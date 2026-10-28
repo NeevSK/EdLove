@@ -247,6 +247,46 @@
   transition: all 0.15s ease;
 }
 
+.worldChipsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.worldChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  background: color-mix(in srgb, var(--paper-light, #fff) 60%, transparent);
+  color: var(--ink, #1a1918);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.worldChip:hover {
+  border-color: var(--color-sanctuary-saffron, #a85022);
+  transform: translateY(-1px);
+}
+
+.worldChipActive {
+  border-color: var(--color-sanctuary-saffron, #a85022);
+  background: color-mix(in srgb, var(--lotus, #d97706) 14%, var(--paper-light, #fff));
+  color: var(--color-sanctuary-saffron, #a85022);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.gridFour {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem;
+}
+
 .pillButton:hover {
   border-color: var(--color-sanctuary-saffron, #a85022);
 }

@@ -24,6 +24,13 @@ import { burnJournal, loadBurnedJournalHistory } from '@/lib/sanctuary/selfJourn
 import { loadMoodHistory, logMood } from '@/lib/sanctuary/selfWellbeing';
 
 vi.mock('@repo/self/features/featureManifest', () => ({
+  createSelfAccessContext: vi.fn((opts) => ({
+    userId: opts?.userId ?? null,
+    capabilities: ['read:SelfReflection', 'read:InnerPulse', 'read:SelfCare'],
+    capacities: ['teacher'],
+    citizenshipLevel: 1,
+    roles: ['teacher'],
+  })),
   resolveSelfFeatureManifest: vi.fn(() => ({
     all: [
       {

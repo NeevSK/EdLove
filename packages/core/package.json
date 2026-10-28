@@ -94,6 +94,16 @@
       "import": "./src/logic/omnichannel/*.ts",
       "default": "./src/logic/omnichannel/*.ts"
     },
+    "./logic/i18n": {
+      "types": "./src/logic/i18n/index.ts",
+      "import": "./src/logic/i18n/index.ts",
+      "default": "./src/logic/i18n/index.ts"
+    },
+    "./logic/i18n/*": {
+      "types": "./src/logic/i18n/*.ts",
+      "import": "./src/logic/i18n/*.ts",
+      "default": "./src/logic/i18n/*.ts"
+    },
     "./logic/modes": {
       "types": "./src/logic/modes/index.ts",
       "import": "./src/logic/modes/index.ts",
@@ -124,10 +134,25 @@
       "import": "./src/logic/events/*.ts",
       "default": "./src/logic/events/*.ts"
     },
+    "./logic/deeplink/*": {
+      "types": "./src/logic/deeplink/*.ts",
+      "import": "./src/logic/deeplink/*.ts",
+      "default": "./src/logic/deeplink/*.ts"
+    },
     "./logic/deeplink/deepLinkPolicyPipeline": {
       "types": "./src/logic/deeplink/deepLinkPolicyPipeline.ts",
       "import": "./src/logic/deeplink/deepLinkPolicyPipeline.ts",
       "default": "./src/logic/deeplink/deepLinkPolicyPipeline.ts"
+    },
+    "./logic/pairing/*": {
+      "types": "./src/logic/pairing/*.ts",
+      "import": "./src/logic/pairing/*.ts",
+      "default": "./src/logic/pairing/*.ts"
+    },
+    "./logic/utils/*": {
+      "types": "./src/logic/utils/*.ts",
+      "import": "./src/logic/utils/*.ts",
+      "default": "./src/logic/utils/*.ts"
     },
     "./routing/routeManifest": {
       "types": "./src/routing/routeManifest.ts",
@@ -488,7 +513,7 @@
   "dependencies": {
     "@growthbook/growthbook": "^1.8.0",
     "@hono/zod-openapi": "^1.6.3",
-    "@intuitui-labs/form-builder-engine": "^0.2.1",
+    "@intuitui-labs/form-builder-engine": "^0.3.0",
     "@orpc/client": "2.0.0-beta.46",
     "@orpc/contract": "2.0.0-beta.46",
     "@orpc/server": "2.0.0-beta.46",

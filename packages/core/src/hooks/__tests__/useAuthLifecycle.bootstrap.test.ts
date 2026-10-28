@@ -23,7 +23,7 @@ const lifecycleMocks = vi.hoisted(() => ({
     setPerspective: vi.fn(),
     setSchoolType: vi.fn(),
     setUser: vi.fn(),
-    user: null as { id: string } | null,
+    user: null as { id: string; is_anonymous?: boolean } | null,
   },
   scopeSnapshot: null as { principalId: string | null } | null,
 }));
@@ -149,14 +149,69 @@ describe('useAuthLifecycle bootstrap ordering', () => {
     lifecycleMocks.storeState.setUser.mockReset();
   });
 
-  function startLifecycle(initialSession: Promise<AuthSession | null> = Promise.resolve(null)) {
+  function startLifecycle(
+    initialSession: Promise<AuthSession | null> = Promise.resolve(null),
+    readLocalGuestId?: () => Promise<string | null>,
+  ) {
     lifecycleMocks.getAuthSession.mockReturnValue(initialSession);
     lifecycleMocks.onAuthStateChange.mockImplementation((listener) => {
       lifecycleMocks.authStateListener = listener;
       return { data: { subscription: { unsubscribe: vi.fn() } } };
     });
-    return useAuthLifecycle();
+    return useAuthLifecycle(readLocalGuestId);
   }
+
+  it('retains a verified device guest when no cloud session exists', async () => {
+    const id = 'local-9ac0f584-4299-4b23-ae2c-5846be605c26';
+    lifecycleMocks.scopeSnapshot = { principalId: id };
+    lifecycleMocks.storeState.user = { id, is_anonymous: true };
+    const readGuest = vi.fn().mockResolvedValue(id);
+    startLifecycle(Promise.resolve(null), readGuest);
+    await vi.waitFor(() => expect(lifecycleMocks.stateSetters[1]).toHaveBeenCalledWith(false));
+    expect(lifecycleMocks.clearScopeSessionCompatibility).not.toHaveBeenCalled();
+    expect(lifecycleMocks.storeState.setUser).not.toHaveBeenCalledWith(null);
+  });
+
+  it('clears a guest scope if the stored local session does not match', async () => {
+    lifecycleMocks.scopeSnapshot = { principalId: 'local-guest-a' };
+    lifecycleMocks.storeState.user = { id: 'local-guest-a', is_anonymous: true };
+    startLifecycle(Promise.resolve(null), async () => 'local-guest-b');
+    await vi.waitFor(() =>
+      expect(lifecycleMocks.clearScopeSessionCompatibility).toHaveBeenCalledOnce(),
+    );
+  });
+
+  it('clears an unverified guest when local session storage fails', async () => {
+    lifecycleMocks.scopeSnapshot = { principalId: 'local-guest-a' };
+    lifecycleMocks.storeState.user = { id: 'local-guest-a', is_anonymous: true };
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      startLifecycle(Promise.resolve(null), async () => {
+        throw new Error('storage unavailable');
+      });
+      await vi.waitFor(() =>
+        expect(lifecycleMocks.clearScopeSessionCompatibility).toHaveBeenCalledOnce(),
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('does not restore guest state after a newer sign-out event', async () => {
+    const id = 'local-9ac0f584-4299-4b23-ae2c-5846be605c26';
+    lifecycleMocks.scopeSnapshot = { principalId: id };
+    lifecycleMocks.storeState.user = { id, is_anonymous: true };
+    const guest = Promise.withResolvers<string | null>();
+    const readGuest = vi.fn(() => guest.promise);
+    startLifecycle(Promise.resolve(null), readGuest);
+    await vi.waitFor(() => expect(readGuest).toHaveBeenCalledOnce());
+    await lifecycleMocks.authStateListener?.('SIGNED_OUT', null);
+    const clears = lifecycleMocks.clearScopeSessionCompatibility.mock.calls.length;
+    guest.resolve(id);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(lifecycleMocks.clearScopeSessionCompatibility).toHaveBeenCalledTimes(clears);
+  });
 
   function activeIdentity(id: string) {
     return {

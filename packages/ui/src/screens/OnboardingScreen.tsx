@@ -4,7 +4,7 @@ import {
   createInitialBond as createCanonicalInitialBond,
   createOnboardingCompletionKey,
 } from '@repo/core/api/onboardingClient';
-import { useActorSnapshot } from '@repo/core/hooks';
+import { useMachineActor } from '@repo/core/hooks';
 import { showToast } from '@repo/core/lib/feedback';
 import { resolveStoredInvite } from '@repo/core/lib/inviteCodes';
 import { storage } from '@repo/core/lib/storage';
@@ -52,6 +52,7 @@ import {
   canProceedOnboardingStep,
   getOnboardingPhase,
   getOnboardingStepLabel,
+  isOnboardingScreenReadyForInteraction,
 } from '@repo/ui/screens/onboardingFlow';
 import {
   initialOnboardingJourneyState,
@@ -440,7 +441,7 @@ const TourStep = memo(
             className="bg-phase-accent flex-[2]"
           >
             <ButtonText className="text-phase-text-on-accent font-bold">
-              {index === 6 ? t('onboarding.finish') : t('onboarding.next')}
+              {index === 6 ? t('onboarding.complete') : t('onboarding.next')}
             </ButtonText>
           </Button>
         </HStack>
@@ -452,6 +453,143 @@ const TourStep = memo(
   ),
 );
 TourStep.displayName = 'TourStep';
+
+type SandboxPricing = 'FREE' | 'PRO' | 'INSTITUTIONAL';
+type SandboxCitizenship = 'WANDERER' | 'SECOND_CLASS' | 'FIRST_CLASS';
+
+const SANDBOX_ROLES: readonly Capacity[] = ['teacher', 'student', 'principal', 'admin'];
+const SANDBOX_PRICING: readonly SandboxPricing[] = ['FREE', 'PRO', 'INSTITUTIONAL'];
+const SANDBOX_CITIZENSHIPS: readonly SandboxCitizenship[] = [
+  'WANDERER',
+  'SECOND_CLASS',
+  'FIRST_CLASS',
+];
+
+const SandboxTextField = memo(function SandboxTextField({
+  label,
+  value,
+  placeholder,
+  onChangeText,
+}: {
+  label: string;
+  value: string;
+  placeholder: string;
+  onChangeText: (value: string) => void;
+}) {
+  return (
+    <VStack className="gap-2">
+      <Text className="text-sm font-bold text-phase-text-primary">{label}</Text>
+      <Input className="rounded-comfortable border-phase-text-tertiary">
+        <InputField
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          className="text-phase-text-primary"
+        />
+      </Input>
+    </VStack>
+  );
+});
+
+function SandboxChoiceGroup<T extends string>({
+  label,
+  hintLabel,
+  options,
+  selected,
+  onSelect,
+  formatLabel,
+}: {
+  label: string;
+  hintLabel: string;
+  options: readonly T[];
+  selected: T;
+  onSelect: (value: T) => void;
+  formatLabel?: (value: T) => string;
+}) {
+  return (
+    <VStack className="gap-2">
+      <Text className="text-sm font-bold text-phase-text-primary">{label}</Text>
+      <HStack className="gap-2 flex-wrap">
+        {options.map((option) => (
+          <Pressable
+            key={option}
+            onPress={() => onSelect(option)}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: selected === option }}
+            accessibilityLabel={option}
+            accessibilityHint={`Select ${hintLabel} as ${option}`}
+            className={`px-4 py-2 border rounded-full ${selected === option ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-canvas'}`}
+          >
+            <Text
+              className={`text-xs font-bold ${selected === option ? 'text-phase-accent' : 'text-phase-text-secondary'}`}
+            >
+              {formatLabel ? formatLabel(option) : option.toUpperCase()}
+            </Text>
+          </Pressable>
+        ))}
+      </HStack>
+    </VStack>
+  );
+}
+
+const SandboxRoleChoiceGroup = memo(function SandboxRoleChoiceGroup({
+  selected,
+  onSelect,
+}: {
+  selected: Capacity;
+  onSelect: (value: Capacity) => void;
+}) {
+  return (
+    <SandboxChoiceGroup
+      label="Capacity / Role"
+      hintLabel="role capacity"
+      options={SANDBOX_ROLES}
+      selected={selected}
+      onSelect={onSelect}
+    />
+  );
+});
+
+const SandboxPricingChoiceGroup = memo(function SandboxPricingChoiceGroup({
+  selected,
+  onSelect,
+}: {
+  selected: SandboxPricing;
+  onSelect: (value: SandboxPricing) => void;
+}) {
+  return (
+    <SandboxChoiceGroup
+      label="Pricing Tier"
+      hintLabel="pricing tier"
+      options={SANDBOX_PRICING}
+      selected={selected}
+      onSelect={onSelect}
+    />
+  );
+});
+
+function formatCitizenshipLabel(value: SandboxCitizenship): string {
+  return value.replace('_', ' ');
+}
+
+const SandboxCitizenshipChoiceGroup = memo(function SandboxCitizenshipChoiceGroup({
+  selected,
+  onSelect,
+}: {
+  selected: SandboxCitizenship;
+  onSelect: (value: SandboxCitizenship) => void;
+}) {
+  return (
+    <SandboxChoiceGroup
+      label="Citizenship"
+      hintLabel="citizenship level"
+      options={SANDBOX_CITIZENSHIPS}
+      selected={selected}
+      onSelect={onSelect}
+      formatLabel={formatCitizenshipLabel}
+    />
+  );
+});
 
 const DevSandboxConsoleInner = memo(
   ({
@@ -469,8 +607,14 @@ const DevSandboxConsoleInner = memo(
   }) => {
     const [name, setName] = useReducer((_: string, val: string) => val, 'Dev User');
     const [role, setRole] = useReducer((_: Capacity, val: Capacity) => val, 'teacher');
-    const [pricing, setPricing] = useReducer((_: string, val: string) => val, 'FREE');
-    const [citizenship, setCitizenship] = useReducer((_: string, val: string) => val, 'WANDERER');
+    const [pricing, setPricing] = useReducer(
+      (_: SandboxPricing, val: SandboxPricing) => val,
+      'FREE',
+    );
+    const [citizenship, setCitizenship] = useReducer(
+      (_: SandboxCitizenship, val: SandboxCitizenship) => val,
+      'WANDERER',
+    );
     const [schoolId, setSchoolId] = useReducer((_: string, val: string) => val, '');
 
     return (
@@ -496,105 +640,21 @@ const DevSandboxConsoleInner = memo(
             </VStack>
           </Box>
           <Box className="px-6 py-6 gap-5">
-            {/* Display Name Input */}
-            <VStack className="gap-2">
-              <Text className="text-sm font-bold text-phase-text-primary">Display Name</Text>
-              <Input className="rounded-comfortable border-phase-text-tertiary">
-                <InputField
-                  value={name}
-                  onChangeText={setName}
-                  placeholder="e.g. John Doe"
-                  className="text-phase-text-primary"
-                />
-              </Input>
-            </VStack>
-
-            {/* Role / Capacity selection */}
-            <VStack className="gap-2">
-              <Text className="text-sm font-bold text-phase-text-primary">Capacity / Role</Text>
-              <HStack className="gap-2 flex-wrap">
-                {(['teacher', 'student', 'principal', 'admin'] as Capacity[]).map((r) => (
-                  <Pressable
-                    key={r}
-                    onPress={() => setRole(r)}
-                    accessibilityRole="radio"
-                    accessibilityState={{ selected: role === r }}
-                    accessibilityLabel={r}
-                    accessibilityHint={`Select role capacity as ${r}`}
-                    className={`px-4 py-2 border rounded-full ${role === r ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-canvas'}`}
-                  >
-                    <Text
-                      className={`text-xs font-bold ${role === r ? 'text-phase-accent' : 'text-phase-text-secondary'}`}
-                    >
-                      {r.toUpperCase()}
-                    </Text>
-                  </Pressable>
-                ))}
-              </HStack>
-            </VStack>
-
-            {/* Pricing Tier selection */}
-            <VStack className="gap-2">
-              <Text className="text-sm font-bold text-phase-text-primary">Pricing Tier</Text>
-              <HStack className="gap-2 flex-wrap">
-                {['FREE', 'PRO', 'INSTITUTIONAL'].map((p) => (
-                  <Pressable
-                    key={p}
-                    onPress={() => setPricing(p)}
-                    accessibilityRole="radio"
-                    accessibilityState={{ selected: pricing === p }}
-                    accessibilityLabel={p}
-                    accessibilityHint={`Select pricing tier as ${p}`}
-                    className={`px-4 py-2 border rounded-full ${pricing === p ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-canvas'}`}
-                  >
-                    <Text
-                      className={`text-xs font-bold ${pricing === p ? 'text-phase-accent' : 'text-phase-text-secondary'}`}
-                    >
-                      {p}
-                    </Text>
-                  </Pressable>
-                ))}
-              </HStack>
-            </VStack>
-
-            {/* Citizenship selection */}
-            <VStack className="gap-2">
-              <Text className="text-sm font-bold text-phase-text-primary">Citizenship</Text>
-              <HStack className="gap-2 flex-wrap">
-                {['WANDERER', 'SECOND_CLASS', 'FIRST_CLASS'].map((c) => (
-                  <Pressable
-                    key={c}
-                    onPress={() => setCitizenship(c)}
-                    accessibilityRole="radio"
-                    accessibilityState={{ selected: citizenship === c }}
-                    accessibilityLabel={c}
-                    accessibilityHint={`Select citizenship level as ${c}`}
-                    className={`px-4 py-2 border rounded-full ${citizenship === c ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-canvas'}`}
-                  >
-                    <Text
-                      className={`text-xs font-bold ${citizenship === c ? 'text-phase-accent' : 'text-phase-text-secondary'}`}
-                    >
-                      {c.replace('_', ' ')}
-                    </Text>
-                  </Pressable>
-                ))}
-              </HStack>
-            </VStack>
-
-            {/* School ID selection */}
-            <VStack className="gap-2">
-              <Text className="text-sm font-bold text-phase-text-primary">
-                School ID (Optional)
-              </Text>
-              <Input className="rounded-comfortable border-phase-text-tertiary">
-                <InputField
-                  value={schoolId}
-                  onChangeText={setSchoolId}
-                  placeholder="e.g. school-uuid"
-                  className="text-phase-text-primary"
-                />
-              </Input>
-            </VStack>
+            <SandboxTextField
+              label="Display Name"
+              value={name}
+              onChangeText={setName}
+              placeholder="e.g. John Doe"
+            />
+            <SandboxRoleChoiceGroup selected={role} onSelect={setRole} />
+            <SandboxPricingChoiceGroup selected={pricing} onSelect={setPricing} />
+            <SandboxCitizenshipChoiceGroup selected={citizenship} onSelect={setCitizenship} />
+            <SandboxTextField
+              label="School ID (Optional)"
+              value={schoolId}
+              onChangeText={setSchoolId}
+              placeholder="e.g. school-uuid"
+            />
 
             {/* Actions */}
             <HStack className="gap-4 mt-4">
@@ -632,6 +692,8 @@ interface OnboardingScreenProps {
   userId?: string | null;
   suggestedName?: string;
   onboardingArtwork?: MascotArtworkSource;
+  onInteractive?: () => void;
+  onDeveloperSandboxOpened?: () => void;
 }
 
 const OnboardingScreen = memo(function OnboardingScreen({
@@ -642,16 +704,17 @@ const OnboardingScreen = memo(function OnboardingScreen({
   userId = null,
   suggestedName,
   onboardingArtwork,
+  onInteractive,
+  onDeveloperSandboxOpened,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
   const [isAbandoning, setIsAbandoning] = useState(false);
   const isGuestSubject = isAnonymous || isLocalGuest;
 
-  const actor = useMemo(
+  const { actor, snapshot } = useMachineActor(
     () => createOnboardingJourneyActor({ userId, isGuest: isGuestSubject }),
     [userId, isGuestSubject],
   );
-  const snapshot = useActorSnapshot(actor);
   const state = snapshot.context;
   const isProcessing = state.isProcessing || snapshot.value === 'submitting';
 
@@ -730,6 +793,21 @@ const OnboardingScreen = memo(function OnboardingScreen({
   const { currentStep, name, selectedCapacity, error, showDevSandbox } = state;
   const currentPhase = getOnboardingPhase(currentStep);
   const { status: networkStatus, isOnline } = useOfflineStatus();
+  const interactiveMarkerSentRef = useRef(false);
+
+  useEffect(() => {
+    if (interactiveMarkerSentRef.current || !onInteractive) return;
+    if (
+      !isOnboardingScreenReadyForInteraction({
+        phase: currentPhase,
+        isProcessing,
+        showingDeveloperSandbox: showDevSandbox,
+      })
+    )
+      return;
+    interactiveMarkerSentRef.current = true;
+    onInteractive();
+  }, [currentPhase, isProcessing, onInteractive, showDevSandbox, userId]);
 
   const resolvedInternalIdRef = useRef<string | null>(null);
   const resolvedCitizenRef = useRef<Awaited<
@@ -1105,8 +1183,21 @@ const OnboardingScreen = memo(function OnboardingScreen({
     if (!canProceed || isProcessing) return;
     hapticLight();
 
+    // The developer sandbox is local and must remain reachable while the device is offline.
+    if (currentPhase === 'arrival') {
+      const devIntent = resolveOnboardingDevIntent({
+        isDevMode: typeof __DEV__ !== 'undefined' && __DEV__,
+        input: name,
+      });
+      if (devIntent.kind === 'menu') {
+        onDeveloperSandboxOpened?.();
+        dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
+        return;
+      }
+    }
+
     // 🛡️ OFFLINE CHECK
-    if (networkStatus !== 'online' && !isAnonymous) {
+    if (networkStatus !== 'online' && !isGuestSubject) {
       hapticError();
       dispatch({
         type: 'SET_ERROR',
@@ -1223,6 +1314,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     networkStatus,
     currentPhase,
     currentStep,
+    onDeveloperSandboxOpened,
     name,
     selectedCapacity,
     handleCompleteOnboarding,
@@ -1239,7 +1331,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   const handleBack = useCallback(() => {
     hapticLight();
     dispatch({ type: 'PREV_STEP' });
-  }, []);
+  }, [dispatch]);
 
   const handleSkipTour = useCallback(() => {
     hapticLight();
@@ -1248,12 +1340,15 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
   const handleNameChange = useCallback(
     (text: string) => dispatch({ type: 'SET_NAME', name: text }),
-    [],
+    [dispatch],
   );
-  const handleCapacitySelect = useCallback((r: Capacity) => {
-    dispatch({ type: 'SET_CAPACITY', capacity: r });
-    hapticLight();
-  }, []);
+  const handleCapacitySelect = useCallback(
+    (r: Capacity) => {
+      dispatch({ type: 'SET_CAPACITY', capacity: r });
+      hapticLight();
+    },
+    [dispatch],
+  );
   const handleBackToWelcome = useCallback(() => {
     if (isAbandoning || isProcessing) return;
 

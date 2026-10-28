@@ -2,7 +2,7 @@
 title: "Verger: the pipeline, needed against built, and requisite variety"
 status: active
 created: 2026-10-24
-updated: 2026-10-24
+updated: 2026-10-28
 owners: [Naveen]
 tags: [verger, adaptive-runtime, architecture, status]
 ---
@@ -17,6 +17,131 @@ compare). Update this page whenever a stage changes. Doctrine:
 [stage-and-chairs.md](stage-and-chairs.md), [second-order-loop.md](second-order-loop.md).
 
 ## Build plan and progress
+
+**Current intent and refinement order:** See [intent, evidence and refinement roadmap](2026-10-28-intent-to-evidence-and-refinement-roadmap.md) for the P0 journey, source fidelity, explainable decisions, graduated sensing and controlled experiments. It reconciles later work with historical gap tables below.
+
+**2026-10-28 journal integrity:** Backfill retains valid records from a damaged JSONL journal,
+but now marks its source `failed` and reports the number of malformed or invalid lines instead
+of claiming completeness. Existing imported source metadata is updated on the next backfill;
+this count does not detect records lost before reaching the journal. G1 / Vitest, substituted
+filesystem and database: local telemetry 15/15. This is not physical-device validation.
+
+**2026-10-28 interaction clock correction:** Event Timing rows retain the entry's original
+monotonic start rather than the observer callback time. When no wall timestamp was supplied,
+the wall time is estimated from the callback's clock pair and marked
+`wall_clock_basis=estimated-from-observation`; clock adjustments and scheduling uncertainty
+remain, so it is not an independently measured cross-source correlation. G1 / Vitest with a
+substituted observer and filesystem: startup and local telemetry 22/22. Existing captured
+rows are not retroactively corrected, and device event completeness remains unverified.
+The Event Timing source also retains `capped` after observer shutdown when its 2,048-entry
+limit is exceeded; it does not count events missed after disconnect. G1 / Vitest startup and
+local telemetry contracts: 23/23 with substituted observer and storage.
+
+**2026-10-28 readiness analysis integrity:** A screen-ready marker without a retained bootstrap
+anchor, or preceding it, is now reported as an unestablished interval instead of a missing marker
+or a zero-duration launch. G1 / Vitest: 11/11 insight cases on synthetic persisted rows;
+this does not establish clock correlation or physical-device startup behavior.
+
+**2026-10-28 input-to-snapshot link:** An opt-in development callback records the accepted input
+that produced each published snapshot change, together with snapshot versions, action, prior and
+current published levels, proposed levels and mode. Shadow proposals remain distinct from applied
+levels. The record is privacy-filtered, explicitly says the textual reason was not recorded, and
+does not capture unchanged reductions, candidate evaluation, actuator success, or later outcomes.
+G1 / Vitest: controller self-cost 5/5 and local telemetry 16/16 using substituted ports and storage.
+This does not prove phone capture or complete decision explanations.
+
+Selected frame-budget and thread-saturation reason templates now also retain their numeric
+evidence and recognized detail as structured fields. `reason_changed` distinguishes the last
+known reason from one changed by the current input; unrecognized or route-derived reasons remain
+unrecorded. G1 / Vitest: local telemetry 16/16 with substituted storage and a privacy check.
+
+**2026-10-28 A52 transition receipt (G5):** Android 14 development client, isolated shadow,
+session `mvri9vdl-cucgsxxq`. The returning guest reached Self; tapping Show Identity changed the
+visible list to Journey. The JSONL journal contained a `long-task` input of 7,198.7 ms joined to
+snapshot version 2 → 3: action decrease, structured JS saturation reason (3 long tasks),
+proposed list-window level 1 while the published level stayed 0. Later tick version 3 → 4 kept
+the same reason (`reason_changed=false`) and proposed level 2. The recorder reported 198 written,
+0 pending, 0 JSONL drops, 0 SQLite drops and no recorded write error at the inspection point.
+Two Event Timing entries were persisted with original source times and estimated wall-clock
+labels; their correspondence to the tap has not been established because clock alignment and
+delivery timing are not validated. Early JS marker to Self-ready was 20,874.0 ms, and Router
+entry to first effect was 10,624.4 ms; this development run includes Metro and instrumentation,
+not OS cold-launch TTI. Duplicate startup effects/launch plans were observed. Shadow proves a
+proposal and record, not actuator effects, native source completeness, or release performance.
+
+**2026-10-28 A52 React profile:** A 16.8-second development/Hermes capture of the returning
+guest Self screen and one Show Wellbeing tap recorded 17 commits, 16 above the profiler's 16 ms
+floor, and 1,585 CPU samples. Large commits occurred before the tap; in the 12–16 second window
+commit #7 was 595.0 ms at 12.859 s and commit #8 was 833.5 ms at 13.818 s; the tap annotation
+was at 12.792 s. The profiler reports repeated View/CssInterop context/style cascades and
+`TabsLayoutContent`; this is a profiling hypothesis, not proof of a single root cause or release
+performance. Native profiler attachment failed because Android package listing hit user 150's
+permission restriction. No native correlation, startup CPU attribution, or before/after fix has
+been established from this recording.
+
+**2026-10-28 A52 theme-marker experiment:** Tested the installed `react-native-css` suggested
+`will-change-variable` marker on the shared Circadian provider and then removed this experimental
+change. Warnings and broad render cascades persisted. A second development profile of the same
+Identity → Wellbeing action recorded 19 commits, 16 above 16 ms; the tap window contained
+568.8 ms, 1,280.6 ms and 826.4 ms commits. The first profile recorded 17 commits, 16 above
+16 ms, with 595.0 ms and 833.5 ms commits near the tap. Different window lengths, system load,
+and instrumentation preclude a controlled performance comparison; the experiment did not
+establish benefit. The second profile files were saved by Argent under session
+`20261028-024534` in `/tmp/argent-profiler-cwd/` on the profiler host. No controller rule changed.
+
+**2026-10-28 launch visibility:** The A52's persisted recovery record is at rung 4 with four
+relapses, so the recovery policy holds the runtime off. The retained record does not establish
+the individual causes. Development capture now records the resolved launch runtime, rung and
+reason and marks inputs disabled when launch is refused; an unset build mode is labeled unset.
+G1 / Vitest: local telemetry 15/15, including the rung-4 refusal; serialized Verger gate
+ALL_PASS=1. These checks do not prove the device received the new launch event or that the
+native sensors are working. Do not reset the ladder or attribute its relapses without evidence.
+
+**2026-10-28 isolated lab:** For a disposable development-only shadow session, start Metro with
+`EXPO_PUBLIC_GURUDEVI_VERGER_ISOLATED=true` and `EXPO_PUBLIC_GURUDEVI_RUNTIME=shadow`.
+This uses no recovery store and does not erase the normal ladder; an off switch still wins.
+The A52 recorded a shadow/rung-0/no-store launch and JS-side inputs including long tasks,
+event-loop lag, battery and power. This proves those recorded paths only, not native frame or
+CPU sensors. The post-change gate reported a 5,000 ms timeout in the deterministic plant test
+under concurrent Metro bundling; the gate ended ALL_PASS=0, so this change is not gate-green.
+Subsequent serialized checks on 2026-10-28 completed ALL_PASS=1; the timeout remains a
+test-reliability observation, not proof of a failed determinism assertion.
+
+**2026-10-28 priority:** P0 is a working app journey: cold and returning launches must reach
+the correct public, guest, authenticated, or recovery destination as applicable, load usable
+screen content, and complete an interaction; required startup failures must offer actionable
+recovery. A shell render, route decision, or telemetry event alone does not prove readiness.
+The onboarding/booting mismatch below remains open until verified on the current device build.
+After P0, prioritize capture integrity and clock correlation; joined interaction, frame, CPU,
+and Verger decision evidence; JS/React, memory, storage, sync and network attribution; thermal,
+power, device context and failures; then specialized profiles. Detailed development capture
+remains separate from bounded field telemetry. See the [coverage contract](../../../../apps/gurudevi-mobile/docs/architecture/2026-10-27-verger-expo-devtools-coverage.md).
+
+**2026-10-27 diagnostic artifact import:** Local development sessions now accept explicit
+React Native DevTools performance trace-event JSON and Perfetto Chrome JSON imports and support
+removing a stopped session. The importer stores trace-clock timestamps plus original event fields
+in a separate SQLite session; it rejects invalid/oversized traces rather than truncating. A52 G5
+evidence: 3 imported DevTools rows were queried back from SQLite; latest live session returned
+38 rows, 0 pending/dropped, and no SQLite write error. A 14.9 s Perfetto trace was parsed on
+Windows; its screen-sharing-contaminated 33-frame sample is not an optimization baseline. Current
+onboarding form is visible while route admission is still `booting`, and the screen-interactive
+event is absent for onboarding in this older bundle. This does not prove all DevTools panels,
+raw Perfetto binary ingestion, profiler/heap exports, or onboarding TTI; trace files remain local
+and may contain sensitive values. [Coverage and limits](../../../../apps/gurudevi-mobile/docs/architecture/2026-10-27-verger-expo-devtools-coverage.md) and [device evidence](../../../../apps/gurudevi-mobile/docs/architecture/2026-10-27-verger-diagnostics-integration-plan.md).
+
+**2026-10-27 query completeness follow-up:** Development diagnostics now queries persisted event
+totals by source independently of the visible timeline page and filters. Engineering findings
+inspect the latest bounded 10,000-row window and disclose when a session contains earlier rows;
+these totals are not source availability claims. G1 / Vitest contracts cover the unbounded
+per-session SQL aggregation and bounded-window disclosure. This improves evidence accounting,
+not data retention or startup performance; the development SQLite database remains locally
+unbounded and that storage quota is an open item.
+
+**2026-10-27 native diagnostics:** Mobile presence reuses the existing RNGH root;
+the generic Verger boundary remains the default fallback. RNGH 3.4 hook lifecycle
+repairs and local development JSONL capture are implemented. A52 G5 receipt:
+21 runtime records persisted, zero drops; optional CPU/network/heap/native trace
+ingestion remains planned. No control policy changed. [Plan and evidence](../../../../apps/gurudevi-mobile/docs/architecture/2026-10-27-verger-diagnostics-integration-plan.md).
 
 **2026-10-27 host integration:** Gurudevi web feeds Verger from the same NetworkManager observation as the connection UI, bus and query scheduler. Generic browser sampling remains the standalone default. Serialized gate: ALL_PASS=1, 517 cases; no control policy changed. [Implementation and evidence](../../../current_progress/2026-10-27-network-world-verger-followup.md), including Expo Modules 2.0 limits and the outstanding exact-source native build.
 

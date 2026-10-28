@@ -52,6 +52,7 @@ export const advancedTools = ['Agent Lab', 'Editorial', 'UI Showcase', 'Icon Lab
 
 export const quickAccessDestinations = [
   { id: 'my-attendance', href: '/self/attendance', label: 'My attendance', symbol: '🗓️', explore: true },
+  { id: 'qr-scanner', href: '/qr', label: 'QR Scanner', symbol: '📷', explore: true },
   { id: 'breathing', href: '/self?practice=breath', label: 'Mindful breathing', symbol: '🌬️', explore: true },
   { id: 'fire-journal', href: '/self?practice=journal', label: 'Fire Journal', symbol: '🔥', explore: true },
   { id: 'submissions', href: '/workspace/submissions', label: 'Submissions', symbol: '📥', explore: false },

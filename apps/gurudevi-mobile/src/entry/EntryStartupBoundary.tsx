@@ -6,7 +6,11 @@ import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
-import { measureDevelopmentStartupTask, recordStartupStage } from '@/boot/startupTelemetry';
+import {
+  measureDevelopmentStartupTask,
+  recordDevelopmentTrace,
+  recordStartupStage,
+} from '@/boot/startupTelemetry';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { EntryShell } from '@/entry/EntryShell';
 import { installGlobalErrorHandlers } from '@/lib/globalErrorHandlers';
@@ -29,7 +33,7 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
     <MascotProvider config={fireflyMascotConfig}>
       <View
         accessibilityRole={error ? 'alert' : 'progressbar'}
-        accessibilityLabel={error ? 'Gurudevi could not start' : 'Preparing Gurudevi'}
+        accessibilityLabel={error ? 'Gurudevi could not start' : 'Opening Gurudevi'}
         style={styles.container}
       >
         {error ? (
@@ -38,7 +42,7 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
           <BrandPulse size={32} tintColor="#D4843A" />
         )}
         <Text style={styles.primaryText}>
-          {error ? 'Gurudevi could not finish starting.' : 'Preparing your sanctuary…'}
+          {error ? 'Gurudevi could not finish starting.' : 'Opening Gurudevi…'}
         </Text>
         {error ? (
           <>
@@ -77,6 +81,16 @@ export function EntryStartupBoundary() {
 
   useEffect(() => {
     installGlobalErrorHandlers();
+    recordDevelopmentTrace({
+      category: 'startup-boundary',
+      task: 'first-effect',
+      state: 'started',
+    });
+    recordDevelopmentTrace({
+      category: 'startup-boundary',
+      task: 'essential-startup',
+      state: 'started',
+    });
     let cancelled = false;
 
     void completeEssentialStartup({
@@ -91,11 +105,21 @@ export function EntryStartupBoundary() {
     })
       .then(() => {
         if (cancelled) return;
+        recordDevelopmentTrace({
+          category: 'startup-boundary',
+          task: 'essential-startup',
+          state: 'completed',
+        });
         setState({ status: 'ready' });
         startDeferredServices();
       })
       .catch((cause: unknown) => {
         if (cancelled) return;
+        recordDevelopmentTrace({
+          category: 'startup-boundary',
+          task: 'essential-startup',
+          state: 'failed',
+        });
         setState({
           status: 'failed',
           error: cause instanceof Error ? cause : new Error('Unknown startup failure.'),

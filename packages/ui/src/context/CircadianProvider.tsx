@@ -4,7 +4,7 @@ import { worldPhaseTokens } from '@repo/ui/theme/worldBridge';
 import { getTextOnBackground } from '@repo/ui/utils/colorUtils';
 import { WorldContext } from '@repo/ui/world/native/WorldContext';
 import { resolveWorld } from '@repo/ui/world/resolve';
-import { vars } from 'nativewind';
+import { VariableContextProvider } from 'nativewind';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { useEnvironment } from './EnvironmentContext';
@@ -27,11 +27,15 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
   const circadianVars = useMemo(() => {
     // Sanctuary keeps its hand-tuned matrix on the clock, as before. Other worlds
     // follow the same phase as the world components, so both agree on screen.
-    const tokens = worldPhaseTokens(worldId, worldId === 'sanctuary' ? temporalPhase : phase, isDark);
+    const tokens = worldPhaseTokens(
+      worldId,
+      worldId === 'sanctuary' ? temporalPhase : phase,
+      isDark,
+    );
     const w = world.tokens;
 
     // Semantic mappings
-    return vars({
+    return {
       '--phase-world': tokens.gradientNodes[0],
       '--phase-canvas': tokens.gradientNodes[1],
       '--phase-surface': tokens.glass.surface.bg,
@@ -75,7 +79,7 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
       '--w-on-danger': w.onDanger,
       '--w-success': w.success,
       '--w-focus': w.focus,
-    });
+    };
   }, [worldId, temporalPhase, phase, isDark, world]);
 
   const contextValue = useMemo(() => ({ phase: temporalPhase }), [temporalPhase]);
@@ -84,7 +88,9 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
   return (
     <CircadianContext value={contextValue}>
       <WorldContext value={worldValue}>
-        <View style={[circadianVars, { flex: 1 }]}>{children}</View>
+        <VariableContextProvider value={circadianVars}>
+          <View style={{ flex: 1 }}>{children}</View>
+        </VariableContextProvider>
       </WorldContext>
     </CircadianContext>
   );

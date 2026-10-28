@@ -1,4 +1,10 @@
-import { injectPostHog, resetUser, trackProductEvent } from '@repo/core/monitoring';
+import {
+  injectPostHog,
+  optOutTelemetry,
+  resetUser,
+  trackProductEvent,
+  trackScreen,
+} from '@repo/core/monitoring';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 describe('PostHog product analytics bridge', () => {
@@ -38,5 +44,21 @@ describe('PostHog product analytics bridge', () => {
 
   it('remains best-effort when no provider is injected', () => {
     expect(() => trackProductEvent('app_started')).not.toThrow();
+  });
+
+  it('does not send screen-view fallback events after telemetry opt-out', () => {
+    const capture = vi.fn();
+    const reset = vi.fn();
+    injectPostHog({
+      capture,
+      identify: vi.fn(),
+      reset,
+    });
+
+    optOutTelemetry();
+    trackScreen('Library');
+
+    expect(reset).toHaveBeenCalledOnce();
+    expect(capture).not.toHaveBeenCalled();
   });
 });

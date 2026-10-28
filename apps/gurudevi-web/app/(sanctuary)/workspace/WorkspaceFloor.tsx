@@ -13,6 +13,7 @@ import {
   type WorkspaceAttendanceReadScope,
 } from '../../../lib/domain/hooks/useWorkspaceDomain';
 import { setExploreCapacity, useExploreCapacity } from '../../../lib/explore/exploreCapacity';
+import { setDevPreviewCapacity } from '../../../lib/sanctuary/devPreviewCapacity';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import {
@@ -60,6 +61,7 @@ type WorkspaceFloorProps = Readonly<{
   capacity?: string;
   displayName?: string;
   scope?: AuthorizedEntryScope;
+  isDevPreview?: boolean;
 }>;
 
 const WORKSPACE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
@@ -124,10 +126,11 @@ export function WorkspaceFloor({
   capacity,
   displayName = 'Guest Explorer',
   scope,
+  isDevPreview = false,
 }: WorkspaceFloorProps) {
   const router = useRouter();
   const exploreCapacity = useExploreCapacity();
-  const normalizedCapacity = (mode === 'explore' ? exploreCapacity : capacity)?.toLowerCase();
+  const normalizedCapacity = (mode === 'explore' && !isDevPreview ? exploreCapacity : capacity)?.toLowerCase();
   const defaultRole: WorkspaceRoleFilter =
     normalizedCapacity === 'student'
       ? 'student'
@@ -138,11 +141,13 @@ export function WorkspaceFloor({
           : 'teacher';
 
   const [activeRole, setActiveRole] = useState<WorkspaceRoleFilter>(defaultRole);
+  const roleLensKey = `sanctuary-role-lens:workspace:${subjectId ?? 'guest'}:${scope?.bondId ?? 'unselected'}`;
 
   useEffect(() => {
     if (mode === 'explore') return;
+    setActiveRole(defaultRole);
     try {
-      const stored = window.localStorage.getItem('sanctuary-role-lens:workspace');
+      const stored = window.localStorage.getItem(roleLensKey);
       if (
         stored &&
         ['all', 'common', 'teacher', 'student', 'principal', 'guardian'].includes(stored)
@@ -152,7 +157,7 @@ export function WorkspaceFloor({
     } catch {
       return;
     }
-  }, [defaultRole, mode]);
+  }, [defaultRole, mode, roleLensKey]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -180,15 +185,16 @@ export function WorkspaceFloor({
           role === 'principal' ||
           role === 'guardian'
         ) {
-          setExploreCapacity(role);
+          if (isDevPreview) setDevPreviewCapacity(role);
+          else setExploreCapacity(role);
         }
         return;
       }
       try {
-        window.localStorage.setItem('sanctuary-role-lens:workspace', role);
+        window.localStorage.setItem(roleLensKey, role);
       } catch {}
     },
-    [mode],
+    [mode, roleLensKey, isDevPreview],
   );
 
   const [overview, setOverview] = useState(true);
@@ -978,7 +984,10 @@ export function WorkspaceFloor({
                 <>
                   <button
                     className={styles.primary}
-                    disabled={mode === 'account' && accountReadState !== 'ready'}
+                    disabled={
+                      mode === 'account' &&
+                      (accountReadState !== 'ready' || (!practiceMode && visibleClassrooms.length === 0))
+                    }
                     onClick={openAttendance}
                     type="button"
                   >
@@ -1018,10 +1027,16 @@ export function WorkspaceFloor({
             accountReadState === 'ready' &&
             visibleClassrooms.length === 0 &&
             (effectiveRole === 'teacher' || effectiveRole === 'principal') ? (
-              <p className={styles.muted}>
-                No classrooms are connected to this account yet. A school or classroom bond is
-                required before shared classroom work appears.
-              </p>
+              <div className={styles.muted} role="status">
+                <p><strong>Your classroom workspace is ready to begin.</strong></p>
+                <p>
+                  Ask your school administrator to connect your account to a school and assign your
+                  classrooms. Once connected, your classrooms and attendance will appear here.
+                </p>
+                {practiceAvailability.available ? (
+                  <p>You can use the safely labelled attendance practice while you wait.</p>
+                ) : null}
+              </div>
             ) : null}
           </LivingCard>
 
@@ -1104,7 +1119,17 @@ export function WorkspaceFloor({
                   const isPinned = canvas.pinnedIds.includes(item.id);
                   return (
                     <li key={item.id}>
-                      <span>{item.name}</span>
+                      <button
+                        className={styles.classroomOpenButton}
+                        type="button"
+                        onClick={() => {
+                          selectedClassroomRef.current = item;
+                          setClassroom(item);
+                          openAttendance();
+                        }}
+                      >
+                        {item.name}
+                      </button>
                       <button
                         type="button"
                         aria-label={isPinned ? `Unpin ${item.name}` : `Pin ${item.name}`}

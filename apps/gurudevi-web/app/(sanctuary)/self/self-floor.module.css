@@ -343,27 +343,305 @@
   margin: 0;
   font-size: 1.25rem;
 }
-.catalogStatus {
-  display: inline-block;
-  margin-top: auto;
-  padding-top: 0.8rem;
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.focusBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--lotus, #d97706) 15%, transparent);
+  color: var(--lotus, #d97706);
+  letter-spacing: 0.04em;
+}
+.pinToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  padding: 0;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-ghost, #8a8275);
+  font-size: 0.85rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.18s ease;
+}
+.pinToggleBtn:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
+  border-color: var(--line);
+  transform: scale(1.08);
+}
+.pinToggleBtnActive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  padding: 0;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--lotus, #d97706) 30%, transparent);
+  background: color-mix(in srgb, var(--lotus, #d97706) 15%, transparent);
+  color: var(--lotus, #d97706);
+  font-size: 0.85rem;
+  cursor: pointer;
+  opacity: 1;
+  transition: all 0.18s ease;
+}
+.pinToggleBtnActive:hover {
+  background: color-mix(in srgb, var(--lotus, #d97706) 25%, transparent);
+  transform: scale(1.08);
+}
+.usageMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink-ghost, #8a8275);
+  letter-spacing: 0.02em;
+}
+.shelfSection {
+  max-width: 72rem;
+  margin-top: clamp(1rem, 2.5vw, 1.75rem);
+  padding: clamp(1.15rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper-light) 45%, transparent);
+}
+.shelfHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.shelfTitle {
+  font-family: Georgia, serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0.25rem 0;
+}
+.shelfSubtitle {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 0.88rem;
   color: var(--ink-soft);
+  line-height: 1.5;
+}
+.shelfSubTabs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.shelfSubTab {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.shelfSubTab:hover {
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  color: var(--ink);
+}
+.shelfSubTabActive {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--lotus, #d97706) 35%, transparent);
+  background: color-mix(in srgb, var(--lotus, #d97706) 12%, transparent);
+  color: var(--lotus, #d97706);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: default;
+}
+.shelfGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+}
+.emptyShelfNotice {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border-radius: 0.75rem;
+  border: 1px dashed var(--line);
+  background: color-mix(in srgb, var(--paper-light) 25%, transparent);
+}
+.emptyShelfNotice p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.catalogHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.devPerspectiveBar {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 0.75rem 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px dashed color-mix(in srgb, var(--lotus, #d97706) 40%, var(--line));
+  background: color-mix(in srgb, var(--paper-light) 75%, transparent);
+}
+.devPerspectiveHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.devBadge {
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--lotus, #d97706);
+}
+.devHelp {
+  font-size: 0.76rem;
+  color: var(--ink-ghost, #8a8275);
+}
+.roleFilterBar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0.75rem 0 1.25rem;
+  padding: 0.65rem 0.95rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 65%, transparent);
+}
+.roleFilterLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-ghost, #8a8275);
+}
+.roleFilterPills {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.roleFilterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: var(--paper-light);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.roleFilterPill:hover {
+  border-color: color-mix(in srgb, var(--lotus, #d97706) 40%, transparent);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+.roleFilterPillActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--lotus, #d97706);
+  background: color-mix(in srgb, var(--lotus, #d97706) 14%, transparent);
+  color: var(--lotus, #d97706);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: default;
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--lotus, #d97706) 20%, transparent);
+}
+.roleFilterCount {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.catalogStatus {
+  display: inline-flex;
+  align-items: center;
+  margin-top: auto;
+  padding: 0.35rem 0.65rem;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--ink-soft) 8%, transparent);
+}
+.catalogLocked {
+  display: inline-flex;
+  align-items: center;
+  margin-top: auto;
+  padding: 0.35rem 0.65rem;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--ink-soft) 8%, transparent);
 }
 .catalogOpen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   align-self: flex-start;
   margin-top: auto;
-  padding: 0.45rem 0;
-  border: 0;
-  border-bottom: 1px solid currentColor;
-  background: transparent;
-  color: var(--lotus);
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--lotus, #d97706) 24%, transparent);
+  background: color-mix(in srgb, var(--lotus, #d97706) 10%, transparent);
+  color: var(--lotus, #d97706);
   cursor: pointer;
   font: inherit;
-  font-weight: 700;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.catalogOpen:hover {
+  background: color-mix(in srgb, var(--lotus, #d97706) 20%, transparent);
+  border-color: color-mix(in srgb, var(--lotus, #d97706) 40%, transparent);
+  transform: translateY(-1px);
+}
+.catalogOpen:active {
+  transform: scale(0.98);
 }
 .catalogOpen:focus-visible,
 .burnButton:focus-visible,

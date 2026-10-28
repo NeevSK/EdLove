@@ -1,4 +1,5 @@
 export { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+export { useMachineActor } from '@repo/core/hooks/useMachineActor';
 export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
 export {
   type AccountLifecycleExecutor,

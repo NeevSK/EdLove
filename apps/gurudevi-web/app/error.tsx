@@ -88,8 +88,8 @@ export default function RootError({
             marginBottom: '2rem',
           }}
         >
-          Something interrupted this sanctuary threshold. Your private work remains safe.
-          You can attempt to restore this view, or return to the Welcome Gate.
+          Something interrupted this sanctuary threshold. Your private work remains safe. You can
+          attempt to restore this view, or return to the Guest House.
         </p>
         <div
           style={{
@@ -139,7 +139,7 @@ export default function RootError({
               textDecoration: 'none',
             }}
           >
-            Return to Welcome Gate
+            Return to Guest House
           </Link>
           <a
             href="https://explore.gurudevi.app"

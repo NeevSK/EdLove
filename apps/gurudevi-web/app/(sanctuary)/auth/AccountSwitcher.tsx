@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import styles from './account-switcher.module.css';
 import {
   type DeviceAccountRecord,
+  getDeviceAccountConfig,
   getDeviceAccounts,
   isKioskMode,
+  removeDeviceAccount,
   setKioskMode,
   verifyAccountPin,
 } from '@/lib/sanctuary/deviceAccountRegistry';
@@ -19,6 +22,7 @@ export function AccountSwitcher({
   onSelectAccount,
   onUseAnotherAccount,
 }: Readonly<AccountSwitcherProps>) {
+  const { t } = useTranslation();
   const [accounts, setAccounts] = useState<DeviceAccountRecord[]>([]);
   const [kiosk, setKiosk] = useState(false);
   const [selectedPinAccount, setSelectedPinAccount] = useState<DeviceAccountRecord | null>(null);
@@ -34,6 +38,14 @@ export function AccountSwitcher({
   const handleKioskChange = (enabled: boolean) => {
     setKiosk(enabled);
     setKioskMode(enabled);
+  };
+
+  const handleRemoveAccount = (e: React.MouseEvent, accountId: string) => {
+    e.stopPropagation();
+    if (window.confirm(t('auth.removeAccountConfirm'))) {
+      removeDeviceAccount(accountId);
+      setAccounts(getDeviceAccounts());
+    }
   };
 
   const handleAccountClick = (account: DeviceAccountRecord) => {
@@ -58,10 +70,10 @@ export function AccountSwitcher({
         setSelectedPinAccount(null);
         onSelectAccount(target);
       } else {
-        setPinError('Incorrect PIN. Please try again.');
+        setPinError(t('auth.incorrectPin'));
       }
     } catch {
-      setPinError('Unable to verify PIN.');
+      setPinError(t('auth.unableVerifyPin'));
     } finally {
       setIsVerifying(false);
     }
@@ -71,20 +83,24 @@ export function AccountSwitcher({
     return null;
   }
 
+  const allowKiosk = getDeviceAccountConfig().allowKioskMode;
+
   return (
     <div className={styles.container}>
-      <div className={styles.kioskBanner}>
-        <label className={styles.kioskToggle}>
-          <input
-            className={styles.kioskCheckbox}
-            type="checkbox"
-            checked={kiosk}
-            onChange={(e) => handleKioskChange(e.target.checked)}
-          />
-          <span>Shared / School Lab Workstation</span>
-        </label>
-        <span style={{ opacity: 0.8 }}>Auto-purge on close</span>
-      </div>
+      {allowKiosk ? (
+        <div className={styles.kioskBanner}>
+          <label className={styles.kioskToggle}>
+            <input
+              className={styles.kioskCheckbox}
+              type="checkbox"
+              checked={kiosk}
+              onChange={(e) => handleKioskChange(e.target.checked)}
+            />
+            <span>{t('auth.kioskWorkstation')}</span>
+          </label>
+          <span style={{ opacity: 0.8 }}>{t('auth.autoPurge')}</span>
+        </div>
+      ) : null}
 
       <div style={{ fontSize: '13px', fontWeight: 600, color: '#7a6e5f' }}>
         Select your profile on this computer:
@@ -110,23 +126,34 @@ export function AccountSwitcher({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {acc.hasPin ? <span title="Protected with PIN">🔒</span> : null}
               <span className={styles.accountBadge}>{acc.capacity}</span>
+              <button
+                type="button"
+                className={styles.removeAccountBtn}
+                title="Remove from this computer"
+                aria-label={`Remove ${acc.displayName} from this computer`}
+                onClick={(e) => handleRemoveAccount(e, acc.accountId)}
+              >
+                ✕
+              </button>
             </div>
           </button>
         ))}
       </div>
 
-      <button
-        className={styles.anotherAccountBtn}
-        type="button"
-        onClick={onUseAnotherAccount}
-      >
-        + Sign in to a different account
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
+        <button
+          className={styles.anotherAccountBtn}
+          type="button"
+          onClick={onUseAnotherAccount}
+        >
+          + {t('auth.useAnotherAccount')}
+        </button>
+      </div>
 
       {selectedPinAccount ? (
         <div className={styles.pinGateModal} role="dialog" aria-modal="true">
           <div className={styles.pinCard}>
-            <h3 className={styles.pinTitle}>Enter your 4-digit PIN</h3>
+            <h3 className={styles.pinTitle}>{t('auth.enterPin')}</h3>
             <p style={{ fontSize: '13px', color: '#7a6e5f', margin: 0 }}>
               Unlock {selectedPinAccount.displayName} on this device.
             </p>
@@ -151,7 +178,7 @@ export function AccountSwitcher({
                 type="button"
                 onClick={() => setSelectedPinAccount(null)}
               >
-                Cancel
+                {t('actions.cancel')}
               </button>
               <button
                 className={styles.unlockBtn}
@@ -159,7 +186,7 @@ export function AccountSwitcher({
                 type="button"
                 onClick={() => void handleUnlockPin()}
               >
-                {isVerifying ? 'Checking…' : 'Unlock'}
+                {isVerifying ? t('actions.loading') : t('auth.unlockSanctuary')}
               </button>
             </div>
           </div>

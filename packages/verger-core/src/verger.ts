@@ -8,20 +8,28 @@ import {
   sensorOf,
   type VergerActivation,
 } from './activation';
+import { validateConfig } from './config';
 import {
   createRuntimeController,
   type RuntimeController,
   type RuntimePort,
   type RuntimeScheduler,
 } from './controller';
+import { type DataLedger, dataBudgetState, foldDataSample, parseDataLedger } from './dataBudget';
 import type { ExperimentAssignment } from './experiment';
 import { fnv1a32 } from './experiment';
 import { createFlightRecorder, type FlightRecorder } from './flightRecorder';
-import type { VergerRecording } from './recording';
-import type { SelfCost } from './selfCost';
-import { createSelfBudgetGuard, SELF_BUDGET_SHED } from './selfBudget';
-import { ineffectiveFindings } from './selfRules';
 import type { VergerHost } from './host';
+import {
+  createOutcomeLedger,
+  type MoveRecord,
+  type OutcomeLedger,
+  type OutcomeSummary,
+  outcomeAttributes,
+  verdictLine,
+} from './outcomes';
+import { canonicalLadderKey, ladderKey as ladderKeyOf } from './policy';
+import type { VergerRecording } from './recording';
 import {
   classifySession,
   type ExitRecord,
@@ -37,27 +45,19 @@ import {
   type SessionOutcome,
   type VergerRecord,
 } from './recovery';
-import {
-  createOutcomeLedger,
-  type MoveRecord,
-  type OutcomeLedger,
-  type OutcomeSummary,
-  outcomeAttributes,
-  verdictLine,
-} from './outcomes';
-import { canonicalLadderKey, ladderKey as ladderKeyOf } from './policy';
+import { UNKNOWN_CAPACITY } from './reducer';
+import { createSelfBudgetGuard, SELF_BUDGET_SHED } from './selfBudget';
+import type { SelfCost } from './selfCost';
+import { ineffectiveFindings } from './selfRules';
 import { createSessionLedger, type SessionLedger } from './session';
 import {
   bucketMs,
   createVergerTelemetry,
+  type TelemetryValue,
   type VergerTelemetry,
   type VergerTelemetrySink,
-  type TelemetryValue,
 } from './telemetry';
-import { validateConfig } from './config';
-import { type DataLedger, dataBudgetState, foldDataSample, parseDataLedger } from './dataBudget';
-import { UNKNOWN_CAPACITY } from './reducer';
-import type { CapacityFacts, VergerConfig, VergerEvent, RunMode, VergerSnapshot } from './types';
+import type { CapacityFacts, RunMode, VergerConfig, VergerEvent, VergerSnapshot } from './types';
 
 /**
  * Durable key-value storage the host supplies. It may be asynchronous: the launch waits for
@@ -143,6 +143,13 @@ export interface VergerOptions {
    * and the dev lab; leave unset in a release.
    */
   readonly recordEvents?: number;
+  /** Observes each accepted runtime input without changing policy or replay behavior. */
+  readonly onRecordEvent?: (event: VergerEvent) => void;
+  readonly onSnapshotTransition?: (
+    event: VergerEvent,
+    before: VergerSnapshot,
+    after: VergerSnapshot,
+  ) => void;
 }
 
 export interface Verger {
@@ -333,13 +340,22 @@ export function createVerger(options: VergerOptions): Verger {
             onEvent(event);
             if (event.type !== 'data-usage') return;
             const wall = wallNow();
-            const folded = foldDataSample(dataLedger, { atWallMs: wall, totalBytes: event.totalBytes }, utcOffset());
+            const folded = foldDataSample(
+              dataLedger,
+              { atWallMs: wall, totalBytes: event.totalBytes },
+              utcOffset(),
+            );
             if (folded !== dataLedger && folded !== null) {
               dataLedger = folded;
               void write(keys.data, JSON.stringify(folded));
             }
             if (options.dataAllowanceBytes === undefined) return;
-            const state = dataBudgetState(dataLedger, options.dataAllowanceBytes, wall, utcOffset());
+            const state = dataBudgetState(
+              dataLedger,
+              options.dataAllowanceBytes,
+              wall,
+              utcOffset(),
+            );
             if (state === reported) return;
             reported = state;
             onEvent({ type: 'data-budget', at: event.at, state });
@@ -559,6 +575,8 @@ export function createVerger(options: VergerOptions): Verger {
       activation,
       policy: host.policy,
       recordEvents: options.recordEvents,
+      onRecordEvent: options.onRecordEvent,
+      onSnapshotTransition: options.onSnapshotTransition,
       afterEvent: () => checkBudget(),
       launch: {
         hardware: decided.hardware,
@@ -630,7 +648,10 @@ export function createVerger(options: VergerOptions): Verger {
     // the recorded session and replays exactly. Sent after the current dispatch finishes, never
     // from inside it.
     const learn = () => {
-      for (const finding of ineffectiveFindings(outcomes.records(), host.config.ineffectiveAfterMoves)) {
+      for (const finding of ineffectiveFindings(
+        outcomes.records(),
+        host.config.ineffectiveAfterMoves,
+      )) {
         const key = `${finding.lever} ${finding.target}`;
         if (learned.has(key)) continue;
         learned.add(key);
@@ -670,7 +691,8 @@ export function createVerger(options: VergerOptions): Verger {
         guard(() => flight.record(snapshot));
         guard(learn);
         // Going to the background is the session's natural checkpoint: a phone may never stop it.
-        if (snapshot.visibility === 'background' && visibility !== 'background') guard(reportOutcomes);
+        if (snapshot.visibility === 'background' && visibility !== 'background')
+          guard(reportOutcomes);
         visibility = snapshot.visibility;
         persistSoon();
         notify();

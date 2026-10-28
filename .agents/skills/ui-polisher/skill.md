@@ -1,4 +1,5 @@
 ---
+name: ui-polisher
 title: Premium UI/UX Polish and Visual Excellence
 description: Guides the agent to review design hierarchy, replace generic layouts with premium components, inject micro-animations, and verify responsiveness using Playwright.
 triggers:

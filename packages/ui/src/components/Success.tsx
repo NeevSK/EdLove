@@ -81,7 +81,7 @@ export function SuccessCheck({
       className={className}
       style={[
         { width: size, height: size },
-        ...(Animated && allowSubtleAnimation
+        Animated && allowSubtleAnimation
           ? ({
               animationName: {
                 '0%': { opacity: 0, transform: [{ scale: scaleTokens.enter }] },
@@ -91,7 +91,7 @@ export function SuccessCheck({
               animationTimingFunction: nativeEasing.decelerate,
               animationFillMode: 'forwards',
             } as any)
-          : {}),
+          : null,
         style,
       ]}
     >

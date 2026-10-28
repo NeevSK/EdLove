@@ -9,25 +9,34 @@ const fixture = vi.hoisted(() => ({
   setSurfacePinned: vi.fn(),
   togglePinFeature: vi.fn(),
   legacyPins: ['journal', 'mood'],
+  missingSelfPins: false,
+  selectedPins: [] as unknown[],
+  selectedAvailableBonds: [] as unknown[],
 }));
 vi.mock('@repo/core/native', () => ({ useWorkspaceLayoutSync: () => fixture }));
 vi.mock('@repo/core/store/useActiveSubTabsStore', () => ({
   useActiveSubTabsStore: (
     select: (state: {
       openTab: () => void;
-      pinnedFeatureIdsByDomain: { self: string[] };
+      pinnedFeatureIdsByDomain: { self?: string[] };
       togglePinFeature: typeof fixture.togglePinFeature;
     }) => unknown,
-  ) =>
-    select({
+  ) => {
+    const selected = select({
       openTab: () => undefined,
-      pinnedFeatureIdsByDomain: { self: fixture.legacyPins },
+      pinnedFeatureIdsByDomain: fixture.missingSelfPins ? {} : { self: fixture.legacyPins },
       togglePinFeature: fixture.togglePinFeature,
-    }),
+    });
+    if (Array.isArray(selected)) fixture.selectedPins.push(selected);
+    return selected;
+  },
 }));
 vi.mock('@repo/core/store/scopeSession', () => ({
-  useScopeSessionStore: (select: (state: { snapshot: null }) => unknown) =>
-    select({ snapshot: null }),
+  useScopeSessionStore: (select: (state: { snapshot: null }) => unknown) => {
+    const selected = select({ snapshot: null });
+    fixture.selectedAvailableBonds.push(selected);
+    return selected;
+  },
 }));
 vi.mock('@repo/core/store/useAuthStore', () => ({
   useAuthStore: (select: (state: { user: null }) => unknown) => select({ user: null }),
@@ -62,6 +71,8 @@ beforeEach(() => {
   vi.clearAllMocks();
   fixture.layout = layout([]);
   fixture.isInitialLayout = false;
+  fixture.missingSelfPins = false;
+  fixture.selectedPins.length = 0;
 });
 
 describe('SelfCanvas pin ownership', () => {
@@ -99,5 +110,23 @@ describe('SelfCanvas pin ownership', () => {
     act(() => view.result.current.togglePin('journal'));
     expect(fixture.togglePinFeature).toHaveBeenCalledWith('self', 'journal');
     expect(fixture.toggleSurfacePinned).not.toHaveBeenCalled();
+  });
+  it('uses a stable empty bond snapshot while scope is unavailable', () => {
+    const view = renderHook(() => useSelfCanvas());
+    const initialSnapshot = fixture.selectedAvailableBonds.at(-1);
+
+    view.rerender();
+
+    expect(fixture.selectedAvailableBonds.at(-1)).toBe(initialSnapshot);
+  });
+  it('keeps a missing pin snapshot stable across renders', () => {
+    fixture.missingSelfPins = true;
+    fixture.layout = null;
+    const view = renderHook(() => useSelfCanvas());
+    const initialSnapshot = fixture.selectedPins.at(-1);
+    expect(initialSnapshot).toEqual([]);
+    view.rerender();
+    expect(fixture.selectedPins.at(-1)).toBe(initialSnapshot);
+    expect(view.result.current.effectivePinnedIds).toEqual([]);
   });
 });

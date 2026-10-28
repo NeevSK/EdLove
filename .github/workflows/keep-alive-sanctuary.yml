@@ -1,0 +1,85 @@
+name: Sanctuary API Keep-Alive Heartbeat
+
+on:
+  schedule:
+    # Run every 10 minutes to prevent Render Free Tier 15-minute idle spin-down
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force heartbeat ping even if keep-alive is paused in config'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: sanctuary-keep-alive
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    name: Ping Sanctuary Health
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check Keep-Alive Configuration
+        id: check_config
+        run: |
+          CONFIG_FILE=".github/keep-alive-config.json"
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "target=https://sanctuary-api-tpj7.onrender.com/health/live" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          
+          ENABLED=$(jq -r '.enabled // true' "$CONFIG_FILE")
+          TARGET=$(jq -r '.targetUrl // "https://sanctuary-api-tpj7.onrender.com/health/live"' "$CONFIG_FILE")
+          
+          # Allow GitHub repository variable override (SANCTUARY_KEEP_ALIVE_ENABLED)
+          if [ "${{ vars.SANCTUARY_KEEP_ALIVE_ENABLED }}" = "false" ]; then
+            echo "Overriding enabled=false via SANCTUARY_KEEP_ALIVE_ENABLED repo variable."
+            ENABLED="false"
+          elif [ "${{ vars.SANCTUARY_KEEP_ALIVE_ENABLED }}" = "true" ]; then
+            echo "Overriding enabled=true via SANCTUARY_KEEP_ALIVE_ENABLED repo variable."
+            ENABLED="true"
+          fi
+
+          # Manual workflow dispatch with force=true overrides pause
+          if [ "${{ inputs.force }}" = "true" ]; then
+            echo "⚡ Force execution requested via workflow dispatch."
+            ENABLED="true"
+          fi
+
+          echo "enabled=$ENABLED" >> "$GITHUB_OUTPUT"
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+
+      - name: Ping Liveness Endpoint
+        if: steps.check_config.outputs.enabled == 'true'
+        run: |
+          TARGET="${{ steps.check_config.outputs.target }}"
+          START_TIME=$(date +%s%3N)
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$TARGET")
+          END_TIME=$(date +%s%3N)
+          DURATION=$((END_TIME - START_TIME))
+          
+          echo "Target: $TARGET"
+          echo "Status: $HTTP_STATUS"
+          echo "Latency: ${DURATION}ms"
+          
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Sanctuary API is alive and warm (${DURATION}ms)."
+          else
+            echo "⚠️ Health check returned HTTP $HTTP_STATUS, retrying wake-up..."
+            sleep 5
+            curl -v --max-time 60 "$TARGET"
+          fi
+
+      - name: Log Paused State
+        if: steps.check_config.outputs.enabled != 'true'
+        run: |
+          echo "⏸️ Sanctuary API Keep-Alive Heartbeat is currently PAUSED."
+          echo "Reason: 'enabled: false' in .github/keep-alive-config.json (or via SANCTUARY_KEEP_ALIVE_ENABLED variable)."
+          echo "Render container will sleep after 15m idle to preserve the 750-hour free tier compute pool."

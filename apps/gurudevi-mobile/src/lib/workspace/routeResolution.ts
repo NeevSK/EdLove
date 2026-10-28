@@ -39,6 +39,7 @@ export type WorkspaceRouteResolutionInput = {
   permissionSnapshotLoaded: boolean;
   isPermissionLoading: boolean;
   permissionError: string | null;
+  isLocalGuest?: boolean;
   perspectiveKind?: PerspectiveKind;
   perspectiveId?: string;
 };
@@ -55,6 +56,7 @@ export function resolveWorkspaceRoute({
   permissionSnapshotLoaded,
   isPermissionLoading,
   permissionError,
+  isLocalGuest = false,
   perspectiveKind,
   perspectiveId,
 }: WorkspaceRouteResolutionInput): WorkspaceRouteResolution {
@@ -62,6 +64,18 @@ export function resolveWorkspaceRoute({
     return {
       kind: 'permission-denied',
       message: 'Sign in with an account that has workspace access to continue.',
+    };
+  }
+
+  // A device-local guest has no remote permission snapshot. Personal
+  // Sanctuary is local data, so let that route open without treating the
+  // absent server snapshot as a failed cloud authorization.
+  if (isLocalGuest && perspectiveKind === 'personal') {
+    return {
+      kind: 'role-ready',
+      target: { kind: 'personal' },
+      isRefreshing: false,
+      refreshError: null,
     };
   }
 
@@ -119,10 +133,7 @@ export function resolveWorkspaceRoute({
     return { kind: 'role-ready', target: { kind: 'grade-head' }, ...backgroundStatus };
   }
 
-  if (
-    resolvedCapacity.data === 'principal' ||
-    resolvedCapacity.data === 'assistantPrincipal'
-  ) {
+  if (resolvedCapacity.data === 'principal' || resolvedCapacity.data === 'assistantPrincipal') {
     return { kind: 'role-ready', target: { kind: 'principal' }, ...backgroundStatus };
   }
 

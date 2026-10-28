@@ -1,5 +1,6 @@
 import { showToast } from '@repo/core/lib/feedback';
 import { usePermissions } from '@repo/core/logic';
+import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
@@ -24,6 +25,21 @@ export function useRewardedAdHub(): RewardedAdHubState {
 
   const refreshBalance = useCallback(async () => {
     if (!userId || userId === 'anonymous') return;
+
+    if (isLocalGuestSessionId(userId)) {
+      setEnergyBalance(
+        (prev) =>
+          prev || {
+            userId,
+            balance: 20,
+            totalEarned: 50,
+            totalSpent: 30,
+            dailyQuotaRemaining: 8,
+            dailyQuotaMax: 10,
+          },
+      );
+      return;
+    }
 
     try {
       // In web or native, fetch from sanctuary-api /api/rewards/energy-balance

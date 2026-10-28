@@ -13,36 +13,35 @@ export const metadata = {
 export default async function WelcomePage({
   searchParams,
 }: {
-  searchParams?: Promise<{ mode?: string; surface?: string }>;
+  searchParams?: Promise<{
+    mode?: string;
+    surface?: string;
+    returnTo?: string;
+    dev?: string;
+    role?: string;
+    name?: string;
+  }>;
 }) {
   const params = await searchParams;
   const requestHeaders = await headers();
   const host = requestHeaders.get('host') ?? '';
   const hostKind = classifyGurudeviHost(host);
-  const isExplore =
-    hostKind === 'explore' ||
-    params?.mode === 'explore' ||
-    params?.surface === 'explore';
+  const surfaceMode =
+    hostKind === 'sanctuary' || params?.mode === 'sanctuary' || params?.surface === 'sanctuary'
+      ? 'sanctuary'
+      : 'explore';
 
-  if (isExplore) {
-    return <WelcomeStage mode="explore" />;
-  }
-
-  // On Sanctuary host: check if already signed in
+  // Check if already signed in
   const supabase = await createServerSupabaseClient();
-  if (!supabase) {
-    return <WelcomeStage mode="sanctuary" />;
+  if (supabase) {
+    const entry = await resolveAuthorizedEntry(supabase);
+    if (entry.kind === 'ready') {
+      redirect(params?.returnTo || '/self');
+    }
+    if (entry.kind === 'onboarding-required') {
+      redirect('/onboarding');
+    }
   }
 
-  const entry = await resolveAuthorizedEntry(supabase);
-  if (entry.kind === 'ready') {
-    // If user is already ready, redirect them to their sanctuary
-    redirect('/self');
-  }
-
-  if (entry.kind === 'onboarding-required') {
-    redirect('/onboarding');
-  }
-
-  return <WelcomeStage mode="sanctuary" />;
+  return <WelcomeStage mode={surfaceMode} returnTo={params?.returnTo} />;
 }

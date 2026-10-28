@@ -19,6 +19,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './classroom-detail.module.css';
 
 import { useClassroomDomain } from '@/lib/domain/classroomDomain';
+import { useTranslation } from '@/lib/i18n';
 
 export function ClassroomDetailFloor({
   classroomId,
@@ -29,6 +30,7 @@ export function ClassroomDetailFloor({
   displayName?: string;
   isExplore?: boolean;
 }>): React.ReactElement {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'students' | 'lessons' | 'assignments' | 'notes'>('students');
 
   const {
@@ -45,27 +47,27 @@ export function ClassroomDetailFloor({
     <div className={styles.container}>
       <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
         <Link href="/workspace" className={styles.breadcrumbLink}>
-          Workspace
+          {t('classroom.workspaceBreadcrumb') || 'Workspace'}
         </Link>
         <span>/</span>
-        <span>Classrooms</span>
+        <span>{t('classroom.classroomsBreadcrumb') || 'Classrooms'}</span>
         <span>/</span>
         <span style={{ color: 'var(--color-ink)' }}>{classroomId}</span>
       </nav>
 
       <header className={styles.header}>
         <div className={styles.headerText}>
-          <p className={styles.eyebrow}>Academic Pedagogical Sanctuary</p>
+          <p className={styles.eyebrow}>{t('classroom.eyebrow')}</p>
           <h1 className={styles.title}>{classroomName}</h1>
-          <p className={styles.subtitle}>{subject} • Curated by {displayName}</p>
+          <p className={styles.subtitle}>{subject} • {t('classroom.curatedBy', { name: displayName })}</p>
         </div>
 
         <div className={styles.headerActions}>
           <Link href="/workspace" className={styles.btnSecondary}>
-            <ArrowLeft size={16} /> Return to Roll Call
+            <ArrowLeft size={16} /> {t('classroom.returnRollCall')}
           </Link>
           <Link href={`/workspace/gradebook?classroom=${classroomId}`} className={styles.btnPrimary}>
-            <GraduationCap size={16} /> Open Gradebook
+            <GraduationCap size={16} /> {t('classroom.openGradebook')}
           </Link>
         </div>
       </header>
@@ -73,9 +75,9 @@ export function ClassroomDetailFloor({
       {/* Stats Ribbon */}
       <section className={styles.statsGrid} aria-label="Classroom Metrics">
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Enrolled Students</span>
+          <span className={styles.statLabel}>{t('classroom.enrolledStudents')}</span>
           <span className={styles.statValue}>{students.length}</span>
-          <span className={styles.statHint}>Active learners</span>
+          <span className={styles.statHint}>{t('classroom.activeLearners')}</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Average Attendance</span>
@@ -85,12 +87,12 @@ export function ClassroomDetailFloor({
           <span className={styles.statHint}>Term rolling average</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Curriculum Lessons</span>
+          <span className={styles.statLabel}>{t('classroom.curriculumUnits')}</span>
           <span className={styles.statValue}>{lessons.length}</span>
           <span className={styles.statHint}>Pedagogical plans</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Active Assignments</span>
+          <span className={styles.statLabel}>{t('classroom.activeAssignments')}</span>
           <span className={styles.statValue}>{assignments.length}</span>
           <span className={styles.statHint}>Open student tasks</span>
         </div>
@@ -104,7 +106,7 @@ export function ClassroomDetailFloor({
           onClick={() => setActiveTab('students')}
         >
           <Users size={18} />
-          Student Roster ({students.length})
+          {t('classroom.tabStudents')} ({students.length})
         </button>
         <button
           type="button"
@@ -112,7 +114,7 @@ export function ClassroomDetailFloor({
           onClick={() => setActiveTab('lessons')}
         >
           <BookOpen size={18} />
-          Lesson Feed ({lessons.length})
+          {t('classroom.tabLessons')} ({lessons.length})
         </button>
         <button
           type="button"
@@ -120,7 +122,7 @@ export function ClassroomDetailFloor({
           onClick={() => setActiveTab('assignments')}
         >
           <FileText size={18} />
-          Assignments Desk ({assignments.length})
+          {t('classroom.tabAssignments')} ({assignments.length})
         </button>
         <button
           type="button"
@@ -128,7 +130,7 @@ export function ClassroomDetailFloor({
           onClick={() => setActiveTab('notes')}
         >
           <MessageSquare size={18} />
-          Observations & Notes ({observations.length})
+          {t('classroom.tabNotes')} ({observations.length})
         </button>
       </nav>
 

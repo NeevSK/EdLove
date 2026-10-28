@@ -8,14 +8,11 @@ time; it does not replace the native iOS and Android app.
 
 ## Product surfaces
 
-- `gurudevi.app` is the canonical public website.
-- `sanctuary.gurudevi.app` is reserved for the future authenticated product.
-- Until host-based routing is configured in deployment, the sanctuary is
-  represented by the temporary `/sanctuary` route.
+- `gurudevi.app` (or `localhost:3000` / `public.localhost:3000`): Canonical public marketing website, stories, and school adoption (`app/(marketing)`).
+- `sanctuary.gurudevi.app` (or `sanctuary.localhost:3000`): Authenticated product surface for educators, students, and administrators (`app/(sanctuary)`), guarded by Supabase session refresh in `proxy.ts`.
+- `explore.gurudevi.app` (or `explore.localhost:3000`): Public guest showroom for exploring the 11 Cultural Worlds, diurnal scenes, and floor clearings.
 
-The app currently has an intentionally minimal public foundation and an honest
-sanctuary placeholder. It has no authentication, production data, or deployment
-configuration yet.
+Host routing is enforced at the edge/proxy level in `lib/host-routing.ts` and `proxy.ts`. Local testing uses standard RFC 6761 `.localhost` subdomains without modifying system hosts files.
 
 ## Architecture
 

@@ -241,3 +241,48 @@
   border-color: rgba(245, 237, 214, 0.2);
   color: #b5a895;
 }
+
+.qrLinkBtn {
+  background: rgba(168, 80, 34, 0.08);
+  border: 1px solid rgba(168, 80, 34, 0.25);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a85022;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.qrLinkBtn:hover {
+  background: rgba(168, 80, 34, 0.14);
+  border-color: #a85022;
+}
+
+:global([data-appearance="night"]) .qrLinkBtn {
+  background: rgba(212, 132, 58, 0.12);
+  border-color: rgba(212, 132, 58, 0.35);
+  color: #f39c4a;
+}
+
+.removeAccountBtn {
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  color: #9c8e7e;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.removeAccountBtn:hover {
+  background: rgba(185, 28, 28, 0.1);
+  color: #dc2626;
+}
+

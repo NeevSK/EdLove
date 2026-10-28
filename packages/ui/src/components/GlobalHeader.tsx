@@ -6,7 +6,7 @@ import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { useTheme } from '@repo/ui/hooks/useTheme';
-import { Bell, ChevronDown, ChevronLeft, Menu, Search, X } from '@repo/ui/icons';
+import { Bell, ChevronDown, ChevronLeft, Menu, QrCode, Search, X } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { BAND_WASH_EDGE, BAND_WASH_TEXT, SceneBackdrop, useScene } from '@repo/ui/scene/native';
@@ -29,6 +29,8 @@ export interface GlobalHeaderProps {
   onBack?: () => void;
   showMenu?: boolean;
   showSearch?: boolean;
+  showQRScan?: boolean;
+  onQRScan?: () => void;
   rightAction?: React.ReactNode;
   userName?: string;
   searchProps?: {
@@ -80,6 +82,8 @@ export default function GlobalHeader({
   onBack,
   showMenu = false,
   showSearch = false,
+  showQRScan = false,
+  onQRScan,
   rightAction,
   userName,
   searchProps,
@@ -330,6 +334,30 @@ export default function GlobalHeader({
                   ) : (
                     <Search size={22} className="text-phase-text-primary" />
                   )}
+                </Box>
+              </Pressable>
+            )}
+
+            {showQRScan && (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Scan QR Code"
+                accessibilityHint="Opens the camera to scan a QR code"
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                onPress={() => {
+                  hapticLight();
+                  if (onQRScan) {
+                    onQRScan();
+                  } else {
+                    router.push('/qr');
+                  }
+                }}
+              >
+                <Box
+                  className="p-2 rounded-full"
+                  style={{ backgroundColor: wt.sunken }}
+                >
+                  <QrCode size={22} className="text-phase-text-primary" />
                 </Box>
               </Pressable>
             )}

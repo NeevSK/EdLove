@@ -3,34 +3,42 @@ import {
   type CapacityFacts,
   type ExperimentAssignment,
   type FidelityPreference,
-  type VergerTelemetrySink,
   GURUDEVI_MOBILE_HOST,
   hostWith,
   labConfigure,
   labTune,
-  type VergerActivation,
+  screenNameOf,
   UNKNOWN_CAPACITY,
   VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_PATCH_KEY,
-  type VergerHost,
   VERGER_LAB_RECORD_EVENTS,
+  type VergerActivation,
+  type VergerHost,
   type VergerStore,
-  screenNameOf,
+  type VergerTelemetrySink,
 } from '@repo/core/verger';
+import { useFidelityOptional } from '@repo/ui/context';
 import { createVergerAndroidPlatform } from '@repo/verger-android';
+import { useScreenAnnouncement, useVerger } from '@repo/verger-react';
 import { VergerRoot } from '@repo/verger-react-native';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
 import { totalMemory } from 'expo-device';
-import { useFidelityOptional } from '@repo/ui/context';
-import { useScreenAnnouncement, useVerger, useVergerSnapshot } from '@repo/verger-react';
 import { usePathname } from 'expo-router';
 import { type ReactNode, useEffect, useState } from 'react';
+import {
+  recordDevelopmentVergerEvent,
+  recordDevelopmentVergerLaunch,
+  recordDevelopmentVergerTransition,
+  saveDevelopmentTelemetry,
+  setDevelopmentTelemetrySource,
+} from '@/telemetry/localDevelopmentTelemetry';
 import { deviceSignals } from './deviceSignals';
 import {
+  isolatedVergerMode,
+  type RuntimeMode,
   readVergerConfig,
   readVergerLaunch,
   readVergerPolicy,
-  type RuntimeMode,
 } from './runtimeMode';
 import { vergerTelemetrySink } from './telemetrySink';
 
@@ -73,7 +81,16 @@ const facts = (): CapacityFacts => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: tot
  * screen (`screenNameOf`).
  */
 function ScreenAnnouncer() {
-  useScreenAnnouncement(screenNameOf(usePathname()));
+  const screen = screenNameOf(usePathname());
+  useScreenAnnouncement(screen);
+  useEffect(() => {
+    if (!__DEV__) return;
+    saveDevelopmentTelemetry({
+      source: 'performance',
+      name: 'screen-transition',
+      attributes: { screen },
+    });
+  }, [screen]);
   return null;
 }
 
@@ -132,6 +149,9 @@ export function GurudeviVerger({
   fidelity,
 }: GurudeviVergerProps) {
   const setting = useFidelityOptional().fidelityLevel;
+  // An explicitly requested development experiment gets a disposable runtime. The
+  // normal recovery record remains untouched and the ordinary kill switches still win.
+  const isolatedLab = isolatedVergerMode(process.env.EXPO_PUBLIC_GURUDEVI_VERGER_ISOLATED, __DEV__);
   // Thresholds and policy hold whether verger runs or not (the floors run the policy too).
   const [host] = useState<VergerHost>(() => {
     const read = readVergerConfig(GURUDEVI_MOBILE_HOST.config);
@@ -148,18 +168,44 @@ export function GurudeviVerger({
   const [launch] = useState<{ mode: RuntimeMode; activation?: VergerActivation }>(() => {
     const read = readVergerLaunch(GURUDEVI_MOBILE_HOST.levers);
     if (read.rejected) console.warn('[verger] remote activation ignored:', read.rejected);
-    if (read.mode === 'off' || assignment?.runtime === 'off') return { mode: 'off' };
+    if (read.mode === 'off' || mode === 'off' || assignment?.runtime === 'off')
+      return { mode: 'off' };
+    if (isolatedLab)
+      return isolatedLab === 'active' && read.mode === 'active'
+        ? {
+            mode: 'active',
+            activation: read.activation ?? undefined,
+          }
+        : { mode: 'shadow' };
     const explicit = mode ?? assignment?.runtime;
     // An explicit mode keeps its own preset; the resolved activation belongs to the resolved mode.
     return explicit
       ? { mode: explicit }
       : { mode: read.mode, activation: read.activation ?? undefined };
   });
+  useEffect(() => {
+    if (!__DEV__) return;
+    const details =
+      launch.mode === 'off'
+        ? 'Verger runtime mode is off; no reducer events are expected.'
+        : 'Waiting for the resolved Verger launch result.';
+    setDevelopmentTelemetrySource('verger-inputs', 'disabled', details);
+    if (isolatedLab) {
+      saveDevelopmentTelemetry({
+        source: 'runtime',
+        name: 'verger-isolated-lab',
+        attributes: { enabled: true, requested: isolatedLab, recovery: 'temporary' },
+      });
+    }
+    return () =>
+      setDevelopmentTelemetrySource('verger-inputs', 'complete', 'Verger host unmounted.');
+  }, [isolatedLab, launch.mode]);
   return (
     <VergerRoot
+      capturePresence={false}
       host={host}
       platform={platform}
-      store={VERGER_STORE}
+      store={isolatedLab ? undefined : VERGER_STORE}
       facts={facts}
       signals={deviceSignals}
       fidelity={fidelity ?? setting}
@@ -169,6 +215,9 @@ export function GurudeviVerger({
       telemetrySink={telemetrySink ?? vergerTelemetrySink}
       release={`${nativeApplicationVersion ?? '0'}+${nativeBuildVersion ?? '0'}`}
       recordEvents={__DEV__ ? VERGER_LAB_RECORD_EVENTS : undefined}
+      onRecordEvent={__DEV__ ? recordDevelopmentVergerEvent : undefined}
+      onSnapshotTransition={__DEV__ ? recordDevelopmentVergerTransition : undefined}
+      onLaunchPlan={__DEV__ ? recordDevelopmentVergerLaunch : undefined}
       killed={killSwitchOn}
     >
       <ScreenAnnouncer />

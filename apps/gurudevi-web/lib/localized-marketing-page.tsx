@@ -27,11 +27,11 @@ export function LocalizedMarketingPage({
   const copy = LOCALIZED_MARKETING[locale];
   const page = copy.pages[section];
   const emails = {
-    support: 'support@gurudevi.app',
-    faq: 'support@gurudevi.app',
-    about: 'institutional@gurudevi.app',
-    thuthimal: 'gratitude@gurudevi.app',
-    journal: 'support@gurudevi.app',
+    support: 'support@gurudevi.lk',
+    faq: 'support@gurudevi.lk',
+    about: 'institutional@gurudevi.lk',
+    thuthimal: 'gratitude@gurudevi.lk',
+    journal: 'support@gurudevi.lk',
   } as const;
 
   return (

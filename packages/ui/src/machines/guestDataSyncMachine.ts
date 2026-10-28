@@ -218,6 +218,9 @@ export async function executeFetchGuestDataSummaryEffect(
 
   return Exit.match(exit, {
     onSuccess: (summary) => {
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: true, summary };
+      }
       actor.send({ type: 'SET_SUMMARY', summary });
       return { success: true, summary };
     },
@@ -225,6 +228,9 @@ export async function executeFetchGuestDataSummaryEffect(
       const errOption = Cause.findErrorOption(cause);
       const message =
         errOption._tag === 'Some' ? errOption.value : 'Failed to retrieve guest data summary.';
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: false, error: message };
+      }
       actor.send({ type: 'SET_ERROR', message });
       return { success: false, error: message };
     },
@@ -247,6 +253,7 @@ export async function executeGuestDataSyncEffect(
   const program = Effect.tryPromise({
     try: () =>
       syncFn(userId, (prog) => {
+        if (actor.getSnapshot().status === 'stopped') return;
         actor.send({
           type: 'UPDATE_PROGRESS',
           current: prog.completed,
@@ -262,18 +269,24 @@ export async function executeGuestDataSyncEffect(
   return Exit.match(exit, {
     onSuccess: (result) => {
       if (result.success) {
-        actor.send({ type: 'SET_COMPLETED' });
+        if (actor.getSnapshot().status !== 'stopped') {
+          actor.send({ type: 'SET_COMPLETED' });
+        }
         return { success: true };
       }
       const message = result.errors?.join(', ') || 'Failed to sync all guest data.';
-      actor.send({ type: 'SET_ERROR', message });
+      if (actor.getSnapshot().status !== 'stopped') {
+        actor.send({ type: 'SET_ERROR', message });
+      }
       return { success: false, error: message };
     },
     onFailure: (cause) => {
       const errOption = Cause.findErrorOption(cause);
       const message =
         errOption._tag === 'Some' ? errOption.value : 'An unexpected error occurred during sync.';
-      actor.send({ type: 'SET_ERROR', message });
+      if (actor.getSnapshot().status !== 'stopped') {
+        actor.send({ type: 'SET_ERROR', message });
+      }
       return { success: false, error: message };
     },
   });

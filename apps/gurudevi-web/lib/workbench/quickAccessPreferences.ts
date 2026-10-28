@@ -2,11 +2,28 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-export type QuickAccessDomain = 'self' | 'workspace';
-export type QuickAccessUsage = Readonly<Record<string, Readonly<{ count: number; lastUsedAt: number }>>>;
+export type QuickAccessDomain = 'self' | 'workspace' | 'community' | 'library';
+export type QuickAccessUsage = Readonly<
+  Record<string, Readonly<{ count: number; lastUsedAt: number }>>
+>;
 export type QuickAccessState = Readonly<{ pinnedIds: readonly string[]; usage: QuickAccessUsage }>;
 
 const changedEvent = 'gurudevi:quick-access-preferences-changed';
+export const QUICK_ACCESS_BUS_NAME = 'gurudevi_quick_access_bus';
+
+let quickAccessChannel: BroadcastChannel | null = null;
+
+function getQuickAccessChannel(): BroadcastChannel | null {
+  if (typeof window === 'undefined' || typeof BroadcastChannel === 'undefined') return null;
+  if (!quickAccessChannel) {
+    try {
+      quickAccessChannel = new BroadcastChannel(QUICK_ACCESS_BUS_NAME);
+    } catch {
+      quickAccessChannel = null;
+    }
+  }
+  return quickAccessChannel;
+}
 
 function storageKey(domain: QuickAccessDomain, scope: string): string {
   return `gurudevi:quick-access:v1:${domain}:${encodeURIComponent(scope)}`;
@@ -23,18 +40,26 @@ function readState(
     if (typeof value !== 'object' || value === null) return { pinnedIds: defaults, usage: {} };
     const record = value as { pinnedIds?: unknown; usage?: unknown };
     const pinnedIds = Array.isArray(record.pinnedIds)
-      ? [...new Set(record.pinnedIds.filter((id): id is string =>
-          typeof id === 'string' && (validIds === null || validIds.has(id)),
-        ))].slice(0, pinLimit)
+      ? [
+          ...new Set(
+            record.pinnedIds.filter(
+              (id): id is string =>
+                typeof id === 'string' && (validIds === null || validIds.has(id)),
+            ),
+          ),
+        ].slice(0, pinLimit)
       : [...defaults];
     const usage: Record<string, { count: number; lastUsedAt: number }> = {};
     if (typeof record.usage === 'object' && record.usage !== null) {
       for (const [id, value] of Object.entries(record.usage)) {
         if (
           (validIds === null || validIds.has(id)) &&
-          typeof value === 'object' && value !== null &&
-          Number.isSafeInteger(value.count) && value.count > 0 &&
-          Number.isFinite(value.lastUsedAt) && value.lastUsedAt > 0
+          typeof value === 'object' &&
+          value !== null &&
+          Number.isSafeInteger(value.count) &&
+          value.count > 0 &&
+          Number.isFinite(value.lastUsedAt) &&
+          value.lastUsedAt > 0
         ) {
           usage[id] = { count: value.count, lastUsedAt: value.lastUsedAt };
         }
@@ -50,6 +75,14 @@ function writeState(key: string, state: QuickAccessState): void {
   try {
     window.localStorage.setItem(key, JSON.stringify(state));
     window.dispatchEvent(new CustomEvent(changedEvent, { detail: { key } }));
+    const channel = getQuickAccessChannel();
+    if (channel) {
+      try {
+        channel.postMessage({ type: 'QUICK_ACCESS_CHANGED', key, timestamp: Date.now() });
+      } catch {
+        // Channel post message failed silently
+      }
+    }
   } catch {
     // Keep quick access available for the current session when storage is blocked.
   }
@@ -80,12 +113,17 @@ export function useQuickAccessPreferences(
   const key = storageKey(domain, scope);
   const validIdsKey = featureIds.join('|');
   const defaultPinnedIdsKey = defaultPinnedIds.join('|');
-  const defaults = [...new Set(defaultPinnedIds.filter((id) => featureIds.includes(id)))].slice(0, pinLimit);
+  const defaults = [...new Set(defaultPinnedIds.filter((id) => featureIds.includes(id)))].slice(
+    0,
+    pinLimit,
+  );
   const [state, setState] = useState<QuickAccessState>({ pinnedIds: defaults, usage: {} });
 
   useEffect(() => {
     const validIds = new Set(validIdsKey ? validIdsKey.split('|') : []);
-    const defaults = [...new Set(defaultPinnedIdsKey.split('|').filter((id) => validIds.has(id)))].slice(0, pinLimit);
+    const defaults = [
+      ...new Set(defaultPinnedIdsKey.split('|').filter((id) => validIds.has(id))),
+    ].slice(0, pinLimit);
     const update = () => setState(readState(key, validIds, defaults, pinLimit));
     update();
     const onChanged = (event: Event) => {
@@ -94,31 +132,43 @@ export function useQuickAccessPreferences(
     const onStorage = (event: StorageEvent) => {
       if (event.key === key) update();
     };
+    const channel = getQuickAccessChannel();
+    const onChannel = (event: MessageEvent) => {
+      if (event.data?.key === key) update();
+    };
     window.addEventListener(changedEvent, onChanged);
     window.addEventListener('storage', onStorage);
+    channel?.addEventListener('message', onChannel);
     return () => {
       window.removeEventListener(changedEvent, onChanged);
       window.removeEventListener('storage', onStorage);
+      channel?.removeEventListener('message', onChannel);
     };
   }, [defaultPinnedIdsKey, key, pinLimit, validIdsKey]);
 
-  const togglePin = useCallback((id: string) => {
-    if (!featureIds.includes(id)) return;
-    const pinned = state.pinnedIds.includes(id);
-    if (!pinned && state.pinnedIds.length >= pinLimit) return;
-    const next: QuickAccessState = {
-      ...state,
-      pinnedIds: pinned
-        ? state.pinnedIds.filter((item) => item !== id)
-        : [...state.pinnedIds, id],
-    };
-    setState(next);
-    writeState(key, next);
-  }, [featureIds, key, pinLimit, state]);
+  const togglePin = useCallback(
+    (id: string) => {
+      if (!featureIds.includes(id)) return;
+      const pinned = state.pinnedIds.includes(id);
+      if (!pinned && state.pinnedIds.length >= pinLimit) return;
+      const next: QuickAccessState = {
+        ...state,
+        pinnedIds: pinned
+          ? state.pinnedIds.filter((item) => item !== id)
+          : [...state.pinnedIds, id],
+      };
+      setState(next);
+      writeState(key, next);
+    },
+    [featureIds, key, pinLimit, state],
+  );
 
-  const trackUse = useCallback((id: string) => {
-    if (featureIds.includes(id)) recordQuickAccessUse(domain, scope, id);
-  }, [domain, featureIds, scope]);
+  const trackUse = useCallback(
+    (id: string) => {
+      if (featureIds.includes(id)) recordQuickAccessUse(domain, scope, id);
+    },
+    [domain, featureIds, scope],
+  );
 
   return { ...state, togglePin, trackUse, pinLimit } as const;
 }

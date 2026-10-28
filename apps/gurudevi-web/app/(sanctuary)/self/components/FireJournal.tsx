@@ -3,6 +3,7 @@
 import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
 import { FeatureStateBoundary } from '@repo/ui/components/FeatureStateBoundary.web';
 import { type Dispatch, type FormEvent, type SetStateAction, useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';
 import type { BurnedJournalEntry } from '../../../../lib/sanctuary/selfJournal';
 import { LivingCard } from '../../components/LivingCard';
@@ -51,6 +52,7 @@ export function FireJournal({
   temporalIntent?: 'current' | 'review' | 'plan';
   selectedDate?: string;
 }>) {
+  const { t } = useTranslation();
   const isReview = temporalIntent === 'review';
   const isPlan = temporalIntent === 'plan';
   const [isRetroactiveComposing, setIsRetroactiveComposing] = useState(false);
@@ -60,13 +62,15 @@ export function FireJournal({
   return (
     <>
       <header className={styles.arrival}>
-        <p className={styles.eyebrow}>Self · Fire Journal</p>
+        <p className={styles.eyebrow}>
+          {t('fireJournal.title') ? `Self · ${t('fireJournal.title')}` : 'Self · Fire Journal'}
+        </p>
         <h1 id="self-floor-title">
           {isReview
             ? 'Reflecting on what was set free.'
             : isPlan
               ? 'Looking toward the morning horizon.'
-              : 'Make room for what needs to be released.'}
+              : t('fireJournalWeb.arrivalTitle') || 'Make room for what needs to be released.'}
         </h1>
         <p>
           {isReview
@@ -77,16 +81,16 @@ export function FireJournal({
                 ? practiceStorageKind === 'local-storage'
                   ? 'Safe Try uses fictional sample data and saves only on this browser. Your account journal is untouched.'
                   : 'Safe Try uses fictional sample data in this page session only. Your account journal is untouched.'
-                : 'Write freely. When you release an entry, the full text is not retained.'}
+                : t('fireJournalWeb.arrivalSubtitle') || 'Write freely. When you release an entry, the full text is not retained.'}
         </p>
         <div className={styles.actions}>
           {isPracticing ? (
             <button className={styles.retryButton} onClick={onDiscardPractice} type="button">
-              End Safe Try and discard
+              {t('fireJournalWeb.endSafeTryBtn') || 'End Safe Try and discard'}
             </button>
           ) : (
             <button className={styles.retryButton} onClick={onEnterPractice} type="button">
-              Try this safely
+              {t('fireJournalWeb.safeTryBtn') || 'Try this safely'}
             </button>
           )}
         </div>
@@ -108,7 +112,7 @@ export function FireJournal({
                   : 'A day that has already passed'
                 : isPlan
                   ? 'A day waiting to arrive'
-                  : 'What can leave your hands today?'}
+                  : t('fireJournalWeb.releasePrompt') || 'What can leave your hands today?'}
             </h2>
             {isReview && !isRetroactiveComposing ? (
               <div className={styles.catharsisCard}>
@@ -258,14 +262,15 @@ export function FireJournal({
                     className={styles.burnButton}
                     disabled={screen.isBurning || isDissolving}
                     type="submit"
+                    aria-label="Release to Fire Journal"
                   >
                     {isDissolving || screen.isBurning
-                      ? 'Consuming in Flame…'
+                      ? (t('fireJournalWeb.burningBtn') || 'Consuming in Flame…')
                       : isReview
                         ? 'Save Retroactive Reflection'
                         : isPracticing
                           ? 'Practice release'
-                          : 'Release to Fire Journal'}
+                          : (t('fireJournalWeb.burnBtn') || 'Release to Fire Journal')}
                   </button>
                   <span className={styles.hint}>
                     {isReview

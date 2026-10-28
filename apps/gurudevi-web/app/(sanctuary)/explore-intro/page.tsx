@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { GURUDEVI_EXPLORE_URL } from '@repo/core/config/publicUrls';
+import { resolveSurfaceUrl } from '@/lib/surface-urls';
 
 export const metadata: Metadata = {
   title: 'A quick introduction to Explore | Gurudevi',
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function ExploreIntroductionPage() {
-  redirect(`${GURUDEVI_EXPLORE_URL}/self`);
+  redirect(resolveSurfaceUrl('explore', '/self'));
 }

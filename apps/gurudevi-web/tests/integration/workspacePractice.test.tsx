@@ -98,6 +98,53 @@ afterEach(() => {
 });
 
 describe('Workspace attendance Safe Try and scoped reads (G3 mounted / jsdom with mocked account APIs)', () => {
+  it('uses local sample attendance for a developer preview instead of account reads', async () => {
+    renderWorkspace(<WorkspaceFloor mode="explore" isDevPreview capacity="teacher" />);
+    expect(await screen.findByText(/local demo data/i)).toBeTruthy();
+    expect(mocks.loadAccountClassrooms).not.toHaveBeenCalled();
+    expect(mocks.loadAccountAttendance).not.toHaveBeenCalled();
+  });
+  it('guides a teacher after a successful empty classroom read', async () => {
+    renderWorkspace(
+      <WorkspaceFloor mode="account" capacity="teacher" subjectId={practiceAccount}
+        scope={{ bondId: 'bond-1', entityId: 'school-a' }} />,
+    );
+
+    expect(await screen.findByText(/ask your school administrator to connect/i)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /audit attendance log|take attendance/i }).hasAttribute('disabled')).toBe(true);
+  });
+
+  it('opens the selected classroom from the overview', async () => {
+    mocks.loadAccountClassrooms.mockResolvedValue([
+      { id: 'grade-a', name: 'Grade A', subject: null },
+      { id: 'grade-b', name: 'Grade B', subject: null },
+    ]);
+    renderWorkspace(
+      <WorkspaceFloor mode="account" capacity="teacher" subjectId={practiceAccount}
+        scope={{ bondId: 'bond-1', entityId: 'school-a' }} />,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Grade B' }));
+    await waitFor(() => expect(mocks.loadAccountAttendance).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'grade-b' }), expect.any(String), practiceAccount, expect.anything(),
+    ));
+  });
+
+  it('does not carry a saved role lens into another bond', async () => {
+    window.localStorage.setItem(`sanctuary-role-lens:workspace:${practiceAccount}:bond-1`, 'student');
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const floor = (bondId: string) => (
+      <QueryClientProvider client={queryClient}>
+        <WorkspaceFloor mode="account" capacity="teacher" subjectId={practiceAccount}
+          scope={{ bondId, entityId: 'school-a' }} />
+      </QueryClientProvider>
+    );
+    const view = render(floor('bond-1'));
+    await waitFor(() => expect((screen.getByLabelText('Workspace role') as HTMLSelectElement).value).toBe('student'));
+    view.rerender(floor('bond-2'));
+    await waitFor(() => expect((screen.getByLabelText('Workspace role') as HTMLSelectElement).value).toBe('teacher'));
+  });
+
   it('enters a fictional roster, saves only locally, and discards practice without a live save', async () => {
     const user = userEvent.setup();
     renderWorkspace(

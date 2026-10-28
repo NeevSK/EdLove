@@ -42,7 +42,6 @@ export function ExploreMuseumModal({
     if (
       pathname === '/welcome' ||
       pathname.startsWith('/sign-in') ||
-      pathname.startsWith('/sign-up') ||
       pathname.startsWith('/onboarding') ||
       pathname.startsWith('/reset-password')
     ) {

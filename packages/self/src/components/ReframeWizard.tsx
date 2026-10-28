@@ -9,7 +9,7 @@
 
 import { usePermissions } from '@repo/core/logic';
 import { isFollowUpDue } from '@repo/core/logic/reflection';
-import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import { useMachineActor } from '@repo/core/hooks/useMachineActor';
 import {
   clearReframeDraftSnapshot,
   createCognitiveReframeActor,
@@ -194,11 +194,10 @@ export default function ReframeWizard({
   const { records, isLoading, isAnonymous, addThoughtRecord, completeFollowUp } =
     persistence ?? hookResult;
 
-  const actor = useMemo(
+  const { actor, snapshot } = useMachineActor(
     () => createCognitiveReframeActor({ userId: activeUserId ?? '' }),
     [activeUserId],
   );
-  const snapshot = useActorSnapshot(actor);
   const {
     preMood,
     preNote,

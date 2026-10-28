@@ -52,7 +52,7 @@ describe('CreateAccountGuidanceModal Integration (G1 boundary / jsdom)', () => {
 
     // Sign up link should not have query param
     const signUpLink = screen.getByRole('link', { name: /create sovereign account ↗/i });
-    expect(signUpLink.getAttribute('href')).toBe('https://sanctuary.gurudevi.app/sign-up');
+    expect(signUpLink.getAttribute('href')).toBe('https://sanctuary.gurudevi.app/sign-in?intent=signup');
 
     // Check carryover back on
     await user.click(checkbox);

@@ -47,7 +47,7 @@ This is the **compressed master catalog**. Thin per-app footprint sheets link ba
 | [@repo/typescript-config](#repotypescript-config) | core | 0.0.1 | 32 | Internal TypeScript compiler configs shared workspace-wide. |
 | [@repo/ui](#repoui) | ui | 1.5.0 | 15 | Shared design system & shell primitives for the whole product family. |
 | [@repo/verger-android](#repoverger-android) | domain | 0.1.0 | 1 | Verger's Android half: sensing and the app-wide hardware levers, as an Expo module. It measures and actuates;  |
-| [@repo/verger-core](#repoverger-core) | domain | 0.1.0 | 6 | Verger is an app-level resource supervisor, subordinate to the operating system: it senses pressure, sheds wor |
+| [@repo/verger-core](#repoverger-core) | domain | 0.1.0 | 7 | Verger is an app-level resource supervisor, subordinate to the operating system: it senses pressure, sheds wor |
 | [@repo/verger-react](#repoverger-react) | domain | 0.1.0 | 5 | Verger's React bindings, for any React platform: hooks over the process's verger (no provider) and the long-ta |
 | [@repo/verger-react-native](#repoverger-react-native) | domain | 0.1.0 | 2 | Verger's React Native shell: VergerRoot runs and binds verger, feeds app state, touches, reduced motion and lo |
 | [@repo/verger-web](#repoverger-web) | domain | 0.1.0 | 1 | Verger in the browser: the browser platform (device facts from the navigator), its device signals (network, ba |
@@ -62,7 +62,7 @@ This is the **compressed master catalog**. Thin per-app footprint sheets link ba
 | [apps-edlove-web](#apps-edlove-web) | app (web) | 3 | [catalog/edlove-web.md](./catalog/edlove-web.md) |
 | [apps-gurudevi-marketing-web](#apps-gurudevi-marketing-web) | app (web) | 3 | [catalog/gurudevi-marketingWeb.md](./catalog/gurudevi-marketingWeb.md) |
 | [gurudevi-mobile](#gurudevi-mobile) | app (mobile) | 23 | [catalog/gurudevi-mobile.md](./catalog/gurudevi-mobile.md) |
-| [gurudevi-web](#gurudevi-web) | app (web) | 8 | [catalog/gurudevi-web.md](./catalog/gurudevi-web.md) |
+| [gurudevi-web](#gurudevi-web) | app (web) | 9 | [catalog/gurudevi-web.md](./catalog/gurudevi-web.md) |
 | [@repo/sanctuary-api](#reposanctuary-api) | app (api) | 3 | [catalog/sanctuary-api.md](./catalog/sanctuary-api.md) |
 
 ## Overlap watchlist

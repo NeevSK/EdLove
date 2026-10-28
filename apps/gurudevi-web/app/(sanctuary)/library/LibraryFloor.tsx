@@ -1,17 +1,17 @@
 'use client';
 
-import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
-import Link from 'next/link';
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
+import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { LivingCard } from '../components/LivingCard';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { TaskStrip } from '../components/workbench';
 import styles from './library.module.css';
 
@@ -21,6 +21,7 @@ const LIBRARY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
   { id: 'shelf', label: 'Catalog Shelf & Search', icon: '📚' },
   { id: 'invitations', label: 'Curated Study Invitations', icon: '📜' },
 ];
+
 import {
   type BrowserLibraryResource,
   classifyLibraryFailure,
@@ -38,18 +39,24 @@ const CATALOG_TASK = {
   localStatePolicy: 'none',
 } as const;
 
-export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] =
-  getSandboxSamples<any[]>('library', 'getResources', [], []).map((r) => ({
-    id: r.id,
-    title: r.title,
-    description: r.description,
-    type: r.type,
-    verified: Boolean(r.verified),
-    subjects: r.subject ? [r.subject] : ['Sanctuary'],
-    url: r.url ?? 'https://gurudevi.app',
-  }));
+export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] = getSandboxSamples<
+  any[]
+>('library', 'getResources', [], []).map((r) => ({
+  id: r.id,
+  title: r.title,
+  description: r.description,
+  type: r.type,
+  verified: Boolean(r.verified),
+  subjects: r.subject ? [r.subject] : ['Sanctuary'],
+  url: r.url ?? 'https://gurudevi.app',
+}));
 
-export const EXPLORE_COLLECTIONS = getSandboxSamples<any[]>('library', 'getCollections', [], []).map((c) => ({
+export const EXPLORE_COLLECTIONS = getSandboxSamples<any[]>(
+  'library',
+  'getCollections',
+  [],
+  [],
+).map((c) => ({
   id: c.id,
   name: c.name,
   description: c.description,
@@ -88,7 +95,9 @@ export function LibraryFloor({
   const searchSeqRef = useRef(0);
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed'>('recent');
+  const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed'>(
+    'recent',
+  );
   const [cardLayout, setCardLayout] = useState<'grid' | 'list'>('grid');
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(() => {
     try {
@@ -120,10 +129,12 @@ export function LibraryFloor({
       localStorage.setItem('gurudevi_library_bookmarks', JSON.stringify(Array.from(next)));
     } catch {}
 
-    void orpcClient.library.engage({
-      params: { id },
-      body: { engagement_type: 'bookmark', toggle: true },
-    }).catch(() => {});
+    void orpcClient.library
+      .engage({
+        params: { id },
+        body: { engagement_type: 'bookmark', toggle: true },
+      })
+      .catch(() => {});
   };
 
   const toggleEndorse = async (id: string) => {
@@ -133,14 +144,20 @@ export function LibraryFloor({
     else next.delete(id);
     setEndorsedIds(next);
 
-    void orpcClient.library.engage({
-      params: { id },
-      body: { engagement_type: 'endorse' },
-    }).catch(() => {});
+    void orpcClient.library
+      .engage({
+        params: { id },
+        body: { engagement_type: 'endorse' },
+      })
+      .catch(() => {});
   };
 
   const loadResources = useCallback(
-    async (search: string, cat: string = selectedCategory, sort: 'recent' | 'popular' | 'most_endorsed' = selectedSort) => {
+    async (
+      search: string,
+      cat: string = selectedCategory,
+      sort: 'recent' | 'popular' | 'most_endorsed' = selectedSort,
+    ) => {
       const seq = ++searchSeqRef.current;
       await Promise.resolve();
       setStatus('loading');
@@ -344,7 +361,11 @@ export function LibraryFloor({
       appearance={canvas.appearance}
       domain="library"
       furnitureItems={LIBRARY_FURNITURE_ITEMS}
-      groupOrder={canvas.groupOrder.length > 0 ? (canvas.groupOrder as string[]) : ['arrival', 'taskstrip', 'shelf', 'invitations']}
+      groupOrder={
+        canvas.groupOrder.length > 0
+          ? (canvas.groupOrder as string[])
+          : ['arrival', 'taskstrip', 'shelf', 'invitations']
+      }
       onReorderFurniture={(order) => canvas.setGroupOrder(order as any)}
       onTogglePinFurniture={(id) => canvas.togglePin(id as any)}
       pinnedIds={canvas.pinnedCategories as string[]}
@@ -364,6 +385,7 @@ export function LibraryFloor({
       </header>
 
       <TaskStrip
+        shellSlot
         tasks={workbench.state.tasks}
         focusedTaskKey={workbench.state.focusedTaskKey}
         overviewActive={!catalogIsOpen}
@@ -571,7 +593,15 @@ export function LibraryFloor({
                               <span key={subject}>{subject}</span>
                             ))}
                           </div>
-                          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              gap: '0.75rem',
+                              alignItems: 'center',
+                              marginTop: '0.5rem',
+                              flexWrap: 'wrap',
+                            }}
+                          >
                             {resource.type === 'Video' ? (
                               <Link
                                 href={`/library/video/${resource.id}`}
@@ -598,7 +628,12 @@ export function LibraryFloor({
                               </Link>
                             )}
                             {url ? (
-                              <a href={url} rel="noreferrer" target="_blank" style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                              <a
+                                href={url}
+                                rel="noreferrer"
+                                target="_blank"
+                                style={{ fontSize: '0.8rem', opacity: 0.8 }}
+                              >
                                 External Link <span aria-hidden="true">↗</span>
                               </a>
                             ) : null}
@@ -632,213 +667,261 @@ export function LibraryFloor({
       ) : (
         <>
           <section className={styles.overview} aria-labelledby="library-overview-title">
-          <div>
-            <p className={styles.eyebrow}>Overview</p>
-            <h2 id="library-overview-title">Start with the catalog</h2>
-            <p>
-              Search current resources, open the original material, and return here whenever you
-              want to begin somewhere new.
-            </p>
-          </div>
-          <div className={styles.overviewAside}>
-            <p className={styles.count}>{status === 'ready' && Array.isArray(resources) ? resources.length : '—'}</p>
-            <p>resources currently shown</p>
-            <button onClick={openCatalog} type="button">
-              Browse resources
-            </button>
-          </div>
-          {status === 'loading' ? <p role="status">Connecting to your Library…</p> : null}
-          {status === 'error' || status === 'denied' ? (
-            <div className={styles.state} role="alert">
-              <p>{notice}</p>
-              <button onClick={retry} type="button">
-                Try again
+            <div>
+              <p className={styles.eyebrow}>Overview</p>
+              <h2 id="library-overview-title">Start with the catalog</h2>
+              <p>
+                Search current resources, open the original material, and return here whenever you
+                want to begin somewhere new.
+              </p>
+            </div>
+            <div className={styles.overviewAside}>
+              <p className={styles.count}>
+                {status === 'ready' && Array.isArray(resources) ? resources.length : '—'}
+              </p>
+              <p>resources currently shown</p>
+              <button onClick={openCatalog} type="button">
+                Browse resources
               </button>
             </div>
-          ) : null}
-        </section>
-
-        <div className={styles.shelvesContainer}>
-          {/* Curated Collections Shelf */}
-          <section className={styles.shelfSection} aria-labelledby="collections-shelf-heading">
-            <div className={styles.shelfHeader}>
-              <h3 id="collections-shelf-heading">Curated Study Collections</h3>
-              <p>Themed curricular paths gathered for deep inquiry</p>
-            </div>
-            <ul className={styles.shelfGrid} aria-label="Curated collections">
-              {(Array.isArray(collections) ? collections : EXPLORE_COLLECTIONS).map((col) => (
-                <li key={col.id}>
-                  <Link href={`/library/collections/${col.id}`} className={styles.collectionCard}>
-                    <div>
-                      <div className={styles.collectionMeta}>
-                        <span>{col.subjects?.[0] || 'Curriculum'}</span>
-                        {col.is_official ? <span>• Official</span> : null}
-                      </div>
-                      <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', color: 'var(--ink)' }}>{col.name}</h4>
-                      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--ink-soft)', lineHeight: 1.5 }}>
-                        {col.description || 'Guided study sequence.'}
-                      </p>
-                    </div>
-                    <span style={{ marginTop: '1rem', fontSize: '0.85rem', fontWeight: 650, color: 'var(--lotus)' }}>
-                      Explore Collection →
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          {/* Continue Learning Shelf */}
-          <section className={styles.shelfSection} aria-labelledby="continue-shelf-heading">
-            <div className={styles.shelfHeader}>
-              <h3 id="continue-shelf-heading">Continue Learning & Field Guides</h3>
-              <p>Hand-picked pedagogical manuscripts and multimedia lectures</p>
-            </div>
-            <ul className={styles.shelfGrid} aria-label="Continue learning resources">
-              {((Array.isArray(resources) && resources.length > 0) ? resources.slice(0, 4) : EXPLORE_LIBRARY_RESOURCES).map((res) => (
-                <li key={res.id}>
-                  <LivingCard className={styles.resourceCard} variant="glass" elevation="floating">
-                    <div className={styles.resourceMeta}>
-                      <span>{res.type || 'Guide'}</span>
-                      {res.verified ? <span>Verified</span> : null}
-                    </div>
-                    <h3>{res.title}</h3>
-                    <p>{res.description || 'Verified pedagogical material.'}</p>
-                    <div style={{ marginTop: '0.75rem' }}>
-                      {res.type === 'Video' ? (
-                        <Link
-                          href={`/library/video/${res.id}`}
-                          style={{
-                            fontSize: '0.85rem',
-                            fontWeight: 650,
-                            color: 'var(--color-action, #a85022)',
-                            textDecoration: 'none',
-                          }}
-                        >
-                          Watch Lecture 🎬
-                        </Link>
-                      ) : (
-                        <Link
-                          href={`/library/reader/${res.id}`}
-                          style={{
-                            fontSize: '0.85rem',
-                            fontWeight: 650,
-                            color: 'var(--color-action, #a85022)',
-                            textDecoration: 'none',
-                          }}
-                        >
-                          Open Reader 📖
-                        </Link>
-                      )}
-                    </div>
-                  </LivingCard>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          {/* Knowledge Tools & Spatial Map Gateway */}
-          <section
-            className={styles.shelfSection}
-            style={{
-              padding: '1.5rem',
-              borderRadius: '1.2rem',
-              border: '1px solid var(--line)',
-              background: 'color-mix(in srgb, var(--paper-light) 40%, transparent)',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '1.5rem',
-            }}
-          >
-            <div>
-              <span className={styles.eyebrow}>Document Workbench</span>
-              <h3 style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.25rem' }}>
-                Knowledge Tools Hub
-              </h3>
-              <p style={{ margin: '0 0 1rem', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>
-                Spreadsheet data grid, OCR vision extractor, study packet compiler, and offline export archive.
-              </p>
-              <Link
-                href="/library/tools"
-                style={{
-                  display: 'inline-block',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '9999px',
-                  background: 'var(--ink)',
-                  color: 'white',
-                  textDecoration: 'none',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                }}
-              >
-                Launch Knowledge Tools →
-              </Link>
-            </div>
-
-            <div>
-              <span className={styles.eyebrow}>Spatial & Topological Map</span>
-              <h3 style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.25rem' }}>
-                Learning Centers & Knowledge Cosmos
-              </h3>
-              <p style={{ margin: '0 0 1rem', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>
-                Explore Sri Lankan physical resource centers and topological concept cluster relationships.
-              </p>
-              <Link
-                href="/library/map"
-                style={{
-                  display: 'inline-block',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '9999px',
-                  background: 'color-mix(in srgb, var(--ink) 10%, transparent)',
-                  color: 'var(--ink)',
-                  border: '1px solid var(--line)',
-                  textDecoration: 'none',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                }}
-              >
-                View Library Map →
-              </Link>
-            </div>
-          </section>
-
-          {/* Living Sanctuary Studio Invitation */}
-          <section
-            className={styles.shelfSection}
-            style={{
-              padding: '1.5rem',
-              borderRadius: '1.2rem',
-              border: '1px dashed var(--line)',
-              background: 'color-mix(in srgb, var(--paper-light) 40%, transparent)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <span className={styles.eyebrow}>Curator Studio</span>
-                <h3 style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.35rem' }}>
-                  Pedagogical Curation & Content Review
-                </h3>
-                <p style={{ margin: 0, color: 'var(--ink-soft)', fontSize: '0.9rem' }}>
-                  Review staged community submissions, verify curricular alignment, and resolve broken link reports.
-                </p>
+            {status === 'loading' ? <p role="status">Connecting to your Library…</p> : null}
+            {status === 'error' || status === 'denied' ? (
+              <div className={styles.state} role="alert">
+                <p>{notice}</p>
+                <button onClick={retry} type="button">
+                  Try again
+                </button>
               </div>
-              <Link
-                href="/library/curator"
+            ) : null}
+          </section>
+
+          <div className={styles.shelvesContainer}>
+            {/* Curated Collections Shelf */}
+            <section className={styles.shelfSection} aria-labelledby="collections-shelf-heading">
+              <div className={styles.shelfHeader}>
+                <h3 id="collections-shelf-heading">Curated Study Collections</h3>
+                <p>Themed curricular paths gathered for deep inquiry</p>
+              </div>
+              <ul className={styles.shelfGrid} aria-label="Curated collections">
+                {(Array.isArray(collections) ? collections : EXPLORE_COLLECTIONS).map((col) => (
+                  <li key={col.id}>
+                    <Link href={`/library/collections/${col.id}`} className={styles.collectionCard}>
+                      <div>
+                        <div className={styles.collectionMeta}>
+                          <span>{col.subjects?.[0] || 'Curriculum'}</span>
+                          {col.is_official ? <span>• Official</span> : null}
+                        </div>
+                        <h4
+                          style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', color: 'var(--ink)' }}
+                        >
+                          {col.name}
+                        </h4>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: '0.85rem',
+                            color: 'var(--ink-soft)',
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {col.description || 'Guided study sequence.'}
+                        </p>
+                      </div>
+                      <span
+                        style={{
+                          marginTop: '1rem',
+                          fontSize: '0.85rem',
+                          fontWeight: 650,
+                          color: 'var(--lotus)',
+                        }}
+                      >
+                        Explore Collection →
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            {/* Continue Learning Shelf */}
+            <section className={styles.shelfSection} aria-labelledby="continue-shelf-heading">
+              <div className={styles.shelfHeader}>
+                <h3 id="continue-shelf-heading">Continue Learning & Field Guides</h3>
+                <p>Hand-picked pedagogical manuscripts and multimedia lectures</p>
+              </div>
+              <ul className={styles.shelfGrid} aria-label="Continue learning resources">
+                {(Array.isArray(resources) && resources.length > 0
+                  ? resources.slice(0, 4)
+                  : EXPLORE_LIBRARY_RESOURCES
+                ).map((res) => (
+                  <li key={res.id}>
+                    <LivingCard
+                      className={styles.resourceCard}
+                      variant="glass"
+                      elevation="floating"
+                    >
+                      <div className={styles.resourceMeta}>
+                        <span>{res.type || 'Guide'}</span>
+                        {res.verified ? <span>Verified</span> : null}
+                      </div>
+                      <h3>{res.title}</h3>
+                      <p>{res.description || 'Verified pedagogical material.'}</p>
+                      <div style={{ marginTop: '0.75rem' }}>
+                        {res.type === 'Video' ? (
+                          <Link
+                            href={`/library/video/${res.id}`}
+                            style={{
+                              fontSize: '0.85rem',
+                              fontWeight: 650,
+                              color: 'var(--color-action, #a85022)',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            Watch Lecture 🎬
+                          </Link>
+                        ) : (
+                          <Link
+                            href={`/library/reader/${res.id}`}
+                            style={{
+                              fontSize: '0.85rem',
+                              fontWeight: 650,
+                              color: 'var(--color-action, #a85022)',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            Open Reader 📖
+                          </Link>
+                        )}
+                      </div>
+                    </LivingCard>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            {/* Knowledge Tools & Spatial Map Gateway */}
+            <section
+              className={styles.shelfSection}
+              style={{
+                padding: '1.5rem',
+                borderRadius: '1.2rem',
+                border: '1px solid var(--line)',
+                background: 'color-mix(in srgb, var(--paper-light) 40%, transparent)',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '1.5rem',
+              }}
+            >
+              <div>
+                <span className={styles.eyebrow}>Document Workbench</span>
+                <h3
+                  style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.25rem' }}
+                >
+                  Knowledge Tools Hub
+                </h3>
+                <p style={{ margin: '0 0 1rem', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>
+                  Spreadsheet data grid, OCR vision extractor, study packet compiler, and offline
+                  export archive.
+                </p>
+                <Link
+                  href="/library/tools"
+                  style={{
+                    display: 'inline-block',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '9999px',
+                    background: 'var(--ink)',
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  Launch Knowledge Tools →
+                </Link>
+              </div>
+
+              <div>
+                <span className={styles.eyebrow}>Spatial & Topological Map</span>
+                <h3
+                  style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.25rem' }}
+                >
+                  Learning Centers & Knowledge Cosmos
+                </h3>
+                <p style={{ margin: '0 0 1rem', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>
+                  Explore Sri Lankan physical resource centers and topological concept cluster
+                  relationships.
+                </p>
+                <Link
+                  href="/library/map"
+                  style={{
+                    display: 'inline-block',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '9999px',
+                    background: 'color-mix(in srgb, var(--ink) 10%, transparent)',
+                    color: 'var(--ink)',
+                    border: '1px solid var(--line)',
+                    textDecoration: 'none',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  View Library Map →
+                </Link>
+              </div>
+            </section>
+
+            {/* Living Sanctuary Studio Invitation */}
+            <section
+              className={styles.shelfSection}
+              style={{
+                padding: '1.5rem',
+                borderRadius: '1.2rem',
+                border: '1px dashed var(--line)',
+                background: 'color-mix(in srgb, var(--paper-light) 40%, transparent)',
+              }}
+            >
+              <div
                 style={{
-                  padding: '0.6rem 1.25rem',
-                  borderRadius: '9999px',
-                  background: 'var(--ink)',
-                  color: 'white',
-                  textDecoration: 'none',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '1rem',
                 }}
               >
-                Open Curator Studio
-              </Link>
-            </div>
-          </section>
-        </div>
+                <div>
+                  <span className={styles.eyebrow}>Curator Studio</span>
+                  <h3
+                    style={{
+                      margin: '0.25rem 0',
+                      fontFamily: 'Georgia, serif',
+                      fontSize: '1.35rem',
+                    }}
+                  >
+                    Pedagogical Curation & Content Review
+                  </h3>
+                  <p style={{ margin: 0, color: 'var(--ink-soft)', fontSize: '0.9rem' }}>
+                    Review staged community submissions, verify curricular alignment, and resolve
+                    broken link reports.
+                  </p>
+                </div>
+                <Link
+                  href="/library/curator"
+                  style={{
+                    padding: '0.6rem 1.25rem',
+                    borderRadius: '9999px',
+                    background: 'var(--ink)',
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  Open Curator Studio
+                </Link>
+              </div>
+            </section>
+          </div>
         </>
       )}
     </SanctuaryFloorCanvas>

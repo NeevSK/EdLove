@@ -41,7 +41,7 @@ const REMEMBERED_SESSION_ERROR = 'Unable to retain refreshed device credentials.
  * Orchestrates the "Reactive Capability Sync" and session management.
  * Hardened for offline cold start, battery doze mode, and mobile token churn.
  */
-export function useAuthLifecycle() {
+export function useAuthLifecycle(readLocalGuestId?: () => Promise<string | null>) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
@@ -284,10 +284,24 @@ export function useAuthLifecycle() {
           useAuthStore.getState().user?.id ??
           null;
         if (persistedScopePrincipalId) {
-          const hasMatchingOwner = await hasVerifiedLocalIdentityForSubject(
+          let hasMatchingOwner = await hasVerifiedLocalIdentityForSubject(
             persistedScopePrincipalId,
             initialSubjectId,
           );
+          if (!initialSession && readLocalGuestId) {
+            try {
+              const localGuestId = await readLocalGuestId();
+              const currentUser = useAuthStore.getState().user;
+              const currentScope = useScopeSessionStore.getState().snapshot;
+              hasMatchingOwner =
+                localGuestId === persistedScopePrincipalId &&
+                currentUser?.id === localGuestId &&
+                currentUser.is_anonymous === true &&
+                currentScope?.principalId === localGuestId;
+            } catch (error) {
+              console.warn('[auth] unable to verify local guest ownership:', error);
+            }
+          }
           if (
             !isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)
           ) {

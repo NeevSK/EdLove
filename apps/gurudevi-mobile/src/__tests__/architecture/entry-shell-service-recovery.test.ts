@@ -24,6 +24,12 @@ describe('entry shell service recovery', () => {
 
   it('provides and renders the shared FAB contract for registered workspace actions', () => {
     expect(entryShell).toContain('<FABProvider>');
-    expect(entryShell).toContain('<LotusPetalFAB />');
+    expect(entryShell).toContain('<LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />');
+  });
+
+  it('registers development diagnostics routes and persists the first shell frame marker', () => {
+    expect(entryShell).toContain('<Stack.Screen name="verger-lab" />');
+    expect(entryShell).toContain('<Stack.Screen name="verger-diagnostics" />');
+    expect(entryShell).toContain("task: 'first-shell-frame'");
   });
 });

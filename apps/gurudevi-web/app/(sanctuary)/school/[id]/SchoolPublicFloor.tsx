@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import { editorialHexagonalService, type SchoolEditorialDraft } from '@/lib/domain';
 import {
   CANONICAL_ANANDA_PROFILE,
@@ -133,7 +134,7 @@ export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>
             </button>
           </nav>
 
-          <a href="https://sanctuary.gurudevi.app/sign-in" className={styles.portalBtn}>
+          <a href={resolveSurfaceUrl('sanctuary', '/sign-in')} className={styles.portalBtn}>
             Enter Sanctuary ➔
           </a>
         </div>
@@ -714,8 +715,8 @@ export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>
 
           <div className={styles.footerLinks}>
             <Link href={`/school/${fact.handle}`}>School Home</Link>
-            <a href="https://sanctuary.gurudevi.app/welcome">Educator Portal</a>
-            <a href="https://sanctuary.gurudevi.app/sign-in">Student Login</a>
+            <a href={resolveSurfaceUrl('sanctuary', '/welcome')}>Educator Portal</a>
+            <a href={resolveSurfaceUrl('sanctuary', '/sign-in')}>Student Login</a>
           </div>
         </div>
       </footer>

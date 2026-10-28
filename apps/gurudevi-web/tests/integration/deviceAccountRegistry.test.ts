@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   clearDeviceAccounts,
+  getActiveDeviceAccountId,
   getDeviceAccounts,
   isKioskMode,
   maskEmail,
   removeDeviceAccount,
   saveDeviceAccount,
+  setActiveDeviceAccountId,
   setAccountPin,
   setKioskMode,
   verifyAccountPin,
@@ -165,6 +167,33 @@ describe('Unit/Integration: Web Device Account Registry & Kiosk Isolation', () =
     it('rejects invalid PIN formats (under 4 digits or non-numeric)', async () => {
       await expect(setAccountPin('acc-pin-test', '12')).rejects.toThrow('PIN must be 4 to 8 digits.');
       await expect(setAccountPin('acc-pin-test', 'abcd')).rejects.toThrow('PIN must be 4 to 8 digits.');
+    });
+  });
+
+  describe('Active Account & Raw Email Tracking', () => {
+    it('persists and retrieves rawEmail when provided', () => {
+      saveDeviceAccount({
+        accountId: 'acc-raw-email',
+        authUserId: 'usr-raw',
+        displayName: 'Devika Lead',
+        avatarUrl: null,
+        maskedEmail: 'd***a@school.lk',
+        rawEmail: 'devika@school.lk',
+        schoolId: null,
+        capacity: 'teacher',
+        hasPin: false,
+      });
+
+      const accounts = getDeviceAccounts();
+      expect(accounts[0]?.rawEmail).toBe('devika@school.lk');
+    });
+
+    it('sets, gets and clears active device account ID', () => {
+      expect(getActiveDeviceAccountId()).toBeNull();
+      setActiveDeviceAccountId('acc-xyz');
+      expect(getActiveDeviceAccountId()).toBe('acc-xyz');
+      setActiveDeviceAccountId(null);
+      expect(getActiveDeviceAccountId()).toBeNull();
     });
   });
 });

@@ -18,8 +18,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const authLifecycle = useAuthLifecycle();
+export const AuthProvider: React.FC<{
+  children: ReactNode;
+  readLocalGuestId?: () => Promise<string | null>;
+}> = ({ children, readLocalGuestId }) => {
+  const authLifecycle = useAuthLifecycle(readLocalGuestId);
 
   return <AuthContext.Provider value={authLifecycle}>{children}</AuthContext.Provider>;
 };

@@ -10,6 +10,8 @@
  * - Operates with zero cloud latency and zero vendor lock-in
  */
 
+import { saveDevelopmentTelemetry } from './localDevelopmentTelemetry';
+
 export interface TelemetryDevRecord {
   id: string;
   timestamp: number;
@@ -37,6 +39,17 @@ class DevTelemetryCatcher {
       id: Math.random().toString(36).substring(2, 9),
       timestamp: Date.now(),
     };
+
+    saveDevelopmentTelemetry({
+      source: 'runtime',
+      name: record.name,
+      attributes: { ...record },
+      timestampMs: typeof event.attributes?.at_ms === 'number' ? event.attributes.at_ms : undefined,
+      wallTimeMs:
+        typeof event.attributes?.wall_time_ms === 'number'
+          ? event.attributes.wall_time_ms
+          : undefined,
+    });
 
     this.buffer.unshift(record);
     if (this.buffer.length > this.maxBufferSize) {

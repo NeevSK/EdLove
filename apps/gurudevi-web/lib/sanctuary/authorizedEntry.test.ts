@@ -21,6 +21,7 @@ function identityPayload(overrides: Record<string, unknown> = {}) {
     id: accountId,
     display_name: 'Nadeesha',
     onboarding_completed: true,
+    activeBond: { capacity: 'principal' },
     scopeBootstrap: {
       version: 1,
       userId: accountId,
@@ -57,7 +58,8 @@ describe('resolveAuthorizedEntry', () => {
       accountId,
       authSubjectId: subject,
       displayName: 'Nadeesha',
-      activeCapacity: 'teacher',
+      activeCapacity: 'principal',
+      primaryCapacity: 'teacher',
       primaryScopeRole: 'teacher',
       activeScope: {
         bondId: '00000000-0000-4000-8000-000000000010',

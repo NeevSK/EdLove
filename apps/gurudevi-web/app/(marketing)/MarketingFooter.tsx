@@ -1,10 +1,21 @@
-import { GURUDEVI_EXPLORE_URL } from '@repo/core/config/publicUrls';
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { SOCIAL_LINKS, WEB_LINKS } from '../../lib/site';
+import { SOCIAL_LINKS } from '../../lib/site';
+import {
+  EDLOVE_URL,
+  EXTERNAL_LINK_PROPS,
+  FOUNDER_URL,
+  INTUITUI_URL,
+  resolveSurfaceUrl,
+} from '../../lib/surface-urls';
+import { useTranslation, LANGUAGES } from '../../lib/i18n';
+import { SriLankaFlag } from '../components/SriLankaFlag';
 
 export function MarketingFooter() {
   const currentYear = new Date().getFullYear();
+  const { locale, setLocale, t } = useTranslation();
 
   return (
     <footer className="site-footer">
@@ -14,37 +25,103 @@ export function MarketingFooter() {
             <Image src="/gurudevi-mark.svg" alt="" width={28} height={28} />
             <span>Gurudevi</span>
           </div>
-          <p>Technology that gives energy back to education.</p>
+          <p>
+            An education ecology support system and sanctuary for education in Sri Lanka,
+            connecting teachers, students, schools, and families.
+          </p>
+          <small className="site-footer__brand-note">
+            Rooted in pedagogical care, local-first trust, and sovereign privacy.
+          </small>
         </div>
+
         <div>
-          <p className="eyebrow footer-label">Explore</p>
+          <p className="eyebrow footer-label">Ecology</p>
           <div className="footer-links">
-            <Link href="/about">The ecology</Link>
-            <Link href="/journal">Journal</Link>
-            <Link href="/faq">FAQ</Link>
-            <Link href="/support">Support</Link>
-            <Link href="/thuthimal">Thuthimal</Link>
+            <Link href="/about">The Living Ecology</Link>
+            <Link href="/journal">Journal &amp; Updates</Link>
+            <Link href="/thuthimal">Thuthimal Heritage</Link>
+            <Link href="/faq">Questions &amp; Clarity</Link>
+            <Link href="/support">Support Desk</Link>
           </div>
         </div>
+
         <div>
-          <p className="eyebrow footer-label">Elsewhere</p>
+          <p className="eyebrow footer-label">Sanctuary</p>
           <div className="footer-links">
-            <a href={`${GURUDEVI_EXPLORE_URL}/self`}>Open platform ↗</a>
-            <a href={WEB_LINKS.edlove} target="_blank" rel="noopener noreferrer">
-              EdLove ↗
+            <a href={resolveSurfaceUrl('explore', '/self')}>Open Platform ↗</a>
+            <a href={resolveSurfaceUrl('sanctuary', '/sign-in')}>Educator Sign In ↗</a>
+            <a href={resolveSurfaceUrl('sanctuary', '/welcome')}>School Gateway ↗</a>
+          </div>
+        </div>
+
+        <div>
+          <p className="eyebrow footer-label">Foundation &amp; Ecosystem</p>
+          <div className="footer-links">
+            <a href={EDLOVE_URL} {...EXTERNAL_LINK_PROPS}>
+              EdLove Foundation ↗
             </a>
-            <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer">
+            <a href={INTUITUI_URL} {...EXTERNAL_LINK_PROPS}>
+              Intuitui Labs ↗
+            </a>
+            <a href={FOUNDER_URL} {...EXTERNAL_LINK_PROPS}>
+              Neev / Research ↗
+            </a>
+            <a href={SOCIAL_LINKS.linkedin} {...EXTERNAL_LINK_PROPS}>
               LinkedIn ↗
             </a>
           </div>
         </div>
       </div>
+
       <div className="site-footer__bottom">
-        <span>© {currentYear} Gurudevi · Part of EdLove</span>
-        <span>
-          <Link href="/privacy">Privacy</Link> · <Link href="/terms">Terms</Link> ·{' '}
-          <Link href="/delete-account">Delete account</Link>
-        </span>
+        <div className="site-footer__upper-bar">
+          <nav className="site-footer__legal" aria-label="Legal and compliance">
+            <Link href="/status">Status</Link>
+            <span className="site-footer__colophon-divider" aria-hidden="true">·</span>
+            <Link href="/guidelines">Community Guidelines</Link>
+            <span className="site-footer__colophon-divider" aria-hidden="true">·</span>
+            <Link href="/privacy">Privacy Policy</Link>
+            <span className="site-footer__colophon-divider" aria-hidden="true">·</span>
+            <Link href="/terms">Terms of Service</Link>
+            <span className="site-footer__colophon-divider" aria-hidden="true">·</span>
+            <Link href="/delete-account">Account &amp; Data</Link>
+          </nav>
+
+          <div className="site-footer__languages" aria-label="Language selection">
+            {LANGUAGES.map((lang, idx) => (
+              <span key={lang.code}>
+                {idx > 0 && ' · '}
+                <button
+                  type="button"
+                  onClick={() => setLocale(lang.code)}
+                  className={`cursor-pointer hover:underline ${locale === lang.code ? 'font-bold underline' : ''}`}
+                  lang={lang.code}
+                >
+                  {lang.nativeLabel}
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="site-footer__bottomline">
+          <span>© {currentYear} Gurudevi</span>
+          <span className="site-footer__colophon-divider" aria-hidden="true">·</span>
+          <span>
+            Part of the{' '}
+            <a
+              href={EDLOVE_URL}
+              {...EXTERNAL_LINK_PROPS}
+              className="site-footer__edlove-link"
+            >
+              EdLove Foundation
+            </a>
+          </span>
+          <span className="site-footer__colophon-divider" aria-hidden="true">·</span>
+          <span className="site-footer__made-with">
+            Made with ❤️ in <SriLankaFlag />
+          </span>
+        </div>
       </div>
     </footer>
   );

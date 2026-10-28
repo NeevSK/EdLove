@@ -1,9 +1,7 @@
 import { isLocalOnlyIdentity } from '@repo/core/logic';
-import {
-  discardLocalGuestSession,
-  getOrCreateGuestLease,
-} from '@repo/core/native';
+import { discardLocalGuestSession, getOrCreateGuestLease } from '@repo/core/native';
 import { getLocalGuestIdentity } from '@repo/core/native/guestIdentity';
+import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { type PropsWithChildren, useEffect } from 'react';
 
@@ -12,7 +10,7 @@ export function GuestLeaseBoundary({ children }: PropsWithChildren) {
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
-    if (!user || !isLocalOnlyIdentity(user)) return;
+    if (!user || !isLocalOnlyIdentity(user) || isLocalGuestSessionId(user.id)) return;
     const guestUserId = user.id;
     let active = true;
     void getLocalGuestIdentity(guestUserId)

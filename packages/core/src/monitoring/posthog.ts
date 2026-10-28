@@ -87,10 +87,12 @@ export const resetUser = () => {
 };
 
 export const trackScreen = (screenName: string, properties?: Record<string, unknown>) => {
+  if (_telemetryOptedOut || !_posthog) return;
+
   const safeProperties = sanitizeTelemetryData(properties);
-  if (!_telemetryOptedOut && _posthog?.screen) {
+  if (_posthog.screen) {
     _posthog.screen(screenName, safeProperties);
-  } else if (_posthog) {
+  } else {
     _posthog.capture('$screen_view', {
       screen_name: screenName,
       ...safeProperties,

@@ -29,7 +29,7 @@ export async function redirectSystemPath({
       }
 
       case 'classroomInvite': {
-        const targetPath = `/community?inviteCode=${encodeURIComponent(intent.inviteCode)}`;
+        const targetPath = `/invitation-welcome?code=${encodeURIComponent(intent.inviteCode)}`;
         // Stash intent so that if the user is unauthenticated, SessionRouteGate
         // will automatically drain and navigate to this target after sign-in.
         pendingIntentStore.getState().setPendingIntent({

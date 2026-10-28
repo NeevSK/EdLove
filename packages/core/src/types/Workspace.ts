@@ -25,9 +25,13 @@ export interface FloorWallpaperConfig {
   wallpaperOpacity?: number; // 0.1 to 0.5
 }
 
+export type SceneGroundMode = 'live' | 'still' | 'image' | 'quiet';
+
 export interface WorkspaceAppearance {
   preset: WorkspaceAppearancePreset;
   motion: WorkspaceAppearanceMotion;
+  groundMode?: SceneGroundMode;
+  worldId?: string;
   wallpaper?: WorkspaceWallpaper | null;
   wallpaperConfig?: FloorWallpaperConfig | null;
 }
@@ -141,10 +145,7 @@ export type WorkspaceRolePersona =
   | 'parent'
   | 'developer';
 
-export type FeatureLifecycleStage =
-  | 'day_0_onboarding'
-  | 'daily_circadian'
-  | 'mastery_governance';
+export type FeatureLifecycleStage = 'day_0_onboarding' | 'daily_circadian' | 'mastery_governance';
 
 export interface ScreenSequenceStep {
   step: number;

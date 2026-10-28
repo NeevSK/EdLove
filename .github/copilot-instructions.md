@@ -394,6 +394,11 @@ python3 scripts/render_docx.py /path/to/file.docx --output_dir /tmp/docx_pages
 
 <!-- START SKILL: expo-rn-expert -->
 
+---
+name: expo-rn-expert
+description: Authoritative engineering guidelines for building cross-platform React Native applications with Expo SDK and Expo Router.
+---
+
 # Expo & React Native Engineering Playbook (expo-rn-expert)
 
 Authoritative engineering guidelines for building cross-platform React Native (web and mobile) applications with Expo SDK 56 and Expo Router.
@@ -2875,6 +2880,11 @@ Notes:
 
 <!-- START SKILL: gh-fix-ci -->
 
+---
+name: gh-fix-ci
+description: "Core instructions for debugging failing GitHub Actions pipelines, fixing monorepo build-graph errors, and resolving CI check blockers. Use when checking or fixing files in .github/workflows/, resolving build failures on CI, or fixing lint/test regressions before merging."
+---
+
 # CI/CD & Pipeline Synchronization Playbook (gh-fix-ci)
 
 Core instructions for debugging failing GitHub Actions pipelines, fixing monorepo build-graph errors, and resolving CI check blockers.
@@ -2934,6 +2944,8 @@ description: "Authoritative skill guide for grill-me in Polymath Platform."
 <!-- START SKILL: growthbook-feature-rollout -->
 
 ---
+name: growthbook-feature-rollout
+description: Implementation and extension of feature management, flags, and experiments using GrowthBook JS SDK.
 title: "GrowthBook Feature Rollout Developer Skill"
 status: "active"
 created: 2026-06-21
@@ -3900,6 +3912,11 @@ For secrets and configuration:
 <!-- END SKILL: netlify-deploy -->
 
 <!-- START SKILL: open-source-maintainer -->
+
+---
+name: open-source-maintainer
+description: "Core operational manuals for maintaining package boundaries, synchronizing dependencies, resolving schema drifts, and verifying release-readiness. Use when auditing imports across workspaces, reorganizing packages, running dependency syncs, or performing pre-release sanity checks across the monorepo."
+---
 
 # Monorepo Integrity & Release Readiness Playbook (open-source-maintainer)
 
@@ -4954,6 +4971,7 @@ description: "Authoritative skill guide for ponytail in Polymath Platform."
 <!-- START SKILL: powersync-expert -->
 
 ---
+name: powersync-expert
 title: PowerSync Sync and Offline Data Expert
 description: Directives and best practices for offline-first architecture, platform-detected database factories, useLiveQuery reactivity, multi-account swaps, and Drizzle query compilation in the Polymath Platform.
 triggers:
@@ -5976,6 +5994,11 @@ gnome-screenshot -w -f output/window.png
 
 <!-- START SKILL: security-best-practices -->
 
+---
+name: security-best-practices
+description: "Authoritative security standards for data access, secret management, identity validation, and trust boundary protection. Use when modifying user identity checks, editing database schemas, writing Supabase policies, or handling authentication logic across the web/mobile app boundaries."
+---
+
 # Security & Trust Boundaries Playbook (security-best-practices)
 
 Authoritative security standards for data access, secret management, identity validation, and trust boundary protection.
@@ -6651,6 +6674,7 @@ supabase gen types typescript --linked
 <!-- START SKILL: supabase-expert -->
 
 ---
+name: supabase-expert
 title: Supabase Database and Security Expert
 description: Guides the agent through safe database schema changes, SQL migrations, RLS (Row Level Security) safety audits, and generating TypeScript types.
 triggers:
@@ -6731,6 +6755,7 @@ description: "Authoritative skill guide for superpowers in Polymath Platform."
 <!-- START SKILL: ui-polisher -->
 
 ---
+name: ui-polisher
 title: Premium UI/UX Polish and Visual Excellence
 description: Guides the agent to review design hierarchy, replace generic layouts with premium components, inject micro-animations, and verify responsiveness using Playwright.
 triggers:

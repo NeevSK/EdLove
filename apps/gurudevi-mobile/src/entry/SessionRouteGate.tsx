@@ -1,9 +1,10 @@
 import { useAuth } from '@repo/core/logic';
 import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
+import { BrandPulse } from '@repo/ui';
 import { Mascot } from '@repo/ui/components/Mascot';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { type Href, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import { recordDevelopmentTrace } from '@/boot/startupTelemetry';
 import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
@@ -22,44 +23,94 @@ export function SessionRouteGate({
   const params = useGlobalSearchParams<{ entry?: string }>();
   const { refreshProfile } = useAuth();
   const routeState = useBootstrapRouteState(pathname);
+  const [restoreWaitExpired, setRestoreWaitExpired] = useState(false);
+  const isDevelopmentToolRoute =
+    __DEV__ && (pathname === '/verger-lab' || pathname === '/verger-diagnostics');
   const bootstrapTarget = getBootstrapRouteTarget(routeState, {
     guestOnboardingIntent: pathname === '/onboarding' && params.entry === 'guest',
   });
   const routeTarget = bootstrapTarget;
   const { decision, redirectTo } = routeTarget;
-  const presentation = getEntryPresentation({
+  const presentation = isDevelopmentToolRoute
+    ? { kind: 'content' as const, mountProtectedServices: false }
+    : getEntryPresentation({
+        pathname,
+        profileError: routeState.profileError,
+        routeTarget,
+      });
+  useEffect(() => {
+    setRestoreWaitExpired(false);
+    if (presentation.kind !== 'restoring' || presentation.message) return;
+    const timeout = setTimeout(() => setRestoreWaitExpired(true), 8_000);
+    return () => clearTimeout(timeout);
+  }, [
     pathname,
-    profileError: routeState.profileError,
-    routeTarget,
-  });
+    presentation.kind,
+    presentation.kind === 'restoring' ? presentation.message : null,
+  ]);
   const mountCloudServices =
     presentation.kind === 'content' &&
     presentation.mountProtectedServices &&
     Boolean(routeState.session?.user);
 
-  console.log('[SessionRouteGate]', {
+  const sessionMode = routeState.session
+    ? routeState.session.user.is_anonymous
+      ? 'anonymous'
+      : 'auth'
+    : 'none';
+  useEffect(() => {
+    console.log('[SessionRouteGate]', {
+      pathname,
+      redirectTo,
+      decision,
+      sessionMode,
+      onboardingCompleted: routeState.onboardingCompleted,
+      isLocalGuestReady: routeState.isLocalGuestReady,
+    });
+  }, [
     pathname,
-    redirectTo: routeTarget.redirectTo,
-    decision: routeTarget.decision,
-    sessionMode: routeState.session
-      ? routeState.session.user.is_anonymous
-        ? 'anonymous'
-        : 'auth'
-      : 'none',
-    onboardingCompleted: routeState.onboardingCompleted,
-    isLocalGuestReady: routeState.isLocalGuestReady,
-  });
+    redirectTo,
+    decision,
+    sessionMode,
+    routeState.onboardingCompleted,
+    routeState.isLocalGuestReady,
+  ]);
 
   useEffect(() => {
     const routePattern = getDiagnosticRoutePattern(pathname);
     recordDevelopmentTrace({
       category: 'route-transition',
       task: routePattern,
-      state: 'committed',
+      state: presentation.kind,
+      decision: routeTarget.decision,
     });
-  }, [pathname]);
+  }, [pathname, presentation.kind, routeTarget.decision]);
 
   useEffect(() => {
+    recordDevelopmentTrace({
+      category: 'route-readiness',
+      task: getDiagnosticRoutePattern(pathname),
+      state: decision,
+      session_loading: routeState.isSessionLoading,
+      profile_resolving: routeState.isProfileResolving,
+      local_guest_ready: Boolean(routeState.isLocalGuestReady),
+      onboarding_completed: routeState.onboardingCompleted,
+      profile_error_present: Boolean(routeState.profileError),
+      has_session: Boolean(routeState.session),
+    });
+  }, [
+    decision,
+    pathname,
+    routeState.isLocalGuestReady,
+    routeState.isProfileResolving,
+    routeState.isSessionLoading,
+    routeState.onboardingCompleted,
+    routeState.profileError,
+    routeState.session,
+  ]);
+
+  useEffect(() => {
+    if (isDevelopmentToolRoute) return;
     const pendingIntent = pendingIntentStore.getState().getPendingIntent();
     const action = getEntryNavigationAction({
       pathname,
@@ -68,7 +119,7 @@ export function SessionRouteGate({
     });
     if (action.consumePendingIntent) pendingIntentStore.getState().drainPendingIntent();
     if (action.target) router.replace(action.target as any);
-  }, [pathname, decision, redirectTo, router]);
+  }, [isDevelopmentToolRoute, pathname, decision, redirectTo, router]);
 
   // router.replace() updates the browser location before Expo Router commits
   // the destination tree. Keeping children mounted in that gap can show the
@@ -106,26 +157,33 @@ export function SessionRouteGate({
 
     return (
       <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
-        <Mascot mode="glowing" state="guiding" size={120} podVariant="raw" />
+        <BrandPulse size={32} tintColor="#D4843A" accessibilityLabel="Opening Gurudevi" />
         <Text className="mt-6 text-center text-base font-semibold text-phase-text-primary">
-          Restoring your sanctuary…
+          Opening Gurudevi…
         </Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Retry restoring your sanctuary"
-          onPress={() => void refreshProfile()}
-          className="mt-6 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
-        >
-          <Text className="font-semibold text-white">Retry</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Return to Welcome"
-          onPress={() => router.replace('/welcome')}
-          className="mt-3 py-2 px-4"
-        >
-          <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
-        </Pressable>
+        {restoreWaitExpired ? (
+          <>
+            <Text className="mt-2 text-center text-sm text-phase-text-muted">
+              This is taking longer than usual.
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Retry restoring your sanctuary"
+              onPress={() => void refreshProfile()}
+              className="mt-5 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
+            >
+              <Text className="font-semibold text-white">Retry</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Return to Welcome"
+              onPress={() => router.replace('/welcome')}
+              className="mt-3 py-2 px-4"
+            >
+              <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
+            </Pressable>
+          </>
+        ) : null}
       </Box>
     );
   }

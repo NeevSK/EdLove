@@ -15,6 +15,10 @@ const mocks = vi.hoisted(() => ({
   routeState: {} as {
     profileError?: string | null;
     session?: { user: { id: string; is_anonymous?: boolean } };
+    isSessionLoading?: boolean;
+    isProfileResolving?: boolean;
+    isLocalGuestReady?: boolean;
+    onboardingCompleted?: boolean;
   },
   optionalStartup: vi.fn(),
 }));
@@ -45,6 +49,7 @@ vi.mock('@/boot/OptionalStartupServices', () => ({
 vi.mock('@/boot/startupTelemetry', () => ({
   recordDevelopmentTrace: mocks.recordDevelopmentTrace,
 }));
+vi.mock('@repo/ui', () => ({ BrandPulse: () => null }));
 vi.mock('@repo/ui/components/BrandPulse', () => ({
   BrandPulse: () => null,
 }));
@@ -69,6 +74,8 @@ function AppServices() {
 
 describe('SessionRouteGate account isolation', () => {
   beforeEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
     pendingIntentStore.getState().clearPendingIntent();
     mocks.pathname = '/self';
     mocks.searchParams = {};
@@ -82,6 +89,28 @@ describe('SessionRouteGate account isolation', () => {
     };
     mocks.routeState = {};
     mocks.optionalStartup.mockReset();
+  });
+
+  it('logs route state changes without repeating identical render diagnostics', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    let tree: ReturnType<typeof create>;
+    try {
+      await act(async () => {
+        tree = create(<SessionRouteGate>{null}</SessionRouteGate>);
+      });
+      await act(async () => {
+        tree.update(<SessionRouteGate>{null}</SessionRouteGate>);
+      });
+      expect(log.mock.calls.filter(([name]) => name === '[SessionRouteGate]')).toHaveLength(1);
+      mocks.routeState.isLocalGuestReady = true;
+      await act(async () => {
+        tree.update(<SessionRouteGate>{null}</SessionRouteGate>);
+      });
+      expect(log.mock.calls.filter(([name]) => name === '[SessionRouteGate]')).toHaveLength(2);
+      await act(async () => tree.unmount());
+    } finally {
+      log.mockRestore();
+    }
   });
 
   it('records a fixed route bucket without retaining route identifiers', async () => {
@@ -98,10 +127,46 @@ describe('SessionRouteGate account isolation', () => {
     expect(mocks.recordDevelopmentTrace).toHaveBeenCalledWith({
       category: 'route-transition',
       task: 'profile',
-      state: 'committed',
+      state: 'restoring',
+      decision: 'booting',
     });
     expect(JSON.stringify(mocks.recordDevelopmentTrace.mock.calls)).not.toContain(
       'private-user-id',
+    );
+  });
+
+  it('records only bounded route readiness facts for startup diagnosis', async () => {
+    vi.stubGlobal('__DEV__', true);
+    mocks.pathname = '/self';
+    mocks.routeState = {
+      profileError: 'private error detail',
+      isSessionLoading: true,
+      isProfileResolving: false,
+      isLocalGuestReady: true,
+      onboardingCompleted: true,
+    };
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.recordDevelopmentTrace).toHaveBeenCalledWith({
+      category: 'route-readiness',
+      task: 'self',
+      state: 'booting',
+      session_loading: true,
+      profile_resolving: false,
+      local_guest_ready: true,
+      onboarding_completed: true,
+      profile_error_present: true,
+      has_session: false,
+    });
+    expect(JSON.stringify(mocks.recordDevelopmentTrace.mock.calls)).not.toContain(
+      'private error detail',
     );
   });
 
@@ -130,6 +195,23 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     expect(tree!.toJSON()).toBe('callback-shell');
+  });
+
+  it('allows development diagnostics routes before a profile is completed', async () => {
+    vi.stubGlobal('__DEV__', true);
+    mocks.pathname = '/verger-diagnostics';
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'development-diagnostics'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(tree!.toJSON()).toBe('development-diagnostics');
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(mocks.optionalStartup).toHaveBeenCalledWith({ phase: 'public-ready' });
   });
 
   it('shows a bootstrap state at root until the entry resolver has authority', async () => {
@@ -365,7 +447,8 @@ describe('SessionRouteGate account isolation', () => {
     expect(mocks.replace).toHaveBeenCalledWith('/welcome');
   });
 
-  it('offers retry and a safe route out while profile restoration is still pending', async () => {
+  it('keeps ordinary restoration calm, then offers recovery if the wait runs long', async () => {
+    vi.useFakeTimers();
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -373,6 +456,16 @@ describe('SessionRouteGate account isolation', () => {
           <>{'protected-shell'}</>
         </SessionRouteGate>,
       );
+    });
+
+    expect(JSON.stringify(tree!.toJSON())).toContain('Opening Gurudevi');
+    expect(
+      tree!.root.findAllByProps({ accessibilityLabel: 'Retry restoring your sanctuary' }),
+    ).toHaveLength(0);
+    expect(tree!.root.findAllByProps({ accessibilityLabel: 'Return to Welcome' })).toHaveLength(0);
+
+    await act(async () => {
+      vi.advanceTimersByTime(8_000);
     });
 
     const retry = tree!.root.findByProps({ accessibilityLabel: 'Retry restoring your sanctuary' });

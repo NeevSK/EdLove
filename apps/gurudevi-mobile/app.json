@@ -201,6 +201,7 @@
         }
       ],
       "./plugins/withNdkVersion",
+      "./plugins/withAndroidDebugTrustAnchors",
       "./plugins/withProfileableBuild",
       "./plugins/withGradleProperties",
       "./plugins/withGradleWrapperVersion",

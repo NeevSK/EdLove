@@ -40,6 +40,14 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
 
 ## Unexplained
 
+- **2026-10-28 baseline:** `pnpm verger:check` ended `ALL_PASS=0`: the Vitest
+  `src/sim/plant.test.ts` test `is deterministic for a seed, and the seed matters` exceeded
+  its 5,000 ms timeout; 303 of 304 verger-core tests passed. All later gate suites passed.
+  The machine reported 100% CPU during the run and the test executes four full heat-soak
+  simulations. The timeout does not establish a determinism failure or prove CPU contention
+  was its sole cause. Preserve both assertions and investigate execution cost and repeatability
+  before treating the baseline as green.
+
 - **Resolved 2026-10-25:** the ladder's mutation checks relied on random search to find the broken ladders and occasionally missed; each now pins the sequence that exposes it (commit 2802d75). Was: **one failed run of `packages/core/src/verger` on 2026-10-24** (1 failed of 96), not kept. Every
   run since passed, including 3000 cases per property. If it recurs: keep the full output (the
   fast-check seed and counterexample), pin it, fix it. Never re-run until green.

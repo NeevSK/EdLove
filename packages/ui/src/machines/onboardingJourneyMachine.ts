@@ -1,4 +1,5 @@
 import { storage } from '@repo/core/logic/managers/StorageManager';
+import { buildPartitionedKey } from '@repo/core/lib/storage';
 import type { Capacity } from '@repo/core/types';
 import { Cause, Effect, Exit } from 'effect';
 import { createActor, createMachine, types } from 'xstate';
@@ -341,8 +342,13 @@ export function createOnboardingJourneyActor(initial?: Partial<OnboardingJourney
 /**
  * Snapshot persistence key helper.
  */
-export function getOnboardingSnapshotKey(userId: string | null): string {
-  return `onboarding_v6_snapshot:${userId || 'guest'}`;
+export function getOnboardingSnapshotKey(userId: string | null, tenantId?: string | null): string {
+  return buildPartitionedKey({
+    tenantId: tenantId ?? 'global',
+    userId: userId || 'guest',
+    feature: 'onboarding',
+    version: 'v6',
+  });
 }
 
 /**
@@ -452,6 +458,9 @@ export async function executeOnboardingCompletionEffect(
 
   return Exit.match(exit, {
     onSuccess: () => {
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: true, error: null };
+      }
       actor.send({ type: 'SUBMIT_SUCCESS' });
       return { success: true, error: null };
     },
@@ -461,6 +470,9 @@ export async function executeOnboardingCompletionEffect(
         errOption._tag === 'Some'
           ? errOption.value
           : 'An unexpected error occurred during onboarding.';
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: false, error: errorMessage };
+      }
       actor.send({ type: 'SUBMIT_FAILURE', error: errorMessage });
       return { success: false, error: errorMessage };
     },

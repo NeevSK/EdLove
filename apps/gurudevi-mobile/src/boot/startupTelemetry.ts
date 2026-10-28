@@ -1,6 +1,7 @@
 import { Observe } from 'expo-observe';
 import type { EssentialStartupStageEvent } from '@/boot/startupCoordinator';
 import { devTelemetryCatcher } from '@/telemetry/devTelemetryCatcher';
+import { setDevelopmentTelemetrySource } from '@/telemetry/localDevelopmentTelemetry';
 
 const MAX_STARTUP_EVENTS_PER_PROCESS = 64;
 const MAX_DEVELOPMENT_TRACE_EVENTS = 65_536;
@@ -28,6 +29,7 @@ const TRACE_STRING_FIELDS = new Set([
   'app_state',
   'pressure_bucket',
   'reason',
+  'decision',
 ]);
 const TRACE_NUMBER_FIELDS = new Set([
   'duration_ms',
@@ -41,17 +43,41 @@ const TRACE_NUMBER_FIELDS = new Set([
   'interaction_id',
   'previous_trace_write_call_ms',
   'cumulative_trace_write_call_ms',
+  'at_ms',
+  'wall_time_ms',
 ]);
-const TRACE_BOOLEAN_FIELDS = new Set(['capacity_known', 'battery_saver', 'allowed']);
+const TRACE_BOOLEAN_FIELDS = new Set([
+  'capacity_known',
+  'battery_saver',
+  'allowed',
+  'session_loading',
+  'profile_resolving',
+  'local_guest_ready',
+  'onboarding_completed',
+  'profile_error_present',
+  'has_session',
+]);
 
 /** Emits only fixed startup-stage fields, with no account or request identifiers. */
 export function recordStartupStage(event: EssentialStartupStageEvent): void {
   if (__DEV__) {
+    if (typeof event.startedAtMs === 'number' && Number.isFinite(event.startedAtMs)) {
+      recordDevelopmentTrace({
+        category: 'essential-stage',
+        task: event.stage,
+        state: 'started',
+        at_ms: event.startedAtMs,
+      });
+    }
     recordDevelopmentTrace({
       category: 'essential-stage',
       task: event.stage,
       outcome: event.outcome,
+      state: event.outcome,
       duration_ms: event.durationMs,
+      ...(typeof event.finishedAtMs === 'number' && Number.isFinite(event.finishedAtMs)
+        ? { at_ms: event.finishedAtMs }
+        : {}),
     });
   }
   if (emittedStartupEvents >= MAX_STARTUP_EVENTS_PER_PROCESS) return;
@@ -92,14 +118,24 @@ export function recordDevelopmentTrace(
     return;
   }
   const startedAt = performance.now();
-  const eventAt = startedAt;
-  const wallTime = Date.now();
+  const eventAt =
+    typeof event.at_ms === 'number' && Number.isFinite(event.at_ms) && event.at_ms >= 0
+      ? event.at_ms
+      : startedAt;
+  const wallTime =
+    typeof event.wall_time_ms === 'number' && Number.isFinite(event.wall_time_ms)
+      ? event.wall_time_ms
+      : Date.now() - (startedAt - eventAt);
   emittedDevelopmentTraceEvents += 1;
   try {
     const attributes: Record<string, string | number | boolean> = {
       at_ms: eventAt,
       wall_time_ms: wallTime,
       time_origin_ms: wallTime - eventAt,
+      wall_clock_basis:
+        typeof event.wall_time_ms === 'number' && Number.isFinite(event.wall_time_ms)
+          ? 'provided'
+          : 'estimated-from-observation',
       trace_session_id: DEVELOPMENT_TRACE_SESSION_ID ?? 'unknown',
       trace_event_index: emittedDevelopmentTraceEvents,
       category: String(event.category ?? 'trace'),
@@ -132,11 +168,13 @@ export function recordDevelopmentTrace(
         category: 'observe',
         name: String(event.task ?? event.stage ?? event.category ?? 'trace'),
         durationMs: typeof event.duration_ms === 'number' ? event.duration_ms : undefined,
-        attributes: event,
+        attributes,
       },
       { print: false },
     );
-    console.log(`[runtime-trace] ${JSON.stringify(attributes)}`);
+    if (process.env.EXPO_PUBLIC_GURUDEVI_TRACE_CONSOLE === 'true') {
+      console.log(`[runtime-trace] ${JSON.stringify(attributes)}`);
+    }
     emittedTraceSessionStart = true;
   } catch {
     // Diagnostic output must never affect runtime work.
@@ -146,17 +184,39 @@ export function recordDevelopmentTrace(
   }
 }
 
+export function recordDevelopmentScreenInteractive(
+  screen: 'welcome' | 'onboarding' | 'self',
+): void {
+  if (!__DEV__) return;
+  recordDevelopmentTrace({ category: 'screen-interactive', task: screen, state: 'ready' });
+}
+
 const MAX_DEVELOPMENT_INTERACTION_EVENTS = 2_048;
 
 /** Records native Event Timing entries in development without retaining target text or view IDs. */
 export function observeDevelopmentInteractions(): () => void {
-  if (!__DEV__ || typeof PerformanceObserver === 'undefined') return () => undefined;
+  if (!__DEV__) return () => undefined;
+  if (typeof PerformanceObserver === 'undefined') {
+    setDevelopmentTelemetrySource(
+      'event-timing',
+      'unsupported',
+      'PerformanceObserver is not available in this runtime.',
+    );
+    return () => undefined;
+  }
   const supportedTypes = (
     PerformanceObserver as typeof PerformanceObserver & {
       supportedEntryTypes?: readonly string[];
     }
   ).supportedEntryTypes;
-  if (!supportedTypes?.includes('event')) return () => undefined;
+  if (!supportedTypes?.includes('event')) {
+    setDevelopmentTelemetrySource(
+      'event-timing',
+      'unsupported',
+      'The runtime does not advertise Event Timing entries.',
+    );
+    return () => undefined;
+  }
 
   let recorded = 0;
   let capReported = false;
@@ -172,6 +232,11 @@ export function observeDevelopmentInteractions(): () => void {
               task: 'event-timing',
               state: 'capped',
             });
+            setDevelopmentTelemetrySource(
+              'event-timing',
+              'capped',
+              'Development Event Timing entry cap reached.',
+            );
           }
           observer.disconnect();
           return;
@@ -188,6 +253,7 @@ export function observeDevelopmentInteractions(): () => void {
           category: 'interaction',
           task: eventName,
           state: 'observed',
+          at_ms: event.startTime,
           interaction_id:
             typeof event.interactionId === 'number' && Number.isSafeInteger(event.interactionId)
               ? event.interactionId
@@ -207,9 +273,24 @@ export function observeDevelopmentInteractions(): () => void {
     } = { type: 'event', buffered: false, durationThreshold: 0 };
     observer.observe(eventTimingOptions);
   } catch {
+    setDevelopmentTelemetrySource(
+      'event-timing',
+      'failed',
+      'PerformanceObserver could not subscribe to Event Timing.',
+    );
     return () => undefined;
   }
-  return () => observer.disconnect();
+  setDevelopmentTelemetrySource(
+    'event-timing',
+    'recording',
+    'Event Timing entries omit target text and view IDs.',
+  );
+  return () => {
+    observer.disconnect();
+    if (!capReported) {
+      setDevelopmentTelemetrySource('event-timing', 'complete', 'Event Timing observer stopped.');
+    }
+  };
 }
 
 export async function measureDevelopmentStartupTask<T>(

@@ -2,6 +2,7 @@ import { useAccountDeletion, useAccountLifecycle, useTracking } from '@repo/core
 import { showToast } from '@repo/core/lib/feedback';
 import {
   type AccountLifecycleCommand,
+  coreRuntime,
   resolveWorkspaceAppearanceColor,
   usePermissions,
 } from '@repo/core/logic';
@@ -46,6 +47,7 @@ import {
   LogOut,
   MessageSquare,
   Settings,
+  Share2,
   Sparkles,
   SquarePen,
   Trash2,
@@ -63,7 +65,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { hapticError, hapticLight, hapticSelection, hapticSuccess } from '@repo/ui/utils/haptics';
 import { EXTERNAL_URLS, GURUDEVI_SUPPORT_EMAIL, GURUDEVI_WEB } from '@repo/ui/utils/urls';
 import { useWorld } from '@repo/ui/world/native';
 import * as Clipboard from 'expo-clipboard';
@@ -113,6 +115,18 @@ const IdentitySection = ({
     hapticSuccess();
     setCopiedPass(true);
     setTimeout(() => setCopiedPass(false), 2500);
+  };
+
+  const handleSharePass = async () => {
+    const passUrl = profile?.id
+      ? `https://gurudevi.app/profile/public/${profile.username || profile.id}`
+      : 'https://explore.gurudevi.app';
+    hapticSelection();
+    await coreRuntime.share.share({
+      message: `Connect with ${profile?.display_name || 'me'} on Gurudevi Sanctuary:\n${passUrl}`,
+      url: passUrl,
+      title: `${profile?.display_name || 'Gurudevi'} Sanctuary Pass`,
+    });
   };
 
   return (
@@ -223,28 +237,49 @@ const IdentitySection = ({
             />
           </Box>
 
-          <Pressable
-            onPress={handleCopyPass}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel="Copy Permanent Sanctuary Pass Link"
-            className="mt-3 w-full py-2.5 px-4 rounded-xl border flex-row items-center justify-center"
-            style={{
-              borderColor: wt.line,
-              backgroundColor: copiedPass ? wt.sunken : wt.ground,
-            }}
-          >
-            <HStack space="xs" className="items-center">
-              {copiedPass ? (
-                <Check size={16} color={accent.action} />
-              ) : (
-                <SquarePen size={16} color={accent.action} />
-              )}
-              <Text style={{ color: wt.ink }} className="text-xs font-semibold">
-                {copiedPass ? 'Pass URL Copied!' : 'Copy Permanent Sanctuary Link'}
-              </Text>
-            </HStack>
-          </Pressable>
+          <HStack space="xs" className="mt-3 w-full gap-2">
+            <Pressable
+              onPress={handleCopyPass}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Copy Permanent Sanctuary Pass Link"
+              className="flex-1 py-2.5 px-2 rounded-xl border flex-row items-center justify-center"
+              style={{
+                borderColor: wt.line,
+                backgroundColor: copiedPass ? wt.sunken : wt.ground,
+              }}
+            >
+              <HStack space="xs" className="items-center">
+                {copiedPass ? (
+                  <Check size={16} color={accent.action} />
+                ) : (
+                  <SquarePen size={16} color={accent.action} />
+                )}
+                <Text style={{ color: wt.ink }} className="text-xs font-semibold">
+                  {copiedPass ? 'Copied!' : 'Copy Link'}
+                </Text>
+              </HStack>
+            </Pressable>
+
+            <Pressable
+              onPress={handleSharePass}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Share Permanent Sanctuary Pass"
+              className="flex-1 py-2.5 px-2 rounded-xl border flex-row items-center justify-center"
+              style={{
+                borderColor: wt.line,
+                backgroundColor: wt.ground,
+              }}
+            >
+              <HStack space="xs" className="items-center">
+                <Share2 size={16} color={accent.action} />
+                <Text style={{ color: wt.ink }} className="text-xs font-semibold">
+                  Share Pass
+                </Text>
+              </HStack>
+            </Pressable>
+          </HStack>
         </VStack>
       )}
     </Center>
@@ -457,6 +492,7 @@ export const ProfileScreen = () => {
   const bottomPadding = useBottomTabPadding();
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const { accent, scene } = useTheme();
+  const wt = useWorld().tokens;
   const isCompactLandscape = windowWidth > windowHeight && windowHeight < 500;
   const cardWidth = Math.min(windowWidth, 600) - (isCompactLandscape ? 24 : 32);
 
@@ -616,8 +652,6 @@ export const ProfileScreen = () => {
       </ScreenWrapper>
     );
   }
-
-  const wt = useWorld().tokens;
 
   return (
     <ScreenWrapper backgroundColor={wt.ground} scroll={false} noTopInset={true}>

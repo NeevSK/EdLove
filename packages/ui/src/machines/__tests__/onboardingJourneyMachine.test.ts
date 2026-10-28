@@ -1,6 +1,7 @@
 import {
   createOnboardingJourneyActor,
   executeOnboardingCompletionEffect,
+  getOnboardingSnapshotKey,
   onboardingJourneyMachine,
   restoreOnboardingSnapshot,
   saveOnboardingSnapshot,
@@ -162,5 +163,33 @@ describe('OnboardingJourneyMachine v6 + Effect v4', () => {
     expect(result.error).toBe('Network timeout');
     expect(actor.getSnapshot().value).toBe('error');
     expect(actor.getSnapshot().context.error).toBe('Network timeout');
+  });
+
+  it('safely handles actor disposal/stop mid-flight in executeOnboardingCompletionEffect', async () => {
+    const actor = createOnboardingJourneyActor({
+      userId: 'usr-disp',
+      name: 'Dr. Jane Roe',
+      selectedCapacity: 'teacher',
+      currentStep: 6,
+    });
+
+    const mockResolveSubject = vi.fn().mockImplementation(async () => {
+      actor.stop();
+      return { internalId: 'usr-disp', isAnonymous: false };
+    });
+
+    const result = await executeOnboardingCompletionEffect(actor, {
+      resolveSubject: mockResolveSubject,
+      createInitialBond: vi.fn().mockResolvedValue(undefined),
+      completeOnboarding: vi.fn().mockResolvedValue(undefined),
+    });
+
+    expect(result.success).toBe(true);
+    expect(actor.getSnapshot().status).toBe('stopped');
+  });
+
+  it('generates partitioned storage keys isolating tenants', () => {
+    const key = getOnboardingSnapshotKey('usr-disp', 'school-42');
+    expect(key).toBe('school-42:usr-disp:root:onboarding:v6');
   });
 });

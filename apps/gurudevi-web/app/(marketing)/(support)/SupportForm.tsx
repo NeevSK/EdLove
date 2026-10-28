@@ -1,10 +1,23 @@
 'use client';
 
-import { FormEvent, useReducer } from 'react';
+import { FormEvent, useEffect, useReducer } from 'react';
+import { useTranslation } from '../../../lib/i18n';
 
-type IssueType = 'support' | 'bug' | 'feature' | 'feedback';
+export type IssueType =
+  | 'support'
+  | 'explore'
+  | 'sanctuary'
+  | 'bug'
+  | 'feature'
+  | 'contribute'
+  | 'institutional'
+  | 'feedback';
 
-type Props = { supportEmail: string; formAction?: string };
+type Props = {
+  supportEmail: string;
+  formAction?: string;
+  initialCategory?: IssueType;
+};
 
 type FormState = {
   issueType: IssueType;
@@ -24,16 +37,40 @@ type FormAction =
   | { type: 'success' }
   | { type: 'error'; message: string };
 
-const initialState: FormState = {
-  issueType: 'support',
-  name: '',
-  address: '',
-  message: '',
-  emailError: null,
-  messageError: null,
-  status: 'idle',
-  submitError: null,
+const categoryLabels: Record<IssueType, string> = {
+  support: 'General Support & Inquiries',
+  explore: 'Explore Web & Guest House',
+  sanctuary: 'Sanctuary Workspace & School Sync',
+  bug: 'Report a Bug or Defect',
+  feature: 'Feature Request / Idea',
+  contribute: 'Contribute (Code, Curriculum, Translation)',
+  institutional: 'School Onboarding & Pilot Request',
+  feedback: 'General Experience Feedback',
 };
+
+const placeholderHints: Record<IssueType, string> = {
+  support: 'How can we help? Describe what you are trying to accomplish.',
+  explore: 'Tell us about your experience in the Explore Guest House (which browser, device, or feature).',
+  sanctuary: 'Describe what happened in your school workspace, attendance floor, or /self.',
+  bug: 'What went wrong? Please include your browser (e.g. Chrome/Safari) and steps to reproduce.',
+  feature: 'What new rhythm, practice, or capability would make your school or classroom lighter?',
+  contribute: 'Tell us how you would like to contribute (engineering, translations, curriculum materials, or research).',
+  institutional: 'Tell us about your school, location, number of classrooms, and preferred timeline.',
+  feedback: 'Share your thoughts, impressions, or field notes with our care team.',
+};
+
+function createInitialState(initialCategory: IssueType = 'support'): FormState {
+  return {
+    issueType: initialCategory,
+    name: '',
+    address: '',
+    message: '',
+    emailError: null,
+    messageError: null,
+    status: 'idle',
+    submitError: null,
+  };
+}
 
 function formReducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
@@ -58,7 +95,7 @@ function mailtoHref(
   message: string,
 ) {
   const body = [
-    `Type: ${issueType}`,
+    `Category: ${categoryLabels[issueType]} (${issueType})`,
     name ? `Name: ${name}` : null,
     address ? `Email: ${address}` : null,
     '',
@@ -66,11 +103,21 @@ function mailtoHref(
   ]
     .filter((part): part is string => part !== null)
     .join('\n');
-  return `mailto:${email}?subject=${encodeURIComponent(`Gurudevi (${issueType})`)}&body=${encodeURIComponent(body)}`;
+  return `mailto:${email}?subject=${encodeURIComponent(`Gurudevi [${issueType.toUpperCase()}]: ${categoryLabels[issueType]}`)}&body=${encodeURIComponent(body)}`;
 }
 
-export function SupportForm({ supportEmail, formAction }: Props) {
-  const [state, dispatch] = useReducer(formReducer, initialState);
+export function SupportForm({ supportEmail, formAction, initialCategory = 'support' }: Props) {
+  const { t } = useTranslation();
+  const [state, dispatch] = useReducer(formReducer, initialCategory, createInitialState);
+
+  useEffect(() => {
+    if (initialCategory) {
+      dispatch({ type: 'field', field: 'issueType', value: initialCategory });
+    }
+  }, [initialCategory]);
+
+  const getCategoryLabel = (type: IssueType) =>
+    t(`supportForm.categories.${type}`) || categoryLabels[type];
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -85,6 +132,7 @@ export function SupportForm({ supportEmail, formAction }: Props) {
     dispatch({ type: 'sending' });
     const data = new FormData(event.currentTarget);
     data.set('source', 'gurudevi-web');
+    data.set('category', state.issueType);
     data.set('page', window.location.href);
     data.set('ts', new Date().toISOString());
     void fetch(formAction, { method: 'POST', body: data, headers: { Accept: 'application/json' } })
@@ -116,16 +164,16 @@ export function SupportForm({ supportEmail, formAction }: Props) {
       {!formAction ? (
         <div className="space-y-5">
           <h2 className="text-2xl font-medium tracking-[-0.03em]">
-            A direct email is the current support channel.
+            {t('supportForm.directEmailTitle')}
           </h2>
           <p className="leading-7 text-ink-soft">
-            Our support form is not configured yet. Please email us and we’ll take care of you.
+            {t('supportForm.directEmailBody')}
           </p>
           <a
             className="inline-flex min-h-12 items-center rounded-full bg-ink px-6 py-3 font-sans text-sm font-bold text-paper-light no-underline hover:bg-lotus focus:outline-3 focus:outline-offset-4 focus:outline-water"
             href={fallbackHref}
           >
-            Email support ↗
+            {t('supportForm.emailSupportCta')} ({getCategoryLabel(state.issueType)}) ↗
           </a>
           <p className="text-sm text-ink-soft">
             Deployment prerequisite: set{' '}
@@ -139,27 +187,32 @@ export function SupportForm({ supportEmail, formAction }: Props) {
         <form className="space-y-6" onSubmit={submit} noValidate>
           <div className="grid gap-6 md:grid-cols-3">
             <label className="space-y-2">
-              <span className="block text-sm font-semibold">Type</span>
+              <span className="block text-sm font-semibold">{t('supportForm.categoryLabel')}</span>
               <select
-                className="min-h-12 w-full rounded-2xl border border-line bg-paper-light px-4 py-3 focus:outline-3 focus:outline-offset-2 focus:outline-water"
+                className="min-h-12 w-full rounded-2xl border border-line bg-paper-light px-4 py-3 text-sm focus:outline-3 focus:outline-offset-2 focus:outline-water"
                 name="type"
                 value={state.issueType}
                 onChange={(event) =>
-                  dispatch({ type: 'field', field: 'issueType', value: event.target.value })
+                  dispatch({ type: 'field', field: 'issueType', value: event.target.value as IssueType })
                 }
               >
-                <option value="support">Support</option>
-                <option value="bug">Bug report</option>
-                <option value="feature">Feature request</option>
-                <option value="feedback">Feedback</option>
+                <option value="support">{getCategoryLabel('support')}</option>
+                <option value="explore">{getCategoryLabel('explore')}</option>
+                <option value="sanctuary">{getCategoryLabel('sanctuary')}</option>
+                <option value="institutional">{getCategoryLabel('institutional')}</option>
+                <option value="contribute">{getCategoryLabel('contribute')}</option>
+                <option value="bug">{getCategoryLabel('bug')}</option>
+                <option value="feature">{getCategoryLabel('feature')}</option>
+                <option value="feedback">{getCategoryLabel('feedback')}</option>
               </select>
             </label>
             <label className="space-y-2">
               <span className="block text-sm font-semibold">
-                Name <span className="font-normal text-ink-soft">(optional)</span>
+                {t('supportForm.nameLabel')}{' '}
+                <span className="font-normal text-ink-soft">{t('supportForm.optionalHint')}</span>
               </span>
               <input
-                className="min-h-12 w-full rounded-2xl border border-line bg-paper-light px-4 py-3 focus:outline-3 focus:outline-offset-2 focus:outline-water"
+                className="min-h-12 w-full rounded-2xl border border-line bg-paper-light px-4 py-3 text-sm focus:outline-3 focus:outline-offset-2 focus:outline-water"
                 name="name"
                 type="text"
                 autoComplete="name"
@@ -171,10 +224,11 @@ export function SupportForm({ supportEmail, formAction }: Props) {
             </label>
             <label className="space-y-2">
               <span className="block text-sm font-semibold">
-                Email <span className="font-normal text-ink-soft">(optional)</span>
+                {t('supportForm.emailLabel')}{' '}
+                <span className="font-normal text-ink-soft">{t('supportForm.optionalHint')}</span>
               </span>
               <input
-                className="min-h-12 w-full rounded-2xl border border-line bg-paper-light px-4 py-3 focus:outline-3 focus:outline-offset-2 focus:outline-water"
+                className="min-h-12 w-full rounded-2xl border border-line bg-paper-light px-4 py-3 text-sm focus:outline-3 focus:outline-offset-2 focus:outline-water"
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -193,9 +247,9 @@ export function SupportForm({ supportEmail, formAction }: Props) {
             </label>
           </div>
           <label className="block space-y-2">
-            <span className="block text-sm font-semibold">Message</span>
+            <span className="block text-sm font-semibold">{t('supportForm.messageLabel')}</span>
             <textarea
-              className="min-h-40 w-full rounded-3xl border border-line bg-paper-light px-5 py-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
+              className="min-h-40 w-full rounded-3xl border border-line bg-paper-light px-5 py-4 text-sm leading-relaxed focus:outline-3 focus:outline-offset-2 focus:outline-water"
               name="message"
               required
               value={state.message}
@@ -204,7 +258,7 @@ export function SupportForm({ supportEmail, formAction }: Props) {
               }
               aria-invalid={Boolean(state.messageError)}
               aria-describedby={state.messageError ? 'support-message-error' : undefined}
-              placeholder="Tell us what’s happening (and what you hoped would happen)."
+              placeholder={placeholderHints[state.issueType]}
             />
             {state.messageError ? (
               <span id="support-message-error" className="block text-sm text-red-700">
@@ -218,10 +272,10 @@ export function SupportForm({ supportEmail, formAction }: Props) {
               type="submit"
               disabled={state.status === 'sending'}
             >
-              {state.status === 'sending' ? 'Sending…' : 'Send'}
+              {state.status === 'sending' ? t('supportForm.sendingCta') : t('supportForm.submitCta')}
             </button>
             <a className="text-sm text-ink-soft underline underline-offset-4" href={fallbackHref}>
-              Prefer email? Contact {supportEmail}
+              Prefer direct email? Contact {supportEmail}
             </a>
           </div>
           {state.status === 'success' ? (
@@ -229,7 +283,7 @@ export function SupportForm({ supportEmail, formAction }: Props) {
               className="rounded-2xl border border-green-800/20 bg-green-50 p-4 font-semibold text-green-900"
               role="status"
             >
-              Received. We’ll respond as soon as we can.
+              Received with gratitude. Our team will review and reply within 24–48 hours.
             </p>
           ) : null}
           {state.status === 'error' ? (
@@ -239,7 +293,7 @@ export function SupportForm({ supportEmail, formAction }: Props) {
             >
               {state.submitError ?? 'Something went wrong. Please use email instead.'}{' '}
               <a className="underline" href={fallbackHref}>
-                Email support
+                Email support directly
               </a>
               .
             </p>

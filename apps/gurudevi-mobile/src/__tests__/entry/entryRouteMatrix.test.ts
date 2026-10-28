@@ -132,6 +132,24 @@ describe('entry route matrix', () => {
       redirectTo: '/welcome',
       presentation: 'transition',
     },
+    {
+      name: 'completed device-local guest remains usable while cloud auth restoration is pending',
+      state: snapshot({
+        hasActiveAccessToken: false,
+        hasLiveCapacity: false,
+        hasLocalGuestSession: true,
+        hasProfileName: false,
+        identityAvailability: 'unknown',
+        isLocalGuestReady: true,
+        isSessionLoading: true,
+        onboardingCompleted: true,
+        pathname: '/self',
+        session: null,
+      }),
+      decision: 'app',
+      redirectTo: null,
+      presentation: 'content',
+    },
   ])('$name', ({ state, decision, redirectTo, presentation }) => {
     const routeTarget = getBootstrapRouteTarget(state);
     const result = getEntryPresentation({

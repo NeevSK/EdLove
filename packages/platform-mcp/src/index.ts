@@ -265,6 +265,28 @@ function buildDownstreamServerSpecs(): DownstreamServerSpec[] {
         'https://mcp.cloudflare.com/mcp',
       ],
     },
+    {
+      name: 'render',
+      envKey: 'RENDER_API_KEY',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.render.com/mcp',
+      ],
+    },
+    {
+      name: 'betterstack',
+      envKey: 'BETTERSTACK_API_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.betterstack.com',
+      ],
+    },
   ];
 }
 
@@ -315,6 +337,12 @@ function resolveServerArgs(spec: DownstreamServerSpec, token: string | undefined
   // Context7 takes its API key via command line; Firecrawl reads it from the environment.
   if (spec.name === 'context7' && token) {
     return [...spec.args, '--api-key', token];
+  }
+  if (spec.name === 'render' && token) {
+    return [...spec.args, '--header', `Authorization:Bearer ${token}`];
+  }
+  if (spec.name === 'betterstack' && token) {
+    return [...spec.args, '--header', `Authorization:Bearer ${token}`];
   }
   return spec.args;
 }

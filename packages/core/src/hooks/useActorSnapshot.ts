@@ -31,3 +31,5 @@ export function useActorSnapshot<TActor extends AnyActorRef>(
 
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }
+
+export { useMachineActor } from './useMachineActor';

@@ -35,20 +35,23 @@ export class DbBillingAdapter implements BillingPort {
 
       // Infer provider from key prefix or fallback to preferredProvider
       let provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek' | 'openrouter' =
-        options.preferredProvider || 'openai';
-      let model = 'gpt-4o';
+        options.preferredProvider || 'gemini';
+      let model = 'gemini-2.5-flash';
 
-      if (key.startsWith('sk-ant-')) {
-        provider = 'anthropic';
-        model = 'claude-3-5-sonnet-20241022';
-      } else if (key.startsWith('AIzaSy')) {
+      if (key.startsWith('AIzaSy')) {
         provider = 'gemini';
-        model = 'gemini-1.5-pro';
+        model = 'gemini-2.5-flash';
+      } else if (key.startsWith('sk-ant-')) {
+        provider = 'anthropic';
+        model = 'claude-3-5-haiku-20241022';
       } else if (key.startsWith('sk-or-v1-')) {
         provider = 'openrouter';
         model = OPENROUTER_MODEL;
       } else if (provider === 'deepseek') {
         model = 'deepseek-chat';
+      } else if (key.startsWith('sk-')) {
+        provider = 'openai';
+        model = 'gpt-4o-mini';
       }
 
       return {
@@ -125,24 +128,32 @@ export class DbBillingAdapter implements BillingPort {
     }
 
     // 4. Resolve Platform keys
-    const preferred = options?.preferredProvider || 'openai';
+    const preferred = options?.preferredProvider;
     const isPremium = pricingTier === 'PRO' || pricingTier === 'INSTITUTIONAL' || hasScopedAiGrant;
 
     if (isPremium) {
+      if ((preferred === 'gemini' || !preferred) && process.env.GEMINI_API_KEY) {
+        return {
+          mode: 'purchased',
+          provider: 'gemini',
+          apiKey: process.env.GEMINI_API_KEY,
+          model: 'gemini-2.5-flash',
+        };
+      }
+      if (preferred === 'openai' && process.env.OPENAI_API_KEY) {
+        return {
+          mode: 'purchased',
+          provider: 'openai',
+          apiKey: process.env.OPENAI_API_KEY,
+          model: 'gpt-4o',
+        };
+      }
       if (preferred === 'anthropic' && process.env.ANTHROPIC_API_KEY) {
         return {
           mode: 'purchased',
           provider: 'anthropic',
           apiKey: process.env.ANTHROPIC_API_KEY,
-          model: 'claude-3-5-sonnet-20241022',
-        };
-      }
-      if (preferred === 'gemini' && process.env.GEMINI_API_KEY) {
-        return {
-          mode: 'purchased',
-          provider: 'gemini',
-          apiKey: process.env.GEMINI_API_KEY,
-          model: 'gemini-1.5-pro',
+          model: 'claude-3-5-haiku-20241022',
         };
       }
       if (preferred === 'deepseek' && process.env.DEEPSEEK_API_KEY) {
@@ -161,17 +172,58 @@ export class DbBillingAdapter implements BillingPort {
           model: OPENROUTER_MODEL,
         };
       }
+      if (process.env.OPENAI_API_KEY) {
+        return {
+          mode: 'purchased',
+          provider: 'openai',
+          apiKey: process.env.OPENAI_API_KEY,
+          model: 'gpt-4o',
+        };
+      }
       return {
         mode: 'purchased',
-        provider: 'openai',
-        apiKey: process.env.OPENAI_API_KEY || '',
-        model: 'gpt-4o',
+        provider: 'gemini',
+        apiKey: process.env.GEMINI_API_KEY || '',
+        model: 'gemini-2.5-flash',
       };
     }
 
-    // Default: Baseline model (gpt-4o-mini). If no OpenAI key is configured but
-    // OpenRouter is, route the baseline tier through OpenRouter so the platform
-    // stays runnable with a single provider key.
+    // Default: Baseline model. Prioritizes preferred provider if available,
+    // otherwise falls back across Google Gemini -> OpenAI -> OpenRouter -> DeepSeek -> Anthropic.
+    if (preferred === 'gemini' && process.env.GEMINI_API_KEY) {
+      return {
+        mode: 'baseline',
+        provider: 'gemini',
+        apiKey: process.env.GEMINI_API_KEY,
+        model: 'gemini-2.5-flash',
+      };
+    }
+    if (preferred === 'openai' && process.env.OPENAI_API_KEY) {
+      return {
+        mode: 'baseline',
+        provider: 'openai',
+        apiKey: process.env.OPENAI_API_KEY,
+        model: 'gpt-4o-mini',
+      };
+    }
+    if (preferred === 'openrouter' && process.env.OPENROUTER_API_KEY) {
+      return {
+        mode: 'baseline',
+        provider: 'openrouter',
+        apiKey: process.env.OPENROUTER_API_KEY,
+        model: OPENROUTER_MODEL,
+      };
+    }
+
+    // Standard fallback ladder
+    if (process.env.GEMINI_API_KEY) {
+      return {
+        mode: 'baseline',
+        provider: 'gemini',
+        apiKey: process.env.GEMINI_API_KEY,
+        model: 'gemini-2.5-flash',
+      };
+    }
     if (process.env.OPENAI_API_KEY) {
       return {
         mode: 'baseline',
@@ -188,11 +240,27 @@ export class DbBillingAdapter implements BillingPort {
         model: OPENROUTER_MODEL,
       };
     }
+    if (process.env.DEEPSEEK_API_KEY) {
+      return {
+        mode: 'baseline',
+        provider: 'deepseek',
+        apiKey: process.env.DEEPSEEK_API_KEY,
+        model: 'deepseek-chat',
+      };
+    }
+    if (process.env.ANTHROPIC_API_KEY) {
+      return {
+        mode: 'baseline',
+        provider: 'anthropic',
+        apiKey: process.env.ANTHROPIC_API_KEY,
+        model: 'claude-3-5-haiku-20241022',
+      };
+    }
     return {
       mode: 'baseline',
-      provider: 'openai',
+      provider: 'gemini',
       apiKey: '',
-      model: 'gpt-4o-mini',
+      model: 'gemini-2.5-flash',
     };
   }
 

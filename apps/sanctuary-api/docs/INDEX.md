@@ -2,7 +2,7 @@
 title: "Sanctuary API Documentation Vault Index"
 status: "active"
 created: 2026-06-20
-updated: 2026-10-25
+updated: 2026-10-28
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -18,6 +18,14 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-10-28** | [Phase 2 & Phase 3 Cutover: Resilient AI Streaming & Omnichannel Ingress](architecture/2026-10-28-ai-streaming-resilience-and-omnichannel-ingress-cutover.md) | Architecture | `active` | Edge anti-buffering headers (X-Accel-Buffering: no), AbortSignal cancellation propagation, Gemini-first baseline resolution, and WhatsApp/Telegram webhook ingress aliasing. |
+| **2026-10-28** | [Production Hosted API: Render Deployment & Operational Standard](infra/2026-10-28-production-hosted-api-render-deployment.md) | Infra | `active` | Live Singapore Render Free deployment standard: monorepo Docker context, Doppler injection, 87.4 req/s baseline, and CLI runbook. |
+| **2026-10-28** | [Hexagonal Telemetry and OpenTelemetry Observability Architecture](architecture/2026-10-28-hexagonal-telemetry-and-observability.md) | Architecture | `active` | Hexagonal telemetry architecture: TelemetryPort, Otel/Noop adapters, W3C trace propagation, and Better Stack/HyperDX/Sentry free matrix. |
+| **2026-10-28** | [Status Page and Automated Keep-Alive Engine](operations/2026-10-28-status-page-and-keep-alive-engine.md) | Operations | `active` | In-app /status dashboard in gurudevi-web, status.gurudevi.app domain binding, and 10-minute GitHub Actions keep-alive heartbeat. |
+| **2026-10-28** | [Platform MCP Gateway & Sovereign Agentic Toolchain](infra/2026-10-28-platform-mcp-and-agentic-tools.md) | Infra | `active` | Downstream Render MCP and Better Stack MCP integration in @repo/platform-mcp, mcp-remote proxying, and stress test harness. |
+| **2026-10-28** | [Integrative Scaling Roadmap & Hostile Critical Review](architecture/2026-10-28-integrative-scaling-roadmap-and-hostile-critique.md) | Architecture | `active` | 5-pillar scaling architecture: TanStack Query/Pacer, AI streaming SSE, cryptographic webhooks, omnichannel identity, and MCP tiers. |
+| **2026-10-28** | [Environment Strategy, Capacity Economics & Disaster Recovery](architecture/2026-10-28-environment-strategy-and-capacity-economics.md) | Architecture | `active` | Prod vs Staging vs Dev 750-hour compute pool economics, Supabase dual-project database strategy, and disaster recovery rollback runbook. |
+| **2026-10-28** | [Full-Stack Threat Model & Cybersecurity Architecture](security/2026-10-28-full-stack-threat-model-and-cybersecurity-architecture.md) | Security | `active` | Repository-grounded AppSec threat model covering Expo 58 mobile, Next.js 16 web, Cedar WASM, PowerSync sync, and 6 trust boundaries. |
 | **2026-10-25** | [Sanctuary API v2: Full Architectural & Engineering Assessment](architecture/2026-10-25-sanctuary-api-v2-architecture-assessment.md) | Architecture | `draft` | Master verdict & architectural assessment: Hono v5 RC, oRPC v2 beta, Bun 1.4.4, Render, Cedar, WhatsApp, Telegram, and Agentic AI/MCP. |
 | **2026-10-25** | [Hono v5 RC: Temporal-Grounded Research Report](architecture/2026-10-25-hono-v5-rc-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on Hono v5.0.0-rc.1, ESM-only transition, decoupled adapters, onError signature changes, and Standard Schema. |
 | **2026-10-25** | [oRPC v2 Beta: Temporal-Grounded Research Report](architecture/2026-10-25-orpc-v2-beta-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on oRPC 2.0.0-beta.46, contract-first decoupling (oc vs os), wire protocol changes, middleware deduplication removal, and MCP. |

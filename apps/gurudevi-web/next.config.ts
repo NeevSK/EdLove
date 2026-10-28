@@ -14,6 +14,34 @@ const nextConfig: NextConfig = {
       process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
       '',
   },
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'status.gurudevi.app',
+          },
+        ],
+        destination: '/status',
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: '/auth',
+        destination: '/sign-in',
+        permanent: false,
+      },
+      {
+        source: '/sign-up',
+        destination: '/sign-in?intent=signup',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

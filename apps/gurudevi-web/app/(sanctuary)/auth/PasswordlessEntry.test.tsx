@@ -28,8 +28,9 @@ describe('PasswordlessEntry email magic link', () => {
     const user = userEvent.setup();
     render(<PasswordlessEntry returnTo="/onboarding" />);
 
-    await user.type(screen.getByLabelText('Email address'), 'learner@example.org');
     await user.click(screen.getByRole('button', { name: 'Continue with email' }));
+    await user.type(screen.getByLabelText('Email address'), 'learner@example.org');
+    await user.click(screen.getByRole('button', { name: /Send magic link/i }));
 
     expect(signInWithOtp).toHaveBeenCalledWith({
       email: 'learner@example.org',
@@ -46,13 +47,14 @@ describe('PasswordlessEntry email magic link', () => {
     const user = userEvent.setup();
     render(<PasswordlessEntry returnTo="/self" />);
 
-    await user.type(screen.getByLabelText('Email address'), 'learner@example.org');
     await user.click(screen.getByRole('button', { name: 'Continue with email' }));
+    await user.type(screen.getByLabelText('Email address'), 'learner@example.org');
+    await user.click(screen.getByRole('button', { name: /Send magic link/i }));
 
     expect((await screen.findByRole('alert')).textContent).toMatch(/could not send an email link/i);
-    expect(
-      screen.getByRole('button', { name: 'Continue with email' }).hasAttribute('disabled'),
-    ).toBe(false);
+    expect(screen.getByRole('button', { name: /Send magic link/i }).hasAttribute('disabled')).toBe(
+      false,
+    );
   });
 
   it('links an anonymous guest email to its existing subject instead of creating another account', async () => {
@@ -67,8 +69,9 @@ describe('PasswordlessEntry email magic link', () => {
     const user = userEvent.setup();
     render(<PasswordlessEntry returnTo="/onboarding" />);
 
-    await user.type(screen.getByLabelText('Email address'), 'learner@example.org');
     await user.click(screen.getByRole('button', { name: 'Continue with email' }));
+    await user.type(screen.getByLabelText('Email address'), 'learner@example.org');
+    await user.click(screen.getByRole('button', { name: /Send magic link/i }));
 
     expect(updateUser).toHaveBeenCalledWith(
       { email: 'learner@example.org' },

@@ -9,6 +9,7 @@ import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
@@ -410,18 +411,29 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
           })}
         </VStack>
 
-        {accounts.length > 0 && (
+        <HStack className="gap-3 mt-2">
+          {accounts.length > 0 && (
+            <Button
+              variant="outline"
+              className="flex-1 rounded-2xl"
+              onPress={() => {
+                void handleSignOutCurrent();
+              }}
+              isDisabled={pinBusy || lifecyclePending || !activeAccountId}
+            >
+              <ButtonText>Sign Out Current</ButtonText>
+            </Button>
+          )}
           <Button
-            variant="outline"
-            className="rounded-2xl mt-2"
+            variant="solid"
+            className="flex-1 rounded-2xl bg-emerald-600"
             onPress={() => {
-              void handleSignOutCurrent();
+              router.push('/auth');
             }}
-            isDisabled={pinBusy || lifecyclePending || !activeAccountId}
           >
-            <ButtonText>Sign Out Current</ButtonText>
+            <ButtonText className="text-white font-bold">+ Add Account</ButtonText>
           </Button>
-        )}
+        </HStack>
       </VStack>
 
       <AccountPinModal

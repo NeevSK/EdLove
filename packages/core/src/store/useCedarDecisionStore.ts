@@ -17,6 +17,7 @@
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { permissionSnapshots, policyVersion } from '@repo/core/adapters/powersync/schema';
 import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
+import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { and, eq } from 'drizzle-orm';
 import { create } from 'zustand';
 
@@ -55,6 +56,17 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
         isLoading: false,
         snapshotScopeId: null,
         error: null,
+      });
+      return;
+    }
+
+    if (isLocalGuestSessionId(userId)) {
+      set({
+        decisions: null,
+        snapshotLoaded: false,
+        isLoading: false,
+        error: null,
+        snapshotScopeId: scopeId ?? null,
       });
       return;
     }

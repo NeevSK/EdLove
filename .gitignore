@@ -163,7 +163,6 @@ scripts/*.js
 
 # research works 
 docs/research
-docs/atlas/
 
 # Multi-agent teamwork scratch & ephemeral orchestration state
 .agents/teamwork/

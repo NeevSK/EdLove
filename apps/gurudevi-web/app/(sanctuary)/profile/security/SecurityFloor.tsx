@@ -52,8 +52,8 @@ export function SecurityFloor({
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>Linked sign-in methods</h2>
             <p className={styles.cardDescription}>
-              Unlinking Google keeps your Gurudevi account. A confirmed email sign-in method must
-              remain.
+              Connect Google or Apple accounts for seamless single-sign-on to this citizen profile.
+              At least one confirmed sign-in method must remain active.
             </p>
             {snapshot.identities.length === 0 && <p>No linked sign-in methods were returned.</p>}
             <ul className={styles.sessionsList}>
@@ -61,43 +61,90 @@ export function SecurityFloor({
                 <li key={identity.id} className={styles.sessionItem}>
                   <span>
                     {identity.provider === 'email'
-                      ? 'Email sign-in'
+                      ? 'Email & Password'
                       : identity.provider === 'google'
-                        ? 'Google sign-in'
-                        : identity.provider}
+                        ? 'Google Account'
+                        : identity.provider === 'apple'
+                          ? 'Apple ID'
+                          : identity.provider}
                   </span>
-                  {identity.provider === 'google' && (
+                  {identity.provider !== 'email' && (
                     <button
                       type="button"
                       className={styles.revokeButton}
-                      disabled={security.pending}
+                      disabled={security.pending || snapshot.identities.length <= 1}
+                      title={
+                        snapshot.identities.length <= 1
+                          ? 'Cannot disconnect the only remaining login method'
+                          : undefined
+                      }
                       onClick={() => security.selectTarget(identity.id)}
                     >
-                      Unlink Google
+                      Unlink
                     </button>
                   )}
                 </li>
               ))}
             </ul>
+
+            {/* Link Additional Identity Providers */}
+            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--line, #e5e7eb)' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 600, margin: '0 0 10px', color: 'var(--ink, #1f2937)' }}>
+                Add more sign-in methods
+              </h3>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {!snapshot.identities.some((id) => id.provider === 'google') && (
+                  <button
+                    type="button"
+                    className={styles.actionButton}
+                    disabled={security.pending}
+                    onClick={() => void security.linkProvider('google')}
+                  >
+                    + Connect Google Account
+                  </button>
+                )}
+                {!snapshot.identities.some((id) => id.provider === 'apple') && (
+                  <button
+                    type="button"
+                    className={styles.actionButton}
+                    disabled={security.pending}
+                    onClick={() => void security.linkProvider('apple')}
+                  >
+                    + Connect Apple ID
+                  </button>
+                )}
+                {snapshot.identities.some((id) => id.provider === 'google') &&
+                  snapshot.identities.some((id) => id.provider === 'apple') && (
+                    <p style={{ fontSize: '13px', color: 'var(--ink-soft, #6b7280)', margin: 0 }}>
+                      All supported identity providers are connected to this citizen account.
+                    </p>
+                  )}
+              </div>
+            </div>
+
             {security.target && (
-              <div>
-                <p>Confirm unlinking Google from this account. Verify your authenticator first.</p>
-                <button
-                  type="button"
-                  className={styles.revokeButton}
-                  disabled={security.pending}
-                  onClick={() => void security.unlink()}
-                >
-                  Confirm unlink Google
-                </button>
-                <button
-                  type="button"
-                  className={styles.actionButton}
-                  disabled={security.pending}
-                  onClick={() => security.selectTarget(null)}
-                >
-                  Cancel unlink
-                </button>
+              <div style={{ marginTop: '16px', padding: '12px', background: 'var(--paper-light, #fef3c7)', borderRadius: '8px' }}>
+                <p style={{ margin: '0 0 10px', fontSize: '13px', fontWeight: 600 }}>
+                  Confirm unlinking this sign-in method from your account. You will no longer be able to use it to log in.
+                </p>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    className={styles.revokeButton}
+                    disabled={security.pending}
+                    onClick={() => void security.unlink()}
+                  >
+                    Confirm Unlink
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.actionButton}
+                    disabled={security.pending}
+                    onClick={() => security.selectTarget(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             )}
           </section>

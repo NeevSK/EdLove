@@ -1,7 +1,7 @@
 import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 import { api } from '@repo/core/api/client';
 import type { StudentAttendance } from '@repo/core/logic';
-import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import { useMachineActor } from '@repo/core/hooks/useMachineActor';
 import {
   createAttendanceSessionActor,
   executeFetchAttendanceRosterEffect,
@@ -16,11 +16,10 @@ interface AttendanceViewProps {
 
 export default function AttendanceView({ classroomId }: AttendanceViewProps) {
   const today = useMemo(() => new Date().toISOString().split('T')[0] ?? '', []);
-  const actor = useMemo(
+  const { actor, snapshot } = useMachineActor(
     () => createAttendanceSessionActor({ classroomId, date: today }),
     [classroomId, today],
   );
-  const snapshot = useActorSnapshot(actor);
   const { students, error: loadError } = snapshot.context;
   const isLoading = snapshot.value === 'loading';
 

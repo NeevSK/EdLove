@@ -68,6 +68,27 @@ describe('verified WhatsApp ingress adapter', () => {
     expect(JSON.stringify(persist.mock.calls)).not.toContain('private');
   });
 
+  it('accepts messages on the canonical /webhooks/whatsapp path without version suffix', async () => {
+    const persist = vi.fn().mockResolvedValue('accepted');
+    const routes = createVerifiedWhatsappIngressRoutes({
+      getEnv,
+      persist,
+      now: () => new Date('2026-10-15T00:00:00.000Z'),
+      correlationId: () => '123e4567-e89b-8101-8000-426614174001',
+    });
+    const body = requestBody();
+
+    const response = await routes.request('/webhooks/whatsapp', {
+      method: 'POST',
+      headers: { 'x-hub-signature-256': signedBody(body) },
+      body,
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ status: 'accepted' });
+    expect(persist).toHaveBeenCalledTimes(1);
+  });
+
   it.each([
     ['missing provider signature', {}, 401],
     ['oversized body', { 'content-length': '262145' }, 413],

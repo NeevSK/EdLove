@@ -66,7 +66,9 @@ export function assertHighway(ruleName: string, actual: DataHighway) {
 }
 
 export function assertPowerSyncBootstrapReady() {
-  if (typeof window === 'undefined') return;
+  // Hermes exposes `window` on React Native, but only browser runtimes provide
+  // `document`. Keep this guard scoped to actual web bootstrap.
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
   throw new Error(
     'PowerSync bootstrap guard: browser code touched PowerSync before the app was ready. Use the direct API highway for bootstrap and identity, and only enter PowerSync after the runtime is intentionally registered.',

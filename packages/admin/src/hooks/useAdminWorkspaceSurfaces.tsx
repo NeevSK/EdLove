@@ -3,14 +3,15 @@ import { ADMIN_REGISTRY } from '@repo/admin/constants/adminRegistry';
 import GradeHeadDashboard from '@repo/admin/screens/GradeHeadDashboard';
 import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
 import SectionHeadDashboard from '@repo/admin/screens/SectionHeadDashboard';
-import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
+import type { FeatureGatingResult } from '@repo/core/hooks/useFeatureRegistry';
 import type { ClassroomWorkspaceSurface, PrincipalInsight } from '@repo/core/types/Workspace';
-import { useRouter } from 'expo-router';
 
 export function appendAdminWorkspaceSurfaces(
   surfaces: ClassroomWorkspaceSurface[],
   {
     can,
+    onJoinSchool,
+    adminGated,
     isGuest,
     isDemoModeTriggered,
     classroomData,
@@ -25,6 +26,8 @@ export function appendAdminWorkspaceSurfaces(
     userCapabilities,
   }: {
     can: (action: string, subject: string, field?: string) => boolean;
+    onJoinSchool: () => void;
+    adminGated: Record<string, FeatureGatingResult>;
     isGuest: boolean;
     isDemoModeTriggered: boolean;
     classroomData: { userId: string };
@@ -39,11 +42,8 @@ export function appendAdminWorkspaceSurfaces(
     userCapabilities: string[];
   },
 ) {
-  const router = useRouter();
   const citizenshipLevel =
     citizenship === 'FIRST_CLASS' ? 2 : citizenship === 'SECOND_CLASS' ? 1 : 0;
-
-  const adminGated = useFeatureRegistry(ADMIN_REGISTRY);
 
   const principalGate = adminGated.principal;
   if (principalGate?.visible) {
@@ -54,7 +54,7 @@ export function appendAdminWorkspaceSurfaces(
           isGuest={isGuest}
           onTryDemo={onTryDemo}
           onCreateSchool={onCreateSchool}
-          onJoinSchool={() => router.push('/welcome')}
+          onJoinSchool={onJoinSchool}
         />
       ) : (
         <PrincipalDashboard

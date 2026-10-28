@@ -18,15 +18,48 @@ export interface DeviceAccountRecord {
   displayName: string;
   avatarUrl: string | null;
   maskedEmail: string;
+  rawEmail?: string;
   schoolId: string | null;
   capacity: Capacity | 'scholar' | 'guest';
   hasPin: boolean;
   lastActiveAt: string;
 }
 
+export interface DeviceAccountRegistryConfig {
+  enabled: boolean;
+  maxAccounts: number;
+  allowKioskMode: boolean;
+}
+
 const REGISTRY_STORAGE_KEY = 'gurudevi_device_accounts';
+const ACTIVE_ACCOUNT_STORAGE_KEY = 'gurudevi_active_account_id';
 const KIOSK_MODE_STORAGE_KEY = 'gurudevi_kiosk_mode';
+const CONFIG_STORAGE_KEY = 'gurudevi_device_accounts_config';
 const PIN_PREFIX_STORAGE_KEY = 'gurudevi_pin_';
+
+export const DEFAULT_DEVICE_ACCOUNT_CONFIG: DeviceAccountRegistryConfig = {
+  enabled: true,
+  maxAccounts: 8,
+  allowKioskMode: true,
+};
+
+export function getDeviceAccountConfig(): DeviceAccountRegistryConfig {
+  if (typeof window === 'undefined') return DEFAULT_DEVICE_ACCOUNT_CONFIG;
+  try {
+    const raw = window.localStorage.getItem(CONFIG_STORAGE_KEY);
+    if (!raw) return DEFAULT_DEVICE_ACCOUNT_CONFIG;
+    return { ...DEFAULT_DEVICE_ACCOUNT_CONFIG, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_DEVICE_ACCOUNT_CONFIG;
+  }
+}
+
+export function setDeviceAccountConfig(patch: Partial<DeviceAccountRegistryConfig>): void {
+  if (typeof window === 'undefined') return;
+  const current = getDeviceAccountConfig();
+  const next = { ...current, ...patch };
+  window.localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(next));
+}
 
 export function maskEmail(email: string): string {
   if (!email || !email.includes('@')) return email;
@@ -54,6 +87,8 @@ export function setKioskMode(enabled: boolean): void {
 
 export function getDeviceAccounts(): DeviceAccountRecord[] {
   if (typeof window === 'undefined') return [];
+  const config = getDeviceAccountConfig();
+  if (!config.enabled) return [];
   try {
     const raw = window.localStorage.getItem(REGISTRY_STORAGE_KEY);
     if (!raw) return [];
@@ -66,6 +101,8 @@ export function getDeviceAccounts(): DeviceAccountRecord[] {
 
 export function saveDeviceAccount(account: Omit<DeviceAccountRecord, 'lastActiveAt'>): void {
   if (typeof window === 'undefined') return;
+  const config = getDeviceAccountConfig();
+  if (!config.enabled) return;
   const accounts = getDeviceAccounts();
   const existingIdx = accounts.findIndex((a) => a.accountId === account.accountId);
   const updatedRecord: DeviceAccountRecord = {
@@ -79,8 +116,8 @@ export function saveDeviceAccount(account: Omit<DeviceAccountRecord, 'lastActive
     accounts.unshift(updatedRecord);
   }
 
-  // Cap at 8 remembered accounts on any given lab workstation
-  const capped = accounts.slice(0, 8);
+  // Cap at configured max remembered accounts (default: 8)
+  const capped = accounts.slice(0, Math.max(1, config.maxAccounts));
   window.localStorage.setItem(REGISTRY_STORAGE_KEY, JSON.stringify(capped));
 }
 
@@ -156,4 +193,22 @@ export async function verifyAccountPin(accountId: string, pin: string): Promise<
   } catch {
     return false;
   }
+}
+
+export function getActiveDeviceAccountId(): string | null {
+  if (typeof window === 'undefined') return null;
+  return window.localStorage.getItem(ACTIVE_ACCOUNT_STORAGE_KEY);
+}
+
+export function setActiveDeviceAccountId(accountId: string | null): void {
+  if (typeof window === 'undefined') return;
+  if (accountId) {
+    window.localStorage.setItem(ACTIVE_ACCOUNT_STORAGE_KEY, accountId);
+  } else {
+    window.localStorage.removeItem(ACTIVE_ACCOUNT_STORAGE_KEY);
+  }
+}
+
+export function clearActiveDeviceAccountId(): void {
+  setActiveDeviceAccountId(null);
 }

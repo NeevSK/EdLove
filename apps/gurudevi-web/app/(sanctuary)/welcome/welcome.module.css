@@ -869,11 +869,11 @@
 .greetingLine {
   display: block;
   opacity: 0;
-  animation: voiceArrive 400ms 200ms ease-out both;
+  animation: voiceArrive 450ms 250ms ease-out both;
 }
 
 .greetingLine + .greetingLine {
-  animation-delay: 550ms;
+  animation-delay: 850ms;
 }
 
 .greetingLineThird {
@@ -882,7 +882,7 @@
   color: var(--color-sanctuary-saffron, #a85022);
   margin-top: 10px;
   opacity: 0;
-  animation: voiceArrive 400ms 900ms ease-out both;
+  animation: voiceArrive 500ms 1500ms ease-out both;
 }
 
 .editorialSubline {
@@ -892,7 +892,7 @@
   margin: 12px 0 28px 0;
   max-width: 48ch;
   opacity: 0;
-  animation: voiceArrive 400ms 1250ms ease-out both;
+  animation: voiceArrive 450ms 2300ms ease-out both;
 }
 
 .editorialActionRow {
@@ -901,7 +901,7 @@
   gap: 18px;
   flex-wrap: wrap;
   opacity: 0;
-  animation: voiceArrive 400ms 1600ms ease-out both;
+  animation: voiceArrive 450ms 3000ms ease-out both;
 }
 
 .editorialBackBtn {
@@ -1044,7 +1044,7 @@
 }
 
 .exploreFloatingMascotImg {
-  max-width: 330px;
+  max-width: clamp(280px, 34vw, 380px);
   width: 100%;
   height: auto;
   object-fit: contain;

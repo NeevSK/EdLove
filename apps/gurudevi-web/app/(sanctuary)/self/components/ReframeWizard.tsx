@@ -2,6 +2,7 @@
 
 import { ArrowRight, Brain, Check } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import { useThoughtRecords } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './reframe-wizard.module.css';
 
@@ -20,6 +21,7 @@ const TRAPS = [
 ];
 
 export function ReframeWizard({ userId, onClose }: ReframeWizardProps) {
+  const { t } = useTranslation();
   const { addThoughtRecord } = useThoughtRecords(userId);
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [automaticThought, setAutomaticThought] = useState('');
@@ -45,34 +47,31 @@ export function ReframeWizard({ userId, onClose }: ReframeWizardProps) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Thought Reframe Wizard</h2>
-        <p className={styles.subtitle}>
-          Deconstruct unhelpful internal narratives with compassionate, evidence-based cognitive
-          reframing
-        </p>
+        <h2 className={styles.title}>{t('self.reframe.title')}</h2>
+        <p className={styles.subtitle}>{t('self.reframe.subtitle')}</p>
       </div>
 
       {!isCompleted ? (
         <>
           <div className={styles.stepper}>
             <span className={`${styles.stepDot} ${step >= 1 ? styles.stepDotActive : ''}`}>
-              1. Notice
+              {t('self.reframe.steps.step1')}
             </span>
             <span className={`${styles.stepDot} ${step >= 2 ? styles.stepDotActive : ''}`}>
-              2. Name
+              {t('self.reframe.steps.step2')}
             </span>
             <span className={`${styles.stepDot} ${step >= 3 ? styles.stepDotActive : ''}`}>
-              3. Spot Trap
+              {t('self.reframe.steps.step3')}
             </span>
             <span className={`${styles.stepDot} ${step >= 4 ? styles.stepDotActive : ''}`}>
-              4. Reframe
+              {t('self.reframe.steps.step4')}
             </span>
           </div>
 
           <div className={styles.wizardCard}>
             {step === 1 && (
               <>
-                <div className={styles.question}>What automatic thought is looping right now?</div>
+                <div className={styles.question}>{t('self.reframe.q1')}</div>
                 <textarea
                   rows={3}
                   placeholder="e.g., 'I didn't finish grading and tomorrow's lesson will be chaotic...'"
@@ -88,7 +87,7 @@ export function ReframeWizard({ userId, onClose }: ReframeWizardProps) {
                     onClick={() => setStep(2)}
                     className={styles.nextBtn}
                   >
-                    <span>Continue</span>
+                    <span>{t('self.reframe.continue')}</span>
                     <ArrowRight size={16} />
                   </button>
                 </div>
@@ -97,7 +96,7 @@ export function ReframeWizard({ userId, onClose }: ReframeWizardProps) {
 
             {step === 2 && (
               <>
-                <div className={styles.question}>What emotion is tied to this thought?</div>
+                <div className={styles.question}>{t('self.reframe.q2')}</div>
                 <input
                   type="text"
                   placeholder="e.g., Overwhelmed, Apprehensive, Self-critical"
@@ -157,7 +156,7 @@ export function ReframeWizard({ userId, onClose }: ReframeWizardProps) {
             {step === 4 && (
               <>
                 <div className={styles.question}>
-                  What is a fairer, more compassionate perspective?
+                  {t('self.reframe.q4')}
                 </div>
                 <textarea
                   rows={3}
@@ -175,7 +174,7 @@ export function ReframeWizard({ userId, onClose }: ReframeWizardProps) {
                     className={styles.nextBtn}
                   >
                     <Check size={16} />
-                    <span>Anchor Reframe</span>
+                    <span>{t('self.reframe.finish')}</span>
                   </button>
                 </div>
               </>

@@ -17,6 +17,8 @@ import { VercelOpenRouterAdapter } from './adapters/VercelOpenRouterAdapter';
 import { Orchestrator } from './domain/Orchestrator';
 import { rateLimit } from './middleware/rateLimit';
 import { type AiPersistencePort, type AiPrivacyMode } from './ports/AiPersistencePort';
+import { VisionOrchestrator } from './vision/VisionOrchestrator';
+import { VisionExtractionRequestSchema } from './vision/schemas';
 
 type AiEnv = {
   Variables: {
@@ -273,10 +275,19 @@ aiRouter.post('/chat', rateLimit, async (c) => {
 
     const start = Date.now();
 
-    // 4. Process chat — the last user message is the current turn
+    // 4. Process chat — hook client disconnect and forward abortSignal
     const lastUser = [...history].reverse().find((m) => m.role === 'user');
+    const abortController = new AbortController();
+    c.req.raw.signal.addEventListener('abort', () => abortController.abort());
+
     const rawStream = await aiCircuitBreaker.execute(() =>
-      orchestrator.processChat(user.id, lastUser?.content ?? '', history, context),
+      orchestrator.processChat(
+        user.id,
+        lastUser?.content ?? '',
+        history,
+        context,
+        c.req.raw.signal,
+      ),
     );
 
     // 5. Wrap the chunk stream to record the audit log on completion
@@ -347,10 +358,14 @@ aiRouter.post('/chat', rateLimit, async (c) => {
       }
     }
 
-    // 6. Encode chunks as newline-delimited JSON
+    // 6. Encode chunks as newline-delimited JSON with anti-buffering edge headers
     return toHttpResponse(auditStream(rawStream), {
+      abortController,
       headers: {
-        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/x-ndjson; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
         'x-ai-sdk': useVercelSdk ? 'vercel' : 'tanstack',
       },
     });
@@ -399,5 +414,33 @@ aiRouter.post('/student-potential', rateLimit, async (c) => {
     const requestId = c.get('requestId') || 'unknown';
     console.error(`[aiRouter] student-potential request ${requestId} failed:`, err);
     return c.json({ error: 'AI_INSIGHT_UNAVAILABLE', request_id: requestId }, 503);
+  }
+});
+
+aiRouter.post('/vision/extract', rateLimit, async (c) => {
+  const user = c.get('user');
+  const db = c.get('db');
+  if (!user || user.id === 'anonymous') return c.json({ error: 'Unauthorized' }, 401);
+
+  try {
+    const rawBody = await c.req.json();
+    const parseResult = VisionExtractionRequestSchema.safeParse(rawBody);
+    if (!parseResult.success) {
+      return c.json({ error: 'INVALID_INPUT', details: parseResult.error.format() }, 400);
+    }
+
+    const billingAdapter = new DbBillingAdapter(db);
+    const visionOrchestrator = new VisionOrchestrator(billingAdapter);
+
+    const result = await aiCircuitBreaker.execute(() =>
+      visionOrchestrator.extractDocument(user.id, parseResult.data, c.req.raw.signal),
+    );
+
+    return c.json({ success: true, data: result }, 200);
+  } catch (err) {
+    const requestId = c.get('requestId') || 'unknown';
+    console.error(`[aiRouter] vision/extract request ${requestId} failed:`, err);
+    if (err instanceof SovereignError) throw err;
+    return c.json({ error: 'VISION_EXTRACTION_UNAVAILABLE', request_id: requestId }, 503);
   }
 });

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import {
   editorialHexagonalService,
   type SchoolEditorialDraft,
@@ -127,7 +128,7 @@ export default async function SchoolArticleReaderPage({ params }: ArticlePagePro
           </Link>
 
           <a
-            href="https://sanctuary.gurudevi.app/sign-in"
+            href={resolveSurfaceUrl('sanctuary', '/sign-in')}
             style={{
               background: '#1f1d1a',
               color: '#ffffff',

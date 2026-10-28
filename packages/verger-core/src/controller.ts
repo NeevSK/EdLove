@@ -1,16 +1,16 @@
 import type { SensorId, VergerActivation } from './activation';
-import type { CreateVergerStateOptions } from './reducer';
 import { VERGER_POLICY, type VergerPolicy } from './policy';
 import { createSessionRecorder, type SessionRecorder, type VergerRecording } from './recording';
+import type { CreateVergerStateOptions } from './reducer';
 import { createSelfCostMeter, type SelfCost } from './selfCost';
 import type { VergerTelemetry } from './telemetry';
 import type {
   CapacityFacts,
+  LeverSpec,
+  RunMode,
   VergerConfig,
   VergerEvent,
-  RunMode,
   VergerSnapshot,
-  LeverSpec,
 } from './types';
 
 /**
@@ -63,6 +63,14 @@ export interface RuntimeControllerOptions {
   readonly measure?: () => number;
   /** Records up to this many events for exact replay (D1); off when absent. Development only. */
   readonly recordEvents?: number;
+  /** Observes each accepted reducer input; failures are isolated from the runtime loop. */
+  readonly onRecordEvent?: (event: VergerEvent) => void;
+  /** Observes an input and its resulting published snapshot change; diagnostics only. */
+  readonly onSnapshotTransition?: (
+    event: VergerEvent,
+    before: VergerSnapshot,
+    after: VergerSnapshot,
+  ) => void;
   /** Called after every event is handled (the self-budget check); a failure is contained. */
   readonly afterEvent?: () => void;
 }
@@ -161,11 +169,13 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
     if (!running || !isValidEvent(event)) return;
     const before = policy.outputVersion(state);
     recorder?.record(event);
+    guard(() => options.onRecordEvent?.(event));
     const reduceStart = measure();
     state = policy.reduce(state, event);
     cost.onReduce(measure() - reduceStart);
     guard(() => observe(event));
     if (policy.outputVersion(state) !== before) {
+      const previousSnapshot = snapshot;
       const sensorsBefore = snapshot.activation.sense;
       snapshot = policy.snapshot(state);
       if (snapshot.activation.sense !== sensorsBefore && port.setSensors) {
@@ -173,6 +183,7 @@ export function createRuntimeController(options: RuntimeControllerOptions): Runt
         guard(() => port.setSensors?.(sensors));
       }
       applyHardware(snapshot);
+      guard(() => options.onSnapshotTransition?.(event, previousSnapshot, snapshot));
       guard(() => telemetry?.onSnapshot(snapshot));
       for (const listener of listeners) guard(listener);
     }
@@ -261,10 +272,15 @@ export function isValidEvent(event: VergerEvent): boolean {
   if (event.type === 'long-task' || event.type === 'input-delay') return finite(event.durationMs);
   if (event.type === 'event-loop-lag') return finite(event.lagMs);
   if (event.type === 'js-heap')
-    return finite(event.gcPauseShare) && (event.allocatedBytes === null || finite(event.allocatedBytes));
+    return (
+      finite(event.gcPauseShare) && (event.allocatedBytes === null || finite(event.allocatedBytes))
+    );
   if (event.type === 'storage') return event.freeBytes === null || finite(event.freeBytes);
   if (event.type === 'cpu-headroom')
-    return event.percent === null || (finite(event.percent) && event.percent >= 0 && event.percent <= 100);
+    return (
+      event.percent === null ||
+      (finite(event.percent) && event.percent >= 0 && event.percent <= 100)
+    );
   if (event.type === 'data-usage') return finite(event.totalBytes);
   if (event.type === 'compute-pressure')
     return ['nominal', 'fair', 'serious', 'critical'].includes(event.state);

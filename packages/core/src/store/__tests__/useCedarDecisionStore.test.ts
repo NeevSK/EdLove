@@ -54,6 +54,21 @@ describe('useCedarDecisionStore', () => {
   });
 
   describe('loadDecisions', () => {
+    it('keeps device-local guests on the local no-decision path without opening PowerSync', async () => {
+      await useCedarDecisionStore
+        .getState()
+        .loadDecisions('local-123e4567-e89b-42d3-a456-426614174000', 'local-bond');
+
+      expect(mockDrizzle.query.permissionSnapshots.findFirst).not.toHaveBeenCalled();
+      expect(useCedarDecisionStore.getState()).toMatchObject({
+        decisions: null,
+        snapshotLoaded: false,
+        isLoading: false,
+        error: null,
+        snapshotScopeId: 'local-bond',
+      });
+    });
+
     it.each(['snapshot', 'policy', 'signature'] as const)(
       'cannot restore grants or errors after clear during %s success or failure',
       async (stage) => {

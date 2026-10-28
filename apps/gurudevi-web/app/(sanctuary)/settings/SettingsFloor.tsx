@@ -4,6 +4,7 @@ import type { WorkspaceAppearanceMotion, WorkspaceAppearancePreset } from '@repo
 import Link from 'next/link';
 import type { FidelityPreference } from '@repo/core/verger';
 import React, { useEffect, useState } from 'react';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { useWebFidelity, writeWebFidelity } from '../../../lib/runtime/webFidelity';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import {
@@ -11,6 +12,7 @@ import {
   PDPA_CONSENT_EVENT,
   setClientConsentStatus,
 } from '../../../lib/privacy/consent';
+import { useTranslation } from '../../../lib/i18n';
 import styles from './settings.module.css';
 
 interface SettingsFloorProps {
@@ -26,9 +28,10 @@ export function SettingsFloor({
   isExplore,
   accountId,
 }: Readonly<SettingsFloorProps>) {
+  const { t, locale, setLocale } = useTranslation();
   const [preset, setPreset] = useState<WorkspaceAppearancePreset>('default');
   const [motion, setMotion] = useState<WorkspaceAppearanceMotion>('subtle');
-  const [language, setLanguage] = useState<'en' | 'si' | 'ta'>('en');
+  const [language, setLanguage] = useState<'en' | 'si' | 'ta'>(locale);
   const [highContrast, setHighContrast] = useState(false);
   const [telemetryConsent, setTelemetryConsent] = useState(true);
   const [savedNotification, setSavedNotification] = useState<string | null>(null);
@@ -208,11 +211,10 @@ export function SettingsFloor({
 
   const handleLanguageChange = (newLang: 'en' | 'si' | 'ta') => {
     setLanguage(newLang);
-    localStorage.setItem('gurudevi_language', newLang);
+    setLocale(newLang);
     void syncPreferenceToCloud({ language: newLang });
     triggerSavedNotice(
-      'Language preference set to ' +
-        (newLang === 'si' ? 'Sinhala' : newLang === 'ta' ? 'Tamil' : 'English'),
+      t('settings.saveNotice') || 'Language preference updated',
     );
   };
 
@@ -276,10 +278,8 @@ export function SettingsFloor({
     <SanctuaryFloorCanvas domain="settings" titleId="settings-title">
       <div className={styles.container}>
         <header className={styles.headerBar}>
-          <h1 id="settings-title">Sanctuary Settings</h1>
-          <p>
-            Personalize your atmosphere, sensory motion, privacy consent, and regional accessibility.
-          </p>
+          <h1 id="settings-title">{t('settings.title')}</h1>
+          <p>{t('settings.subtitle')}</p>
         </header>
 
         {isExplore && (
@@ -306,7 +306,7 @@ export function SettingsFloor({
               </span>
             </div>
             <a
-              href="https://sanctuary.gurudevi.app/sign-in"
+              href={resolveSurfaceUrl('sanctuary', '/sign-in')}
               style={{
                 fontSize: '0.85rem',
                 fontWeight: 700,
@@ -360,11 +360,10 @@ export function SettingsFloor({
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
             <span>🎨</span>
-            <span>Diurnal Atmosphere & Color</span>
+            <span>{t('settings.atmosphereTitle')}</span>
           </h2>
           <p className={styles.sectionDescription}>
-            Gurudevi adapts to your natural daily rhythm. Each theme is calibrated to WCAG 3.0 /
-            APCA contrast thresholds ($L_c \ge 75$) for eye health.
+            {t('settings.atmosphereDesc')}
           </p>
 
           <div className={styles.optionsGrid}>
@@ -419,11 +418,10 @@ export function SettingsFloor({
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
             <span>🌊</span>
-            <span>Motion & Sensory Balance</span>
+            <span>{t('settings.sensoryTitle')}</span>
           </h2>
           <p className={styles.sectionDescription}>
-            Control transitions, particle animations, and breathing rings to support focus and
-            prevent vestibular fatigue.
+            {t('settings.sensoryDesc')}
           </p>
 
           <div className={styles.optionsGrid}>
@@ -502,10 +500,10 @@ export function SettingsFloor({
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
             <span>🗣️</span>
-            <span>Language & Curricular Script</span>
+            <span>{t('settings.languageTitle')}</span>
           </h2>
           <p className={styles.sectionDescription}>
-            Display language for contemplative prompts, menus, and national school curricula.
+            {t('settings.languageDesc')}
           </p>
 
           <div className={styles.optionsGrid}>
@@ -543,11 +541,10 @@ export function SettingsFloor({
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
             <span>🛡️</span>
-            <span>Privacy & PDPA Governance</span>
+            <span>{t('settings.privacyTitle')}</span>
           </h2>
           <p className={styles.sectionDescription}>
-            Under Sri Lanka Personal Data Protection Act No. 9 of 2022, you maintain full
-            sovereignty over your educational learning records and telemetry.
+            {t('settings.privacyDesc')}
           </p>
 
           <div className={styles.toggleRow}>
@@ -627,10 +624,10 @@ export function SettingsFloor({
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
             <span>🔔</span>
-            <span>Sensory Acoustics & Quiet Mode</span>
+            <span>{t('settings.soundTitle')}</span>
           </h2>
           <p className={styles.sectionDescription}>
-            Audio chimes provide auditory anchoring during transitions and mindful reflection.
+            {t('settings.soundDesc')}
           </p>
 
           <div className={styles.toggleRow}>
@@ -647,15 +644,15 @@ export function SettingsFloor({
               onClick={handleSoundToggle}
               type="button"
             >
-              {soundEnabled ? 'Enabled' : 'Muted'}
+              {soundEnabled ? t('settings.enabled') : t('settings.muted')}
             </button>
           </div>
 
           <div className={styles.toggleRow}>
             <div>
-              <div className={styles.toggleLabel}>Quiet Sanctuary Mode</div>
+              <div className={styles.toggleLabel}>{t('settings.quietModeLabel')}</div>
               <div className={styles.toggleDescription}>
-                Suppresses all ambient sound and non-critical pings during meditation or deep reading hours.
+                {t('settings.quietModeDesc')}
               </div>
             </div>
             <button
@@ -665,7 +662,7 @@ export function SettingsFloor({
               onClick={handleQuietModeToggle}
               type="button"
             >
-              {quietMode ? 'Active' : 'Off'}
+              {quietMode ? t('settings.active') : t('settings.off')}
             </button>
           </div>
         </section>
@@ -674,10 +671,10 @@ export function SettingsFloor({
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
             <span>📬</span>
-            <span>Notification Rhythms & Pacing</span>
+            <span>{t('settings.notifTitle')}</span>
           </h2>
           <p className={styles.sectionDescription}>
-            Configure your notifications to preserve cognitive peace and avoid notification burnout.
+            {t('settings.notifDesc')}
           </p>
 
           <div className={styles.toggleRow}>
@@ -694,7 +691,7 @@ export function SettingsFloor({
               onClick={() => handleNotifToggle('push')}
               type="button"
             >
-              {pushNotifications ? 'Enabled' : 'Paused'}
+              {pushNotifications ? t('settings.enabled') : t('settings.paused')}
             </button>
           </div>
 
@@ -712,7 +709,7 @@ export function SettingsFloor({
               onClick={() => handleNotifToggle('reflections')}
               type="button"
             >
-              {dailyReflections ? 'Enabled' : 'Paused'}
+              {dailyReflections ? t('settings.enabled') : t('settings.paused')}
             </button>
           </div>
 
@@ -730,7 +727,7 @@ export function SettingsFloor({
               onClick={() => handleNotifToggle('community')}
               type="button"
             >
-              {communityAlerts ? 'Enabled' : 'Paused'}
+              {communityAlerts ? t('settings.enabled') : t('settings.paused')}
             </button>
           </div>
         </section>
@@ -739,10 +736,10 @@ export function SettingsFloor({
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
             <span>🛡️</span>
-            <span>Device Trust & Security Floor</span>
+            <span>{t('settings.securityTitle')}</span>
           </h2>
           <p className={styles.sectionDescription}>
-            Audit active sessions, manage cryptographic device tokens, and review data portability.
+            {t('settings.securityDesc')}
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <Link
@@ -817,10 +814,10 @@ export function SettingsFloor({
             <div>
               <strong>Direct Support:</strong>{' '}
               <a
-                href="mailto:support@gurudevi.org?subject=Gurudevi%20Sanctuary%20Support"
+                href="mailto:support@gurudevi.lk?subject=Gurudevi%20Sanctuary%20Support"
                 style={{ color: 'var(--color-action, #a85022)', textDecoration: 'underline', fontWeight: 600 }}
               >
-                support@gurudevi.org
+                support@gurudevi.lk
               </a>
             </div>
           </div>

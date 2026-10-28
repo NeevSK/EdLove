@@ -9,12 +9,10 @@ import type React from 'react';
 import { type FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 import {
-  Gesture,
   GestureDetector,
-  type GestureStateChangeEvent,
-  type GestureUpdateEvent,
-  type PanGestureChangeEventPayload,
-  type PanGestureHandlerEventPayload,
+  useExclusiveGestures,
+  usePanGesture,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
@@ -225,8 +223,8 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       const preferredY =
         viewportHeight - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding);
       const next = clampFabToViewport(preferredX, preferredY);
-      positionX.value = next.x;
-      positionY.value = next.y;
+      positionX.set(next.x);
+      positionY.set(next.y);
     }, [
       bottomInset,
       bottomTabPadding,
@@ -247,7 +245,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       }
 
       if (onPress) {
-        pressScale.value = withSequence(withTiming(0.9, { duration: 100 }), withSpring(1));
+        pressScale.set(withSequence(withTiming(0.9, { duration: 100 }), withSpring(1)));
         onPress();
       }
     }, [disabled, onPress, actions, pressScale]);
@@ -262,8 +260,8 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
               const parsed = JSON.parse(raw);
               if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
                 const next = clampFabToViewport(parsed.x, parsed.y);
-                positionX.value = next.x;
-                positionY.value = next.y;
+                positionX.set(next.x);
+                positionY.set(next.y);
                 initialized = true;
               }
             }
@@ -280,89 +278,60 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
 
     useEffect(() => {
       const next = clampFabToViewport(positionX.value, positionY.value);
-      positionX.value = next.x;
-      positionY.value = next.y;
+      positionX.set(next.x);
+      positionY.set(next.y);
       persistWebPosition(next.x, next.y);
     }, [clampFabToViewport, persistWebPosition, positionX, positionY]);
 
-    const dragGesture = useMemo(
-      () =>
-        Gesture.Pan()
-          .enabled(!disabled)
-          .minDistance(FAB_DRAG_THRESHOLD)
-          .maxPointers(1)
-          .onStart(() => {
-            'worklet';
-            dragStartX.value = positionX.value;
-            dragStartY.value = positionY.value;
-            pressScale.value = withSpring(1.1);
-            scheduleOnRN(hapticLight);
-          })
-          .onUpdate(
-            (
-              event: GestureUpdateEvent<
-                PanGestureHandlerEventPayload & PanGestureChangeEventPayload
-              >,
-            ) => {
-              'worklet';
-              const next = clampGesturePosition(
-                dragStartX.value + event.translationX,
-                dragStartY.value + event.translationY,
-                viewportWidth,
-                viewportHeight,
-                bottomInset,
-                bottomTabPadding,
-              );
-              positionX.value = next.x;
-              positionY.value = next.y;
-            },
-          )
-          .onEnd(
-            (_event: GestureStateChangeEvent<PanGestureHandlerEventPayload>, success: boolean) => {
-              'worklet';
-              pressScale.value = withSpring(1);
-              if (success) {
-                scheduleOnRN(persistWebPosition, positionX.value, positionY.value);
-              }
-              positionX.value = withSpring(positionX.value, { damping: 15 });
-              positionY.value = withSpring(positionY.value, { damping: 15 });
-            },
-          )
-          .onFinalize(() => {
-            'worklet';
-            pressScale.value = withSpring(1);
-          }),
-      [
-        disabled,
-        bottomInset,
-        bottomTabPadding,
-        dragStartX,
-        dragStartY,
-        persistWebPosition,
-        positionX,
-        positionY,
-        pressScale,
-        viewportHeight,
-        viewportWidth,
-      ],
-    );
+    const dragGesture = usePanGesture({
+      enabled: !disabled,
+      minDistance: FAB_DRAG_THRESHOLD,
+      maxPointers: 1,
+      onActivate: () => {
+        'worklet';
+        dragStartX.set(positionX.value);
+        dragStartY.set(positionY.value);
+        pressScale.set(withSpring(1.1));
+        scheduleOnRN(hapticLight);
+      },
+      onUpdate: (event) => {
+        'worklet';
+        const next = clampGesturePosition(
+          dragStartX.value + event.translationX,
+          dragStartY.value + event.translationY,
+          viewportWidth,
+          viewportHeight,
+          bottomInset,
+          bottomTabPadding,
+        );
+        positionX.set(next.x);
+        positionY.set(next.y);
+      },
+      onDeactivate: (event) => {
+        'worklet';
+        pressScale.set(withSpring(1));
+        if (!event.canceled) {
+          scheduleOnRN(persistWebPosition, positionX.value, positionY.value);
+        }
+        positionX.set(withSpring(positionX.value, { damping: 15 }));
+        positionY.set(withSpring(positionY.value, { damping: 15 }));
+      },
+      onFinalize: () => {
+        'worklet';
+        pressScale.set(withSpring(1));
+      },
+    });
 
-    const tapGesture = useMemo(
-      () =>
-        Gesture.Tap()
-          .enabled(!disabled)
-          .maxDistance(FAB_DRAG_THRESHOLD)
-          .onEnd(() => {
-            'worklet';
-            scheduleOnRN(handlePress);
-          }),
-      [disabled, handlePress],
-    );
+    const tapGesture = useTapGesture({
+      enabled: !disabled,
+      maxDistance: FAB_DRAG_THRESHOLD,
+      onDeactivate: (event) => {
+        'worklet';
+        if (!event.canceled) scheduleOnRN(handlePress);
+      },
+    });
 
-    const composedGesture = useMemo(
-      () => Gesture.Exclusive(tapGesture, dragGesture),
-      [tapGesture, dragGesture],
-    );
+    const composedGesture = useExclusiveGestures(tapGesture, dragGesture);
 
     // Breathing Animation
     // Only while it is on screen and verger allows motion: a hidden FAB must cost nothing.
@@ -370,19 +339,23 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       if (disabled || !isVisible || !breathes) {
         cancelAnimation(breathingScale);
         cancelAnimation(pulseOpacity);
-        breathingScale.value = 1;
-        pulseOpacity.value = 0.4;
+        breathingScale.set(1);
+        pulseOpacity.set(0.4);
         return;
       }
-      breathingScale.value = withRepeat(
-        withTiming(1.1, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
-        -1,
-        true,
+      breathingScale.set(
+        withRepeat(
+          withTiming(1.1, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
+          -1,
+          true,
+        ),
       );
-      pulseOpacity.value = withRepeat(
-        withTiming(0.7, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
-        -1,
-        true,
+      pulseOpacity.set(
+        withRepeat(
+          withTiming(0.7, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
+          -1,
+          true,
+        ),
       );
       return () => {
         cancelAnimation(breathingScale);

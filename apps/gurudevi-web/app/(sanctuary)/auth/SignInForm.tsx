@@ -2,14 +2,19 @@
 
 import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import { resolveCanonicalDeviceAccount } from '@/lib/sanctuary/canonicalDeviceAccount';
-import { getDeviceAccounts, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
+import { getDeviceAccounts, saveDeviceAccount, setActiveDeviceAccountId } from '@/lib/sanctuary/deviceAccountRegistry';
 import styles from './auth.module.css';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
 
 type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
 
-export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
+export function SignInForm({
+  returnTo,
+  defaultEmail = '',
+}: Readonly<{ returnTo: string; defaultEmail?: string }>) {
+  const { t } = useTranslation();
   const [state, setState] = useState<FormState>('ready');
   const [message, setMessage] = useState('');
   const [remember, setRemember] = useState(false);
@@ -45,7 +50,12 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
         subject: data.session.user.id,
       });
       const existing = getDeviceAccounts().find((entry) => entry.accountId === account.accountId);
-      saveDeviceAccount({ ...account, hasPin: existing?.hasPin ?? false });
+      saveDeviceAccount({
+        ...account,
+        rawEmail: email || existing?.rawEmail,
+        hasPin: existing?.hasPin ?? false,
+      });
+      setActiveDeviceAccountId(account.accountId);
     } catch {
       setState('error');
       setMessage('Signed in, but your account could not be verified. Please retry.');
@@ -71,7 +81,7 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
     >
       <div className={styles.inputGroup}>
         <label className={styles.inputLabel} htmlFor="email">
-          Email address
+          {t('auth.emailLabel')}
         </label>
         <input
           autoComplete="email"
@@ -80,6 +90,7 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
           name="email"
           required
           type="email"
+          defaultValue={defaultEmail}
           placeholder="you@school.edu.lk"
         />
       </div>
@@ -87,13 +98,13 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
       <div className={styles.inputGroup}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label className={styles.inputLabel} htmlFor="password">
-            Password
+            {t('auth.passwordLabel')}
           </label>
           <Link
             style={{ fontSize: '12px', color: '#7a6e5f', textDecoration: 'underline' }}
             href={`/recovery?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
           >
-            Forgot password?
+            {t('auth.forgotPassword')}
           </Link>
         </div>
         <input
@@ -124,7 +135,7 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
           checked={remember}
           onChange={(e) => setRemember(e.target.checked)}
         />
-        <span>Remember me for 30 days</span>
+        <span>{t('auth.rememberMe30Days')}</span>
       </label>
 
       {state !== 'ready' && state !== 'submitting' ? (
@@ -134,7 +145,7 @@ export function SignInForm({ returnTo }: Readonly<{ returnTo: string }>) {
       ) : null}
 
       <button className={styles.submitBtn} disabled={state === 'submitting'} type="submit">
-        {state === 'submitting' ? 'Signing in…' : 'Sign in with password'}
+        {state === 'submitting' ? t('auth.signingIn') : t('auth.signInWithPassword')}
       </button>
     </form>
   );

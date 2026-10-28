@@ -115,7 +115,7 @@ export function createVerifiedTelegramIngressRoutes(options: VerifiedTelegramIng
   const now = options.now ?? (() => new Date());
   const correlationId = options.correlationId ?? crypto.randomUUID;
 
-  routes.post('/webhooks/telegram-v2', async (c) => {
+  const handleTelegramUpdate = async (c: any) => {
     const webhookSecret = options.getEnv('TELEGRAM_WEBHOOK_SECRET');
     const identityHashSecret = options.getEnv('TELEGRAM_IDENTITY_HASH_SECRET');
     if (!webhookSecret || !identityHashSecret) return c.text('Service Unavailable', 503);
@@ -167,7 +167,10 @@ export function createVerifiedTelegramIngressRoutes(options: VerifiedTelegramIng
     }
 
     return c.json({ status: 'accepted' }, 200);
-  });
+  };
+
+  routes.post('/webhooks/telegram', handleTelegramUpdate);
+  routes.post('/webhooks/telegram-v2', handleTelegramUpdate);
 
   return routes;
 }

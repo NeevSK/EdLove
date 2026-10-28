@@ -1,9 +1,11 @@
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
+import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { WorkspaceFloor } from './WorkspaceFloor';
@@ -13,10 +15,17 @@ export const metadata = { title: 'Workspace | Gurudevi Sanctuary' };
 export default async function WorkspacePage({
   searchParams,
 }: {
-  searchParams?: Promise<{ mode?: string; surface?: string }>;
+  searchParams?: Promise<{
+    mode?: string;
+    surface?: string;
+    dev?: string;
+    role?: string;
+    name?: string;
+  }>;
 }) {
   const params = await searchParams;
   const requestHeaders = await headers();
+  const cookieStore = await cookies();
   const host = requestHeaders.get('host') ?? '';
   const isExplore =
     classifyGurudeviHost(host) === 'explore' ||
@@ -36,41 +45,54 @@ export default async function WorkspacePage({
     );
   }
 
-  const supabase = await createServerSupabaseClient();
-  if (!supabase)
+  const devSession = resolveSanctuaryDevSession({
+    searchParams: params,
+    host,
+    cookieStore,
+  });
+
+  if (devSession.isDevSession) {
     return (
       <SanctuaryShell
-        displayName="Guest Explorer"
+        displayName={devSession.displayName}
+        isDevPreview
+        previewCapacity={devSession.capacity}
         navigationPrefix=""
         showAccountNavigation={true}
-        isExploreMode={true}
+        isExploreMode={false}
       >
-        <WorkspaceFloor capacity="TEACHER" displayName="Guest Explorer" mode="explore" />
+        <WorkspaceFloor
+          capacity={devSession.capacity}
+          displayName={devSession.displayName}
+          mode="explore"
+          isDevPreview
+        />
       </SanctuaryShell>
     );
+  }
+
+  const supabase = await createServerSupabaseClient();
+  if (!supabase) {
+    redirect('/welcome?returnTo=/workspace');
+  }
 
   const entry = await resolveAuthorizedEntry(supabase);
-  if (entry.kind === 'signed-out')
-    return (
-      <SanctuaryShell
-        displayName="Guest Explorer"
-        navigationPrefix=""
-        showAccountNavigation={true}
-        isExploreMode={true}
-      >
-        <WorkspaceFloor capacity="TEACHER" displayName="Guest Explorer" mode="explore" />
-      </SanctuaryShell>
-    );
+  if (entry.kind === 'signed-out') {
+    redirect('/welcome?returnTo=/workspace');
+  }
   if (entry.kind === 'onboarding-required') {
     redirect('/onboarding');
   }
-  if (entry.kind === 'inactive' || entry.kind === 'unavailable')
+  if (entry.kind === 'inactive') {
+    redirect('/account-recovery');
+  }
+  if (entry.kind === 'unavailable')
     return (
       <WorkspaceState
         action={
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/welcome">Return to Welcome Gate</Link>
-            <a href="https://explore.gurudevi.app">Guest House ↗</a>
+            <Link href="/welcome">Return to Guest House</Link>
+            <a href={resolveSurfaceUrl('explore', '/')}>Guest House ↗</a>
           </div>
         }
         displayName="Explorer"
@@ -84,12 +106,16 @@ export default async function WorkspacePage({
         action={
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
             <Link href="/self">Return to Self</Link>
-            <Link href="/welcome">Welcome Gate</Link>
+            <Link href="/welcome">Guest House</Link>
           </div>
         }
         displayName={entry.displayName}
         title="Choose a classroom or school bond"
-        detail="Personal Sanctuary keeps your private Self work together. Classroom attendance opens only in an institutional classroom or school scope."
+        detail={
+          entry.activeCapacity?.toLowerCase() === 'teacher'
+            ? 'Your personal Sanctuary is ready. Ask your school administrator to connect your account to a school and assign your classrooms. When you have a school or classroom bond, select it to open your shared workspace.'
+            : 'Personal Sanctuary keeps your private Self work together. Classroom attendance opens only in an institutional classroom or school scope.'
+        }
       />
     );
 

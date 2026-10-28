@@ -33,8 +33,12 @@ export type SceneFollows = 'room' | 'world' | 'one';
 export type ScenePresence = 'full' | 'band' | 'quiet';
 export type SceneGround =
   | { readonly kind: 'sky' }
+  | { readonly kind: 'live' }
+  | { readonly kind: 'still' }
+  | { readonly kind: 'image'; readonly url?: string | null }
   | { readonly kind: 'solid'; readonly colour: string }
-  | { readonly kind: 'plain' };
+  | { readonly kind: 'plain' }
+  | { readonly kind: 'quiet'; readonly colour?: string | null };
 export type SceneTier = 'rich' | 'balanced' | 'essential';
 export type SceneSurface = 'paper' | 'frost';
 /** What paints the back layer: the scene, one solid colour, or nothing (the world's own ground). */
@@ -168,8 +172,11 @@ function viewOf(input: SceneInput): SceneView {
 function paintOf(input: SceneInput, tier: SceneTier): ScenePaint {
   if (input.presence === 'quiet') return 'none';
   const ground = input.ground ?? { kind: 'sky' };
-  if (ground.kind === 'plain') return 'none';
+  if (ground.kind === 'plain' || ground.kind === 'quiet') {
+    return ground.kind === 'quiet' && ground.colour ? 'colour' : 'none';
+  }
   if (ground.kind === 'solid') return 'colour';
+  if (ground.kind === 'image') return 'scene';
   return tier === 'essential' ? 'none' : 'scene';
 }
 

@@ -381,7 +381,7 @@ export const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: Welcome
   }, []);
 
   const footer = useMemo(
-    () => t('welcome.footer') || 'Part of the EdLove Constellation · Made with 💖 in Sri Lanka',
+    () => t('welcome.footer') || 'Part of the EdLove Foundation · Made with ❤️ in Sri Lanka 🇱🇰',
     [t],
   );
 

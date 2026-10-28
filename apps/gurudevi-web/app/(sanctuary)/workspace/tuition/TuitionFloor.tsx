@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { type FeeViewModel as FeeRecord, useTuitionDomain } from '@/lib/domain';
+import { useTranslation } from '@/lib/i18n';
 import styles from './tuition.module.css';
 
 interface TuitionFloorProps {
@@ -11,6 +12,7 @@ interface TuitionFloorProps {
 }
 
 export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorProps>) {
+  const { t } = useTranslation();
   const { fees, issueReceipt, isOnline } = useTuitionDomain();
   const isOffline = !isOnline;
   const pendingCount = fees.filter((f) => f.status === 'pending').length;
@@ -71,10 +73,10 @@ export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorPro
                 textDecoration: 'none',
               }}
             >
-              ← Back to Attendance Workspace
+              {t('tuition.backToWorkspace')}
             </Link>
           </div>
-          <h1>Tuition & Institutional Fee Ledger</h1>
+          <h1>{t('tuition.title')}</h1>
           <p>
             Manage term installments, bursar fee collection, and verifiable receipts across
             classrooms.
@@ -91,11 +93,11 @@ export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorPro
       {/* Aggregate Stats */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <p className={styles.statLabel}>Total Collected (LKR)</p>
+          <p className={styles.statLabel}>{t('tuition.collected')} (LKR)</p>
           <p className={styles.statValue}>Rs. {totalCollected.toLocaleString()}</p>
         </div>
         <div className={styles.statCard}>
-          <p className={styles.statLabel}>Outstanding Balance</p>
+          <p className={styles.statLabel}>{t('tuition.outstanding')}</p>
           <p className={styles.statValue}>Rs. {totalPending.toLocaleString()}</p>
         </div>
         <div className={styles.statCard}>
@@ -116,7 +118,7 @@ export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorPro
               onClick={() => setFilter('all')}
               type="button"
             >
-              All Batches ({fees.length})
+              {t('tuition.filterAll')} ({fees.length})
             </button>
             <button
               className={styles.filterTab}
@@ -124,7 +126,7 @@ export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorPro
               onClick={() => setFilter('paid')}
               type="button"
             >
-              Settled
+              {t('tuition.filterPaid')}
             </button>
             <button
               className={styles.filterTab}
@@ -132,7 +134,7 @@ export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorPro
               onClick={() => setFilter('pending')}
               type="button"
             >
-              Pending
+              {t('tuition.filterPending')}
             </button>
             <button
               className={styles.filterTab}
@@ -140,7 +142,7 @@ export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorPro
               onClick={() => setFilter('overdue')}
               type="button"
             >
-              Overdue
+              {t('tuition.filterOverdue')}
             </button>
           </div>
         </div>

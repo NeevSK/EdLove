@@ -271,6 +271,202 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ==========================================================================
+   Script-Adaptive Typography & Localization Layer
+   ========================================================================== */
+
+/* 1. Global Indic / Non-Latin Optical Normalization */
+html[lang="si"],
+html[data-locale="si"],
+[data-locale="si"],
+html[lang="ta"],
+html[data-locale="ta"],
+[data-locale="ta"] {
+  /* Prevent horizontal text explosion by normalizing root scale (1rem = ~14.7px) */
+  font-size: 92%;
+
+  /* Disable Latin-centric tracking that shatters Indic ligatures */
+  letter-spacing: 0;
+
+  /* Modern browser text balancing */
+  text-rendering: optimizeLegibility;
+}
+
+html[lang="si"] *,
+html[data-locale="si"] *,
+[data-locale="si"] *,
+html[lang="ta"] *,
+html[data-locale="ta"] *,
+[data-locale="ta"] * {
+  /* Strict ligature protection: zero letter-spacing on all child nodes */
+  letter-spacing: normal !important;
+  text-transform: none !important; /* Sinhala and Tamil have no casing; prevent uppercase distortions */
+}
+
+/* 2. Sinhala Script (si) Typography Adaptation */
+html[lang="si"],
+html[data-locale="si"],
+[data-locale="si"] {
+  --font-sans: var(--font-sinhala);
+  --font-serif: var(--font-sinhala);
+  --font-content: var(--font-sinhala);
+  --font-display: var(--font-sinhala);
+  --font-ui-grotesque: var(--font-sinhala);
+}
+
+html[lang="si"] body,
+html[data-locale="si"] body,
+[data-locale="si"] body {
+  font-family: var(--font-sinhala);
+  font-size: 1.05rem; /* Down from 1.18rem to match Latin optical weight */
+  line-height: 1.68; /* Balanced breathing room for top ispilla & bottom papilla */
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* 3. Tamil Script (ta) Typography Adaptation */
+html[lang="ta"],
+html[data-locale="ta"],
+[data-locale="ta"] {
+  --font-sans: var(--font-tamil);
+  --font-serif: var(--font-tamil);
+  --font-content: var(--font-tamil);
+  --font-display: var(--font-tamil);
+  --font-ui-grotesque: var(--font-tamil);
+}
+
+html[lang="ta"] body,
+html[data-locale="ta"] body,
+[data-locale="ta"] body {
+  font-family: var(--font-tamil);
+  font-size: 1.05rem;
+  line-height: 1.62;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* 4. Fluid Heading & Container Normalization for Indic Scripts */
+html[lang="si"] h1,
+html[data-locale="si"] h1,
+html[lang="ta"] h1,
+html[data-locale="ta"] h1 {
+  line-height: 1.35;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+html[lang="si"] h2,
+html[data-locale="si"] h2,
+html[lang="ta"] h2,
+html[data-locale="ta"] h2 {
+  line-height: 1.38;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+html[lang="si"] h3,
+html[data-locale="si"] h3,
+html[lang="ta"] h3,
+html[data-locale="ta"] h3 {
+  line-height: 1.4;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+html[lang="si"] p,
+html[data-locale="si"] p,
+html[lang="ta"] p,
+html[data-locale="ta"] p {
+  text-wrap: pretty;
+  line-height: 1.7;
+}
+
+/* Optical scale-down on large fluid hero titles */
+html[lang="si"] .hero-editorial h1,
+html[data-locale="si"] .hero-editorial h1,
+html[lang="ta"] .hero-editorial h1,
+html[data-locale="ta"] .hero-editorial h1 {
+  font-size: clamp(1.85rem, 3.4vw, 2.75rem);
+  line-height: 1.3;
+}
+
+html[lang="si"] .hero-editorial__lede,
+html[data-locale="si"] .hero-editorial__lede,
+html[lang="ta"] .hero-editorial__lede,
+html[data-locale="ta"] .hero-editorial__lede {
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 1.65;
+}
+
+/* Buttons: Fluid, wrapping, and no rigid horizontal overflow */
+html[lang="si"] .button,
+html[data-locale="si"] .button,
+html[lang="ta"] .button,
+html[data-locale="ta"] .button {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  letter-spacing: normal;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
+  max-width: 100%;
+}
+
+/* Workspace rows: Fluid responsive grid alignment */
+html[lang="si"] .workspace-row,
+html[data-locale="si"] .workspace-row,
+html[lang="ta"] .workspace-row,
+html[data-locale="ta"] .workspace-row {
+  grid-template-columns: minmax(40px, 56px) minmax(220px, 1.2fr) minmax(280px, 1.8fr);
+  gap: 24px;
+}
+
+html[lang="si"] .workspace-row h3,
+html[data-locale="si"] .workspace-row h3,
+html[lang="ta"] .workspace-row h3,
+html[data-locale="ta"] .workspace-row h3 {
+  font-size: clamp(1.25rem, 1.8vw, 1.65rem);
+  line-height: 1.35;
+}
+
+html[lang="si"] .workspace-row p,
+html[data-locale="si"] .workspace-row p,
+html[lang="ta"] .workspace-row p,
+html[data-locale="ta"] .workspace-row p {
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+/* Header & Navigation Optical Tuning */
+html[lang="si"] .desktop-nav,
+html[data-locale="si"] .desktop-nav,
+html[lang="ta"] .desktop-nav,
+html[data-locale="ta"] .desktop-nav {
+  gap: clamp(8px, 1.2vw, 18px);
+}
+
+html[lang="si"] .desktop-nav a,
+html[data-locale="si"] .desktop-nav a,
+html[lang="ta"] .desktop-nav a,
+html[data-locale="ta"] .desktop-nav a {
+  font-size: clamp(0.82rem, 0.95vw, 0.92rem);
+  white-space: nowrap !important;
+  word-break: keep-all;
+  flex-shrink: 0;
+}
+
+html[lang="si"] .header-platform,
+html[data-locale="si"] .header-platform,
+html[lang="ta"] .header-platform,
+html[data-locale="ta"] .header-platform {
+  font-size: clamp(0.82rem, 0.92vw, 0.88rem);
+  padding: 8px 16px;
+  white-space: nowrap !important;
+  word-break: keep-all;
+  letter-spacing: normal;
+  flex-shrink: 0;
+}
+
 body {
   margin: 0;
   background-color: var(--color-cream-silence);
@@ -883,13 +1079,13 @@ a {
 }
 
 .site-header__inner {
-  width: min(1080px, calc(100% - 48px));
+  width: min(1140px, calc(100% - 32px));
   min-height: 76px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 32px;
+  gap: clamp(16px, 2.5vw, 32px);
 }
 
 .brand {
@@ -901,12 +1097,14 @@ a {
   letter-spacing: -0.03em;
   font-size: 1.22rem;
   min-height: 48px;
+  flex-shrink: 0;
 }
 
 .desktop-nav {
   display: flex;
   gap: 28px;
   margin-left: auto;
+  align-items: center;
 }
 
 .desktop-nav a {
@@ -918,6 +1116,9 @@ a {
   display: inline-flex;
   align-items: center;
   letter-spacing: 0.01em;
+  white-space: nowrap !important;
+  word-break: keep-all;
+  flex-shrink: 0;
 }
 
 .desktop-nav a:hover {
@@ -928,6 +1129,7 @@ a {
   display: flex;
   align-items: center;
   gap: 18px;
+  flex-shrink: 0;
 }
 
 .header-platform {
@@ -944,7 +1146,10 @@ a {
   min-height: 48px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .header-platform:hover {
@@ -986,8 +1191,8 @@ a {
 
 .site-footer__grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr;
-  gap: 48px;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 40px;
   padding-bottom: 64px;
 }
 
@@ -996,11 +1201,21 @@ a {
 }
 
 .site-footer__brand p {
-  max-width: 260px;
-  margin-top: 16px;
+  max-width: 320px;
+  margin-top: 14px;
   color: var(--color-mud-brown);
-  font-size: 1rem;
-  line-height: 1.68;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.site-footer__brand-note {
+  display: block;
+  max-width: 300px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--color-mud-brown);
+  opacity: 0.8;
 }
 
 .footer-label {
@@ -1022,19 +1237,82 @@ a {
   transition: color 180ms ease;
 }
 
-.footer-links a:hover,
-.site-footer__bottom a:hover {
+.footer-links a:hover {
   color: var(--color-sanctuary-saffron);
 }
 
 .site-footer__bottom {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding-top: 22px;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 24px;
   border-top: 1px solid rgb(104 94 85 / 0.14);
   color: var(--color-mud-brown);
   font-size: 0.92rem;
+}
+
+.site-footer__upper-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+
+.site-footer__bottomline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(104 94 85 / 0.08);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.site-footer__colophon {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.site-footer__colophon-divider {
+  opacity: 0.4;
+  font-size: 0.8em;
+  user-select: none;
+}
+
+.site-footer__edlove-link {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2.5px;
+  transition: color 180ms ease;
+}
+
+.site-footer__edlove-link:hover {
+  color: var(--color-sanctuary-saffron, #a85022);
+}
+
+.site-footer__made-with {
+  font-size: 0.84rem;
+  opacity: 0.9;
+}
+
+.site-footer__languages {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.site-footer__legal {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .site-footer__bottom a {
@@ -1042,6 +1320,10 @@ a {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+}
+
+.site-footer__bottom a:hover {
+  color: var(--color-sanctuary-saffron);
 }
 
 /* Keyframes */
@@ -1243,6 +1525,227 @@ a {
   flex-direction: column;
 }
 
+/* Legal & Reading Shell */
+.legal-shell {
+  width: 100%;
+}
+
+.legal-nav {
+  position: sticky;
+  top: 76px;
+  z-index: 40;
+  background: color-mix(in srgb, var(--paper-light) 92%, var(--paper));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgb(104 94 85 / 0.12);
+  padding: 0 24px;
+}
+
+@media (max-width: 767px) {
+  .legal-nav {
+    top: 68px;
+    padding: 0 16px;
+  }
+}
+
+.legal-nav__inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 10px 0;
+}
+
+.legal-nav__inner::-webkit-scrollbar {
+  display: none;
+}
+
+.legal-nav__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 160ms ease;
+}
+
+.legal-nav__link:hover {
+  color: var(--ink);
+  background: rgb(104 94 85 / 0.08);
+}
+
+.legal-nav__link.is-active {
+  color: var(--ink);
+  background: rgb(104 94 85 / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(104 94 85 / 0.2);
+}
+
+.reading-shell {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 44px 24px 88px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .reading-shell {
+    padding: 28px 20px 64px;
+  }
+  .site-footer__grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 24px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.back-link:hover {
+  color: var(--color-sanctuary-saffron, #a85022);
+}
+
+.kicker {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-sanctuary-saffron, #a85022);
+  margin-bottom: 8px;
+}
+
+/* Provenance Folio (Editorial Colophon) */
+.provenance-folio {
+  margin: 28px 0 36px;
+  padding: 22px 26px 24px;
+  border: 1px solid rgb(104 94 85 / 0.16);
+  border-left: 3px solid var(--color-sanctuary-saffron, #a85022);
+  border-radius: 4px 8px 8px 4px;
+  background: color-mix(in srgb, var(--paper-light) 96%, #ebe3d5);
+  box-shadow: 0 1px 2px rgba(42, 35, 24, 0.04), 0 4px 12px -2px rgba(42, 35, 24, 0.03);
+}
+
+.provenance-folio__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgb(104 94 85 / 0.1);
+}
+
+.provenance-folio__status-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.provenance-folio__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2f6848;
+  box-shadow: 0 0 0 2.5px rgba(47, 104, 72, 0.18);
+  display: inline-block;
+}
+
+.provenance-folio__status {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #234d35;
+}
+
+.provenance-folio__id {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.provenance-folio__body {
+  margin: 0;
+}
+
+.provenance-folio__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px 20px;
+  margin: 0;
+  padding: 0;
+}
+
+.provenance-folio__row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.provenance-folio__row dt {
+  font-family: var(--font-sans);
+  font-size: 0.69rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.provenance-folio__row dd {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.provenance-folio__preamble {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgb(104 94 85 / 0.1);
+}
+
+.provenance-folio__preamble p {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* Callout Box */
+.callout-box {
+  padding: 20px 24px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--paper-light) 96%, #e7eddf);
+  border: 1px solid color-mix(in srgb, #3e5e4e 30%, transparent);
+}
+
 /* Responsive Media Queries */
 @media (max-width: 960px) {
   .roadmap-grid {
@@ -1251,7 +1754,26 @@ a {
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1080px) {
+  html[lang="si"] .desktop-nav,
+  html[data-locale="si"] .desktop-nav,
+  html[lang="ta"] .desktop-nav,
+  html[data-locale="ta"] .desktop-nav,
+  html[lang="si"] .header-platform,
+  html[data-locale="si"] .header-platform,
+  html[lang="ta"] .header-platform,
+  html[data-locale="ta"] .header-platform {
+    display: none;
+  }
+  html[lang="si"] .menu-toggle,
+  html[data-locale="si"] .menu-toggle,
+  html[lang="ta"] .menu-toggle,
+  html[data-locale="ta"] .menu-toggle {
+    display: block;
+  }
+}
+
+@media (max-width: 960px) {
   .site-header__inner {
     width: min(100% - 32px, 1180px);
     min-height: 68px;

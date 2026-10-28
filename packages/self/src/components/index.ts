@@ -23,6 +23,7 @@ export { default as SchoolLegacyTimeline } from '@repo/self/components/SchoolLeg
 export { default as SleepTracker } from '@repo/self/components/SleepTracker';
 export { SpotlightEmpty } from '@repo/self/components/SpotlightEmpty';
 export { default as StudentGoals } from '@repo/self/components/StudentGoals';
+export { default as TeacherVitalityCard } from '@repo/self/components/TeacherVitalityCard';
 export { TimelineEvent } from '@repo/self/components/TimelineEvent';
 export { default as TomorrowPrep } from '@repo/self/components/TomorrowPrep';
 export { default as VoiceJournaling } from '@repo/self/components/VoiceJournaling';

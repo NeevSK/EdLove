@@ -8,6 +8,7 @@ export interface SanctuaryDoorwayActionsProps {
   hasPreviousSession?: boolean;
   onExploreGuest: () => void | Promise<void>;
   onSignIn: () => void;
+  onScanQR?: () => void;
   guestLabel?: string;
   signInLabel?: string;
 }
@@ -17,6 +18,7 @@ export const SanctuaryDoorwayActions = memo(
     isConnecting = false,
     onExploreGuest,
     onSignIn,
+    onScanQR,
     guestLabel,
     signInLabel,
   }: SanctuaryDoorwayActionsProps) => {
@@ -62,6 +64,21 @@ export const SanctuaryDoorwayActions = memo(
             </Text>
           </Box>
         </PressableScale>
+
+        {/* Day-0 QR Ingress for students and teachers with physical paper/flyers */}
+        {onScanQR && (
+          <PressableScale
+            onPress={onScanQR}
+            accessibilityLabel={t('welcome.scanQr', { defaultValue: 'Scan School or Classroom QR' })}
+            accessibilityHint="Opens the camera to scan an invitation or attendance code"
+          >
+            <Box className="h-[46px] w-full rounded-2xl border border-dashed border-phase-border bg-phase-surface/30 justify-center items-center flex-row gap-2">
+              <Text className="text-phase-text-secondary font-medium text-sm">
+                📷 {t('welcome.scanQr', { defaultValue: 'Scan School or Classroom QR' })}
+              </Text>
+            </Box>
+          </PressableScale>
+        )}
       </VStack>
     );
   },

@@ -8,7 +8,7 @@ import type {
   EntitlementSnapshot,
   SubscriptionTier,
 } from '@repo/core/logic/ports/entitlement.port';
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import { useEffect, useReducer } from 'react';
 
 export const ENTITLEMENT_SNAPSHOT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -186,7 +186,7 @@ export function useEntitlementQuery(
   scope: EntitlementScopeContext,
   enabled: boolean,
 ) {
-  const identity = principalId ? normalizeIdentity(principalId, scope) : null;
+  const identity = enabled && principalId ? normalizeIdentity(principalId, scope) : null;
   const query = useQuery<
     QualifiedEntitlementSnapshot,
     Error,
@@ -195,7 +195,7 @@ export function useEntitlementQuery(
   >({
     ...(identity
       ? createEntitlementQueryOptions(identity)
-      : { queryKey: ['capability', 'entitlement', 'disabled'] as const }),
+      : { queryKey: ['capability', 'entitlement', 'disabled'] as const, queryFn: skipToken }),
     enabled: enabled && identity !== null,
   });
 

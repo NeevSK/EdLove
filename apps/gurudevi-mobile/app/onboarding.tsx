@@ -2,7 +2,11 @@ import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { OnboardingWrapper } from '@repo/ui/screens/OnboardingWrapper';
-import { Suspense } from 'react';
+import { Suspense, useCallback } from 'react';
+import {
+  recordDevelopmentScreenInteractive,
+  recordDevelopmentTrace,
+} from '@/boot/startupTelemetry';
 import { fireflyProductArtwork } from '@/brand/mascotArtwork';
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -16,10 +20,25 @@ function Fallback() {
 }
 
 export default function OnboardingRoute() {
+  const handleInteractive = useCallback(() => {
+    recordDevelopmentScreenInteractive('onboarding');
+  }, []);
+  const handleDeveloperSandboxOpened = useCallback(() => {
+    recordDevelopmentTrace({
+      category: 'developer-tool',
+      task: 'sandbox-console',
+      state: 'opened',
+    });
+  }, []);
+
   return (
     <ErrorBoundary name="OnboardingRoute">
       <Suspense fallback={<Fallback />}>
-        <OnboardingWrapper onboardingArtwork={fireflyProductArtwork.onboarding} />
+        <OnboardingWrapper
+          onboardingArtwork={fireflyProductArtwork.onboarding}
+          onInteractive={handleInteractive}
+          onDeveloperSandboxOpened={handleDeveloperSandboxOpened}
+        />
       </Suspense>
     </ErrorBoundary>
   );

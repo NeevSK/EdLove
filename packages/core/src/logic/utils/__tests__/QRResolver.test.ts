@@ -49,6 +49,24 @@ describe('QRResolver (G0 Contract & G1 Boundary Tests)', () => {
       });
     });
 
+    it('parses link_device ephemeral pairing challenge action', () => {
+      const result = resolveQR(
+        'gurudevi://qr?v=1&action=link_device&challenge_id=chal-123&target_install_id=inst-456&platform=web&k=deadbeef0123',
+      );
+      expect(result).toEqual({
+        ok: true,
+        payload: {
+          v: 1,
+          action: 'link_device',
+          challenge_id: 'chal-123',
+          target_install_id: 'inst-456',
+          platform: 'web',
+          expires_at: undefined,
+          pairing_key: 'deadbeef0123',
+        },
+      });
+    });
+
     it('parses claim_invite action', () => {
       const result = resolveQR(
         'gurudevi://qr?v=1&action=claim_invite&invite_code=INV-123&school_id=sch-1&capacity=teacher',

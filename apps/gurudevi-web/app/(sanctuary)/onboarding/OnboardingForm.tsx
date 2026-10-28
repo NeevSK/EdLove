@@ -8,6 +8,9 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { resolveCanonicalDeviceAccount } from '@/lib/sanctuary/canonicalDeviceAccount';
+import { maskEmail, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
+import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import { browserAuthRuntime } from '../auth/browserAuth';
 import styles from './onboarding.module.css';
 
@@ -61,7 +64,8 @@ function readOnboardingDraft(): { displayName: string; capacity: string } | null
     if (typeof value !== 'object' || value === null) return null;
     const displayName = Reflect.get(value, 'displayName');
     const capacity = Reflect.get(value, 'capacity');
-    if (typeof displayName !== 'string' || !capacities.some((item) => item.value === capacity))
+    if (typeof displayName !== 'string' || typeof capacity !== 'string' ||
+      (capacity !== '' && !capacities.some((item) => item.value === capacity)))
       return null;
     return { displayName, capacity };
   } catch {
@@ -84,12 +88,7 @@ function saveOnboardingDraft(displayName: string, capacity: string) {
 }
 
 function getTargetSelfUrl(): string {
-  if (typeof window === 'undefined') return '/self';
-  const hostname = window.location.hostname;
-  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.localhost')) {
-    return '/self?surface=explore';
-  }
-  return 'https://explore.gurudevi.app/self';
+  return resolveSurfaceUrl('explore', '/self');
 }
 
 function unavailableMessage(status: number | null): string {
@@ -106,21 +105,58 @@ function errorStatus(error: unknown): number | null {
   return typeof status === 'number' ? status : null;
 }
 
+function extractCandidateName(user: unknown): string {
+  if (typeof user !== 'object' || user === null) return '';
+  const meta = (Reflect.get(user, 'user_metadata') as Record<string, unknown> | null) || {};
+  if (typeof meta.full_name === 'string' && meta.full_name.trim()) return meta.full_name.trim();
+  if (typeof meta.name === 'string' && meta.name.trim()) return meta.name.trim();
+  if (meta.name && typeof meta.name === 'object') {
+    const first = String(
+      Reflect.get(meta.name, 'firstName') ?? Reflect.get(meta.name, 'first_name') ?? '',
+    ).trim();
+    const last = String(
+      Reflect.get(meta.name, 'lastName') ?? Reflect.get(meta.name, 'last_name') ?? '',
+    ).trim();
+    const combined = `${first} ${last}`.trim();
+    if (combined) return combined;
+  }
+  if (typeof meta.given_name === 'string' && meta.given_name.trim()) {
+    const family = typeof meta.family_name === 'string' ? meta.family_name.trim() : '';
+    return `${meta.given_name} ${family}`.trim();
+  }
+  const email = Reflect.get(user, 'email');
+  if (typeof email === 'string' && email.includes('@')) {
+    const local = email.split('@')[0] ?? '';
+    const cleaned = local
+      .replace(/[._+-]+/g, ' ')
+      .replace(/\d+/g, '')
+      .trim();
+    if (cleaned.length >= 2) {
+      return cleaned
+        .split(/\s+/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+  }
+  return '';
+}
+
 export function OnboardingForm() {
   const [step, setStep] = useState<JourneyStep>('name');
   const [completionKey] = useState(createOnboardingCompletionKey);
   const [state, setState] = useState<FormState>('ready');
   const [message, setMessage] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [selectedCapacity, setSelectedCapacity] = useState<string>('teacher');
+  const [detectedName, setDetectedName] = useState<string>('');
+  const [isEditingCustomName, setIsEditingCustomName] = useState(false);
+  const [selectedCapacity, setSelectedCapacity] = useState<string>('');
   const [identityStatus, setIdentityStatus] = useState<IdentityStatus>(() => {
     if (typeof window === 'undefined') return 'checking';
     return browserAuthRuntime() ? 'checking' : 'unavailable';
   });
   const capacityHeading = useRef<HTMLHeadingElement>(null);
   const firstName = displayName.trim().split(/\s+/)[0] || 'there';
-  const roleLabel =
-    capacities.find((item) => item.value === selectedCapacity)?.label ?? 'member';
+  const roleLabel = capacities.find((item) => item.value === selectedCapacity)?.label ?? 'member';
 
   useEffect(() => {
     let isCurrent = true;
@@ -129,14 +165,30 @@ export function OnboardingForm() {
 
     runtime.bootstrapIdentity().then((identity) => {
       if (!isCurrent) return;
-      const isAuth =
-        identity.status === 'authenticated' && !identity.session.user.is_anonymous;
+      const isAuth = identity.status === 'authenticated' && !identity.session.user.is_anonymous;
       setIdentityStatus(isAuth ? 'authenticated' : 'signed-out');
       const draft = readOnboardingDraft();
       if (draft) {
         setDisplayName(draft.displayName);
         setSelectedCapacity(draft.capacity);
         setStep('capacity');
+      } else if (isAuth && identity.session?.user) {
+        const candidate = extractCandidateName(identity.session.user);
+        if (candidate) {
+          setDetectedName(candidate);
+          setDisplayName(candidate);
+        }
+      } else if (!draft) {
+        try {
+          const guestStr = localStorage.getItem('gurudevi_guest_profile_v1');
+          if (guestStr) {
+            const guest = JSON.parse(guestStr);
+            if (guest?.name && typeof guest.name === 'string' && guest.name.trim()) {
+              setDetectedName(guest.name.trim());
+              setDisplayName(guest.name.trim());
+            }
+          }
+        } catch {}
       }
     });
 
@@ -152,10 +204,12 @@ export function OnboardingForm() {
     window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   }, [step]);
 
-  function continueToCapacity() {
-    if (!displayName.trim()) return;
+  function continueToCapacity(nameToUse?: string) {
+    const finalName = (nameToUse ?? displayName).trim();
+    if (!finalName) return;
+    setDisplayName(finalName);
     setMessage('');
-    saveOnboardingDraft(displayName, selectedCapacity);
+    saveOnboardingDraft(finalName, selectedCapacity);
     setStep('capacity');
   }
 
@@ -209,12 +263,35 @@ export function OnboardingForm() {
         expectedSession,
       );
       await completeOnboarding({ idempotencyKey: completionKey }, expectedSession);
+
+      // Save profile into device registry for seamless multi-account per device switching
+      try {
+        const canonical = await resolveCanonicalDeviceAccount(runtime.client, expectedSession);
+        saveDeviceAccount({
+          ...canonical,
+          displayName: displayName.trim() || canonical.displayName,
+          capacity: (selectedCapacity as any) || canonical.capacity,
+          hasPin: false,
+        });
+      } catch {
+        saveDeviceAccount({
+          accountId: identity.session.user.id,
+          authUserId: identity.session.user.id,
+          displayName: displayName.trim(),
+          avatarUrl: (identity.session.user.user_metadata?.avatar_url as string) ?? null,
+          maskedEmail: maskEmail(identity.session.user.email ?? ''),
+          schoolId: null,
+          capacity: selectedCapacity as any,
+          hasPin: false,
+        });
+      }
+
       try {
         sessionStorage.removeItem(onboardingDraftKey);
       } catch {
         // Ignored
       }
-      window.location.replace(getTargetSelfUrl());
+      window.location.replace(resolveSurfaceUrl('sanctuary', '/workspace'));
     } catch (error) {
       setState('error');
       setMessage(unavailableMessage(errorStatus(error)));
@@ -233,11 +310,7 @@ export function OnboardingForm() {
         role="group"
         aria-label={`Step ${step === 'name' ? 1 : step === 'capacity' ? 2 : 3} of ${identityStatus === 'authenticated' ? 2 : 3}`}
       >
-        <span
-          aria-hidden="true"
-          className={styles.progressSegment}
-          data-active={true}
-        />
+        <span aria-hidden="true" className={styles.progressSegment} data-active={true} />
         <span
           aria-hidden="true"
           className={styles.progressSegment}
@@ -265,36 +338,87 @@ export function OnboardingForm() {
             />
             <div className={styles.voice}>
               <h2 className={styles.title} id="onboarding-name-title">
-                What’s your name?
+                {detectedName && !isEditingCustomName
+                  ? `Welcome, ${detectedName}`
+                  : 'What should we call you?'}
               </h2>
-              <label className={styles.fieldLabel} htmlFor="onboarding-name">
-                Your name
-              </label>
-              <input
-                autoComplete="name"
-                autoFocus
-                className={styles.nameInput}
-                id="onboarding-name"
-                maxLength={120}
-                onChange={(event) => setDisplayName(event.currentTarget.value)}
-                placeholder="e.g. Ananda Silva"
-                required
-                value={displayName}
-              />
+
+              {detectedName && !isEditingCustomName ? (
+                <div className={styles.detectedNameCard}>
+                  <p className={styles.detectedNamePrompt}>
+                    Should we call you <strong>{detectedName}</strong>, or do you prefer another name?
+                  </p>
+                  <div className={styles.detectedNameChoiceRow}>
+                    <button
+                      type="button"
+                      className={styles.primaryAction}
+                      onClick={() => continueToCapacity(detectedName)}
+                    >
+                      Call me {detectedName} <span aria-hidden="true">→</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.secondaryActionBtn}
+                      onClick={() => {
+                        setIsEditingCustomName(true);
+                        setDisplayName(detectedName);
+                      }}
+                    >
+                      Use a different name
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <label className={styles.fieldLabel} htmlFor="onboarding-name">
+                    Preferred name
+                  </label>
+                  <input
+                    autoComplete="name"
+                    autoFocus
+                    className={styles.nameInput}
+                    id="onboarding-name"
+                    maxLength={120}
+                    onChange={(event) => setDisplayName(event.currentTarget.value)}
+                    placeholder="e.g. Ananda or Teacher Sam"
+                    required
+                    value={displayName}
+                  />
+                  <p className={styles.detectedNameHelper} style={{ marginTop: '6px' }}>
+                    You can change this anytime in your settings.
+                  </p>
+                  {detectedName ? (
+                    <div className={styles.detectedNameSuggestion}>
+                      <button
+                        type="button"
+                        className={styles.useDetectedNameBtn}
+                        onClick={() => {
+                          setDisplayName(detectedName);
+                          setIsEditingCustomName(false);
+                        }}
+                      >
+                        ← Back to &ldquo;{detectedName}&rdquo;
+                      </button>
+                    </div>
+                  ) : null}
+                </>
+              )}
             </div>
           </div>
           <div className={styles.actionRow}>
             <Link className={styles.backAction} href="/welcome">
               Welcome
             </Link>
-            <button
-              className={styles.primaryAction}
-              disabled={!displayName.trim()}
-              onClick={continueToCapacity}
-              type="button"
-            >
-              Next <span aria-hidden="true">→</span>
-            </button>
+            {!detectedName || isEditingCustomName ? (
+              <button
+                className={styles.primaryAction}
+                disabled={!displayName.trim()}
+                onClick={() => continueToCapacity()}
+                type="button"
+              >
+                Next <span aria-hidden="true">→</span>
+              </button>
+            ) : null}
           </div>
         </section>
       ) : null}
@@ -348,7 +472,7 @@ export function OnboardingForm() {
             </button>
             <button
               className={styles.primaryAction}
-              disabled={state === 'submitting'}
+              disabled={state === 'submitting' || !selectedCapacity}
               type="submit"
             >
               {state === 'submitting'
@@ -378,14 +502,15 @@ export function OnboardingForm() {
                 Create your account with Tutii
               </h2>
               <p className={styles.prompt}>
-                Welcome, {firstName}! To enter as a {roleLabel} and keep your personal Sanctuary secure, let’s create your account.
+                Welcome, {firstName}! To enter as a {roleLabel} and keep your personal Sanctuary
+                secure, let’s create your account.
               </p>
             </div>
           </div>
           <div className={styles.nudgeActions}>
             <Link
               className={styles.primaryAction}
-              href="/sign-up?returnTo=%2Fonboarding"
+              href="/sign-in?intent=signup&returnTo=%2Fonboarding"
               onClick={() => saveOnboardingDraft(displayName, selectedCapacity)}
             >
               <span>Create account with Tutii</span>
@@ -398,6 +523,24 @@ export function OnboardingForm() {
             >
               Already have an account? Sign in
             </Link>
+            {process.env.NODE_ENV !== 'production' ? (
+              <a
+                className={styles.secondaryActionLink}
+                style={{ fontWeight: 700, color: 'var(--color-sanctuary-saffron, #a85022)' }}
+                href={`/workspace?mode=sanctuary&dev=true&role=${selectedCapacity}&name=${encodeURIComponent(displayName)}`}
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem('gurudevi_sandbox_mode', 'true');
+                    localStorage.setItem(
+                      'gurudevi_dev_sanctuary_v1',
+                      JSON.stringify({ name: displayName, capacity: selectedCapacity }),
+                    );
+                  } catch {}
+                }}
+              >
+                ⚡ Enter Dev Sanctuary as {roleLabel} ({displayName}) →
+              </a>
+            ) : null}
             <a
               className={styles.secondaryActionLink}
               href={getTargetSelfUrl()}

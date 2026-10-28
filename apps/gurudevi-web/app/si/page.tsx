@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { PUBLIC_LOCALES } from '../../lib/locales';
+import { MarketingHeader } from '../(marketing)/MarketingHeader';
+import { MarketingClient } from '../(marketing)/MarketingClient';
+import { MarketingFooter } from '../(marketing)/MarketingFooter';
+import { LocaleProvider } from '../../lib/i18n';
 
 const copy = PUBLIC_LOCALES.si;
 
@@ -26,33 +29,10 @@ export const metadata: Metadata = {
 
 export default function SinhalaLandingPage() {
   return (
-    <main
-      id="main-content"
-      lang={copy.htmlLang}
-      className="mx-auto min-h-screen max-w-5xl px-5 py-16 sm:px-8 sm:py-24"
-    >
-      <nav aria-label="භාෂාව / Language" className="mb-16 flex gap-5 font-sans text-sm">
-        <Link href="/">English</Link>
-        <Link href="/si" aria-current="page">
-          සිංහල
-        </Link>
-        <Link href="/ta">தமிழ்</Link>
-      </nav>
-      <p className="font-sans text-sm font-semibold tracking-wide text-ink-soft">{copy.brand}</p>
-      <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight sm:text-6xl">
-        {copy.tagline}
-      </h1>
-      <p className="mt-8 max-w-3xl text-xl leading-9 text-ink-soft">{copy.summary}</p>
-      <p className="mt-8 max-w-3xl text-lg leading-8">
-        ගුරුදෙවි යනු අධ්‍යාපනයේ සම්බන්ධතා ශක්තිමත් කිරීමට සහ ගුරුවරුන්ගේ, සිසුන්ගේ සහ පාසල් ප්‍රජාවන්ගේ ගෞරවය රැකීමට නිර්මාණය කළ
-        ඩිජිටල් වේදිකාවකි.
-      </p>
-      <Link
-        className="mt-10 inline-block font-sans text-sm font-semibold underline underline-offset-4"
-        href="/about"
-      >
-        අධ්‍යාපනික පරිසරය ගැන කියවන්න ↗
-      </Link>
-    </main>
+    <LocaleProvider initialLocale="si">
+      <MarketingHeader />
+      <MarketingClient />
+      <MarketingFooter />
+    </LocaleProvider>
   );
 }

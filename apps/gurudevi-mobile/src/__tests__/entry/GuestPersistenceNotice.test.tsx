@@ -9,7 +9,11 @@ const mocks = vi.hoisted(() => ({
     day: 1,
     isExpired: false,
     reminderDay: 1,
-    lease: { startedAt: '2026-09-10T00:00:00.000Z', expiresAt: '2026-09-25T00:00:00.000Z', dismissedReminderDays: [] },
+    lease: {
+      startedAt: '2026-09-10T00:00:00.000Z',
+      expiresAt: '2026-09-25T00:00:00.000Z',
+      dismissedReminderDays: [],
+    },
   },
 }));
 
@@ -33,6 +37,10 @@ vi.mock('@repo/core/native', () => ({
   dismissGuestLeaseReminder: vi.fn(() => Promise.resolve()),
 }));
 
+vi.mock('@repo/core/native/localGuestSession', () => ({
+  isLocalGuestSessionId: (id: string) => id.startsWith('local-'),
+}));
+
 vi.mock('expo-router', () => ({
   usePathname: () => mocks.pathname,
   useRouter: () => ({ push: mocks.push }),
@@ -48,6 +56,7 @@ import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 
 describe('GuestPersistenceNotice (component-real)', () => {
   beforeEach(() => {
+    mocks.user.id = 'guest-1';
     mocks.pathname = '/self';
     mocks.push.mockClear();
   });
@@ -79,5 +88,25 @@ describe('GuestPersistenceNotice (component-real)', () => {
     });
 
     expect(tree!.toJSON()).toBeNull();
+  });
+
+  it('explains durable device-local guest storage without a lease countdown', async () => {
+    mocks.user.id = 'local-123e4567-e89b-42d3-a456-426614174000';
+    mocks.pathname = '/self';
+    let tree;
+    await act(async () => {
+      tree = create(<GuestPersistenceNotice />);
+    });
+
+    expect(JSON.stringify(tree!.toJSON())).toContain('Guest mode · saved on this device');
+    expect(JSON.stringify(tree!.toJSON())).not.toContain('days left');
+    const dismiss = tree!.root.findByProps({
+      accessibilityLabel: 'Dismiss guest storage reminder',
+    });
+    await act(async () => {
+      dismiss.props.onPress();
+    });
+    expect(tree!.toJSON()).toBeNull();
+    mocks.user.id = 'guest-1';
   });
 });

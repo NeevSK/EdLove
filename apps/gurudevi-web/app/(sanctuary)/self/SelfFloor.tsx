@@ -1,19 +1,20 @@
 'use client';
 
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
-import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import {
   resolveTemporalCoordinates,
   resolveTemporalIntent,
   toIsoDate,
 } from '@repo/core/logic/workbench';
+import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import {
+  createSelfAccessContext,
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
-import { Volume2, VolumeX } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { Volume2, VolumeX } from 'lucide-react';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import type { SelfCategory } from '../../../lib/canvas/useSelfCanvas';
 import { useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
@@ -36,40 +37,38 @@ import {
   timeGreeting,
   WorkbenchContextHeader,
 } from '../components/workbench';
-import {
-  BROWSER_SELF_FEATURES,
-} from './browserFeatureRegistry';
+import { BROWSER_SELF_FEATURES } from './browserFeatureRegistry';
+import { DailyContentCard } from './components/DailyContentCard';
+import { DailyRhythm } from './components/DailyRhythm';
+import { DailySadhanaModal } from './components/DailySadhanaModal';
+import { DecisionJournalSection } from './components/DecisionJournalSection';
+import { DynamicCareIsland } from './components/DynamicCareIsland';
+import { EnergyForecast } from './components/EnergyForecast';
 import { FireJournal, initialScreen, type ScreenState } from './components/FireJournal';
-import { MoodLotusModal } from './components/MoodLotusModal';
-import { JoyJar } from './components/JoyJar';
 import { GratitudeGlimmers } from './components/GratitudeGlimmers';
-import { WisdomSeeds } from './components/WisdomSeeds';
-import { TomorrowPrep } from './components/TomorrowPrep';
+import { JoyJar } from './components/JoyJar';
+import { MoodLotusModal } from './components/MoodLotusModal';
+import { MyGradesView } from './components/MyGradesView';
+import { ProgressTree } from './components/ProgressTree';
+import { PulseDashboard } from './components/PulseDashboard';
+import { ReframeWizard } from './components/ReframeWizard';
+import { RemindersManager } from './components/RemindersManager';
+import { ResonancePatternCard } from './components/ResonancePatternCard';
+import { SelfOverview } from './components/SelfOverview';
+import { ShadowAgentDrawer } from './components/ShadowAgentDrawer';
 import { SleepTracker } from './components/SleepTracker';
 import { StudentGoals } from './components/StudentGoals';
-import { DailyRhythm } from './components/DailyRhythm';
-import { ProgressTree } from './components/ProgressTree';
-import { EnergyForecast } from './components/EnergyForecast';
-import { VoiceJournaling } from './components/VoiceJournaling';
-import { RemindersManager } from './components/RemindersManager';
-import { WindDownRitual } from './components/WindDownRitual';
-import { WarmMirrorCard } from './components/WarmMirrorCard';
-import { ResonancePatternCard } from './components/ResonancePatternCard';
-import { MyGradesView } from './components/MyGradesView';
-import { DailyContentCard } from './components/DailyContentCard';
 import { TeachingHistoryTimeline } from './components/TeachingHistoryTimeline';
-import { DecisionJournalSection } from './components/DecisionJournalSection';
-import { ReframeWizard } from './components/ReframeWizard';
-import { PulseDashboard } from './components/PulseDashboard';
-import { ShadowAgentDrawer } from './components/ShadowAgentDrawer';
-import { SelfOverview } from './components/SelfOverview';
-import { DynamicCareIsland } from './components/DynamicCareIsland';
-import { DailySadhanaModal } from './components/DailySadhanaModal';
+import { TomorrowPrep } from './components/TomorrowPrep';
 import { UnavailableTask } from './components/UnavailableTask';
+import { VoiceJournaling } from './components/VoiceJournaling';
+import { WarmMirrorCard } from './components/WarmMirrorCard';
+import { WindDownRitual } from './components/WindDownRitual';
+import { WisdomSeeds } from './components/WisdomSeeds';
 import styles from './self-floor.module.css';
 
 const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
-  null,
+  createSelfAccessContext({ isExplore: true }),
   {
     customOrder: [],
     hiddenIds: [],
@@ -127,11 +126,13 @@ export function SelfFloor({
   displayName,
   initialPracticing = false,
   initialCapacity,
+  capacities = [],
 }: Readonly<{
   accountId?: string;
   displayName: string;
   initialPracticing?: boolean;
   initialCapacity?: string;
+  capacities?: readonly string[];
 }>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
   const [isPracticing, setIsPracticing] = useState(initialPracticing || accountId === 'explore');
@@ -158,7 +159,10 @@ export function SelfFloor({
     setAudioMuted(next);
   }, []);
 
-  const [todaySadhana, setTodaySadhana] = useState<{ intention: string; energyLevel: number } | null>(null);
+  const [todaySadhana, setTodaySadhana] = useState<{
+    intention: string;
+    energyLevel: number;
+  } | null>(null);
   const loadTodaySadhana = useCallback(() => {
     if (typeof window === 'undefined') return;
     try {
@@ -187,6 +191,8 @@ export function SelfFloor({
   const exploreCapacity = useExploreCapacity();
   const primaryRole =
     initialCapacity ?? (accountId === 'explore-guest' ? exploreCapacity : undefined);
+  const isExplore =
+    accountId === 'explore-guest' || accountId === 'explore' || initialPracticing;
   const practiceAdapter = useMemo(
     () =>
       accountId
@@ -231,6 +237,7 @@ export function SelfFloor({
     accountId: accountId ?? 'anonymous',
     activeFeatureId: focusedTask ? focusedTask.featureId : null,
     role: primaryRole,
+    roles: primaryRole ? [primaryRole, ...capacities] : capacities,
   });
 
   const [atmosphere, setAtmosphere] = useState<FloorAtmosphereKind>(() => {
@@ -352,6 +359,7 @@ export function SelfFloor({
   }
 
   function openFireJournal() {
+    quickAccess.trackUse(fireJournalFeature.id);
     const result = workbench.open(fireJournalTask);
     if (result.kind === 'at-capacity') {
       setScreen((current) => ({
@@ -375,6 +383,7 @@ export function SelfFloor({
   }
 
   function openFeature(feature: SelfFeatureManifestItem) {
+    quickAccess.trackUse(feature.id);
     const result = workbench.open({
       ...fireJournalTask,
       featureId: feature.id,
@@ -499,7 +508,8 @@ export function SelfFloor({
     <ReframeWizard userId={accountId ?? 'guest-explorer'} />
   ) : focusedTask?.featureId === 'decisions' ? (
     <DecisionJournalSection userId={accountId ?? 'guest-explorer'} />
-  ) : focusedTask?.featureId === 'professional_history' || focusedTask?.featureId === 'journey_timeline' ? (
+  ) : focusedTask?.featureId === 'professional_history' ||
+    focusedTask?.featureId === 'journey_timeline' ? (
     <TeachingHistoryTimeline userId={accountId ?? 'guest-explorer'} />
   ) : focusedTask?.featureId === 'daily_pulse' ? (
     <PulseDashboard userId={accountId ?? 'guest-explorer'} />
@@ -555,7 +565,9 @@ export function SelfFloor({
           intent={coordinates.intent}
           selectedDate={coordinates.date}
           renderExtra={() => (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap' }}>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap' }}
+            >
               <button
                 type="button"
                 className={styles.centerNowBtn}
@@ -599,36 +611,36 @@ export function SelfFloor({
       )}
     >
       <TaskStrip
-          shellSlot
-          focusedTaskKey={workbench.state.focusedTaskKey}
-          onCloseTask={closeTask}
-          onFocusTask={focusTask}
-          onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
-          onOpenOverview={() => {
-            setShowOverview(true);
-            requestAnimationFrame(() =>
-              document.getElementById('self-catalog-title')?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-              }),
-            );
-          }}
-          quickAccessItems={SELF_FEATURE_MANIFEST.all.map((feature) => ({
-            id: feature.id,
-            label: feature.label,
-            emoji: feature.emoji,
-          }))}
-          quickAccessPinnedIds={quickAccess.pinnedIds}
-          quickAccessUsage={quickAccess.usage}
-          quickAccessPinLimit={quickAccess.pinLimit}
-          onOpenQuickAccessItem={(item) => {
-            const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === item.id);
-            if (feature) openQuickAccessFeature(feature);
-          }}
-          onToggleQuickAccessPin={quickAccess.togglePin}
-          overviewActive={showOverview}
-          tasks={workbench.state.tasks}
-        />
+        shellSlot
+        focusedTaskKey={workbench.state.focusedTaskKey}
+        onCloseTask={closeTask}
+        onFocusTask={focusTask}
+        onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
+        onOpenOverview={() => {
+          setShowOverview(true);
+          requestAnimationFrame(() =>
+            document.getElementById('self-catalog-title')?.scrollIntoView?.({
+              behavior: 'smooth',
+              block: 'start',
+            }),
+          );
+        }}
+        quickAccessItems={SELF_FEATURE_MANIFEST.all.map((feature) => ({
+          id: feature.id,
+          label: feature.label,
+          emoji: feature.emoji,
+        }))}
+        quickAccessPinnedIds={quickAccess.pinnedIds}
+        quickAccessUsage={quickAccess.usage}
+        quickAccessPinLimit={quickAccess.pinLimit}
+        onOpenQuickAccessItem={(item) => {
+          const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === item.id);
+          if (feature) openQuickAccessFeature(feature);
+        }}
+        onToggleQuickAccessPin={quickAccess.togglePin}
+        overviewActive={showOverview}
+        tasks={workbench.state.tasks}
+      />
 
       {showOverview ? (
         <div className={styles.featureContentIn} key="self-home">
@@ -639,15 +651,24 @@ export function SelfFloor({
             onOpenFeature={openFeature}
             onOpenFireJournal={openFireJournal}
             pinnedFeatures={canvas.pinnedFeatures}
+            pinnedIds={quickAccess.pinnedIds}
+            usage={quickAccess.usage}
+            onTogglePin={quickAccess.togglePin}
             fireJournalId={fireJournalFeature.id}
             temporalIntent={coordinates.intent}
             selectedDate={coordinates.date}
             primaryRole={primaryRole}
+            otherRoles={capacities}
             userId={accountId}
+            isExplore={isExplore}
           />
         </div>
       ) : (
-        <div className={styles.featureContentIn} data-layout-mode={canvas.layoutMode} key={focusedTask?.taskKey ?? 'self-feature'}>
+        <div
+          className={styles.featureContentIn}
+          data-layout-mode={canvas.layoutMode}
+          key={focusedTask?.taskKey ?? 'self-feature'}
+        >
           <div className={styles.activePracticeStage}>{practiceContent}</div>
         </div>
       )}

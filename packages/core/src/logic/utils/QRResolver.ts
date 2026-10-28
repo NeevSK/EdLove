@@ -192,6 +192,29 @@ function buildPayloadFromParams(
       return { ok: true, payload: { v: 1, action, gift_token, gifter_name } };
     }
 
+    case 'share_resource': {
+      const { resource_id, resource_type, title, url } = params;
+      if (!resource_id || !resource_type || !title) return { ok: false, error: 'invalid', raw };
+      return { ok: true, payload: { v: 1, action, resource_id, resource_type, title, url } };
+    }
+
+    case 'link_device': {
+      const { challenge_id, target_install_id, platform, expires_at, pairing_key, k } = params;
+      if (!challenge_id || !target_install_id) return { ok: false, error: 'invalid', raw };
+      return {
+        ok: true,
+        payload: {
+          v: 1,
+          action,
+          challenge_id,
+          target_install_id,
+          platform,
+          expires_at,
+          pairing_key: pairing_key || k,
+        },
+      };
+    }
+
     default:
       return { ok: false, error: 'unknown_action', raw };
   }

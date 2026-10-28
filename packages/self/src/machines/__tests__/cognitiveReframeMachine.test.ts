@@ -208,4 +208,65 @@ describe('cognitiveReframeMachine (XState v6 + Effect v4)', () => {
     expect(actor.getSnapshot().value).toBe('recheck');
     expect(actor.getSnapshot().context.error).toBe('Network offline');
   });
+
+  it('safely handles actor disposal/stop mid-flight in executeSaveThoughtRecordEffect', async () => {
+    const actor = createCognitiveReframeActor({
+      userId: 'usr-42',
+      preMood: 2,
+      automaticThought: 'Unmounting wizard thought',
+      reframedThought: 'Grounding breath',
+      postMood: 4,
+    });
+
+    actor.send({ type: 'JUMP_TO_STEP', step: 'recheck' });
+
+    const mockSaved: ThoughtRecord = {
+      id: 'saved-rec-disp',
+      userId: 'usr-42',
+      preMood: 2,
+      automaticThought: 'Unmounting wizard thought',
+      emotion: 'anxious',
+      intensity: 6,
+      trapIds: [],
+      evidence: { forThought: '', againstThought: '' },
+      reframedThought: 'Grounding breath',
+      postMood: 4,
+      postOutcome: 'better',
+      createdAt: '2026-10-26T00:00:00Z',
+      completedAt: '2026-10-26T00:05:00Z',
+    };
+
+    const addFn = vi.fn().mockImplementation(async () => {
+      actor.stop();
+      return mockSaved;
+    });
+
+    const result = await executeSaveThoughtRecordEffect(actor, addFn);
+    expect(result.success).toBe(true);
+    expect(result.record).toEqual(mockSaved);
+    expect(actor.getSnapshot().status).toBe('stopped');
+  });
+
+  it('partitions draft storage by tenant and user to prevent cross-tenant collisions', () => {
+    const actor1 = createCognitiveReframeActor({
+      userId: 'user-alpha',
+      automaticThought: 'Tenant A Thought',
+    });
+    const actor2 = createCognitiveReframeActor({
+      userId: 'user-alpha',
+      automaticThought: 'Tenant B Thought',
+    });
+
+    saveReframeDraftSnapshot(actor1, 'user-alpha', 'school-A');
+    saveReframeDraftSnapshot(actor2, 'user-alpha', 'school-B');
+
+    const freshA = createCognitiveReframeActor({ userId: 'user-alpha' });
+    const freshB = createCognitiveReframeActor({ userId: 'user-alpha' });
+
+    restoreReframeDraftSnapshot(freshA, 'user-alpha', 'school-A');
+    restoreReframeDraftSnapshot(freshB, 'user-alpha', 'school-B');
+
+    expect(freshA.getSnapshot().context.automaticThought).toBe('Tenant A Thought');
+    expect(freshB.getSnapshot().context.automaticThought).toBe('Tenant B Thought');
+  });
 });

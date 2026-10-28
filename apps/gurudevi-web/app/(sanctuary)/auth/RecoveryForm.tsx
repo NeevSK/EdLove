@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
 
 type FormState = 'ready' | 'submitting' | 'sent' | 'unavailable' | 'error';
 
 export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
+  const { t } = useTranslation();
   const [state, setState] = useState<FormState>('ready');
   const [message, setMessage] = useState('');
   const busy = useRef(false);
@@ -57,7 +59,7 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
   return (
     <form className="space-y-5" onSubmit={(event) => void requestRecovery(event)}>
       <label className="block font-sans text-sm font-semibold" htmlFor="recovery-email">
-        Email address
+        {t('auth.emailLabel')}
       </label>
       <input
         autoComplete="email"
@@ -84,7 +86,7 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
         type="submit"
       >
         {state === 'submitting'
-          ? 'Sending…'
+          ? (t('actions.loading') || 'Sending…')
           : state === 'sent'
             ? 'Recovery requested'
             : 'Send recovery email'}
@@ -93,13 +95,13 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
         className="block text-center font-sans text-sm font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
         href={`/sign-in?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
       >
-        Back to sign in
+        {t('auth.allSignInOptions') || 'Back to sign in'}
       </Link>
       <p className="text-center font-sans text-sm text-ink-soft">
         Need an account?{' '}
         <Link
           className="font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
-          href={`/sign-up?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
+          href={`/sign-in?intent=signup&returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
         >
           Sign up
         </Link>

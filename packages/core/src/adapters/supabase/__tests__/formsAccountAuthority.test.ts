@@ -81,6 +81,41 @@ describe('G1 form ownership uses canonical binding, not credential subjects', ()
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
+  it('preserves v0.3.0 battery accessPolicy and kind in the serialized config payload', async () => {
+    const { adapter, fetch } = fixture(account);
+    const v3Form: FormSchema = {
+      v: '1.0',
+      id: 'quiz-battery-01',
+      title: 'Climate Quiz',
+      kind: 'quiz',
+      accessPolicy: {
+        allowRedo: true,
+        maxAttempts: 3,
+        rewardStrategy: 'score_delta',
+      },
+      prerequisites: {
+        completedFormIds: ['intro-survey'],
+        minScorePercent: 80,
+      },
+      pages: [],
+    };
+
+    await adapter.save(v3Form);
+    const body = JSON.parse(String(fetch.mock.calls[1]?.[1]?.body));
+    expect(body.config).toMatchObject({
+      kind: 'quiz',
+      accessPolicy: {
+        allowRedo: true,
+        maxAttempts: 3,
+        rewardStrategy: 'score_delta',
+      },
+      prerequisites: {
+        completedFormIds: ['intro-survey'],
+        minScorePercent: 80,
+      },
+    });
+  });
+
   it('keeps anonymous submissions unattributed', async () => {
     const { adapter, fetch } = fixture(null);
     await adapter.record(form.id, response);

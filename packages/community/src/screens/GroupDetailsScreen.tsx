@@ -3,7 +3,8 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { clearPendingGateAction, getPendingGateAction, setPendingGateAction, usePermissions } from '@repo/core/logic';
 
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
-import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
+import { QRBuilder } from '@repo/core/logic/utils/QRBuilder';
+import { SanctuaryQRCard } from '@repo/ui/qr';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
@@ -468,25 +469,21 @@ export default function GroupDetailsScreen() {
         <SanctuaryModal
           isOpen={showQRModal}
           onClose={handleHideQR}
-          title={t('community.groups.qrTitle')}
+          title={t('community.groups.qrTitle') || 'Share Group'}
         >
-          <VStack className="items-center py-8 gap-8">
-            <Box className="p-6 bg-white rounded-[40px] shadow-2xl">
-              <QRCodeGenerator value={QRBuilder.group(group.id, group.handle)} size={220} />
-            </Box>
-            <VStack className="items-center gap-2 px-10">
-              <Text className="font-black text-2xl text-center text-ink">{group.name}</Text>
-              {group.handle && (
-                <Text className="text-phase-interactive text-sm font-bold">@{group.handle}</Text>
-              )}
-              <Text className="text-xs text-ink/40 text-center mt-3 font-medium leading-relaxed">
-                {t('community.groups.qrHint')}
-              </Text>
-            </VStack>
+          <VStack className="items-center py-4 gap-4">
+            <SanctuaryQRCard
+              value={QRBuilder.group(group.id, group.handle)}
+              title={group.name}
+              subtitle={group.handle ? `@${group.handle} • ${t('community.groups.qrHint') || 'Scan to join group'}` : (t('community.groups.qrHint') || 'Scan to join group')}
+              code={group.handle ? `@${group.handle}` : undefined}
+              size={190}
+              label={group.name}
+            />
 
             <SanctuaryButton
               action="secondary"
-              className="w-full h-14 rounded-2xl border-border bg-ink/5"
+              className="w-full h-12 rounded-2xl border-border bg-ink/5 mt-2"
               onPress={handleHideQR}
             >
               <Text className="text-ink font-bold">{t('common.close') || 'Close'}</Text>

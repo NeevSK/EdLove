@@ -2,6 +2,7 @@
 
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import {
+  createSelfAccessContext,
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
@@ -28,7 +29,7 @@ const TABLET_BREAKPOINT = 768;
 const DESKTOP_BREAKPOINT = 1024;
 
 export const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
-  null,
+  createSelfAccessContext({ isExplore: true }),
   {
     customOrder: [],
     hiddenIds: [],
@@ -70,20 +71,128 @@ export function getCircadianPhase(): 'morning' | 'afternoon' | 'night' {
   return 'night';
 }
 
+export function isFeatureApplicableToRole(
+  feature: SelfFeatureManifestItem,
+  role?: string,
+): boolean {
+  if (!role || role === 'all') return true;
+  const weights = feature.roleWeights;
+  if (!weights || Object.keys(weights).length === 0) return true;
+  const normalized = role.toLowerCase() as keyof typeof weights;
+  const weight = weights[normalized];
+  return typeof weight === 'number' && weight > 0;
+}
+
+export function isUniversalFeature(feature: SelfFeatureManifestItem): boolean {
+  // 1. Universal practice domains & core personal reflection
+  const universalDomains = ['pulse', 'care', 'reflection', 'journey'];
+  if (feature.domain && universalDomains.includes(feature.domain)) return true;
+
+  // 2. Canonical Cedar resources open to any human irrespective of institutional standing
+  const universalResources: readonly string[] = [
+    'FireJournal',
+    'MoodLog',
+    'Wellbeing',
+    'JoyMoments',
+    'GratitudeEntries',
+    'EnergyForecasts',
+    'LearningReflection',
+    'User',
+  ];
+  if (feature.cedar?.resource && universalResources.includes(feature.cedar.resource)) return true;
+
+  // 3. Fallback: if all four major educational capacities (teacher, student, principal, guardian) have weights > 0
+  const weights = feature.roleWeights;
+  if (!weights || Object.keys(weights).length === 0) return true;
+  const primaryRoles = ['teacher', 'student', 'principal', 'guardian'] as const;
+  return primaryRoles.every((r) => {
+    const w = weights[r];
+    return typeof w === 'number' && w > 0;
+  });
+}
+
+export function isFeatureForCapacity(
+  feature: SelfFeatureManifestItem,
+  primaryCapacity?: string,
+  otherCapacities?: readonly string[],
+): boolean {
+  // Universal practices are always available to all human beings
+  if (isUniversalFeature(feature)) return true;
+
+  const normalizedPrimary = primaryCapacity?.toLowerCase();
+  if (normalizedPrimary && normalizedPrimary !== 'all') {
+    if (isFeatureApplicableToRole(feature, normalizedPrimary)) return true;
+  }
+
+  if (otherCapacities && otherCapacities.length > 0) {
+    for (const sec of otherCapacities) {
+      if (sec && isFeatureApplicableToRole(feature, sec.toLowerCase())) return true;
+    }
+  }
+
+  // If no capacity specified at all, default to showing
+  if (!normalizedPrimary) return true;
+
+  return false;
+}
+
 export function scoreFeatureForRoles(
   feature: SelfFeatureManifestItem,
   roles: readonly string[],
   phase: 'morning' | 'afternoon' | 'night',
+  usageInfo?: { lastUsedAt?: number | string; count?: number; isPinned?: boolean },
+  primaryRole?: string,
 ): number {
   const activeRoles = roles.length > 0 ? roles : ['teacher'];
-  const maxRoleWeight = Math.max(
-    ...activeRoles.map((r) => {
-      const w = feature.roleWeights?.[r as keyof typeof feature.roleWeights];
-      return typeof w === 'number' ? w : 50;
-    }),
-  );
-  const timingBonus = feature.timing?.preferredPhase === phase ? 25 : 0;
-  return maxRoleWeight + timingBonus - (feature.defaultOrder * 0.01);
+
+  // 1. Time-of-day alignment: +50 priority if it matches current circadian phase
+  const isTimeMatch = feature.timing?.preferredPhase === phase;
+  const timeBonus = isTimeMatch ? 50 : 0;
+
+  // 2. Role membership:
+  // Primary capacity focus (>= 80): +30
+  // Primary capacity affinity (> 0): +20
+  // Secondary capacity focus (>= 80): +15
+  // Secondary capacity affinity (> 0): +10
+  // Universal practice baseline: +10
+  let roleBonus = 0;
+  if (primaryRole) {
+    const pw = feature.roleWeights?.[primaryRole.toLowerCase() as keyof typeof feature.roleWeights];
+    if (typeof pw === 'number') {
+      if (pw >= 80) roleBonus = Math.max(roleBonus, 30);
+      else if (pw > 0) roleBonus = Math.max(roleBonus, 20);
+    }
+  }
+
+  for (const r of activeRoles) {
+    if (primaryRole && r.toLowerCase() === primaryRole.toLowerCase()) continue;
+    const w = feature.roleWeights?.[r.toLowerCase() as keyof typeof feature.roleWeights];
+    if (typeof w === 'number') {
+      if (w >= 80) roleBonus = Math.max(roleBonus, 15);
+      else if (w > 0) roleBonus = Math.max(roleBonus, 10);
+    }
+  }
+
+  if (isUniversalFeature(feature)) {
+    roleBonus = Math.max(roleBonus, 10);
+  }
+
+  // 3. Pinned & recent usage priority
+  let usageBonus = 0;
+  if (usageInfo?.isPinned) usageBonus += 15;
+  if (usageInfo?.lastUsedAt) {
+    const time =
+      typeof usageInfo.lastUsedAt === 'number'
+        ? usageInfo.lastUsedAt
+        : Date.parse(usageInfo.lastUsedAt) || 0;
+    const hoursAgo = (Date.now() - time) / (1000 * 60 * 60);
+    if (hoursAgo < 24) usageBonus += 10;
+  }
+  if (usageInfo?.count && usageInfo.count > 0) {
+    usageBonus += Math.min(usageInfo.count, 5);
+  }
+
+  return timeBonus + roleBonus + usageBonus;
 }
 
 export interface UseSelfCanvasOptions {
@@ -109,6 +218,37 @@ export function useSelfCanvas({
     if (role) return [role];
     return ['teacher'];
   }, [role, roles]);
+
+  const accessContext = useMemo(
+    () =>
+      createSelfAccessContext({
+        userId: accountId,
+        role: role ?? activeRoles[0],
+        roles: activeRoles,
+        capacities: activeRoles as string[],
+        isExplore:
+          !accountId ||
+          accountId === 'explore-guest' ||
+          accountId === 'explore' ||
+          accountId === 'anonymous',
+      }),
+    [accountId, role, activeRoles],
+  );
+
+  const manifest = useMemo(
+    () =>
+      resolveSelfFeatureManifest(
+        accessContext,
+        {
+          customOrder: [],
+          hiddenIds: [],
+          selectedIds: [],
+        },
+        'browser',
+        { deliveredFeatureIds: Object.keys(BROWSER_SELF_FEATURES) },
+      ),
+    [accessContext],
+  );
 
   const appearanceHook = useBrowserWorkspaceAppearance({
     accountId,
@@ -167,39 +307,43 @@ export function useSelfCanvas({
     for (const cat of DEFAULT_SELF_CATEGORIES) {
       map.set(cat, []);
     }
-    for (const feature of SELF_FEATURE_MANIFEST.all) {
+    for (const feature of manifest.all) {
       const list = map.get(feature.category);
       if (list) {
         list.push(feature);
       }
     }
     for (const [, list] of map) {
-      list.sort(
-        (a, b) =>
-          scoreFeatureForRoles(b, activeRoles, phase) -
-          scoreFeatureForRoles(a, activeRoles, phase),
-      );
+      list.sort((a, b) => {
+        const diff =
+          scoreFeatureForRoles(b, activeRoles, phase, undefined, role) -
+          scoreFeatureForRoles(a, activeRoles, phase, undefined, role);
+        if (diff !== 0) return diff;
+        return a.defaultOrder - b.defaultOrder;
+      });
     }
     return map;
-  }, [activeRoles, phase]);
+  }, [activeRoles, manifest.all, phase, role]);
 
   const sortedManifestAll = useMemo(() => {
-    return [...SELF_FEATURE_MANIFEST.all].sort(
-      (a, b) =>
-        scoreFeatureForRoles(b, activeRoles, phase) -
-        scoreFeatureForRoles(a, activeRoles, phase),
-    );
-  }, [activeRoles, phase]);
+    return [...manifest.all].sort((a, b) => {
+      const diff =
+        scoreFeatureForRoles(b, activeRoles, phase, undefined, role) -
+        scoreFeatureForRoles(a, activeRoles, phase, undefined, role);
+      if (diff !== 0) return diff;
+      return a.defaultOrder - b.defaultOrder;
+    });
+  }, [activeRoles, manifest.all, phase, role]);
 
   // Resolve pinned features
   const pinnedFeatures = useMemo(() => {
     const resolved: SelfFeatureManifestItem[] = [];
     for (const id of pinnedIds) {
-      const feature = SELF_FEATURE_MANIFEST.all.find((f) => f.id === id);
+      const feature = manifest.all.find((f) => f.id === id);
       if (feature) resolved.push(feature);
     }
     return resolved;
-  }, [pinnedIds]);
+  }, [manifest.all, pinnedIds]);
 
   // Resolve layout mode based on viewport and active feature
   const layoutMode: SelfLayoutMode = useMemo(() => {
@@ -228,6 +372,7 @@ export function useSelfCanvas({
     groupOrder,
     featuresByCategory,
     sortedManifestAll,
+    manifest,
     pinnedIds,
     pinnedFeatures,
     togglePin,

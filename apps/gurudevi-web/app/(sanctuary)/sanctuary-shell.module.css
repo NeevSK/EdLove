@@ -251,6 +251,19 @@
 .exploreBanner a:hover {
   color: var(--color-sanctuary-saffron, #a85022);
 }
+.exploreBannerActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+.exploreReturnLink {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+.exploreBannerDivider {
+  opacity: 0.45;
+}
 .horizontalNavigation {
   display: none;
 }
@@ -907,42 +920,59 @@
     min-height: 0;
     overflow: hidden;
   }
-  .rail {
-    order: 2;
-    flex-shrink: 0;
-    height: var(--bottom-tabs-block-size);
-    max-height: var(--bottom-tabs-block-size);
-    position: static;
-    z-index: 3;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0.35rem max(env(safe-area-inset-right), 0.5rem)
-      max(env(safe-area-inset-bottom), 0.35rem) max(env(safe-area-inset-left), 0.5rem);
-    border-top: 1px solid var(--line);
-    border-right: 0;
-    background: color-mix(in srgb, var(--paper-light) 94%, transparent);
-    backdrop-filter: blur(12px);
+  .taskStripSlot {
+    transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                padding-block 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                border-bottom-color 0.2s ease;
+    max-height: 3.5rem;
     overflow: hidden;
-    width: 100%;
+    opacity: 1;
+  }
+  .taskStripSlot[data-mobile-idle="true"],
+  .taskStripSlot[data-has-active-tasks="false"][data-overview-active="true"],
+  .taskStripSlot:has([data-mobile-idle="true"]) {
+    max-height: 0 !important;
+    min-height: 0 !important;
+    padding-block: 0 !important;
+    border-bottom-color: transparent !important;
+    border-bottom-width: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+  .rail {
+    display: none !important;
   }
   .shell[data-sidebar="collapsed"] .rail {
-    width: 100%;
-    align-items: center;
-    padding: 0.35rem max(env(safe-area-inset-right), 0.5rem)
-      max(env(safe-area-inset-bottom), 0.35rem) max(env(safe-area-inset-left), 0.5rem);
+    display: none !important;
   }
-  .shell[data-navigation-layout="horizontal"] .rail { display: none; }
-  .shell[data-navigation-layout="side"] .rail { display: flex; }
-  .shell[data-navigation-layout="horizontal"] .horizontalNavigation {
+  .shell[data-navigation-layout="horizontal"] .rail,
+  .shell[data-navigation-layout="side"] .rail {
+    display: none !important;
+  }
+  .horizontalNavigation,
+  .shell .horizontalNavigation,
+  .shell[data-navigation-layout="horizontal"] .horizontalNavigation,
+  .shell[data-navigation-layout="side"] .horizontalNavigation {
+    order: 10;
     display: flex;
-    min-height: 3.45rem;
+    flex-shrink: 0;
+    min-height: calc(3.45rem + env(safe-area-inset-bottom, 0px));
     justify-content: space-around;
+    align-items: center;
     gap: 0;
-    padding: 0.2rem 0.35rem;
+    padding: 0.2rem 0.35rem max(env(safe-area-inset-bottom, 0px), 0.35rem) 0.35rem;
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+    background: color-mix(in srgb, var(--paper-light) 94%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 10;
   }
   .horizontalNavigation .navLink,
-  .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navLink {
+  .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navLink,
+  .shell[data-navigation-layout="side"] .horizontalNavigation .navLink {
     width: auto;
     min-width: 0;
     min-height: 3rem;
@@ -950,20 +980,28 @@
     flex: 1 1 0;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     gap: 0.1rem;
     margin: 0;
     padding: 0.15rem 0.2rem;
     border: 0;
     font-size: 0.68rem;
+    position: relative;
   }
   .horizontalNavigation .navSymbol,
-  .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navSymbol {
+  .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navSymbol,
+  .shell[data-navigation-layout="side"] .horizontalNavigation .navSymbol {
     display: inline-flex;
     width: 1.3rem;
     height: 1.3rem;
+    font-size: 1.15rem;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
   }
   .horizontalNavigation .navLabel,
-  .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navLabel {
+  .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navLabel,
+  .shell[data-navigation-layout="side"] .horizontalNavigation .navLabel {
     position: static;
     width: auto;
     height: auto;
@@ -971,12 +1009,21 @@
     clip-path: none;
     text-overflow: clip;
     white-space: nowrap;
+    font-size: 0.68rem;
+    font-weight: 600;
   }
   .horizontalNavigation .navLink[aria-current="page"]::before,
-  .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navLink[aria-current="page"]::before {
+  .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navLink[aria-current="page"]::before,
+  .shell[data-navigation-layout="side"] .horizontalNavigation .navLink[aria-current="page"]::before {
+    display: block;
     top: 0;
     bottom: auto;
     left: 50%;
+    width: 1.6rem;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--color-sanctuary-saffron, #a85022);
+    transform: translateX(-50%);
   }
   .rail nav {
     width: 100%;
@@ -1139,11 +1186,28 @@
     box-shadow: none;
     transform: none;
   }
+  .horizontalNavigation .navLink {
+    font-size: 0.62rem;
+    padding: 0.1rem 0.1rem;
+  }
+  .horizontalNavigation .navSymbol {
+    width: 1.15rem;
+    height: 1.15rem;
+    font-size: 1rem;
+  }
 }
 
 /* Short landscape canvases reserve vertical room for furniture: a compact rail
    preserves canvas height where a bottom bar would obscure it. */
 @media (orientation: landscape) and (max-height: 34rem) {
+  .horizontalNavigation,
+  .shell .horizontalNavigation {
+    display: none !important;
+  }
+  .rail,
+  .shell .rail {
+    display: flex !important;
+  }
   .body {
     grid-template-columns: 4.25rem minmax(0, 1fr);
   }

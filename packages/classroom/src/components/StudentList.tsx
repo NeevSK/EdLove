@@ -1,7 +1,9 @@
 import { AddStudentModal } from '@repo/classroom/components/AddStudentModal';
+import { TactilePulseGesture } from '@repo/classroom/components/teacher/TactilePulseGesture';
 import { studentsAPI } from '@repo/core/api/client';
 import type { Student } from '@repo/core/types';
-import { QRCodeGenerator } from '@repo/scanner-kit';
+import { QRBuilder } from '@repo/core/logic/utils/QRBuilder';
+import { SanctuaryQRCard } from '@repo/ui/qr';
 import { BrandPulse } from '@repo/ui';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
@@ -44,6 +46,7 @@ export default function StudentList({
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [studentForQr, setStudentForQr] = useState<Student | null>(null);
+  const [studentForPulse, setStudentForPulse] = useState<Student | null>(null);
 
   const handleRemoveStudent = async (studentId: string) => {
     const student = students.find((candidate) => candidate.id === studentId);
@@ -101,6 +104,7 @@ export default function StudentList({
             onEdit={handleEditStudent}
             onShowQr={handleShowQr}
             onAnalyze={onAnalyzePotential}
+            onPulse={(s) => setStudentForPulse(s)}
             t={t}
           />
         )}
@@ -167,41 +171,27 @@ export default function StudentList({
               </Button>
             }
           >
-            <VStack className="gap-8 items-center py-4">
-              <Box className="p-6 bg-white rounded-[32px] shadow-sm border border-sanctuary-border/10">
-                <QRCodeGenerator
-                  value={q?.invite_code || ''}
-                  size={200}
-                  color="black"
-                  backgroundColor="white"
-                />
-              </Box>
-              <VStack className="gap-2 items-center">
-                <Heading className="text-lg text-sanctuary-text text-center font-bold">
-                  {q?.full_name}
-                </Heading>
-                <Text className="text-sanctuary-text-tertiary text-xs uppercase font-bold tracking-widest">
-                  {t('classroom.students.individualCode') || 'Individual Invite Code'}
-                </Text>
-                <Pressable
-                  onPress={() => copyToClipboard(q?.invite_code || '')}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Copy invite code for ${q?.full_name || 'student'}`}
-                  accessibilityHint="Copies the invite code to the clipboard"
-                  className="bg-sanctuary-surface-secondary px-6 py-3 rounded-2xl border border-sanctuary-border"
-                >
-                  <Text className="text-sanctuarySaffron font-black text-2xl tracking-tighter">
-                    {q?.invite_code}
-                  </Text>
-                </Pressable>
-                <Text className="text-[10px] text-sanctuary-text-tertiary mt-2">
-                  {t('common.tapToCopy') || 'Tap code to copy to clipboard'}
-                </Text>
-              </VStack>
+            <VStack className="items-center py-2">
+              <SanctuaryQRCard
+                value={QRBuilder.invite(q?.invite_code || '', classroomId, 'student')}
+                title={q?.full_name || t('classroom.students.individualCode') || 'Student Pass'}
+                subtitle={t('classroom.students.individualCode') || 'Individual Student Desk Pass'}
+                code={q?.invite_code}
+                size={180}
+                label={`Student Desk Pass - ${q?.full_name}`}
+              />
             </VStack>
           </SanctuaryModal>
         );
       })()}
+
+      <TactilePulseGesture
+        isOpen={!!studentForPulse}
+        student={studentForPulse}
+        classroomId={classroomId}
+        onClose={() => setStudentForPulse(null)}
+        onPulseRecorded={() => onRefresh()}
+      />
     </VStack>
   );
 }
@@ -214,6 +204,7 @@ const StudentRow = React.memo(
     onEdit,
     onShowQr,
     onAnalyze,
+    onPulse,
     t,
   }: {
     student: any;
@@ -222,6 +213,7 @@ const StudentRow = React.memo(
     onEdit: (student: any) => void;
     onShowQr: (student: any) => void;
     onAnalyze?: (student: any) => void;
+    onPulse?: (student: any) => void;
     t: any;
   }) => {
     return (
@@ -262,11 +254,20 @@ const StudentRow = React.memo(
               <Pressable
                 onPress={() => {
                   hapticLight();
+                  if (onPulse) {
+                    onPulse(student);
+                  } else {
+                    onAnalyze(student);
+                  }
+                }}
+                onLongPress={() => {
+                  hapticMedium();
                   onAnalyze(student);
                 }}
-                className="p-2.5 bg-sanctuary-surface/50 rounded-full border border-sanctuary-border/20"
+                className="p-2.5 bg-sanctuarySaffron/10 rounded-full border border-sanctuarySaffron/30"
                 accessibilityRole="button"
-                accessibilityLabel={`Analyze ${student.full_name}`}
+                accessibilityLabel={`Pulse attunement for ${student.full_name}`}
+                accessibilityHint="Tap for quick 8-second pulse, long press for deep multidimensional analysis"
               >
                 <Icon as={Sparkles} size={18} className="text-sanctuarySaffron" />
               </Pressable>

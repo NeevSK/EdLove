@@ -1,4 +1,5 @@
 import { appendAdminWorkspaceSurfaces } from '@repo/admin';
+import { ADMIN_REGISTRY } from '@repo/admin/constants/adminRegistry';
 import { CLASSROOM_REGISTRY } from '@repo/classroom/constants/classroomRegistry';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
 import type {
@@ -71,6 +72,7 @@ export function useClassroomWorkspaceSurfaces({
   const router = useRouter();
   const citizenshipLevel = CITIZENSHIP_MAP[citizenship] ?? 0;
 
+  const adminGated = useFeatureRegistry(ADMIN_REGISTRY);
   const classroomGated = useFeatureRegistry(CLASSROOM_REGISTRY);
   const renderNudge = () => {
     if (classroomData && !classroomData.profileCompleted && !isGuest) {
@@ -162,6 +164,8 @@ export function useClassroomWorkspaceSurfaces({
 
     appendAdminWorkspaceSurfaces(surfaces, {
       can,
+      onJoinSchool: () => router.push('/welcome'),
+      adminGated,
       isGuest,
       isDemoModeTriggered,
       classroomData,
@@ -224,6 +228,8 @@ export function useClassroomWorkspaceSurfaces({
     userCapabilities,
     classroomGated.student,
     classroomGated.teacher,
+    adminGated,
+    router,
     citizenship,
   ]);
 

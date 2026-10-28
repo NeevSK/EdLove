@@ -1,4 +1,5 @@
 import { usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
+import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
@@ -34,6 +35,7 @@ export default function WorkspaceDispatcher() {
     permissionSnapshotLoaded,
     isPermissionLoading: loading,
     permissionError,
+    isLocalGuest: isLocalGuestSessionId(context.userId),
     perspectiveKind: activePerspective.kind,
     perspectiveId: activePerspective.id,
   });

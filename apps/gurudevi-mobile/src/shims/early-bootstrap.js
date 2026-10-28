@@ -11,6 +11,16 @@ const g =
           ? global
           : {};
 
+try {
+  const performanceNow = g.performance?.now;
+  g.__GURUDEVI_EARLY_BOOT_MARK__ = {
+    wallTimeMs: Date.now(),
+    monotonicTimeMs: typeof performanceNow === 'function' ? performanceNow.call(g.performance) : null,
+  };
+} catch {
+  g.__GURUDEVI_EARLY_BOOT_MARK__ = null;
+}
+
 if (typeof g.SharedArrayBuffer === 'undefined') {
   g.SharedArrayBuffer = ArrayBuffer;
 }

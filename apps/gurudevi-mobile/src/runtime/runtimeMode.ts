@@ -1,9 +1,9 @@
 import {
   type LeverSpec,
-  resolveVergerConfig,
-  resolveVergerPolicy,
-  resolveVergerLaunch,
   type RuntimeMode,
+  resolveVergerConfig,
+  resolveVergerLaunch,
+  resolveVergerPolicy,
   type VergerConfig,
   type VergerConfigLaunch,
   type VergerLaunch,
@@ -12,6 +12,17 @@ import {
 import { getAndroidId } from 'expo-application';
 
 export type { RuntimeMode } from '@repo/core/verger';
+
+/** An isolated development run never reads or changes the persisted recovery ladder. */
+export function isolatedVergerMode(
+  value: string | undefined,
+  dev: boolean,
+): 'shadow' | 'active' | null {
+  if (!dev) return null;
+  if (value === 'true') return 'shadow';
+  if (value === 'active') return 'active';
+  return null;
+}
 
 declare global {
   // Remote config or the diagnostics screen may set this; `off` is the kill switch.
@@ -68,7 +79,9 @@ export function readVergerPolicy(): VergerPolicyLaunch {
   return resolveVergerPolicy({
     build: process.env.EXPO_PUBLIC_GURUDEVI_VERGER_POLICY,
     remote: globalThis.__GURUDEVI_VERGER_POLICY__,
-    split: id ? { installId: id, key: 'gurudevi-verger-policy', treatmentPercent: percent } : undefined,
+    split: id
+      ? { installId: id, key: 'gurudevi-verger-policy', treatmentPercent: percent }
+      : undefined,
     dev: __DEV__,
   });
 }

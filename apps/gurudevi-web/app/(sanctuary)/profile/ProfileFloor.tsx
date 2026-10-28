@@ -1,22 +1,60 @@
 'use client';
 
+import '@repo/core/api/auth';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { WorkspaceAppearance } from '@repo/core/types';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { type ProfileSection, useProfileCanvas } from '../../../lib/canvas/useProfileCanvas';
-import {
-  getExploreCapacityMeta,
-  useExploreCapacity,
-} from '../../../lib/explore/exploreCapacity';
+import { getExploreCapacityMeta, useExploreCapacity } from '../../../lib/explore/exploreCapacity';
 import { AccountSignOut } from '../components/AccountSignOut';
 import { CapacityPerspectiveSwitcher } from '../components/CapacityPerspectiveSwitcher';
-import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import { AccountDeletionControl } from './AccountDeletionControl';
 import { CreateAccountGuidanceModal } from './CreateAccountGuidanceModal';
-import { ThuthimalClaimModal } from './ThuthimalClaimModal';
 import styles from './profile.module.css';
+import { ThuthimalClaimModal } from './ThuthimalClaimModal';
+import { WebDeviceAccountManager } from './WebDeviceAccountManager';
+
+const FALLBACK_EXPLORE_PROFILE = {
+  id: 'guest-explorer-profile',
+  display_name: 'Dr. Devika Sharma',
+  username: 'devika_lead',
+  bio: 'Fostering ecological, mindful, and collaborative learning communities across all standards.',
+  phone: '+91 98111 22334',
+  avatar_url: null,
+  experience_years: 14,
+  subjects_taught: ['Educational Leadership', 'Institutional Ethics'],
+  qualifications: ['Ph.D. Education Administration', 'M.Ed. Leadership'],
+  social_links: [{ platform: 'Website', url: 'https://gurudevi.org' }],
+  energy_tokens: 120,
+  stats: {
+    circles_visited: 8,
+    mindful_streak_days: 14,
+    journals_released: 6,
+  },
+  focus_areas: ['🏛️ Institutional Ethics', '🌐 Community Ecology', '📊 Whole-School Sensing'],
+  role_title: 'School Leader & Principal',
+  custom_badges: [
+    {
+      id: 'school-architect',
+      label: 'School Architect',
+      icon: '🏛️',
+      description: 'Whole-school institutional systems builder',
+    },
+    {
+      id: 'restorative-steward',
+      label: 'Restorative Steward',
+      icon: '🕊️',
+      description: 'Certified conflict transformation mediator',
+    },
+  ],
+  research_interests: ['Restorative Institutional Governance'],
+  affiliations: ['Council of Contemplative Principals'],
+  is_sample: true,
+};
 
 const PROFILE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
   { id: 'profile-intro', label: 'Persona & Role Header', icon: '👤' },
@@ -60,7 +98,10 @@ export function ProfileFloor({
   const exploreRole = getExploreCapacityMeta(exploreCapacity);
 
   const defaultProfile = useMemo(() => {
-    return getSandboxSamples<any>('user', 'getProfile', [exploreCapacity]);
+    return (
+      getSandboxSamples<any>('user', 'getProfile', [exploreCapacity], FALLBACK_EXPLORE_PROFILE) ??
+      FALLBACK_EXPLORE_PROFILE
+    );
   }, [exploreCapacity]);
 
   // Profile data & edit state
@@ -161,7 +202,8 @@ export function ProfileFloor({
           if (parsed.username !== undefined) setUsername(parsed.username);
           if (parsed.avatarUrl !== undefined) setAvatarUrl(parsed.avatarUrl);
           if (parsed.socialLinks) setSocialLinks(parsed.socialLinks);
-          if (typeof parsed.experienceYears === 'number') setExperienceYears(parsed.experienceYears);
+          if (typeof parsed.experienceYears === 'number')
+            setExperienceYears(parsed.experienceYears);
           if (Array.isArray(parsed.subjectsTaught)) setSubjectsTaught(parsed.subjectsTaught);
           if (Array.isArray(parsed.qualifications)) setQualifications(parsed.qualifications);
           if (typeof parsed.energyTokens === 'number') setEnergyTokens(parsed.energyTokens);
@@ -180,7 +222,9 @@ export function ProfileFloor({
 
           const { data: userRecord } = await supabase
             .from('users')
-            .select('display_name, bio, phone, username, avatar_url, experience_years, subjects_taught, qualifications')
+            .select(
+              'display_name, bio, phone, username, avatar_url, experience_years, subjects_taught, qualifications',
+            )
             .eq('id', accountId)
             .maybeSingle();
 
@@ -190,8 +234,12 @@ export function ProfileFloor({
             if (userRecord.phone) setPhone(userRecord.phone);
             if (userRecord.username) setUsername(userRecord.username);
             if (userRecord.avatar_url) setAvatarUrl(userRecord.avatar_url);
-            if (typeof userRecord.experience_years === 'number') setExperienceYears(userRecord.experience_years);
-            if (Array.isArray(userRecord.subjects_taught) && userRecord.subjects_taught.length > 0) {
+            if (typeof userRecord.experience_years === 'number')
+              setExperienceYears(userRecord.experience_years);
+            if (
+              Array.isArray(userRecord.subjects_taught) &&
+              userRecord.subjects_taught.length > 0
+            ) {
               setSubjectsTaught(userRecord.subjects_taught);
             }
             if (Array.isArray(userRecord.qualifications) && userRecord.qualifications.length > 0) {
@@ -420,7 +468,8 @@ export function ProfileFloor({
               <p className={styles.eyebrow}>Profile</p>
               <h1 id="profile-title">Your Sanctuary Persona</h1>
               <p>
-                {profileName}, manage your verified credentials, workspace atmosphere, and account safety.
+                {profileName}, manage your verified credentials, workspace atmosphere, and account
+                safety.
               </p>
             </header>
           )}
@@ -446,7 +495,11 @@ export function ProfileFloor({
           {isModuleVisible('profile-stage') && (
             <div className={styles.masterDetailLayout}>
               {/* Mobile quick-switch pills */}
-              <div className={styles.mobileSectionPills} role="tablist" aria-label="Profile sections">
+              <div
+                className={styles.mobileSectionPills}
+                role="tablist"
+                aria-label="Profile sections"
+              >
                 {canvas.sections.map((section) => (
                   <button
                     key={section}
@@ -494,8 +547,8 @@ export function ProfileFloor({
                     style={{ width: '100%', justifyContent: 'flex-start' }}
                     onClick={() => {
                       const targetUrl = isExplore
-                        ? 'https://explore.gurudevi.app'
-                        : `https://gurudevi.app/profile/${accountId}`;
+                        ? resolveSurfaceUrl('explore', '/')
+                        : resolveSurfaceUrl('public', `/profile/${accountId}`);
                       if (navigator.clipboard?.writeText) {
                         void navigator.clipboard.writeText(targetUrl);
                         triggerNotice('Pass link copied to clipboard!');
@@ -542,10 +595,26 @@ export function ProfileFloor({
                         onChange={handleAvatarFile}
                       />
                       <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: '0.5rem',
+                          }}
+                        >
                           <div>
-                            <strong style={{ fontSize: '1.2rem', color: 'var(--ink, #2d2018)' }}>{profileName}</strong>
-                            <p style={{ margin: '0.15rem 0 0', color: 'var(--ink-soft, #74675d)', fontSize: '0.85rem' }}>
+                            <strong style={{ fontSize: '1.2rem', color: 'var(--ink, #2d2018)' }}>
+                              {profileName}
+                            </strong>
+                            <p
+                              style={{
+                                margin: '0.15rem 0 0',
+                                color: 'var(--ink-soft, #74675d)',
+                                fontSize: '0.85rem',
+                              }}
+                            >
                               {isExplore ? 'Guest Explorer' : primaryScopeRole}
                             </p>
                           </div>
@@ -561,7 +630,11 @@ export function ProfileFloor({
                     </div>
 
                     {/* Quick Navigation Shortcuts Bar */}
-                    <div className={styles.quickActionsBar} role="navigation" aria-label="Profile Shortcuts">
+                    <div
+                      className={styles.quickActionsBar}
+                      role="navigation"
+                      aria-label="Profile Shortcuts"
+                    >
                       <Link href="/settings" className={styles.quickBtn}>
                         ⚙️ Sanctuary Settings
                       </Link>
@@ -569,7 +642,11 @@ export function ProfileFloor({
                         🛡️ Device & Security Floor
                       </Link>
                       <a
-                        href={isExplore ? 'https://explore.gurudevi.app' : `https://gurudevi.app/profile/public/${username || accountId}`}
+                        href={
+                          isExplore
+                            ? resolveSurfaceUrl('explore', '/')
+                            : resolveSurfaceUrl('public', `/profile/public/${username || accountId}`)
+                        }
                         target="_blank"
                         rel="noreferrer"
                         className={styles.quickBtn}
@@ -601,7 +678,11 @@ export function ProfileFloor({
                     </div>
 
                     {isEditing && (
-                      <form onSubmit={handleSaveProfile} className={styles.editModeForm} aria-label="Edit Profile Form">
+                      <form
+                        onSubmit={handleSaveProfile}
+                        className={styles.editModeForm}
+                        aria-label="Edit Profile Form"
+                      >
                         <div className={styles.formField}>
                           <label htmlFor="edit-name">Display Name</label>
                           <input
@@ -669,7 +750,13 @@ export function ProfileFloor({
                               value={newSubjectInput}
                               onChange={(e) => setNewSubjectInput(e.target.value)}
                             />
-                            <button type="button" className={styles.copyQrBtn} onClick={handleAddSubject}>+ Add</button>
+                            <button
+                              type="button"
+                              className={styles.copyQrBtn}
+                              onClick={handleAddSubject}
+                            >
+                              + Add
+                            </button>
                           </div>
                         </div>
                         <div className={styles.formField}>
@@ -683,15 +770,29 @@ export function ProfileFloor({
                               value={newQualificationInput}
                               onChange={(e) => setNewQualificationInput(e.target.value)}
                             />
-                            <button type="button" className={styles.copyQrBtn} onClick={handleAddQualification}>+ Add</button>
+                            <button
+                              type="button"
+                              className={styles.copyQrBtn}
+                              onClick={handleAddQualification}
+                            >
+                              + Add
+                            </button>
                           </div>
                         </div>
-                        <div className={styles.formFieldFull} style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                        <div
+                          className={styles.formFieldFull}
+                          style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}
+                        >
                           <button
                             type="submit"
                             disabled={isSaving}
                             className={styles.copyQrBtn}
-                            style={{ background: 'var(--color-action, #9a5b2d)', color: '#fff', border: 'none', padding: '0.5rem 1.25rem' }}
+                            style={{
+                              background: 'var(--color-action, #9a5b2d)',
+                              color: '#fff',
+                              border: 'none',
+                              padding: '0.5rem 1.25rem',
+                            }}
                           >
                             {isSaving ? 'Saving…' : 'Save Changes'}
                           </button>
@@ -716,7 +817,16 @@ export function ProfileFloor({
                           border: '1px solid var(--line)',
                         }}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '0.25rem',
+                            flexWrap: 'wrap',
+                            gap: '0.5rem',
+                          }}
+                        >
                           <strong style={{ fontSize: '0.9rem' }}>
                             🪷 Guest Explorer Sandbox · {exploreRole.roleTitle} Lens
                           </strong>
@@ -772,13 +882,27 @@ export function ProfileFloor({
                             </button>
                           </div>
                         </div>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--ink-soft)', margin: '0 0 0.75rem' }}>
-                          Exploring sample profile and curricular desk. Your sample activity stays private on this device.
+                        <p
+                          style={{
+                            fontSize: '0.8rem',
+                            color: 'var(--ink-soft)',
+                            margin: '0 0 0.75rem',
+                          }}
+                        >
+                          Exploring sample profile and curricular desk. Your sample activity stays
+                          private on this device.
                         </p>
                         <CapacityPerspectiveSwitcher mode="explore" />
-                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '0.5rem',
+                            flexWrap: 'wrap',
+                            marginTop: '0.75rem',
+                          }}
+                        >
                           <Link
-                            href="https://sanctuary.gurudevi.app/login"
+                            href={resolveSurfaceUrl('sanctuary', '/sign-in')}
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -821,7 +945,7 @@ export function ProfileFloor({
                               textDecoration: 'none',
                             }}
                           >
-                            Welcome Gate →
+                            Guest House →
                           </Link>
                           <Link
                             href="/community"
@@ -862,7 +986,9 @@ export function ProfileFloor({
                       {bio && (
                         <div>
                           <dt>Contemplative bio</dt>
-                          <dd style={{ fontSize: '0.95rem', fontWeight: 500, lineHeight: 1.5 }}>{bio}</dd>
+                          <dd style={{ fontSize: '0.95rem', fontWeight: 500, lineHeight: 1.5 }}>
+                            {bio}
+                          </dd>
                         </div>
                       )}
                       <div>
@@ -887,14 +1013,23 @@ export function ProfileFloor({
                         <span className={styles.completionPercent}>{completionPercentage}%</span>
                       </div>
                       <div className={styles.completionTrack}>
-                        <div className={styles.completionFill} style={{ width: `${completionPercentage}%` }} />
+                        <div
+                          className={styles.completionFill}
+                          style={{ width: `${completionPercentage}%` }}
+                        />
                       </div>
                       <div className={styles.completionSteps}>
                         <span>✓ Persona &amp; Identity established</span>
-                        <span>{bio.trim() ? '✓' : '○'} Pedagogical reflection &amp; focus documented</span>
-                        <span>{phone.trim() || username.trim() ? '✓' : '○'} Contact and handle verified</span>
+                        <span>
+                          {bio.trim() ? '✓' : '○'} Pedagogical reflection &amp; focus documented
+                        </span>
+                        <span>
+                          {phone.trim() || username.trim() ? '✓' : '○'} Contact and handle verified
+                        </span>
                         <span>{avatarUrl ? '✓' : '○'} Visual avatar established</span>
-                        <span>{socialLinks.length > 0 ? '✓' : '○'} Collaborative links attached</span>
+                        <span>
+                          {socialLinks.length > 0 ? '✓' : '○'} Collaborative links attached
+                        </span>
                         {isExplore && (
                           <span
                             onClick={() => setIsGuidanceModalOpen(true)}
@@ -909,19 +1044,19 @@ export function ProfileFloor({
                     <div className={styles.statsGrid}>
                       <div className={styles.statCard}>
                         <div className={styles.statNumber}>
-                          {isExplore ? defaultProfile.stats.circles_visited : 0}
+                          {isExplore ? (defaultProfile?.stats?.circles_visited ?? 0) : 0}
                         </div>
                         <div className={styles.statLabel}>Circles Visited</div>
                       </div>
                       <div className={styles.statCard}>
                         <div className={styles.statNumber}>
-                          {isExplore ? `${defaultProfile.stats.mindful_streak_days}d` : '0d'}
+                          {isExplore ? `${defaultProfile?.stats?.mindful_streak_days ?? 0}d` : '0d'}
                         </div>
                         <div className={styles.statLabel}>Mindful Streak</div>
                       </div>
                       <div className={styles.statCard}>
                         <div className={styles.statNumber}>
-                          {isExplore ? defaultProfile.stats.journals_released : 0}
+                          {isExplore ? (defaultProfile?.stats?.journals_released ?? 0) : 0}
                         </div>
                         <div className={styles.statLabel}>Journal Released</div>
                       </div>
@@ -929,24 +1064,48 @@ export function ProfileFloor({
 
                     {/* Social Links Linktree */}
                     <div className={styles.linktreeCard}>
-                      <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.9rem', color: 'var(--ink, #2d2018)' }}>
+                      <h4
+                        style={{
+                          margin: '0 0 0.5rem',
+                          fontSize: '0.9rem',
+                          color: 'var(--ink, #2d2018)',
+                        }}
+                      >
                         Connected Linktree &amp; Circles
                       </h4>
                       {socialLinks.length === 0 ? (
-                        <p style={{ fontSize: '0.8rem', color: 'var(--ink-soft, #74675d)', margin: '0 0 0.75rem' }}>
+                        <p
+                          style={{
+                            fontSize: '0.8rem',
+                            color: 'var(--ink-soft, #74675d)',
+                            margin: '0 0 0.75rem',
+                          }}
+                        >
                           No collaborative social links added yet.
                         </p>
                       ) : (
                         <div className={styles.linktreeGrid}>
                           {socialLinks.map((link, idx) => (
                             <div key={idx} className={styles.linktreeItem}>
-                              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <span
+                                style={{
+                                  flex: 1,
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
                                 🔗 {link.platform}: {link.url}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => handleRemoveSocialLink(idx)}
-                                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-danger, #b23b3b)' }}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  color: 'var(--color-danger, #b23b3b)',
+                                }}
                                 title="Remove link"
                               >
                                 ×
@@ -955,7 +1114,14 @@ export function ProfileFloor({
                           ))}
                         </div>
                       )}
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '0.5rem',
+                          marginTop: '0.5rem',
+                          flexWrap: 'wrap',
+                        }}
+                      >
                         <select
                           className={styles.formInput}
                           style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
@@ -972,7 +1138,12 @@ export function ProfileFloor({
                           type="url"
                           placeholder="https://..."
                           className={styles.formInput}
-                          style={{ flex: 1, minWidth: '160px', padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
+                          style={{
+                            flex: 1,
+                            minWidth: '160px',
+                            padding: '0.35rem 0.5rem',
+                            fontSize: '0.8rem',
+                          }}
                           value={newLinkUrl}
                           onChange={(e) => setNewLinkUrl(e.target.value)}
                         />
@@ -986,64 +1157,102 @@ export function ProfileFloor({
                       </div>
                     </div>
 
-                    {isExplore && defaultProfile.focus_areas && defaultProfile.focus_areas.length > 0 && (
-                      <div className={styles.tagsSection}>
-                        <div className={styles.tagsTitle}>Pedagogical Focus Areas &amp; Circles</div>
-                        <div className={styles.tagsRow}>
-                          {defaultProfile.focus_areas.map((tag: string, idx: number) => (
-                            <span key={idx} className={styles.tagPill}>
-                              {tag}
-                            </span>
-                          ))}
+                    {isExplore &&
+                      defaultProfile?.focus_areas &&
+                      defaultProfile.focus_areas.length > 0 && (
+                        <div className={styles.tagsSection}>
+                          <div className={styles.tagsTitle}>
+                            Pedagogical Focus Areas &amp; Circles
+                          </div>
+                          <div className={styles.tagsRow}>
+                            {defaultProfile.focus_areas.map((tag: string, idx: number) => (
+                              <span key={idx} className={styles.tagPill}>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {isExplore && defaultProfile.custom_badges && defaultProfile.custom_badges.length > 0 && (
-                      <div className={styles.tagsSection} style={{ marginTop: '1rem' }}>
-                        <div className={styles.tagsTitle}>🏅 Verified Role Badges &amp; Accreditations</div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.4rem' }}>
-                          {defaultProfile.custom_badges.map((badge: any) => (
-                            <div
-                              key={badge.id}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                padding: '0.4rem 0.75rem',
-                                background: 'color-mix(in srgb, var(--paper) 70%, var(--line))',
-                                border: '1px solid var(--line)',
-                                borderRadius: '0.5rem',
-                                fontSize: '0.8rem',
-                              }}
-                            >
-                              <span style={{ fontSize: '1.1rem' }}>{badge.icon}</span>
-                              <div>
-                                <strong style={{ color: 'var(--ink)' }}>{badge.label}</strong>
-                                <span style={{ color: 'var(--ink-soft)', marginLeft: '0.5rem' }}>· {badge.description}</span>
+                    {isExplore &&
+                      defaultProfile?.custom_badges &&
+                      defaultProfile.custom_badges.length > 0 && (
+                        <div className={styles.tagsSection} style={{ marginTop: '1rem' }}>
+                          <div className={styles.tagsTitle}>
+                            🏅 Verified Role Badges &amp; Accreditations
+                          </div>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '0.4rem',
+                              marginTop: '0.4rem',
+                            }}
+                          >
+                            {defaultProfile.custom_badges.map((badge: any) => (
+                              <div
+                                key={badge.id}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  padding: '0.4rem 0.75rem',
+                                  background: 'color-mix(in srgb, var(--paper) 70%, var(--line))',
+                                  border: '1px solid var(--line)',
+                                  borderRadius: '0.5rem',
+                                  fontSize: '0.8rem',
+                                }}
+                              >
+                                <span style={{ fontSize: '1.1rem' }}>{badge.icon}</span>
+                                <div>
+                                  <strong style={{ color: 'var(--ink)' }}>{badge.label}</strong>
+                                  <span style={{ color: 'var(--ink-soft)', marginLeft: '0.5rem' }}>
+                                    · {badge.description}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* Saved Library Materials & Learning Desk (Explore Sandbox Showcase) */}
                     {isExplore && (
                       <div className={styles.linktreeCard} style={{ marginTop: '1rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                          <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--ink, #2d2018)' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '0.5rem',
+                          }}
+                        >
+                          <h4
+                            style={{ margin: 0, fontSize: '0.9rem', color: 'var(--ink, #2d2018)' }}
+                          >
                             📚 Sample Library Desk &amp; Curations
                           </h4>
                           <Link
                             href="/library"
-                            style={{ fontSize: '0.75rem', fontWeight: 650, color: 'var(--color-action, #a85022)', textDecoration: 'none' }}
+                            style={{
+                              fontSize: '0.75rem',
+                              fontWeight: 650,
+                              color: 'var(--color-action, #a85022)',
+                              textDecoration: 'none',
+                            }}
                           >
                             Open Library →
                           </Link>
                         </div>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--ink-soft, #74675d)', margin: '0 0 0.75rem' }}>
-                          Curricular circulars, field guides, and video lectures bookmarked for sample practice.
+                        <p
+                          style={{
+                            fontSize: '0.8rem',
+                            color: 'var(--ink-soft, #74675d)',
+                            margin: '0 0 0.75rem',
+                          }}
+                        >
+                          Curricular circulars, field guides, and video lectures bookmarked for
+                          sample practice.
                         </p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                           <Link
@@ -1054,7 +1263,13 @@ export function ProfileFloor({
                             <span style={{ flex: 1, fontSize: '0.825rem', color: 'var(--ink)' }}>
                               📖 Field Guide to Sri Lankan Mangrove Ecosystems
                             </span>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--color-action, #a85022)', fontWeight: 600 }}>
+                            <span
+                              style={{
+                                fontSize: '0.75rem',
+                                color: 'var(--color-action, #a85022)',
+                                fontWeight: 600,
+                              }}
+                            >
                               Page 1 • Continue
                             </span>
                           </Link>
@@ -1066,23 +1281,44 @@ export function ProfileFloor({
                             <span style={{ flex: 1, fontSize: '0.825rem', color: 'var(--ink)' }}>
                               🎬 Field Botany: Identifying Endemic Wet-Zone Plants
                             </span>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--color-action, #a85022)', fontWeight: 600 }}>
+                            <span
+                              style={{
+                                fontSize: '0.75rem',
+                                color: 'var(--color-action, #a85022)',
+                                fontWeight: 600,
+                              }}
+                            >
                               Video Lecture
                             </span>
                           </Link>
                         </div>
-                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '0.5rem',
+                            marginTop: '0.75rem',
+                            flexWrap: 'wrap',
+                          }}
+                        >
                           <Link
                             href="/library/contribute"
                             className={styles.copyQrBtn}
-                            style={{ textDecoration: 'none', fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
+                            style={{
+                              textDecoration: 'none',
+                              fontSize: '0.75rem',
+                              padding: '0.35rem 0.75rem',
+                            }}
                           >
                             + Contribute New Material
                           </Link>
                           <Link
                             href="/library/tools"
                             className={styles.copyQrBtn}
-                            style={{ textDecoration: 'none', fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
+                            style={{
+                              textDecoration: 'none',
+                              fontSize: '0.75rem',
+                              padding: '0.35rem 0.75rem',
+                            }}
                           >
                             🛠️ Launch Knowledge Tools
                           </Link>
@@ -1101,7 +1337,12 @@ export function ProfileFloor({
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        style={{ background: 'var(--paper-light, #faf3e6)', padding: '6px', borderRadius: '8px', flexShrink: 0 }}
+                        style={{
+                          background: 'var(--paper-light, #faf3e6)',
+                          padding: '6px',
+                          borderRadius: '8px',
+                          flexShrink: 0,
+                        }}
                         aria-label="Sanctuary Pass QR"
                       >
                         <rect width="5" height="5" x="3" y="3" rx="1" />
@@ -1130,8 +1371,8 @@ export function ProfileFloor({
                             className={styles.copyQrBtn}
                             onClick={() => {
                               const targetUrl = isExplore
-                                ? 'https://explore.gurudevi.app'
-                                : `https://gurudevi.app/profile/${accountId}`;
+                                ? resolveSurfaceUrl('explore', '/')
+                                : resolveSurfaceUrl('public', `/profile/${accountId}`);
                               if (navigator.clipboard?.writeText) {
                                 void navigator.clipboard.writeText(targetUrl);
                                 triggerNotice('Pass link copied to clipboard!');
@@ -1163,15 +1404,37 @@ export function ProfileFloor({
                         <span>Professional Credentials &amp; Pedagogical Scope</span>
                       </div>
                       <div style={{ marginBottom: '0.75rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase' }}>
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            color: 'var(--ink-soft)',
+                            textTransform: 'uppercase',
+                          }}
+                        >
                           Experience &amp; Tenure
                         </span>
-                        <p style={{ margin: '0.25rem 0 0', fontSize: '0.9rem', fontWeight: 600, color: 'var(--ink)' }}>
-                          {experienceYears} years of accredited contemplative teaching &amp; mentoring
+                        <p
+                          style={{
+                            margin: '0.25rem 0 0',
+                            fontSize: '0.9rem',
+                            fontWeight: 600,
+                            color: 'var(--ink)',
+                          }}
+                        >
+                          {experienceYears} years of accredited contemplative teaching &amp;
+                          mentoring
                         </p>
                       </div>
                       <div style={{ marginBottom: '0.75rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase' }}>
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            color: 'var(--ink-soft)',
+                            textTransform: 'uppercase',
+                          }}
+                        >
                           Subjects &amp; Disciplines
                         </span>
                         <div className={styles.badgeRow} style={{ marginTop: '0.35rem' }}>
@@ -1183,7 +1446,14 @@ export function ProfileFloor({
                         </div>
                       </div>
                       <div>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase' }}>
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            color: 'var(--ink-soft)',
+                            textTransform: 'uppercase',
+                          }}
+                        >
                           Accreditations &amp; Qualifications
                         </span>
                         <div className={styles.badgeRow} style={{ marginTop: '0.35rem' }}>
@@ -1202,29 +1472,47 @@ export function ProfileFloor({
                         <span>🧭</span>
                         <span>Living Journey &amp; Sanctuary Milestones</span>
                       </div>
-                      <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: 'var(--ink-soft)' }}>
-                        Continuous reflection trajectory across daily cycles, peer resonance, and accredited inquiries.
+                      <p
+                        style={{
+                          margin: '0 0 0.75rem',
+                          fontSize: '0.85rem',
+                          color: 'var(--ink-soft)',
+                        }}
+                      >
+                        Continuous reflection trajectory across daily cycles, peer resonance, and
+                        accredited inquiries.
                       </p>
                       <div className={styles.timelineList}>
                         <div className={styles.timelineItem}>
                           <div>
                             <div className={styles.timelineDate}>Milestone · Verified Today</div>
                             <strong>Mindful Presence Streak (5 Days)</strong>
-                            <p style={{ margin: '0.2rem 0 0', color: 'var(--ink-soft)' }}>Maintained daily contemplation across morning dawn and evening wind-down.</p>
+                            <p style={{ margin: '0.2rem 0 0', color: 'var(--ink-soft)' }}>
+                              Maintained daily contemplation across morning dawn and evening
+                              wind-down.
+                            </p>
                           </div>
                         </div>
                         <div className={styles.timelineItem}>
                           <div>
-                            <div className={styles.timelineDate}>Milestone · Circle Contribution</div>
+                            <div className={styles.timelineDate}>
+                              Milestone · Circle Contribution
+                            </div>
                             <strong>Resonance in 3 Learning Circles</strong>
-                            <p style={{ margin: '0.2rem 0 0', color: 'var(--ink-soft)' }}>Active peer dialogue in Mindful Pedagogies and Forest Learning groups.</p>
+                            <p style={{ margin: '0.2rem 0 0', color: 'var(--ink-soft)' }}>
+                              Active peer dialogue in Mindful Pedagogies and Forest Learning groups.
+                            </p>
                           </div>
                         </div>
                         <div className={styles.timelineItem}>
                           <div>
-                            <div className={styles.timelineDate}>Accreditation · Identity Sealed</div>
+                            <div className={styles.timelineDate}>
+                              Accreditation · Identity Sealed
+                            </div>
                             <strong>Sanctuary Citizen Credential Established</strong>
-                            <p style={{ margin: '0.2rem 0 0', color: 'var(--ink-soft)' }}>Cryptographically bound to canonical UUIDv8 account identity.</p>
+                            <p style={{ margin: '0.2rem 0 0', color: 'var(--ink-soft)' }}>
+                              Cryptographically bound to canonical UUIDv8 account identity.
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1295,13 +1583,25 @@ export function ProfileFloor({
                         <h3 style={{ margin: '0 0 0.5rem', fontSize: '1rem' }}>
                           Zero Cloud Telemetry Guarantee
                         </h3>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--ink-soft)', lineHeight: 1.6, margin: '0 0 1rem' }}>
-                          Under Sri Lanka PDPA No. 9 of 2022, no personal biometric or learning data is uploaded to remote cloud databases during public exploration.
+                        <p
+                          style={{
+                            fontSize: '0.85rem',
+                            color: 'var(--ink-soft)',
+                            lineHeight: 1.6,
+                            margin: '0 0 1rem',
+                          }}
+                        >
+                          Under Sri Lanka PDPA No. 9 of 2022, no personal biometric or learning data
+                          is uploaded to remote cloud databases during public exploration.
                         </p>
                         <button
                           type="button"
                           onClick={() => {
-                            if (window.confirm('Reset all local guest session data and cached preferences?')) {
+                            if (
+                              window.confirm(
+                                'Reset all local guest session data and cached preferences?',
+                              )
+                            ) {
                               localStorage.clear();
                               window.location.reload();
                             }
@@ -1323,11 +1623,16 @@ export function ProfileFloor({
                     ) : (
                       <>
                         <p>
-                          Manage your credentials or request permanent deletion of your account and all
-                          associated sanctuary history.
+                          Manage your credentials or request permanent deletion of your account and
+                          all associated sanctuary history.
                         </p>
-                        <p><Link href="/sign-in">Switch account</Link></p>
-                        <AccountSignOut />
+                        <WebDeviceAccountManager
+                          currentAccountId={accountId}
+                          currentDisplayName={displayName}
+                        />
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', margin: '14px 0' }}>
+                          <AccountSignOut />
+                        </div>
                         <AccountDeletionControl />
                       </>
                     )}
@@ -1336,10 +1641,7 @@ export function ProfileFloor({
               </main>
             </div>
           )}
-          <ThuthimalClaimModal
-            isOpen={claimModalOpen}
-            onClose={() => setClaimModalOpen(false)}
-          />
+          <ThuthimalClaimModal isOpen={claimModalOpen} onClose={() => setClaimModalOpen(false)} />
           <CreateAccountGuidanceModal
             isOpen={isGuidanceModalOpen}
             onClose={() => setIsGuidanceModalOpen(false)}
@@ -1353,12 +1655,26 @@ export function ProfileFloor({
               aria-labelledby="energy-modal-title"
               onClick={() => setIsEnergyModalOpen(false)}
             >
-              <div
-                className={styles.energyModal}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h2 id="energy-modal-title" style={{ margin: 0, fontSize: '1.25rem', color: '#2d2018', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className={styles.energyModal} onClick={(e) => e.stopPropagation()}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <h2
+                    id="energy-modal-title"
+                    style={{
+                      margin: 0,
+                      fontSize: '1.25rem',
+                      color: '#2d2018',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
                     <span>⚡</span> Negentropy Living Energy Reservoir
                   </h2>
                   <button
@@ -1377,8 +1693,17 @@ export function ProfileFloor({
                   </button>
                 </div>
 
-                <p style={{ fontSize: '0.88rem', color: '#74675d', lineHeight: 1.5, margin: '0 0 1.25rem' }}>
-                  Negentropy represents stored communal attention, mindful feedback, and pedagogical vitality. Tokens regenerate through contemplative reflection and active participation.
+                <p
+                  style={{
+                    fontSize: '0.88rem',
+                    color: '#74675d',
+                    lineHeight: 1.5,
+                    margin: '0 0 1.25rem',
+                  }}
+                >
+                  Negentropy represents stored communal attention, mindful feedback, and pedagogical
+                  vitality. Tokens regenerate through contemplative reflection and active
+                  participation.
                 </p>
 
                 <div
@@ -1394,18 +1719,36 @@ export function ProfileFloor({
                   }}
                 >
                   <div>
-                    <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#74675d', fontWeight: 700 }}>
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        color: '#74675d',
+                        fontWeight: 700,
+                      }}
+                    >
                       Active Reservoir Balance
                     </span>
                     <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#9a5b2d' }}>
-                      {energyTokens} <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Joules (NT)</span>
+                      {energyTokens}{' '}
+                      <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Joules (NT)</span>
                     </div>
                   </div>
                   <div style={{ fontSize: '2rem' }}>🌿</div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                  <h4 style={{ margin: 0, fontSize: '0.85rem', color: '#2d2018', fontWeight: 700 }}>Contribute Vitality</h4>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                    marginBottom: '1.5rem',
+                  }}
+                >
+                  <h4 style={{ margin: 0, fontSize: '0.85rem', color: '#2d2018', fontWeight: 700 }}>
+                    Contribute Vitality
+                  </h4>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     {[5, 10, 25].map((amount) => (
                       <button
@@ -1419,10 +1762,14 @@ export function ProfileFloor({
                             setEnergyTokens(updated);
                             if (isExplore) {
                               try {
-                                const cached = localStorage.getItem('gurudevi_guest_profile_v1') || '{}';
+                                const cached =
+                                  localStorage.getItem('gurudevi_guest_profile_v1') || '{}';
                                 const parsed = JSON.parse(cached);
                                 parsed.energyTokens = updated;
-                                localStorage.setItem('gurudevi_guest_profile_v1', JSON.stringify(parsed));
+                                localStorage.setItem(
+                                  'gurudevi_guest_profile_v1',
+                                  JSON.stringify(parsed),
+                                );
                               } catch {
                                 // storage fallback
                               }

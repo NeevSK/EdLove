@@ -5,6 +5,8 @@ import type {
   FormPage,
   FormResponse,
   FormSchema,
+  FormKind,
+  FormAccessPolicy,
 } from '@intuitui-labs/form-builder-engine/schema';
 import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
 import { APIError } from '@repo/core/types/API';
@@ -42,6 +44,11 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
     pages: FormPage[];
     settings: FormSchema['settings'];
     affordanceConfig?: Record<string, unknown>;
+    kind?: FormKind;
+    accessPolicy?: FormAccessPolicy;
+    prerequisites?: FormSchema['prerequisites'];
+    governance?: FormSchema['governance'];
+    assessment?: FormSchema['assessment'];
   } {
     try {
       const parsed = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
@@ -60,6 +67,11 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
         pages?: FormPage[];
         settings?: FormSchema['settings'];
         affordanceConfig?: Record<string, unknown>;
+        kind?: FormKind;
+        accessPolicy?: FormAccessPolicy;
+        prerequisites?: FormSchema['prerequisites'];
+        governance?: FormSchema['governance'];
+        assessment?: FormSchema['assessment'];
       };
 
       return {
@@ -71,6 +83,11 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
           ...configObj?.settings,
         },
         affordanceConfig: configObj?.affordanceConfig,
+        kind: configObj?.kind,
+        accessPolicy: configObj?.accessPolicy,
+        prerequisites: configObj?.prerequisites,
+        governance: configObj?.governance,
+        assessment: configObj?.assessment,
       };
     } catch {
       return {
@@ -97,6 +114,11 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       pages: form.pages,
       settings: form.settings,
       affordanceConfig: form.affordanceConfig,
+      kind: form.kind,
+      accessPolicy: form.accessPolicy,
+      prerequisites: form.prerequisites,
+      governance: form.governance,
+      assessment: form.assessment,
     };
 
     const templateData = {
@@ -138,7 +160,7 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       throw new APIError(`Form template not found: ${id}`, 'NOT_FOUND');
     }
 
-    const { pages, settings, affordanceConfig } = this.parseFormConfig(template.config, template);
+    const parsedConfig = this.parseFormConfig(template.config, template);
 
     return {
       v: '1.0',
@@ -146,9 +168,14 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       tenantId: template.owner_id,
       title: template.title,
       description: template.description ?? undefined,
-      pages,
-      settings,
-      affordanceConfig,
+      pages: parsedConfig.pages,
+      settings: parsedConfig.settings,
+      affordanceConfig: parsedConfig.affordanceConfig,
+      kind: parsedConfig.kind,
+      accessPolicy: parsedConfig.accessPolicy,
+      prerequisites: parsedConfig.prerequisites,
+      governance: parsedConfig.governance,
+      assessment: parsedConfig.assessment,
       createdAt: template.created_at,
       updatedAt: template.updated_at,
     };
@@ -169,16 +196,21 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
     }
 
     return (templates || []).map((template) => {
-      const { pages, settings, affordanceConfig } = this.parseFormConfig(template.config, template);
+      const parsedConfig = this.parseFormConfig(template.config, template);
       return {
         v: '1.0',
         id: template.id,
         tenantId: template.owner_id,
         title: template.title,
         description: template.description ?? undefined,
-        pages,
-        settings,
-        affordanceConfig,
+        pages: parsedConfig.pages,
+        settings: parsedConfig.settings,
+        affordanceConfig: parsedConfig.affordanceConfig,
+        kind: parsedConfig.kind,
+        accessPolicy: parsedConfig.accessPolicy,
+        prerequisites: parsedConfig.prerequisites,
+        governance: parsedConfig.governance,
+        assessment: parsedConfig.assessment,
         createdAt: template.created_at,
         updatedAt: template.updated_at,
       };

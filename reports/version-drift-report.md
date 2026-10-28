@@ -1,6 +1,6 @@
 # Sovereign Dependency Intelligence & Cohort Audit Report
 
-Generated: 2026-10-27T01:51:35.295Z
+Generated: 2026-10-28T12:32:54.375Z
 Threshold: \Delta_{\text{major}} \ge 2
 
 ## 1. Ecosystem Cohorts & External Registry Drift
@@ -18,7 +18,7 @@ Threshold: \Delta_{\text{major}} \ge 2
 | Status | Package | Current | Latest | Lag (Δ) | Cohort Policy |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 🏛️ `COHORT MANAGED` | `lightningcss-linux-x64-gnu` | `1.30.1` | `1.33.0` | +3 min | Tooling, Test & Quality Gates universal pin (1.30.1) |
-| 🏛️ `COHORT MANAGED` | `typescript-eslint` | `8.69.0` | `8.72.0` | +3 min | Tooling, Test & Quality Gates universal pin (8.69.0) |
+| 🏛️ `COHORT MANAGED` | `typescript-eslint` | `8.69.0` | `8.72.1` | +3 min | Tooling, Test & Quality Gates universal pin (8.69.0) |
 
 ### 1D. Standalone External Dependencies (Actionable Upgrades & Waivers)
 
@@ -26,17 +26,19 @@ Threshold: \Delta_{\text{major}} \ge 2
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | ⚠️ **`UNANNOTATED`** | `@opentelemetry/exporter-trace-otlp-http` | 🚀 `PRODUCTION` | `0.221.0` | `0.300.0` | +79 min (0.x break) | - |
 | ⚠️ **`UNANNOTATED`** | `@sentry/react-native` | 🚀 `PRODUCTION` | `8.23.0` | `8.32.0` | +9 min | Description only (no waiver): "v8.31.0 active in mobile app; aligned to Expo SDK 58 runtime." |
-| ⚠️ **`UNANNOTATED`** | `oxlint` | 🛠️ `TOOLING` | `1.81.0` | `1.89.0` | +8 min | - |
+| ⚠️ **`UNANNOTATED`** | `oxlint@1.81.0 (dev)` | 🛠️ `TOOLING` | `1.81.0` | `1.90.0` | +9 min | - |
 | ⚠️ **`UNANNOTATED`** | `@lottiefiles/dotlottie-react` | 🚀 `PRODUCTION` | `0.13.5` | `0.20.0` | +7 min (0.x break) | - |
-| 📝 `WAIVED` | `vercel` | 🛠️ `TOOLING` | `59.26.0` | `65.2.0` | +6 maj | v59 pinned for monorepo build deployment workflows. (Review: Next.js 17 milestone) |
+| 📝 `WAIVED` | `vercel` | 🛠️ `TOOLING` | `59.26.0` | `65.4.0` | +6 maj | v59 pinned for monorepo build deployment workflows. (Review: Next.js 17 milestone) |
 | ⚠️ **`UNANNOTATED`** | `@rnx-kit/eslint-plugin` | 🛠️ `TOOLING` | `0.5.3` | `0.9.9` | +4 min (0.x break) | - |
 | ⚠️ **`UNANNOTATED`** | `@supabase/mcp-server-supabase` | 🛠️ `TOOLING` | `0.11.0` | `0.14.0` | +3 min (0.x break) | - |
 | ⚠️ **`UNANNOTATED`** | `@swmansion/react-native-bottom-sheet` | 🚀 `PRODUCTION` | `0.14.1` | `0.17.1` | +3 min (0.x break) | - |
 | ⚠️ **`UNANNOTATED`** | `fallow` | 🛠️ `TOOLING` | `3.33.1` | `3.36.0` | +3 min | - |
 | ⚠️ **`UNANNOTATED`** | `foglamp` | 🚀 `PRODUCTION` | `0.7.1` | `0.10.1` | +3 min (0.x break) | - |
-| ⚠️ **`UNANNOTATED`** | `posthog-react-native` | 🚀 `PRODUCTION` | `4.81.8` | `4.84.0` | +3 min | - |
+| ⚠️ **`UNANNOTATED`** | `posthog-react-native` | 🚀 `PRODUCTION` | `4.81.8` | `4.84.2` | +3 min | - |
 | ⚠️ **`UNANNOTATED`** | `@stripe/stripe-react-native` | 🚀 `PRODUCTION` | `0.81.0` | `0.83.0` | +2 min (0.x break) | - |
 | ⚠️ **`UNANNOTATED`** | `@tanstack/react-pacer` | 🚀 `PRODUCTION` | `0.22.1` | `0.24.1` | +2 min (0.x break) | - |
+| ⚠️ **`UNANNOTATED`** | `oxfmt` | 🛠️ `TOOLING` | `0.73.0` | `0.75.0` | +2 min (0.x break) | - |
+| 📝 `WAIVED` | `@op-engineering/op-sqlite` | 🚀 `PRODUCTION` | `17.2.0` | `19.0.1` | +2 maj | v17 pinned for Nitro SQLite bindings and PowerSync native compatibility. |
 | 📝 `WAIVED` | `inline-style-prefixer` | 🚀 `PRODUCTION` | `5.1.2` | `7.0.1` | +2 maj | v5 pinned as direct peer dependency of react-native-web runtime. (Review: react-native-web v0.22) |
 | 📝 `WAIVED` | `tesseract.js` | 💤 `INERT` | `5.1.1` | `7.0.0` | +2 maj | v5 pinned for local web worker and OCR model asset stability. (Review: Q1-2027) |
 
@@ -53,32 +55,7 @@ Threshold: \Delta_{\text{major}} \ge 2
 
 ## 2. Framework Dialect & Code Deprecation Drift
 
-### expo-image-picker: ImagePicker.MediaTypeOptions (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** To set media types available in the image picker use an array of [`MediaType`](#mediatype) instead. (Replacement: an)
-
-- [packages/community/src/hooks/useComposerLogic.ts:22](file:///C:/x/packages/community/src/hooks/useComposerLogic.ts#L22)
-  📍 **Substrate Proof:** [`node_modules/expo-image-picker/build/ImagePicker.types.d.ts:2`](file:///C:/x/node_modules/expo-image-picker/build/ImagePicker.types.d.ts#L2)
-  ```typescript
-  mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  ```
-
-### react-native-gesture-handler: Gesture.LongPress (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** `Gesture.LongPress()` is deprecated and will be removed in the future. Please use `useLongPressGesture` instead. (Replacement: useLongPressGesture)
-
-- [packages/ui/src/components/workspace/DraggableCanvasSurface.tsx:67](file:///C:/x/packages/ui/src/components/workspace/DraggableCanvasSurface.tsx#L67)
-  📍 **Substrate Proof:** [`node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gestureObjects.d.ts:59`](file:///C:/x/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gestureObjects.d.ts#L59)
-  ```typescript
-  Gesture.LongPress()
-  ```
-
-### react-native-gesture-handler: Gesture.Simultaneous (1 occurrences) — `Live Substrate Deprecation`
-> **Advice:** `Gesture.Simultaneous()` is deprecated and will be removed in the future. Please use `useSimultaneousGestures` instead. (Replacement: useSimultaneousGestures)
-
-- [packages/ui/src/components/workspace/DraggableCanvasSurface.tsx:134](file:///C:/x/packages/ui/src/components/workspace/DraggableCanvasSurface.tsx#L134)
-  📍 **Substrate Proof:** [`node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gestureObjects.d.ts:108`](file:///C:/x/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gestureObjects.d.ts#L108)
-  ```typescript
-  () => Gesture.Simultaneous(longPressGesture, dragGesture),
-  ```
+✅ Zero deprecated framework dialects detected across source code.
 
 ## 3. Internal Workspace Version Alignment Drift
 
@@ -87,10 +64,10 @@ Threshold: \Delta_{\text{major}} \ge 2
 | Package | Divergent Versions | Consuming Packages | Action / Sacred Baseline |
 | :--- | :--- | :--- | :--- |
 | `@react-native-async-storage/async-storage` | `2.2.0` vs `*` | `2.2.0`: `gurudevi-mobile`<br>`*`: `@repo/profile` | Run `pnpm run deps:harmonize` |
-| `effect` | `^4.0.5` vs `^4.0.0-alpha.1` | `^4.0.5`: `gurudevi-mobile`, `@repo/classroom`, `@repo/core`, `@repo/ui`<br>`^4.0.0-alpha.1`: `@repo/self` | Run `pnpm run deps:harmonize` |
+| `effect` | `^4.0.5` vs `^4.0.0-alpha.1` | `^4.0.5`: `gurudevi-mobile`, `@repo/admin`, `@repo/classroom`, `@repo/core`, `@repo/scanner-kit`, `@repo/ui`<br>`^4.0.0-alpha.1`: `@repo/self` | Run `pnpm run deps:harmonize` |
 | `react-native-enriched-markdown` | `1.1.1` vs `^1.1.1` | `1.1.1`: `gurudevi-mobile`<br>`^1.1.1`: `@repo/ui` | Run `pnpm run deps:harmonize` |
+| `zod` | `4.6.7` vs `4.6.5` | `4.6.7`: `gurudevi-mobile`, `@repo/sanctuary-api`, `@repo/admin`, `@repo/classroom`, `@repo/community`, `@repo/core`, `@repo/database`, `@repo/platform-mcp`, `@repo/schema`, `@repo/self`, `@repo/ui`<br>`4.6.5`: `@repo/scanner-kit` | Run `pnpm run deps:harmonize` |
 | `hono` | `5.0.0-rc.1` vs `^4.13.13` | `5.0.0-rc.1`: `@repo/sanctuary-api`<br>`^4.13.13`: `@repo/core` | Run `pnpm run deps:harmonize` |
-| `@intuitui-labs/form-builder-engine` | `^0.2.1` vs `^0.3.0` | `^0.2.1`: `@repo/core`<br>`^0.3.0`: `@repo/form-builder` | Run `pnpm run deps:harmonize` |
 
 ## 4. Sovereign Command Center & Proactive Workflows
 

@@ -11,9 +11,10 @@ import {
 } from '@repo/core/verger';
 import { tokens } from '@repo/ui/tokens';
 import { useVergerLab } from '@repo/verger-react';
+import { FlashList } from '@shopify/flash-list';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const LEVERS = GURUDEVI_MOBILE_HOST.levers;
 
@@ -94,13 +95,83 @@ export function VergerLabScreen() {
       setResult({ what: 'recording', outcome: { ok: false, error: String(error) } }),
     );
   };
+  const sections = labSections(report);
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Verger lab</Text>
-      <Button label="Tab shell lab (A/B)" onPress={() => router.push('/shell-lab')} />
-      {labSections(report).map((section) => (
-        <View key={section.title} style={styles.section}>
+    <FlashList
+      contentContainerStyle={styles.content}
+      data={sections}
+      keyExtractor={(section) => section.title}
+      ListHeaderComponent={
+        <View style={styles.listHeader}>
+          <Text style={styles.title}>Verger lab</Text>
+          <Button
+            label="Development diagnostics timeline"
+            onPress={() => router.push('/verger-diagnostics')}
+          />
+          <Button label="Tab shell lab (A/B)" onPress={() => router.push('/shell-lab')} />
+        </View>
+      }
+      ListFooterComponent={
+        <View style={styles.listFooter}>
+          <View style={styles.section}>
+            <Text style={styles.heading}>
+              Levers (level / proposed · limit ≤ ceiling ≤ home ≤ floor)
+            </Text>
+            {report.levers.map((lever) => (
+              <View key={lever.id} style={styles.row}>
+                <Text style={styles.label}>{lever.id}</Text>
+                <Text style={styles.value}>
+                  {lever.level} / {lever.proposed} · {lever.limit} ≤ {lever.ceiling} ≤ {lever.home}{' '}
+                  ≤ {lever.floor}
+                  {lever.pressure > 0 ? ` · pressure ${lever.pressure}` : ''}
+                  {lever.ineffective.length > 0 ? ` · not for ${lever.ineffective.join(', ')}` : ''}
+                  {lever.gain
+                    ? ` · gain ${Math.round(lever.gain.gain * 100)}% (${lever.gain.samples})`
+                    : ''}
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.heading}>Activation patch (JSON; empty returns to the launch)</Text>
+            <TextInput
+              testID="verger-activation-patch"
+              accessibilityLabel="Verger activation patch JSON"
+              style={styles.input}
+              value={patchText}
+              onChangeText={setPatchText}
+              placeholder='{"grow": false}'
+              autoCapitalize="none"
+              autoCorrect={false}
+              multiline
+            />
+            <Button label="Apply and save" onPress={applyPatch} />
+            <Text style={styles.heading}>Thresholds (JSON; empty returns to the host's)</Text>
+            <TextInput
+              testID="verger-threshold-tuning"
+              accessibilityLabel="Verger threshold tuning JSON"
+              style={styles.input}
+              value={tuneText}
+              onChangeText={setTuneText}
+              placeholder='{"upgradeAfterMs": 2000}'
+              autoCapitalize="none"
+              autoCorrect={false}
+              multiline
+            />
+            <Button label="Tune and save" onPress={applyTune} />
+            <Button label="Share session recording" onPress={shareRecording} />
+            {result ? (
+              <Text style={result.outcome.ok ? styles.ok : styles.error}>
+                {result.what}: {result.outcome.ok ? 'applied' : result.outcome.error}
+              </Text>
+            ) : null}
+          </View>
+        </View>
+      }
+      renderItem={({ item: section }) => (
+        <View style={styles.section}>
           <Text style={styles.heading}>{section.title}</Text>
           {section.rows.map(([label, value]) => (
             <View key={label} style={styles.row}>
@@ -109,59 +180,9 @@ export function VergerLabScreen() {
             </View>
           ))}
         </View>
-      ))}
-
-      <View style={styles.section}>
-        <Text style={styles.heading}>
-          Levers (level / proposed · limit ≤ ceiling ≤ home ≤ floor)
-        </Text>
-        {report.levers.map((lever) => (
-          <View key={lever.id} style={styles.row}>
-            <Text style={styles.label}>{lever.id}</Text>
-            <Text style={styles.value}>
-              {lever.level} / {lever.proposed} · {lever.limit} ≤ {lever.ceiling} ≤ {lever.home} ≤{' '}
-              {lever.floor}
-              {lever.pressure > 0 ? ` · pressure ${lever.pressure}` : ''}
-              {lever.ineffective.length > 0 ? ` · not for ${lever.ineffective.join(', ')}` : ''}
-              {lever.gain
-                ? ` · gain ${Math.round(lever.gain.gain * 100)}% (${lever.gain.samples})`
-                : ''}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.heading}>Activation patch (JSON; empty returns to the launch)</Text>
-        <TextInput
-          style={styles.input}
-          value={patchText}
-          onChangeText={setPatchText}
-          placeholder='{"grow": false}'
-          autoCapitalize="none"
-          autoCorrect={false}
-          multiline
-        />
-        <Button label="Apply and save" onPress={applyPatch} />
-        <Text style={styles.heading}>Thresholds (JSON; empty returns to the host's)</Text>
-        <TextInput
-          style={styles.input}
-          value={tuneText}
-          onChangeText={setTuneText}
-          placeholder='{"upgradeAfterMs": 2000}'
-          autoCapitalize="none"
-          autoCorrect={false}
-          multiline
-        />
-        <Button label="Tune and save" onPress={applyTune} />
-        <Button label="Share session recording" onPress={shareRecording} />
-        {result ? (
-          <Text style={result.outcome.ok ? styles.ok : styles.error}>
-            {result.what}: {result.outcome.ok ? 'applied' : result.outcome.error}
-          </Text>
-        ) : null}
-      </View>
-    </ScrollView>
+      )}
+      style={styles.screen}
+    />
   );
 }
 
@@ -176,6 +197,8 @@ function Button({ label, onPress }: { readonly label: string; readonly onPress: 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: tokens.colors.background },
   content: { padding: 16, gap: 12 },
+  listHeader: { gap: 12 },
+  listFooter: { gap: 12 },
   title: { fontSize: 22, fontWeight: '700', color: tokens.colors.ink },
   empty: { padding: 16, color: tokens.colors.inkSubtle },
   section: {

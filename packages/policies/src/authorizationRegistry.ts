@@ -75,3 +75,7 @@ export const BOND_ENTITY_TYPES = [
   'PERSONAL',
   'PERSONAL_CLASSROOM',
 ] as const;
+
+export type AuthorizationAction = (typeof AUTHORIZATION_ACTIONS)[number];
+export type AuthorizationResource = (typeof AUTHORIZATION_RESOURCES)[number];
+export type BondEntityType = (typeof BOND_ENTITY_TYPES)[number];

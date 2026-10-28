@@ -7,6 +7,7 @@ import { useSyncExternalStore } from 'react';
  * `useSyncExternalStore`: no Context, no provider in the tree.
  */
 let bound: Verger | null = null;
+let lastInteraction: { verger: Verger; at: number } | null = null;
 const listeners = new Set<() => void>();
 
 const notify = () => {
@@ -19,6 +20,19 @@ const subscribeBinding = (listener: () => void) => {
   };
 };
 const noSubscription = () => () => {};
+/** Verger needs continuous presence, not one event for every native move. */
+export const INTERACTION_THROTTLE_MS = 250;
+
+/** Existing host roots can report presence without adding a layout View or claiming a responder. */
+export function reportVergerInteraction(): false {
+  if (bound === null || bound.activation === null) return false;
+  const at = performance.now();
+  if (lastInteraction?.verger === bound && at - lastInteraction.at < INTERACTION_THROTTLE_MS)
+    return false;
+  lastInteraction = { verger: bound, at };
+  bound.dispatch({ type: 'interaction', at });
+  return false;
+}
 
 /**
  * Binds `verger` during its shell's first render when nothing is bound yet, so the shell's
@@ -42,6 +56,7 @@ export function bindVerger(verger: Verger): () => void {
   return () => {
     if (bound !== verger) return;
     bound = null;
+    lastInteraction = null;
     notify();
   };
 }

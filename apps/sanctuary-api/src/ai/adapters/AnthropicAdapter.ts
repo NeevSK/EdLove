@@ -8,6 +8,7 @@ export class AnthropicAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
+    _abortSignal?: AbortSignal,
   ): Promise<AsyncIterable<StreamChunk>> {
     return chat({
       adapter: createAnthropicChat(model as any, apiKey),

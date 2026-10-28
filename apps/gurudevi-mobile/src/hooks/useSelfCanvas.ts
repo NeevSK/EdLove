@@ -2,6 +2,7 @@ import { useWorkspaceLayoutSync as usePersistentLayoutSync } from '@repo/core/na
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
+import type { Bond } from '@repo/core/types/Identity';
 import { useResponsiveGrid } from '@repo/ui';
 import { tokens } from '@repo/ui/tokens';
 import { router } from 'expo-router';
@@ -9,6 +10,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { getSelfRegistry } from '@/navigation/registries/selfRegistry';
 import type { MobileFeatureItem } from '@/navigation/registries/types';
+
+const EMPTY_AVAILABLE_BONDS: readonly Bond[] = [];
+const EMPTY_PINNED_IDS: string[] = [];
 
 export type SelfCategory = 'all' | NonNullable<MobileFeatureItem['category']>;
 
@@ -47,13 +51,15 @@ export function useSelfCanvas() {
   const { width } = useWindowDimensions();
   const { columns, gutter } = useResponsiveGrid();
   const user = useAuthStore((state) => state.user);
-  const availableBonds = useScopeSessionStore((state) => state.snapshot?.availableBonds ?? []);
+  const availableBonds = useScopeSessionStore(
+    (state) => state.snapshot?.availableBonds ?? EMPTY_AVAILABLE_BONDS,
+  );
   const displayName = user?.display_name?.split(' ')[0] || 'Seeker';
 
   const [selectedCategory, setSelectedCategory] = useState<SelfCategory>('all');
   const openTab = useActiveSubTabsStore((state) => state.openTab);
   const localPinnedIds = useActiveSubTabsStore(
-    (state) => state.pinnedFeatureIdsByDomain.self || [],
+    (state) => state.pinnedFeatureIdsByDomain.self ?? EMPTY_PINNED_IDS,
   );
   const toggleLocalPin = useActiveSubTabsStore((state) => state.togglePinFeature);
 

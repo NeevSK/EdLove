@@ -1,3 +1,15 @@
+/**
+ * Gurudevi Host Routing Engine
+ *
+ * Partitions the single Next.js web application into three distinct surfaces:
+ * 1. Public / Marketing: gurudevi.app (or localhost:3000 / public.localhost:3000) -> app/(marketing)
+ * 2. Sanctuary Web: sanctuary.gurudevi.app (or sanctuary.localhost:3000) -> app/(sanctuary)
+ * 3. Explore Web: explore.gurudevi.app (or explore.localhost:3000) -> app/(sanctuary) guest showcase
+ *
+ * Local development leverages RFC 6761 (*.localhost) to permit zero-OS-hack
+ * testing without editing /etc/hosts or dealing with SSL port collisions.
+ */
+
 export const PUBLIC_GURUDEVI_HOST = 'gurudevi.app';
 export const SANCTUARY_GURUDEVI_HOST = 'sanctuary.gurudevi.app';
 export const EXPLORE_GURUDEVI_HOST = 'explore.gurudevi.app';
@@ -86,9 +98,15 @@ export function extractSchoolSubdomain(hostname: string): string | null {
 
 export function classifyGurudeviHost(hostname: string): GurudeviHost {
   const normalizedHostname = normalizeHostname(hostname);
-  if (normalizedHostname === PUBLIC_GURUDEVI_HOST) return 'public';
-  if (normalizedHostname === SANCTUARY_GURUDEVI_HOST) return 'sanctuary';
-  if (normalizedHostname === EXPLORE_GURUDEVI_HOST || normalizedHostname === 'explore.localhost') return 'explore';
+  if (normalizedHostname === PUBLIC_GURUDEVI_HOST || normalizedHostname === 'public.localhost')
+    return 'public';
+  if (
+    normalizedHostname === SANCTUARY_GURUDEVI_HOST ||
+    normalizedHostname === 'sanctuary.localhost'
+  )
+    return 'sanctuary';
+  if (normalizedHostname === EXPLORE_GURUDEVI_HOST || normalizedHostname === 'explore.localhost')
+    return 'explore';
   if (extractSchoolSubdomain(normalizedHostname) !== null) return 'school';
   return 'other';
 }
@@ -149,6 +167,10 @@ export function resolveHostRouting(
       return { kind: 'allow' };
     }
 
+    if (pathname === '/support' || pathname.startsWith('/support/')) {
+      return { kind: 'allow' };
+    }
+
     if (isSanctuaryPath(pathname)) {
       return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname };
     }
@@ -178,6 +200,11 @@ export function resolveHostRouting(
 
   if (incomingHost === 'sanctuary' && pathname === '/') {
     return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname: '/welcome' };
+  }
+
+  if (pathname === '/support' || pathname.startsWith('/support/')) {
+    if (method !== 'GET' && method !== 'HEAD') return { kind: 'not-found' };
+    return { kind: 'allow' };
   }
 
   const expectedHost = isSanctuaryPath(pathname) ? 'sanctuary' : 'public';

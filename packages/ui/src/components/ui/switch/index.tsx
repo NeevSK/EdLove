@@ -42,7 +42,7 @@ export const Switch = ({
     <RNSwitch
       {...props}
       value={value}
-      onValueChange={handleValueChange}
+      onValueChange={isDisabled ? undefined : handleValueChange}
       disabled={isDisabled}
       trackColor={trackColorProp || defaultTrackColor}
       thumbColor={Platform.OS === 'ios' ? '#FFFFFF' : value ? '#FFFFFF' : '#f4f3f4'}

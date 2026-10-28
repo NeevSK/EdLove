@@ -1,8 +1,7 @@
-import { resolveSelfFeatureManifest } from '@repo/self/features/featureManifest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as React from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SelfFloor } from '@/app/(sanctuary)/self/SelfFloor';
 import { requestAccountSelfProcedure } from '@/lib/sanctuary/selfApiClient';
 
@@ -15,6 +14,13 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
 });
 
 vi.mock('@repo/self/features/featureManifest', () => ({
+  createSelfAccessContext: vi.fn((opts) => ({
+    userId: opts?.userId ?? null,
+    capabilities: ['read:SelfReflection', 'read:InnerPulse', 'read:SelfCare'],
+    capacities: ['teacher'],
+    citizenshipLevel: 1,
+    roles: ['teacher'],
+  })),
   resolveSelfFeatureManifest: vi.fn(() => ({
     all: [
       {
@@ -86,13 +92,11 @@ vi.mock('@/app/(sanctuary)/self/browserFeatureRegistry', () => ({
     fire_journal: { renderer: 'fire-journal', taskKind: 'task' },
     mood_lotus: { renderer: 'mood-lotus', taskKind: 'modal' },
   },
-  getBrowserSelfFeature: vi.fn(
-    (id: string) => {
-      if (id === 'fire_journal') return { renderer: 'fire-journal', taskKind: 'task' };
-      if (id === 'mood_lotus') return { renderer: 'mood-lotus', taskKind: 'modal' };
-      return null;
-    },
-  ),
+  getBrowserSelfFeature: vi.fn((id: string) => {
+    if (id === 'fire_journal') return { renderer: 'fire-journal', taskKind: 'task' };
+    if (id === 'mood_lotus') return { renderer: 'mood-lotus', taskKind: 'modal' };
+    return null;
+  }),
   isBrowserSelfFeatureDelivered: vi.fn((id) => ['fire_journal', 'mood_lotus'].includes(id)),
 }));
 
@@ -142,11 +146,17 @@ vi.mock('@/lib/sanctuary/selfApiClient', () => ({
 }));
 
 beforeEach(() => {
+  window.localStorage.clear();
   vi.clearAllMocks();
   vi.mocked(requestAccountSelfProcedure).mockImplementation(async (proc) => {
     if (proc === 'getJournalHistory' || proc === 'getMoodHistory') return [];
     return null;
   });
+});
+
+afterEach(() => {
+  cleanup();
+  window.localStorage.clear();
 });
 
 describe('SelfFloor Component Integration (G2 — jsdom)', () => {
@@ -180,12 +190,9 @@ describe('SelfFloor Component Integration (G2 — jsdom)', () => {
   });
 
   it('shows error state when burn fails', async () => {
-    const { requestAccountSelfProcedure } = await import('@/lib/sanctuary/selfApiClient');
-    vi.mocked(requestAccountSelfProcedure).mockImplementation(async (proc) => {
-      if (proc === 'getJournalHistory') return [];
-      if (proc === 'burnJournal') throw new Error('We could not release that reflection.');
-      return null;
-    });
+    vi.mocked(requestAccountSelfProcedure).mockRejectedValueOnce(
+      new Error('We could not release that reflection.'),
+    );
 
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
@@ -202,65 +209,49 @@ describe('SelfFloor Component Integration (G2 — jsdom)', () => {
     });
   });
 
-  it('renders master-detail practice rail when Fire Journal is open and returns to overview', async () => {
+  it('renders master-detail task strip when Fire Journal is open and returns to overview', async () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
     await user.click(screen.getByRole('button', { name: /open fire journal/i }));
 
-    // Verify master-detail rail is rendered alongside the active practice
-    expect(screen.getByText('Self Practices')).toBeDefined();
-    expect(screen.getByRole('button', { name: /full overview/i })).toBeDefined();
+    // Verify active practice and TaskStrip Home button are rendered
+    expect(screen.getByText('Self · Fire Journal')).toBeDefined();
+    expect(screen.getByText('Make room for what needs to be released.')).toBeDefined();
+    expect(screen.getByRole('button', { name: /home/i })).toBeDefined();
     expect(screen.getByRole('textbox', { name: /a private reflection/i })).toBeDefined();
 
-    // Verify rail contains Pinned and Practice Catalog sections
-    const rail = screen.getByRole('complementary', { name: /self practices/i });
-    expect(within(rail).getByText('Pinned')).toBeDefined();
-    expect(within(rail).getByText('Practice Catalog')).toBeDefined();
-
-    // Clicking "Full Overview" returns the user to the catalog
-    await user.click(screen.getByRole('button', { name: /full overview/i }));
-    expect(screen.getByText('Practices, held in one place')).toBeDefined();
+    // Clicking "Home" returns the user to the catalog
+    await user.click(screen.getByRole('button', { name: /home/i }));
+    expect(screen.getByText('Self · Overview')).toBeDefined();
   });
 
-  it('allows switching practice and toggling pins directly from the master-detail rail', async () => {
+  it('allows access to task strip and quick access shortcuts while in practice mode', async () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
     // Open Fire Journal
     await user.click(screen.getByRole('button', { name: /open fire journal/i }));
 
-    const rail = screen.getByRole('complementary', { name: /self practices/i });
-    expect(rail).toBeDefined();
+    // Task strip navigation exists
+    const nav = screen.getByRole('navigation', { name: /open work tabs/i });
+    expect(nav).toBeDefined();
 
-    // Toggle pin on Mood Lotus from the rail
-    const pinMoodButton = within(rail).getByRole('button', { name: /pin mood lotus/i });
-    await user.click(pinMoodButton);
-
-    // Now Mood Lotus should be pinned (appears in Pinned list and in Practice Catalog)
-    expect(
-      within(rail).getAllByRole('button', { name: /unpin mood lotus/i }).length,
-    ).toBeGreaterThanOrEqual(1);
-
-    // Open Mood Lotus directly from the rail
-    const openMoodFromRail = within(rail).getAllByRole('button', { name: /mood lotus/i })[0];
-    if (!openMoodFromRail) throw new Error('Expected Mood Lotus button in rail');
-    await user.click(openMoodFromRail);
-
-    // Mood Lotus modal should open
-    expect(screen.getByRole('dialog')).toBeDefined();
-    expect(screen.getByText('How are you arriving?')).toBeDefined();
+    // Quick access button is mounted
+    const quickAccessBtn = screen.getByRole('button', { name: /open quick access/i });
+    expect(quickAccessBtn).toBeDefined();
   });
 
   it('opens Mood Lotus modal from catalog', async () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
-    const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
+    const moodLotusCard = screen
+      .getByRole('heading', { level: 4, name: 'Mood Lotus' })
+      .closest('article');
     if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
     await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
-    expect(screen.getByRole('dialog')).toBeDefined();
     expect(screen.getByText('How are you arriving?')).toBeDefined();
   });
 });
@@ -293,7 +284,9 @@ describe('Mood Lotus Integration (G2 — jsdom)', () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
-    const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
+    const moodLotusCard = screen
+      .getByRole('heading', { level: 4, name: 'Mood Lotus' })
+      .closest('article');
     if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
     await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
@@ -316,7 +309,9 @@ describe('Mood Lotus Integration (G2 — jsdom)', () => {
     const user = userEvent.setup();
     render(<SelfFloor displayName="Test User" />);
 
-    const moodLotusCard = screen.getByText('Mood Lotus').closest('article');
+    const moodLotusCard = screen
+      .getByRole('heading', { level: 4, name: 'Mood Lotus' })
+      .closest('article');
     if (!moodLotusCard) throw new Error('Expected Mood Lotus card in catalog');
     await user.click(within(moodLotusCard).getByRole('button', { name: /open practice/i }));
 
@@ -337,9 +332,7 @@ describe('Floor Atmosphere Integration (G2 — jsdom)', () => {
     expect(trigger).toBeDefined();
 
     await user.click(trigger);
-    expect(
-      screen.getByRole('dialog', { name: /floor studio/i }),
-    ).toBeDefined();
+    expect(screen.getByRole('dialog', { name: /floor studio/i })).toBeDefined();
     expect(screen.getByText(/tactile shader fx/i)).toBeDefined();
 
     await user.click(screen.getByRole('button', { name: /aurora mesh/i }));

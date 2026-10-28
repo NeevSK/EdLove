@@ -8,6 +8,7 @@ export class OpenRouterAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
+    _abortSignal?: AbortSignal,
   ): Promise<AsyncIterable<StreamChunk>> {
     // OpenRouter exposes an OpenAI-compatible chat completions endpoint, so we
     // configure the OpenAI completions adapter with OpenRouter's URL.

@@ -18,6 +18,6 @@ describe('useRewardedAdHub contract & lifecycle integrity', () => {
     expect(hookContent).toContain('dailyQuotaRemaining <= 0');
     expect(hookContent).toContain('setCooldownSeconds(45);');
     expect(hookContent).toContain('+10 Sanctuary Energy');
-    expect(hookContent).toContain('fetch(`/api/rewards/energy-balance');
+    expect(hookContent).toMatch(/fetch\(\s*`\/api\/rewards\/energy-balance/);
   });
 });

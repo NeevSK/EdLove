@@ -234,6 +234,9 @@ export async function executeSaveWindDownRitualEffect(
 
   return Exit.match(exit, {
     onSuccess: () => {
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: true };
+      }
       actor.send({ type: 'SAVE_SUCCESS' });
       return { success: true };
     },
@@ -243,6 +246,9 @@ export async function executeSaveWindDownRitualEffect(
         errOption._tag === 'Some'
           ? errOption.value
           : 'Your ritual could not be saved. Your reflections are still here—please try again.';
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: false, error: errorMessage };
+      }
       actor.send({ type: 'SAVE_FAILURE', error: errorMessage });
       return { success: false, error: errorMessage };
     },

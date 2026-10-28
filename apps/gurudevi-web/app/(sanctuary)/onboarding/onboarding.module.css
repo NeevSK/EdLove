@@ -494,3 +494,90 @@
     transition: none;
   }
 }
+
+.detectedNameCard {
+  margin-top: 18px;
+  padding: 16px;
+  background: rgba(212, 132, 58, 0.08);
+  border: 1px solid rgba(212, 132, 58, 0.25);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeIn 200ms ease-out;
+}
+
+:global([data-appearance='night']) .detectedNameCard {
+  background: rgba(212, 132, 58, 0.12);
+  border-color: rgba(212, 132, 58, 0.35);
+}
+
+.detectedNameChoiceRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.secondaryActionBtn {
+  border: 0;
+  background: transparent;
+  color: #365d49;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  padding: 6px 4px;
+}
+
+.secondaryActionBtn:hover {
+  color: #294a38;
+}
+
+:global([data-appearance='night']) .secondaryActionBtn {
+  color: #8bb899;
+}
+
+.detectedNameSuggestion {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: fadeIn 200ms ease-out;
+}
+
+.detectedNamePrompt {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--color-sanctuary-saffron, #a85022);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detectedNameHelper {
+  margin: 0;
+  font-size: 12.5px;
+  color: #68736a;
+}
+
+.useDetectedNameBtn {
+  align-self: flex-start;
+  background: rgba(212, 132, 58, 0.1);
+  border: 1px solid rgba(212, 132, 58, 0.3);
+  color: var(--color-sanctuary-saffron, #a85022);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.useDetectedNameBtn:hover {
+  background: rgba(212, 132, 58, 0.18);
+}
+

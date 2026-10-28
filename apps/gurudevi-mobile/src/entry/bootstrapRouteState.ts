@@ -7,10 +7,13 @@ import {
   useAuth,
 } from '@repo/core/logic';
 import type { AuthSession } from '@repo/core/logic/ports/auth.port';
-import { getLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { getOrCreateGuestLease } from '@repo/core/native/guestLease';
 import { setGuestScope } from '@repo/core/native/guestScope';
-import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
+import { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
+import {
+  isLocalGuestSessionId,
+  restoreLocalGuestSession,
+} from '@repo/core/native/localGuestSession';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useEffect, useState } from 'react';
@@ -53,6 +56,7 @@ type LocalGuestRouteState = {
 function useLocalGuestRouteState(
   session: AuthSession | null,
   onboardingCompleted: boolean,
+  isSessionLoading: boolean,
 ): LocalGuestRouteState {
   const isAnonymous = getSessionIdentityMode(session) === 'anonymous';
   const [state, setState] = useState<LocalGuestRouteState>({
@@ -70,28 +74,32 @@ function useLocalGuestRouteState(
 
     let active = true;
     setState({ isLoading: true, isReady: false, localGuestId: null });
-    void (anonymousGuestId ? Promise.resolve({ id: anonymousGuestId }) : restoreLocalGuestSession())
-      .then((guestSession) => {
-        if (!guestSession) return null;
-        return getLocalGuestIdentity(guestSession.id).then((identity) => ({
-          identity,
-          userId: guestSession.id,
-        }));
-      })
+    void (
+      anonymousGuestId
+        ? Promise.resolve({ version: 1 as const, id: anonymousGuestId })
+        : restoreLocalGuestSession()
+    )
+      .then((guestSession) => activateLocalGuestSession(guestSession))
       .then(async (identity) => {
-        if (
-          !identity ||
-          !identity.identity.onboarding_completed ||
-          !identity.identity.activeBond?.capacity
-        ) {
-          return { isReady: false, localGuestId: identity?.userId ?? null };
+        if (!identity) return null;
+        if (!identity.identity.onboarding_completed || !identity.identity.activeBond?.capacity) {
+          return { isReady: false, localGuestId: identity.session.id };
         }
-        setGuestScope(identity.userId);
-        const lease = await getOrCreateGuestLease(identity.userId);
-        return { isReady: !lease.isExpired, localGuestId: identity.userId };
+        setGuestScope(identity.session.id);
+        if (isLocalGuestSessionId(identity.session.id)) {
+          return { isReady: true, localGuestId: identity.session.id };
+        }
+        const lease = await getOrCreateGuestLease(identity.session.id);
+        return { isReady: !lease.isExpired, localGuestId: identity.session.id };
       })
       .then((next) => {
-        if (active) setState({ isLoading: false, ...next });
+        if (active) {
+          setState(
+            next
+              ? { isLoading: false, ...next }
+              : { isLoading: false, isReady: false, localGuestId: null },
+          );
+        }
       })
       .catch((error: unknown) => {
         console.warn('[entry] unable to restore local guest admission state:', error);
@@ -101,7 +109,7 @@ function useLocalGuestRouteState(
     return () => {
       active = false;
     };
-  }, [isAnonymous, onboardingCompleted, session]);
+  }, [isAnonymous, isSessionLoading, onboardingCompleted, session]);
 
   return state;
 }
@@ -147,7 +155,7 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
     ),
   );
   const { manifestLoaded, readiness, snapshotUserId } = entitlement;
-  const localGuest = useLocalGuestRouteState(session, onboardingCompleted);
+  const localGuest = useLocalGuestRouteState(session, onboardingCompleted, loading);
   const isAnonymous = getSessionIdentityMode(session) === 'anonymous';
   const hasActiveAccessToken = Boolean(
     session?.access_token &&
@@ -205,7 +213,7 @@ export function getBootstrapRouteTarget(
     readiness: state.entitlement.readiness,
   });
   const readiness = getSessionRouteReadiness({
-    isSessionLoading: state.isSessionLoading,
+    isSessionLoading: state.isSessionLoading && !state.hasLocalGuestSession,
     isProfileResolving: state.isProfileResolving,
     hasProfileError: Boolean(state.profileError),
     hasSession: Boolean(state.session) || Boolean(state.hasLocalGuestSession),

@@ -77,8 +77,8 @@ export default function NotFound() {
             marginBottom: '2rem',
           }}
         >
-          This threshold does not lead to a known sanctuary floor or classroom room.
-          You can return to the Welcome Gate or wander through the open museum.
+          This threshold does not lead to a known sanctuary floor or classroom room. You can return
+          to the Guest House or explore freely.
         </p>
         <div
           style={{
@@ -106,7 +106,7 @@ export default function NotFound() {
               boxShadow: '0 2px 0 rgba(0, 0, 0, 0.2)',
             }}
           >
-            Return to Welcome Gate
+            Return to Guest House
           </Link>
           <a
             href="https://explore.gurudevi.app"

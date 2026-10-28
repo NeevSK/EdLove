@@ -9,6 +9,7 @@ import type { ServerSupabaseClient } from '../supabase/server';
 export type AuthorizedEntry = AuthorizedEntryResult | Readonly<{ kind: 'signed-out' }>;
 
 type IdentityPayload = Readonly<{
+  activeBond?: unknown;
   display_name?: unknown;
   id?: unknown;
   name?: unknown;
@@ -85,10 +86,10 @@ function activeScope(payload: IdentityPayload): BrowserActiveScope | null {
   };
 }
 
-function primaryScopeRole(payload: IdentityPayload): string | null {
-  const bootstrap = payload.scopeBootstrap;
-  if (!bootstrap || typeof bootstrap !== 'object' || Array.isArray(bootstrap)) return null;
-  const capacity = (bootstrap as ScopeBootstrapPayload).primaryCapacity;
+function selectedBondCapacity(payload: IdentityPayload): string | null {
+  const bond = payload.activeBond;
+  if (!bond || typeof bond !== 'object' || Array.isArray(bond)) return null;
+  const capacity = Reflect.get(bond, 'capacity');
   return typeof capacity === 'string' && capacity.trim() ? capacity : null;
 }
 
@@ -109,10 +110,18 @@ function authoritativeFacts(
     authSubjectId: subject,
     displayName: displayName(payload),
     onboardingCompleted: payload.onboarding_completed,
-    activeCapacity: primaryScopeRole(payload),
-    primaryScopeRole: primaryScopeRole(payload),
+    activeCapacity: selectedBondCapacity(payload),
+    primaryCapacity: onboardingPrimaryCapacity(payload),
+    primaryScopeRole: onboardingPrimaryCapacity(payload),
     activeScope: activeScope(payload),
   };
+}
+
+function onboardingPrimaryCapacity(payload: IdentityPayload): string | null {
+  const bootstrap = payload.scopeBootstrap;
+  if (!bootstrap || typeof bootstrap !== 'object' || Array.isArray(bootstrap)) return null;
+  const capacity = (bootstrap as ScopeBootstrapPayload).primaryCapacity;
+  return typeof capacity === 'string' && capacity.trim() ? capacity : null;
 }
 
 function hasCanonicalAccountConsistency(payload: IdentityPayload): boolean {

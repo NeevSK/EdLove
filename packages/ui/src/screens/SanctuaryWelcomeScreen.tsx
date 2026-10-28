@@ -25,11 +25,12 @@ export interface SanctuaryWelcomeScreenProps {
   onGuest?: () => void;
   /** Mobile owns guest identity selection so offline entry can remain device-local. */
   onStartGuest?: () => Promise<void>;
+  onScanQR?: () => void;
   exploreArtwork?: MascotArtworkSource;
 }
 
 export const SanctuaryWelcomeScreen = memo(
-  ({ onLogin, onGuest, onStartGuest, exploreArtwork }: SanctuaryWelcomeScreenProps) => {
+  ({ onLogin, onGuest, onStartGuest, onScanQR, exploreArtwork }: SanctuaryWelcomeScreenProps) => {
     const { t, i18n } = useTranslation();
     const { accent, animationsEnabled, blurEnabled, scene } = useTheme();
     const { isReduceMotionEnabled } = useAccessibility();
@@ -189,6 +190,7 @@ export const SanctuaryWelcomeScreen = memo(
               isConnecting={isConnecting}
               onExploreGuest={handleStartExploring}
               onSignIn={handleLoginPress}
+              onScanQR={onScanQR}
             />
 
             {/* Seamless Legal & Security Footnote (Zero-Friction In-App Links) */}

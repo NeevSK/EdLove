@@ -2,12 +2,15 @@
 
 import type {
   FloorWallpaperConfig,
+  SceneGroundMode,
   WorkspaceAppearanceMotion,
   WorkspaceAppearancePreset,
   WorkspaceWallpaper,
 } from '@repo/core/types';
+import { WORLD_IDS, WORLDS } from '@repo/ui/world';
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { getBackdropsForWorld, PRESET_WALLPAPERS } from '../../../lib/canvas/appearanceConstants';
 import {
   deleteCustomWallpaper,
   loadCustomWallpapers,
@@ -15,6 +18,8 @@ import {
 } from '../../../lib/storage/wallpaperIndexedDb';
 import type { FloorAtmosphereKind } from './FloorAtmosphere';
 import styles from './floor-studio.module.css';
+
+export { PRESET_WALLPAPERS };
 
 export interface FurnitureDefinition {
   id: string;
@@ -27,6 +32,8 @@ export interface FloorStudioDrawerProps {
   onClose: () => void;
   floorDomain: string;
   initialTab?: 'atmosphere' | 'furniture';
+  currentWorld?: string;
+  currentGroundMode?: SceneGroundMode;
   currentPreset: WorkspaceAppearancePreset;
   currentMotion: WorkspaceAppearanceMotion;
   currentAtmosphere: FloorAtmosphereKind;
@@ -35,6 +42,8 @@ export interface FloorStudioDrawerProps {
   furnitureItems: readonly FurnitureDefinition[];
   groupOrder: string[];
   pinnedIds: string[];
+  onSelectWorld?: (worldId: string) => void;
+  onSelectGroundMode?: (mode: SceneGroundMode) => void;
   onSelectPreset: (preset: WorkspaceAppearancePreset) => void;
   onSelectMotion: (motion: WorkspaceAppearanceMotion) => void;
   onSelectAtmosphere: (kind: FloorAtmosphereKind) => void;
@@ -45,46 +54,13 @@ export interface FloorStudioDrawerProps {
   onResetFloorDefaults: () => void;
 }
 
-export const PRESET_WALLPAPERS: ReadonlyArray<WorkspaceWallpaper> = [
-  {
-    provider: 'preset',
-    url: '/wallpapers/sanctuary-dawn-lotus.jpg',
-    publicId: 'preset:dawn-lotus',
-    width: 1920,
-    height: 1080,
-    name: 'Dawn Lotus',
-  },
-  {
-    provider: 'preset',
-    url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80',
-    publicId: 'preset:bamboo',
-    width: 1920,
-    height: 1080,
-    name: 'Bamboo Grove',
-  },
-  {
-    provider: 'preset',
-    url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80',
-    publicId: 'preset:peaks',
-    width: 1920,
-    height: 1080,
-    name: 'Misty Peaks',
-  },
-  {
-    provider: 'preset',
-    url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=80',
-    publicId: 'preset:cosmos',
-    width: 1920,
-    height: 1080,
-    name: 'Night Cosmos',
-  },
-];
-
 export function FloorStudioDrawer({
   isOpen,
   onClose,
   floorDomain,
   initialTab = 'atmosphere',
+  currentWorld = 'sanctuary',
+  currentGroundMode = 'live',
   currentPreset,
   currentAtmosphere,
   wallpaperConfig,
@@ -92,6 +68,8 @@ export function FloorStudioDrawer({
   furnitureItems,
   groupOrder,
   pinnedIds,
+  onSelectWorld,
+  onSelectGroundMode,
   onSelectPreset,
   onSelectAtmosphere,
   onSelectWallpaper,
@@ -195,18 +173,10 @@ export function FloorStudioDrawer({
     .map((id) => furnitureItems.find((f) => f.id === id))
     .filter((f): f is FurnitureDefinition => f !== undefined);
 
-  return createPortal((
+  return createPortal(
     <>
-      <div
-        aria-hidden="true"
-        className={styles.drawerOverlay}
-        onClick={onClose}
-      />
-      <aside
-        aria-label="Floor Studio Configuration"
-        className={styles.drawerPanel}
-        role="dialog"
-      >
+      <div aria-hidden="true" className={styles.drawerOverlay} onClick={onClose} />
+      <aside aria-label="Floor Studio Configuration" className={styles.drawerPanel} role="dialog">
         <header className={styles.drawerHeader}>
           <div className={styles.drawerTitleGroup}>
             <span aria-hidden="true">⚙️</span>
@@ -249,130 +219,226 @@ export function FloorStudioDrawer({
         <div className={styles.drawerBody}>
           {activeTab === 'atmosphere' ? (
             <>
-              {/* Wallpaper Section */}
+              {/* Cultural World Section */}
               <section className={styles.section}>
                 <div className={styles.sectionHeader}>
-                  <span className={styles.sectionTitle}>Sanctuary Wallpaper</span>
-                  {activeWallpaper ? (
-                    <button
-                      className={styles.resetBtn}
-                      onClick={() => onSelectWallpaper(null)}
-                      type="button"
-                    >
-                      Clear Wallpaper
-                    </button>
-                  ) : null}
+                  <span className={styles.sectionTitle}>Cultural World</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
+                    {WORLDS[currentWorld as keyof typeof WORLDS]?.names.en ?? 'Sanctuary'}
+                  </span>
                 </div>
-
-                <div className={styles.wallpaperList}>
-                  {PRESET_WALLPAPERS.map((preset) => (
-                    <div
-                      className={`${styles.wallpaperCard} ${
-                        activeWallpaper?.publicId === preset.publicId ? styles.wallpaperCardActive : ''
-                      }`}
-                      key={preset.publicId}
-                      onClick={() => onSelectWallpaper(preset)}
-                      role="button"
-                      style={{ backgroundImage: `url("${preset.url}")` }}
-                      tabIndex={0}
-                    >
-                      <span className={styles.wallpaperCardLabel}>{preset.name}</span>
-                    </div>
-                  ))}
-
-                  {customWallpapers.map((custom) => (
-                    <div
-                      className={`${styles.wallpaperCard} ${
-                        activeWallpaper?.publicId === custom.publicId ? styles.wallpaperCardActive : ''
-                      }`}
-                      key={custom.publicId}
-                      onClick={() => onSelectWallpaper(custom)}
-                      role="button"
-                      style={{ backgroundImage: `url("${custom.url}")` }}
-                      tabIndex={0}
-                    >
-                      <span className={styles.wallpaperCardLabel}>{custom.name || 'Custom'}</span>
+                <div className={styles.worldChipsList}>
+                  {WORLD_IDS.map((id) => {
+                    const world = WORLDS[id];
+                    const isSelected = currentWorld === id;
+                    return (
                       <button
-                        aria-label={`Delete custom wallpaper ${custom.name}`}
-                        className={styles.wallpaperDeleteBtn}
-                        onClick={(e) => handleDeleteCustomWallpaper(e, custom.publicId)}
-                        title="Delete wallpaper"
+                        className={`${styles.worldChip} ${isSelected ? styles.worldChipActive : ''}`}
+                        key={id}
+                        onClick={() => onSelectWorld?.(id)}
                         type="button"
                       >
-                        ✕
+                        {world?.names.en ?? id}
                       </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
-
-                {/* Upload Custom Dropzone */}
-                <label className={styles.dropzone}>
-                  <input
-                    accept="image/png,image/jpeg,image/webp"
-                    className={styles.fileInputHidden}
-                    disabled={isUploading}
-                    onChange={handleFileUpload}
-                    ref={fileInputRef}
-                    type="file"
-                  />
-                  <span aria-hidden="true">{isUploading ? '⏳' : '📤'}</span>
-                  <span className={styles.dropzoneText}>
-                    {isUploading ? 'Downsampling & Saving...' : 'Upload Custom Wallpaper'}
-                  </span>
-                  <span className={styles.dropzoneHint}>PNG, JPEG, WebP (auto-scaled to 1920×1080)</span>
-                </label>
               </section>
 
-              {/* Slideshow Mode Switcher */}
+              {/* Scene Ground Mode Section */}
               <section className={styles.section}>
-                <span className={styles.sectionTitle}>Wallpaper Playback Mode</span>
-                <div className={styles.gridTwo}>
+                <span className={styles.sectionTitle}>Scene Ground Mode</span>
+                <div className={styles.gridFour}>
                   <button
                     className={`${styles.pillButton} ${
-                      currentMode !== 'slideshow' ? styles.pillButtonActive : ''
+                      currentGroundMode === 'live' ? styles.pillButtonActive : ''
                     }`}
                     onClick={() => {
-                      if (currentMode === 'slideshow') toggleSlideshowMode();
+                      onSelectGroundMode?.('live');
+                      onSelectWallpaper(null);
                     }}
                     type="button"
                   >
-                    <span>🖼️</span> Static Image
+                    <span>🌅</span> Live Sky
                   </button>
                   <button
                     className={`${styles.pillButton} ${
-                      currentMode === 'slideshow' ? styles.pillButtonActive : ''
+                      currentGroundMode === 'still' ? styles.pillButtonActive : ''
                     }`}
-                    onClick={toggleSlideshowMode}
+                    onClick={() => {
+                      onSelectGroundMode?.('still');
+                      onSelectWallpaper(null);
+                    }}
                     type="button"
                   >
-                    <span>🔄</span> Slideshow
+                    <span>🌄</span> Still Sky
+                  </button>
+                  <button
+                    className={`${styles.pillButton} ${
+                      currentGroundMode === 'image' ? styles.pillButtonActive : ''
+                    }`}
+                    onClick={() => {
+                      onSelectGroundMode?.('image');
+                      const backdrops = getBackdropsForWorld(currentWorld);
+                      if (!activeWallpaper && backdrops.length > 0) {
+                        onSelectWallpaper(backdrops[0] ?? null);
+                      }
+                    }}
+                    type="button"
+                  >
+                    <span>🖼️</span> Photo
+                  </button>
+                  <button
+                    className={`${styles.pillButton} ${
+                      currentGroundMode === 'quiet' ? styles.pillButtonActive : ''
+                    }`}
+                    onClick={() => {
+                      onSelectGroundMode?.('quiet');
+                      onSelectWallpaper(null);
+                    }}
+                    type="button"
+                  >
+                    <span>⚪</span> Quiet
                   </button>
                 </div>
+              </section>
 
-                {currentMode === 'slideshow' ? (
-                  <div style={{ marginTop: '0.4rem' }}>
-                    <span className={styles.sectionTitle}>Slideshow Cadence</span>
-                    <div className={styles.gridThree} style={{ marginTop: '0.35rem' }}>
-                      {[
-                        { sec: 180, label: '3 min' },
-                        { sec: 300, label: '5 min' },
-                        { sec: 900, label: '15 min' },
-                      ].map((cadence) => (
+              {/* Photographic Wallpapers (when in image mode) */}
+              {currentGroundMode === 'image' ? (
+                <>
+                  <section className={styles.section}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.sectionTitle}>World Photo Gallery</span>
+                      {activeWallpaper ? (
                         <button
-                          className={`${styles.pillButton} ${
-                            currentInterval === cadence.sec ? styles.pillButtonActive : ''
-                          }`}
-                          key={cadence.sec}
-                          onClick={() => handleIntervalChange(cadence.sec)}
+                          className={styles.resetBtn}
+                          onClick={() => onSelectWallpaper(null)}
                           type="button"
                         >
-                          {cadence.label}
+                          Clear Wallpaper
                         </button>
+                      ) : null}
+                    </div>
+
+                    <div className={styles.wallpaperList}>
+                      {getBackdropsForWorld(currentWorld).map((preset) => (
+                        <div
+                          className={`${styles.wallpaperCard} ${
+                            activeWallpaper?.publicId === preset.publicId
+                              ? styles.wallpaperCardActive
+                              : ''
+                          }`}
+                          key={preset.publicId}
+                          onClick={() => onSelectWallpaper(preset)}
+                          role="button"
+                          style={{ backgroundImage: `url("${preset.url}")` }}
+                          tabIndex={0}
+                        >
+                          <span className={styles.wallpaperCardLabel}>{preset.name}</span>
+                        </div>
+                      ))}
+
+                      {customWallpapers.map((custom) => (
+                        <div
+                          className={`${styles.wallpaperCard} ${
+                            activeWallpaper?.publicId === custom.publicId
+                              ? styles.wallpaperCardActive
+                              : ''
+                          }`}
+                          key={custom.publicId}
+                          onClick={() => onSelectWallpaper(custom)}
+                          role="button"
+                          style={{ backgroundImage: `url("${custom.url}")` }}
+                          tabIndex={0}
+                        >
+                          <span className={styles.wallpaperCardLabel}>
+                            {custom.name || 'Custom'}
+                          </span>
+                          <button
+                            aria-label={`Delete custom wallpaper ${custom.name}`}
+                            className={styles.wallpaperDeleteBtn}
+                            onClick={(e) => handleDeleteCustomWallpaper(e, custom.publicId)}
+                            title="Delete wallpaper"
+                            type="button"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       ))}
                     </div>
-                  </div>
-                ) : null}
-              </section>
+
+                    {/* Upload Custom Dropzone */}
+                    <label className={styles.dropzone} style={{ marginTop: '0.6rem' }}>
+                      <input
+                        accept="image/png,image/jpeg,image/webp"
+                        className={styles.fileInputHidden}
+                        disabled={isUploading}
+                        onChange={handleFileUpload}
+                        ref={fileInputRef}
+                        type="file"
+                      />
+                      <span aria-hidden="true">{isUploading ? '⏳' : '📤'}</span>
+                      <span className={styles.dropzoneText}>
+                        {isUploading ? 'Downsampling & Saving...' : 'Upload Custom Wallpaper'}
+                      </span>
+                      <span className={styles.dropzoneHint}>
+                        PNG, JPEG, WebP (auto-scaled to 1920×1080)
+                      </span>
+                    </label>
+                  </section>
+
+                  {/* Slideshow Mode Switcher */}
+                  <section className={styles.section}>
+                    <span className={styles.sectionTitle}>Wallpaper Playback Mode</span>
+                    <div className={styles.gridTwo}>
+                      <button
+                        className={`${styles.pillButton} ${
+                          currentMode !== 'slideshow' ? styles.pillButtonActive : ''
+                        }`}
+                        onClick={() => {
+                          if (currentMode === 'slideshow') toggleSlideshowMode();
+                        }}
+                        type="button"
+                      >
+                        <span>🖼️</span> Static Image
+                      </button>
+                      <button
+                        className={`${styles.pillButton} ${
+                          currentMode === 'slideshow' ? styles.pillButtonActive : ''
+                        }`}
+                        onClick={toggleSlideshowMode}
+                        type="button"
+                      >
+                        <span>🔄</span> Slideshow
+                      </button>
+                    </div>
+
+                    {currentMode === 'slideshow' ? (
+                      <div style={{ marginTop: '0.4rem' }}>
+                        <span className={styles.sectionTitle}>Slideshow Cadence</span>
+                        <div className={styles.gridThree} style={{ marginTop: '0.35rem' }}>
+                          {[
+                            { sec: 180, label: '3 min' },
+                            { sec: 300, label: '5 min' },
+                            { sec: 900, label: '15 min' },
+                          ].map((cadence) => (
+                            <button
+                              className={`${styles.pillButton} ${
+                                currentInterval === cadence.sec ? styles.pillButtonActive : ''
+                              }`}
+                              key={cadence.sec}
+                              onClick={() => handleIntervalChange(cadence.sec)}
+                              type="button"
+                            >
+                              {cadence.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </section>
+                </>
+              ) : null}
 
               {/* Background Color Wash Palette */}
               <section className={styles.section}>
@@ -407,7 +473,10 @@ export function FloorStudioDrawer({
                       if (onUpdateWallpaperConfig) {
                         onUpdateWallpaperConfig({
                           mode: currentMode,
-                          items: wallpaperConfig?.items ?? [...PRESET_WALLPAPERS, ...customWallpapers],
+                          items: wallpaperConfig?.items ?? [
+                            ...PRESET_WALLPAPERS,
+                            ...customWallpapers,
+                          ],
                           slideshowIntervalSeconds: currentInterval,
                           customWashColor: e.target.value,
                         });
@@ -458,7 +527,8 @@ export function FloorStudioDrawer({
               </div>
 
               <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--ink-soft)' }}>
-                Reorder or pin spatial components on this floor. Pinned furniture stays anchored at the top of the room.
+                Reorder or pin spatial components on this floor. Pinned furniture stays anchored at
+                the top of the room.
               </p>
 
               <div className={styles.furnitureList}>
@@ -514,11 +584,7 @@ export function FloorStudioDrawer({
         </div>
 
         <footer className={styles.drawerFooter}>
-          <button
-            className={styles.resetBtn}
-            onClick={onResetFloorDefaults}
-            type="button"
-          >
+          <button className={styles.resetBtn} onClick={onResetFloorDefaults} type="button">
             Reset Floor Defaults
           </button>
           <button
@@ -531,6 +597,7 @@ export function FloorStudioDrawer({
           </button>
         </footer>
       </aside>
-    </>
-  ), document.body);
+    </>,
+    document.body,
+  );
 }

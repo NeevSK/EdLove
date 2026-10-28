@@ -23,6 +23,8 @@ describe('Gurudevi hostname policy', () => {
     expect(isLocalPreviewHost('[::1]:3000')).toBe(true);
     expect(isLocalPreviewHost('explore.gurudevi.app')).toBe(false);
     expect(classifyGurudeviHost('localhost')).toBe('other');
+    expect(classifyGurudeviHost('sanctuary.localhost:3000')).toBe('sanctuary');
+    expect(classifyGurudeviHost('explore.localhost:3000')).toBe('explore');
   });
 
   it('routes browser auth and product paths to Sanctuary', () => {

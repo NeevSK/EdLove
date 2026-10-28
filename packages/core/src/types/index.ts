@@ -113,6 +113,7 @@ export {
   type JoinClassPayload,
   type JoinGroupPayload,
   type JoinSchoolPayload,
+  type LinkDevicePayload,
   QR_VERSION,
   type QRAction,
   type QRPayload,
@@ -201,6 +202,7 @@ export type {
   FeatureLifecycleStage,
   FloorWallpaperConfig,
   ResolvedWorkspaceSurface,
+  SceneGroundMode,
   ScreenSequenceStep,
   SensoryFeedbackProfile,
   WallpaperPlaybackMode,
@@ -227,8 +229,8 @@ export { APIError };
 export type DeviceInfo = DeviceMetadata & { uniqueId: string };
 export type AppConfig = { env: string; apiHost: string };
 export type AppContext = { user?: User; schoolId?: string };
+export * from './EducationalEconomics';
+export * from './FlowDAG';
 export * from './Growth';
 export type { AppNotification, NotificationStatus } from './notifications';
 export * from './Perspective';
-export * from './EducationalEconomics';
-export * from './FlowDAG';

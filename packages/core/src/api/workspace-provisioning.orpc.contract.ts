@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const commercialCapability = 'workspace.provision-commercial-batch' as const;
 const guardianCapability = 'workspace.request-guardian-link' as const;
+const teacherClassroomCapability = 'workspace.provision-teacher-classroom' as const;
 
 const commercialInput = z.strictObject({
   idempotencyKey: z.uuid(),
@@ -37,6 +38,20 @@ const settled = <T extends z.ZodType>(capability: string, result: T) =>
   });
 
 export const workspaceProvisioningORPCContract = {
+  provisionTeacherClassroom: {
+    method: 'post',
+    path: '/workspace-provisioning/teacher-classrooms',
+    request: { body: z.strictObject({
+      idempotencyKey: z.uuid(),
+      name: z.string().trim().min(1).max(160),
+      purpose: z.enum(['independent', 'personal']),
+    }) },
+    responses: { 200: {
+      schema: settled(teacherClassroomCapability, z.strictObject({ classroomId: z.uuid(), bondId: z.uuid() })),
+      description: 'Atomically creates an owned classroom and its teacher bond.',
+    } },
+    metadata: { policy: { action: 'create', subject: 'User' } },
+  },
   provisionCommercialBatch: {
     method: 'post',
     path: '/workspace-provisioning/commercial-batches',
@@ -65,6 +80,7 @@ export const workspaceProvisioningORPCContract = {
 } as const;
 
 export const WorkspaceProvisioningCapabilities = {
+  teacherClassroomCapability,
   commercialCapability,
   guardianCapability,
 } as const;

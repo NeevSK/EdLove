@@ -73,3 +73,34 @@ vi.mock('react-native-fast-confetti', () => {
     React.createElement('Confetti', { ...props, ref });
   return { __esModule: true, default: Confetti, Confetti };
 });
+
+vi.mock('react-native-gesture-handler', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-native-gesture-handler')>();
+  const createChainable = () => {
+    const chain: Record<string, unknown> = {};
+    const proxy: unknown = new Proxy(chain, {
+      get: (_target, prop) => {
+        if (prop === 'then') return undefined;
+        if (!chain[prop as string]) {
+          chain[prop as string] = vi.fn().mockReturnValue(proxy);
+        }
+        return chain[prop as string];
+      },
+    });
+    return proxy;
+  };
+
+  return {
+    ...actual,
+    Gesture: {
+      ...actual.Gesture,
+      Pan: vi.fn(() => createChainable()),
+      Tap: vi.fn(() => createChainable()),
+      LongPress: vi.fn(() => createChainable()),
+      Pinch: vi.fn(() => createChainable()),
+      Rotation: vi.fn(() => createChainable()),
+      Fling: vi.fn(() => createChainable()),
+    },
+    usePanGesture: vi.fn((config: unknown) => config),
+  };
+});

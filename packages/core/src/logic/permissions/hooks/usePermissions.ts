@@ -1,3 +1,4 @@
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import { isAnonymousIdentity, isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import {
   isBaselineReadCapability,
@@ -20,11 +21,10 @@ import {
   type UserContext,
   UserContextSchema,
 } from '@repo/core/logic/schemas/user.schema';
+import { PERSONAL_SCOPE_PERSPECTIVE, useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
-import { PERSONAL_SCOPE_PERSPECTIVE, useScopeSessionStore } from '@repo/core/store/scopeSession';
 import type { Action, Subject } from '@repo/core/types/authorization';
 import { useCallback, useMemo } from 'react';
 
@@ -49,9 +49,10 @@ export const usePermissions = () => {
     !scopeTransitioning &&
     scopeSnapshot !== null &&
     scopeSnapshot.principalId === (user?.id ?? null);
-  const activePerspective = scopeMatchesIdentity && scopeSnapshot
-    ? scopeSnapshot.activePerspective
-    : PERSONAL_SCOPE_PERSPECTIVE;
+  const activePerspective =
+    scopeMatchesIdentity && scopeSnapshot
+      ? scopeSnapshot.activePerspective
+      : PERSONAL_SCOPE_PERSPECTIVE;
   const schoolType =
     scopeMatchesIdentity && scopeSnapshot?.activePerspective.kind === 'institutional'
       ? (scopeSnapshot.activePerspective.schoolType ?? null)
@@ -64,14 +65,17 @@ export const usePermissions = () => {
     {
       activeBondId: scopeMatchesIdentity ? (scopeSnapshot?.activeBond?.id ?? null) : null,
       activeEntityId: scopeMatchesIdentity ? (scopeSnapshot?.activeBond?.entity_id ?? null) : null,
-      activeEntityType: scopeMatchesIdentity ? (scopeSnapshot?.activeBond?.entity_type ?? null) : null,
+      activeEntityType: scopeMatchesIdentity
+        ? (scopeSnapshot?.activeBond?.entity_type ?? null)
+        : null,
     },
-    Boolean(user?.id && scopeMatchesIdentity),
+    Boolean(user?.id && scopeMatchesIdentity && !isLocalOnlyIdentity(user)),
   );
   const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } = entitlement;
 
   const context: UserContext = useMemo(() => {
-    const availableBonds = scopeMatchesIdentity && scopeSnapshot ? scopeSnapshot.availableBonds : [];
+    const availableBonds =
+      scopeMatchesIdentity && scopeSnapshot ? scopeSnapshot.availableBonds : [];
     const activeBond = scopeMatchesIdentity && scopeSnapshot ? scopeSnapshot.activeBond : null;
     const personalCapacity: Capacity = CapacitySchema.safeParse(user?.capacity).data ?? 'student';
 

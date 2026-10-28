@@ -54,10 +54,22 @@ export const metadata: Metadata = {
 };
 
 import { PDPAConsentBanner } from './components/PDPAConsentBanner';
+import { cookies } from 'next/headers';
+import {
+  DEFAULT_LOCALE,
+  isSupportedLocale,
+  LOCALE_COOKIE_NAME,
+  type SupportedLocale,
+} from '../lib/i18n/types';
+import { LocaleProvider } from '../lib/i18n/LocaleContext';
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const cookieStore = await cookies();
+  const rawLocale = cookieStore.get(LOCALE_COOKIE_NAME)?.value;
+  const initialLocale: SupportedLocale = isSupportedLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={initialLocale} data-locale={initialLocale} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -68,6 +80,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <style>{`:root{${sharedTokenCss}}`}</style>
         <WorldStyles />
         <script>{`(function(){try{
+var l=localStorage.getItem('gd_locale');
+if(l&&['en','si','ta'].includes(l)){document.documentElement.lang=l;document.documentElement.setAttribute('data-locale',l);}
 var t=localStorage.getItem('gurudevi_theme')||'sanctuary';
 var m=localStorage.getItem('gurudevi_mode')||'system';
 var d=localStorage.getItem('gurudevi_density')||'default';
@@ -87,8 +101,10 @@ if(c){document.documentElement.setAttribute('data-pdpa-consent',c);}
 }catch(e){}})();`}</script>
       </head>
       <body className="bg-paper font-serif text-ink antialiased">
-        {children}
-        <PDPAConsentBanner />
+        <LocaleProvider initialLocale={initialLocale}>
+          {children}
+          <PDPAConsentBanner />
+        </LocaleProvider>
       </body>
     </html>
   );

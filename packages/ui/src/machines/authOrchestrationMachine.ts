@@ -316,6 +316,13 @@ export async function executePasswordAuthEffect(
 
   return Exit.match(exit, {
     onSuccess: (data) => {
+      if (actor.getSnapshot().status === 'stopped') {
+        return {
+          success: true,
+          newUserId: data.newUserId,
+          hasGuestData: data.hasGuestData,
+        };
+      }
       actor.send({
         type: 'AUTH_SUCCESS',
         guestSourceId: data.guestSourceId,
@@ -334,6 +341,9 @@ export async function executePasswordAuthEffect(
         errOption._tag === 'Some'
           ? String(errOption.value)
           : 'Authentication failed. Please verify your credentials.';
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: false, error: errorMessage };
+      }
       actor.send({ type: 'AUTH_FAILURE', error: errorMessage });
       return { success: false, error: errorMessage };
     },

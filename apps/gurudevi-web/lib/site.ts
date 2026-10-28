@@ -1,3 +1,5 @@
+import { EDLOVE_URL, FOUNDER_URL, INTUITUI_URL } from './surface-urls';
+
 export const SITE_URL = 'https://gurudevi.app';
 export const SITE_NAME = 'Gurudevi';
 export const SITE_TITLE = 'Gurudevi | Education Ecology Support System and Sanctuary for Education';
@@ -184,9 +186,9 @@ function publicUrl(name: string, fallback: string): string {
 export const WEB_LINKS = {
   marketing: SITE_URL,
   app: publicUrl('PUBLIC_GURUDEVI_APP_URL', 'https://sanctuary.gurudevi.app'),
-  edlove: publicUrl('PUBLIC_EDLOVE_URL', 'https://edlove.org'),
-  intuitui: publicUrl('PUBLIC_INTUITUI_URL', 'https://intuituilabs.edlove.org'),
-  founder: publicUrl('PUBLIC_FOUNDER_URL', 'https://neevsk.edlove.org'),
+  edlove: publicUrl('PUBLIC_EDLOVE_URL', EDLOVE_URL),
+  intuitui: publicUrl('PUBLIC_INTUITUI_URL', INTUITUI_URL),
+  founder: publicUrl('PUBLIC_FOUNDER_URL', FOUNDER_URL),
   beacons: 'https://beacons.ai/gurudevi',
 } as const;
 

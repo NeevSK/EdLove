@@ -1,10 +1,24 @@
 'use client';
 
-import { GURUDEVI_SANCTUARY_URL } from '@repo/core/config/publicUrls';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { type DragEvent, type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import {
+  type DragEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { isLocalPreviewHost } from '../../../lib/host-routing';
+import { setDevPreviewCapacity } from '../../../lib/sanctuary/devPreviewCapacity';
+import {
+  type BrowserCapability,
+  loadAccountCapabilities,
+} from '../../../lib/sanctuary/capabilityBootstrap';
 import { useInactivitySentinel } from '../../../lib/sanctuary/useInactivitySentinel';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { WorkbenchScopeProvider } from '../../../lib/workbench/WorkbenchScope';
@@ -20,16 +34,14 @@ import {
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
 import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatureRegistry';
-import {
-  type BrowserCapability,
-  loadAccountCapabilities,
-} from '../../../lib/sanctuary/capabilityBootstrap';
 import { CommandPalette } from './CommandPalette';
 import { DiurnalThemeToggle } from './DiurnalThemeToggle';
 import { ExamLockdownBanner } from './ExamLockdownBanner';
 import { SanctuaryNavIcon } from './SanctuaryNavIcon';
 import { SyncStatusPill } from './SyncStatusPill';
 import { WorkspaceRouteTabs } from './workbench/WorkspaceRouteTabs';
+import { WorkspaceScopeSwitcher } from './WorkspaceScopeSwitcher';
+import { CapacityPerspectiveSwitcher } from './CapacityPerspectiveSwitcher';
 
 type SanctuaryShellProps = Readonly<{
   children: ReactNode;
@@ -40,6 +52,8 @@ type SanctuaryShellProps = Readonly<{
   unreadNotifications?: number;
   showAccountNavigation?: boolean;
   isExploreMode?: boolean;
+  isDevPreview?: boolean;
+  previewCapacity?: string;
 }>;
 
 const showAdvancedTools = process.env.NODE_ENV !== 'production';
@@ -53,6 +67,8 @@ export function SanctuaryShell({
   unreadNotifications = 0,
   showAccountNavigation = true,
   isExploreMode = false,
+  isDevPreview = false,
+  previewCapacity,
 }: SanctuaryShellProps) {
   useInactivitySentinel(!isExploreMode);
   const pathname = usePathname();
@@ -128,8 +144,14 @@ export function SanctuaryShell({
 
   useEffect(() => {
     const readLayout = () => {
+      if (isExploreMode) {
+        setNavigationLayout('horizontal');
+        return;
+      }
       try {
-        setNavigationLayout(localStorage.getItem(navigationLayoutKey) === 'side' ? 'side' : 'horizontal');
+        setNavigationLayout(
+          localStorage.getItem(navigationLayoutKey) === 'side' ? 'side' : 'horizontal',
+        );
       } catch {
         setNavigationLayout('horizontal');
       }
@@ -137,30 +159,41 @@ export function SanctuaryShell({
     readLayout();
     window.addEventListener('gurudevi:navigation-layout', readLayout);
     return () => window.removeEventListener('gurudevi:navigation-layout', readLayout);
-  }, []);
+  }, [isExploreMode]);
 
   useEffect(() => {
     const storageKey = `gurudevi_quick_access_${isExploreMode ? 'explore' : 'sanctuary'}`;
     const defaults: QuickAccessId[] = isExploreMode
       ? ['my-attendance', 'breathing']
       : ['my-attendance', 'breathing', 'submissions', 'community-forest'];
-    try {
-      setQuickAccessIds(defaults);
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        const parsed: unknown = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const savedIds = parsed.filter((id): id is QuickAccessId =>
-            quickAccessOptions.some((destination) => destination.id === id),
-          );
-          setQuickAccessIds(
-            [...new Set([...savedIds, ...defaults])].slice(0, 4),
-          );
+
+    const loadQuickAccess = () => {
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          const parsed: unknown = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const savedIds = parsed.filter((id): id is QuickAccessId =>
+              quickAccessOptions.some((destination) => destination.id === id),
+            );
+            setQuickAccessIds([...new Set([...savedIds, ...defaults])].slice(0, 4));
+            return;
+          }
         }
+        setQuickAccessIds(defaults);
+      } catch {
+        setQuickAccessIds(defaults);
       }
-    } catch {
-      setQuickAccessIds(defaults);
-    }
+    };
+
+    loadQuickAccess();
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === storageKey) {
+        loadQuickAccess();
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, [isExploreMode, quickAccessOptions]);
 
   useEffect(() => {
@@ -174,11 +207,12 @@ export function SanctuaryShell({
   }, []);
 
   useEffect(() => {
-    const domain = pathname === '/self' || pathname.startsWith('/self/')
-      ? 'self'
-      : pathname === '/workspace' || pathname.startsWith('/workspace/')
-        ? 'workspace'
-        : null;
+    const domain =
+      pathname === '/self' || pathname.startsWith('/self/')
+        ? 'self'
+        : pathname === '/workspace' || pathname.startsWith('/workspace/')
+          ? 'workspace'
+          : null;
     setSidebarOverride(null);
     if (!domain) {
       setContextRailVisible(false);
@@ -191,7 +225,8 @@ export function SanctuaryShell({
     };
     const onVisibilityChange = (event: Event) => {
       const detail = (event as CustomEvent<{ domain: string; visible: boolean }>).detail;
-      if (detail?.domain === domain) setContextRailVisible(window.innerWidth > 767 && detail.visible);
+      if (detail?.domain === domain)
+        setContextRailVisible(window.innerWidth > 767 && detail.visible);
     };
 
     readVisibility();
@@ -203,78 +238,86 @@ export function SanctuaryShell({
     };
   }, [pathname]);
 
-  const menuIsCollapsed = sidebarOverride ?? (sidebarCollapsed || autoCollapsed || contextRailVisible);
+  const menuIsCollapsed =
+    sidebarOverride ?? (sidebarCollapsed || autoCollapsed || contextRailVisible);
 
-  const saveQuickAccess = useCallback((next: QuickAccessId[]) => {
-    setQuickAccessIds(next);
-    try {
-      localStorage.setItem(
-        `gurudevi_quick_access_${isExploreMode ? 'explore' : 'sanctuary'}`,
-        JSON.stringify(next),
-      );
-    } catch {
-      // Keep the in-session selection if browser storage is unavailable.
-    }
-  }, [isExploreMode]);
-
-  const toggleQuickAccess = useCallback((id: QuickAccessId) => {
-    const selected = quickAccessIds.includes(id);
-    if (selected && quickAccessIds.length === 1) return;
-    if (!selected && quickAccessIds.length >= 4) return;
-    saveQuickAccess(
-      selected
-        ? quickAccessIds.filter((item) => item !== id)
-        : [...quickAccessIds, id],
-    );
-  }, [quickAccessIds, saveQuickAccess]);
-
-  const handleQuickAccessDrop = useCallback((event: DragEvent<HTMLElement>, targetId?: QuickAccessId) => {
-    event.preventDefault();
-    const dragged = quickAccessOptions.find((destination) =>
-      destination.id === event.dataTransfer.getData('text/plain'),
-    );
-    if (!dragged) return;
-
-    const current = quickAccessIds.filter((id) => id !== dragged.id);
-    if (!quickAccessIds.includes(dragged.id) && current.length >= 4) return;
-    const targetIndex = targetId ? current.indexOf(targetId) : current.length;
-    current.splice(targetIndex < 0 ? current.length : targetIndex, 0, dragged.id);
-    saveQuickAccess(current);
-  }, [quickAccessOptions, quickAccessIds, saveQuickAccess]);
-
-  const handleQuickAccessDragStart = useCallback((event: DragEvent<HTMLElement>, id: QuickAccessId) => {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', id);
-  }, []);
-
-  const openQuickAccessDestination = useCallback((href: string) => {
-    const feature = WORKSPACE_FEATURES.find((item) => item.href === href);
-    const route = feature?.id === 'attendance' ? '/workspace?task=attendance' : href;
-    if (feature) {
-      const result = workspaceWorkbench.open({
-        featureId: feature.id,
-        route,
-        title: feature.label,
-        icon: feature.symbol,
-        temporalBinding: { kind: 'follow-domain' },
-        localStatePolicy: 'restore-permitted',
-      });
-      if (result.kind === 'at-capacity') {
-        setQuickAccessNotice('Close a Workspace task before opening another.');
-        return;
+  const saveQuickAccess = useCallback(
+    (next: QuickAccessId[]) => {
+      setQuickAccessIds(next);
+      try {
+        localStorage.setItem(
+          `gurudevi_quick_access_${isExploreMode ? 'explore' : 'sanctuary'}`,
+          JSON.stringify(next),
+        );
+      } catch {
+        // Keep the in-session selection if browser storage is unavailable.
       }
-    }
-    setQuickAccessNotice('');
-    if (pathname !== route) router.push(route);
-  }, [pathname, router, workspaceWorkbench]);
+    },
+    [isExploreMode],
+  );
+
+  const toggleQuickAccess = useCallback(
+    (id: QuickAccessId) => {
+      const selected = quickAccessIds.includes(id);
+      if (selected && quickAccessIds.length === 1) return;
+      if (!selected && quickAccessIds.length >= 4) return;
+      saveQuickAccess(
+        selected ? quickAccessIds.filter((item) => item !== id) : [...quickAccessIds, id],
+      );
+    },
+    [quickAccessIds, saveQuickAccess],
+  );
+
+  const handleQuickAccessDrop = useCallback(
+    (event: DragEvent<HTMLElement>, targetId?: QuickAccessId) => {
+      event.preventDefault();
+      const dragged = quickAccessOptions.find(
+        (destination) => destination.id === event.dataTransfer.getData('text/plain'),
+      );
+      if (!dragged) return;
+
+      const current = quickAccessIds.filter((id) => id !== dragged.id);
+      if (!quickAccessIds.includes(dragged.id) && current.length >= 4) return;
+      const targetIndex = targetId ? current.indexOf(targetId) : current.length;
+      current.splice(targetIndex < 0 ? current.length : targetIndex, 0, dragged.id);
+      saveQuickAccess(current);
+    },
+    [quickAccessOptions, quickAccessIds, saveQuickAccess],
+  );
+
+  const handleQuickAccessDragStart = useCallback(
+    (event: DragEvent<HTMLElement>, id: QuickAccessId) => {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', id);
+    },
+    [],
+  );
+
+  const openQuickAccessDestination = useCallback(
+    (href: string) => {
+      const feature = WORKSPACE_FEATURES.find((item) => item.href === href);
+      const route = feature?.id === 'attendance' ? '/workspace?task=attendance' : href;
+      if (feature) {
+        const result = workspaceWorkbench.open({
+          featureId: feature.id,
+          route,
+          title: feature.label,
+          icon: feature.symbol,
+          temporalBinding: { kind: 'follow-domain' },
+          localStatePolicy: 'restore-permitted',
+        });
+        if (result.kind === 'at-capacity') {
+          setQuickAccessNotice('Close a Workspace task before opening another.');
+          return;
+        }
+      }
+      setQuickAccessNotice('');
+      if (pathname !== route) router.push(route);
+    },
+    [pathname, router, workspaceWorkbench],
+  );
 
   const toggleSidebar = useCallback(() => {
-    if (window.matchMedia('(min-width: 48.001rem)').matches && navigationLayout === 'horizontal') {
-      setNavigationLayout('side');
-      try { localStorage.setItem(navigationLayoutKey, 'side'); } catch {}
-      window.dispatchEvent(new Event('gurudevi:navigation-layout'));
-      return;
-    }
     const next = !menuIsCollapsed;
     if (contextRailVisible || autoCollapsed) {
       setSidebarOverride(next);
@@ -290,7 +333,7 @@ export function SanctuaryShell({
       }
       return nextValue;
     });
-  }, [autoCollapsed, contextRailVisible, menuIsCollapsed, navigationLayout]);
+  }, [autoCollapsed, contextRailVisible, menuIsCollapsed]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -340,12 +383,23 @@ export function SanctuaryShell({
             title={menuIsCollapsed ? 'Open menu' : 'Close menu'}
             type="button"
           >
-            <span aria-hidden="true" className={styles.brandLotus}>🪷</span>
+            <span aria-hidden="true" className={styles.brandLotus}>
+              🪷
+            </span>
           </button>
           <SyncStatusPill />
         </div>
 
         <div className={styles.headerControls}>
+          {isExploreMode ? (
+            <CapacityPerspectiveSwitcher mode="explore" />
+          ) : isDevPreview ? (
+            <CapacityPerspectiveSwitcher
+              mode="preview"
+              activeCapacity={previewCapacity}
+              onChange={setDevPreviewCapacity}
+            />
+          ) : <WorkspaceScopeSwitcher />}
           <button
             aria-label="Search Gurudevi (Ctrl+K)"
             className={styles.commandPaletteTrigger}
@@ -368,7 +422,12 @@ export function SanctuaryShell({
             href="/support"
             title="Help & feedback"
           >
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={styles.headerActionGlyph}>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              fill="none"
+              className={styles.headerActionGlyph}
+            >
               <circle cx="12" cy="12" r="9" />
               <path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.15 1.05-1.8 1.45-1.8 3" />
               <path d="M12 17.2h.01" />
@@ -377,8 +436,14 @@ export function SanctuaryShell({
           {showAccountNavigation && notifications && profile && settings ? (
             <nav aria-label="Account navigation" className={styles.accountActions}>
               <Link
-                aria-label={unreadNotifications > 0 ? `Notifications, ${unreadNotifications} unread` : 'Notifications'}
-                aria-current={isSanctuaryNavActive(pathname, notifications.href) ? 'page' : undefined}
+                aria-label={
+                  unreadNotifications > 0
+                    ? `Notifications, ${unreadNotifications} unread`
+                    : 'Notifications'
+                }
+                aria-current={
+                  isSanctuaryNavActive(pathname, notifications.href) ? 'page' : undefined
+                }
                 className={styles.headerAction}
                 href={notifications.href}
                 title="Notifications"
@@ -397,7 +462,12 @@ export function SanctuaryShell({
                 href={profile.href}
                 title={displayName ? `Profile: ${displayName}` : 'Profile'}
               >
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={styles.profileGlyph}>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className={styles.profileGlyph}
+                >
                   <circle cx="12" cy="8" r="3.25" />
                   <path d="M5.5 20c.55-3.5 2.9-5.25 6.5-5.25s5.95 1.75 6.5 5.25" />
                 </svg>
@@ -418,25 +488,25 @@ export function SanctuaryShell({
 
       {isExploreMode ? (
         <aside className={styles.exploreBanner} aria-label="Explore sample space">
-          <span><strong>Explore</strong> · Sample space; changes stay in this demo.</span>
-          <a
-            href={`${GURUDEVI_SANCTUARY_URL}/welcome`}
-            onClick={(event) => {
-              if (
-                event.button === 0 &&
-                !event.metaKey &&
-                !event.ctrlKey &&
-                !event.shiftKey &&
-                !event.altKey &&
-                isLocalPreviewHost(window.location.hostname)
-              ) {
-                event.preventDefault();
-                window.location.assign('/welcome');
-              }
-            }}
-          >
-            Go to Sanctuary <span aria-hidden="true">→</span>
-          </a>
+          <span>
+            <strong>Explore</strong> · Sample space; changes stay in this demo.
+          </span>
+          <div className={styles.exploreBannerActions}>
+            <a
+              href={resolveSurfaceUrl('public', '/')}
+              className={styles.exploreReturnLink}
+            >
+              <span aria-hidden="true">←</span> Gurudevi.app
+            </a>
+            <span className={styles.exploreBannerDivider} aria-hidden="true">
+              ·
+            </span>
+            <a
+              href={resolveSurfaceUrl('sanctuary', '/welcome')}
+            >
+              Go to Sanctuary <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </aside>
       ) : null}
 
@@ -465,11 +535,7 @@ export function SanctuaryShell({
             <ul className={styles.navList}>
               {primaryItems.map((item) => (
                 <li key={item.id}>
-                  <NavLink
-                    item={item}
-                    pathname={pathname}
-                    collapsed={menuIsCollapsed}
-                  />
+                  <NavLink item={item} pathname={pathname} collapsed={menuIsCollapsed} />
                 </li>
               ))}
             </ul>
@@ -482,10 +548,14 @@ export function SanctuaryShell({
             onDrop={(event) => handleQuickAccessDrop(event)}
           >
             <div className={styles.quickAccessHeader}>
-              <span className={styles.railTitle} id="quick-access-title">Quick access</span>
+              <span className={styles.railTitle} id="quick-access-title">
+                Quick access
+              </span>
               <button
                 aria-expanded={quickAccessEditorOpen}
-                aria-label={quickAccessEditorOpen ? 'Close quick access editor' : 'Edit quick access'}
+                aria-label={
+                  quickAccessEditorOpen ? 'Close quick access editor' : 'Edit quick access'
+                }
                 className={styles.quickAccessEdit}
                 onClick={() => setQuickAccessEditorOpen((open) => !open)}
                 type="button"
@@ -514,7 +584,9 @@ export function SanctuaryShell({
                     >
                       <span aria-hidden="true">{destination.symbol}</span>
                       <span>{destination.label}</span>
-                      <span aria-hidden="true" className={styles.quickAccessCheck}>{selected ? '✓' : '+'}</span>
+                      <span aria-hidden="true" className={styles.quickAccessCheck}>
+                        {selected ? '✓' : '+'}
+                      </span>
                     </button>
                   );
                 })}
@@ -588,7 +660,11 @@ export function SanctuaryShell({
               window.location.search.includes('lockdown=true')) ? (
               <ExamLockdownBanner />
             ) : null}
-            {quickAccessNotice ? <p className={styles.quickAccessNotice} role="status">{quickAccessNotice}</p> : null}
+            {quickAccessNotice ? (
+              <p className={styles.quickAccessNotice} role="status">
+                {quickAccessNotice}
+              </p>
+            ) : null}
             <WorkbenchScopeProvider scope={workspaceUsageScope}>{children}</WorkbenchScopeProvider>
           </div>
         </main>
@@ -599,7 +675,6 @@ export function SanctuaryShell({
         navigationPrefix={navigationPrefix}
         onClose={() => setCommandPaletteOpen(false)}
       />
-
     </div>
   );
 }
@@ -607,9 +682,15 @@ function HeaderActionGlyph({ id }: Readonly<{ id: 'notifications' | 'settings' }
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={styles.headerActionGlyph}>
       {id === 'notifications' ? (
-        <><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></>
+        <>
+          <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+          <path d="M10 21h4" />
+        </>
       ) : (
-        <><path d="M19.14 12.94a7.5 7.5 0 0 0 0-1.88l2.03-1.58-2-3.46-2.42.98a7.4 7.4 0 0 0-1.63-.94L14.75 3h-4.5l-.37 3.06a7.4 7.4 0 0 0-1.63.94l-2.42-.98-2 3.46 2.03 1.58a7.5 7.5 0 0 0 0 1.88l-2.03 1.58 2 3.46 2.42-.98c.5.4 1.05.72 1.63.94L10.25 21h4.5l.37-3.06c.58-.22 1.13-.54 1.63-.94l2.42.98 2-3.46-2.03-1.58Z" /><circle cx="12.5" cy="12" r="2.5" /></>
+        <>
+          <path d="M19.14 12.94a7.5 7.5 0 0 0 0-1.88l2.03-1.58-2-3.46-2.42.98a7.4 7.4 0 0 0-1.63-.94L14.75 3h-4.5l-.37 3.06a7.4 7.4 0 0 0-1.63.94l-2.42-.98-2 3.46 2.03 1.58a7.5 7.5 0 0 0 0 1.88l-2.03 1.58 2 3.46 2.42-.98c.5.4 1.05.72 1.63.94L10.25 21h4.5l.37-3.06c.58-.22 1.13-.54 1.63-.94l2.42.98 2-3.46-2.03-1.58Z" />
+          <circle cx="12.5" cy="12" r="2.5" />
+        </>
       )}
     </svg>
   );
@@ -640,7 +721,16 @@ function NavLink({
       title={collapsed ? item.label : undefined}
     >
       <span aria-hidden="true" className={styles.navSymbol}>
-        {emoji ? item.symbol : <SanctuaryNavIcon id={item.id} size={18} strokeWidth={active ? 2.3 : 1.9} fallback={item.symbol} />}
+        {emoji ? (
+          item.symbol
+        ) : (
+          <SanctuaryNavIcon
+            id={item.id}
+            size={18}
+            strokeWidth={active ? 2.3 : 1.9}
+            fallback={item.symbol}
+          />
+        )}
       </span>
       <span className={styles.navLabel}>{item.label}</span>
       {hasUnread && (

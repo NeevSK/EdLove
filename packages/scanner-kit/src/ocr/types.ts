@@ -10,8 +10,8 @@
 //  Core provider interface
 
 export interface OCRProvider {
-  readonly name: 'mlkit' | 'google_vision' | 'openai_vision';
-  recognize(imageUri: string): Promise<OCRRawResult>;
+  readonly name: 'sanctuary_vision' | 'mlkit' | 'google_vision' | 'openai_vision';
+  recognize(imageUri: string, options?: OCRRecognizeOptions): Promise<OCRRawResult>;
 }
 
 //  Raw output (normalized across all providers)
@@ -23,6 +23,16 @@ export interface OCRRawResult {
   blocks: OCRBlock[];
   /** Overall document confidence, 01. Not all providers supply this. */
   confidence?: number;
+  /** Directly extracted student rows when available from structured vision */
+  students?: Array<{
+    name: string;
+    index_number: string;
+    notes?: string;
+    confidence: number;
+    uncertain: boolean;
+  }>;
+  /** Universal document envelope when produced by multimodal gateway */
+  envelope?: any;
 }
 
 export interface OCRBlock {
@@ -61,8 +71,12 @@ export type OCRProviderName = OCRProvider['name'];
 
 export interface OCRRecognizeOptions {
   /**
-   * Preferred provider. Falls back to 'mlkit' on error.
-   * @default 'mlkit'
+   * Preferred provider. Falls back to 'sanctuary_vision' or 'mlkit' on error.
+   * @default 'sanctuary_vision'
    */
   provider?: OCRProviderName;
+  /**
+   * Optional context intent hint (e.g. 'student_roster', 'lesson_plan').
+   */
+  intentHint?: string;
 }

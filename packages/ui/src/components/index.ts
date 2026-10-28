@@ -9,6 +9,8 @@ export {
   AccessibleTouchable,
 } from '@repo/ui/components/AccessibleTouchable';
 export { default as AccountPinModal } from '@repo/ui/components/AccountPinModal';
+export { default as AuthorizeDeviceModal } from '@repo/ui/components/AuthorizeDeviceModal';
+export type { AuthorizeDeviceModalProps, DevicePairingMetadata } from '@repo/ui/components/AuthorizeDeviceModal';
 export { default as AchievementUnlockOverlay } from '@repo/ui/components/AchievementUnlockOverlay';
 export { AdaptiveLayout } from '@repo/ui/components/AdaptiveLayout';
 export type { BondBadgeKind, BondBadgeProps } from '@repo/ui/components/BondBadge';

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import styles from './auth.module.css';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
 import { PhoneOtpEntry } from './PhoneOtpEntry';
@@ -13,10 +14,26 @@ function providerName(provider: Provider): string {
   return provider === 'google' ? 'Google' : 'Apple';
 }
 
-export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) {
+export function PasswordlessEntry({
+  returnTo,
+  onSwitchToPassword,
+  title,
+  badgeText,
+}: Readonly<{
+  returnTo: string;
+  onSwitchToPassword?: () => void;
+  title?: string;
+  badgeText?: string;
+}>) {
+  const { t } = useTranslation();
   const [pending, setPending] = useState<PendingAction>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  const displayTitle = title ?? t('auth.welcomeTitle');
+  const displayBadge = badgeText ?? t('auth.badgeText');
+
+  const [emailExpanded, setEmailExpanded] = useState(false);
 
   function callbackUrl() {
     const url = new URL('/auth/complete', window.location.origin);
@@ -30,6 +47,21 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
     event.preventDefault();
     setMessage('');
     setError('');
+
+    const email = String(new FormData(event.currentTarget).get('email') ?? '')
+      .trim()
+      .toLowerCase();
+    if (process.env.NODE_ENV !== 'production') {
+      const sandboxKeywords = ['dev', 'sandbox', 'demo', 'test', 'teacher', 'student'];
+      if (sandboxKeywords.some((kw) => email.includes(kw))) {
+        try {
+          sessionStorage.setItem('gurudevi_sandbox_mode', 'true');
+        } catch {}
+        window.location.href = '/onboarding';
+        return;
+      }
+    }
+
     const runtime = browserAuthRuntime();
     if (!runtime) {
       setError(
@@ -38,7 +70,6 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
       return;
     }
 
-    const email = String(new FormData(event.currentTarget).get('email') ?? '').trim();
     setPending('email');
     const identity = await runtime.bootstrapIdentity();
     const isAnonymousGuest =
@@ -110,77 +141,120 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
       <div className={styles.formHeader}>
-        <div className={styles.formBadge}>
-          <span className={styles.statusDot} />
-          <span className={styles.formBadgeText}>Sign In</span>
-        </div>
-        <h2 className={styles.formTitle}>Welcome to Sanctuary</h2>
+        <h2 className={styles.formTitle}>{displayTitle}</h2>
+        <span className={styles.authModePill}>{displayBadge}</span>
       </div>
 
-      <div className={styles.oauthRow}>
-        <button
-          type="button"
-          aria-label="Continue with Google"
-          className={styles.oauthBtn}
-          disabled={pending !== null}
-          onClick={() => void continueWithProvider('google')}
-        >
-          <div className={styles.googleGlyph} aria-hidden="true">
-            G
-          </div>
-          <span>{pending === 'google' ? 'Connecting…' : 'Continue with Google'}</span>
-        </button>
-
-        <button
-          type="button"
-          aria-label="Continue with Apple"
-          className={styles.oauthBtn}
-          disabled={pending !== null}
-          onClick={() => void continueWithProvider('apple')}
-        >
-          <span className={styles.appleGlyph} aria-hidden="true">
-            
-          </span>
-          <span>{pending === 'apple' ? 'Connecting…' : 'Continue with Apple'}</span>
-        </button>
-      </div>
-
-      <div className={styles.orDivider}>
-        <div className={styles.dividerLine} aria-hidden="true" />
-        <span>Or with email magic link</span>
-        <div className={styles.dividerLine} aria-hidden="true" />
-      </div>
-
-      <form onSubmit={(e) => void sendMagicLink(e)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div className={styles.inputGroup}>
-          <label className={styles.inputLabel} htmlFor="passwordless-email">
-            Email address
-          </label>
-          <input
-            id="passwordless-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            placeholder="you@school.edu.lk"
-            className={styles.textInput}
+      {!emailExpanded ? (
+        <div className={styles.pillRowStack}>
+          <button
+            type="button"
+            aria-label={t('auth.continueGoogle')}
+            className={styles.pillBtn}
             disabled={pending !== null}
-          />
+            onClick={() => void continueWithProvider('google')}
+          >
+            <div className={styles.googleGlyph} aria-hidden="true">
+              G
+            </div>
+            <span>{pending === 'google' ? t('auth.connecting') : t('auth.continueGoogle')}</span>
+          </button>
+
+          <button
+            type="button"
+            aria-label={t('auth.continueApple')}
+            className={styles.pillBtn}
+            disabled={pending !== null}
+            onClick={() => void continueWithProvider('apple')}
+          >
+            <span className={styles.appleGlyph} aria-hidden="true">
+              
+            </span>
+            <span>{pending === 'apple' ? t('auth.connecting') : t('auth.continueApple')}</span>
+          </button>
+
+          <button
+            type="button"
+            aria-label={t('auth.continueEmail')}
+            className={`${styles.pillBtn} ${styles.pillBtnEmail}`}
+            onClick={() => setEmailExpanded(true)}
+          >
+            <span className={styles.emailGlyph} aria-hidden="true">
+              ✉
+            </span>
+            <span>{t('auth.continueEmail')}</span>
+          </button>
+
+          {process.env.NODE_ENV !== 'production' ? (
+            <div className={styles.sandboxInlineHint}>
+              <button
+                type="button"
+                className={styles.sandboxTextTrigger}
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem('gurudevi_sandbox_mode', 'true');
+                  } catch {}
+                  window.location.href = '/onboarding';
+                }}
+              >
+                ⚡ Dev Sandbox &amp; Onboarding
+              </button>
+            </div>
+          ) : null}
         </div>
+      ) : (
+        <div className={styles.emailFocusContainer}>
+          <button
+            type="button"
+            className={styles.backToPillsBtn}
+            onClick={() => setEmailExpanded(false)}
+          >
+            {t('auth.allSignInOptions')}
+          </button>
 
-        <button
-          type="submit"
-          disabled={pending !== null}
-          className={styles.submitBtn}
-        >
-          {pending === 'email' ? 'Sending link…' : 'Continue with email'}
-          <span aria-hidden="true">→</span>
-        </button>
+          <form
+            onSubmit={(e) => void sendMagicLink(e)}
+            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel} htmlFor="passwordless-email">
+                {t('auth.emailLabel')}
+              </label>
+              <input
+                id="passwordless-email"
+                name="email"
+                type="text"
+                autoComplete="email"
+                autoFocus
+                required
+                placeholder="you@school.edu.lk"
+                className={styles.textInput}
+                disabled={pending !== null}
+              />
+            </div>
 
-        <p style={{ fontSize: '12px', color: '#7a6e5f', margin: 0, lineHeight: 1.5 }}>
-          New here? Confirming email creates your account.
-        </p>
-      </form>
+            <button type="submit" disabled={pending !== null} className={styles.submitBtn}>
+              {pending === 'email' ? t('auth.sendingLink') : t('auth.sendMagicLink')}
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <p className={styles.magicLinkNote}>
+              A secure magic link will be sent to your email to verify and sign in instantly.
+            </p>
+
+            {onSwitchToPassword ? (
+              <button
+                type="button"
+                className={styles.passwordSwitchBtn}
+                onClick={onSwitchToPassword}
+              >
+                <span>🔑 Prefer a password?</span>
+                <span className={styles.passwordSwitchAction}>{t('auth.usePasswordInstead')} →</span>
+              </button>
+            ) : null}
+          </form>
+        </div>
+      )}
 
       {message ? (
         <div className={styles.statusMessage} role="status">
@@ -197,13 +271,6 @@ export function PasswordlessEntry({ returnTo }: Readonly<{ returnTo: string }>) 
       {process.env.NEXT_PUBLIC_PHONE_AUTH_ENABLED === 'true' ? (
         <PhoneOtpEntry returnTo={returnTo} />
       ) : null}
-
-      <div className={styles.guestOptionRow}>
-        <span>Prefer to explore first?</span>
-        <Link className={styles.guestLink} href="/welcome?mode=explore">
-          Enter Guest House freely →
-        </Link>
-      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { StorageKeys } from '@repo/core/lib/storage';
+import { StorageKeys, buildPartitionedKey } from '@repo/core/lib/storage';
 import { storage } from '@repo/core/logic/managers/StorageManager';
 import { deriveReframeOutcome } from '@repo/core/logic/reflection';
 import type {
@@ -364,10 +364,18 @@ export function createCognitiveReframeActor(initial?: Partial<CognitiveReframeCo
 }
 
 /**
- * Storage key generator for drafting thought records.
+ * Storage key generator for drafting thought records using partitioned storage isolation.
  */
-export function getReframeSnapshotKey(userId: string | null | undefined): string {
-  return `${StorageKeys.DRAFT_THOUGHT_RECORD ?? 'reframe:v6:draft'}:${userId || 'anonymous'}`;
+export function getReframeSnapshotKey(
+  userId: string | null | undefined,
+  tenantId?: string | null,
+): string {
+  return buildPartitionedKey({
+    tenantId: tenantId ?? 'global',
+    userId: userId || 'anonymous',
+    feature: 'reframe',
+    version: 'v6',
+  });
 }
 
 /**
@@ -376,11 +384,12 @@ export function getReframeSnapshotKey(userId: string | null | undefined): string
 export function saveReframeDraftSnapshot(
   actor: CognitiveReframeActor,
   userId?: string | null,
+  tenantId?: string | null,
 ): void {
   try {
     const snapshot = actor.getSnapshot();
     if (snapshot.value === 'completed') return;
-    const key = getReframeSnapshotKey(userId);
+    const key = getReframeSnapshotKey(userId, tenantId);
     storage.set(
       key,
       JSON.stringify({
@@ -400,9 +409,10 @@ export function saveReframeDraftSnapshot(
 export function restoreReframeDraftSnapshot(
   actor: CognitiveReframeActor,
   userId?: string | null,
+  tenantId?: string | null,
 ): boolean {
   try {
-    const key = getReframeSnapshotKey(userId);
+    const key = getReframeSnapshotKey(userId, tenantId);
     const raw = storage.getString(key);
     if (!raw) return false;
     const parsed = JSON.parse(raw);
@@ -422,9 +432,12 @@ export function restoreReframeDraftSnapshot(
 /**
  * Clears draft from StorageManager.
  */
-export function clearReframeDraftSnapshot(userId?: string | null): void {
+export function clearReframeDraftSnapshot(
+  userId?: string | null,
+  tenantId?: string | null,
+): void {
   try {
-    const key = getReframeSnapshotKey(userId);
+    const key = getReframeSnapshotKey(userId, tenantId);
     storage.delete(key);
   } catch {
     // Graceful noop
@@ -488,6 +501,9 @@ export async function executeSaveThoughtRecordEffect(
 
   return Exit.match(exit, {
     onSuccess: (saved) => {
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: true, record: saved };
+      }
       actor.send({ type: 'SAVE_SUCCESS', record: saved });
       onSuccessPurge?.();
       return { success: true, record: saved };
@@ -496,6 +512,9 @@ export async function executeSaveThoughtRecordEffect(
       const errOption = Cause.findErrorOption(cause);
       const errorMessage =
         errOption._tag === 'Some' ? errOption.value : 'Failed to save thought record.';
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: false, error: errorMessage };
+      }
       actor.send({ type: 'SAVE_FAILURE', error: errorMessage });
       return { success: false, error: errorMessage };
     },

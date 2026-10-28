@@ -27,6 +27,35 @@ import { Effect, Queue } from 'effect';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';
 const ACTIVE_ACCOUNT_KEY = 'gurudevi-active-account-id';
+const CONFIG_KEY = 'gurudevi-device-accounts-config';
+
+export interface DeviceAccountsConfig {
+  enabled: boolean;
+  maxAccounts: number;
+  allowSwitching: boolean;
+}
+
+export const DEFAULT_DEVICE_ACCOUNTS_CONFIG: DeviceAccountsConfig = {
+  enabled: true,
+  maxAccounts: 5,
+  allowSwitching: true,
+};
+
+export function getDeviceAccountsConfig(): DeviceAccountsConfig {
+  const raw = storage.getString(CONFIG_KEY);
+  if (!raw) return DEFAULT_DEVICE_ACCOUNTS_CONFIG;
+  try {
+    return { ...DEFAULT_DEVICE_ACCOUNTS_CONFIG, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_DEVICE_ACCOUNTS_CONFIG;
+  }
+}
+
+export function setDeviceAccountsConfig(patch: Partial<DeviceAccountsConfig>): void {
+  const current = getDeviceAccountsConfig();
+  const next = { ...current, ...patch };
+  storage.set(CONFIG_KEY, JSON.stringify(next));
+}
 
 export interface DeviceAccountRecord {
   accountId: string;
@@ -52,6 +81,8 @@ export interface DeviceAccountProfile {
 }
 
 async function readRegistry() {
+  const config = getDeviceAccountsConfig();
+  if (!config.enabled) return [] as DeviceAccountRecord[];
   const raw = storage.getString(ACCOUNTS_REGISTRY_KEY);
   if (!raw) return [] as DeviceAccountRecord[];
 
@@ -64,7 +95,9 @@ async function readRegistry() {
 }
 
 async function writeRegistry(accounts: DeviceAccountRecord[]) {
-  storage.set(ACCOUNTS_REGISTRY_KEY, JSON.stringify(accounts));
+  const config = getDeviceAccountsConfig();
+  const capped = accounts.slice(0, Math.max(1, config.maxAccounts));
+  storage.set(ACCOUNTS_REGISTRY_KEY, JSON.stringify(capped));
 }
 
 async function setActiveAccount(accountId: string | null) {
@@ -495,6 +528,8 @@ export const deviceAccounts = {
     mutateDeviceAccounts(() => deviceAccountOperations.signOutCurrentAccount()),
   signOutAllAccounts: () =>
     mutateDeviceAccounts(() => deviceAccountOperations.signOutAllAccounts()),
+  getConfig: () => getDeviceAccountsConfig(),
+  configure: (patch: Partial<DeviceAccountsConfig>) => setDeviceAccountsConfig(patch),
 };
 
 /** Synchronous binding lookup avoids waiting behind an in-progress account transition. */

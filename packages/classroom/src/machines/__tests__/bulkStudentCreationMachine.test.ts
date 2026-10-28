@@ -162,4 +162,47 @@ describe('bulkStudentCreationMachine (XState v6 + Effect v4)', () => {
     expect(actor.getSnapshot().value).toBe('review');
     expect(actor.getSnapshot().context.error).toBe('Database write constraint violation.');
   });
+
+  it('safely handles actor disposal/stop mid-flight in executeBulkStudentImportEffect (zero zombie transitions)', async () => {
+    const actor = createBulkStudentCreationActor();
+    actor.send({ type: 'SET_TOTAL_COUNT', totalCount: '1' });
+    actor.send({ type: 'START_ENTRY' });
+    actor.send({ type: 'UPDATE_CURRENT_STUDENT', field: 'name', value: 'Disposed Student' });
+    actor.send({ type: 'UPDATE_CURRENT_STUDENT', field: 'index_number', value: 'STU-DISP' });
+    actor.send({ type: 'NEXT_STUDENT' });
+
+    // Mock import that stops the actor before resolving (simulating unmount/navigation)
+    const mockImport = vi.fn().mockImplementation(async () => {
+      actor.stop();
+    });
+
+    const result = await executeBulkStudentImportEffect(actor, mockImport);
+    expect(result.success).toBe(true);
+    expect(result.count).toBe(1);
+    expect(actor.getSnapshot().status).toBe('stopped');
+  });
+
+  it('persists and restores partitioned draft snapshots using PartitionKeyOptions', () => {
+    const actor = createBulkStudentCreationActor();
+    actor.send({ type: 'SET_TOTAL_COUNT', totalCount: '1' });
+    actor.send({ type: 'START_ENTRY' });
+    actor.send({ type: 'UPDATE_CURRENT_STUDENT', field: 'name', value: 'Partitioned Student' });
+    actor.send({ type: 'UPDATE_CURRENT_STUDENT', field: 'index_number', value: 'STU-PART' });
+
+    const partitionOpts = {
+      tenantId: 'school-77',
+      userId: 'teacher-12',
+      entityId: 'class-9B',
+      feature: 'bulk_students',
+    };
+
+    saveBulkStudentDraftSnapshot(actor, partitionOpts);
+
+    const freshActor = createBulkStudentCreationActor();
+    const restored = restoreBulkStudentDraftSnapshot(freshActor, partitionOpts);
+
+    expect(restored).toBe(true);
+    expect(freshActor.getSnapshot().context.students[0]?.name).toBe('Partitioned Student');
+    expect(freshActor.getSnapshot().context.students[0]?.index_number).toBe('STU-PART');
+  });
 });

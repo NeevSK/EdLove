@@ -58,6 +58,32 @@ describe('workspace route resolution', () => {
     );
   });
 
+  it('opens only the local guest personal workspace without a cloud permission snapshot', () => {
+    expect(
+      resolveWorkspaceRoute({
+        ...resolvedStudentInput,
+        permissionSnapshotLoaded: false,
+        permissionError: null,
+        isLocalGuest: true,
+        perspectiveKind: 'personal',
+      }),
+    ).toEqual({
+      kind: 'role-ready',
+      target: { kind: 'personal' },
+      isRefreshing: false,
+      refreshError: null,
+    });
+
+    expect(
+      resolveWorkspaceRoute({
+        ...resolvedStudentInput,
+        permissionSnapshotLoaded: false,
+        isLocalGuest: true,
+        perspectiveKind: 'institutional',
+      }).kind,
+    ).toBe('retryable-error');
+  });
+
   it('retains an explicit classroom selection and its role-specific destination', () => {
     expect(
       resolveWorkspaceRoute({

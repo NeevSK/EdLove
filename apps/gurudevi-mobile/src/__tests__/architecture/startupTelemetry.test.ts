@@ -1,17 +1,28 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const observeMock = vi.hoisted(() => ({ logEvent: vi.fn() }));
+const catcherMock = vi.hoisted(() => ({ record: vi.fn() }));
+const sourceMock = vi.hoisted(() => vi.fn());
 
 vi.mock('expo-observe', () => ({ Observe: { logEvent: observeMock.logEvent } }));
+vi.mock('@/telemetry/devTelemetryCatcher', () => ({
+  devTelemetryCatcher: { record: catcherMock.record },
+}));
+vi.mock('@/telemetry/localDevelopmentTelemetry', () => ({
+  setDevelopmentTelemetrySource: sourceMock,
+}));
 
 describe('startup stage telemetry', () => {
   beforeEach(() => {
     observeMock.logEvent.mockReset();
+    catcherMock.record.mockReset();
+    sourceMock.mockReset();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it('uses the Expo Observe logEvent options shape with fixed stage attributes', async () => {
@@ -22,6 +33,8 @@ describe('startup stage telemetry', () => {
         stage: 'initializeDeviceAccounts',
         outcome: 'failed',
         durationMs: 23.5,
+        startedAtMs: 11,
+        finishedAtMs: 34,
       }),
     ).not.toThrow();
 
@@ -33,6 +46,31 @@ describe('startup stage telemetry', () => {
         duration_ms: 23.5,
       },
     });
+    expect(catcherMock.record).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        name: 'initializeDeviceAccounts',
+        attributes: expect.objectContaining({
+          category: 'essential-stage',
+          state: 'started',
+          at_ms: 11,
+        }),
+      }),
+      { print: false },
+    );
+    expect(catcherMock.record).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        name: 'initializeDeviceAccounts',
+        durationMs: 23.5,
+        attributes: expect.objectContaining({
+          category: 'essential-stage',
+          state: 'failed',
+          at_ms: 34,
+        }),
+      }),
+      { print: false },
+    );
 
     recordStartupStage({
       stage: 'loadCatalog',
@@ -69,6 +107,7 @@ describe('startup stage telemetry', () => {
 
   it('traces deferred startup task completion and failure locally in development', async () => {
     vi.stubGlobal('__DEV__', true);
+    vi.stubEnv('EXPO_PUBLIC_GURUDEVI_TRACE_CONSOLE', 'true');
     vi.resetModules();
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { measureDevelopmentStartupTask } = await import('@/boot/startupTelemetry');
@@ -109,6 +148,7 @@ describe('startup stage telemetry', () => {
 
   it('serializes bounded admission inputs needed to explain a governor decision', async () => {
     vi.stubGlobal('__DEV__', true);
+    vi.stubEnv('EXPO_PUBLIC_GURUDEVI_TRACE_CONSOLE', 'true');
     vi.resetModules();
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const { recordDevelopmentTrace } = await import('@/boot/startupTelemetry');
@@ -141,5 +181,117 @@ describe('startup stage telemetry', () => {
       queue_depth: 2,
     });
     expect(trace).not.toHaveProperty('account_id');
+  });
+
+  it('records only the fixed development screen readiness buckets', async () => {
+    vi.stubGlobal('__DEV__', true);
+    vi.stubEnv('EXPO_PUBLIC_GURUDEVI_TRACE_CONSOLE', 'true');
+    vi.resetModules();
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const { recordDevelopmentScreenInteractive } = await import('@/boot/startupTelemetry');
+
+    recordDevelopmentScreenInteractive('onboarding');
+    recordDevelopmentScreenInteractive('self');
+
+    const traces = log.mock.calls.map(([line]) =>
+      JSON.parse(String(line).replace(/^\[runtime-trace\] /, '')),
+    );
+    expect(traces).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          category: 'screen-interactive',
+          task: 'onboarding',
+          state: 'ready',
+        }),
+        expect.objectContaining({ category: 'screen-interactive', task: 'self', state: 'ready' }),
+      ]),
+    );
+  });
+
+  it('retains local trace capture while keeping Metro quiet by default', async () => {
+    vi.stubGlobal('__DEV__', true);
+    vi.resetModules();
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const { recordDevelopmentTrace } = await import('@/boot/startupTelemetry');
+
+    recordDevelopmentTrace({ category: 'startup', task: 'first-shell-frame', state: 'committed' });
+
+    expect(log).not.toHaveBeenCalled();
+    expect(catcherMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'first-shell-frame' }),
+      { print: false },
+    );
+  });
+
+  it('keeps the original Event Timing start and labels its estimated wall clock', async () => {
+    vi.stubGlobal('__DEV__', true);
+    let deliver: PerformanceObserverCallback | undefined;
+    class Observer {
+      static supportedEntryTypes = ['event'];
+      constructor(callback: PerformanceObserverCallback) {
+        deliver = callback;
+      }
+      observe() {}
+      disconnect() {}
+    }
+    vi.stubGlobal('PerformanceObserver', Observer);
+    vi.resetModules();
+    const { observeDevelopmentInteractions } = await import('@/boot/startupTelemetry');
+    const stop = observeDevelopmentInteractions();
+    const event = {
+      name: 'click',
+      startTime: 10,
+      duration: 30,
+      processingStart: 15,
+      processingEnd: 20,
+    };
+    deliver?.(
+      { getEntries: () => [event] } as unknown as PerformanceObserverEntryList,
+      {} as PerformanceObserver,
+    );
+
+    expect(catcherMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        attributes: expect.objectContaining({
+          at_ms: 10,
+          input_delay_ms: 5,
+          processing_ms: 5,
+          presentation_delay_ms: 20,
+          wall_clock_basis: 'estimated-from-observation',
+        }),
+      }),
+      { print: false },
+    );
+    stop();
+  });
+
+  it('keeps the capped source status after the observer stops', async () => {
+    vi.stubGlobal('__DEV__', true);
+    let deliver: PerformanceObserverCallback | undefined;
+    class Observer {
+      static supportedEntryTypes = ['event'];
+      constructor(callback: PerformanceObserverCallback) {
+        deliver = callback;
+      }
+      observe() {}
+      disconnect() {}
+    }
+    vi.stubGlobal('PerformanceObserver', Observer);
+    vi.resetModules();
+    const { observeDevelopmentInteractions } = await import('@/boot/startupTelemetry');
+    const stop = observeDevelopmentInteractions();
+    const event = { name: 'click', startTime: 10, duration: 30 };
+    deliver?.(
+      {
+        getEntries: () => Array.from({ length: 2049 }, () => event),
+      } as PerformanceObserverEntryList,
+      {} as PerformanceObserver,
+    );
+    stop();
+    expect(sourceMock).toHaveBeenLastCalledWith(
+      'event-timing',
+      'capped',
+      'Development Event Timing entry cap reached.',
+    );
   });
 });

@@ -1,6 +1,6 @@
 import { StorageKeys, storage } from '@repo/core/logic';
 import type { BulkStudent } from '@repo/core/types';
-import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import { useMachineActor } from '@repo/core/hooks/useMachineActor';
 import {
   createBulkStudentCreationActor,
   executeBulkStudentImportEffect,
@@ -45,8 +45,7 @@ export default function BulkStudentCreation({
 }: BulkStudentCreationProps) {
   const { t } = useTranslation();
   const toast = useToast();
-  const actor = useMemo(() => createBulkStudentCreationActor(), []);
-  const snapshot = useActorSnapshot(actor);
+  const { actor, snapshot } = useMachineActor(() => createBulkStudentCreationActor(), []);
   const { totalCount, students, currentIndex, error } = snapshot.context;
   const step = snapshot.value as BulkStudentStep;
 

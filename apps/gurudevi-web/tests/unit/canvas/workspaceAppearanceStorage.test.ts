@@ -29,10 +29,17 @@ describe('workspace appearance local storage', () => {
       }),
     );
     await waitFor(() => expect(malformed.result.current.status).toBe('ready'));
-    expect(malformed.result.current.appearance).toEqual({ preset: 'default', motion: 'off' });
+    expect(malformed.result.current.appearance).toEqual({
+      preset: 'default',
+      motion: 'off',
+      groundMode: 'live',
+      worldId: 'sanctuary',
+    });
     await act(async () => {
       await malformed.result.current.setAppearance({ preset: 'dawn', motion: 'off' });
     });
-    expect(window.localStorage.getItem(key)).toBe(JSON.stringify({ preset: 'dawn', motion: 'off' }));
+    expect(window.localStorage.getItem(key)).toBe(
+      JSON.stringify({ preset: 'dawn', motion: 'off' }),
+    );
   });
 });

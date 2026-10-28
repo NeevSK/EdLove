@@ -1,11 +1,10 @@
-import { headers } from 'next/headers';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '@/lib/host-routing';
 import { QueryProvider } from '@/lib/query/QueryProvider';
 import { GurudeviWebVerger } from '@/lib/runtime/GurudeviWebVerger';
 import { AuthProvider } from './auth/AuthProvider';
-import { ExploreMuseumModal } from './components/ExploreMuseumModal';
 import { SkipLink } from './components/SkipLink';
 
 export const metadata: Metadata = {
@@ -32,7 +31,6 @@ export default async function SanctuaryLayout({ children }: Readonly<{ children:
         <QueryProvider>
           <SkipLink />
           {children}
-          <ExploreMuseumModal isExploreHost />
         </QueryProvider>
       </GurudeviWebVerger>
     );
@@ -44,7 +42,6 @@ export default async function SanctuaryLayout({ children }: Readonly<{ children:
         <QueryProvider>
           <SkipLink />
           {children}
-          <ExploreMuseumModal isExploreHost={false} />
         </QueryProvider>
       </AuthProvider>
     </GurudeviWebVerger>

@@ -6,17 +6,13 @@ import {
 import { GripVertical, X } from '@repo/ui/icons';
 import { Box, Pressable, ScrollView, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
-import { useWorld } from '@repo/ui/world/native';
 import { hapticLight, hapticSelection } from '@repo/ui/utils/haptics';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { scheduleOnRN } from 'react-native-worklets';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useWorld } from '@repo/ui/world/native';
 import { usePathname, useRouter } from 'expo-router';
 import React, { useCallback, useRef } from 'react';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 const EMPTY_TABS: ActiveSubTabItem[] = [];
 const HOME_ICON_STYLE = { fontSize: tokens.typography.sizes.sm };
@@ -53,32 +49,35 @@ function DraggableTaskPill({
     transform: [{ translateX: translationX.value }, { scale: dragging.value ? 1.04 : 1 }],
     zIndex: dragging.value ? 2 : 0,
   }));
-  const dragGesture = Gesture.Pan()
-    .activateAfterLongPress(260)
-    .activeOffsetX([-10, 10])
-    .onStart(() => {
+  const dragGesture = usePanGesture({
+    activateAfterLongPress: 260,
+    activeOffsetX: [-10, 10],
+    onActivate: () => {
       'worklet';
-      dragging.value = true;
-    })
-    .onUpdate((event: any) => {
+      dragging.set(true);
+    },
+    onUpdate: (event) => {
       'worklet';
-      translationX.value = event.translationX;
-    })
-    .onEnd((event: any) => {
+      translationX.set(event.translationX);
+    },
+    onDeactivate: (event) => {
       'worklet';
-      if (Math.abs(event.translationX) >= 8) {
+      if (!event.canceled && Math.abs(event.translationX) >= 8) {
         scheduleOnRN(onDrop, tab.id, event.translationX);
       }
-    })
-    .onFinalize(() => {
+    },
+    onFinalize: () => {
       'worklet';
-      dragging.value = false;
-      translationX.value = withSpring(0, {
-        duration: 400,
-        dampingRatio: 0.8,
-        overshootClamping: true,
-      });
-    });
+      dragging.set(false);
+      translationX.set(
+        withSpring(0, {
+          duration: 400,
+          dampingRatio: 0.8,
+          overshootClamping: true,
+        }),
+      );
+    },
+  });
 
   return (
     <Animated.View
@@ -89,9 +88,7 @@ function DraggableTaskPill({
         {
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: active
-            ? wt.raised
-            : 'transparent',
+          backgroundColor: active ? wt.raised : 'transparent',
           borderBottomWidth: active ? 2 : 0,
           borderBottomColor: wt.lampDeep,
           borderRadius: tokens.radii.sm,
@@ -309,7 +306,6 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
               borderBottomColor: wt.lampDeep,
             }}
           >
-
             <Text
               style={{
                 fontSize: tokens.typography.sizes.xs,
@@ -323,7 +319,6 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({
         ) : null}
 
         {pillElements}
-
       </ScrollView>
     </Box>
   );

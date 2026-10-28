@@ -40,4 +40,14 @@ describe('CapacityPerspectiveSwitcher (G1 boundary)', () => {
     expect(screen.getByText(/school leader & principal/i)).toBeTruthy();
     expect(screen.queryByRole('button', { name: /current perspective/i })).toBeNull();
   });
+
+  it('lets a developer preview change roles without changing Explore preferences', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<CapacityPerspectiveSwitcher activeCapacity="PRINCIPAL" mode="preview" onChange={onChange} />);
+    await user.click(screen.getByRole('button', { name: /current perspective: school leader/i }));
+    await user.click(screen.getByRole('option', { name: /young learner & student/i }));
+    expect(onChange).toHaveBeenCalledWith('student');
+    expect(getExploreCapacity()).toBe('teacher');
+  });
 });

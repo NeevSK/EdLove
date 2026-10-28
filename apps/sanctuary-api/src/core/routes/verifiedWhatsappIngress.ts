@@ -103,7 +103,7 @@ export function createVerifiedWhatsappIngressRoutes(options: VerifiedWhatsappIng
   const now = options.now ?? (() => new Date());
   const correlationId = options.correlationId ?? crypto.randomUUID;
 
-  routes.get('/webhooks/whatsapp-v2', (c) => {
+  const handleVerification = (c: any) => {
     const verifyToken = options.getEnv('WHATSAPP_VERIFY_TOKEN');
     if (!verifyToken) return c.text('Service Unavailable', 503);
     if (
@@ -114,9 +114,9 @@ export function createVerifiedWhatsappIngressRoutes(options: VerifiedWhatsappIng
       return c.text('Forbidden', 403);
     }
     return c.text(c.req.query('hub.challenge')!, 200);
-  });
+  };
 
-  routes.post('/webhooks/whatsapp-v2', async (c) => {
+  const handleMessageDelivery = async (c: any) => {
     const appSecret = options.getEnv('WHATSAPP_APP_SECRET');
     const identityHashSecret = options.getEnv('WHATSAPP_IDENTITY_HASH_SECRET');
     if (!appSecret || !identityHashSecret) return c.text('Service Unavailable', 503);
@@ -165,7 +165,13 @@ export function createVerifiedWhatsappIngressRoutes(options: VerifiedWhatsappIng
     }
 
     return c.json({ status: 'accepted' }, 200);
-  });
+  };
+
+  // Support both canonical /webhooks/whatsapp and versioned /webhooks/whatsapp-v2 paths
+  routes.get('/webhooks/whatsapp', handleVerification);
+  routes.get('/webhooks/whatsapp-v2', handleVerification);
+  routes.post('/webhooks/whatsapp', handleMessageDelivery);
+  routes.post('/webhooks/whatsapp-v2', handleMessageDelivery);
 
   return routes;
 }

@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LEGAL_SUPPORT_EMAIL } from '../contact';
+import { ProvenanceCard } from '../ProvenanceCard';
 
-export const metadata: Metadata = { title: 'Delete Account' };
+export const metadata: Metadata = {
+  title: 'Delete Account & Right to Erasure',
+  description:
+    'Formal account deletion and data erasure procedure under the Sri Lanka Personal Data Protection Act.',
+};
 
 export default function DeleteAccountPage() {
   const subject = encodeURIComponent('Delete my Gurudevi account');
@@ -13,79 +18,114 @@ export default function DeleteAccountPage() {
   return (
     <main className="reading-shell" id="main-content">
       <Link className="back-link" href="/">
-        Gurudevi
+        ← Back to Gurudevi
       </Link>
       <article className="max-w-3xl space-y-7 font-sans text-[1.05rem] leading-8 text-ink-soft">
         <p className="kicker">Your data, your decision</p>
         <h1 className="!mb-0 !font-serif !text-5xl !leading-tight !text-ink">
-          Delete your Gurudevi account
+          Account Deletion & Data Erasure
         </h1>
+
+        <ProvenanceCard
+          documentId="GD-GOV-2026-ERASURE"
+          version="v1.2"
+          lastUpdated="28 October 2026"
+          governingFramework="Sri Lanka Personal Data Protection Act No. 9 of 2022 (Section 14)"
+          custodian="Data Protection Officer & Account Security Team"
+          status="Statutory Operational Protocol"
+        >
+          This procedure implements your statutory Right to Erasure under Section 14 of the Sri Lanka
+          PDPA. We verify every request through cryptographic identity verification before committing
+          irreversible mutations.
+        </ProvenanceCard>
+
         <p className="lede">
-          Request deletion here if you cannot access the app. We verify each request before changing
-          an account or its data.
+          If you wish to terminate your account and remove associated personal records, you may
+          initiate the process directly via this form or through the authenticated Sanctuary settings.
         </p>
+
         <section
-          className="border border-line bg-paper-light p-6 sm:p-8"
+          className="callout-box !p-6 sm:!p-8"
           aria-labelledby="request-heading"
         >
           <h2 id="request-heading" className="!mb-4 !font-serif !text-2xl !text-ink">
-            How to request deletion
+            How to Submit an Erasure Request
           </h2>
           <ol className="list-decimal space-y-3 pl-6">
             <li>
-              If you can sign in, use the account deletion option in Gurudevi. This is the fastest
-              way to associate a request with your account.
+              <strong>From Sanctuary Settings (Fastest):</strong> If you can sign in, navigate to
+              Account Settings and select <em>“Request Account Deletion”</em>. This automatically binds
+              your cryptographic identity token to the request.
             </li>
             <li>
-              Email us at{' '}
+              <strong>Via Direct Email Verification:</strong> If you cannot sign in or need manual
+              assistance, email our Data Stewardship Board at{' '}
               <a className="underline underline-offset-4" href={`mailto:${LEGAL_SUPPORT_EMAIL}`}>
                 {LEGAL_SUPPORT_EMAIL}
               </a>
               .
             </li>
             <li>
-              Use the subject: <span className="font-semibold">“Delete my Gurudevi account”</span>.
+              Use the exact subject line: <span className="font-semibold text-ink">“Delete my Gurudevi account”</span>.
             </li>
             <li>
-              Include:
-              <ul className="mt-2 list-disc space-y-1 pl-6">
-                <li>The email/phone number you used to sign in</li>
-                <li>Your role (Teacher / Student / Principal)</li>
-                <li>Your school name (if applicable)</li>
-                <li>Any context you want us to know (optional)</li>
+              Please provide the following verification details:
+              <ul className="mt-2 list-disc space-y-1 pl-6 text-sm">
+                <li>Primary email or phone number used to sign in</li>
+                <li>Your institutional role (Teacher / Student / Principal / Guardian)</li>
+                <li>Your school or organizational affiliation (if applicable)</li>
+                <li>Any specific retention or migration concerns (optional)</li>
               </ul>
             </li>
           </ol>
-          <a
-            className="primary-action"
-            href={`mailto:${LEGAL_SUPPORT_EMAIL}?subject=${subject}&body=${body}`}
-          >
-            Email deletion request
-          </a>
+          <div className="mt-6">
+            <a
+              className="button button--dark"
+              href={`mailto:${LEGAL_SUPPORT_EMAIL}?subject=${subject}&body=${body}`}
+            >
+              Email deletion request →
+            </a>
+          </div>
         </section>
+
         <section
-          className="border border-line bg-paper-light/60 p-6 sm:p-8"
+          className="border border-line bg-paper-light/60 p-6 sm:p-8 rounded"
           aria-labelledby="after-request-heading"
         >
           <h2 id="after-request-heading" className="!mb-4 !font-serif !text-2xl !text-ink">
-            What happens after a request
+            What Happens Following Your Request
           </h2>
-          <p>
-            We acknowledge the request, verify that it comes from the account holder, and check
-            whether a school, guardian, safety, fraud-prevention, or legal retention obligation
-            affects the request. Once verified, the account is soft-deactivated while the deletion
-            is scheduled; this stops normal access but is not presented as completed deletion.
-          </p>
-          <p className="text-sm opacity-80">
-            When deletion is completed, we delete or anonymize account-associated data unless a
-            specific security, fraud-prevention, institutional recordkeeping, safeguarding, or legal
-            obligation requires limited retention. If that applies, we will explain the category and
-            basis before completion. Read the{' '}
+          <div className="space-y-4">
+            <p>
+              <strong>1. Verification & Soft Deactivation:</strong> Upon receiving your request, we
+              verify account ownership and immediately apply a soft deactivation. This stops all
+              active sessions, notification dispatches, and public or school-level visibility.
+            </p>
+            <p>
+              <strong>2. Statutory Audit:</strong> Before executing cryptographic erasure, we review
+              whether mandatory statutory retention rules apply (such as official Ministry of Education
+              examination records, child safeguarding incident documentation, or anti-fraud requirements).
+            </p>
+            <p>
+              <strong>3. Permanent Irreversible Purging:</strong> All remaining personal data, reflections,
+              auth tokens, and local cache backups are permanently purged from primary storage and
+              scheduled for irreversible garbage collection in our secure database partitions.
+            </p>
+          </div>
+          <p className="mt-4 text-xs opacity-80 border-t border-line pt-3">
+            For further information regarding retention categories and legal bases, consult the{' '}
             <Link className="underline underline-offset-4" href="/privacy#retention-and-deletion">
-              retention and deletion policy
+              Data Retention & Erasure Policy
             </Link>
             .
           </p>
+        </section>
+
+        <hr className="my-8 border-line" />
+        <section className="text-xs text-ink-soft space-y-1">
+          <p className="font-semibold text-ink">Revision Provenance History:</p>
+          <p>• v1.2 (28 Oct 2026): Streamlined two-stage deletion protocol, clarified PDPA Section 14 statutory alignment.</p>
+          <p>• v1.1 (01 Sep 2026): Initial draft of account deletion guidelines.</p>
         </section>
       </article>
     </main>

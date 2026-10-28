@@ -13,8 +13,10 @@ export type AuthorizedEntryResult =
       accountId: string;
       authSubjectId: string;
       displayName: string;
-      /** Compatibility label derived from the server-selected scope, never a profile fallback. */
+      /** Capacity of the currently selected bond, used for workspace-specific authorization. */
       activeCapacity: string;
+      /** Capacity selected during onboarding, anchored to the personal sanctuary bond. */
+      primaryCapacity: string;
       primaryScopeRole: string;
       activeScope: Readonly<{
         bondId: string;
@@ -42,8 +44,10 @@ export type AuthoritativeAuthorizedEntryFacts =
       authSubjectId: string;
       displayName: string | null;
       onboardingCompleted: boolean;
-      /** Compatibility label derived from the selected scope by the server adapter. */
+      /** Capacity of the currently selected bond. */
       activeCapacity: string | null;
+      /** Capacity selected during onboarding, anchored to the personal sanctuary bond. */
+      primaryCapacity: string | null;
       primaryScopeRole: string | null;
       activeScope: Readonly<{
         bondId: string;
@@ -96,6 +100,7 @@ export function mapAuthorizedEntry(
   }
   if (
     !present(facts.activeCapacity) ||
+    !present(facts.primaryCapacity) ||
     !present(facts.primaryScopeRole) ||
     !facts.activeScope ||
     facts.activeScope.roles.length === 0
@@ -109,6 +114,7 @@ export function mapAuthorizedEntry(
     authSubjectId: facts.authSubjectId,
     displayName: facts.displayName,
     activeCapacity: facts.activeCapacity,
+    primaryCapacity: facts.primaryCapacity,
     primaryScopeRole: facts.primaryScopeRole,
     activeScope: facts.activeScope,
   };

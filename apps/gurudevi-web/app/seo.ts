@@ -5,9 +5,9 @@ export const SITE_NAME = 'Gurudevi';
 export const SITE_DESCRIPTION =
   'Gurudevi is an education ecology support system and sanctuary for education in Sri Lanka, supporting teachers, students, schools, families, and communities.';
 
-export const SUPPORT_EMAIL = 'support@gurudevi.app';
-export const INSTITUTIONAL_EMAIL = 'institutional@gurudevi.app';
-export const GRATITUDE_EMAIL = 'gratitude@gurudevi.app';
+export const SUPPORT_EMAIL = 'support@gurudevi.lk';
+export const INSTITUTIONAL_EMAIL = 'institutional@gurudevi.lk';
+export const GRATITUDE_EMAIL = 'gratitude@gurudevi.lk';
 
 export const publicPaths = [
   '/',

@@ -11,6 +11,8 @@ export type GuardianLinkProvisionInput = {
 
 /** Server commands are the only provisioning writers. The client merely owns durable intent. */
 export const workspaceProvisioningClient = {
+  teacherClassroom: (input: { idempotencyKey: string; name: string; purpose: 'independent' | 'personal' }) =>
+    orpcClient.workspaceProvisioning.provisionTeacherClassroom({ body: input }),
   commercialBatch: (input: CreateTuitionBatchInput & { idempotencyKey: string }) =>
     orpcClient.workspaceProvisioning.provisionCommercialBatch({
       body: {

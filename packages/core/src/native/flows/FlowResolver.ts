@@ -1,6 +1,7 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { identityAPI } from '@repo/core/api/identity';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { encryptPairingPayload } from '@repo/core/logic/pairing/pairingCrypto';
 import { trackProductEvent } from '@repo/core/monitoring';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary,
 // but for now let's assume core is the base.
@@ -73,6 +74,13 @@ export class FlowResolver {
               gifter_name: payload.gifter_name,
             },
           };
+
+        case 'link_device':
+          return await FlowResolver.executeLinkDevice(
+            payload.challenge_id,
+            userId,
+            payload.pairing_key,
+          );
 
         default:
           return { outcome: 'error', message: 'Unknown action' };
@@ -249,6 +257,60 @@ export class FlowResolver {
         outcome: 'error',
         message: error.message || 'Claim failed',
         error,
+      };
+    }
+  }
+
+  private static async executeLinkDevice(
+    challengeId: string,
+    _userId: string,
+    pairingKey?: string,
+  ): Promise<FlowResult> {
+    try {
+      let encryptedSession: Record<string, unknown> | null = null;
+
+      // Extract current active Supabase session to delegate to target device
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      if (sessionData?.session?.access_token && sessionData?.session?.refresh_token) {
+        const rawPayload = {
+          access_token: sessionData.session.access_token,
+          refresh_token: sessionData.session.refresh_token,
+          user_id: sessionData.session.user.id,
+        };
+
+        if (pairingKey) {
+          encryptedSession = (await encryptPairingPayload(rawPayload, pairingKey)) as unknown as Record<
+            string,
+            unknown
+          >;
+        } else {
+          encryptedSession = rawPayload;
+        }
+      }
+
+      const { data: _data, error } = await supabaseClient.rpc('authorize_device_pairing', {
+        p_challenge_id: challengeId,
+        p_approve: true,
+        p_encrypted_session: encryptedSession,
+      });
+
+      if (error) {
+        return {
+          outcome: 'error',
+          message: error.message || 'Failed to authorize device pairing',
+        };
+      }
+
+      return {
+        outcome: 'success',
+        message: 'Device authorized! The browser will now log in.',
+        intent: 'GOTO_SELF',
+      };
+    } catch (err: any) {
+      return {
+        outcome: 'error',
+        message: err.message || 'Device authorization encountered an error',
+        error: err,
       };
     }
   }

@@ -103,6 +103,45 @@ export async function settleWorkspaceProvisioning<T extends Record<string, unkno
 }
 
 export const workspaceProvisioningRouter = impl.router({
+  provisionTeacherClassroom: impl.provisionTeacherClassroom
+    .use(sovereignErrorMiddleware)
+    .handler(({ input, context }) =>
+      settleWorkspaceProvisioning({
+        context,
+        capability: WorkspaceProvisioningCapabilities.teacherClassroomCapability,
+        idempotencyKey: input.body.idempotencyKey,
+        intent: { ...input.body, accountId: context.user.id },
+        commit: async (tx) => {
+          const now = new Date();
+          const user = await tx.user.findUnique({
+            where: { id: context.user.id }, select: { onboarding_completed: true },
+          });
+          const teacherBond = await tx.bond.findFirst({
+            where: {
+              user_id: context.user.id, capacity: 'teacher', status: 'active',
+              valid_from: { lte: now }, OR: [{ valid_until: null }, { valid_until: { gt: now } }],
+            }, select: { id: true },
+          });
+          if (!user?.onboarding_completed || !teacherBond) {
+            throw new ORPCError('FORBIDDEN', { message: 'An active teacher bond is required to create a classroom.' });
+          }
+          const classroom = await tx.classroom.create({
+            data: {
+              name: input.body.name, school_id: null, teacher_id: context.user.id,
+              created_by: context.user.id, academic_year: String(now.getUTCFullYear()),
+            }, select: { id: true },
+          });
+          const bond = await tx.bond.create({
+            data: {
+              user_id: context.user.id, entity_id: classroom.id, entity_type: 'CLASSROOM',
+              capacity: 'teacher', status: 'active', valid_from: now,
+              metadata: { source: 'teacher_classroom_provisioning', purpose: input.body.purpose },
+            }, select: { id: true },
+          });
+          return { classroomId: classroom.id, bondId: bond.id };
+        },
+      }),
+    ),
   provisionCommercialBatch: impl.provisionCommercialBatch
     .use(sovereignErrorMiddleware)
     .handler(({ input, context }) =>

@@ -28,6 +28,7 @@ import {
   clearLocalGuestSession,
   getOrCreateLocalGuestSession,
   LocalGuestSessionError,
+  readLocalGuestSession,
   restoreLocalGuestSession,
 } from '@repo/core/native/localGuestSession';
 
@@ -63,6 +64,14 @@ describe('local guest session', () => {
     expect(mocks.setGuestScope).toHaveBeenCalledWith(persisted.id);
   });
 
+  it('verifies a stored session without changing the active scope', async () => {
+    const persisted = { version: 1, id: `local-${UUID}` };
+    mocks.values.set(STORAGE_KEY, JSON.stringify(persisted));
+    await expect(readLocalGuestSession()).resolves.toEqual(persisted);
+    expect(mocks.setGuestScope).not.toHaveBeenCalled();
+    expect(mocks.removeItem).not.toHaveBeenCalled();
+  });
+
   it('reuses a valid session without generating or rewriting it', async () => {
     const persisted = { version: 1, id: `local-${UUID}` };
     mocks.values.set(STORAGE_KEY, JSON.stringify(persisted));
@@ -89,7 +98,9 @@ describe('local guest session', () => {
     vi.stubGlobal('crypto', {});
 
     await expect(getOrCreateLocalGuestSession()).rejects.toBeInstanceOf(LocalGuestSessionError);
-    await expect(getOrCreateLocalGuestSession()).rejects.toThrow('crypto.randomUUID is unavailable');
+    await expect(getOrCreateLocalGuestSession()).rejects.toThrow(
+      'crypto.randomUUID is unavailable',
+    );
     expect(mocks.setItem).not.toHaveBeenCalled();
   });
 

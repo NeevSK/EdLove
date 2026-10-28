@@ -5,6 +5,13 @@ export { default as RoleInitialState } from '@repo/classroom/components/Identity
 export { default as QuickAnalytics } from '@repo/classroom/components/QuickAnalytics';
 export * from '@repo/classroom/constants/classroomRegistry';
 export * from '@repo/classroom/hooks';
+export * from './machines/attendanceSessionMachine';
+export * from './machines/bulkStudentCreationMachine';
+export * from './machines/classroomSpaceNavigatorMachine';
+export * from './machines/gradebookBatchMachine';
+export * from './machines/schoolProvisioningMachine';
+export * from './machines/studentClaimMachine';
+export * from './machines/studentVerificationMachine';
 
 export { default as AttendanceReportScreen } from '@repo/classroom/screens/AttendanceReportScreen';
 export { default as AttendanceScreen } from '@repo/classroom/screens/AttendanceScreen';

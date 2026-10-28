@@ -3,9 +3,20 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { vi } from 'vitest';
 import { Button, ButtonIcon, ButtonText } from '../components/ui/button';
 
-vi.mock('@repo/ui/utils/haptics', () => ({
-  hapticImpact: vi.fn(),
-}));
+vi.mock('@repo/ui/utils/haptics', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@repo/ui/utils/haptics')>();
+  return {
+    ...actual,
+    hapticImpact: vi.fn(),
+    hapticLight: vi.fn(),
+    hapticMedium: vi.fn(),
+    hapticHeavy: vi.fn(),
+    hapticSuccess: vi.fn(),
+    hapticWarning: vi.fn(),
+    hapticError: vi.fn(),
+    hapticSelection: vi.fn(),
+  };
+});
 
 import { hapticImpact } from '@repo/ui/utils/haptics';
 

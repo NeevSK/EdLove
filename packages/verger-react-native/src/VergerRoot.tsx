@@ -3,19 +3,21 @@ import {
   createVerger,
   type ExperimentAssignment,
   type FidelityPreference,
-  type VergerEvent,
+  type LaunchPlan,
   type RunMode,
-  type VergerSnapshot,
-  type VergerTelemetrySink,
   type Verger,
+  type VergerActivation,
+  type VergerEvent,
   type VergerHost,
   type VergerPlatform,
-  type VergerActivation,
+  type VergerSnapshot,
   type VergerStore,
+  type VergerTelemetrySink,
 } from '@repo/verger-core';
 import {
   bindVerger,
   bindVergerEarly,
+  INTERACTION_THROTTLE_MS,
   observeEventLoopLag,
   observeInputDelay,
   observeJsHeap,
@@ -27,9 +29,6 @@ import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
 
 /** `off` runs nothing; `shadow` senses and decides but applies nothing new; `active` applies. */
 export type VergerMode = 'off' | RunMode;
-
-/** Touches closer together than this are one interaction; verger needs presence, not taps. */
-const INTERACTION_THROTTLE_MS = 250;
 
 // Unknown or null at launch is treated as active: the app is starting in front of the user,
 // and treating it as hidden would force reduced motion until the first change event.
@@ -48,6 +47,8 @@ function sendPreferences(
 
 export interface VergerRootProps {
   readonly children: ReactNode;
+  /** False only when the existing host root reports presence with reportVergerInteraction. */
+  readonly capturePresence?: boolean;
   /** The host's definition (`defineHost`): its levers, rules, thresholds and recovery. */
   readonly host: VergerHost;
   /** The platform (`createVergerAndroidPlatform`). Called only if the launch lets verger run. */
@@ -77,6 +78,15 @@ export interface VergerRootProps {
   readonly release: string;
   /** Records each session for the dev lab's export (D1); development builds only. */
   readonly recordEvents?: number;
+  /** Observes each accepted runtime input for development diagnostics. */
+  readonly onRecordEvent?: (event: VergerEvent) => void;
+  readonly onSnapshotTransition?: (
+    event: VergerEvent,
+    before: VergerSnapshot,
+    after: VergerSnapshot,
+  ) => void;
+  /** Reports the actual launch result, including recovery-ladder refusal. */
+  readonly onLaunchPlan?: (plan: LaunchPlan) => void;
   /**
    * The kill switch, read live (R8): checked each time the app returns to the foreground; once it
    * reads true, a running verger stops and only the floors remain until the next launch.
@@ -99,6 +109,7 @@ export interface VergerRootProps {
  */
 export function VergerRoot({
   children,
+  capturePresence = true,
   host,
   platform,
   store,
@@ -111,6 +122,9 @@ export function VergerRoot({
   telemetrySink,
   release,
   recordEvents,
+  onRecordEvent,
+  onSnapshotTransition,
+  onLaunchPlan,
   killed,
 }: VergerRootProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
@@ -129,6 +143,8 @@ export function VergerRoot({
       telemetrySink,
       release,
       recordEvents,
+      onRecordEvent,
+      onSnapshotTransition,
       now,
     }),
   );
@@ -162,7 +178,13 @@ export function VergerRoot({
     settings();
     if (runs)
       void verger.start().then((plan) => {
-        if (live && plan.runtime !== 'off') settings();
+        if (!live) return;
+        try {
+          onLaunchPlan?.(plan);
+        } catch (error) {
+          console.warn('[verger] launch diagnostics failed', error);
+        }
+        if (plan.runtime !== 'off') settings();
       });
     const appState = AppState.addEventListener('change', (status) => {
       verger.dispatch({ type: 'app-state', at: now(), state: visibilityOf(status) });
@@ -210,11 +232,15 @@ export function VergerRoot({
       appState.remove();
       if (runs) void verger.stop();
     };
-  }, [verger, runs, startSignals]);
+  }, [verger, runs, startSignals, onLaunchPlan]);
 
   return (
     <>
-      {runs ? <PresenceBoundary verger={verger}>{children}</PresenceBoundary> : children}
+      {runs && capturePresence ? (
+        <PresenceBoundary verger={verger}>{children}</PresenceBoundary>
+      ) : (
+        children
+      )}
       <GlobalMotion verger={verger} />
     </>
   );

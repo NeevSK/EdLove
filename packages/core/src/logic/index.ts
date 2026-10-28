@@ -28,7 +28,12 @@ export {
   type PendingGateAction,
   setPendingGateAction,
 } from '@repo/core/lib/pendingGateAction';
-export { StorageKeys, storage } from '@repo/core/lib/storage';
+export {
+  StorageKeys,
+  storage,
+  buildPartitionedKey,
+  type PartitionKeyOptions,
+} from '@repo/core/lib/storage';
 export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 export type {
   AccountLifecycleCommand,

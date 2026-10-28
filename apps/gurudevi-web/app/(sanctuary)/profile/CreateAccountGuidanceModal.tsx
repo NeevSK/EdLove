@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React, { useState } from 'react';
+import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import styles from './create-account-guidance-modal.module.css';
 
 interface CreateAccountGuidanceModalProps {
@@ -34,10 +35,10 @@ export function CreateAccountGuidanceModal({
   };
 
   const signUpHref = preserveSandboxData
-    ? 'https://sanctuary.gurudevi.app/sign-up?preserve_guest=1'
-    : 'https://sanctuary.gurudevi.app/sign-up';
+    ? resolveSurfaceUrl('sanctuary', '/sign-in?intent=signup&preserve_guest=1')
+    : resolveSurfaceUrl('sanctuary', '/sign-in?intent=signup');
 
-  const signInHref = 'https://sanctuary.gurudevi.app/sign-in';
+  const signInHref = resolveSurfaceUrl('sanctuary', '/sign-in');
 
   return (
     <div

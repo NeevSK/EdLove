@@ -26,6 +26,17 @@ export interface ParsedStudent extends ScannedStudent {
  * Returns ParsedStudent[] sorted in document order.
  */
 export function parseStudents(result: OCRRawResult): ParsedStudent[] {
+  // If the vision engine already extracted structured student rows, pass them through directly
+  if (result.students && result.students.length > 0) {
+    return result.students.map((s) => ({
+      name: s.name,
+      index_number: s.index_number,
+      notes: s.notes,
+      confidence: s.confidence,
+      uncertain: s.uncertain ?? s.confidence < CONFIDENCE_THRESHOLD,
+    }));
+  }
+
   // If we have blocks, use them for finer-grained processing.
   // Otherwise fall back to line-by-line text parsing.
   const lines = buildLines(result);

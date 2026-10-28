@@ -1,5 +1,5 @@
 import { storage } from '@repo/core/logic/managers/StorageManager';
-import { StorageKeys } from '@repo/core/lib/storage';
+import { StorageKeys, buildPartitionedKey, type PartitionKeyOptions } from '@repo/core/lib/storage';
 import type { BulkStudent } from '@repo/core/types';
 import { Cause, Effect, Exit } from 'effect';
 import { createActor, createMachine, types } from 'xstate';
@@ -354,21 +354,38 @@ export function createBulkStudentCreationActor(initial?: Partial<BulkStudentCrea
 }
 
 /**
+ * Resolves a storage key, accepting either a legacy string key or PartitionKeyOptions.
+ */
+function resolveBulkStudentStorageKey(
+  storageKeyOrOptions: string | PartitionKeyOptions = StorageKeys.DRAFT_STUDENTS,
+): string {
+  if (typeof storageKeyOrOptions === 'string') {
+    return storageKeyOrOptions;
+  }
+  return buildPartitionedKey({
+    ...storageKeyOrOptions,
+    feature: storageKeyOrOptions.feature ?? 'bulk_students',
+    version: storageKeyOrOptions.version ?? 'v6',
+  });
+}
+
+/**
  * Saves draft students snapshot into StorageManager.
  */
 export function saveBulkStudentDraftSnapshot(
   actor: BulkStudentCreationActor,
-  storageKey = StorageKeys.DRAFT_STUDENTS,
+  storageKeyOrOptions: string | PartitionKeyOptions = StorageKeys.DRAFT_STUDENTS,
 ): void {
+  const resolvedKey = resolveBulkStudentStorageKey(storageKeyOrOptions);
   try {
     const snapshot = actor.getSnapshot();
     if (snapshot.value === 'completed') {
-      storage.delete(storageKey);
+      storage.delete(resolvedKey);
       return;
     }
     if (snapshot.context.students.length > 0) {
       storage.set(
-        storageKey,
+        resolvedKey,
         JSON.stringify({
           students: snapshot.context.students,
           step: snapshot.value,
@@ -387,10 +404,11 @@ export function saveBulkStudentDraftSnapshot(
  */
 export function restoreBulkStudentDraftSnapshot(
   actor: BulkStudentCreationActor,
-  storageKey = StorageKeys.DRAFT_STUDENTS,
+  storageKeyOrOptions: string | PartitionKeyOptions = StorageKeys.DRAFT_STUDENTS,
 ): boolean {
+  const resolvedKey = resolveBulkStudentStorageKey(storageKeyOrOptions);
   try {
-    const raw = storage.getString(storageKey);
+    const raw = storage.getString(resolvedKey);
     if (!raw) return false;
     const data = JSON.parse(raw);
     if (Array.isArray(data?.students) && data.students.length > 0) {
@@ -446,6 +464,9 @@ export async function executeBulkStudentImportEffect(
 
   return Exit.match(exit, {
     onSuccess: () => {
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: true, count: validStudents.length };
+      }
       actor.send({ type: 'IMPORT_SUCCESS' });
       clearDraftFn?.();
       return { success: true, count: validStudents.length };
@@ -456,6 +477,9 @@ export async function executeBulkStudentImportEffect(
         errOption._tag === 'Some'
           ? errOption.value
           : 'Failed to import student roster. Please try again.';
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: false, count: 0, error: errorMessage };
+      }
       actor.send({ type: 'IMPORT_FAILURE', error: errorMessage });
       return { success: false, count: 0, error: errorMessage };
     },

@@ -325,6 +325,9 @@ export async function executeFetchAttendanceRosterEffect(
 
   return Exit.match(exit, {
     onSuccess: (students) => {
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: true, students };
+      }
       actor.send({ type: 'FETCH_SUCCESS', students });
       return { success: true, students };
     },
@@ -334,6 +337,9 @@ export async function executeFetchAttendanceRosterEffect(
         errOption._tag === 'Some'
           ? errOption.value
           : 'The class list could not be loaded. Please try again.';
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: false, error: errorMessage };
+      }
       actor.send({ type: 'FETCH_FAILURE', error: errorMessage });
       return { success: false, error: errorMessage };
     },
@@ -370,6 +376,9 @@ export async function executeSaveAttendanceSessionEffect(
 
   return Exit.match(exit, {
     onSuccess: () => {
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: true };
+      }
       actor.send({ type: 'SAVE_SUCCESS' });
       return { success: true };
     },
@@ -377,6 +386,9 @@ export async function executeSaveAttendanceSessionEffect(
       const errOption = Cause.findErrorOption(cause);
       const errorMessage =
         errOption._tag === 'Some' ? errOption.value : 'Failed to save attendance records.';
+      if (actor.getSnapshot().status === 'stopped') {
+        return { success: false, error: errorMessage };
+      }
       actor.send({ type: 'SAVE_FAILURE', error: errorMessage });
       return { success: false, error: errorMessage };
     },

@@ -1,9 +1,10 @@
 import { isLocalOnlyIdentity } from '@repo/core/logic';
 import {
   dismissGuestLeaseReminder,
-  getOrCreateGuestLease,
   type GuestLeaseStatus,
+  getOrCreateGuestLease,
 } from '@repo/core/native';
+import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { usePathname, useRouter } from 'expo-router';
@@ -18,9 +19,11 @@ export function GuestPersistenceNotice() {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const [status, setStatus] = useState<GuestLeaseStatus | null>(null);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    if (!user || !isLocalOnlyIdentity(user)) {
+    setIsDismissed(false);
+    if (!user || !isLocalOnlyIdentity(user) || isLocalGuestSessionId(user.id)) {
       setStatus(null);
       return;
     }
@@ -40,21 +43,35 @@ export function GuestPersistenceNotice() {
     pathname === '/auth' ||
     pathname === '/onboarding' ||
     pathname === '/account-recovery';
+  const isDurableLocalGuest = Boolean(user && isLocalGuestSessionId(user.id));
 
-  if (!user || !isLocalOnlyIdentity(user) || isEntryRoute || !status?.reminderDay || status.isExpired) return null;
+  if (
+    !user ||
+    !isLocalOnlyIdentity(user) ||
+    isEntryRoute ||
+    isDismissed ||
+    (!isDurableLocalGuest && (!status?.reminderDay || status.isExpired))
+  )
+    return null;
 
-  const remainingDays = Math.max(0, 15 - status.day);
+  const remainingDays = status ? Math.max(0, 15 - status.day) : null;
   const dismiss = () => {
-    const reminderDay = status.reminderDay;
+    if (isDurableLocalGuest) {
+      setIsDismissed(true);
+      return;
+    }
+    const reminderDay = status?.reminderDay;
     if (!reminderDay) return;
     void dismissGuestLeaseReminder(user.id, reminderDay).then(() => setStatus(null));
   };
 
   return (
-    <Box className="absolute bottom-4 left-4 right-4 z-40 flex-row items-center gap-3 rounded-2xl border border-phase-border bg-phase-surface px-4 py-3 shadow-lg">
+    <Box className="absolute bottom-24 left-4 right-4 z-40 flex-row items-center gap-3 rounded-2xl border border-phase-border bg-phase-surface px-4 py-3 shadow-lg">
       <Box className="flex-1">
         <Text className="text-sm font-semibold text-phase-text-primary">
-          Guest mode · {remainingDays} day{remainingDays === 1 ? '' : 's'} left
+          {isDurableLocalGuest
+            ? 'Guest mode · saved on this device'
+            : `Guest mode · ${remainingDays} day${remainingDays === 1 ? '' : 's'} left`}
         </Text>
         <Text className="mt-0.5 text-xs leading-4 text-phase-text-secondary">
           Your work is saved only on this device until you create an account.
@@ -68,7 +85,11 @@ export function GuestPersistenceNotice() {
       >
         <Text className="text-xs font-bold text-white">Keep work</Text>
       </Pressable>
-      <Pressable accessibilityRole="button" accessibilityLabel="Dismiss guest storage reminder" onPress={dismiss}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Dismiss guest storage reminder"
+        onPress={dismiss}
+      >
         <Text className="text-base text-phase-text-secondary">×</Text>
       </Pressable>
     </Box>

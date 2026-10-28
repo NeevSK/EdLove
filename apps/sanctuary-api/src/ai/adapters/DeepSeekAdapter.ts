@@ -8,6 +8,7 @@ export class DeepSeekAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
+    _abortSignal?: AbortSignal,
   ): Promise<AsyncIterable<StreamChunk>> {
     // DeepSeek is OpenAI API-compatible (chat completions), so we configure
     // the OpenAI completions adapter with DeepSeek's URL.

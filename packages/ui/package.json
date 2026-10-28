@@ -29,6 +29,16 @@
       "import": "./src/components/ui/*/index.tsx",
       "default": "./src/components/ui/*/index.tsx"
     },
+    "./qr": {
+      "types": "./src/qr/index.ts",
+      "import": "./src/qr/index.ts",
+      "default": "./src/qr/index.ts"
+    },
+    "./qr/*": {
+      "types": "./src/qr/*.tsx",
+      "import": "./src/qr/*.tsx",
+      "default": "./src/qr/*.tsx"
+    },
     "./utils": {
       "types": "./src/utils/index.ts",
       "import": "./src/utils/index.ts",
@@ -976,6 +986,7 @@
     "react-i18next": "^17.1.0",
     "react-native": "0.88.0",
     "react-native-enriched-markdown": "^1.0.1",
+    "react-native-gesture-handler": "3.4.0",
     "react-native-keyboard-controller": "1.22.8",
     "react-native-safe-area-context": "5.10.1",
     "react-native-webview": "14.0.1",

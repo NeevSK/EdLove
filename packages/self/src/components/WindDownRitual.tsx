@@ -1,5 +1,5 @@
 import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
-import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import { useMachineActor } from '@repo/core/hooks/useMachineActor';
 import {
   createWindDownRitualActor,
   executeSaveWindDownRitualEffect,
@@ -52,11 +52,10 @@ interface WindDownRitualProps {
 export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const router = useRouter();
   const { t } = useTranslation();
-  const actor = useMemo(
+  const { actor, snapshot } = useMachineActor(
     () => createWindDownRitualActor({ userId: userId ?? '' }),
     [userId],
   );
-  const snapshot = useActorSnapshot(actor);
   const { wentWell, toRelease, tomorrowIntent, error: saveError, isSaving: saving } =
     snapshot.context;
   const step = snapshot.value as WindDownStep | 'saving' | 'completed';

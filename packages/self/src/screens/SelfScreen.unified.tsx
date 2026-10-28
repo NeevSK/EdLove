@@ -6,7 +6,7 @@ import { FeaturePicker } from '@repo/self/components/FeaturePicker';
 import { RoleWeightEditor } from '@repo/self/components/RoleWeightEditor';
 import { SelfCanvas } from '@repo/self/components/SelfCanvas';
 import {
-  deriveRolesFromCapabilities,
+  deriveRolesFromCapacities,
   resolveAccessibleFeatures,
 } from '@repo/self/features/accessPolicy';
 import { FEATURE_CATALOG } from '@repo/self/features/featureCatalog';
@@ -101,8 +101,8 @@ export default function SelfScreenUnified() {
     [context.capacity],
   );
   const roles = useMemo(
-    () => deriveRolesFromCapabilities(capabilities, capacities),
-    [capabilities, capacities],
+    () => deriveRolesFromCapacities(capacities),
+    [capacities],
   );
 
   const citizenshipLevel = useMemo(() => {

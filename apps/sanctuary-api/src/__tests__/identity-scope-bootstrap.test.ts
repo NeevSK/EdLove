@@ -61,7 +61,7 @@ describe('versioned identity scope bootstrap', () => {
     });
   });
 
-  it('does not infer selection from primary capacity or first available bond', () => {
+  it('preserves primary capacity without inferring a selected workspace', () => {
     const personal = bond();
     const result = buildIdentityBootstrap(user, [personal], null, now);
 
@@ -69,7 +69,7 @@ describe('versioned identity scope bootstrap', () => {
       version: 1,
       userId: user.id,
       name: 'Learner',
-      primaryCapacity: null,
+      primaryCapacity: 'student',
       selection: 'needs_selection',
       activeScope: null,
     });
@@ -77,9 +77,15 @@ describe('versioned identity scope bootstrap', () => {
   });
 
   it('combines only currently valid roles in the explicitly selected perspective', () => {
-    const selected = bond();
+    const selected = bond({ entity_id: 'school-1', entity_type: 'SCHOOL', capacity: 'principal' });
+    const personal = bond({
+      id: '00000000-0000-4000-8000-000000000015',
+      capacity: 'teacher',
+    });
     const otherRole = bond({
       id: '00000000-0000-4000-8000-000000000011',
+      entity_id: 'school-1',
+      entity_type: 'SCHOOL',
       capacity: 'teacher',
     });
     const otherPerspective = bond({
@@ -100,7 +106,7 @@ describe('versioned identity scope bootstrap', () => {
     });
     const result = buildIdentityBootstrap(
       user,
-      [selected, otherRole, otherPerspective, archived, expired],
+      [selected, personal, otherRole, otherPerspective, archived, expired],
       selected,
       now,
     );
@@ -110,11 +116,12 @@ describe('versioned identity scope bootstrap', () => {
       bondId: selected.id,
       entityId: selected.entity_id,
       entityType: selected.entity_type,
-      roles: ['student', 'teacher'],
+      roles: ['principal', 'student', 'teacher'],
     });
-    expect(result.scopeBootstrap.primaryCapacity).toBe(selected.capacity);
+    expect(result.scopeBootstrap.primaryCapacity).toBe('teacher');
     expect(result.availableBonds.map(({ id }) => id)).toEqual([
       selected.id,
+      personal.id,
       otherRole.id,
       otherPerspective.id,
     ]);

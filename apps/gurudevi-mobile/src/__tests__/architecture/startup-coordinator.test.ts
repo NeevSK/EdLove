@@ -95,11 +95,41 @@ describe('essential startup coordinator', () => {
       });
 
       expect(stages).toEqual([
-        { stage: 'bootstrapPlatform', outcome: 'complete', durationMs: 4 },
-        { stage: 'runtimeRegistration', outcome: 'complete', durationMs: 0 },
-        { stage: 'loadCatalog', outcome: 'complete', durationMs: 3 },
-        { stage: 'registerAppCatalog', outcome: 'complete', durationMs: 2 },
-        { stage: 'initializeDeviceAccounts', outcome: 'complete', durationMs: 5 },
+        {
+          stage: 'bootstrapPlatform',
+          outcome: 'complete',
+          durationMs: 4,
+          startedAtMs: 10,
+          finishedAtMs: 14,
+        },
+        {
+          stage: 'runtimeRegistration',
+          outcome: 'complete',
+          durationMs: 0,
+          startedAtMs: 14,
+          finishedAtMs: 14,
+        },
+        {
+          stage: 'loadCatalog',
+          outcome: 'complete',
+          durationMs: 3,
+          startedAtMs: 14,
+          finishedAtMs: 17,
+        },
+        {
+          stage: 'registerAppCatalog',
+          outcome: 'complete',
+          durationMs: 2,
+          startedAtMs: 17,
+          finishedAtMs: 19,
+        },
+        {
+          stage: 'initializeDeviceAccounts',
+          outcome: 'complete',
+          durationMs: 5,
+          startedAtMs: 19,
+          finishedAtMs: 24,
+        },
       ]);
       expect(warn).toHaveBeenCalledOnce();
     } finally {
@@ -159,6 +189,8 @@ describe('essential startup coordinator', () => {
         stage: 'bootstrapPlatform',
         outcome: 'failed',
         durationMs: expect.any(Number),
+        startedAtMs: expect.any(Number),
+        finishedAtMs: expect.any(Number),
       });
       expect(vi.getTimerCount()).toBe(0);
     } finally {

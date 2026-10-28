@@ -97,10 +97,43 @@ export function useSecurityControls(owner: SecurityOwner) {
       setNotice('Authenticator verified for this session.');
       await query.refetch();
     });
-  const unlink = () =>
+  const linkProvider = (provider: 'google' | 'apple') =>
+    run(async (_current) => {
+      const client = createBrowserSupabaseClient();
+      if (!client) throw new Error('Browser authentication is unavailable.');
+
+      const { data, error } = await client.auth.linkIdentity({
+        provider,
+        options: {
+          redirectTo:
+            typeof window !== 'undefined'
+              ? `${window.location.origin}/profile/security`
+              : undefined,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message || `Failed to initiate ${provider} identity linking.`);
+      }
+
+      if (data?.url && typeof window !== 'undefined') {
+        window.location.href = data.url;
+      }
+    });
+
+  const unlink = (identityId?: string) =>
     run(async (current) => {
-      if (!target) throw new Error('Choose the Google sign-in method to unlink.');
-      const receipt = await unlinkSecurityCredential(owner, target);
+      const idToUnlink = identityId || target;
+      if (!idToUnlink) throw new Error('Choose the sign-in method to unlink.');
+
+      const currentIdentities = query.data?.identities ?? [];
+      if (currentIdentities.length <= 1) {
+        throw new Error(
+          'Cannot disconnect your only remaining sign-in method. You must keep at least one active login method to access your account.',
+        );
+      }
+
+      const receipt = await unlinkSecurityCredential(owner, idToUnlink);
       if (!current()) return;
       queryClient.setQueryData<SecuritySnapshot>(key, (snapshot) =>
         snapshot
@@ -114,7 +147,7 @@ export function useSecurityControls(owner: SecurityOwner) {
       );
       setTarget(null);
       setCode('');
-      setNotice('Google sign-in unlinked. Your account is retained.');
+      setNotice('Sign-in method unlinked successfully. Your account is retained.');
       await query.refetch();
     });
   const requestPasswordCode = () =>
@@ -161,5 +194,6 @@ export function useSecurityControls(owner: SecurityOwner) {
     },
     verify,
     unlink,
+    linkProvider,
   };
 }

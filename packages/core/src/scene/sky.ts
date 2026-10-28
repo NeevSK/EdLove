@@ -164,7 +164,7 @@ export const SCENE_LIGHT = {
 /* ---------- colour arithmetic (6-digit hex only) ---------- */
 
 function channels(hex: string): [number, number, number] {
-  const h = hex.replace('#', '');
+  const h = (hex || '#FFE3A8').replace('#', '');
   return [
     Number.parseInt(h.slice(0, 2), 16),
     Number.parseInt(h.slice(2, 4), 16),
@@ -240,7 +240,7 @@ export function skyPaletteAt(
   minute: number,
   season: SceneSeason,
   weather: SceneWeather,
-  worldGlow: string,
+  worldGlow: string = '#FFE3A8',
 ): SkyPalette {
   const wx = WEATHER[weather];
   const light = daylightAt(minute);

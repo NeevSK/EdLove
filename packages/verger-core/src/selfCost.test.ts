@@ -35,16 +35,57 @@ describe('self-cost meter', () => {
     meter.onReduce(-5);
     meter.onReduce(Number.NaN);
     const cost = meter.read(0);
-    expect(cost).toMatchObject({ events: 2, reduceTotalMs: 0, reduceMaxMs: 0, eventsPerMinute: 0, dutyRatio: 0 });
+    expect(cost).toMatchObject({
+      events: 2,
+      reduceTotalMs: 0,
+      reduceMaxMs: 0,
+      eventsPerMinute: 0,
+      dutyRatio: 0,
+    });
   });
 });
 
 describe('controller self-cost', () => {
+  it('correlates a valid input with the snapshot it changes and contains observer failures', () => {
+    const transitions: { event: string; before: number; after: number }[] = [];
+    const controller = createRuntimeController({
+      port: { start: () => () => {}, setRefreshCap: () => {}, setCpuBoost: () => {} },
+      capacity: UNKNOWN_CAPACITY,
+      levers: SAMPLE_LEVERS,
+      mode: 'active',
+      config: DEFAULT_VERGER_CONFIG,
+      now: () => 0,
+      scheduler: { setTimeout: () => 1, clearTimeout: () => {} },
+      memorySensing: false,
+      onSnapshotTransition: (event, before, after) => {
+        transitions.push({ event: event.type, before: before.version, after: after.version });
+        throw new Error('diagnostic sink failed');
+      },
+    });
+    const originalError = console.error;
+    console.error = () => {};
+    try {
+      controller.start();
+      controller.dispatch({ type: 'memory-trim', at: 10, severity: 'critical' });
+      controller.dispatch({ type: 'memory-trim', at: Number.NaN, severity: 'critical' });
+      expect(transitions).toHaveLength(1);
+      expect(transitions[0]).toMatchObject({ event: 'memory-trim' });
+      expect(transitions[0]?.after).toBe(controller.getSnapshot().version);
+      expect(transitions[0]?.before).not.toBe(transitions[0]?.after);
+    } finally {
+      console.error = originalError;
+      controller.stop();
+    }
+  });
   it('measures each reduction with the measure clock and counts timer wake-ups', () => {
     let at = 0;
     let measured = 0;
     const timers: (() => void)[] = [];
-    const port: RuntimePort = { start: () => () => {}, setRefreshCap: () => {}, setCpuBoost: () => {} };
+    const port: RuntimePort = {
+      start: () => () => {},
+      setRefreshCap: () => {},
+      setCpuBoost: () => {},
+    };
     const controller = createRuntimeController({
       port,
       capacity: UNKNOWN_CAPACITY,

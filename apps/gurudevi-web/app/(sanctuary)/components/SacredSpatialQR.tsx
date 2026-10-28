@@ -60,7 +60,9 @@ export function SacredSpatialQR({
   const isVerifiedOrigin =
     value.startsWith('gurudevi://') ||
     value.startsWith('https://gurudevi.app') ||
-    value.startsWith('https://sanctuary.gurudevi.app');
+    value.startsWith('https://sanctuary.gurudevi.app') ||
+    value.includes('.localhost') ||
+    value.startsWith('http://localhost');
 
   const handleCopy = async () => {
     try {

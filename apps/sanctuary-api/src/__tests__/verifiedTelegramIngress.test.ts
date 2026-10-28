@@ -61,6 +61,22 @@ describe('verified Telegram ingress adapter', () => {
     expect(JSON.stringify(persist.mock.calls)).not.toContain('private input');
   });
 
+  it('accepts updates on the canonical /webhooks/telegram path without version suffix', async () => {
+    const persist = vi.fn().mockResolvedValue('accepted');
+    const routes = createVerifiedTelegramIngressRoutes({ getEnv, persist });
+    const body = update('private');
+
+    const response = await routes.request('/webhooks/telegram', {
+      method: 'POST',
+      headers: { 'x-telegram-bot-api-secret-token': secrets.TELEGRAM_WEBHOOK_SECRET },
+      body,
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ status: 'accepted' });
+    expect(persist).toHaveBeenCalledTimes(1);
+  });
+
   it('preserves a group boundary in the ingress envelope', async () => {
     const persist = vi.fn().mockResolvedValue('accepted');
     const routes = createVerifiedTelegramIngressRoutes({ getEnv, persist });

@@ -1,7 +1,8 @@
 import { api } from '@repo/core/api/client';
 import { coreRuntime, handleAPIError, type PrincipalInviteRole as UserRole } from '@repo/core/logic';
 import type { InviteCode } from '@repo/core/types';
-import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
+import { QRBuilder } from '@repo/core/logic/utils/QRBuilder';
+import { SanctuaryQRCard } from '@repo/ui/qr';
 import { ArrowLeft, Copy, Plus, QrCode, Shield, Users } from '@repo/ui/icons';
 import {
   Box,
@@ -347,35 +348,21 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
               )}
             </VStack>
           </ModalHeader>
-          <ModalBody className="items-center gap-8 px-4 pb-8">
+          <ModalBody className="items-center px-4 pb-4">
             {qrCodeData && (
-              <VStack className="items-center gap-8">
-                <Box className="p-8 bg-phase-canvas rounded-[40px] border border-phase-border shadow-inner">
-                  <QRCodeGenerator
-                    value={QRBuilder.invite(qrCodeData.code, schoolId, qrCodeData.capacity)}
-                    size={220}
-                    color="#000000"
-                    backgroundColor="transparent"
-                    label={qrCodeData.code}
-                    errorCorrectionLevel="H"
-                    borderRadius={24}
-                    padding={0}
-                  />
-                </Box>
-                <VStack className="items-center gap-2">
-                  <Text className="text-[28px] font-mono font-black text-phase-interactive tracking-[4px] italic">
-                    {qrCodeData.code}
-                  </Text>
-                  <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[3px] opacity-60">
-                    Scan to establish capacity
-                  </Text>
-                </VStack>
-              </VStack>
+              <SanctuaryQRCard
+                value={QRBuilder.invite(qrCodeData.code, schoolId, qrCodeData.capacity)}
+                title={`${qrCodeData.capacity.toUpperCase()} Gate Pass`}
+                subtitle="Scan with Gurudevi or enter code to claim capacity"
+                code={qrCodeData.code}
+                size={190}
+                label={`Invite Pass (${qrCodeData.capacity})`}
+              />
             )}
           </ModalBody>
           <Button
             onPress={() => setQrCodeData(null)}
-            className="w-full h-14 rounded-[20px] bg-phase-canvas border border-phase-border"
+            className="w-full h-12 mt-4 rounded-[20px] bg-phase-canvas border border-phase-border"
           >
             <ButtonText className="text-phaseText-primary font-black uppercase text-[11px] tracking-widest">
               Close Gate

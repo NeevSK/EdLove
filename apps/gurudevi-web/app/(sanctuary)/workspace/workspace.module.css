@@ -433,6 +433,16 @@
   color: var(--ink, #29251f);
 }
 
+.classroomHomeList .classroomOpenButton {
+  width: auto;
+  height: auto;
+  min-height: 2.75rem;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  color: var(--ink, #29251f);
+  text-align: left;
+}
+
 .streamBackButton {
   display: inline-flex;
   align-items: center;

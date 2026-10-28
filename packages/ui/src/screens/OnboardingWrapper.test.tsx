@@ -16,6 +16,8 @@ const mocks = vi.hoisted(() => {
 
   return {
     capturedOnComplete: undefined as undefined | (() => void),
+    capturedOnInteractive: undefined as undefined | (() => void),
+    capturedOnDeveloperSandboxOpened: undefined as undefined | (() => void),
     refreshProfile: vi.fn(),
     store,
     useAuthStore,
@@ -42,8 +44,18 @@ vi.mock('@repo/ui/components/CelebrationOverlay', () => ({
   CelebrationOverlay: () => null,
 }));
 vi.mock('@repo/ui/screens/OnboardingScreen', () => ({
-  default: ({ onComplete }: { onComplete: () => void }) => {
+  default: ({
+    onComplete,
+    onInteractive,
+    onDeveloperSandboxOpened,
+  }: {
+    onComplete: () => void;
+    onInteractive?: () => void;
+    onDeveloperSandboxOpened?: () => void;
+  }) => {
     mocks.capturedOnComplete = onComplete;
+    mocks.capturedOnInteractive = onInteractive;
+    mocks.capturedOnDeveloperSandboxOpened = onDeveloperSandboxOpened;
     return null;
   },
 }));
@@ -58,10 +70,26 @@ import { OnboardingWrapper } from './OnboardingWrapper';
 describe('OnboardingWrapper admission reconciliation', () => {
   beforeEach(() => {
     mocks.capturedOnComplete = undefined;
+    mocks.capturedOnInteractive = undefined;
+    mocks.capturedOnDeveloperSandboxOpened = undefined;
     mocks.refreshProfile.mockReset();
     mocks.store.setUser.mockReset();
     mocks.store.user.is_anonymous = false;
     mocks.store.showToast.mockReset();
+  });
+
+  it('forwards an app-owned ready marker to the onboarding screen', async () => {
+    const onInteractive = vi.fn();
+    const onDeveloperSandboxOpened = vi.fn();
+    await render(
+      <OnboardingWrapper
+        onInteractive={onInteractive}
+        onDeveloperSandboxOpened={onDeveloperSandboxOpened}
+      />,
+    );
+
+    expect(mocks.capturedOnInteractive).toBe(onInteractive);
+    expect(mocks.capturedOnDeveloperSandboxOpened).toBe(onDeveloperSandboxOpened);
   });
 
   it('updates the guest profile completion field without a separate auth completion mirror', async () => {

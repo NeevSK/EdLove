@@ -1,4 +1,5 @@
 ---
+name: supabase-expert
 title: Supabase Database and Security Expert
 description: Guides the agent through safe database schema changes, SQL migrations, RLS (Row Level Security) safety audits, and generating TypeScript types.
 triggers:

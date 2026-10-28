@@ -1,11 +1,13 @@
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { classifyGurudeviHost, isLocalPreviewHost } from '../../../lib/host-routing';
+import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
+import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { ProfileFloor } from './ProfileFloor';
 import styles from './profile.module.css';
@@ -17,12 +19,19 @@ export const metadata = { title: 'Profile | Gurudevi Sanctuary' };
  * returned by the verified Sanctuary entry contract. Editing and expanded
  * profile fields remain out of scope until their browser contracts exist.
  */
-export default async function ProfilePage() {
+type ProfilePageProps = {
+  searchParams?: Promise<{ mode?: string; [key: string]: string | string[] | undefined }>;
+};
+
+export default async function ProfilePage(props: ProfilePageProps) {
+  const searchParams = props.searchParams ? await props.searchParams : undefined;
   const requestHeaders = await headers();
+  const cookieStore = await cookies();
   const host = requestHeaders.get('host') ?? '';
-  const isExploreHost = classifyGurudeviHost(host) === 'explore';
-  const supabase = isExploreHost ? null : await createServerSupabaseClient();
-  const isExplore = isExploreHost || (!supabase && isLocalPreviewHost(host));
+  const isExplore =
+    classifyGurudeviHost(host) === 'explore' ||
+    searchParams?.mode === 'explore' ||
+    searchParams?.surface === 'explore';
 
   if (isExplore) {
     return (
@@ -42,63 +51,42 @@ export default async function ProfilePage() {
     );
   }
 
-  if (!supabase) {
+  const devSession = resolveSanctuaryDevSession({
+    searchParams: searchParams as any,
+    host,
+    cookieStore,
+  });
+
+  if (devSession.isDevSession) {
     return (
-      <ProfileState
-        action={
-          <div className={styles.actionRow}>
-            <Link className={styles.action} href={signInPath('/profile')}>
-              Sign in
-            </Link>
-            <a className={styles.secondaryAction} href="https://explore.gurudevi.app">
-              Explore in Guest House ↗
-            </a>
-          </div>
-        }
-        detail="To view your verified educator or student profile, sign in to your sanctuary account."
-        eyebrow="Personal Sanctuary"
-        title="Sanctuary Profile"
-      />
+      <SanctuaryShell
+        displayName={devSession.displayName}
+        isDevPreview
+        previewCapacity={devSession.capacity}
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={false}
+      >
+        <ProfileFloor
+          accountId={devSession.accountId}
+          displayName={devSession.displayName}
+          primaryScopeRole={devSession.capacity}
+          isExplore={false}
+        />
+      </SanctuaryShell>
     );
+  }
+
+  const supabase = await createServerSupabaseClient();
+  if (!supabase) {
+    redirect('/welcome?returnTo=/profile');
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
-    if (isLocalPreviewHost(host)) {
-      return (
-        <SanctuaryShell
-          displayName="Guest Explorer"
-          navigationPrefix=""
-          showAccountNavigation={true}
-          isExploreMode={true}
-        >
-          <ProfileFloor
-            accountId="guest-explorer"
-            displayName="Guest Explorer"
-            primaryScopeRole="Guest Explorer"
-            isExplore={true}
-          />
-        </SanctuaryShell>
-      );
-    }
-    return (
-      <ProfileState
-        action={
-          <div className={styles.actionRow}>
-            <Link className={styles.action} href={signInPath('/profile')}>
-              Sign in
-            </Link>
-            <Link className={styles.secondaryAction} href="/sign-up?returnTo=/onboarding">
-              Create account
-            </Link>
-          </div>
-        }
-        detail="Sign in to view the identity associated with your Gurudevi sanctuary."
-        eyebrow="Personal Sanctuary"
-        title="Your profile is private"
-      />
-    );
+    redirect('/welcome?returnTo=/profile');
   }
+
   if (entry.kind === 'onboarding-required') {
     return (
       <ProfileState
@@ -108,7 +96,7 @@ export default async function ProfilePage() {
               Complete Enrollment
             </Link>
             <Link className={styles.secondaryAction} href="/welcome">
-              Welcome Gate
+              Guest House
             </Link>
           </div>
         }
@@ -119,23 +107,7 @@ export default async function ProfilePage() {
     );
   }
   if (entry.kind === 'inactive') {
-    return (
-      <ProfileState
-        action={
-          <div className={styles.actionRow}>
-            <Link className={styles.action} href="/welcome">
-              Return to Welcome Gate
-            </Link>
-            <a className={styles.secondaryAction} href="https://explore.gurudevi.app">
-              Guest House ↗
-            </a>
-          </div>
-        }
-        detail={entry.message}
-        eyebrow="Profile"
-        title="This profile is inactive"
-      />
-    );
+    redirect('/account-recovery');
   }
   if (entry.kind === 'unavailable') {
     return (
@@ -143,7 +115,7 @@ export default async function ProfilePage() {
         action={
           <div className={styles.actionRow}>
             <Link className={styles.action} href="/welcome">
-              Return to Welcome Gate
+              Return to Guest House
             </Link>
             <Link className={styles.secondaryAction} href={signInPath('/profile')}>
               Sign in again
@@ -195,14 +167,20 @@ function ProfileState({
 }>) {
   return (
     <SanctuaryShell displayName={displayName} navigationPrefix="">
-      <main id="main-content" className="sanctuary-container">
-        <section className={styles.state} aria-live="polite" aria-labelledby="profile-state-title">
-          <p className={styles.eyebrow}>{eyebrow}</p>
-          <h1 id="profile-state-title">{title}</h1>
-          <p>{detail}</p>
-          {action}
-        </section>
-      </main>
+      <SanctuaryFloorCanvas domain="profile" showPageActions={false}>
+        <main id="main-content" className="sanctuary-container">
+          <section
+            className={styles.state}
+            aria-live="polite"
+            aria-labelledby="profile-state-title"
+          >
+            <p className={styles.eyebrow}>{eyebrow}</p>
+            <h1 id="profile-state-title">{title}</h1>
+            <p>{detail}</p>
+            {action}
+          </section>
+        </main>
+      </SanctuaryFloorCanvas>
     </SanctuaryShell>
   );
 }

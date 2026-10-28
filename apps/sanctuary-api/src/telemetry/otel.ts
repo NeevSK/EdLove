@@ -27,30 +27,34 @@ import {
 } from '@opentelemetry/semantic-conventions';
 import type { MiddlewareHandler } from 'hono';
 
+import type {
+  SpanHandle,
+  SpanOptions,
+  TelemetryPort,
+  TelemetryRuntime,
+  TelemetryRuntimeStatus,
+} from './ports/TelemetryPort';
+import { NoopTelemetryAdapter } from './adapters/NoopAdapter';
+import { detectRuntime, OtelTelemetryAdapter } from './adapters/OtelAdapter';
+
+export type {
+  SpanHandle,
+  SpanOptions,
+  TelemetryPort,
+  TelemetryRuntime,
+  TelemetryRuntimeStatus,
+};
+
+export type OtelRuntimeStatus = TelemetryRuntimeStatus;
+
 const INSTRUMENTATION_NAME = '@repo/sanctuary-api';
 const DEFAULT_SERVICE_NAME = 'sanctuary-api';
 const MAX_ATTRIBUTE_LENGTH = 128;
-
-type Runtime = 'node' | 'bun' | 'edge' | 'unknown';
-
-export interface OtelRuntimeStatus {
-  enabled: boolean;
-  endpoint?: string;
-  serviceName: string;
-  runtime: Runtime;
-}
 
 const getEnv = (key: string): string | undefined => {
   if (typeof process !== 'undefined' && process.env) return process.env[key];
   const env = (globalThis as { ENV?: Record<string, string | undefined> }).ENV;
   return env?.[key];
-};
-
-const runtime = (): Runtime => {
-  if (typeof process !== 'undefined' && process.versions?.bun) return 'bun';
-  if (typeof process !== 'undefined' && process.versions?.node) return 'node';
-  if ('EdgeRuntime' in globalThis) return 'edge';
-  return 'unknown';
 };
 
 const trimAttribute = (value: string): string => value.slice(0, MAX_ATTRIBUTE_LENGTH);
@@ -77,27 +81,54 @@ const parseSampleRate = (): number => {
   return Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 1;
 };
 
-let status: OtelRuntimeStatus = {
-  enabled: false,
-  serviceName: getEnv('OTEL_SERVICE_NAME') || DEFAULT_SERVICE_NAME,
-  runtime: runtime(),
+const parseHeaders = (raw: string | undefined): Record<string, string> => {
+  if (!raw) return {};
+  return Object.fromEntries(
+    raw
+      .split(',')
+      .map((entry) => entry.split('=').map((part) => part.trim()))
+      .filter(([key, value]) => Boolean(key && value))
+      .map(([key, value]) => [key, value]),
+  );
 };
+
+let activePort: TelemetryPort = new NoopTelemetryAdapter();
 let initialized = false;
 
-export const getOtelStatus = (): OtelRuntimeStatus => ({ ...status });
+export const getTelemetryPort = (): TelemetryPort => activePort;
+
+export const getOtelStatus = (): OtelRuntimeStatus => activePort.status;
 
 export const initializeOtel = async (): Promise<OtelRuntimeStatus> => {
-  if (initialized) return getOtelStatus();
+  if (initialized) return activePort.status;
   initialized = true;
 
   const endpoint = getTraceEndpoint();
   const serviceName = trimAttribute(getEnv('OTEL_SERVICE_NAME') || DEFAULT_SERVICE_NAME);
-  status = { enabled: Boolean(endpoint), endpoint, serviceName, runtime: runtime() };
+  const runtime = detectRuntime();
+
+  const providerType = endpoint?.includes('betterstack.com')
+    ? 'betterstack'
+    : endpoint?.includes('hyperdx.io')
+    ? 'hyperdx'
+    : endpoint
+    ? 'opentelemetry'
+    : 'noop';
+
+  const status: TelemetryRuntimeStatus = {
+    enabled: Boolean(endpoint),
+    endpoint,
+    serviceName,
+    runtime,
+    provider: providerType,
+  };
+
   propagation.setGlobalPropagator(new W3CTraceContextPropagator());
 
   if (!endpoint || getEnv('OTEL_SDK_DISABLED') === 'true') {
     status.enabled = false;
-    return getOtelStatus();
+    activePort = new NoopTelemetryAdapter();
+    return activePort.status;
   }
 
   try {
@@ -112,7 +143,7 @@ export const initializeOtel = async (): Promise<OtelRuntimeStatus> => {
         [ATTR_SERVICE_NAME]: serviceName,
         [ATTR_SERVICE_VERSION]: trimAttribute(getEnv('APP_VERSION') || 'unknown'),
         'deployment.environment.name': trimAttribute(getEnv('NODE_ENV') || 'production'),
-        'runtime.name': runtime(),
+        'runtime.name': runtime,
       }),
       sampler: new TraceIdRatioBasedSampler(parseSampleRate()),
       spanProcessors: [
@@ -125,32 +156,23 @@ export const initializeOtel = async (): Promise<OtelRuntimeStatus> => {
     });
 
     trace.setGlobalTracerProvider(provider);
-    await installNodeContextManager();
-    console.info(`[telemetry] OpenTelemetry tracing enabled for ${serviceName}`);
+    await installNodeContextManager(runtime);
+    activePort = new OtelTelemetryAdapter(status);
+    console.info(`[telemetry] OpenTelemetry tracing enabled for ${serviceName} via ${providerType}`);
   } catch (error) {
     status.enabled = false;
+    activePort = new NoopTelemetryAdapter();
     console.warn(
-      '[telemetry] OpenTelemetry initialization failed; continuing without tracing',
+      '[telemetry] OpenTelemetry initialization failed; continuing with NoopTelemetryAdapter',
       error,
     );
   }
 
-  return getOtelStatus();
+  return activePort.status;
 };
 
-const parseHeaders = (raw: string | undefined): Record<string, string> => {
-  if (!raw) return {};
-  return Object.fromEntries(
-    raw
-      .split(',')
-      .map((entry) => entry.split('=').map((part) => part.trim()))
-      .filter(([key, value]) => Boolean(key && value))
-      .map(([key, value]) => [key, value]),
-  );
-};
-
-const installNodeContextManager = async (): Promise<void> => {
-  if (runtime() !== 'node') return;
+const installNodeContextManager = async (runtime: TelemetryRuntime): Promise<void> => {
+  if (runtime !== 'node') return;
   const { AsyncLocalStorageContextManager } = await import('@opentelemetry/context-async-hooks');
   context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable());
 };
@@ -175,7 +197,7 @@ const requestCarrier = (headers: Headers): Record<string, string> => {
   return carrier;
 };
 
-const recordError = (span: Span, error: unknown): void => {
+const recordSpanError = (span: Span, error: unknown): void => {
   span.recordException(error instanceof Error ? error : new Error(String(error)));
   span.setStatus({ code: SpanStatusCode.ERROR });
 };
@@ -198,7 +220,7 @@ export const otelMiddleware = (): MiddlewareHandler => async (c, next) => {
         [ATTR_HTTP_ROUTE]: route,
         [ATTR_URL_PATH]: route,
         'app.request_id': requestId,
-        'runtime.name': runtime(),
+        'runtime.name': detectRuntime(),
       },
     },
     parentContext,
@@ -214,7 +236,7 @@ export const otelMiddleware = (): MiddlewareHandler => async (c, next) => {
     span.setStatus({ code: c.res.status >= 500 ? SpanStatusCode.ERROR : SpanStatusCode.UNSET });
   } catch (error) {
     span.setAttribute(ATTR_HTTP_RESPONSE_STATUS_CODE, c.res.status || 500);
-    recordError(span, error);
+    recordSpanError(span, error);
     throw error;
   } finally {
     span.setAttribute('http.server.duration_ms', Math.round(performance.now() - startedAt));

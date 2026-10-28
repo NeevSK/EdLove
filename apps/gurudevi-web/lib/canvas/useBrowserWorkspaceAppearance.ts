@@ -14,8 +14,7 @@ import {
 import type { WorkspaceAppearance } from '@repo/core/types';
 import { useCallback, useEffect, useState } from 'react';
 import { createBrowserSupabaseClient } from '../supabase/browser';
-
-const DEFAULT_APPEARANCE: WorkspaceAppearance = { preset: 'default', motion: 'off' };
+import { DEFAULT_APPEARANCE, EXPLORE_DEFAULT_APPEARANCE } from './appearanceConstants';
 
 type AppearanceStatus = 'loading' | 'ready' | 'saving' | 'saved' | 'offline' | 'error';
 
@@ -116,17 +115,26 @@ export function useBrowserWorkspaceAppearance({
   enableRemoteSync = true,
   defaultGroupOrder = [],
   defaultPinnedIds = [],
+  defaultAppearance,
 }: Readonly<{
   accountId: string;
   workspaceId: string;
   enableRemoteSync?: boolean;
   defaultGroupOrder?: readonly string[];
   defaultPinnedIds?: readonly string[];
+  defaultAppearance?: WorkspaceAppearance;
 }>) {
+  const isExplore =
+    accountId === 'guest-explorer' ||
+    accountId === 'explore-guest' ||
+    accountId === 'explore' ||
+    workspaceId === 'explore';
+  const initialFallback =
+    defaultAppearance ?? (isExplore ? EXPLORE_DEFAULT_APPEARANCE : DEFAULT_APPEARANCE);
   const defaultGroupOrderKey = defaultGroupOrder.join('|');
   const defaultPinnedIdsKey = defaultPinnedIds.join('|');
   const [layoutTarget, setLayoutTarget] = useState<WorkspaceLayoutTarget>('web');
-  const [appearance, setAppearanceState] = useState<WorkspaceAppearance>(DEFAULT_APPEARANCE);
+  const [appearance, setAppearanceState] = useState<WorkspaceAppearance>(initialFallback);
   const [groupOrder, setGroupOrderState] = useState<string[]>([...defaultGroupOrder]);
   const [pinnedIds, setPinnedIdsState] = useState<string[]>([...defaultPinnedIds]);
   const [status, setStatus] = useState<AppearanceStatus>('loading');
@@ -150,7 +158,20 @@ export function useBrowserWorkspaceAppearance({
     const local = readLocal(key);
     setGroupOrderState(readGroups(groupsKey, defaultGroupOrder));
     setPinnedIdsState(readPinned(pinnedKey, defaultPinnedIds));
-    if (local) setAppearanceState(local);
+    if (local) {
+      if (isExplore && (!local.wallpaperConfig || local.wallpaperConfig.mode === 'off')) {
+        setAppearanceState({
+          ...local,
+          preset: local.preset === 'default' ? 'dawn' : local.preset,
+          wallpaper: local.wallpaper ?? EXPLORE_DEFAULT_APPEARANCE.wallpaper,
+          wallpaperConfig: EXPLORE_DEFAULT_APPEARANCE.wallpaperConfig,
+        });
+      } else {
+        setAppearanceState(local);
+      }
+    } else {
+      setAppearanceState(initialFallback);
+    }
 
     if (!enableRemoteSync) {
       setStatus('ready');

@@ -4,7 +4,14 @@ import type {
   FormStorage,
   FormSync,
 } from '@intuitui-labs/form-builder-engine/ports';
-import type { FormResponse, FormSchema, FormPage, FormField } from '@intuitui-labs/form-builder-engine/schema';
+import type {
+  FormResponse,
+  FormSchema,
+  FormPage,
+  FormField,
+  FormKind,
+  FormAccessPolicy,
+} from '@intuitui-labs/form-builder-engine/schema';
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { formResponses, formTemplates } from '@repo/core/adapters/powersync/schema';
 import { eq } from 'drizzle-orm';
@@ -20,6 +27,11 @@ interface SerializedFormConfig {
   pages: FormPage[];
   settings?: FormSchema['settings'];
   affordanceConfig?: Record<string, unknown>;
+  kind?: FormKind;
+  accessPolicy?: FormAccessPolicy;
+  prerequisites?: FormSchema['prerequisites'];
+  governance?: FormSchema['governance'];
+  assessment?: FormSchema['assessment'];
 }
 
 function parseFormConfig(
@@ -29,6 +41,11 @@ function parseFormConfig(
   pages: FormPage[];
   settings: FormSchema['settings'];
   affordanceConfig?: Record<string, unknown>;
+  kind?: FormKind;
+  accessPolicy?: FormAccessPolicy;
+  prerequisites?: FormSchema['prerequisites'];
+  governance?: FormSchema['governance'];
+  assessment?: FormSchema['assessment'];
 } {
   try {
     const parsed = JSON.parse(rawConfig);
@@ -53,6 +70,11 @@ function parseFormConfig(
         ...configObj.settings,
       },
       affordanceConfig: configObj.affordanceConfig,
+      kind: configObj.kind,
+      accessPolicy: configObj.accessPolicy,
+      prerequisites: configObj.prerequisites,
+      governance: configObj.governance,
+      assessment: configObj.assessment,
     };
   } catch {
     return {
@@ -82,6 +104,11 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       pages: form.pages,
       settings: form.settings,
       affordanceConfig: (form as ExtendedFormSchema).affordanceConfig,
+      kind: form.kind,
+      accessPolicy: form.accessPolicy,
+      prerequisites: form.prerequisites,
+      governance: form.governance,
+      assessment: form.assessment,
     };
 
     const templateData: typeof formTemplates.$inferInsert = {
@@ -119,7 +146,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       throw new Error(`Local form template not found: ${id}`);
     }
 
-    const { pages, settings, affordanceConfig } = parseFormConfig(template.config, template);
+    const parsedConfig = parseFormConfig(template.config, template);
 
     return {
       v: '1.0',
@@ -127,9 +154,14 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       tenantId: template.ownerId,
       title: template.title,
       description: template.description ?? undefined,
-      pages,
-      settings,
-      affordanceConfig,
+      pages: parsedConfig.pages,
+      settings: parsedConfig.settings,
+      affordanceConfig: parsedConfig.affordanceConfig,
+      kind: parsedConfig.kind,
+      accessPolicy: parsedConfig.accessPolicy,
+      prerequisites: parsedConfig.prerequisites,
+      governance: parsedConfig.governance,
+      assessment: parsedConfig.assessment,
       createdAt: template.createdAt,
       updatedAt: template.updatedAt,
     };
@@ -146,16 +178,21 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       .where(eq(formTemplates.ownerId, tenantId));
 
     return templates.map((template) => {
-      const { pages, settings, affordanceConfig } = parseFormConfig(template.config, template);
+      const parsedConfig = parseFormConfig(template.config, template);
       return {
         v: '1.0',
         id: template.id,
         tenantId: template.ownerId,
         title: template.title,
         description: template.description ?? undefined,
-        pages,
-        settings,
-        affordanceConfig,
+        pages: parsedConfig.pages,
+        settings: parsedConfig.settings,
+        affordanceConfig: parsedConfig.affordanceConfig,
+        kind: parsedConfig.kind,
+        accessPolicy: parsedConfig.accessPolicy,
+        prerequisites: parsedConfig.prerequisites,
+        governance: parsedConfig.governance,
+        assessment: parsedConfig.assessment,
         createdAt: template.createdAt,
         updatedAt: template.updatedAt,
       };

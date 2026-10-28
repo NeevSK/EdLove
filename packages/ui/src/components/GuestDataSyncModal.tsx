@@ -1,5 +1,5 @@
 import { GuestDataSync } from '@repo/core/native/guestDataSync';
-import { useActorSnapshot } from '@repo/core/hooks/useActorSnapshot';
+import { useMachineActor } from '@repo/core/hooks/useMachineActor';
 import {
   createGuestDataSyncActor,
   executeFetchGuestDataSummaryEffect,
@@ -37,8 +37,10 @@ export default function GuestDataSyncModal({
   onDiscard,
 }: GuestDataSyncModalProps) {
   const { t } = useTranslation();
-  const actor = useMemo(() => createGuestDataSyncActor({ userId }), [userId]);
-  const snapshot = useActorSnapshot(actor);
+  const { actor, snapshot } = useMachineActor(
+    () => createGuestDataSyncActor({ userId }),
+    [userId],
+  );
   const state = useMemo(
     () => ({
       status: snapshot.value as SyncStatus,

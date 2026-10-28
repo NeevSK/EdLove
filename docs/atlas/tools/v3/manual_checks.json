@@ -1,0 +1,11 @@
+{
+ "ShadowAgentDrawer":{"verdict":"CONTRADICTED","note":"Manual: only packages/self/src/components/archive/ShadowAgentDrawer.tsx exists, and no code imports it. The doc's ✅ (2026-03-01) is false at HEAD."},
+ "ResonancePatternCard":{"verdict":"CONTRADICTED","note":"Manual: packages/self/src/components/ResonancePatternCard.tsx is defined; only docs reference it, no importer."},
+ "ReportPostModal":{"verdict":"CONTRADICTED","note":"Manual: no ReportPostModal file exists at HEAD. The community.reportContent procedure exists."},
+ "GradeEntryForm":{"verdict":"CONTRADICTED","note":"Manual: packages/classroom/src/components/grading/GradeEntryForm.tsx is defined, but no code imports it."},
+ "GroupChatScreen":{"verdict":"MATCHED","note":"Manual: routed at apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx. Static nav found no literal inbound link (dynamic push is likely), so treat it as reachable; disputed."},
+ "ProgressTree":{"verdict":"MATCHED","note":"Manual: used via the packages/self/src/components/SelfFeatureRenderer.tsx registry, so it is likely reachable; disputed."},
+ "openExternalURL":{"verdict":"MATCHED","note":"Manual: called inline in packages/library/src/screens/LibraryScreen.web.tsx and ResourceHubScreen.tsx."},
+ "StudentPulseSection":{"verdict":"CONTRADICTED","note":"Manual: no StudentPulseSection file exists. The name survives only in StudentEnrollmentPulse.tsx."},
+ "DailyContentCard":{"verdict":"CONTRADICTED","note":"Manual (v1): DailyContentCard is exported but no screen uses it."}
+}

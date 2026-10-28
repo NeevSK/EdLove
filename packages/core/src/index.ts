@@ -5,7 +5,10 @@ export { accountTransition } from '@repo/core/accounts/accountTransition';
 export {
   type DeviceAccountProfile,
   type DeviceAccountRecord,
+  type DeviceAccountsConfig,
   deviceAccounts,
+  getDeviceAccountsConfig,
+  setDeviceAccountsConfig,
 } from '@repo/core/accounts/deviceAccounts';
 export { isDemo } from '@repo/core/api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
@@ -175,6 +178,12 @@ export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 export type { QRResolveResult } from '@repo/core/logic/utils/QRResolver';
 export { resolveQR } from '@repo/core/logic/utils/QRResolver';
 export {
+  decryptPairingPayload,
+  encryptPairingPayload,
+  generatePairingKey,
+  type EncryptedPairingEnvelope,
+} from '@repo/core/logic/pairing/pairingCrypto';
+export {
   applyTemporalFilter,
   getTemporalRange,
   getTransactionRange,
@@ -228,6 +237,8 @@ export { applyRule, validateRules } from '@intuitui-labs/form-builder-engine/val
 export { GrowthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
 // Hexagonal Adapters
 export { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
+export { SupabaseFormsAdapter } from '@repo/core/adapters/supabase/forms.adapter';
+export { PowerSyncFormsAdapter } from '@repo/core/adapters/powersync/forms.adapter';
 export * from '@repo/core/api/client';
 export {
   type POAMetadata,

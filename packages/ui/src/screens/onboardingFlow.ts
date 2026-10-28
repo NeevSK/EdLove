@@ -16,6 +16,16 @@ export function getOnboardingPhase(step: number): OnboardingPhase {
   return ONBOARDING_FLOW.find((item) => item.step === step)?.phase ?? 'arrival';
 }
 
+export function isOnboardingScreenReadyForInteraction(params: {
+  readonly phase: OnboardingPhase;
+  readonly isProcessing: boolean;
+  readonly showingDeveloperSandbox: boolean;
+}): boolean {
+  return Boolean(
+    params.phase === 'arrival' && !params.isProcessing && !params.showingDeveloperSandbox,
+  );
+}
+
 export function getOnboardingStepLabel(step: number): string {
   return ONBOARDING_FLOW.find((item) => item.step === step)?.label ?? 'STEP';
 }

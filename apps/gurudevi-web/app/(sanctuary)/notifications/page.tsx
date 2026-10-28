@@ -1,22 +1,38 @@
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { classifyGurudeviHost, isLocalPreviewHost } from '../../../lib/host-routing';
+import { classifyGurudeviHost } from '../../../lib/host-routing';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
+import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { signInPath } from '../auth/routeSafety';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { NotificationsFloor } from './NotificationsFloor';
 
 export const metadata = { title: 'Notifications | Gurudevi Sanctuary' };
 
-export default async function NotificationsPage() {
+export default async function NotificationsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{
+    mode?: string;
+    surface?: string;
+    dev?: string;
+    role?: string;
+    name?: string;
+  }>;
+} = {}) {
+  const params = searchParams ? await searchParams : undefined;
   const requestHeaders = await headers();
+  const cookieStore = await cookies();
   const host = requestHeaders.get('host') ?? '';
-  const isExploreHost = classifyGurudeviHost(host) === 'explore';
-  const supabase = isExploreHost ? null : await createServerSupabaseClient();
-  const isExplore = isExploreHost || (!supabase && isLocalPreviewHost(host));
+  const isExplore =
+    classifyGurudeviHost(host) === 'explore' ||
+    params?.mode === 'explore' ||
+    params?.surface === 'explore';
 
   if (isExplore) {
     return (
@@ -32,52 +48,36 @@ export default async function NotificationsPage() {
     );
   }
 
-  if (!supabase) {
+  const devSession = resolveSanctuaryDevSession({
+    searchParams: params,
+    host,
+    cookieStore,
+  });
+
+  if (devSession.isDevSession) {
     return (
-      <NotificationsState
-        action={
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-            <Link href={signInPath('/notifications')}>Sign in</Link>
-            <Link href="/welcome">Welcome Gate</Link>
-            <a href="https://explore.gurudevi.app">Guest House ↗</a>
-          </div>
-        }
-        displayName="Explorer"
-        title="Notifications are private"
-        detail="Sign in to view alerts and updates from your learning circles."
-      />
+      <SanctuaryShell
+        displayName={devSession.displayName}
+        isDevPreview
+        previewCapacity={devSession.capacity}
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={false}
+        unreadNotifications={1}
+      >
+        <NotificationsFloor displayName={devSession.displayName} isExplore={false} />
+      </SanctuaryShell>
     );
+  }
+
+  const supabase = await createServerSupabaseClient();
+  if (!supabase) {
+    redirect('/welcome?returnTo=/notifications');
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
-    if (isLocalPreviewHost(host)) {
-      return (
-        <SanctuaryShell
-          displayName="Guest Explorer"
-          navigationPrefix=""
-          showAccountNavigation={true}
-          isExploreMode={true}
-          unreadNotifications={2}
-        >
-          <NotificationsFloor displayName="Guest Explorer" isExplore={true} />
-        </SanctuaryShell>
-      );
-    }
-    return (
-      <NotificationsState
-        action={
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-            <Link href={signInPath('/notifications')}>Sign in</Link>
-            <Link href="/welcome">Welcome Gate</Link>
-            <a href="https://explore.gurudevi.app">Guest House ↗</a>
-          </div>
-        }
-        displayName="Explorer"
-        detail="Sign in to view alerts and updates from your learning circles."
-        title="Notifications are private"
-      />
-    );
+    redirect('/welcome?returnTo=/notifications');
   }
 
   if (entry.kind === 'onboarding-required') {
@@ -86,7 +86,7 @@ export default async function NotificationsPage() {
         action={
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
             <Link href="/onboarding">Complete Enrollment</Link>
-            <Link href="/welcome">Welcome Gate</Link>
+            <Link href="/welcome">Guest House</Link>
           </div>
         }
         displayName="Explorer"
@@ -101,8 +101,8 @@ export default async function NotificationsPage() {
       <NotificationsState
         action={
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-            <Link href="/welcome">Return to Welcome Gate</Link>
-            <a href="https://explore.gurudevi.app">Guest House ↗</a>
+            <Link href="/welcome">Return to Guest House</Link>
+            <a href={resolveSurfaceUrl('explore', '/')}>Guest House ↗</a>
           </div>
         }
         displayName="Explorer"
@@ -131,21 +131,23 @@ function NotificationsState({
 }: Readonly<{ action?: ReactNode; detail: string; displayName: string; title: string }>) {
   return (
     <SanctuaryShell displayName={displayName} navigationPrefix="">
-      <main id="main-content" className="sanctuary-container">
-        <section
-          aria-live="polite"
-          style={{ padding: '3rem 1.5rem', maxWidth: '36rem', margin: '0 auto' }}
-        >
-          <h1 style={{ fontFamily: 'var(--font-display, Georgia, serif)', fontSize: '1.75rem' }}>
-            {title}
-          </h1>
-          <p style={{ color: 'var(--color-ink-soft, #453c35)', lineHeight: 1.6 }}>{detail}</p>
-          <p style={{ fontSize: '0.85rem', color: 'var(--color-ink-soft, #453c35)' }}>
-            Browsing sanctuary as {displayName}
-          </p>
-          {action ? <div style={{ marginTop: '1.5rem' }}>{action}</div> : null}
-        </section>
-      </main>
+      <SanctuaryFloorCanvas domain="notifications" showPageActions={false}>
+        <main id="main-content" className="sanctuary-container">
+          <section
+            aria-live="polite"
+            style={{ padding: '3rem 1.5rem', maxWidth: '36rem', margin: '0 auto' }}
+          >
+            <h1 style={{ fontFamily: 'var(--font-display, Georgia, serif)', fontSize: '1.75rem' }}>
+              {title}
+            </h1>
+            <p style={{ color: 'var(--color-ink-soft, #453c35)', lineHeight: 1.6 }}>{detail}</p>
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-ink-soft, #453c35)' }}>
+              Browsing sanctuary as {displayName}
+            </p>
+            {action ? <div style={{ marginTop: '1.5rem' }}>{action}</div> : null}
+          </section>
+        </main>
+      </SanctuaryFloorCanvas>
     </SanctuaryShell>
   );
 }

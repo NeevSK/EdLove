@@ -37,6 +37,17 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
   {
+    id: 'qr_scanner',
+    label: 'QR Scanner',
+    href: '/qr',
+    symbol: '📷',
+    description: 'Scan classroom enrollment codes, attendance badges, or resource tokens directly in browser.',
+    roles: ['teacher', 'student', 'principal', 'guardian'],
+    isCommon: true,
+    category: 'operations',
+    temporalCapabilities: { hasReview: false, hasPlan: false },
+  },
+  {
     id: 'timetable',
     label: 'Timetable',
     href: '/workspace/timetable',

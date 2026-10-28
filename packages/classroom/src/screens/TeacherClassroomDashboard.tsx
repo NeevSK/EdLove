@@ -5,6 +5,7 @@ import {
   ClassroomHolisticInsights,
   InventoryView,
   ResourcesView,
+  StudentAnalysisModal,
   StudentList,
 } from '@repo/classroom/components';
 import ClassroomNotes from '@repo/classroom/components/ClassroomNotes';
@@ -28,7 +29,6 @@ import type {
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
 } from '@repo/core/types';
-import { StudentAnalysisModal } from '@repo/library';
 import ClassroomLegacyTimeline from '@repo/self/components/ClassroomLegacyTimeline';
 import { ConflictResolver } from '@repo/ui/components/ConflictResolver';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -68,14 +68,14 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { SceneBackdrop, useScene } from '@repo/ui/scene/native';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { openExternalURL } from '@repo/ui/utils/linking';
-import { SceneBackdrop, useScene } from '@repo/ui/scene/native';
-import { useWindowDimensions, View } from 'react-native';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
+import { useWindowDimensions, View } from 'react-native';
 
 type FeatureId =
   | 'insights'

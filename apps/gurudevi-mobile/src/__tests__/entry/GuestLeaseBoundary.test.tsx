@@ -69,4 +69,16 @@ describe('GuestLeaseBoundary', () => {
 
     expect(mocks.discardGuestSession).not.toHaveBeenCalled();
   });
+
+  it('does not expire a device-local guest session', async () => {
+    mocks.user = {
+      id: 'local-123e4567-e89b-42d3-a456-426614174000',
+      is_anonymous: true,
+    };
+
+    await mountBoundary();
+
+    expect(mocks.getLease).not.toHaveBeenCalled();
+    expect(mocks.discardGuestSession).not.toHaveBeenCalled();
+  });
 });

@@ -48,6 +48,7 @@ export {
   setGuestScope,
 } from '@repo/core/native/guestScope';
 export { discardLocalGuestSession } from '@repo/core/native/guestSessionCleanup';
+export { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
 export {
   completeLocalGuestOnboarding,
   createLocalGuestInitialBond,

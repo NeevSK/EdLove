@@ -78,7 +78,7 @@ export const LOCALIZED_MARKETING: Record<
           },
           {
             title: 'පාසලක් සම්බන්ධ වන්නේ කෙසේද?',
-            body: 'institutional@gurudevi.app වෙත ලියන්න. ප්‍රවේශමෙන්, ආරාධනා මත සිදුවන ආරම්භයක් ගැන සාකච්ඡා කරමින් සිටිමු.',
+            body: 'institutional@gurudevi.lk වෙත ලියන්න. ප්‍රවේශමෙන්, ආරාධනා මත සිදුවන ආරම්භයක් ගැන සාකච්ඡා කරමින් සිටිමු.',
           },
         ],
       },
@@ -91,9 +91,9 @@ export const LOCALIZED_MARKETING: Record<
           'ඔබේ අදහස් මඟින් පද්ධතිය වඩාත් ප්‍රයෝජනවත්, සැලකිලිමත් සහ පැහැදිලි කරගත යුතු තැන් හඳුනාගැනීමට අපට උපකාර වේ.',
         ],
         points: [
-          { title: 'තාක්ෂණික සහාය', body: 'ගැටලු සහ ප්‍රතිචාර සඳහා support@gurudevi.app වෙත ලියන්න.' },
-          { title: 'පාසල් සාකච්ඡා', body: 'පාසලක් සමඟ ආරම්භ කිරීම ගැන institutional@gurudevi.app වෙත ලියන්න.' },
-          { title: 'තුතිමල්', body: 'ගුරු කෘතඥතා සහාය ගැන gratitude@gurudevi.app වෙත ලියන්න.' },
+          { title: 'තාක්ෂණික සහාය', body: 'ගැටලු සහ ප්‍රතිචාර සඳහා support@gurudevi.lk වෙත ලියන්න.' },
+          { title: 'පාසල් සාකච්ඡා', body: 'පාසලක් සමඟ ආරම්භ කිරීම ගැන institutional@gurudevi.lk වෙත ලියන්න.' },
+          { title: 'තුතිමල්', body: 'ගුරු කෘතඥතා සහාය ගැන gratitude@gurudevi.lk වෙත ලියන්න.' },
         ],
         contactLabel: 'විද්‍යුත් තැපෑලෙන් සම්බන්ධ වන්න',
       },
@@ -182,7 +182,7 @@ export const LOCALIZED_MARKETING: Record<
           },
           {
             title: 'பள்ளி எவ்வாறு இணைவது?',
-            body: 'institutional@gurudevi.app என்ற முகவரிக்கு எழுதுங்கள். கவனத்துடனும் அழைப்பின் அடிப்படையிலும் தொடங்குவது பற்றி பேசுகிறோம்.',
+            body: 'institutional@gurudevi.lk என்ற முகவரிக்கு எழுதுங்கள். கவனத்துடனும் அழைப்பின் அடிப்படையிலும் தொடங்குவது பற்றி பேசுகிறோம்.',
           },
         ],
       },
@@ -197,15 +197,15 @@ export const LOCALIZED_MARKETING: Record<
         points: [
           {
             title: 'தொழில்நுட்ப உதவி',
-            body: 'சிக்கல்கள் மற்றும் கருத்துகளுக்கு support@gurudevi.app என்ற முகவரிக்கு எழுதுங்கள்.',
+            body: 'சிக்கல்கள் மற்றும் கருத்துகளுக்கு support@gurudevi.lk என்ற முகவரிக்கு எழுதுங்கள்.',
           },
           {
             title: 'பள்ளி கலந்துரையாடல்',
-            body: 'பள்ளியுடன் தொடங்குவது பற்றி institutional@gurudevi.app என்ற முகவரிக்கு எழுதுங்கள்.',
+            body: 'பள்ளியுடன் தொடங்குவது பற்றி institutional@gurudevi.lk என்ற முகவரிக்கு எழுதுங்கள்.',
           },
           {
             title: 'துத்திமல்',
-            body: 'ஆசிரியர் நன்றியாதரவு பற்றி gratitude@gurudevi.app என்ற முகவரிக்கு எழுதுங்கள்.',
+            body: 'ஆசிரியர் நன்றியாதரவு பற்றி gratitude@gurudevi.lk என்ற முகவரிக்கு எழுதுங்கள்.',
           },
         ],
         contactLabel: 'மின்னஞ்சலில் தொடர்புகொள்ளுங்கள்',

@@ -1,6 +1,7 @@
 import { showToast } from '@repo/core/lib/feedback';
 import { suggestDisplayName } from '@repo/core/logic';
 import { discardLocalGuestSession } from '@repo/core/native';
+import { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
 import { discardLocalGuestOnboarding } from '@repo/core/native/localGuestOnboarding';
 import {
   type LocalGuestSession,
@@ -17,8 +18,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export function OnboardingWrapper({
   onboardingArtwork,
+  onInteractive,
+  onDeveloperSandboxOpened,
 }: {
   onboardingArtwork?: MascotArtworkSource;
+  onInteractive?: () => void;
+  onDeveloperSandboxOpened?: () => void;
 }) {
   const { session, refreshProfile } = useAuth();
   const storeUser = useAuthStore((state) => state.user);
@@ -40,8 +45,9 @@ export function OnboardingWrapper({
     let active = true;
     setLocalGuestRestoreError(null);
     void restoreLocalGuestSession()
-      .then((localGuest: LocalGuestSession | null) => {
-        if (active) setLocalGuestId(localGuest?.id ?? null);
+      .then((localGuest: LocalGuestSession | null) => activateLocalGuestSession(localGuest))
+      .then((activated) => {
+        if (active) setLocalGuestId(activated?.session.id ?? null);
       })
       .catch((error: unknown) => {
         console.warn('[onboarding] unable to restore local guest session:', error);
@@ -142,6 +148,8 @@ export function OnboardingWrapper({
           onComplete={handleComplete}
           onAbandon={handleAbandon}
           onboardingArtwork={onboardingArtwork}
+          onInteractive={onInteractive}
+          onDeveloperSandboxOpened={onDeveloperSandboxOpened}
         />
       )}
       <CelebrationOverlay

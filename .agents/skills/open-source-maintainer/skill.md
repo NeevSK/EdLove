@@ -1,3 +1,8 @@
+---
+name: open-source-maintainer
+description: "Core operational manuals for maintaining package boundaries, synchronizing dependencies, resolving schema drifts, and verifying release-readiness. Use when auditing imports across workspaces, reorganizing packages, running dependency syncs, or performing pre-release sanity checks across the monorepo."
+---
+
 # Monorepo Integrity & Release Readiness Playbook (open-source-maintainer)
 
 Core operational manuals for maintaining package boundaries, synchronizing dependencies, resolving schema drifts, and verifying release-readiness.

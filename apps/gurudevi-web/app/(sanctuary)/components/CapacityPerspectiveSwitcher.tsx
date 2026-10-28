@@ -11,7 +11,7 @@ import {
 import styles from './capacity-perspective-switcher.module.css';
 
 export interface CapacityPerspectiveSwitcherProps {
-  readonly mode?: 'explore' | 'account';
+  readonly mode?: 'explore' | 'account' | 'preview';
   readonly activeCapacity?: string;
   readonly onChange?: (capacity: ExploreCapacity) => void;
 }
@@ -27,8 +27,8 @@ export function CapacityPerspectiveSwitcher({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
 
-  const isExplore = mode === 'explore' || !activeCapacity;
-  const currentCapacity = isExplore ? exploreCapacity : activeCapacity;
+  const isExplore = mode !== 'account' || !activeCapacity;
+  const currentCapacity = mode === 'preview' && activeCapacity ? activeCapacity : isExplore ? exploreCapacity : activeCapacity;
   const meta = getExploreCapacityMeta(currentCapacity);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export function CapacityPerspectiveSwitcher({
   }
 
   function handleSelect(capacity: ExploreCapacity) {
-    setExploreCapacity(capacity);
+    if (mode !== 'preview') setExploreCapacity(capacity);
     onChange?.(capacity);
     setIsOpen(false);
     triggerRef.current?.focus();
@@ -93,13 +93,13 @@ export function CapacityPerspectiveSwitcher({
       {isOpen ? (
         <div aria-label="Role perspectives" className={styles.dropdown} id={menuId} role="listbox">
           <div className={styles.menuHeader}>
-            <div className={styles.menuHeaderTitle}>Explore Sandbox Perspective</div>
+            <div className={styles.menuHeaderTitle}>{mode === 'preview' ? 'Developer Preview Perspective' : 'Explore Sandbox Perspective'}</div>
             <div className={styles.menuHeaderSubtitle}>
               Switch role to experience domain capabilities tailored for this capacity.
             </div>
           </div>
           {EXPLORE_CAPACITIES.map((item) => {
-            const isSelected = item.id === exploreCapacity;
+            const isSelected = item.id === currentCapacity?.toLowerCase();
             return (
               <button
                 aria-selected={isSelected}

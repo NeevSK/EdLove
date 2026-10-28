@@ -8,6 +8,7 @@ export class OpenAiAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
+    _abortSignal?: AbortSignal,
   ): Promise<AsyncIterable<StreamChunk>> {
     return chat({
       adapter: createOpenaiChat(model as any, apiKey),

@@ -37,6 +37,7 @@ export type { FireflyFeedbackSceneProps } from './components/FireflyFeedbackScen
 export { FireflyFeedbackScene } from './components/FireflyFeedbackScene';
 export type { FocusRingProps } from './components/FocusRing';
 export { FocusRing } from './components/FocusRing';
+export { InteractiveRadarChart, type RadarDimension } from './components/InteractiveRadarChart';
 export type { PageFrame } from './components/layout';
 export { useBreakpoint, usePageFrame, useResponsiveGrid } from './components/layout';
 export type { MascotArtworkSource, MascotConfig, MascotId } from './components/Mascot';

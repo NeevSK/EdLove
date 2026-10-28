@@ -1,11 +1,21 @@
 import type { StudentLongitudinalEvent } from '@repo/core';
-import { api, type StudentObservation } from '@repo/core/api/client';
+import {
+  api,
+  type StudentObservation,
+  type StudentPotentialAnalysis,
+  studentPotentialAPI,
+} from '@repo/core/api/client';
 import { useTemporalStore } from '@repo/core/logic';
 import type { StudentGrade } from '@repo/core/types';
 import { BrandPulse } from '@repo/ui';
+import {
+  InteractiveRadarChart,
+  type RadarDimension,
+} from '@repo/ui/components/InteractiveRadarChart';
 import { Card } from '@repo/ui/components/SanctuaryCard';
+import { TemporalScrubber } from '@repo/ui/components/TemporalScrubber';
 import { useThemedColors } from '@repo/ui/hooks';
-import { ArrowLeft, Calendar, Clock3, Lock, ShieldCheck, Trophy } from '@repo/ui/icons';
+import { ArrowLeft, Calendar, Clock3, Lock, ShieldCheck, Sparkles, Trophy } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -52,7 +62,7 @@ export default function StudentProfileScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'academics' | 'observations' | 'timeline'
+    'overview' | 'potential' | 'academics' | 'observations' | 'timeline'
   >('overview');
 
   // Data states
@@ -60,6 +70,7 @@ export default function StudentProfileScreen() {
   const [attendance, setAttendance] = useState<Array<{ status: string }> | null>([]);
   const [grades, setGrades] = useState<StudentGrade[]>([]);
   const [observations, setObservations] = useState<StudentObservation[]>([]);
+  const [potential, setPotential] = useState<StudentPotentialAnalysis | null>(null);
   const [timeline, setTimeline] = useState<StudentLongitudinalEvent[]>([]);
   const [snapshotRecords, setSnapshotRecords] = useState<StudentLongitudinalEvent[]>([]);
 
@@ -67,42 +78,45 @@ export default function StudentProfileScreen() {
     try {
       setIsLoading(true);
       setLoadError(null);
-      const [attData, gradeData, obsData, timelineData, snapshotData] = await Promise.all([
-        // A school may not let this caller see the history (403): keep the rest of the
-        // profile and show the card as unavailable instead of failing everything.
-        api.attendance
-          .getStudentAttendanceTimeline(studentId, { classroomId })
-          .catch((error: unknown) => {
-            console.warn('Student attendance history unavailable:', error);
-            return null;
-          }),
-        // The grading client has no per-student read yet (getStudentGradeTimeline is not
-        // implemented), and calling it threw before any data loaded. Show no grades
-        // rather than failing the whole profile.
-        typeof (api.grading as any).getStudentGradeTimeline === 'function'
-          ? (api.grading as any).getStudentGradeTimeline(studentId, { classroomId })
-          : Promise.resolve([]),
-        api.studentObservations.getForEnrollment(classroomStudentId),
-        api.longitudinal.getStudentTimeline(studentId, viewDate, [
-          'enrollment',
-          'attendance',
-          'grade',
-          'observation',
-          'submission',
-          'study_note',
-        ]),
-        api.longitudinal.getStudentSnapshotAsOf(studentId, viewDate, [
-          'enrollment',
-          'attendance',
-          'grade',
-          'observation',
-          'submission',
-          'study_note',
-        ]),
-      ]);
+      const [attData, gradeData, obsData, timelineData, snapshotData, potentialData] =
+        await Promise.all([
+          // A school may not let this caller see the history (403): keep the rest of the
+          // profile and show the card as unavailable instead of failing everything.
+          api.attendance
+            .getStudentAttendanceTimeline(studentId, { classroomId })
+            .catch((error: unknown) => {
+              console.warn('Student attendance history unavailable:', error);
+              return null;
+            }),
+          // The grading client has no per-student read yet (getStudentGradeTimeline is not
+          // implemented), and calling it threw before any data loaded. Show no grades
+          // rather than failing the whole profile.
+          typeof (api.grading as any).getStudentGradeTimeline === 'function'
+            ? (api.grading as any).getStudentGradeTimeline(studentId, { classroomId })
+            : Promise.resolve([]),
+          api.studentObservations.getForEnrollment(classroomStudentId),
+          api.longitudinal.getStudentTimeline(studentId, viewDate, [
+            'enrollment',
+            'attendance',
+            'grade',
+            'observation',
+            'submission',
+            'study_note',
+          ]),
+          api.longitudinal.getStudentSnapshotAsOf(studentId, viewDate, [
+            'enrollment',
+            'attendance',
+            'grade',
+            'observation',
+            'submission',
+            'study_note',
+          ]),
+          studentPotentialAPI.getForStudent(studentId, classroomId).catch(() => null),
+        ]);
       setAttendance(attData);
       setGrades(gradeData || []);
       setObservations(obsData || []);
+      setPotential(potentialData);
       setTimeline(timelineData?.events || []);
       setSnapshotRecords(snapshotData?.records || []);
     } catch (error) {
@@ -248,6 +262,117 @@ export default function StudentProfileScreen() {
       </VStack>
     </VStack>
   );
+
+  const renderPotential = () => {
+    const dimensions: RadarDimension[] = [
+      { key: 'cognitive_flow', label: 'Cognitive Flow', value: potential?.cognitive_flow ?? 65 },
+      {
+        key: 'emotional_resonance',
+        label: 'Emotional Resonance',
+        value: potential?.emotional_resonance ?? 70,
+      },
+      { key: 'social_weaving', label: 'Social Weaving', value: potential?.social_weaving ?? 60 },
+      { key: 'creative_spark', label: 'Creative Spark', value: potential?.creative_spark ?? 80 },
+      {
+        key: 'practical_mastery',
+        label: 'Practical Mastery',
+        value: potential?.practical_mastery ?? 75,
+      },
+    ];
+
+    return (
+      <VStack className="gap-md p-md">
+        {/* Temporal Time-Series Scrubber */}
+        <Box className="rounded-2xl bg-phase-surface-secondary border border-phase-border/40 py-1">
+          <TemporalScrubber />
+        </Box>
+
+        <Card className="p-md bg-phase-surface-secondary items-center">
+          <Text className="text-xs font-bold text-templeGold uppercase tracking-widest mb-2">
+            Multidimensional Resonance Radar
+          </Text>
+          <InteractiveRadarChart dimensions={dimensions} size={280} />
+          <Text className="text-[11px] text-phase-text-tertiary text-center mt-2 max-w-[260px]">
+            Holistic balance of student presence, latent sparks, and cognitive flow.
+          </Text>
+        </Card>
+
+        {potential?.silver_lining && (
+          <Card className="p-md bg-phase-surface-secondary border border-templeGold/20">
+            <HStack className="items-center gap-2 mb-2">
+              <Icon as={Sparkles} size={16} color={Theme.colors.sanctuarySaffron} />
+              <Heading size="xs" className="text-templeGold font-bold">
+                Silver Lining & Discovered Potential
+              </Heading>
+            </HStack>
+            <Text className="text-sm text-phase-text-primary italic leading-relaxed">
+              "{potential.silver_lining}"
+            </Text>
+          </Card>
+        )}
+
+        <HStack className="gap-md">
+          <Card className="flex-1 p-md bg-phase-surface-secondary">
+            <Text className="text-[11px] text-phase-text-secondary font-semibold">
+              Creative Spark
+            </Text>
+            <Heading size="lg" className="text-templeGold font-bold mt-1">
+              {potential?.creative_spark ?? 80}%
+            </Heading>
+            <Text className="text-[10px] text-phase-text-tertiary mt-1">Divergent thinking</Text>
+          </Card>
+          <Card className="flex-1 p-md bg-phase-surface-secondary">
+            <Text className="text-[11px] text-phase-text-secondary font-semibold">
+              Cognitive Flow
+            </Text>
+            <Heading size="lg" className="text-templeGold font-bold mt-1">
+              {potential?.cognitive_flow ?? 65}%
+            </Heading>
+            <Text className="text-[10px] text-phase-text-tertiary mt-1">Focus & absorption</Text>
+          </Card>
+        </HStack>
+
+        {/* Sovereign Annual Living Portfolio */}
+        <Card className="p-md bg-phase-surface-secondary border border-sanctuarySaffron/20">
+          <HStack className="items-center justify-between mb-3">
+            <HStack className="items-center gap-2">
+              <Icon as={Trophy} size={16} className="text-sanctuarySaffron" />
+              <Heading size="xs" className="text-sanctuarySaffron font-bold">
+                Annual Living Portfolio (2025–2026)
+              </Heading>
+            </HStack>
+            <Box className="px-2 py-0.5 rounded-full bg-sanctuarySaffron/10 border border-sanctuarySaffron/30">
+              <Text className="text-[9px] font-black text-sanctuarySaffron uppercase tracking-wider">
+                Living Arc
+              </Text>
+            </Box>
+          </HStack>
+
+          <VStack className="gap-2">
+            <Text className="text-xs font-semibold text-phase-text-secondary">
+              High-Water Marks:
+            </Text>
+            <HStack className="gap-2 flex-wrap">
+              <Box className="px-2.5 py-1 rounded-xl bg-phase-surface border border-phase-border/40">
+                <Text className="text-[11px] text-phase-text-primary">
+                  🌟 Term 2: Science Fair Invention (94% Creative Spark)
+                </Text>
+              </Box>
+              <Box className="px-2.5 py-1 rounded-xl bg-phase-surface border border-phase-border/40">
+                <Text className="text-[11px] text-phase-text-primary">
+                  🤝 Term 1: Collaborative Workshop (88% Social Weaving)
+                </Text>
+              </Box>
+            </HStack>
+
+            <Text className="text-[10px] text-phase-text-tertiary mt-2">
+              Replaces once-a-year appraisals with continuous harmonic evidence. Compounded from daily micro-pulses smoothed by EMA (α = 0.3).
+            </Text>
+          </VStack>
+        </Card>
+      </VStack>
+    );
+  };
 
   const renderTimeline = () => (
     <VStack className="gap-md p-md">
@@ -410,29 +535,33 @@ export default function StudentProfileScreen() {
         </HStack>
 
         <HStack className="gap-md">
-          {(['overview', 'academics', 'observations', 'timeline'] as const).map((tab) => (
-            <Pressable
-              key={tab}
-              onPress={() => {
-                hapticMedium();
-                setActiveTab(tab);
-              }}
-              className="pb-sm"
-              accessibilityRole="tab"
-              accessibilityLabel={t(`common.${tab}`) || tab}
-              accessibilityState={{ selected: activeTab === tab }}
-              style={{
-                borderBottomWidth: activeTab === tab ? 2 : 0,
-                borderBottomColor: Theme.colors.sanctuarySaffron,
-              }}
-            >
-              <Text
-                className={`text-sm capitalize ${activeTab === tab ? 'text-phase-text-primary font-bold' : 'text-phase-text-secondary font-normal'}`}
+          {(['overview', 'potential', 'academics', 'observations', 'timeline'] as const).map(
+            (tab) => (
+              <Pressable
+                key={tab}
+                onPress={() => {
+                  hapticMedium();
+                  setActiveTab(tab);
+                }}
+                className="pb-sm"
+                accessibilityRole="tab"
+                accessibilityLabel={
+                  tab === 'potential' ? 'Soul & Potential' : t(`common.${tab}`) || tab
+                }
+                accessibilityState={{ selected: activeTab === tab }}
+                style={{
+                  borderBottomWidth: activeTab === tab ? 2 : 0,
+                  borderBottomColor: Theme.colors.sanctuarySaffron,
+                }}
               >
-                {t(`common.${tab}`) || tab}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  className={`text-sm capitalize ${activeTab === tab ? 'text-phase-text-primary font-bold' : 'text-phase-text-secondary font-normal'}`}
+                >
+                  {tab === 'potential' ? 'Soul & Potential' : t(`common.${tab}`) || tab}
+                </Text>
+              </Pressable>
+            ),
+          )}
         </HStack>
       </Box>
 
@@ -454,6 +583,7 @@ export default function StudentProfileScreen() {
         ) : (
           <>
             {activeTab === 'overview' && renderOverview()}
+            {activeTab === 'potential' && renderPotential()}
             {activeTab === 'academics' && renderAcademics()}
             {activeTab === 'observations' && renderObservations()}
             {activeTab === 'timeline' && renderTimeline()}

@@ -57,6 +57,12 @@ function createOpaqueId(): string {
   return `${LOCAL_GUEST_ID_PREFIX}${randomUUID.call(globalThis.crypto)}`;
 }
 
+/** Reads guest ownership without changing the active storage scope. */
+export async function readLocalGuestSession(): Promise<LocalGuestSession | null> {
+  const raw = await SafeZustandStorage.getItem(LOCAL_GUEST_SESSION_KEY);
+  return raw === null ? null : parseLocalGuestSession(raw);
+}
+
 /** Restores the persisted device-local guest session and activates its data scope. */
 export async function restoreLocalGuestSession(): Promise<LocalGuestSession | null> {
   const raw = await SafeZustandStorage.getItem(LOCAL_GUEST_SESSION_KEY);

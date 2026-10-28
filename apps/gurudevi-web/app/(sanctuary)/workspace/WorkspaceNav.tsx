@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useWorkbenchScope } from '../../../lib/workbench/WorkbenchScope';
 import type { WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
@@ -14,6 +15,7 @@ interface WorkspaceNavProps {
 }
 
 export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<WorkspaceNavProps>) {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
   const workbench = useDomainWorkbench('workspace', { usageScope: useWorkbenchScope() });
@@ -22,10 +24,12 @@ export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<Workspac
 
   function openFeature(item: (typeof WORKSPACE_FEATURES)[number]) {
     const route = item.id === 'attendance' ? '/workspace?task=attendance' : item.href;
+    const localizedTitle = t(`workspace.features.${item.id}`);
+    const displayTitle = localizedTitle !== `workspace.features.${item.id}` ? localizedTitle : item.label;
     const result = workbench.open({
       featureId: item.id,
       route,
-      title: item.label,
+      title: displayTitle,
       icon: item.symbol,
       temporalBinding: { kind: 'follow-domain' },
       localStatePolicy: 'restore-permitted',
@@ -39,9 +43,11 @@ export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<Workspac
   }
 
   return (
-    <nav className={styles.workspaceNav} aria-label="Workspace tools navigation">
+    <nav className={styles.workspaceNav} aria-label={t('workspace.toolsNav') || 'Workspace tools navigation'}>
       {visibleItems.map((item) => {
         const isActive = activeId ? activeId === item.id : pathname === item.href;
+        const localizedLabel = t(`workspace.features.${item.id}`);
+        const displayLabel = localizedLabel !== `workspace.features.${item.id}` ? localizedLabel : item.label;
         return (
           <button
             key={item.id}
@@ -53,7 +59,7 @@ export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<Workspac
             <span className={styles.symbol} aria-hidden="true">
               {item.symbol}
             </span>
-            <span>{item.label}</span>
+            <span>{displayLabel}</span>
           </button>
         );
       })}

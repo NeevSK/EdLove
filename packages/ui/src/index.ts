@@ -2,7 +2,6 @@ export { NotificationSettingsPanel } from '@repo/ui/components/NotificationSetti
 export { SignupPrompt } from '@repo/ui/components/prompts/SignupPrompt';
 export { SanctuaryGuard } from '@repo/ui/components/SanctuaryGuard';
 export * from '@repo/ui/context';
-export * from './hooks';
 export { useNotificationPreferences } from '@repo/ui/hooks/useNotificationPreferences';
 // Keep the root surface intentionally light. Heavy UI modules now live behind
 // explicit subpaths such as `@repo/ui/components/...` and `@repo/ui/screens/...`.
@@ -12,7 +11,6 @@ export * from '@repo/ui/screens/index';
 export * from '@repo/ui/theme/Theme';
 export * from '@repo/ui/tokens';
 export * from '@repo/ui/utils';
-export * from './sensory';
 export { useTranslation } from 'react-i18next';
 export {
   default as Animated,
@@ -23,6 +21,8 @@ export {
   SlideInDown,
   SlideInUp,
 } from 'react-native-reanimated';
+export { ActiveSubTabStrip, type ActiveSubTabStripProps } from './components/ActiveSubTabStrip';
+export { default as AuthorizeDeviceModal, type AuthorizeDeviceModalProps, type DevicePairingMetadata } from './components/AuthorizeDeviceModal';
 export type { BrandedEmptyStateProps } from './components/BrandedEmptyState';
 export { BrandedEmptyState } from './components/BrandedEmptyState';
 export type { BrandPulseProps } from './components/BrandPulse';
@@ -32,6 +32,7 @@ export type { CelebrationOverlayProps } from './components/CelebrationOverlay';
 export { CelebrationOverlay } from './components/CelebrationOverlay';
 export type { CollapseProps } from './components/Collapse';
 export { Collapse } from './components/Collapse';
+export { DomainSubHeader, type DomainSubHeaderProps } from './components/DomainSubHeader';
 export { default as ErrorBoundary, RouteErrorBoundary } from './components/ErrorBoundary';
 export type { ErrorStateProps } from './components/ErrorState';
 export { ErrorState as BrandedErrorState } from './components/ErrorState';
@@ -48,6 +49,7 @@ export type {
 export { FireflyProductMoment } from './components/FireflyProductMoment';
 export type { FocusRingProps } from './components/FocusRing';
 export { FocusRing } from './components/FocusRing';
+export { InteractiveRadarChart, type RadarDimension } from './components/InteractiveRadarChart';
 export { JourneyErrorBoundary } from './components/JourneyErrorBoundary';
 export type { LivingFireflyProps } from './components/LivingFirefly';
 export { LivingFirefly } from './components/LivingFirefly';
@@ -79,6 +81,11 @@ export { color, duration, easing, scale } from './components/motion';
 export type { PressableScaleProps } from './components/PressableScale';
 // Delight Primitives
 export { PressableScale } from './components/PressableScale';
+export {
+  default as SanctuaryLegendList,
+  type LegendListRef,
+  type SanctuaryLegendListProps,
+} from './components/SanctuaryLegendList';
 export type { ScreenWrapperProps } from './components/ScreenWrapper';
 export {
   ShimmerBlock,
@@ -87,12 +94,21 @@ export {
 } from './components/Skeleton';
 export type { SkiaGlowAuraProps } from './components/SkiaGlowAura';
 export { SkiaGlowAura } from './components/SkiaGlowAura';
+export {
+  SovereignVirtualList,
+  type SovereignVirtualListProps,
+} from './components/SovereignVirtualList';
 export { SuccessCheck, SuccessGlow } from './components/Success';
 export { sharedTransitionTiming, softCrossfadeScale } from './components/screenTransitions';
 export { VisualCapabilityInspector } from './components/VisualCapabilityInspector';
 export { WorkspaceRenderer } from './components/workspace/WorkspaceRenderer';
-export { ActiveSubTabStrip, type ActiveSubTabStripProps } from './components/ActiveSubTabStrip';
-export { DomainSubHeader, type DomainSubHeaderProps } from './components/DomainSubHeader';
-export { LayoutLoopSentinel, useLayoutSentinel, createLayoutSentinel, type LayoutLoopSentinelProps, type LayoutRecord } from './sentinels/LayoutLoopSentinel';
-export { SovereignVirtualList, type SovereignVirtualListProps } from './components/SovereignVirtualList';
-export { default as SanctuaryLegendList, type SanctuaryLegendListProps, type LegendListRef } from './components/SanctuaryLegendList';
+export * from './hooks';
+export * from './machines/mediaPlaybackMachine';
+export * from './sensory';
+export {
+  createLayoutSentinel,
+  LayoutLoopSentinel,
+  type LayoutLoopSentinelProps,
+  type LayoutRecord,
+  useLayoutSentinel,
+} from './sentinels/LayoutLoopSentinel';

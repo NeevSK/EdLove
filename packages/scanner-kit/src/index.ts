@@ -22,3 +22,7 @@ export {
   parseInstitutionalQR,
   type ParsedInstitutionalQR,
 } from './qr/institutionalQrParser';
+export * from './machines/ocrScannerMachine';
+export * from './machines/documentVisionMachine';
+export * from './utils/imagePreFlight';
+export * from './ocr/providers/SanctuaryVisionProvider';

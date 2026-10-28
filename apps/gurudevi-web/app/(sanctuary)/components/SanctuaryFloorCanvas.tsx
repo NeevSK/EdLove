@@ -2,24 +2,28 @@
 
 import type {
   FloorWallpaperConfig,
+  SceneGroundMode,
   WorkspaceAppearance,
   WorkspaceAppearanceMotion,
   WorkspaceAppearancePreset,
   WorkspaceWallpaper,
 } from '@repo/core/types';
+import { isWorldId } from '@repo/ui/world';
 import React, { useEffect, useState } from 'react';
-import { useFloorSlideshow } from '../../../lib/canvas/useFloorSlideshow';
-import { FloorAtmosphere, type FloorAtmosphereKind } from './FloorAtmosphere';
 import {
-  FloorStudioDrawer,
-  type FurnitureDefinition,
-} from './FloorStudioDrawer';
-import { FloorPageActions } from './FloorPageActions';
-import { FloorErrorBoundary } from './FloorErrorBoundary';
-import { WorkspaceWallpaperLayer } from './WorkspaceWallpaperLayer';
-import { WorkspaceLayoutRecoveryControl } from './WorkspaceLayoutRecoveryControl';
-import studioStyles from './floor-studio.module.css';
+  EXPLORE_DEFAULT_APPEARANCE,
+  getBackdropsForWorld,
+} from '../../../lib/canvas/appearanceConstants';
+import { useFloorSlideshow } from '../../../lib/canvas/useFloorSlideshow';
+import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import floorStyles from '../self/self-floor.module.css';
+import { FloorAtmosphere, type FloorAtmosphereKind } from './FloorAtmosphere';
+import { FloorErrorBoundary } from './FloorErrorBoundary';
+import { FloorPageActions } from './FloorPageActions';
+import { FloorStudioDrawer, type FurnitureDefinition } from './FloorStudioDrawer';
+import studioStyles from './floor-studio.module.css';
+import { WorkspaceLayoutRecoveryControl } from './WorkspaceLayoutRecoveryControl';
+import { WorkspaceWallpaperLayer } from './WorkspaceWallpaperLayer';
 
 export type SanctuaryFloorCanvasRenderProps = {
   isModuleVisible: (id: string) => boolean;
@@ -39,6 +43,8 @@ export interface SanctuaryFloorCanvasProps {
   titleId?: string;
   className?: string;
   dataMode?: string;
+  worldId?: string;
+  onSelectWorld?: (world: string) => void;
   appearance?: WorkspaceAppearance;
   setAppearance?: (next: WorkspaceAppearance) => void;
   furnitureItems?: readonly FurnitureDefinition[];
@@ -54,12 +60,13 @@ export interface SanctuaryFloorCanvasProps {
   children: React.ReactNode | ((props: SanctuaryFloorCanvasRenderProps) => React.ReactNode);
 }
 
-
 export function SanctuaryFloorCanvas({
   domain,
   titleId,
   className,
   dataMode,
+  worldId,
+  onSelectWorld,
   appearance,
   setAppearance,
   furnitureItems = [],
@@ -75,8 +82,9 @@ export function SanctuaryFloorCanvas({
   children,
 }: Readonly<SanctuaryFloorCanvasProps>) {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
-  const [studioTab, setStudioTab] = useState<FloorStudioTab>('furniture');
-  const hasPageActions = showPageActions && ['self', 'workspace', 'community', 'library'].includes(domain);
+  const [studioTab, setStudioTab] = useState<FloorStudioTab>('atmosphere');
+  const hasPageActions =
+    showPageActions && ['self', 'workspace', 'community', 'library'].includes(domain);
 
   useEffect(() => {
     if (!showPageActions) setIsStudioOpen(false);
@@ -87,12 +95,38 @@ export function SanctuaryFloorCanvas({
     setIsStudioOpen(true);
   };
 
-  const [internalAppearance, setInternalAppearance] = useState<WorkspaceAppearance>(() => ({
-    preset: 'default',
-    motion: 'off',
-  }));
+  const [internalAppearance, setInternalAppearance] = useState<WorkspaceAppearance>(() =>
+    dataMode === 'explore'
+      ? EXPLORE_DEFAULT_APPEARANCE
+      : { preset: 'default', motion: 'off', groundMode: 'live', worldId: 'sanctuary' },
+  );
   const activeAppearance = appearance ?? internalAppearance;
   const updateAppearance = setAppearance ?? setInternalAppearance;
+
+  const { world: reactiveWorld, setWorld: setReactiveWorld } = useWorldTheme();
+  const activeWorld = worldId ?? activeAppearance.worldId ?? reactiveWorld;
+
+  const handleSelectWorld = (newWorld: string) => {
+    if (isWorldId(newWorld)) {
+      setReactiveWorld(newWorld);
+    }
+    updateAppearance({
+      ...activeAppearance,
+      worldId: newWorld,
+    });
+    if (onSelectWorld) onSelectWorld(newWorld);
+  };
+
+  const groundMode: SceneGroundMode =
+    activeAppearance.groundMode ?? (activeAppearance.wallpaper ? 'image' : 'live');
+
+  const handleSelectGroundMode = (mode: SceneGroundMode) => {
+    updateAppearance({
+      ...activeAppearance,
+      groundMode: mode,
+    });
+  };
+
   const defaultFurnitureIds = furnitureItems.map((item) => item.id);
   const defaultFurnitureKey = defaultFurnitureIds.join('|');
 
@@ -123,9 +157,7 @@ export function SanctuaryFloorCanvas({
   const configuredOrder = groupOrder.length > 0 ? groupOrder : internalGroupOrder;
   const activeGroupOrder = [
     ...configuredOrder.filter((id) => furnitureItems.some((item) => item.id === id)),
-    ...furnitureItems
-      .filter((item) => !configuredOrder.includes(item.id))
-      .map((item) => item.id),
+    ...furnitureItems.filter((item) => !configuredOrder.includes(item.id)).map((item) => item.id),
   ];
 
   const handleReorder = (order: string[]) => {
@@ -170,6 +202,12 @@ export function SanctuaryFloorCanvas({
     activeAppearance.wallpaper,
   );
 
+  const effectiveWallpaper =
+    activeWallpaper ??
+    (dataMode === 'explore'
+      ? EXPLORE_DEFAULT_APPEARANCE.wallpaper
+      : (getBackdropsForWorld(activeWorld)[0] ?? null));
+
   const customWash = activeAppearance.wallpaperConfig?.customWashColor;
   const customWashStyle =
     customWash && activeAppearance.preset !== 'none'
@@ -185,9 +223,11 @@ export function SanctuaryFloorCanvas({
       data-appearance={activeAppearance.preset}
       data-atmosphere={atmosphere}
       data-domain={domain}
-      data-has-wallpaper={Boolean(activeWallpaper?.url)}
+      data-ground-mode={groundMode}
+      data-has-wallpaper={Boolean(effectiveWallpaper?.url)}
       data-mode={dataMode}
       data-motion={activeAppearance.motion}
+      data-world={activeWorld}
       style={customWashStyle}
     >
       <WorkspaceWallpaperLayer
@@ -195,7 +235,7 @@ export function SanctuaryFloorCanvas({
         isCrossFading={isCrossFading}
         nextWallpaper={nextWallpaper}
         pure={activeAppearance.preset === 'none'}
-        wallpaper={activeWallpaper}
+        wallpaper={effectiveWallpaper}
       />
 
       <FloorAtmosphere
@@ -215,24 +255,25 @@ export function SanctuaryFloorCanvas({
             : topControls}
         </div>
 
-        {hasPageActions ? (
-          <FloorPageActions
-            domain={domain}
-            onChangeWallpaper={() => openStudio('atmosphere')}
-            onOrganize={() => openStudio('furniture')}
-          />
-        ) : typeof topControls === 'function' ? null : (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
             aria-expanded={isStudioOpen}
-            aria-label={`Organize ${domain} home`}
+            aria-label={`Open ${domain} Floor Studio — customize this ${domain} floor`}
             className={`${studioStyles.studioTrigger} ${isStudioOpen ? studioStyles.studioTriggerActive : ''}`}
-            onClick={() => openStudio('furniture')}
-            title={`Organize ${domain} home and customize its appearance`}
+            onClick={() => openStudio('atmosphere')}
+            title={`Open ${domain} Floor Studio — customize this ${domain} floor`}
             type="button"
           >
-            <span>Organize home</span>
+            <span>Floor Studio</span>
           </button>
-        )}
+          {hasPageActions ? (
+            <FloorPageActions
+              domain={domain}
+              onChangeWallpaper={() => openStudio('atmosphere')}
+              onOrganize={() => openStudio('furniture')}
+            />
+          ) : null}
+        </div>
       </div>
 
       {layoutSyncStatus && onReapplyLayoutChanges && (
@@ -246,7 +287,6 @@ export function SanctuaryFloorCanvas({
       <FloorErrorBoundary
         fallbackTitle={`${domain.charAt(0).toUpperCase() + domain.slice(1)} Floor Experience Temporarily Paused`}
       >
-
         {typeof children === 'function'
           ? (children as (props: SanctuaryFloorCanvasRenderProps) => React.ReactNode)({
               isModuleVisible: (id: string) => {
@@ -261,20 +301,30 @@ export function SanctuaryFloorCanvas({
       <FloorStudioDrawer
         activeWallpaper={activeWallpaper}
         currentAtmosphere={atmosphere}
+        currentGroundMode={groundMode}
         currentMotion={activeAppearance.motion}
         currentPreset={activeAppearance.preset}
-        initialTab={studioTab}
+        currentWorld={activeWorld}
         floorDomain={domain}
         furnitureItems={furnitureItems}
         groupOrder={activeGroupOrder}
+        initialTab={studioTab}
         isOpen={isStudioOpen}
         onClose={() => setIsStudioOpen(false)}
         onReorderFurniture={handleReorder}
         onResetFloorDefaults={onResetFloorDefaults}
         onSelectAtmosphere={setAtmosphere}
+        onSelectGroundMode={handleSelectGroundMode}
         onSelectMotion={(motion) => updateAppearance({ ...activeAppearance, motion })}
         onSelectPreset={(preset) => updateAppearance({ ...activeAppearance, preset })}
-        onSelectWallpaper={(wallpaper) => updateAppearance({ ...activeAppearance, wallpaper })}
+        onSelectWallpaper={(wallpaper) =>
+          updateAppearance({
+            ...activeAppearance,
+            wallpaper,
+            groundMode: wallpaper ? 'image' : groundMode,
+          })
+        }
+        onSelectWorld={handleSelectWorld}
         onTogglePinFurniture={onTogglePinFurniture}
         onUpdateWallpaperConfig={(wallpaperConfig) =>
           updateAppearance({ ...activeAppearance, wallpaperConfig })

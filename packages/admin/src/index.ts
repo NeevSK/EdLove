@@ -8,6 +8,8 @@ export * from '@repo/admin/components';
 // Constants & Hooks
 export * from '@repo/admin/constants/adminRegistry';
 export * from '@repo/admin/hooks';
+export * from './machines/academicCycleMachine';
+export * from './machines/principalSetupMachine';
 export type { InviteCode } from '@repo/admin/invites';
 export { invitesAPI } from '@repo/admin/invites';
 export type { PrincipalObservation } from '@repo/admin/observations';

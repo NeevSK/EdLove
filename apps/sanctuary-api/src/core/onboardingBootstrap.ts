@@ -10,6 +10,7 @@ const onboardingBootstrapProcedurePaths = new Set([
   '/api/identity/capabilityBootstrap',
   '/api/openapi/capabilities/bootstrap/v1',
   '/api/workspaceProvisioning/provisionCommercialBatch',
+  '/api/workspaceProvisioning/provisionTeacherClassroom',
   '/api/workspaceProvisioning/requestGuardianLink',
 ]);
 

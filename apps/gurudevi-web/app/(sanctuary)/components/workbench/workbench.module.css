@@ -31,6 +31,9 @@
 @media (max-width: 48rem) {
   .routeTaskStrip { grid-template-columns: minmax(0, 1fr); }
   .routeTaskStrip > :last-child { justify-self: end; }
+  .taskStripShell[data-mobile-idle="true"] {
+    display: none !important;
+  }
 }
 
 .taskStrip::-webkit-scrollbar { display: none; }

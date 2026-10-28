@@ -1,3 +1,8 @@
+---
+name: expo-rn-expert
+description: Authoritative engineering guidelines for building cross-platform React Native applications with Expo SDK and Expo Router.
+---
+
 # Expo & React Native Engineering Playbook (expo-rn-expert)
 
 Authoritative engineering guidelines for building cross-platform React Native (web and mobile) applications with Expo SDK 56 and Expo Router.

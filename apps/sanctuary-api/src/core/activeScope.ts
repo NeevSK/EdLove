@@ -195,6 +195,7 @@ export function buildIdentityBootstrap(
   const selected = activeBond
     ? (validBonds.find((bond) => bond.id === activeBond.id) ?? null)
     : null;
+  const personalBond = validBonds.find((bond) => bond.entity_type === 'PERSONAL_CLASSROOM') ?? null;
   const selectedRoles = selected
     ? validBonds
         .filter(
@@ -210,7 +211,7 @@ export function buildIdentityBootstrap(
     version: 1,
     userId: user.id,
     name,
-    primaryCapacity: selected?.capacity ?? null,
+    primaryCapacity: personalBond?.capacity ?? user.capacity ?? null,
     selection: selected ? 'selected' : 'needs_selection',
     activeScope: selected
       ? {

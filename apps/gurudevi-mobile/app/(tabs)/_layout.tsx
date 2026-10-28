@@ -48,7 +48,8 @@ import {
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { useWorld, Text as WText } from '@repo/ui/world/native';
-import { router, Tabs, useGlobalSearchParams, usePathname } from 'expo-router';
+import { router, useGlobalSearchParams, usePathname } from 'expo-router';
+import { Tabs } from 'expo-router/js-tabs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

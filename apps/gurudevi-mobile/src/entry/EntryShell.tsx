@@ -3,6 +3,7 @@ import {
   GlobalProvider,
   useCapabilityHydration,
 } from '@repo/core/logic';
+import { readLocalGuestSession } from '@repo/core/native/localGuestSession';
 import { useUIStore } from '@repo/core/store';
 import { inMemoryHealthAdapter } from '@repo/self';
 import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
@@ -13,6 +14,7 @@ import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider, Pressable, Text } from '@repo/ui/primitives';
 import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
 import { sensoryFeedback } from '@repo/ui/sensory';
+import { reportVergerInteraction } from '@repo/verger-react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
@@ -21,7 +23,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
-import { observeDevelopmentInteractions } from '@/boot/startupTelemetry';
+import { observeDevelopmentInteractions, recordDevelopmentTrace } from '@/boot/startupTelemetry';
 import { WorldFonts } from '@/boot/WorldFonts';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
@@ -47,6 +49,8 @@ import { useSomaticShake } from '@/somatic/useSomaticShake';
  * Optional native services stay outside this route host so their failure cannot
  * turn a public launch into a blank surface.
  */
+const readLocalGuestId = async () => (await readLocalGuestSession())?.id ?? null;
+
 export function EntryShell() {
   const pathname = usePathname();
   const params = useGlobalSearchParams<{ preview?: string }>();
@@ -64,10 +68,20 @@ export function EntryShell() {
 
   useEffect(() => {
     const stopObservingInteractions = observeDevelopmentInteractions();
+    recordDevelopmentTrace({
+      category: 'startup-boundary',
+      task: 'entry-shell-mounted',
+      state: 'committed',
+    });
     console.log('[entry-shell] mounted');
     const stopSplashHandoff = handoffNativeSplashAfterCommit({
       onCommit: () => {
         console.log('[entry-shell] first frame committed; hiding native splash');
+        recordDevelopmentTrace({
+          category: 'startup',
+          task: 'first-shell-frame',
+          state: 'committed',
+        });
       },
       onError: (error: unknown) => {
         console.warn('[entry-shell] native splash handoff unavailable:', error);
@@ -88,11 +102,15 @@ export function EntryShell() {
   }
 
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <GestureHandlerRootView
+      style={styles.root}
+      onStartShouldSetResponderCapture={reportVergerInteraction}
+      onMoveShouldSetResponderCapture={reportVergerInteraction}
+    >
       <ErrorBoundary name="EntryShell">
         <SafeAreaProvider>
           <QueryClientProvider client={queryClient}>
-            <GlobalProvider>
+            <GlobalProvider readLocalGuestId={readLocalGuestId}>
               <EnvironmentProvider>
                 <GurudeviVerger>
                   <OptionalStartupServices phase="public-ready" />
@@ -120,6 +138,8 @@ export function EntryShell() {
                                           <Stack.Screen name="account-recovery" />
                                           <Stack.Screen name="onboarding" />
                                           <Stack.Screen name="public-form/[slug]" />
+                                          <Stack.Screen name="verger-lab" />
+                                          <Stack.Screen name="verger-diagnostics" />
                                           <Stack.Screen name="(tabs)" />
                                           <Stack.Screen
                                             name="(modal)"

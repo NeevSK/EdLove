@@ -81,6 +81,20 @@ export function TaskStrip({
     return;
   }, [useShellSlot]);
 
+  const isIdleOverview = overviewActive && tasks.length === 0;
+
+  useEffect(() => {
+    if (!shellSlot) return;
+    shellSlot.dataset.hasActiveTasks = String(tasks.length > 0);
+    shellSlot.dataset.overviewActive = String(overviewActive);
+    shellSlot.dataset.mobileIdle = String(isIdleOverview);
+    return () => {
+      delete shellSlot.dataset.hasActiveTasks;
+      delete shellSlot.dataset.overviewActive;
+      delete shellSlot.dataset.mobileIdle;
+    };
+  }, [shellSlot, tasks.length, overviewActive, isIdleOverview]);
+
   const resetDrag = () => {
     dragSourceRef.current = null;
     setDraggedTaskKey(null);
@@ -185,7 +199,7 @@ export function TaskStrip({
   };
 
   const strip = (
-    <div className={styles.taskStripShell}>
+    <div className={styles.taskStripShell} data-mobile-idle={isIdleOverview}>
     <nav aria-label="Open work tabs" className={`${styles.taskStrip} ${shellSlot ? styles.shellTaskStrip : ''} ${className ?? ''}`}>
       <button
         aria-label={overviewActive ? 'Home' : 'Open Home'}

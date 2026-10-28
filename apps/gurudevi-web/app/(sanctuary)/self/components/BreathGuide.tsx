@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';
 import { logReminderFeedback } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './breath-guide.module.css';
@@ -72,6 +73,7 @@ function getStep(index: number): BreathStep {
 const TOTAL_CYCLES = 4;
 
 export function BreathGuide({ onComplete }: Readonly<BreathGuideProps>) {
+  const { t } = useTranslation();
   const [active, setActive] = useState(false);
   const [cycleIdx, setCycleIdx] = useState(0);
   const [phaseIdx, setPhaseIdx] = useState(0);
@@ -168,8 +170,8 @@ export function BreathGuide({ onComplete }: Readonly<BreathGuideProps>) {
   return (
     <div className={styles.container}>
       <div>
-        <span className={styles.badge}>Somatic Regulation</span>
-        <h3 className={styles.title}>Breath Resonance</h3>
+        <span className={styles.badge}>{t('breathe.badge') || 'Somatic Regulation'}</span>
+        <h3 className={styles.title}>{t('breathe.title') || 'Breath Resonance'}</h3>
       </div>
 
       {done ? (
@@ -178,13 +180,13 @@ export function BreathGuide({ onComplete }: Readonly<BreathGuideProps>) {
             🌱
           </span>
           <h4 style={{ margin: 0, fontFamily: 'Georgia, serif', fontSize: '1.3rem' }}>
-            Grounded & Present
+            {t('breathe.groundedTitle') || 'Grounded & Present'}
           </h4>
           <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--ink-soft)', lineHeight: 1.6 }}>
-            Breath cycle fulfilled. Your nervous system has recalibrated toward equilibrium.
+            {t('breathe.groundedText') || 'Breath cycle fulfilled. Your nervous system has recalibrated toward equilibrium.'}
           </p>
           <button className={styles.primaryButton} onClick={start} type="button">
-            Restart Cycle
+            {t('breathe.restartBtn') || 'Restart Cycle'}
           </button>
         </div>
       ) : (
@@ -218,7 +220,7 @@ export function BreathGuide({ onComplete }: Readonly<BreathGuideProps>) {
             {active ? (
               <>
                 <p className={styles.phaseLabel} style={{ color: currentStep.accentColor }}>
-                  {currentStep.label}
+                  {t(`breathe.${currentStep.phase}`) || currentStep.label}
                 </p>
                 <div className={styles.progressTrack}>
                   <div
@@ -230,13 +232,14 @@ export function BreathGuide({ onComplete }: Readonly<BreathGuideProps>) {
                   />
                 </div>
                 <span className={styles.cycleText}>
-                  Cycle {cycleIdx + 1} of {TOTAL_CYCLES}
+                  {t('breathe.cycleText', { current: cycleIdx + 1, total: TOTAL_CYCLES }) ||
+                    `Cycle ${cycleIdx + 1} of ${TOTAL_CYCLES}`}
                 </span>
               </>
             ) : (
               <p className={styles.idleHint}>
-                Follow the gentle 4-2-6-2 cadence to anchor your presence and release physical
-                tension.
+                {t('breathe.idleHint') ||
+                  'Follow the gentle 4-2-6-2 cadence to anchor your presence and release physical tension.'}
               </p>
             )}
           </div>
@@ -248,7 +251,7 @@ export function BreathGuide({ onComplete }: Readonly<BreathGuideProps>) {
             onClick={active ? stop : start}
             type="button"
           >
-            {active ? 'Cease Exercise' : 'Initiate Breath Cycle'}
+            {active ? (t('breathe.stopBtn') || 'Cease Exercise') : (t('breathe.startBtn') || 'Initiate Breath Cycle')}
           </button>
         </>
       )}

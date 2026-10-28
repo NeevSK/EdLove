@@ -104,7 +104,9 @@ config.useWatchman = false;
 // policy is established, but bundle resolution remains available.
 config.watchFolders = [];
 config.resetCache = false;
-config.maxWorkers = 2;
+// A live Windows Metro session exhausted file handles while transforming its
+// cache. Serial transforms trade bundle throughput for bounded file pressure.
+config.maxWorkers = 1;
 
 
 
@@ -358,6 +360,13 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // Workspace packages are mapped to their source roots below. That mapping
   // intentionally bypasses package `exports`, so resolve conditional native
   // adapters explicitly before delegating to Metro.
+  if (moduleName === '@repo/core/native/localGuestActivation') {
+    return {
+      filePath: path.resolve(workspaceRoot, 'packages/core/src/native/localGuestActivation.ts'),
+      type: 'sourceFile',
+    };
+  }
+
   if (moduleName === '@repo/core/native/webPush') {
     return {
       filePath: path.resolve(

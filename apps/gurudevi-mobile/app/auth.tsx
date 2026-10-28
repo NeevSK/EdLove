@@ -2,6 +2,7 @@ import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
 import AuthScreen from '../src/screens/AuthScreen';
 
@@ -16,6 +17,8 @@ function Fallback() {
 }
 
 export default function AuthRoute() {
+  const router = useRouter();
+
   const handleSuccess = useCallback(async () => {
     // The session gate owns post-auth navigation.
   }, []);
@@ -24,10 +27,18 @@ export default function AuthRoute() {
     safeBack('/welcome');
   }, []);
 
+  const handleRecovery = useCallback(() => {
+    router.push('/account-recovery');
+  }, [router]);
+
   return (
     <ErrorBoundary name="AuthRoute">
       <Suspense fallback={<Fallback />}>
-        <AuthScreen onSuccess={handleSuccess} onBack={handleBack} />
+        <AuthScreen
+          onSuccess={handleSuccess}
+          onBack={handleBack}
+          onNavigateRecovery={handleRecovery}
+        />
       </Suspense>
     </ErrorBoundary>
   );

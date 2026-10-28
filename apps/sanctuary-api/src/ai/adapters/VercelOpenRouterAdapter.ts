@@ -9,6 +9,7 @@ export class VercelOpenRouterAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
+    abortSignal?: AbortSignal,
   ) {
     const provider = createOpenAI({
       apiKey,
@@ -28,6 +29,7 @@ export class VercelOpenRouterAdapter implements LlmPort {
         role: m.role as 'user' | 'assistant',
         content: m.content,
       })),
+      abortSignal,
     });
 
     return vercelStreamToTanStackChunks(result.fullStream, model);

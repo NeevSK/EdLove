@@ -98,6 +98,8 @@ export default function ClassroomList({
           rawClassrooms = isGuestOrDemo
             ? await api.classrooms.getByTeacher(userId, pagination)
             : await getSchoolScopedClassroomsForPrincipal(userId, pagination);
+        } else if (isGuestOrDemo || isExplorerMode) {
+          rawClassrooms = await api.classrooms.getByTeacher('demo-teacher', pagination);
         }
 
         const filtered = (rawClassrooms ?? []).filter(

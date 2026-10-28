@@ -1,8 +1,9 @@
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
+import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { SelfFloor } from './SelfFloor';
@@ -12,10 +13,17 @@ export const metadata = { title: 'Self | Gurudevi Sanctuary' };
 export default async function SelfPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ mode?: string; surface?: string }>;
+  searchParams?: Promise<{
+    mode?: string;
+    surface?: string;
+    dev?: string;
+    role?: string;
+    name?: string;
+  }>;
 }) {
   const params = await searchParams;
   const requestHeaders = await headers();
+  const cookieStore = await cookies();
   const host = requestHeaders.get('host') ?? '';
   const isExplore =
     classifyGurudeviHost(host) === 'explore' ||
@@ -39,28 +47,47 @@ export default async function SelfPage({
     );
   }
 
+  const devSession = resolveSanctuaryDevSession({
+    searchParams: params,
+    host,
+    cookieStore,
+  });
+
+  if (devSession.isDevSession) {
+    return (
+      <SanctuaryShell
+        displayName={devSession.displayName}
+        isDevPreview
+        previewCapacity={devSession.capacity}
+        navigationPrefix=""
+        isExploreMode={false}
+      >
+        <SelfFloor
+          accountId={devSession.accountId}
+          displayName={devSession.displayName}
+          initialCapacity={devSession.capacity as any}
+          initialPracticing={false}
+        />
+      </SanctuaryShell>
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
-    return <SelfFloorGuestFallback />;
+    redirect('/welcome?returnTo=/self');
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
-    return (
-      <SanctuaryShell
-        displayName="Guest Explorer"
-        navigationPrefix=""
-        showAccountNavigation={true}
-        isExploreMode={true}
-      >
-        <SelfFloor accountId="explore-guest" displayName="Guest Explorer" initialPracticing={true} />
-      </SanctuaryShell>
-    );
+    redirect('/welcome?returnTo=/self');
   }
   if (entry.kind === 'onboarding-required') {
     redirect('/onboarding');
   }
-  if (entry.kind === 'inactive' || entry.kind === 'unavailable')
+  if (entry.kind === 'inactive') {
+    redirect('/account-recovery');
+  }
+  if (entry.kind === 'unavailable')
     return <SelfState detail={entry.message} title="Self is unavailable" />;
 
   return (
@@ -68,7 +95,7 @@ export default async function SelfPage({
       <SelfFloor
         accountId={entry.accountId}
         displayName={entry.displayName}
-        initialCapacity={entry.activeCapacity}
+        initialCapacity={entry.primaryCapacity}
         key={entry.accountId}
       />
     </SanctuaryShell>

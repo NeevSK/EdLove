@@ -24,6 +24,8 @@ export interface EssentialStartupStageEvent {
   stage: EssentialStartupStage;
   outcome: 'complete' | 'failed';
   durationMs: number | null;
+  startedAtMs?: number | null;
+  finishedAtMs?: number | null;
 }
 
 const ESSENTIAL_STARTUP_TIMEOUT_MS = 200_000;
@@ -93,7 +95,7 @@ function reportStage(
     warnAboutInstrumentationFailure('[startup] stage duration could not be measured.');
   }
   try {
-    onStage?.({ stage, outcome, durationMs });
+    onStage?.({ stage, outcome, durationMs, startedAtMs: startedAt, finishedAtMs: finishedAt });
   } catch {
     warnAboutInstrumentationFailure('[startup] stage observation callback failed.');
   }

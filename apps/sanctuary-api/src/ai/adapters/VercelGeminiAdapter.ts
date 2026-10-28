@@ -9,6 +9,7 @@ export class VercelGeminiAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
+    abortSignal?: AbortSignal,
   ) {
     const provider = createGoogle({ apiKey });
 
@@ -19,6 +20,7 @@ export class VercelGeminiAdapter implements LlmPort {
         role: m.role as 'user' | 'assistant',
         content: m.content,
       })),
+      abortSignal,
     });
 
     return vercelStreamToTanStackChunks(result.fullStream, model);

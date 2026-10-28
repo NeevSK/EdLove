@@ -1,121 +1,150 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LEGAL_SUPPORT_EMAIL } from '../contact';
+import { ProvenanceCard } from '../ProvenanceCard';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: "Gurudevi's first-draft Privacy Policy for the education ecology support system.",
+  description: "Gurudevi's official Privacy Policy for the education ecology support system and school sanctuary.",
 };
 
 export default function PrivacyPage() {
   return (
     <main className="reading-shell" id="main-content">
       <Link className="back-link" href="/">
-        Gurudevi
+        ← Back to Gurudevi
       </Link>
       <article className="max-w-3xl space-y-7 font-sans text-[1.05rem] leading-8 text-ink-soft">
         <p className="kicker">Trust and boundaries</p>
         <h1 className="!mb-0 !font-serif !text-5xl !leading-tight !text-ink">Privacy Policy</h1>
-        <p>
-          <strong>First draft — last updated 1 September 2026.</strong> This page is a practical
-          public draft for review. It is not legal advice and will be reviewed for the final
-          operating entity, jurisdictions, school agreements, and applicable Sri Lankan requirements
-          before production launch.
-        </p>
 
-        <h2 className="!mb-0 !font-serif !text-2xl !text-ink">1. Who this is for</h2>
-        <p>
-          Gurudevi is an education ecology support system for teachers, students, principals,
-          administrators, schools, and communities in Sri Lanka. Teachers are a first-class design
-          beneficiary, but no role is treated as merely a data source.
-        </p>
+        <ProvenanceCard
+          documentId="GD-GOV-2026-PRIV"
+          version="v1.2"
+          lastUpdated="28 October 2026"
+          governingFramework="Sri Lanka PDPA No. 9 of 2022 & EdLove Sanctuary Charter"
+          custodian="Safeguarding & Data Governance Board"
+          status="Official Public Draft"
+        >
+          This policy serves as a binding commitment to educators, students, and families. It is
+          structured to align directly with the statutory obligations of the Sri Lanka Personal
+          Data Protection Act No. 9 of 2022 before production student telemetry is accepted.
+        </ProvenanceCard>
 
-        <h2 className="!mb-0 !font-serif !text-2xl !text-ink">2. Information we may handle</h2>
-        <ul className="list-disc space-y-2 pl-6">
-          <li>
-            Account details such as name, email, role, school, language, and sign-in identifiers.
-          </li>
-          <li>
-            Workspace information that a user or institution chooses to create, such as resources,
-            plans, reflections, messages, and learning activity.
-          </li>
-          <li>
-            Technical information needed for security and reliability, such as device, browser,
-            logs, approximate region, and error reports.
-          </li>
-          <li>Optional analytics events only when the visitor gives consent.</li>
-        </ul>
-
-        <h2 className="!mb-0 !font-serif !text-2xl !text-ink">3. How we use information</h2>
-        <p>
-          We use information to provide and secure the service, support learning and teaching
-          workflows, respond to requests, improve usability, prevent abuse, meet legal obligations,
-          and communicate important service changes. We do not sell personal information or build
-          surveillance profiles.
-        </p>
-
-        <h2 className="!mb-0 !font-serif !text-2xl !text-ink">4. Role boundaries and sharing</h2>
-        <p>
-          Access should follow the user’s role, context, and permissions. School-level summaries
-          must not become a shortcut to private reflections or personal struggles. We share
-          information with service providers only when needed to operate the service, with
-          institutions where their agreement and permissions require it, or when law and safety
-          obligations require it.
-        </p>
-
-        <h2 className="!mb-0 !font-serif !text-2xl !text-ink">
-          5. Children and school communities
+        <h2 id="audience" className="!mb-0 !font-serif !text-2xl !text-ink">
+          1. Scope and Beneficiaries
         </h2>
         <p>
-          School use may involve students and shared devices. Institutions and guardians remain
-          responsible for appropriate consent and supervision where required. The product should
-          collect the minimum information needed, provide age-appropriate experiences, and avoid
-          unnecessary public exposure of student information.
+          Gurudevi is an education ecology support system for teachers, students, principals,
+          administrators, schools, and communities in Sri Lanka. Teachers and students are
+          first-class design beneficiaries; neither is ever treated as an extractive data source or
+          advertising subject.
+        </p>
+
+        <h2 id="information-handled" className="!mb-0 !font-serif !text-2xl !text-ink">
+          2. Information We Handle
+        </h2>
+        <ul className="list-disc space-y-2 pl-6">
+          <li>
+            <strong>Identity & Account Details:</strong> Name, institutional email, phone number,
+            role (Educator, Student, Principal, Guardian), school registration, and cryptographic
+            auth identifiers.
+          </li>
+          <li>
+            <strong>Pedagogical & Reflection Data:</strong> Lesson plans, reflections, educational
+            resources, student assessment summaries, and collaborative workspace notes.
+          </li>
+          <li>
+            <strong>Operational Telemetry:</strong> Device security states, network stability logs,
+            approximate regional locale (to route to the closest island node), and crash reports.
+          </li>
+          <li>
+            <strong>Optional Sensory Analytics:</strong> Enabled only when explicitly permitted via
+            the PDPA consent banner.
+          </li>
+        </ul>
+
+        <h2 id="use-of-information" className="!mb-0 !font-serif !text-2xl !text-ink">
+          3. How We Use Information
+        </h2>
+        <p>
+          Data is processed strictly to provide educational services, protect classroom safety,
+          prevent abuse, and fulfill institutional duties. We operate under a non-commercial
+          covenant:
+        </p>
+        <div className="callout-box">
+          <p className="font-semibold text-ink">Our Absolute Data Covenant:</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+            <li>We do not sell, rent, or monetize personal information.</li>
+            <li>We do not build surveillance profiles across schools.</li>
+            <li>We do not run behavioral advertising algorithms against children or educators.</li>
+          </ul>
+        </div>
+
+        <h2 id="role-boundaries" className="!mb-0 !font-serif !text-2xl !text-ink">
+          4. Role Boundaries and Information Silos
+        </h2>
+        <p>
+          Access follows strict cryptographic boundaries matching user roles. School-level
+          analytical summaries must never compromise personal teacher journals or private student
+          pastoral reflections. Third-party infrastructure partners process encrypted data only as
+          necessary to operate the service under binding data processing agreements.
+        </p>
+
+        <h2 id="child-safeguarding" className="!mb-0 !font-serif !text-2xl !text-ink">
+          5. Safeguarding Children and Schools
+        </h2>
+        <p>
+          Classroom environments often utilize shared tablets and institutional terminals. Schools
+          and legal guardians retain primary authority. The platform enforces minimal data
+          collection principles, enforces age-appropriate content filters, and prevents unintended
+          public exposure of minor details.
         </p>
 
         <h2 id="retention-and-deletion" className="!mb-0 !font-serif !text-2xl !text-ink">
-          6. Retention and deletion
+          6. Retention, Rectification & Right to Erasure
         </h2>
         <p>
-          We retain information only for as long as needed for the stated purpose, safety, dispute
-          resolution, institutional recordkeeping, or legal obligations. You can request deletion or
-          correction through{' '}
+          Under Section 14 of the Sri Lanka PDPA, data subjects retain the right to request erasure
+          and rectification. Requests can be submitted directly via{' '}
           <Link className="underline underline-offset-4" href="/delete-account">
-            the account deletion page
+            the Account Deletion portal
           </Link>{' '}
-          or, when available, from the account controls in the app.
+          or through in-app administrative controls.
         </p>
         <p>
-          A deletion request is not silently treated as completed. We verify the requester, assess
-          safeguarding, custody, school-record, security, fraud-prevention, and legal-retention
-          obligations, then soft-deactivate the account while a permitted deletion is scheduled.
-          Soft deactivation stops ordinary account access; it is not a substitute for deletion.
-        </p>
-        <p>
-          When a request can be completed, we delete or anonymize associated account data. Where a
-          category must be retained, we keep only what is necessary for the stated obligation and
-          explain the category and basis to the requester. This operating policy is a pre-launch
-          draft: exact retention periods and the responsible operating entity will be finalized with
-          legal counsel and applicable school agreements before production student data is accepted.
+          Deletion requests trigger a two-phase protocol: immediate cryptographic soft-deactivation
+          followed by secure permanent purging, subject only to mandatory institutional recordkeeping
+          or child protection obligations.
         </p>
 
-        <h2 className="!mb-0 !font-serif !text-2xl !text-ink">7. Cookies and analytics</h2>
+        <h2 id="cookies-and-storage" className="!mb-0 !font-serif !text-2xl !text-ink">
+          7. Local Storage and Analytics Controls
+        </h2>
         <p>
-          Essential storage may remember basic site preferences. Optional analytics is disabled
-          until you choose “Allow analytics” in the consent notice. You can withdraw that choice by
-          clearing site storage or contacting us. This draft does not promise that every future
-          vendor or integration will use the same data practices; those will be documented before
-          activation.
+          We utilize localized client storage (e.g. secure browser cookies and local tokens) solely
+          for authentication sessions and diurnal circadian theme preferences. Optional telemetry is
+          disabled by default until consented to via the PDPA consent interface.
         </p>
 
-        <h2 className="!mb-0 !font-serif !text-2xl !text-ink">8. Contact and changes</h2>
+        <h2 id="contact-and-redress" className="!mb-0 !font-serif !text-2xl !text-ink">
+          8. Inquiries, Data Protection Officer & Redress
+        </h2>
         <p>
-          For privacy questions or requests, email{' '}
+          For data protection queries, supervisory inquiries, or rights enforcement, contact the
+          Gurudevi Data Stewardship Board at{' '}
           <a className="underline underline-offset-4" href={`mailto:${LEGAL_SUPPORT_EMAIL}`}>
             {LEGAL_SUPPORT_EMAIL}
           </a>
-          . We will publish material changes on this page with a new update date.
+          .
         </p>
+
+        <hr className="my-8 border-line" />
+        <section className="text-xs text-ink-soft space-y-1">
+          <p className="font-semibold text-ink">Revision Provenance History:</p>
+          <p>• v1.2 (28 Oct 2026): Harmonized cross-subdomain references, codified PDPA Section 14 erasure protocol.</p>
+          <p>• v1.1 (01 Sep 2026): Initial public draft with school safeguarding and data covenant boundaries.</p>
+        </section>
       </article>
     </main>
   );

@@ -40,4 +40,26 @@ describe('sanitizeTelemetryData', () => {
       effective_entitlement_tier: 'INSTITUTIONAL',
     });
   });
+
+  it('bounds each real-user telemetry payload by property count and serialized size', () => {
+    const input = {
+      oversized: 'x'.repeat(121),
+      nonFinite: Number.POSITIVE_INFINITY,
+      ...Object.fromEntries(Array.from({ length: 80 }, (_, index) => [`dimension_${index}`, 'ok'])),
+    };
+
+    const safe = sanitizeTelemetryData(input);
+
+    expect(safe.oversized).toBeUndefined();
+    expect(safe.nonFinite).toBeUndefined();
+    expect(Object.keys(safe)).toHaveLength(32);
+
+    const large = sanitizeTelemetryData(
+      Object.fromEntries(
+        Array.from({ length: 80 }, (_, index) => [`dimension_${index}`, 'x'.repeat(120)]),
+      ),
+    );
+    expect(Object.keys(large).length).toBeLessThanOrEqual(32);
+    expect(JSON.stringify(large).length).toBeLessThanOrEqual(4096);
+  });
 });

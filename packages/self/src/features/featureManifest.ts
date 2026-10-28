@@ -1,4 +1,6 @@
 import {
+  createSelfAccessContext,
+  type CreateSelfAccessContextOptions,
   getFeatureAccessStatus,
   resolveAccessibleFeatures,
   type UserAccessContext,
@@ -43,7 +45,7 @@ export interface SelfFeatureManifestItem extends SelfFeatureDefinition {
   taskBehavior: SelfFeatureTaskBehavior;
   delivery: SelfFeatureDelivery;
   availability: 'available' | 'unavailable' | 'authorization-unresolved';
-  unavailableReason?: 'capability' | 'citizenship' | 'not-delivered-on-platform';
+  unavailableReason?: 'cedar-denied' | 'capability' | 'citizenship' | 'not-delivered-on-platform';
 }
 
 export interface ResolvedSelfFeatureManifest {
@@ -111,11 +113,9 @@ export function resolveSelfFeatureManifest(
 ): ResolvedSelfFeatureManifest {
   const accessible = context ? resolveAccessibleFeatures(context) : [];
   const resolvedAccessible = resolveFeatureSet(accessible, preferences);
-  const capabilities = context ? new Set(context.capabilities) : null;
 
   const all = Object.values(FEATURE_CATALOG).map((feature) => {
-    const access =
-      context && capabilities ? getFeatureAccessStatus(feature, context, capabilities) : null;
+    const access = context ? getFeatureAccessStatus(feature, context) : null;
     const delivery =
       getSelfFeatureDelivery(feature.id, platform, deliveryDeclaration) ?? 'catalog-only';
     const unavailableReason: SelfFeatureManifestItem['unavailableReason'] =
@@ -146,3 +146,8 @@ export function resolveSelfFeatureManifest(
     runnable: all.filter((feature) => feature.availability === 'available'),
   };
 }
+
+export {
+  createSelfAccessContext,
+  type CreateSelfAccessContextOptions,
+};

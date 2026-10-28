@@ -16,7 +16,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 
 /**
  * Actionsheet Component
@@ -91,19 +91,26 @@ export interface ActionsheetContentProps {
 export const ActionsheetContent = ({ children, className }: ActionsheetContentProps) => {
   const { isOpen, onClose } = useActionsheet();
   const translateY = useSharedValue(0);
-  const panGesture = Gesture.Pan()
-    .activeOffsetY?.(8)
-    .failOffsetX?.([-24, 24])
-    .onUpdate((event: { translationY: number }) => {
-      'worklet';
-      translateY.value = Math.max(0, event.translationY);
-    })
-    .onEnd((event: { canceled?: boolean }) => {
-      'worklet';
-      const shouldClose = !event.canceled && translateY.value > 120;
-      if (shouldClose) runOnJS(onClose)();
-      translateY.value = withSpring(0);
-    });
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetY(8)
+        .failOffsetX([-24, 24])
+        .onUpdate((event: { translationY: number }) => {
+          'worklet';
+          translateY.set(Math.max(0, event.translationY));
+        })
+        .onEnd((event: { canceled?: boolean }) => {
+          'worklet';
+          const shouldClose = !event.canceled && translateY.value > 120;
+          if (shouldClose) scheduleOnRN(onClose);
+        })
+        .onFinalize(() => {
+          'worklet';
+          translateY.set(withSpring(0));
+        }),
+    [onClose, translateY],
+  );
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));

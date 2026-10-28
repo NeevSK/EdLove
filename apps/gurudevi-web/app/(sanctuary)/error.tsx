@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { resolveSurfaceUrl } from '@/lib/surface-urls';
 
 export default function SanctuaryError({
   error,
@@ -85,8 +86,8 @@ export default function SanctuaryError({
             marginBottom: '2rem',
           }}
         >
-          An unexpected interruption occurred while preparing this room. You can retry
-          or return to the Welcome Gate.
+          An unexpected interruption occurred while preparing this room. You can retry or return to
+          the Guest House.
         </p>
         <div
           style={{
@@ -136,10 +137,10 @@ export default function SanctuaryError({
               textDecoration: 'none',
             }}
           >
-            Welcome Gate
+            Guest House
           </Link>
           <a
-            href="https://explore.gurudevi.app"
+            href={resolveSurfaceUrl('explore', '/')}
             style={{
               display: 'inline-flex',
               alignItems: 'center',

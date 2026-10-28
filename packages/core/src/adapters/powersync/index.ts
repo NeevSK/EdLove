@@ -38,3 +38,9 @@ export {
 } from '@repo/core/adapters/powersync/schema';
 export { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
 export { PowerSyncDataAdapter } from '@repo/core/adapters/powersync/syncData.adapter';
+export {
+  PowerSyncFormsAdapter,
+  type ExtendedFormField,
+  type ExtendedFormPage,
+  type ExtendedFormSchema,
+} from '@repo/core/adapters/powersync/forms.adapter';

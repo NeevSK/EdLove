@@ -15,11 +15,14 @@ import {
   isExploreCapacity,
   useExploreCapacity,
 } from '../../../lib/explore/exploreCapacity';
+import { useDomainWorkbench } from '../../../lib/workbench';
+import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { LivingCard } from '../components/LivingCard';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { CirclePostStream } from './components/CirclePostStream';
+import { TaskStrip } from '../components/workbench/TaskStrip';
 import styles from './community.module.css';
+import { CirclePostStream } from './components/CirclePostStream';
 
 const COMMUNITY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
   { id: 'arrival', label: 'Circle Welcome & Notice', icon: '🪷' },
@@ -34,23 +37,33 @@ export function CommunityFeedFloor({
   result: initialResult,
   accountId,
   primaryCapacity,
+  inviteCode,
 }: Readonly<{
   mode?: CommunityFloorMode;
   result: CommunityGroupsResult;
   accountId?: string;
   primaryCapacity?: string | null;
+  inviteCode?: string;
 }>) {
   const exploreCapacity = useExploreCapacity();
-  const roleLabel = primaryCapacity && isExploreCapacity(primaryCapacity)
-    ? getExploreCapacityMeta(primaryCapacity).label
-    : mode === 'explore'
-      ? getExploreCapacityMeta(exploreCapacity).label
-      : null;
+  const roleLabel =
+    primaryCapacity && isExploreCapacity(primaryCapacity)
+      ? getExploreCapacityMeta(primaryCapacity).label
+      : mode === 'explore'
+        ? getExploreCapacityMeta(exploreCapacity).label
+        : null;
   const canvas = useCommunityCanvas({
     accountId: accountId ?? 'explore',
     enableRemoteSync: mode === 'account' && Boolean(accountId),
   });
   const router = useRouter();
+  const workbench = useDomainWorkbench('community', { usageScope: mode });
+  const quickAccess = useQuickAccessPreferences(
+    'community',
+    mode,
+    ['circles', 'announcements', 'forest'],
+    ['circles'],
+  );
   const [isRefreshing, startRefresh] = useTransition();
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(initialResult);
@@ -64,6 +77,25 @@ export function CommunityFeedFloor({
 
   const isSearchActive = mode === 'account' && Boolean(query.trim());
   const effectiveResult = isSearchActive ? result : initialResult;
+
+  const handleSelectGroup = (groupId: string) => {
+    setSelectedGroupId(groupId);
+    const grp = visibleGroups.find((g) => g.id === groupId);
+    workbench.open({
+      featureId: 'circle-detail',
+      route: `/community?group=${encodeURIComponent(groupId)}`,
+      title: grp ? grp.name : 'Circle Detail',
+      icon: '👥',
+      temporalBinding: { kind: 'follow-domain' },
+      localStatePolicy: 'restore-permitted',
+    });
+  };
+
+  const handleClearSelectedGroup = () => {
+    setSelectedGroupId(null);
+    const detailTask = workbench.state.tasks.find((t) => t.featureId === 'circle-detail');
+    if (detailTask) workbench.close(detailTask.taskKey);
+  };
 
   useEffect(() => {
     if (!isSearchActive) return;
@@ -173,14 +205,61 @@ export function CommunityFeedFloor({
           {mode === 'explore' ? 'Community · Sample space' : 'Community · Shared space'}
         </p>
         <h1 id="community-title">Your circles</h1>
-        {roleLabel ? <p className={styles.roleContext}>Showing your {roleLabel.toLocaleLowerCase()} perspective</p> : null}
+        {roleLabel ? (
+          <p className={styles.roleContext}>
+            Showing your {roleLabel.toLocaleLowerCase()} perspective
+          </p>
+        ) : null}
         <p>
           {mode === 'explore'
             ? 'Explore sample circles on this device. Searching is local; no account, group membership, or cloud request is created.'
             : 'Browse circles available to your selected sanctuary scope. The server filters every result against that scope.'}
         </p>
       </header>
-      <div style={{ display: 'flex', gap: '0.75rem', margin: '0.75rem 0 1.25rem', flexWrap: 'wrap' }}>
+
+      <TaskStrip
+        shellSlot
+        tasks={workbench.state.tasks}
+        focusedTaskKey={selectedGroupId ? 'circle-detail' : workbench.state.focusedTaskKey}
+        overviewActive={!selectedGroupId && !workbench.state.focusedTaskKey}
+        onFocusTask={(task) => {
+          workbench.focus(task.taskKey);
+          if (task.featureId === 'circle-detail') {
+            const groupId = new URL(task.route, 'https://local').searchParams.get('group');
+            if (groupId) setSelectedGroupId(groupId);
+          }
+        }}
+        onCloseTask={(task) => {
+          workbench.close(task.taskKey);
+          if (task.featureId === 'circle-detail') {
+            setSelectedGroupId(null);
+          }
+        }}
+        onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
+        onOpenOverview={handleClearSelectedGroup}
+        quickAccessItems={[
+          { id: 'circles', label: 'Circles', emoji: '👥' },
+          { id: 'announcements', label: 'Broadcaster Updates', emoji: '📢' },
+          { id: 'forest', label: 'Community Forest', emoji: '🌳' },
+        ]}
+        quickAccessPinnedIds={quickAccess.pinnedIds}
+        quickAccessUsage={quickAccess.usage}
+        quickAccessPinLimit={quickAccess.pinLimit}
+        onOpenQuickAccessItem={(item) => {
+          quickAccess.trackUse(item.id);
+          if (item.id === 'announcements') {
+            router.push('/community/announcements');
+          } else if (item.id === 'circles') {
+            handleClearSelectedGroup();
+          } else if (item.id === 'forest') {
+            router.push('/community/forest');
+          }
+        }}
+        onToggleQuickAccessPin={quickAccess.togglePin}
+      />
+      <div
+        style={{ display: 'flex', gap: '0.75rem', margin: '0.75rem 0 1.25rem', flexWrap: 'wrap' }}
+      >
         <span
           style={{
             padding: '0.35rem 0.85rem',
@@ -210,6 +289,66 @@ export function CommunityFeedFloor({
           📢 Broadcaster Updates →
         </Link>
       </div>
+      {inviteCode ? (
+        <aside
+          role="region"
+          aria-label="Classroom Invitation"
+          style={{
+            margin: '0.75rem 0',
+            padding: '1rem 1.25rem',
+            background: 'var(--card, #ffffff)',
+            border: '1.5px solid var(--accent, #d4843a)',
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(212, 132, 58, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
+          <div>
+            <span
+              style={{
+                fontSize: '0.8rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: '#d4843a',
+                fontWeight: 700,
+              }}
+            >
+              Classroom Invitation Pass
+            </span>
+            <p style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--ink, #1f2937)' }}>
+              Invitation Code:{' '}
+              <code
+                style={{
+                  padding: '0.15rem 0.4rem',
+                  background: 'rgba(212, 132, 58, 0.1)',
+                  borderRadius: '4px',
+                }}
+              >
+                {inviteCode}
+              </code>
+            </p>
+          </div>
+          <Link
+            href={`/workspace?claimCode=${encodeURIComponent(inviteCode)}`}
+            style={{
+              padding: '0.5rem 1.1rem',
+              borderRadius: '999px',
+              background: '#d4843a',
+              color: '#ffffff',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              textDecoration: 'none',
+              boxShadow: '0 2px 6px rgba(212, 132, 58, 0.25)',
+            }}
+          >
+            Claim Desk Pass →
+          </Link>
+        </aside>
+      ) : null}
       {mode === 'explore' ? (
         <aside className={styles.exploreNotice} role="note">
           Sample data · local exploration only · nothing is sent to other people.
@@ -277,7 +416,7 @@ export function CommunityFeedFloor({
                       <h3 className={styles.catalogRailTitle}>Community Circles</h3>
                       <button
                         className={styles.returnOverviewButton}
-                        onClick={() => setSelectedGroupId(null)}
+                        onClick={handleClearSelectedGroup}
                         type="button"
                       >
                         All Circles
@@ -300,7 +439,7 @@ export function CommunityFeedFloor({
                               <div className={styles.catalogRailRow}>
                                 <button
                                   className={`${styles.catalogRailItem} ${isCurrent ? styles.catalogRailItemActive : ''}`}
-                                  onClick={() => setSelectedGroupId(group.id)}
+                                  onClick={() => handleSelectGroup(group.id)}
                                   type="button"
                                 >
                                   <span className={styles.catalogRailItemLabel}>{group.name}</span>
@@ -327,7 +466,7 @@ export function CommunityFeedFloor({
                     <div className={styles.backOverviewBar}>
                       <button
                         className={styles.streamBackButton}
-                        onClick={() => setSelectedGroupId(null)}
+                        onClick={handleClearSelectedGroup}
                         type="button"
                       >
                         ← Back to Circles
@@ -346,7 +485,7 @@ export function CommunityFeedFloor({
                     <CommunityGroupCard
                       key={group.id}
                       group={group}
-                      onSelect={() => setSelectedGroupId(group.id)}
+                      onSelect={() => handleSelectGroup(group.id)}
                     />
                   ))}
                 </div>

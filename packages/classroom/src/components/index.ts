@@ -2,10 +2,10 @@ export { AddStudentModal } from '@repo/classroom/components/AddStudentModal';
 export { default as AttendanceView } from '@repo/classroom/components/AttendanceView';
 export { default as BulkStudentCreation } from '@repo/classroom/components/BulkStudentCreation';
 export { ClaimInviteModal } from '@repo/classroom/components/ClaimInviteModal';
+export { default as ClassroomAccessState } from '@repo/classroom/components/ClassroomAccessState';
 export { default as ClassroomEchoSection } from '@repo/classroom/components/ClassroomEchoSection';
 export { default as ClassroomHolisticInsights } from '@repo/classroom/components/ClassroomHolisticInsights';
 export { default as ClassroomList } from '@repo/classroom/components/ClassroomList';
-export { default as ClassroomAccessState } from '@repo/classroom/components/ClassroomAccessState';
 export { default as ClassroomNotes } from '@repo/classroom/components/ClassroomNotes';
 export { default as CreateClassroomModal } from '@repo/classroom/components/CreateClassroomModal';
 export { default as CreateSchoolModal } from '@repo/classroom/components/CreateSchoolModal';
@@ -25,3 +25,5 @@ export { default as QuickAnalytics } from '@repo/classroom/components/QuickAnaly
 export { default as ResourcesView } from '@repo/classroom/components/ResourcesView';
 export { default as StudentList } from '@repo/classroom/components/StudentList';
 export { default as SubmissionModal } from '@repo/classroom/components/SubmissionModal';
+export { StudentAnalysisModal } from '@repo/classroom/components/teacher/StudentAnalysisModal';
+export { TactilePulseGesture } from '@repo/classroom/components/teacher/TactilePulseGesture';

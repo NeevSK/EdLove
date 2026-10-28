@@ -9,7 +9,8 @@ import { useSchoolCreation } from '@repo/core/hooks';
 import { KeyboardAwareForm } from '@repo/core/hooks/useKeyboard';
 import { useExperienceState } from '@repo/core/lib/experienceState';
 import { useAuthStore } from '@repo/core/store';
-import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
+import { QRBuilder } from '@repo/core/logic/utils/QRBuilder';
+import { SanctuaryQRCard } from '@repo/ui/qr';
 import { FireflyMascot } from '@repo/ui';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
@@ -182,20 +183,13 @@ export default function SchoolCreationScreen() {
               </Text>
             </VStack>
 
-            <Box className="w-full items-center bg-phase-interactive/5 p-8 rounded-3xl border border-phase-border">
-              <Text className="text-xs font-black text-phase-interactive mb-4 text-center uppercase tracking-widest">
-                Share this QR to invite others
-              </Text>
-              <QRCodeGenerator
-                value={QRBuilder.school(successData.schoolId, successData.groupId)}
-                size={180}
-                label={successData.schoolName}
-                errorCorrectionLevel="H"
-              />
-              <Text className="text-xs text-phaseText-secondary mt-4 text-center font-bold">
-                Scanning joins {successData.schoolName} and its Community HQ group
-              </Text>
-            </Box>
+            <SanctuaryQRCard
+              value={QRBuilder.school(successData.schoolId, successData.groupId)}
+              title={successData.schoolName}
+              subtitle="Scan or share to invite teachers and students to your school HQ"
+              size={180}
+              label={successData.schoolName}
+            />
 
             <Box className="w-full mt-6 gap-4">
               <SanctuaryButton

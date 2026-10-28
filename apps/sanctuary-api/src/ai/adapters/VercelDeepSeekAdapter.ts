@@ -9,6 +9,7 @@ export class VercelDeepSeekAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
+    abortSignal?: AbortSignal,
   ) {
     const provider = createOpenAI({ apiKey, baseURL: 'https://api.deepseek.com/v1' });
 
@@ -19,6 +20,7 @@ export class VercelDeepSeekAdapter implements LlmPort {
         role: m.role as 'user' | 'assistant',
         content: m.content,
       })),
+      abortSignal,
     });
 
     return vercelStreamToTanStackChunks(result.fullStream, model);
