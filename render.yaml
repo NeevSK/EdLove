@@ -4,10 +4,10 @@ services:
     runtime: docker
     dockerfilePath: ./apps/sanctuary-api/Dockerfile
     dockerContext: .
-    plan: standard
-    region: oregon
+    plan: free
+    region: singapore
     healthCheckPath: /health/live
-    autoDeploy: true
+    autoDeploy: false
     envVars:
       - key: PORT
         value: "3000"
@@ -43,3 +43,5 @@ services:
         value: "http://127.0.0.1:8788"
       - key: ENABLE_WEBSOCKETS
         value: "false"
+      - key: EDLOVE_ENV
+        value: development
