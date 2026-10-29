@@ -6,9 +6,9 @@ vi.mock('../../../context/VisualCapabilities', () => ({
 import { render, screen } from '@testing-library/react-native';
 import { WorldScope } from '../../../theme/native/WorldContext';
 import { resolveWorld } from '../../../theme/resolve';
+import { SIGNS } from '../../../theme/signs';
 import { WORLD_IDS } from '../../../theme/worlds';
 import { WorldLoading, WorldSkeleton } from '../Waiting/Waiting';
-import { SIGNS } from '../../../theme/signs';
 import { WaitingSign } from '../WaitingSign/WaitingSign';
 
 const caps = (motion: string, allowShimmer = true) => ({ allowShimmer, experience: { motion } });

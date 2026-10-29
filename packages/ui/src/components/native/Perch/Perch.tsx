@@ -5,14 +5,17 @@
 
 import { StyleSheet } from 'react-native';
 import Svg, { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
-import { PERCH_VIEWBOX, PERCHES, type PerchElement, type PerchInk } from '../../../theme/perches';
 import { useWorld } from '../../../theme/native/WorldContext';
+import { PERCH_VIEWBOX, PERCHES, type PerchElement, type PerchInk } from '../../../theme/perches';
 import type { WorldTokens } from '../../../theme/types';
 
-const ELEMENTS = { path: Path, circle: Circle, ellipse: Ellipse, rect: Rect, line: Line } as const satisfies Record<
-  PerchElement,
-  unknown
->;
+const ELEMENTS = {
+  path: Path,
+  circle: Circle,
+  ellipse: Ellipse,
+  rect: Rect,
+  line: Line,
+} as const satisfies Record<PerchElement, unknown>;
 
 function paint(ink: PerchInk | undefined, t: WorldTokens): string | undefined {
   if (ink === undefined) return undefined;
@@ -32,7 +35,11 @@ export function Perch({ width, height }: { width: number; height: number }) {
       style={StyleSheet.absoluteFill}
       pointerEvents="none"
     >
-      <G fill={paint(group.fill, t)} stroke={paint(group.stroke, t)} strokeWidth={group.strokeWidth}>
+      <G
+        fill={paint(group.fill, t)}
+        stroke={paint(group.stroke, t)}
+        strokeWidth={group.strokeWidth}
+      >
         {group.shapes.map((shape, i) => {
           const El = ELEMENTS[shape.el] as typeof Path;
           return (

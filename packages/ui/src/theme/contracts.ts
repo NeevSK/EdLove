@@ -8,13 +8,16 @@
  */
 
 import type { ComponentType, ReactNode } from 'react';
+import type { SignKind } from './signs';
 import type {
   ButtonSize,
   ButtonVariant,
+  Radius,
   SectionDensity,
   SurfaceTone,
   TextRole,
   TextTone,
+  WorldId,
   WorldLanguage,
 } from './types';
 
@@ -96,6 +99,42 @@ export interface SectionContract {
 export interface SwitchContract {
   value: boolean;
   onValueChange: (value: boolean) => void;
-  /** The setting's name, read aloud and shown beside the switch. */
+  /** The setting's name: the switch's accessible name. Show it beside the switch (a Row does). */
+  label: string;
+}
+
+export interface WaitingSignContract {
+  /** Width and height in px (dp on native). */
+  size?: number;
+  /** Draw another world's sign (previews); defaults to the active world's. */
+  kind?: SignKind;
+  /** Hold still regardless of motion settings (a sign used as an illustration). */
+  still?: boolean;
+}
+
+export type LoadingSize = 'sm' | 'md' | 'lg';
+
+export interface LoadingContract {
+  /** What is happening, already translated ("Loading lessons"). Read aloud and shown. */
+  label: string;
+  size?: LoadingSize;
+  /** Hide the words visually; they are still read aloud. */
+  quiet?: boolean;
+  /** Cover the screen with the world's ground. */
+  fullscreen?: boolean;
+}
+
+export interface SkeletonContract {
+  height: number;
+  /** Defaults to the world's inset corners. */
+  radius?: Radius;
+  /** Hold still even when shimmer is allowed. */
+  still?: boolean;
+}
+
+export interface WorldPickerContract {
+  value: WorldId;
+  onChange: (world: WorldId) => void;
+  /** Accessible name of the group, already translated (e.g. "World"). */
   label: string;
 }

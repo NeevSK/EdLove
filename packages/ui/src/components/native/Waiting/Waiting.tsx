@@ -1,3 +1,4 @@
+import type { LoadingContract, SkeletonContract } from '../../../theme/contracts';
 import { useEffect } from 'react';
 import {
   type DimensionValue,
@@ -23,14 +24,7 @@ import { WaitingSign } from '../WaitingSign/WaitingSign';
 
 const SIGN_SIZE = { sm: 28, md: 44, lg: 64 } as const;
 
-export interface WorldLoadingProps {
-  /** What is happening, already translated ("Loading lessons"). Read aloud and shown. */
-  label: string;
-  size?: keyof typeof SIGN_SIZE;
-  /** Hide the words visually; they are still read aloud. */
-  quiet?: boolean;
-  /** Cover the screen with the world's ground. */
-  fullscreen?: boolean;
+export interface WorldLoadingProps extends LoadingContract {
   style?: StyleProp<ViewStyle>;
 }
 
@@ -61,13 +55,8 @@ export function WorldLoading({ label, size = 'md', quiet, fullscreen, style }: W
   );
 }
 
-export interface WorldSkeletonProps {
+export interface WorldSkeletonProps extends SkeletonContract {
   width?: DimensionValue;
-  height: number;
-  /** Defaults to the world's inset corners, capped to stay a bar. */
-  radius?: Radius;
-  /** Hold still even when shimmer is allowed. */
-  still?: boolean;
   /** Layout classes from screens that still use NativeWind (margins only). */
   className?: string;
   style?: StyleProp<ViewStyle>;

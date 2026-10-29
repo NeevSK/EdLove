@@ -8,6 +8,7 @@
  * in a pose that still reads as waiting.
  */
 
+import type { WaitingSignContract } from '../../../theme/contracts';
 import { type ReactNode, useEffect } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, {
@@ -374,14 +375,7 @@ function circle(d: number): ViewStyle {
   return { width: d, height: d, borderRadius: d / 2 };
 }
 
-export interface WaitingSignProps {
-  /** Width and height in dp. */
-  size?: number;
-  /** Draw another world's sign (previews); defaults to the active world's. */
-  kind?: SignKind;
-  /** Hold still regardless of verger (a sign used as an illustration, not a loader). */
-  still?: boolean;
-}
+export type WaitingSignProps = WaitingSignContract;
 
 /**
  * The world's waiting sign. Decorative: put the words ("Loading") on the

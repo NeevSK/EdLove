@@ -1,3 +1,4 @@
+import type { WorldPickerContract } from '../../../theme/contracts';
 import { Pressable, Text as RNText, View } from 'react-native';
 import { radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext, WorldScope } from '../../../theme/native/WorldContext';
@@ -5,12 +6,7 @@ import type { Radius, WorldId } from '../../../theme/types';
 import { WORLD_IDS, WORLDS } from '../../../theme/worlds';
 import { hapticImpact } from '../../../utils/haptics';
 
-export interface WorldPickerProps {
-  value: WorldId;
-  onChange: (world: WorldId) => void;
-  /** Accessible name of the group, already translated (e.g. "World"). */
-  label: string;
-}
+export type WorldPickerProps = WorldPickerContract;
 
 /**
  * Choose the world that dresses the app. Each choice is drawn *in its own

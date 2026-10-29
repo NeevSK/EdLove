@@ -9,15 +9,15 @@
 
 import type { HTMLAttributes, ReactNode } from 'react';
 import { worldStylesheet } from '../css';
+import { kitStylesheet } from '../kitCss';
 import type { WorldId, WorldMode, Phase } from '../types';
 import { WORLDS } from '../worlds';
 
 /** Inline every world's variables and component rules. Render once, in <head>. */
 export function WorldStyles({ nonce }: { nonce?: string }) {
+  const css = `${worldStylesheet()}\n${kitStylesheet()}`;
   // biome-ignore lint/security/noDangerouslySetInnerHtml: generated from typed world data, no user input.
-  return (
-    <style id="gd-worlds" nonce={nonce} dangerouslySetInnerHTML={{ __html: worldStylesheet() }} />
-  );
+  return <style id="gd-worlds" nonce={nonce} dangerouslySetInnerHTML={{ __html: css }} />;
 }
 
 export interface WorldScopeProps extends HTMLAttributes<HTMLDivElement> {

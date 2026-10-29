@@ -22,7 +22,11 @@ export function ButtonPulse({ size, color }: { size: number; color: string }) {
       return;
     }
     breath.set(
-      withRepeat(withTiming(1, { duration: BREATH_MS, easing: Easing.inOut(Easing.ease) }), -1, true),
+      withRepeat(
+        withTiming(1, { duration: BREATH_MS, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true,
+      ),
     );
     return () => cancelAnimation(breath);
   }, [animates, breath]);
