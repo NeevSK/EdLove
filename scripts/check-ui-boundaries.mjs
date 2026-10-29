@@ -8,6 +8,7 @@
  *   tokens/                fixed scales
  *   components/native/     React Native components
  *   components/web/        DOM components
+ *   components/shared/     platform-neutral kit logic (stores, helpers) both sets use
  *
  * Rules:
  *  1. Platform-neutral theme code and everything web never imports React Native,
@@ -57,7 +58,8 @@ const LEGACY_PATHS = [
 const isFlatComponent = (p) =>
   p.startsWith(`${UI}/components/`) &&
   !`${p}/`.startsWith(`${UI}/components/native/`) &&
-  !`${p}/`.startsWith(`${UI}/components/web/`);
+  !`${p}/`.startsWith(`${UI}/components/web/`) &&
+  !`${p}/`.startsWith(`${UI}/components/shared/`);
 
 /** Kit -> legacy links that are still allowed. Empty since 1.2; keep it that way. */
 const KIT_EXCEPTIONS = new Set([]);
@@ -71,6 +73,7 @@ const zone = (path) => {
   const p = `${path}/`;
   if (p.startsWith(`${UI}/components/native/`)) return 'native';
   if (p.startsWith(`${UI}/components/web/`)) return 'web';
+  if (p.startsWith(`${UI}/components/shared/`)) return 'shared';
   if (p.startsWith(`${UI}/theme/native/`)) return 'theme-native';
   if (p.startsWith(`${UI}/theme/web/`)) return 'theme-web';
   if (p.startsWith(`${UI}/theme/`) || p.startsWith(`${UI}/tokens/`)) return 'theme';
@@ -122,15 +125,18 @@ for (const file of files) {
     const to = target ? zone(target) : null;
     const where = `${file}  '${spec}'`;
 
-    if (from === 'theme' || from === 'web' || from === 'theme-web') {
+    if (from === 'theme' || from === 'shared' || from === 'web' || from === 'theme-web') {
       if (NATIVE_ONLY.test(spec)) violations.push(`${where}: native module in platform-neutral or web code`);
       if (to === 'native' || to === 'theme-native') violations.push(`${where}: imports the native side`);
     }
     if ((from === 'native' || from === 'theme-native') && (to === 'web' || to === 'theme-web')) {
       violations.push(`${where}: native imports the web side`);
     }
-    if ((from === 'theme' || from === 'theme-native' || from === 'theme-web') && (to === 'native' || to === 'web')) {
+    if ((from === 'theme' || from === 'theme-native' || from === 'theme-web') && (to === 'native' || to === 'web' || to === 'shared')) {
       violations.push(`${where}: theme imports components`);
+    }
+    if (from === 'shared' && (to === 'native' || to === 'web')) {
+      violations.push(`${where}: shared kit code imports a platform's components`);
     }
     if (from && from !== 'legacy' && isLegacy(target)) {
       const key = `${file} -> ${target.replace(/\.(tsx?|jsx?)$/, '')}`;

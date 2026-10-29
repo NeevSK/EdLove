@@ -123,6 +123,30 @@ const BASE_CSS = `
 .gd-s-seg{width:${s(0.13)};height:${s(0.3)};background:var(--w-lamp);animation-timing-function:step-end}
 .gd-s-tip{width:3px;height:${s(0.15)};margin-left:1px;background:var(--w-ink)}
 .gd-perch{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.gd-dialog{padding:0;margin:auto;border:0;background:transparent;color:var(--w-ink);width:calc(100% - 48px);max-width:420px;overflow:visible}
+.gd-dialog::backdrop{background:color-mix(in srgb, var(--w-ink) 42%, transparent)}
+[data-mode="dark"] .gd-dialog::backdrop,.gd-dialog[data-mode="dark"]::backdrop{background:color-mix(in srgb, var(--w-ground) 72%, transparent)}
+.gd-overlay-panel{display:flex;flex-direction:column;gap:12px;padding:20px;background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);color:var(--w-ink)}
+.gd-overlay-panel>.gd-text{margin:0}
+.gd-dialog-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:8px}
+.gd-sheet{margin:auto auto 0;width:100%;max-width:640px;max-height:90vh}
+.gd-sheet .gd-overlay-panel{border-bottom-left-radius:0;border-bottom-right-radius:0;padding-bottom:calc(24px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
+.gd-sheet-grabber{align-self:center;width:40px;height:4px;margin-bottom:4px;border-radius:2px;background:var(--w-line)}
+@media (prefers-reduced-motion:no-preference){.gd-dialog[open]:not(.gd-sheet){animation:gd-overlay-in var(--w-settle) ease-out}.gd-sheet[open]{animation:gd-sheet-in 280ms cubic-bezier(.2,.8,.2,1)}}
+@keyframes gd-overlay-in{from{opacity:0;transform:translateY(8px) scale(.98)}}
+@keyframes gd-sheet-in{from{transform:translateY(100%)}}
+.gd-toasts{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:1100;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.gd-toast-region{display:flex;flex-direction:column;align-items:center;gap:8px}
+.gd-toast{pointer-events:auto;display:flex;align-items:center;gap:12px;width:100%;max-width:520px;padding:12px 16px;background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);border-left:3px solid var(--w-line);color:var(--w-ink)}
+.gd-toast[data-tone="success"]{border-left-color:var(--w-success)}
+.gd-toast[data-tone="danger"]{border-left-color:var(--w-danger)}
+.gd-toast>.gd-text{flex:1;margin:0}
+@media (prefers-reduced-motion:no-preference){.gd-toast{animation:gd-overlay-in var(--w-settle) ease-out}}
+.gd-tipwrap{position:relative;display:inline-flex}
+.gd-tip{position:absolute;bottom:calc(100% + 6px);left:50%;z-index:1060;width:max-content;max-width:240px;padding:6px 10px;border-radius:var(--w-button-radius);background:var(--w-ink);color:var(--w-ground);font-size:.8125rem;line-height:1.35;pointer-events:none;opacity:0;visibility:hidden;transform:translateX(-50%);transition:opacity var(--w-settle),visibility var(--w-settle)}
+.gd-tipwrap:hover>.gd-tip,.gd-tipwrap:focus-within>.gd-tip{opacity:1;visibility:visible}
+.gd-tipwrap[data-dismissed]>.gd-tip{opacity:0;visibility:hidden}
+.gd-popover{position:absolute;z-index:1050;outline:none}
 .gd-picker{display:flex;flex-direction:column;gap:8px;padding:6px 0}
 .gd-picker-choice{appearance:none;margin:0;font:inherit;text-align:start;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 14px;border-radius:14px;background:var(--w-ground);border:1px solid var(--w-line);color:var(--w-ink)}
 .gd-picker-choice[aria-checked="true"]{border:2px solid var(--w-focus)}

@@ -8,9 +8,12 @@
  * impossible to theme, and the `check:world` script will flag them here.
  */
 
+export { toast } from '../shared/toasts';
 export { Button, type ButtonProps } from './Button/Button';
 export { Chip, type ChipProps, Chips, type ChipsProps } from './Chip/Chip';
+export { Dialog, type DialogProps } from './Dialog/Dialog';
 export { Perch } from './Perch/Perch';
+export { Popover, type PopoverProps } from './Popover/Popover';
 export { Row, type RowProps } from './Row/Row';
 export {
   SceneBackdrop,
@@ -24,10 +27,13 @@ export {
   useScene,
 } from './Scene';
 export { Section, type SectionProps } from './Section/Section';
+export { Sheet, type SheetProps } from './Sheet/Sheet';
 export { Surface, type SurfaceProps } from './Surface/Surface';
 export { Switch, type SwitchProps } from './Switch/Switch';
 export { Text, type TextProps, toneColor } from './Text/Text';
 export { TextField, type TextFieldProps } from './TextField/TextField';
+export { ToastHost } from './Toast/ToastHost';
+export { Tooltip, type TooltipProps } from './Tooltip/Tooltip';
 export {
   WorldLoading,
   type WorldLoadingProps,

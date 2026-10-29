@@ -1,4 +1,3 @@
-import type { LoadingContract, SkeletonContract } from '../../../theme/contracts';
 import { useEffect } from 'react';
 import {
   type DimensionValue,
@@ -16,6 +15,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
+import type { LoadingContract, SkeletonContract } from '../../../theme/contracts';
 import { radiusStyle } from '../../../theme/native/style';
 import { useWorld } from '../../../theme/native/WorldContext';
 import type { Radius } from '../../../theme/types';

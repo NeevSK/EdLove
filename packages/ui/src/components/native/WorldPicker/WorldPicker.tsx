@@ -1,5 +1,5 @@
-import type { WorldPickerContract } from '../../../theme/contracts';
 import { Pressable, Text as RNText, View } from 'react-native';
+import type { WorldPickerContract } from '../../../theme/contracts';
 import { radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext, WorldScope } from '../../../theme/native/WorldContext';
 import type { Radius, WorldId } from '../../../theme/types';

@@ -8,7 +8,6 @@
  * in a pose that still reads as waiting.
  */
 
-import type { WaitingSignContract } from '../../../theme/contracts';
 import { type ReactNode, useEffect } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, {
@@ -21,8 +20,14 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
+import type { WaitingSignContract } from '../../../theme/contracts';
 import { useWorld } from '../../../theme/native/WorldContext';
-import { SIGN_CYCLE_MS as CYCLE, SIGN_REST as REST, SIGNS, type SignKind } from '../../../theme/signs';
+import {
+  SIGN_CYCLE_MS as CYCLE,
+  SIGN_REST as REST,
+  SIGNS,
+  type SignKind,
+} from '../../../theme/signs';
 import type { WorldTokens } from '../../../theme/types';
 
 interface Part {

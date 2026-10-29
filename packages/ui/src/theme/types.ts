@@ -308,6 +308,28 @@ export interface WorldMotion {
   haptic: 'soft' | 'crisp';
 }
 
+export type ToastTone = 'info' | 'success' | 'danger';
+
+/**
+ * Everything that floats over a screen (dialogs, sheets, popovers, toasts,
+ * tooltips). Derived from the world's raised surface, so a Kandyan dialog
+ * keeps its painted frame and a Wewa sheet its quiet rim.
+ */
+export interface OverlayRecipe {
+  /** The veil over the screen behind a dialog or sheet. */
+  scrim: string;
+  /** Dialogs and popovers: the raised surface, a little roomier. */
+  panel: SurfaceToneRecipe;
+  /** Sheets rise from the bottom edge: only the top corners round. */
+  sheetRadius: Radius;
+  /** The small handle at the top of a sheet. */
+  grabber: string;
+  /** A short label for a control: the world's ink with ground-coloured words. */
+  tip: { fill: string; ink: string; radius: Radius };
+  /** Toasts are raised panels with an edge in their tone's colour. */
+  toast: Record<ToastTone, { edge: string }>;
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -317,6 +339,7 @@ export interface WorldRecipes {
   row: RowRecipe;
   section: Record<SectionDensity, SectionRecipe>;
   ornament: { kind: OrnamentKind; color: string; accent: string };
+  overlay: OverlayRecipe;
   motion: { settleMs: number; breatheMs: number };
 }
 

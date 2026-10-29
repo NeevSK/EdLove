@@ -6,12 +6,13 @@
  * read the result, so mobile and web cannot drift apart.
  */
 
-import { contrastRatio, mix } from './color';
+import { alpha, contrastRatio, mix } from './color';
 import type {
   BoundaryKind,
   ButtonRecipe,
   ChipRecipe,
   FieldRecipe,
+  OverlayRecipe,
   Radius,
   RowRecipe,
   SectionDensity,
@@ -391,6 +392,29 @@ function buildSection(
   return { dense: make('dense'), calm: make('calm') };
 }
 
+function buildOverlay(
+  t: WorldTokens,
+  s: WorldStyle,
+  mode: WorldMode,
+  surface: SurfaceRecipe,
+): OverlayRecipe {
+  const r = s.corner.surface;
+  const top: Radius = typeof r === 'number' ? [r, r, 0, 0] : [r[0], r[1], 0, 0];
+  return {
+    // Light worlds dim with their own ink; dark worlds deepen with their ground.
+    scrim: mode === 'dark' ? alpha(t.ground, 0.72) : alpha(t.ink, 0.42),
+    panel: { ...surface.raised, padding: 20, paddingX: 20 },
+    sheetRadius: top,
+    grabber: t.line,
+    tip: { fill: t.ink, ink: t.ground, radius: shrink(s.corner.control, 2) },
+    toast: {
+      info: { edge: t.line },
+      success: { edge: t.success },
+      danger: { edge: t.danger },
+    },
+  };
+}
+
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
   const surface = buildSurface(t, s, mode);
@@ -402,6 +426,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     chip: buildChip(t, s),
     row: buildRow(t, text),
     section: buildSection(t, s, mode, text, surface),
+    overlay: buildOverlay(t, s, mode, surface),
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },
   };

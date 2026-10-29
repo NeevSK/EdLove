@@ -17,6 +17,7 @@ import type {
   SurfaceTone,
   TextRole,
   TextTone,
+  ToastTone,
   WorldId,
   WorldLanguage,
 } from './types';
@@ -137,4 +138,55 @@ export interface WorldPickerContract {
   onChange: (world: WorldId) => void;
   /** Accessible name of the group, already translated (e.g. "World"). */
   label: string;
+}
+
+export interface DialogContract {
+  open: boolean;
+  /** Called when the person dismisses the dialog (Escape, back, the backdrop). */
+  onClose: () => void;
+  /** Announced as the dialog's name and shown as its heading. */
+  title: string;
+  /** One or two plain lines under the title; announced as the description. */
+  description?: string;
+  children?: ReactNode;
+  /** Buttons along the bottom, primary last. */
+  actions?: ReactNode;
+  /** When false, only an action can close it (Escape, back and the backdrop do nothing). */
+  dismissable?: boolean;
+}
+
+export interface SheetContract {
+  open: boolean;
+  onClose: () => void;
+  /** The sheet's name; shown as its heading. */
+  title: string;
+  children?: ReactNode;
+  dismissable?: boolean;
+}
+
+export interface ToastAction {
+  label: string;
+  onPress: () => void;
+}
+
+export interface ToastOptions {
+  /** Already translated, one short sentence. */
+  message: string;
+  tone?: ToastTone;
+  action?: ToastAction;
+  /** How long it stays, in ms. Toasts with an action stay longer by default. */
+  durationMs?: number;
+}
+
+export interface TooltipContract {
+  /** The words, already translated. Also the control's description for assistive technology. */
+  label: string;
+}
+
+export interface PopoverContract {
+  open: boolean;
+  onClose: () => void;
+  /** Names the popover for assistive technology. */
+  label: string;
+  children?: ReactNode;
 }
