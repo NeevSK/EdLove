@@ -44,7 +44,8 @@ export type { MascotArtworkSource, MascotConfig, MascotId } from './components/M
 export { Mascot, MascotProvider, useMascot } from './components/Mascot';
 export type { MascotPodProps, MascotPodVariant } from './components/MascotPod';
 export { MascotPod } from './components/MascotPod';
-export { color, duration, easing, scale } from './components/motion';
+export { color, easing } from './components/motion';
+export { duration, scale } from './tokens/motion';
 export type { PressableScaleProps } from './components/PressableScale';
 // Delight Primitives
 export { PressableScale } from './components/PressableScale';

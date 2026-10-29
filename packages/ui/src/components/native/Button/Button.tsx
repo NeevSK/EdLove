@@ -20,7 +20,7 @@ import {
 } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { type HapticImpact, hapticImpact } from '../../../utils/haptics';
-import { BrandPulse } from '../../BrandPulse';
+import { ButtonPulse } from './ButtonPulse';
 
 export interface ButtonProps extends ButtonContract, Omit<PressableProps, 'children' | 'style'> {
   haptic?: HapticImpact | false;
@@ -131,7 +131,7 @@ export function Button({
         ]}
       >
         {loading ? (
-          <BrandPulse size={Math.round(dims.fontSize * 1.3)} tintColor={v.ink} />
+          <ButtonPulse size={dims.fontSize} color={v.ink} />
         ) : Icon ? (
           <Icon size={Math.round(dims.fontSize * 1.2)} color={v.ink} />
         ) : null}

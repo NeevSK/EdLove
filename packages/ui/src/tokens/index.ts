@@ -208,3 +208,4 @@ export const tokens = {
 
 export type Tokens = typeof tokens;
 export default tokens;
+export { duration, easingPoints, scale } from './motion';

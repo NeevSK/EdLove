@@ -19,7 +19,8 @@ import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useBreakpoint } from './layout';
-import { color, duration, nativeEasing } from './motion';
+import { duration } from '../tokens/motion';
+import { color, nativeEasing } from './motion';
 
 // Same traced geometry as the line-draw splash concept — the whole
 // silhouette plus the two heart-side lines, stroke only, never filled.

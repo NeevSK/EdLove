@@ -21,7 +21,7 @@ import { tokens } from '@repo/ui/tokens';
 import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 import { WorldSkeleton } from './native/Waiting/Waiting';
 import { useResponsiveGrid } from './layout';
-import { duration } from './motion';
+import { duration } from '../tokens/motion';
 
 type ShimmerBlockProps = {
   width?: number | `${number}%`;

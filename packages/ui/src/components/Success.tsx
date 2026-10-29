@@ -16,7 +16,8 @@ import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useWorld } from '../theme/native/WorldContext';
-import { duration, nativeEasing, scale as scaleTokens } from './motion';
+import { duration, scale as scaleTokens } from '../tokens/motion';
+import { nativeEasing } from './motion';
 
 /** Success in the world's light: the tick in its deep lamp, the heart lit, motes in its glow. */
 function useSuccessColors() {

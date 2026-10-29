@@ -15,7 +15,6 @@ import { TextField } from '../TextField/TextField';
 
 vi.mock('@repo/ui/utils/haptics', () => ({ hapticImpact: vi.fn() }));
 vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn() }));
-vi.mock('../../BrandPulse', () => ({ BrandPulse: () => null }));
 
 function flat(style: unknown) {
   return StyleSheet.flatten(style as never) ?? {};

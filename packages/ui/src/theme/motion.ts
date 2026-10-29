@@ -17,7 +17,7 @@
  */
 
 import type { ExperienceLevel } from '@repo/core/verger';
-import { duration as BASE } from '../components/motion';
+import { duration as BASE } from '../tokens/motion';
 import type { WorldMotion } from './types';
 
 export type Bezier = readonly [number, number, number, number];

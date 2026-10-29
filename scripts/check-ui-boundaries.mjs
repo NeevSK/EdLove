@@ -14,7 +14,7 @@
  *     Expo, NativeWind or Skia, and never imports the native side.
  *  2. Native never imports the web side.
  *  3. The theme never imports components.
- *  4. The kit never imports legacy UI (except the exceptions below, which only shrink).
+ *  4. The kit never imports legacy UI.
  *  5. Everywhere else, imports of legacy UI and `*.web.tsx` files may only go down.
  *     The baseline lives in tooling/ui-legacy-ratchet.json; lower it with `--update`.
  *
@@ -59,13 +59,8 @@ const isFlatComponent = (p) =>
   !`${p}/`.startsWith(`${UI}/components/native/`) &&
   !`${p}/`.startsWith(`${UI}/components/web/`);
 
-/** Kit -> legacy links that exist today. Each names the phase that removes it; never add to this. */
-const KIT_EXCEPTIONS = new Set([
-  // Phase 1: base durations move into tokens.
-  `${UI}/theme/motion.ts -> ${UI}/components/motion`,
-  // Phase 1: the loading pulse becomes part of the kit.
-  `${UI}/components/native/Button/Button.tsx -> ${UI}/components/BrandPulse`,
-]);
+/** Kit -> legacy links that are still allowed. Empty since 1.2; keep it that way. */
+const KIT_EXCEPTIONS = new Set([]);
 
 const NATIVE_ONLY =
   /^(react-native(?:-[\w-]+)?|expo(?:-[\w-]+)?|nativewind|@shopify\/react-native-skia|@expo\/[\w-]+)(\/|$)/;

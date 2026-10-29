@@ -77,7 +77,8 @@ export type {
   MascotState,
   MascotTheme,
 } from './components/mascotTypes';
-export { color, duration, easing, scale } from './components/motion';
+export { color, easing } from './components/motion';
+export { duration, scale } from './tokens/motion';
 export type { PressableScaleProps } from './components/PressableScale';
 // Delight Primitives
 export { PressableScale } from './components/PressableScale';
