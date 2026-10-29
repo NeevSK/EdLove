@@ -18,7 +18,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { confirmAction } from '@repo/ui/utils/dialogs';
 

@@ -22,9 +22,9 @@ async function main() {
   (globalThis as { CanvasKit?: unknown }).CanvasKit = await CanvasKitInit();
   const headless = await import('react-native-skia');
   const { experienceOf } = await import('../../packages/core/src/verger/experience');
-  const scene = await import('../../packages/core/src/scene/index');
-  const { SceneStill } = await import('../../packages/ui/src/scene/native/SceneStill');
-  const { resolveWorld } = await import('../../packages/ui/src/world/resolve');
+  const scene = await import('../../packages/ui/src/theme/scene/index');
+  const { SceneStill } = await import('../../packages/ui/src/components/native/Scene/SceneStill');
+  const { resolveWorld } = await import('../../packages/ui/src/theme/resolve');
 
   const budget = experienceOf({ levels: {}, capacityClass: 'high' }, { fidelity: 'auto' });
   const W = 390;

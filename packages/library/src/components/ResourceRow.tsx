@@ -23,7 +23,7 @@ import {
   Video,
 } from '@repo/ui/icons';
 import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import type React from 'react';
 // ============================================================================
 // CONFIG

@@ -45,7 +45,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
-import { useWorld } from '@repo/ui/world/native';
+import { useWorld } from '@repo/ui/theme/native';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams } from 'expo-router';

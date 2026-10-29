@@ -9,7 +9,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { ChatProvider, useChatScrollToIndex } from '@repo/ui/context/ChatContext';
 import { ChevronLeft, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, useTheme, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';

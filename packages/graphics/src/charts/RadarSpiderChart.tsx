@@ -1,5 +1,5 @@
 import { Card } from '@repo/ui/components/SanctuaryCard';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 interface RadarPoint {

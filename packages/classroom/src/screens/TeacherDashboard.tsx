@@ -20,7 +20,7 @@ import {
   Pressable,
   ScrollView,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';

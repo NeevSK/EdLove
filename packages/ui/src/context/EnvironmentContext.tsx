@@ -124,4 +124,3 @@ export {
   useThemeContextOptional,
 } from './ThemeProvider';
 
-export { getTemporalPhase, shouldUseDarkTheme } from './utils';

@@ -1,6 +1,6 @@
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Button, ButtonText, Text, useTheme, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
 

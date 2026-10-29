@@ -16,18 +16,19 @@ import {
   useState,
 } from 'react';
 import { useColorScheme } from 'react-native';
-import { DEFAULT_WORLD, isWorldId } from '../world/worlds';
-import type { WorldId } from '../world/types';
-import type { TemporalPhase, ThemeMode } from './types';
-import { getTemporalPhase, shouldUseDarkTheme } from './utils';
+import { DEFAULT_WORLD, isWorldId } from '../theme/worlds';
+import type { WorldId } from '../theme/types';
+import { isDarkPhase, phaseAt } from '../theme/scene';
+import type { Phase } from '../theme/types';
+import type { ThemeMode } from './types';
 
 interface ThemeContextValue {
   themeMode: ThemeMode;
-  temporalPhase: TemporalPhase;
+  temporalPhase: Phase;
   isDark: boolean;
   isVeilActive: boolean;
   enableLivingTheme: boolean;
-  /** The world that dresses every component (see packages/ui/src/world). */
+  /** The world that dresses every component (see packages/ui/src/theme). */
   worldId: WorldId;
   setThemeMode: (mode: ThemeMode) => Promise<void>;
   toggleVeil: () => Promise<void>;
@@ -52,7 +53,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const isVeilActive = savedVeil === 'true';
   const enableLivingTheme = savedLivingTheme !== 'false';
   const worldId = isWorldId(savedWorld) ? savedWorld : DEFAULT_WORLD;
-  const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
+  const [temporalPhase, setTemporalPhase] = useState<Phase>(() => phaseAt());
   const systemColorScheme = useColorScheme();
 
   // Derived
@@ -60,7 +61,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () =>
       themeMode === 'dark' ||
       (themeMode === 'system' && systemColorScheme === 'dark') ||
-      (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase)),
+      (themeMode === 'auto' && isDarkPhase(temporalPhase)),
     [themeMode, systemColorScheme, temporalPhase],
   );
 
@@ -73,7 +74,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Temporal Sync
   useEffect(() => {
     const update = () => {
-      const next = getTemporalPhase();
+      const next = phaseAt();
       setTemporalPhase((prev) => (prev !== next ? next : prev));
     };
     const interval = setInterval(update, 60000);
@@ -87,7 +88,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     ) => {
       const applyChange = async () => {
         await storage.setAsync(DEVICE_THEME_MODE_KEY, mode);
-        if (mode === 'auto') setTemporalPhase(getTemporalPhase());
+        if (mode === 'auto') setTemporalPhase(phaseAt());
       };
 
       const { startThemeTransition } = await import('../theme/nitroThemeTransition');

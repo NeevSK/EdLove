@@ -87,7 +87,7 @@
     "check:cng": "node scripts/audit-cng-pipeline.mjs",
     "check:native-slop": "node scripts/check-native-slop.mjs",
     "check:hollow-stubs": "node scripts/check-hollow-stubs.mjs",
-    "check:anti-slop": "pnpm run check:cng && pnpm run check:native-slop && pnpm run check:hollow-stubs && pnpm run check:aislop && pnpm run check:fallow && pnpm run check:version-drift && pnpm run check:seams && pnpm run ratchet",
+    "check:anti-slop": "pnpm run check:cng && pnpm run check:native-slop && pnpm run check:hollow-stubs && pnpm run check:aislop && pnpm run check:fallow && pnpm run check:version-drift && pnpm run check:seams && pnpm run check:ui-boundaries && pnpm run ratchet",
     "audit:device-evidence": "node scripts/audit-device-evidence.mjs",
     "maintenance:outdated": "node ./scripts/run-and-report.mjs --cmd \"powershell -File scripts/audit-dependency-health.ps1\" --name \"package_json-maintenance_outdated\"",
     "stack-map": "node ./scripts/run-and-report.mjs --cmd \"node scripts/stack-map.mjs\" --name \"package_json-stack_map\"",
@@ -158,7 +158,8 @@
     "preflight:build": "node scripts/preflight-build.mjs",
     "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\"",
     "scene:shots": "tsx --tsconfig scripts/scene-shots/tsconfig.json scripts/scene-shots/index.tsx",
-    "check:world": "node scripts/check-world.mjs"
+    "check:world": "node scripts/check-world.mjs",
+    "check:ui-boundaries": "node scripts/check-ui-boundaries.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",

@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
-import { WaitingSign } from '../world/native/WaitingSign';
+import { WaitingSign } from './native/WaitingSign/WaitingSign';
 
 interface BreathingLoaderProps {
   size?: number;

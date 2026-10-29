@@ -26,7 +26,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
-import { useWorld } from '../world/native/WorldContext';
+import { useWorld } from '../theme/native/WorldContext';
 
 // ============================================================================
 // TYPES

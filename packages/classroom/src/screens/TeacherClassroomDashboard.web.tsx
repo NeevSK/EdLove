@@ -39,7 +39,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { openExternalURL } from '@repo/ui/utils/linking';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';

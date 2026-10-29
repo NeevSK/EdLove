@@ -30,8 +30,10 @@ const RATCHET = join(ROOT, 'tooling/world-ratchet.json');
 
 /** Files and folders that must take every colour from the world. */
 const DRESSED = [
-  'packages/ui/src/world/native',
-  'packages/ui/src/world/dom',
+  'packages/ui/src/components/native',
+  'packages/ui/src/theme/native',
+  'packages/ui/src/components/web',
+  'packages/ui/src/theme/web',
   'packages/ui/src/screens/AppSettingsScreen.shared.tsx',
   'packages/ui/src/components/GlobalHeader.tsx',
   'packages/ui/src/components/DomainSubHeader.tsx',
@@ -42,14 +44,14 @@ const DRESSED = [
 
 /** Where palettes are defined; raw colours are the point here. */
 const PALETTE_FILES = new Set([
-  'packages/ui/src/world/worlds.ts',
-  'packages/core/src/scene/sky.ts',
-  'packages/core/src/scene/landscape.ts',
-  'packages/ui/src/world/build.ts',
-  'packages/ui/src/world/color.ts',
-  'packages/ui/src/world/resolve.ts',
-  'packages/ui/src/world/css.ts',
-  'packages/ui/src/tokens.ts',
+  'packages/ui/src/theme/worlds',
+  'packages/ui/src/theme/scene/sky.ts',
+  'packages/ui/src/theme/scene/landscape.ts',
+  'packages/ui/src/theme/build.ts',
+  'packages/ui/src/theme/color.ts',
+  'packages/ui/src/theme/resolve.ts',
+  'packages/ui/src/theme/css.ts',
+  'packages/ui/src/tokens',
   'packages/ui/src/theme/Theme.ts',
 ]);
 
@@ -103,7 +105,7 @@ let hexCount = 0;
 
 for (const file of files) {
   const rel = relative(ROOT, file).split('\\').join('/');
-  if (PALETTE_FILES.has(rel)) continue;
+  if ([...PALETTE_FILES].some((p) => rel === p || rel.startsWith(`${p}/`))) continue;
   const src = stripComments(readFileSync(file, 'utf8'));
   if (isDressed(rel)) {
     const lines = src.split('\n');

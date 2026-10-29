@@ -7,7 +7,7 @@ import type {
   WorkspaceAppearancePreset,
   WorkspaceWallpaper,
 } from '@repo/core/types';
-import { WORLD_IDS, WORLDS } from '@repo/ui/world';
+import { WORLD_IDS, WORLDS } from '@repo/ui/theme';
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getBackdropsForWorld, PRESET_WALLPAPERS } from '../../../lib/canvas/appearanceConstants';

@@ -1,6 +1,6 @@
 'use client';
 
-import { DEFAULT_WORLD, isWorldId, type WorldId } from '@repo/ui/world';
+import { DEFAULT_WORLD, isWorldId, type WorldId } from '@repo/ui/theme';
 import { useSyncExternalStore } from 'react';
 
 export type PersonalityTheme = 'sanctuary' | 'lotus' | 'youth' | 'garden';

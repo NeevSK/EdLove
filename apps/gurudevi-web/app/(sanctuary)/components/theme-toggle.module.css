@@ -270,7 +270,7 @@
   .themeGlyph { width: 1.05rem; height: 1.05rem; }
 }
 
-/* Worlds (packages/ui/src/world). Each swatch shows the world's paper and its one lit colour. */
+/* Worlds (packages/ui/src/theme/worlds). Each swatch shows the world's paper and its one lit colour. */
 .worldDot {
   width: 9px;
   height: 9px;

@@ -27,7 +27,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { confirmAction } from '@repo/ui/utils/dialogs';
 

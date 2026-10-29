@@ -1,8 +1,8 @@
 import { tokens } from '@repo/ui/tokens';
 import type React from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import { WorldEnter } from '../world/native/motion';
-import { Text } from '../world/native/Text';
+import { WorldEnter } from '../theme/native/motion';
+import { Text } from './native/Text/Text';
 import { FireflyFeedbackScene } from './FireflyFeedbackScene';
 
 export type BrandedEmptyStateProps = {

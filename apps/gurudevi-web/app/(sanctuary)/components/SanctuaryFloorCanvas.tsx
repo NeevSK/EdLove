@@ -8,7 +8,7 @@ import type {
   WorkspaceAppearancePreset,
   WorkspaceWallpaper,
 } from '@repo/core/types';
-import { isWorldId } from '@repo/ui/world';
+import { isWorldId } from '@repo/ui/theme';
 import React, { useEffect, useState } from 'react';
 import {
   EXPLORE_DEFAULT_APPEARANCE,

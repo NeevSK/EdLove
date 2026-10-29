@@ -10,11 +10,11 @@
  * the default world changes nothing for current screens.
  */
 
-import type { TemporalPhase } from '../context/types';
-import { alpha } from '../world/color';
-import { resolveWorld } from '../world/resolve';
-import type { WorldId, WorldTokens } from '../world/types';
-import { DEFAULT_WORLD, isWorldId } from '../world/worlds';
+import type { Phase } from './types';
+import { alpha } from './color';
+import { resolveWorld } from './resolve';
+import type { WorldId, WorldTokens } from './types';
+import { DEFAULT_WORLD, isWorldId } from './worlds';
 import {
   enrichPhaseTokens,
   type PhaseTokens,
@@ -56,7 +56,7 @@ export function worldToPhaseTokens(t: WorldTokens): PhaseTokens {
 /** Legacy phase tokens for a world. Sanctuary returns the original matrix. */
 export function worldPhaseTokens(
   worldId: WorldId | undefined,
-  phase: TemporalPhase,
+  phase: Phase,
   isDark: boolean,
 ): PhaseTokens {
   const id = isWorldId(worldId) ? worldId : DEFAULT_WORLD;
@@ -68,7 +68,7 @@ const resolvedCache = new Map<string, ResolvedThemeTokens>();
 
 export function resolveWorldThemeTokens(
   worldId: WorldId | undefined,
-  phase: TemporalPhase,
+  phase: Phase,
   isDark: boolean,
 ): ResolvedThemeTokens {
   const key = `${worldId ?? DEFAULT_WORLD}:${phase}:${isDark ? 1 : 0}`;

@@ -34,7 +34,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import NativeForm from '@repo/form-builder/NativeForm';
 import { defaultFormBuilderServices, type FormBuilderServices } from '@repo/form-builder/services';

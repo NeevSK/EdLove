@@ -1,7 +1,7 @@
 import { ArrowLeft, Bell, ChevronDown, LayoutGrid, Settings } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
-import { useWorld } from '@repo/ui/world/native';
+import { useWorld } from '@repo/ui/theme/native';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import React from 'react';
 

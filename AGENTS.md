@@ -13,7 +13,7 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 > **PRIME DIRECTIVE: WEB-FIRST & REPO-DOCS-FIRST FOR ALL MODERN ECOSYSTEM DECISIONS**  
 > Agent static training memory has a fixed cutoff and is blind to recent changes in Expo SDK 58, React Native 0.88+, Kotlin 2.x, Gradle 8.x, Skia v3, Effect v4, etc. **NEVER rely on internal memory or make guesses.** The model is a stateless reasoner (CPU), not a memory bank. Always inspect the physical substrate (source files, AST symbols, installed `node_modules` declarations) and perform live web searches (`search_web`) or registry queries.
 > 0. **The Cognitive Handshake (Active Reasoning Invariant)**: Passive reading decays. Before proposing code or diffs, the agent MUST output the 3-line Bounding Triad: (1) Surface & Mode, (2) Grounded Substrate (files/types inspected), (3) Active Seam & Constraints.
-> 1. **Context Boundary Rules**: Monorepo packages are strictly divided into Domain Logic (`@repo/core`, `@repo/classroom`), UI Tokens (`@repo/ui/tokens`), Native Apps (`apps/gurudevi-mobile`), and Browser Web (`apps/gurudevi-web`). Never cross these boundaries.
+> 1. **Context Boundary Rules**: Monorepo packages are strictly divided into Domain Logic (`@repo/core`, `@repo/classroom`), UI Theme, Tokens and Kit (`@repo/ui/theme`, `@repo/ui/tokens`, `@repo/ui/components/native|web`), Native Apps (`apps/gurudevi-mobile`), and Browser Web (`apps/gurudevi-web`). Never cross these boundaries.
 > 2. **Verification Protocol**: Before declaring completion, verify your changes against the monorepo toolchain. Never submit unverified code.
 > 3. **The Deletion Veto**: Working behavior, tests, fallbacks, or routes must NEVER be silently deleted. If you need to deprecate or remove code, you MUST request explicit human approval first.
 > 4. **Two-Tier Search Protocol (Dated Precision)**: First execute broad architectural pattern discovery, immediately followed by a mandatory dated precision round targeting official release tags, commit changelogs, RFCs, and migration guides tied to the exact active package versions. Never rely on generic high-level keywords.
@@ -44,10 +44,19 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 | :--- | :--- | :--- |
 | `@repo/core` | **Platform spine**: auth, tenancy, permissions, contracts, API clients | Shared logic, hooks, schemas, API clients |
 | `@repo/classroom` | **Classroom domain**: attendance, gradebook, reflect, workspace | Classroom domain logic |
-| `@repo/ui` | RN/NativeWind primitives (tokens, not web components) | RN components only |
-| `@repo/ui/tokens` | Design tokens (colors, spacing, motion) - platform-neutral | Design values only |
-| `@repo/ui/web` | **Web-only components** (built in gurudevi-web, extracted after proven) | Web-only components |
+| `@repo/ui/theme` | **World engine**, platform-neutral: 11 worlds, `resolveWorld`, recipes, CSS variables, `Phase`; `theme/scene` holds the one clock (`phaseAt`), sky, season, weather | Anything a world changes |
+| `@repo/ui/theme/native` · `@repo/ui/theme/web` | The active world on each platform (`useWorld`, `WorldScope` · `WorldStyles`) | Theme bindings only |
+| `@repo/ui/tokens` | Fixed scales (spacing, radii, sizes, touch targets) - platform-neutral; its colours are legacy and leave as screens migrate | Values that never change per world |
+| `@repo/ui/components/native` | **Owned RN components** (Button, Text, Surface, TextField, Chip, Row, Section, Switch, Waiting, Scene …) | All new mobile UI |
+| `@repo/ui/components/web` | **Owned DOM components**, same names and props as native | All new web UI |
+| `@repo/ui` (everything else) | Legacy: Gluestack-style `components/ui`, `primitives`, flat `components/*`, `theme/Theme`, `worldBridge` | Frozen. No new imports; being replaced |
 | `@repo/platform-mcp` | **Sovereign Control Plane & Gateway** - multiplexes downstream tools | Agentic discovery, audit, maintenance, and tool proxy |
+
+**UI kit rules** (plan: [`docs/architecture/2026-10-29-ui-component-system-rebuild-plan.md`](docs/architecture/2026-10-29-ui-component-system-rebuild-plan.md); enforced by `pnpm check:ui-boundaries`, part of `check:anti-slop`):
+- Components read colour, radius, type and motion from the world's recipes, never hard-coded values. On native, NativeWind is for screen layout only, with colours through `w-*` classes. On web, CSS modules are for layout only, with colours through `var(--w-*)`.
+- `theme/` (except `theme/native`) and everything web never import React Native, Expo, NativeWind or Skia. Native never imports web. Theme never imports components.
+- Imports of legacy UI and the count of `*.web.tsx` files may only go down (`tooling/ui-legacy-ratchet.json`).
+- Phase styling is retired: no new `phase-*` classes, `--phase-*` variables, `phaseMatrix` or `worldBridge` reads.
 
 ### The Sovereign Context & Integration Pattern (The Anti-Island Law)
 
@@ -61,7 +70,7 @@ Never treat the monorepo as an empty workspace or create ad-hoc "islands" (throw
    - Before writing or proposing any code, explore the workspace substrate first.
    - For agent tools/APIs: Inspect `packages/platform-mcp/` (`DiscoveryService`, `ScoutService`, downstreams).
    - For domain logic: Search `@repo/core`, `@repo/classroom`, and package manifests for existing contracts and utilities.
-   - For UI: Check `@repo/ui/tokens` and existing component primitives.
+   - For UI: Check `@repo/ui/components/native|web`, `@repo/ui/theme` and `@repo/ui/tokens`.
 2. **Phase 2: Absorb Architecture & Invariants:**
    - Understand how the system already solves adjacent problems.
    - Identify active boundaries, secret configurations (Doppler), and runtime rules.
@@ -87,9 +96,9 @@ for migrations, the signed `canonical_account_id` claim, and real-database proof
 | ❌ NEVER | ✅ INSTEAD |
 | :--- | :--- |
 | Import `*.web.tsx` in `gurudevi-web` | Build browser-native in `apps/gurudevi-web` |
-| Import `@repo/ui` web components in Next.js | Use `@repo/ui/tokens` for design values; build in `gurudevi-web` |
+| Import legacy `@repo/ui` (primitives, `components/ui`, flat `components/*`) in Next.js | Use `@repo/ui/components/web`, `@repo/ui/theme`, `@repo/ui/theme/web` |
 | Import Expo/RN/PowerSync in `gurudevi-web` | Use `@repo/core/web-auth`, `@repo/core/web-authorized-entry` |
-| Put web components in `@repo/ui` | Build in `apps/gurudevi-web`; extract to `@repo/ui/web` after proven |
+| Build reusable UI ad hoc in an app (hand-made buttons, pills, fields) | Add it to `@repo/ui/components/web` and `/native` with the same props |
 | Import native storage (MMKV) in `@repo/core` | Use `StorageManager` polyfill proxy (zero native pollution) |
 | Use RN Web (`*.web.tsx`) for new features | RN Web is **migration source only** - being retired |
 

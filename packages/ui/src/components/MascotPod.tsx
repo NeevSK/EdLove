@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { useVisualCapabilities } from '../context/VisualCapabilities';
-import { useWorld } from '../world/native/WorldContext';
+import { useWorld } from '../theme/native/WorldContext';
 
 export type MascotPodVariant = 'halo' | 'glassPod' | 'avatar' | 'raw';
 

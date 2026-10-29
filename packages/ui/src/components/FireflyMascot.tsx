@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { useWorld } from '../world/native/WorldContext';
+import { useWorld } from '../theme/native/WorldContext';
 import type { MascotArtworkSource } from './Mascot';
 import { MascotPod, type MascotPodVariant } from './MascotPod';
 import {

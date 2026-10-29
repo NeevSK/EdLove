@@ -19,7 +19,7 @@
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { tokens } from '@repo/ui/tokens';
 import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
-import { WorldSkeleton } from '../world/native/Waiting';
+import { WorldSkeleton } from './native/Waiting/Waiting';
 import { useResponsiveGrid } from './layout';
 import { duration } from './motion';
 

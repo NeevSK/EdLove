@@ -21,7 +21,7 @@ import {
   TextInput,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQueryClient } from '@tanstack/react-query';

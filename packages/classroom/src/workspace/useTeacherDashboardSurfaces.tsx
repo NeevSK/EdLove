@@ -16,7 +16,7 @@ import {
   Zap,
 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { type ComponentType, type ReactNode, useMemo } from 'react';
 
 export type TeacherDashboardSurfaceId =

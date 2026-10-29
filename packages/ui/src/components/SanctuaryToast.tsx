@@ -14,9 +14,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
-import { useWorldMotion } from '../world/native/motion';
-import { edgeStyle, radiusStyle, shadowStyle, typeStyle } from '../world/native/style';
-import { useWorldContext } from '../world/native/WorldContext';
+import { useWorldMotion } from '../theme/native/motion';
+import { edgeStyle, radiusStyle, shadowStyle, typeStyle } from '../theme/native/style';
+import { useWorldContext } from '../theme/native/WorldContext';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 

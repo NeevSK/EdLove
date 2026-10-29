@@ -28,7 +28,7 @@ import {
   useTheme,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 export interface ResourceListProps {

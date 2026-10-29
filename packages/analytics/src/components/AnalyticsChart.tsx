@@ -5,7 +5,7 @@ import {
   SimplePieChart,
 } from '@repo/graphics/charts';
 import { Box, HStack, Text } from '@repo/ui/primitives';
-import { colors } from '@repo/ui/theme';
+import { colors } from '@repo/ui/theme/Theme';
 
 interface AnalyticsChartProps {
   title: string;

@@ -10,7 +10,8 @@
  */
 
 import { useEnvironment } from '@repo/ui/context/EnvironmentContext';
-import type { TemporalPhase, ThemeMode } from '@repo/ui/context/types';
+import type { ThemeMode } from '@repo/ui/context/types';
+import type { Phase } from '@repo/ui/theme';
 import {
   type ResolvedThemeTokens,
   resolveClassicTokens,
@@ -53,7 +54,7 @@ export interface UseThemeReturn extends ResolvedThemeTokens, AdaptiveTokens {
   templeGold: string;
   sageGreen: string;
   isDark: boolean;
-  phase: TemporalPhase;
+  phase: Phase;
   /** Whether animations should run (based on device tier + fidelity) */
   animationsEnabled: boolean;
   /** Whether blur effects should be used */

@@ -3,7 +3,7 @@ import { SimpleBarChart } from '@repo/graphics/charts';
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { colors } from '@repo/ui/theme';
+import { colors } from '@repo/ui/theme/Theme';
 import { formatGPA, getGradeColor, getPerformanceLevel } from '@/utils/analyticsHelpers';
 export function PerformanceDashboard({ metrics, insights = [], recommendations = [], }) {
     const themeColors = useThemedColors();

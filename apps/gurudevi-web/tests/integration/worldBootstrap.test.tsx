@@ -1,4 +1,4 @@
-import { WORLD_IDS } from '@repo/ui/world';
+import { WORLD_IDS } from '@repo/ui/theme';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import RootLayout from '@/app/layout';

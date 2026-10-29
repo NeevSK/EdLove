@@ -8,7 +8,7 @@
  * Philosophy: Every value has meaning and serves the sanctuary aesthetic.
  */
 
-import type { TemporalPhase } from '@repo/ui/context/types';
+import type { Phase } from './types';
 import { compositeColorOverBackground, getTextOnBackground } from '@repo/ui/utils/colorUtils';
 import { tokens } from '../tokens';
 
@@ -648,7 +648,7 @@ function enrichThemeTokens(
 }
 
 /** Full matrix: phase \u2192 themeMode \u2192 resolved tokens */
-export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: PhaseTokens }> = {
+export const phaseMatrix: Record<Phase, { dark: PhaseTokens; light: PhaseTokens }> = {
   predawn: {
     dark: {
       gradientNodes: ['#11141B', '#171C27', '#232B3B'], // Obsidian \u2192 Ink \u2192 Shroud
@@ -1244,6 +1244,6 @@ export function enrichPhaseTokens(tokens: PhaseTokens): ResolvedThemeTokens {
 }
 
 /** The single resolver \u2014 this is what all components call via useTheme() */
-export function resolvePhaseTokens(phase: TemporalPhase, isDark: boolean): ResolvedThemeTokens {
+export function resolvePhaseTokens(phase: Phase, isDark: boolean): ResolvedThemeTokens {
   return enrichThemeTokens(phaseMatrix[phase][isDark ? 'dark' : 'light']);
 }

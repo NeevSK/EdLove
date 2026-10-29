@@ -2,7 +2,7 @@ import { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
 import LotusLoader from '@repo/ui/components/LotusLoader';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { useLocalSearchParams } from 'expo-router';
 
 import { useEffect, useMemo, useState } from 'react';

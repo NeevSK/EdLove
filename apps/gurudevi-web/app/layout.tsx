@@ -1,9 +1,15 @@
 import { tokens } from '@repo/ui/tokens';
-import { WORLD_IDS } from '@repo/ui/world';
-import { WorldStyles } from '@repo/ui/world/dom';
+import { WORLD_IDS } from '@repo/ui/theme';
+import { PHASE_START_HOUR } from '@repo/ui/theme/scene';
+import { WorldStyles } from '@repo/ui/theme/web';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './styles.css';
+
+/** Phase start hours, latest first, so the pre-paint script picks the same phase as `phaseAt`. */
+const PHASE_STARTS_DESC = JSON.stringify(
+  Object.entries(PHASE_START_HOUR).sort(([, a], [, b]) => b - a),
+);
 
 const sharedTokenCss = [
   `--gd-primary:${tokens.colors.primary}`,
@@ -90,8 +96,9 @@ if(legacy==='night'){m='dark';}else if(legacy==='garden'||legacy==='dawn'){t=leg
 var resolvedMode=m==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;
 var w=localStorage.getItem('gurudevi_world');
 if(w&&${JSON.stringify(WORLD_IDS)}.includes(w)){document.documentElement.setAttribute('data-world',w);if(w!=='sanctuary'){t='sanctuary';}}
-var h=new Date().getHours();
-document.documentElement.setAttribute('data-phase',h>=4&&h<6?'predawn':h>=6&&h<9?'dawn':h>=9&&h<12?'morning':h>=12&&h<17?'afternoon':h>=17&&h<20?'dusk':'night');
+var h=new Date().getHours(),p='night',s=${PHASE_STARTS_DESC};
+for(var i=0;i<s.length;i++){if(h>=s[i][1]){p=s[i][0];break;}}
+document.documentElement.setAttribute('data-phase',p);
 document.documentElement.setAttribute('data-theme',t);
 document.documentElement.setAttribute('data-mode',resolvedMode);
 document.documentElement.setAttribute('data-appearance',resolvedMode==='dark'?'night':t);

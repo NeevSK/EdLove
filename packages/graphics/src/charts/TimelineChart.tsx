@@ -1,6 +1,6 @@
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import { VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface TimelineEvent {

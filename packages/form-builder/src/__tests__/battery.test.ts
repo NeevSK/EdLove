@@ -18,7 +18,7 @@ vi.mock('@repo/ui/hooks', () => ({
   }),
 }));
 
-vi.mock('@repo/ui/theme', () => ({
+vi.mock('@repo/ui/theme/Theme', () => ({
   Theme: {
     colors: {
       sanctuarySaffron: '#D97706',

@@ -5,15 +5,10 @@
 
 import type { GurudeviExperience } from '@repo/core/verger';
 import type { Bond } from '@repo/core/types';
-import type { WorldId } from '../world/types';
-
-/**
- * Temporal Phase - Time of day affecting theme and behavior
- */
-export type TemporalPhase = 'predawn' | 'dawn' | 'morning' | 'afternoon' | 'dusk' | 'night';
+import type { Phase, WorldId } from '../theme/types';
 
 /** Maps 6-phase to 4-phase for legacy consumers */
-export const PHASE_FALLBACK: Record<TemporalPhase, 'dawn' | 'day' | 'evening' | 'night'> = {
+export const PHASE_FALLBACK: Record<Phase, 'dawn' | 'day' | 'evening' | 'night'> = {
   predawn: 'dawn',
   dawn: 'dawn',
   morning: 'day',
@@ -54,7 +49,7 @@ export interface EnvironmentState {
 
   // Theme & Visual
   themeMode: ThemeMode;
-  temporalPhase: TemporalPhase;
+  temporalPhase: Phase;
   isDark: boolean;
   fidelityLevel: FidelityLevel;
   /** The fidelity in force: the user's choice, or for `auto` the phone's class (from verger). */

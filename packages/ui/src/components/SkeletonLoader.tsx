@@ -1,6 +1,6 @@
 import type React from 'react';
 import type { DimensionValue, StyleProp, ViewStyle } from 'react-native';
-import { WorldSkeleton } from '../world/native/Waiting';
+import { WorldSkeleton } from './native/Waiting/Waiting';
 
 interface SkeletonProps {
   width?: number | string;

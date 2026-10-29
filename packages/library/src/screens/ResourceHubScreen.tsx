@@ -34,7 +34,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { openExternalURL } from '@repo/ui/utils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQuery } from '@tanstack/react-query';

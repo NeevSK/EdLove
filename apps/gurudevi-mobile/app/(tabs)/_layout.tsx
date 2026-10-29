@@ -47,7 +47,8 @@ import {
 } from '@repo/ui/icons/native';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
-import { useWorld, Text as WText } from '@repo/ui/world/native';
+import { Text as WText } from '@repo/ui/components/native';
+import { useWorld } from '@repo/ui/theme/native';
 import { router, useGlobalSearchParams, usePathname } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

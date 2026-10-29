@@ -14,6 +14,6 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - In local development, test surfaces via `http://localhost:3000`, `http://sanctuary.localhost:3000`, and `http://explore.localhost:3000` (RFC 6761) without modifying system hosts files.
 - Keep public routes under `app/(marketing)` and protected product routes under `app/(sanctuary)`.
 - Build web UI with semantic HTML and browser-native behavior. Do not import React Native UI components or React Native Web into this app.
-- Share only platform-neutral contracts, validation, repositories, and design tokens with `gurudevi-mobile`.
+- Share only platform-neutral contracts, validation, repositories, the theme (`@repo/ui/theme`, `@repo/ui/theme/web`) and tokens with `gurudevi-mobile`. UI components come from `@repo/ui/components/web`.
 - Design from the 360-430 px browser viewport upward. Desktop enhancement must not alter the primary phone journey.
 - Every changed user journey needs browser evidence before it can replace a Metro web route.

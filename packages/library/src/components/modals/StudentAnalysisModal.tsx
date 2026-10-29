@@ -22,7 +22,7 @@ import {
   useTheme,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import Svg, { Circle, G, Line, Polygon, Text as SvgText } from 'react-native-svg';

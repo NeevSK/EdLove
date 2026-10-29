@@ -10,7 +10,7 @@ import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, Pressable, ScrollView, Text } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';

@@ -7,7 +7,7 @@
  * Rewrites `tokens.semantic.*` and `tokens.colors.*` colour reads to `wt.*`.
  * It does not add the hook: put `const wt = useWorld().tokens;` at the top of
  * each component that now reads `wt`, import `useWorld` from
- * '@repo/ui/world/native', then run `pnpm check:world`.
+ * '@repo/ui/theme/native', then run `pnpm check:world`.
  *
  * Review each result by eye. A thin line or small text in `lamp` may need
  * `lampDeep` to stay legible on the ground.

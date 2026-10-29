@@ -1,0 +1,68 @@
+import { FACES, MOTION } from '../faces';
+import type { WorldDefinition } from '../types';
+import { tokens } from './tokens';
+
+export const perahera: WorldDefinition = {
+  id: 'perahera',
+  names: { en: 'Perahera', si: 'පෙරහැර', ta: 'பெரஹெரா' },
+  description: 'The festival night: torchlight, drums and coloured flags. Ceremonial and bright.',
+  family: 'cultural',
+  faces: FACES.perahera,
+  motion: MOTION.perahera,
+  preferredMode: 'dark',
+  palette: {
+    light: tokens(
+      {
+        ground: '#FFF4E0',
+        raised: '#FFFBF2',
+        sunken: '#F6E4C6',
+        ink: '#2B1408',
+        inkSoft: '#6A3E22',
+        inkFaint: '#94694A',
+        lamp: '#C23A08',
+        onLamp: '#FFF6EA',
+        lampDeep: '#A8320A',
+        glow: '#FFB23E',
+        ornament: '#8C1C5A',
+        danger: '#8E1C2A',
+        onDanger: '#FFF6EA',
+        success: '#3F6E2A',
+        focus: '#A8320A',
+      },
+      0.24,
+    ),
+    dark: tokens(
+      {
+        ground: '#140A12',
+        raised: '#22121E',
+        sunken: '#0E060C',
+        ink: '#FFEFD9',
+        inkSoft: '#E2C39E',
+        inkFaint: '#A88868',
+        lamp: '#FF7A2E',
+        onLamp: '#1E0A04',
+        lampDeep: '#FF9A5A',
+        glow: '#FFB23E',
+        ornament: '#E04A9A',
+        danger: '#FF8A80',
+        onDanger: '#2A0808',
+        success: '#9FD08A',
+        focus: '#FF9A5A',
+      },
+      0.24,
+    ),
+  },
+  style: {
+    corner: { control: 6, surface: 6, chip: 6, field: 6 },
+    primary: { fill: 'gradient', doubleEdge: true, glow: true },
+    quietForm: 'outlined',
+    raised: { edge: 'frame', shadow: false },
+    field: 'box',
+    chip: 'outlined',
+    label: 'boldcaps',
+    display: { weight: '700', uppercase: true, letterSpacing: 0.6 },
+    lineWeight: 1.5,
+    boundary: { dense: 'boxes', calm: 'boxes' },
+    ornament: 'flag',
+  },
+};

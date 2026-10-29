@@ -67,7 +67,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSelection, hapticSuccess } from '@repo/ui/utils/haptics';
 import { EXTERNAL_URLS, GURUDEVI_SUPPORT_EMAIL, GURUDEVI_WEB } from '@repo/ui/utils/urls';
-import { useWorld } from '@repo/ui/world/native';
+import { useWorld } from '@repo/ui/theme/native';
 import * as Clipboard from 'expo-clipboard';
 import type { TFunction } from 'i18next';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';

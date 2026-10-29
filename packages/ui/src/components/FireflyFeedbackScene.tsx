@@ -1,9 +1,9 @@
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
-import { Perch } from '../world/native/Perch';
-import { useWorld } from '../world/native/WorldContext';
-import type { WorldTokens } from '../world/types';
+import { Perch } from './native/Perch/Perch';
+import { useWorld } from '../theme/native/WorldContext';
+import type { WorldTokens } from '../theme/types';
 import { type FireflyFeedbackState, getFireflyFeedbackPresentation } from './fireflyFeedback';
 import { Mascot, type MascotArtworkSource, useMascot } from './Mascot';
 import { mascotStateForFeedback } from './mascotStateMachine';

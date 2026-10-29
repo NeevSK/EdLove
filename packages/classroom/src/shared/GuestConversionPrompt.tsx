@@ -15,7 +15,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { useTranslation } from 'react-i18next';
 
 export interface GuestConversionPromptProps {

@@ -15,7 +15,7 @@ import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { useWorld } from '../world/native/WorldContext';
+import { useWorld } from '../theme/native/WorldContext';
 import { duration, nativeEasing, scale as scaleTokens } from './motion';
 
 /** Success in the world's light: the tick in its deep lamp, the heart lit, motes in its glow. */

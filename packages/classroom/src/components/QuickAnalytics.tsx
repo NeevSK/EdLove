@@ -15,7 +15,7 @@ import {
   Zap,
 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 
 interface AnalyticsWidgetProps {
   title: string;

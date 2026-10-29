@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { FACES } from '@repo/ui/world';
+import { FACES } from '@repo/ui/theme';
 
 const ROOT = join(__dirname, '../../..');
 const FOLDER = join(ROOT, 'src/assets/fonts/world');

@@ -10,7 +10,7 @@ import {
   View,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 

@@ -1,7 +1,7 @@
 import { useThemedColors } from '@repo/ui/hooks';
 import { ArrowLeft, History } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 
 interface LegacyDashboardProps {
   schoolId: string;

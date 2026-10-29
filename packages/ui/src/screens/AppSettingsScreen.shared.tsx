@@ -23,10 +23,10 @@ import {
   Section,
   Switch,
   TextField,
-  useWorld,
   WorldPicker,
   Text as WText,
-} from '@repo/ui/world/native';
+} from '@repo/ui/components/native';
+import { useWorld } from '@repo/ui/theme/native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';

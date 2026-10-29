@@ -35,7 +35,7 @@ import {
   useTheme,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';

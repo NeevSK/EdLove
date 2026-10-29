@@ -32,7 +32,7 @@ module.exports = {
             onSurface: 'var(--phase-text-on-surface)',
           },
         },
-        // World semantic tokens (packages/ui/src/world). Prefer these over raw colours.
+        // World semantic tokens (packages/ui/src/theme). Prefer these over raw colours.
         w: {
           ground: 'var(--w-ground)',
           raised: 'var(--w-raised)',

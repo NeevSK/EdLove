@@ -1,4 +1,4 @@
-import { typeStyle, useWorldContext } from '@repo/ui/world/native';
+import { typeStyle, useWorldContext } from '@repo/ui/theme/native';
 import { NativeTabs } from 'expo-router/native-tabs';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';

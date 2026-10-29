@@ -65,34 +65,29 @@
       "default": "./src/providers/*.tsx"
     },
     "./theme": {
-      "types": "./src/theme/Theme.ts",
-      "import": "./src/theme/Theme.ts",
-      "default": "./src/theme/Theme.ts"
+      "types": "./src/theme/index.ts",
+      "import": "./src/theme/index.ts",
+      "default": "./src/theme/index.ts"
+    },
+    "./theme/native": {
+      "types": "./src/theme/native/index.ts",
+      "import": "./src/theme/native/index.ts",
+      "default": "./src/theme/native/index.ts"
+    },
+    "./theme/web": {
+      "types": "./src/theme/web/index.tsx",
+      "import": "./src/theme/web/index.tsx",
+      "default": "./src/theme/web/index.tsx"
+    },
+    "./theme/scene": {
+      "types": "./src/theme/scene/index.ts",
+      "import": "./src/theme/scene/index.ts",
+      "default": "./src/theme/scene/index.ts"
     },
     "./tokens": {
-      "types": "./src/tokens.ts",
-      "import": "./src/tokens.ts",
-      "default": "./src/tokens.ts"
-    },
-    "./world": {
-      "types": "./src/world/index.ts",
-      "import": "./src/world/index.ts",
-      "default": "./src/world/index.ts"
-    },
-    "./scene/native": {
-      "types": "./src/scene/native/index.ts",
-      "import": "./src/scene/native/index.ts",
-      "default": "./src/scene/native/index.ts"
-    },
-    "./world/native": {
-      "types": "./src/world/native/index.ts",
-      "import": "./src/world/native/index.ts",
-      "default": "./src/world/native/index.ts"
-    },
-    "./world/dom": {
-      "types": "./src/world/dom/index.tsx",
-      "import": "./src/world/dom/index.tsx",
-      "default": "./src/world/dom/index.tsx"
+      "types": "./src/tokens/index.ts",
+      "import": "./src/tokens/index.ts",
+      "default": "./src/tokens/index.ts"
     },
     "./feedback": {
       "types": "./src/feedback.ts",
@@ -117,6 +112,16 @@
     },
     "./global.css": {
       "default": "./src/global.css"
+    },
+    "./components/native": {
+      "types": "./src/components/native/index.ts",
+      "import": "./src/components/native/index.ts",
+      "default": "./src/components/native/index.ts"
+    },
+    "./components/web": {
+      "types": "./src/components/web/index.tsx",
+      "import": "./src/components/web/index.tsx",
+      "default": "./src/components/web/index.tsx"
     },
     "./components": {
       "types": "./src/components/index.ts",

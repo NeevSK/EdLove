@@ -1,6 +1,6 @@
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
-import { colors } from '@repo/ui/theme';
+import { colors } from '@repo/ui/theme/Theme';
 import { formatGPA, getGradeColor } from '@repo/analytics/utils/analyticsHelpers';
 
 interface GPAInsightsProps {

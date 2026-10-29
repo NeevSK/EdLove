@@ -8,6 +8,5 @@ export * from './FidelityProvider';
 export * from './LanguageProvider';
 export * from './SensoryProvider';
 export * from './types';
-export * from './utils';
 export * from './VisualCapabilities';
 export * from './visualSafety';

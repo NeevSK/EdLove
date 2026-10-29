@@ -1,6 +1,6 @@
 'use client';
 
-import { WORLD_IDS, WORLDS, type WorldId } from '@repo/ui/world';
+import { WORLD_IDS, WORLDS, type WorldId } from '@repo/ui/theme';
 import { useEffect, useRef, useState } from 'react';
 import {
   type LuminanceMode,

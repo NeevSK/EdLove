@@ -1,4 +1,4 @@
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';

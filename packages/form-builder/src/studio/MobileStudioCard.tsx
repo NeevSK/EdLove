@@ -3,7 +3,7 @@ import type { FormField } from '@intuitui-labs/form-builder-engine/schema';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Award, ChevronDown, ChevronUp, GripVertical, Settings2, Trash2 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import React, { memo } from 'react';
 
 export interface MobileStudioCardProps {

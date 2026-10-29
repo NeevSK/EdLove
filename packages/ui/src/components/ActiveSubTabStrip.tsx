@@ -7,7 +7,7 @@ import { GripVertical, X } from '@repo/ui/icons';
 import { Box, Pressable, ScrollView, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticSelection } from '@repo/ui/utils/haptics';
-import { useWorld } from '@repo/ui/world/native';
+import { useWorld } from '@repo/ui/theme/native';
 import { usePathname, useRouter } from 'expo-router';
 import React, { useCallback, useRef } from 'react';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';

@@ -6,7 +6,7 @@ import {
   phaseOfMinute,
   seasonOfMonth,
   skyPaletteAt,
-} from '@repo/core/scene';
+} from '@repo/ui/theme/scene';
 import { useEffect, useState } from 'react';
 
 export interface SceneLiveLayerProps {

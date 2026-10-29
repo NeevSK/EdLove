@@ -68,8 +68,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-import { SceneBackdrop, useScene } from '@repo/ui/scene/native';
-import { Theme } from '@repo/ui/theme';
+import { SceneBackdrop, useScene } from '@repo/ui/components/native';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { openExternalURL } from '@repo/ui/utils/linking';
 import { safeBack } from '@repo/ui/utils/navigation';

@@ -316,8 +316,6 @@ jest.mock(`${__dirname}/../../packages/ui/src/context/EnvironmentContext`, () =>
   return {
     EnvironmentProvider: ({ children }: any) => children,
     useEnvironment: jest.fn(() => defaultEnv),
-    getTemporalPhase: jest.fn(() => 'morning'),
-    shouldUseDarkTheme: jest.fn(() => false),
   };
 });
 

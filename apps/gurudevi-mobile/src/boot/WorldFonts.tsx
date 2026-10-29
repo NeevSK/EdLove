@@ -13,8 +13,8 @@
  */
 
 import { useEnvironment } from '@repo/ui/context';
-import { fontNamesOf } from '@repo/ui/world';
-import { registerAvailableFonts } from '@repo/ui/world/native';
+import { fontNamesOf } from '@repo/ui/theme';
+import { registerAvailableFonts } from '@repo/ui/theme/native';
 import * as Font from 'expo-font';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';

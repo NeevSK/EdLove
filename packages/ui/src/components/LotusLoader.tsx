@@ -1,4 +1,4 @@
-import { WorldLoading } from '../world/native/Waiting';
+import { WorldLoading } from './native/Waiting/Waiting';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';

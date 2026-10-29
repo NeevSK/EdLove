@@ -7,7 +7,7 @@ import {
 } from '@intuitui-labs/form-builder-engine/studio';
 import { Award, Check, Eye, Play, RotateCcw, RotateCw, Save, Settings2 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import NativeForm from '../NativeForm';
 import { MobileStudioCanvas } from './MobileStudioCanvas';

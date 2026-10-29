@@ -3,7 +3,7 @@ import type { BatteryNode, FormSubmissionHistoryItem } from '@intuitui-labs/form
 import { useThemedColors } from '@repo/ui/hooks';
 import { Award, ChevronRight, Clock, Lock, ShieldCheck, Sparkles, Trophy } from '@repo/ui/icons';
 import { Badge, BadgeText, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import React, { memo, useMemo } from 'react';
 
 export interface BatterySequenceCardProps {

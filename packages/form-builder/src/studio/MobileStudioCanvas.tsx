@@ -4,7 +4,7 @@ import { DraggableCanvasSurface } from '@repo/ui/components/workspace';
 import { useThemedColors } from '@repo/ui/hooks';
 import { GitBranch, Plus, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import React, { memo } from 'react';
 import { MobileStudioCard } from './MobileStudioCard';
 
