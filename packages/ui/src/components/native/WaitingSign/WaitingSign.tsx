@@ -21,64 +21,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
 import { useWorld } from '../../../theme/native/WorldContext';
-import type { WorldId, WorldTokens } from '../../../theme/types';
-
-export type SignKind =
-  | 'flame'
-  | 'ripple'
-  | 'glint'
-  | 'leaf'
-  | 'rows'
-  | 'band'
-  | 'lamp'
-  | 'beat'
-  | 'petal'
-  | 'signal'
-  | 'charge';
-
-export const SIGNS: Readonly<Record<WorldId, SignKind>> = {
-  sanctuary: 'flame',
-  wewa: 'ripple',
-  ratna: 'glint',
-  kele: 'leaf',
-  tea: 'rows',
-  kandyan: 'band',
-  angampora: 'lamp',
-  perahera: 'beat',
-  rosa: 'petal',
-  colombo: 'signal',
-  spark: 'charge',
-};
-
-/** One loop of each sign at tempo 1, in ms. */
-const CYCLE: Readonly<Record<SignKind, number>> = {
-  flame: 2400,
-  ripple: 2400,
-  glint: 2000,
-  leaf: 2800,
-  rows: 1800,
-  band: 2200,
-  lamp: 2000,
-  beat: 1200,
-  petal: 2600,
-  signal: 1400,
-  charge: 1600,
-};
-
-/** Where each sign rests when it cannot move: a pose that still says "waiting". */
-const REST: Readonly<Record<SignKind, number>> = {
-  flame: 0.25,
-  ripple: 0.35,
-  glint: 0.5,
-  leaf: 0,
-  rows: 0.55,
-  band: 0.4,
-  lamp: 0.45,
-  beat: 0.1,
-  petal: 0.3,
-  signal: 0.2,
-  charge: 0.5,
-};
+import { SIGN_CYCLE_MS as CYCLE, SIGN_REST as REST, SIGNS, type SignKind } from '../../../theme/signs';
+import type { WorldTokens } from '../../../theme/types';
 
 interface Part {
   p: SharedValue<number>;

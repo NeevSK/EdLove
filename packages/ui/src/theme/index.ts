@@ -30,3 +30,5 @@ export {
 export { phaseTokens, resolveWorld } from './resolve';
 export type * from './types';
 export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS } from './worlds';
+export { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
+export { PERCH_VIEWBOX, PERCHES, type PerchElement, type PerchGroup, type PerchInk, type PerchShape } from './perches';

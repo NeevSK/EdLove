@@ -34,10 +34,5 @@ export {
   WorldSkeleton,
   type WorldSkeletonProps,
 } from './Waiting/Waiting';
-export {
-  SIGNS,
-  type SignKind,
-  WaitingSign,
-  type WaitingSignProps,
-} from './WaitingSign/WaitingSign';
+export { WaitingSign, type WaitingSignProps } from './WaitingSign/WaitingSign';
 export { WorldPicker, type WorldPickerProps } from './WorldPicker/WorldPicker';

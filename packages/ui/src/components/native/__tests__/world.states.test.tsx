@@ -8,7 +8,8 @@ import { WorldScope } from '../../../theme/native/WorldContext';
 import { resolveWorld } from '../../../theme/resolve';
 import { WORLD_IDS } from '../../../theme/worlds';
 import { WorldLoading, WorldSkeleton } from '../Waiting/Waiting';
-import { SIGNS, WaitingSign } from '../WaitingSign/WaitingSign';
+import { SIGNS } from '../../../theme/signs';
+import { WaitingSign } from '../WaitingSign/WaitingSign';
 
 const caps = (motion: string, allowShimmer = true) => ({ allowShimmer, experience: { motion } });
 const hidden = { includeHiddenElements: true };
