@@ -58,12 +58,12 @@ export function WorldEnter({ children, index = 0, style }: WorldEnterProps) {
 
   useEffect(() => {
     if (!m.animates) {
-      progress.value = 1;
+      progress.set(1);
       return;
     }
     const delay = index * m.stagger;
     const to = m.spring ? withSpring(1, m.spring) : withTiming(1, m.timing());
-    progress.value = delay > 0 ? withDelay(delay, to) : to;
+    progress.set(delay > 0 ? withDelay(delay, to) : to);
   }, [m, index, progress]);
 
   const { x, y } = m.from;

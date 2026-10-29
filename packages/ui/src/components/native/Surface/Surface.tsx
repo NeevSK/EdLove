@@ -1,12 +1,11 @@
 import type { ComponentRef, ReactNode, Ref } from 'react';
-import { StyleSheet, type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
-import type { SurfaceTone, SurfaceToneRecipe } from '../../../theme/types';
+import { type StyleProp, StyleSheet, View, type ViewProps, type ViewStyle } from 'react-native';
+import type { SurfaceContract } from '../../../theme/contracts';
 import { edgeStyle, insetRadius, radiusStyle, shadowStyle } from '../../../theme/native/style';
 import { useWorld } from '../../../theme/native/WorldContext';
+import type { SurfaceToneRecipe } from '../../../theme/types';
 
-export interface SurfaceProps extends ViewProps {
-  /** `plain`: ruled lines, no box. `raised`: a held sheet. `inset`: a quiet well. */
-  tone?: SurfaceTone;
+export interface SurfaceProps extends SurfaceContract, ViewProps {
   /** Remove the recipe's padding when the content manages its own. */
   flush?: boolean;
   children?: ReactNode;

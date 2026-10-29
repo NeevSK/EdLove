@@ -9,8 +9,8 @@
 import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Svg, { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
-import type { WorldId, WorldTokens } from '../../../theme/types';
 import { useWorld } from '../../../theme/native/WorldContext';
+import type { WorldId, WorldTokens } from '../../../theme/types';
 
 type Draw = (t: WorldTokens) => ReactNode;
 

@@ -1,23 +1,10 @@
-import type { ComponentRef, ReactNode, Ref } from 'react';
+import type { ComponentRef, Ref } from 'react';
 import { Pressable, Text as RNText, type StyleProp, View, type ViewStyle } from 'react-native';
+import type { RowContract } from '../../../theme/contracts';
 import { glowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 
-export interface RowProps {
-  label: string;
-  /** The current value, shown at the end of the row ("Comfortable", "Only here"). */
-  detail?: string;
-  /** A quiet sentence under the row explaining what the setting means. */
-  note?: string;
-  /** A control at the end of the row (a switch, a segmented choice). */
-  accessory?: ReactNode;
-  onPress?: () => void;
-  /** This row needs the person: a small lit dot and the value in the lamp colour. */
-  signal?: boolean;
-  /** Words a screen reader adds when `signal` is on (already translated), e.g. "needs you". */
-  signalLabel?: string;
-  /** Show the "goes somewhere" mark. Defaults to true for pressable rows without an accessory. */
-  chevron?: boolean;
+export interface RowProps extends RowContract {
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
   ref?: Ref<ComponentRef<typeof View>>;

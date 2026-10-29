@@ -20,8 +20,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
-import type { WorldId, WorldTokens } from '../../../theme/types';
 import { useWorld } from '../../../theme/native/WorldContext';
+import type { WorldId, WorldTokens } from '../../../theme/types';
 
 export type SignKind =
   | 'flame'
@@ -456,14 +456,20 @@ export function WaitingSign({ size = 40, kind, still = false }: WaitingSignProps
 
   useEffect(() => {
     if (moving) {
-      p.value = 0;
-      p.value = withRepeat(withTiming(1, { duration: cycle, easing: Easing.linear }), -1, false);
+      p.set(0);
+      p.set(withRepeat(withTiming(1, { duration: cycle, easing: Easing.linear }), -1, false));
     } else {
-      p.value = REST[sign];
+      p.set(REST[sign]);
     }
-    breath.value = breathing
-      ? withRepeat(withTiming(0.5, { duration: 1200, easing: Easing.inOut(Easing.sin) }), -1, true)
-      : 1;
+    breath.set(
+      breathing
+        ? withRepeat(
+            withTiming(0.5, { duration: 1200, easing: Easing.inOut(Easing.sin) }),
+            -1,
+            true,
+          )
+        : 1,
+    );
     return () => {
       cancelAnimation(p);
       cancelAnimation(breath);

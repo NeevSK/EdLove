@@ -3,6 +3,11 @@
  * in, and what verger allows now. Screens only say how present the scene may be.
  */
 
+import { useVergerSnapshot } from '@repo/verger-react';
+import { useIsFocused, usePathname } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
+import { useVisualCapabilities } from '../../../context/VisualCapabilities';
+import { useWorld } from '../../../theme/native/WorldContext';
 import {
   resolveScene,
   roomOfPath,
@@ -14,11 +19,6 @@ import {
   type SceneSurface,
   type SceneWeather,
 } from '../../../theme/scene';
-import { useVergerSnapshot } from '@repo/verger-react';
-import { useIsFocused, usePathname } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { useVisualCapabilities } from '../../../context/VisualCapabilities';
-import { useWorld } from '../../../theme/native/WorldContext';
 
 export interface UseSceneOptions {
   presence: ScenePresence;

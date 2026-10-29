@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ComponentRef, ComponentType, Ref } from 'react';
+import type { ComponentRef, Ref } from 'react';
 import {
   type GestureResponderEvent,
   Pressable,
@@ -10,21 +10,19 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { BrandPulse } from '../../BrandPulse';
-import { type HapticImpact, hapticImpact } from '../../../utils/haptics';
-import type { ButtonSize, ButtonVariant } from '../../../theme/types';
-import { edgeStyle, glowStyle, insetRadius, radiusStyle, typeStyle } from '../../../theme/native/style';
+import type { ButtonContract } from '../../../theme/contracts';
+import {
+  edgeStyle,
+  glowStyle,
+  insetRadius,
+  radiusStyle,
+  typeStyle,
+} from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import { type HapticImpact, hapticImpact } from '../../../utils/haptics';
+import { BrandPulse } from '../../BrandPulse';
 
-export interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
-  /** The words on the button. Also its accessible name. */
-  label: string;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  /** Optional leading icon, drawn in the button's ink colour. */
-  icon?: ComponentType<{ size?: number; color?: string }>;
-  loading?: boolean;
-  fullWidth?: boolean;
+export interface ButtonProps extends ButtonContract, Omit<PressableProps, 'children' | 'style'> {
   haptic?: HapticImpact | false;
   style?: StyleProp<ViewStyle>;
   ref?: Ref<ComponentRef<typeof View>>;

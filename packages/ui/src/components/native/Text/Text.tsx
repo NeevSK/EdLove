@@ -1,15 +1,11 @@
 import type { ComponentRef, Ref } from 'react';
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
-import type { TextRole, TextTone, WorldTokens } from '../../../theme/types';
+import type { TextContract } from '../../../theme/contracts';
 import { typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import type { TextTone, WorldTokens } from '../../../theme/types';
 
-export interface TextProps extends RNTextProps {
-  /** What the words are for. The world decides how each kind looks. */
-  kind?: TextRole;
-  /** Override the role's colour with another semantic ink. */
-  tone?: TextTone;
-  align?: 'left' | 'center' | 'right';
+export interface TextProps extends TextContract, RNTextProps {
   ref?: Ref<ComponentRef<typeof RNText>>;
 }
 

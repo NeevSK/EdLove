@@ -6,17 +6,12 @@ import {
   type TextInputProps,
   View,
 } from 'react-native';
-import type { FieldState } from '../../../theme/types';
+import type { FieldContract } from '../../../theme/contracts';
 import { glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import type { FieldState } from '../../../theme/types';
 
-export interface TextFieldProps extends Omit<TextInputProps, 'style' | 'editable'> {
-  /** Always visible above the field, and the field's accessible name. */
-  label: string;
-  /** Quiet help under the field. */
-  hint?: string;
-  /** When set, the field shows its error state and this message, and announces it. */
-  error?: string;
+export interface TextFieldProps extends FieldContract, Omit<TextInputProps, 'style' | 'editable'> {
   disabled?: boolean;
   ref?: Ref<ComponentRef<typeof TextInput>>;
 }

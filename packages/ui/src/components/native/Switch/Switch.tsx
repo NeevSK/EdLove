@@ -1,14 +1,11 @@
 import { Switch as RNSwitch, type SwitchProps as RNSwitchProps } from 'react-native';
-import { hapticImpact } from '../../../utils/haptics';
+import type { SwitchContract } from '../../../theme/contracts';
 import { useWorld } from '../../../theme/native/WorldContext';
+import { hapticImpact } from '../../../utils/haptics';
 
 export interface SwitchProps
-  extends Omit<RNSwitchProps, 'trackColor' | 'thumbColor' | 'onValueChange'> {
-  value: boolean;
-  onValueChange: (value: boolean) => void;
-  /** The setting's name. Required: a switch on its own says nothing. */
-  label: string;
-}
+  extends SwitchContract,
+    Omit<RNSwitchProps, 'trackColor' | 'thumbColor' | 'value' | 'onValueChange'> {}
 
 /** An on/off setting. Lit with the world's lamp when on, a quiet line when off. */
 export function Switch({ value, onValueChange, label, disabled, ...rest }: SwitchProps) {

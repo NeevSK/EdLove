@@ -15,11 +15,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
-import type { Radius } from '../../../theme/types';
 import { radiusStyle } from '../../../theme/native/style';
+import { useWorld } from '../../../theme/native/WorldContext';
+import type { Radius } from '../../../theme/types';
 import { Text } from '../Text/Text';
 import { WaitingSign } from '../WaitingSign/WaitingSign';
-import { useWorld } from '../../../theme/native/WorldContext';
 
 const SIGN_SIZE = { sm: 28, md: 44, lg: 64 } as const;
 
@@ -99,13 +99,11 @@ export function WorldSkeleton({
 
   useEffect(() => {
     if (!shimmer) {
-      glow.value = 0;
+      glow.set(0);
       return;
     }
-    glow.value = withRepeat(
-      withTiming(1, { duration: pace, easing: Easing.inOut(Easing.sin) }),
-      -1,
-      true,
+    glow.set(
+      withRepeat(withTiming(1, { duration: pace, easing: Easing.inOut(Easing.sin) }), -1, true),
     );
     return () => cancelAnimation(glow);
   }, [shimmer, pace, glow]);

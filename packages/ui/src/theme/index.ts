@@ -10,6 +10,7 @@
 
 export { buildRecipes } from './build';
 export * from './color';
+export type * from './contracts';
 export {
   boxShadowCss,
   paintCss,

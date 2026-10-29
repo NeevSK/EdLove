@@ -7,20 +7,12 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { hapticImpact } from '../../../utils/haptics';
+import type { ChipContract, ChipsContract } from '../../../theme/contracts';
 import { edgeStyle, glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import { hapticImpact } from '../../../utils/haptics';
 
-export interface ChipProps extends Omit<PressableProps, 'children' | 'style'> {
-  label: string;
-  selected?: boolean;
-  /**
-   * `radio` inside a single-choice group, `checkbox` for multi-select,
-   * `button` (default) for a toggle that stands alone.
-   */
-  kind?: 'button' | 'radio' | 'checkbox';
-  /** Language of the label, when it differs from the app (e.g. a language picker). */
-  lang?: 'en' | 'si' | 'ta';
+export interface ChipProps extends ChipContract, Omit<PressableProps, 'children' | 'style'> {
   style?: StyleProp<ViewStyle>;
   ref?: Ref<ComponentRef<typeof View>>;
 }
@@ -81,12 +73,8 @@ export function Chip({
   );
 }
 
-export interface ChipsProps {
+export interface ChipsProps extends ChipsContract {
   children: ReactNode;
-  /** Accessible name of the group, e.g. "Language". */
-  label?: string;
-  /** Single choice groups are announced as radio groups. */
-  single?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 

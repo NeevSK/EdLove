@@ -6,6 +6,10 @@
  * nothing and the world's own ground (already tinted by the hour) shows through.
  */
 
+import { useMemo, useState } from 'react';
+import { type LayoutChangeEvent, Platform, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Canvas, LinearGradient, Rect, vec } from 'react-native-skia';
+import { useWorld } from '../../../theme/native/WorldContext';
 import {
   daylightAt,
   landscapeColours,
@@ -14,10 +18,6 @@ import {
   SCENE_LIGHT,
   type Scene,
 } from '../../../theme/scene';
-import { useMemo, useState } from 'react';
-import { type LayoutChangeEvent, Platform, StyleSheet, View, type ViewStyle } from 'react-native';
-import { Canvas, LinearGradient, Rect, vec } from 'react-native-skia';
-import { useWorld } from '../../../theme/native/WorldContext';
 import { SceneStill } from './SceneStill';
 import { SceneWeather } from './SceneWeather';
 

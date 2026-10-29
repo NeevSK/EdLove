@@ -5,11 +5,11 @@
  * or no particles. Positions are a pure function of time, so nothing is allocated per drop.
  */
 
-import { SCENE_LIGHT, type Scene } from '../../../theme/scene';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { useDerivedValue, useFrameCallback, useSharedValue } from 'react-native-reanimated';
 import { BlurMask, Canvas, Path, Skia } from 'react-native-skia';
+import { SCENE_LIGHT, type Scene } from '../../../theme/scene';
 
 export interface SceneWeatherProps {
   scene: Scene;
@@ -34,8 +34,8 @@ export function SceneWeather({ scene, width, height, rainColour }: SceneWeatherP
     'worklet';
     const now = info.timeSinceFirstFrame;
     if (now - last.value >= frameMs) {
-      last.value = now;
-      time.value = now;
+      last.set(now);
+      time.set(now);
     }
   }, false);
 

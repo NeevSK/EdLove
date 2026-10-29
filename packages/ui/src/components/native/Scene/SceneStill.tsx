@@ -6,15 +6,6 @@
  */
 
 import {
-  daylightAt,
-  SCENE_LIGHT as L,
-  type Landscape,
-  type LandscapeColours,
-  mixHex,
-  type Scene,
-  WEATHER,
-} from '../../../theme/scene';
-import {
   Circle,
   Group,
   LinearGradient,
@@ -24,6 +15,15 @@ import {
   Rect,
   vec,
 } from 'react-native-skia';
+import {
+  daylightAt,
+  SCENE_LIGHT as L,
+  type Landscape,
+  type LandscapeColours,
+  mixHex,
+  type Scene,
+  WEATHER,
+} from '../../../theme/scene';
 
 export interface SceneStillProps {
   scene: Scene;

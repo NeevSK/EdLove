@@ -9,23 +9,15 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { alpha } from '../../../theme/color';
-import type { SectionDensity, SectionRecipe } from '../../../theme/types';
-import { InnerFrame, surfaceStyle } from '../Surface/Surface';
+import type { SectionContract } from '../../../theme/contracts';
 import { glowStyle, radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import type { SectionRecipe } from '../../../theme/types';
+import { InnerFrame, surfaceStyle } from '../Surface/Surface';
 
-export interface SectionProps {
-  /** Short name of the group. Announced as a heading. */
-  title: string;
-  /** Optional human sentence that opens a calm section ("What stays with you"). */
-  voice?: string;
-  /** `dense` for working screens, `calm` for quiet ones. The world picks the boundary for each. */
-  density?: SectionDensity;
-  /** This group needs the person. Each boundary shows it in its own way (a lit knot, warmer light). */
-  signal?: boolean;
-  /** Draw the closing rule under the last section of a page (margin boundary). */
+export interface SectionProps extends SectionContract {
+  /** The last section on a screen draws no closing boundary. */
   last?: boolean;
-  children: ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 

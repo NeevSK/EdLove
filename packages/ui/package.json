@@ -119,9 +119,9 @@
       "default": "./src/components/native/index.ts"
     },
     "./components/web": {
-      "types": "./src/components/web/index.tsx",
-      "import": "./src/components/web/index.tsx",
-      "default": "./src/components/web/index.tsx"
+      "types": "./src/components/web/index.ts",
+      "import": "./src/components/web/index.ts",
+      "default": "./src/components/web/index.ts"
     },
     "./components": {
       "types": "./src/components/index.ts",

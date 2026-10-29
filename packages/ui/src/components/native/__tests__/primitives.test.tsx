@@ -1,8 +1,10 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import { vi } from 'vitest';
-import { resolveWorld } from '../../../theme/resolve';
 import { WorldScope } from '../../../theme/native';
+import { resolveWorld } from '../../../theme/resolve';
+import type { WorldId } from '../../../theme/types';
+import { WORLD_IDS } from '../../../theme/worlds';
 import { Button } from '../Button/Button';
 import { Chip, Chips } from '../Chip/Chip';
 import { Row } from '../Row/Row';
@@ -10,8 +12,6 @@ import { Section } from '../Section/Section';
 import { Surface } from '../Surface/Surface';
 import { Text } from '../Text/Text';
 import { TextField } from '../TextField/TextField';
-import type { WorldId } from '../../../theme/types';
-import { WORLD_IDS } from '../../../theme/worlds';
 
 vi.mock('@repo/ui/utils/haptics', () => ({ hapticImpact: vi.fn() }));
 vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn() }));

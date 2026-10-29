@@ -1,9 +1,9 @@
 import { Pressable, Text as RNText, View } from 'react-native';
-import { hapticImpact } from '../../../utils/haptics';
-import type { Radius, WorldId } from '../../../theme/types';
-import { WORLD_IDS, WORLDS } from '../../../theme/worlds';
 import { radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext, WorldScope } from '../../../theme/native/WorldContext';
+import type { Radius, WorldId } from '../../../theme/types';
+import { WORLD_IDS, WORLDS } from '../../../theme/worlds';
+import { hapticImpact } from '../../../utils/haptics';
 
 export interface WorldPickerProps {
   value: WorldId;
