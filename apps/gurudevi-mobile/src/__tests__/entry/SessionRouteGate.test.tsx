@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
     onboardingCompleted?: boolean;
   },
   optionalStartup: vi.fn(),
+  splashHandoff: vi.fn(() => () => undefined),
 }));
 
 vi.mock('expo-router', () => ({
@@ -45,6 +46,9 @@ vi.mock('@/boot/OptionalStartupServices', () => ({
     mocks.optionalStartup(props);
     return null;
   },
+}));
+vi.mock('@/boot/nativeSplashService', () => ({
+  handoffNativeSplashAfterCommit: mocks.splashHandoff,
 }));
 vi.mock('@/boot/startupTelemetry', () => ({
   recordDevelopmentTrace: mocks.recordDevelopmentTrace,
@@ -89,6 +93,7 @@ describe('SessionRouteGate account isolation', () => {
     };
     mocks.routeState = {};
     mocks.optionalStartup.mockReset();
+    mocks.splashHandoff.mockClear();
   });
 
   it('logs route state changes without repeating identical render diagnostics', async () => {
@@ -415,6 +420,62 @@ describe('SessionRouteGate account isolation', () => {
 
     expect(mocks.replace).toHaveBeenCalledTimes(2);
     expect(tree!.toJSON()).toBe('protected-shell');
+  });
+
+  it('keeps the native splash over a route transition and releases it for the admitted route', async () => {
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: '/welcome',
+      policy: { canRenderCurrentPath: false },
+    };
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith('/welcome');
+    expect(mocks.splashHandoff).not.toHaveBeenCalled();
+
+    mocks.pathname = '/welcome';
+    await act(async () => {
+      tree!.update(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(tree!.toJSON()).toBe('protected-shell');
+    expect(mocks.splashHandoff).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the native splash when a route transition outlasts the wait', async () => {
+    vi.useFakeTimers();
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: '/welcome',
+      policy: { canRenderCurrentPath: false },
+    };
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.splashHandoff).not.toHaveBeenCalled();
+    await act(async () => {
+      vi.advanceTimersByTime(8_000);
+    });
+
+    expect(mocks.splashHandoff).toHaveBeenCalledTimes(1);
+    expect(tree!.root.findByProps({ accessibilityLabel: 'Continue to Welcome' })).toBeDefined();
   });
 
   it('shows recovery and retries profile restoration after a bootstrap failure', async () => {

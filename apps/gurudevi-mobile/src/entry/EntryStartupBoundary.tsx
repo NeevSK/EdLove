@@ -4,7 +4,7 @@ import { BrandPulse, Mascot, MascotProvider } from '@repo/ui';
 import { Pressable, Text, View } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
+import { handoffNativeSplashAfterCommit, NATIVE_SPLASH_MAX_HOLD_MS } from '@/boot/nativeSplashService';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
 import {
   measureDevelopmentStartupTask,
@@ -21,13 +21,24 @@ type StartupState =
   | { status: 'failed'; error: Error };
 
 function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => void }) {
+  const [startWaitExpired, setStartWaitExpired] = useState(false);
   useEffect(() => {
+    if (error) return;
+    const timeout = setTimeout(() => setStartWaitExpired(true), NATIVE_SPLASH_MAX_HOLD_MS);
+    return () => clearTimeout(timeout);
+  }, [error]);
+
+  // Normal startup stays under the native splash until the admitted route commits;
+  // a failure or a stalled start must still be visible.
+  const revealFallback = Boolean(error) || startWaitExpired;
+  useEffect(() => {
+    if (!revealFallback) return;
     return handoffNativeSplashAfterCommit({
       onError: (cause: unknown) => {
         console.warn('[startup] native splash handoff unavailable:', cause);
       },
     });
-  }, []);
+  }, [revealFallback]);
 
   return (
     <MascotProvider config={fireflyMascotConfig}>

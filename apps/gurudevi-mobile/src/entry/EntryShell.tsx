@@ -21,7 +21,7 @@ import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
+import { handoffNativeSplashAfterCommit, NATIVE_SPLASH_MAX_HOLD_MS } from '@/boot/nativeSplashService';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import { observeDevelopmentInteractions, recordDevelopmentTrace } from '@/boot/startupTelemetry';
 import { WorldFonts } from '@/boot/WorldFonts';
@@ -74,21 +74,27 @@ export function EntryShell() {
       state: 'committed',
     });
     console.log('[entry-shell] mounted');
-    const stopSplashHandoff = handoffNativeSplashAfterCommit({
-      onCommit: () => {
-        console.log('[entry-shell] first frame committed; hiding native splash');
-        recordDevelopmentTrace({
-          category: 'startup',
-          task: 'first-shell-frame',
-          state: 'committed',
-        });
-      },
-      onError: (error: unknown) => {
-        console.warn('[entry-shell] native splash handoff unavailable:', error);
-      },
+    const shellFrame = requestAnimationFrame(() => {
+      recordDevelopmentTrace({
+        category: 'startup',
+        task: 'first-shell-frame',
+        state: 'committed',
+      });
     });
+    // SessionRouteGate releases the splash once the admitted route commits; this
+    // only covers paths that never reach it.
+    let stopSplashHandoff = () => {};
+    const splashHold = setTimeout(() => {
+      stopSplashHandoff = handoffNativeSplashAfterCommit({
+        onError: (error: unknown) => {
+          console.warn('[entry-shell] native splash safety release unavailable:', error);
+        },
+      });
+    }, NATIVE_SPLASH_MAX_HOLD_MS);
     return () => {
       stopObservingInteractions();
+      cancelAnimationFrame(shellFrame);
+      clearTimeout(splashHold);
       stopSplashHandoff();
     };
   }, []);

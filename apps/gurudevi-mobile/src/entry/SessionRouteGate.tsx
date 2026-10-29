@@ -5,6 +5,7 @@ import { Mascot } from '@repo/ui/components/Mascot';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { type Href, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { type ReactNode, useEffect, useState } from 'react';
+import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import { recordDevelopmentTrace } from '@/boot/startupTelemetry';
 import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
@@ -23,7 +24,7 @@ export function SessionRouteGate({
   const params = useGlobalSearchParams<{ entry?: string }>();
   const { refreshProfile } = useAuth();
   const routeState = useBootstrapRouteState(pathname);
-  const [restoreWaitExpired, setRestoreWaitExpired] = useState(false);
+  const [expiredEntryWait, setExpiredEntryWait] = useState<string | null>(null);
   const isDevelopmentToolRoute =
     __DEV__ && (pathname === '/verger-lab' || pathname === '/verger-diagnostics');
   const bootstrapTarget = getBootstrapRouteTarget(routeState, {
@@ -38,16 +39,44 @@ export function SessionRouteGate({
         profileError: routeState.profileError,
         routeTarget,
       });
+  // Each calm wait (a transition, or restoring without an error) is keyed by its
+  // route and kind, so a new wait starts unexpired without resetting state.
+  const entryWaitKey =
+    presentation.kind === 'transition' ||
+    (presentation.kind === 'restoring' && !presentation.message)
+      ? `${pathname}:${presentation.kind}`
+      : null;
+  const entryWaitExpired = entryWaitKey !== null && expiredEntryWait === entryWaitKey;
   useEffect(() => {
-    setRestoreWaitExpired(false);
-    if (presentation.kind !== 'restoring' || presentation.message) return;
-    const timeout = setTimeout(() => setRestoreWaitExpired(true), 8_000);
-    return () => clearTimeout(timeout);
-  }, [
-    pathname,
-    presentation.kind,
-    presentation.kind === 'restoring' ? presentation.message : null,
-  ]);
+    if (!entryWaitKey) return;
+    const timeout = setTimeout(() => setExpiredEntryWait(entryWaitKey), 8_000);
+    return () => {
+      clearTimeout(timeout);
+      // A later wait with the same key must start calm again.
+      setExpiredEntryWait(null);
+    };
+  }, [entryWaitKey]);
+  // The native splash stays over the root -> destination replace, so the first
+  // visible frame is the admitted route rather than a transition surface that
+  // exists only while Expo Router commits. A transition that outlasts the wait
+  // releases it anyway, so the Continue fallback below can be reached.
+  const revealEntry = presentation.kind !== 'transition' || entryWaitExpired;
+  useEffect(() => {
+    if (!revealEntry) return;
+    return handoffNativeSplashAfterCommit({
+      onCommit: () => {
+        console.log('[entry] admitted route committed; hiding native splash');
+        recordDevelopmentTrace({
+          category: 'startup',
+          task: 'admitted-route-frame',
+          state: 'committed',
+        });
+      },
+      onError: (error: unknown) => {
+        console.warn('[entry] native splash handoff unavailable:', error);
+      },
+    });
+  }, [revealEntry]);
   const mountCloudServices =
     presentation.kind === 'content' &&
     presentation.mountProtectedServices &&
@@ -161,7 +190,7 @@ export function SessionRouteGate({
         <Text className="mt-6 text-center text-base font-semibold text-phase-text-primary">
           Opening Gurudevi…
         </Text>
-        {restoreWaitExpired ? (
+        {entryWaitExpired ? (
           <>
             <Text className="mt-2 text-center text-sm text-phase-text-muted">
               This is taking longer than usual.

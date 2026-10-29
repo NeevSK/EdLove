@@ -1,0 +1,39 @@
+steps:
+  - echo: On English Welcome, expect Explore as Guest before entering normal
+      onboarding.
+  - tool: await-ui-element
+    args:
+      condition: visible
+      selector:
+        text: Explore as Guest
+      timeoutMs: 15000
+  - echo: Tap Explore as Guest through normal app UI; expect onboarding
+      identity/name step.
+  - tap:
+      text: Explore as Guest
+  - tool: await-ui-element
+    args:
+      condition: visible
+      selector:
+        text: Enter the name you'd like us to use
+      timeoutMs: 15000
+  - echo: On onboarding name step, focus name and enter dev::sandbox; expect
+      developer-only sandbox console through the normal parser.
+  - tap:
+      text: Enter the name you'd like us to use
+  - tool: keyboard
+    args:
+      text: dev::sandbox
+  - echo: Name field visibly contains dev::sandbox; Continue should open Sandbox
+      Console.
+  - tap:
+      text: Continue
+  - tool: await-ui-element
+    args:
+      condition: visible
+      selector:
+        text: Sandbox Console
+      timeoutMs: 15000
+executionPrerequisite: Isolated Android Verger v2 development client foreground
+  on English Welcome, no authenticated account, Metro connected and
+  developer-menu overlays closed.

@@ -27,4 +27,27 @@ describe('native splash service', () => {
       }),
     );
   });
+
+  it('hides the splash once however many entry surfaces ask', () => {
+    vi.stubGlobal('requestAnimationFrame', (callback: () => void) => {
+      callback();
+      return 1;
+    });
+    mocks.schedule.mockReset();
+    mocks.schedule.mockImplementation(
+      ({ requestFrame, hide }: { requestFrame: (cb: () => void) => number; hide: () => void }) => {
+        requestFrame(() => hide());
+        return vi.fn();
+      },
+    );
+    const onCommit = vi.fn();
+
+    handoffNativeSplashAfterCommit({ onCommit, onError: vi.fn() });
+    handoffNativeSplashAfterCommit({ onCommit, onError: vi.fn() });
+
+    expect(mocks.hideAsync).toHaveBeenCalledTimes(1);
+    expect(onCommit).toHaveBeenCalledTimes(1);
+    expect(mocks.schedule).toHaveBeenCalledTimes(1);
+    vi.unstubAllGlobals();
+  });
 });
