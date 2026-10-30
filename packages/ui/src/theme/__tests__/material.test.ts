@@ -61,6 +61,8 @@ describe('world material and living light', { tags: ['unit'] }, () => {
     const t = base.palette.light;
     const even = buildRecipes(t, { ...base.style, material: { temperature: 0 } }, 'light');
     expect(even.material.wash.centre).toBe(t.raised);
+    expect(even.material.wash.edge).toBe(t.raised);
+    expect(even.surface.raised.wash).toBeNull();
     const warm = buildRecipes(t, { ...base.style, material: { temperature: 1 } }, 'light');
     expect(warm.material.wash.centre).not.toBe(t.raised);
   });

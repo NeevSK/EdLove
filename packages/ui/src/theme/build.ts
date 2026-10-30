@@ -207,7 +207,7 @@ function buildMaterial(t: WorldTokens, s: WorldStyle, mode: WorldMode): Material
     grain: m.grain ?? 0,
     wash: {
       centre: mix(mix(t.raised, t.glow, warm), t.line, cool),
-      edge: mix(t.raised, warm > 0 ? t.line : t.glow, 0.06),
+      edge: temperature === 0 ? t.raised : mix(t.raised, warm > 0 ? t.line : t.glow, 0.06),
     },
     shadow,
     detail: m.detail ?? (s.ornament === 'hairline' ? 'sparse' : 'focused'),
@@ -268,6 +268,7 @@ function buildSurface(
         : null,
       ruleTop: null,
       ruleBottom: null,
+      wash: material.wash.centre === material.wash.edge ? null : material.wash,
     },
     inset: {
       fill: t.sunken,

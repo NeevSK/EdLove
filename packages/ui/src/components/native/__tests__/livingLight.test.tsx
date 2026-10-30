@@ -4,6 +4,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { WorldScope } from '../../../theme/native';
 import { resolveWorld } from '../../../theme/resolve';
 import { Button } from '../Button/Button';
+import { Checkbox } from '../Checkbox/Checkbox';
+import { Chip } from '../Chip/Chip';
+import { Surface } from '../Surface/Surface';
 import { TextField } from '../TextField/TextField';
 
 vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
@@ -63,5 +66,62 @@ describe('living light', { tags: ['interaction', 'unit'] }, () => {
       .children.flatMap((c) => (typeof c === 'string' ? [] : [c]))
       .map((c) => flat(c.props.style));
     expect(layers.some((s) => s.backgroundColor === glow)).toBe(false);
+  });
+
+  it('a checkbox fills with the lamp when checked, from the lamp at zero', async () => {
+    const r = resolveWorld('sanctuary', 'morning', 'light').recipes.toggle;
+    const tree = (checked: boolean) => (
+      <WorldScope world="sanctuary" phase="morning" mode="light">
+        <Checkbox label="Notify" checked={checked} onChange={() => {}} />
+      </WorldScope>
+    );
+    const { rerender } = await render(tree(false));
+    const box = () => {
+      const [first] = screen
+        .getByRole('checkbox')
+        .children.flatMap((c) => (typeof c === 'string' ? [] : [c]));
+      return flat(first?.props.style);
+    };
+    expect(box().borderColor).toBe(r.edge.color);
+    expect(box().backgroundColor).not.toBe(r.on.fill);
+    await rerender(tree(true));
+    await rerender(tree(true));
+    expect(box()).toMatchObject({ borderColor: r.on.fill, backgroundColor: r.on.fill });
+  });
+
+  it('a chip paints its selected fill on a layer that does not take touches', async () => {
+    const chip = resolveWorld('kandyan', 'morning', 'light').recipes.chip;
+    const tree = (selected: boolean) => (
+      <WorldScope world="kandyan" phase="morning" mode="light">
+        <Chip kind="radio" label="Tamil" selected={selected} />
+      </WorldScope>
+    );
+    const { rerender } = await render(tree(false));
+    await rerender(tree(true));
+    await rerender(tree(true));
+    const layer = screen
+      .getByRole('radio', { name: 'Tamil' })
+      .children.flatMap((c) => (typeof c === 'string' ? [] : [c]))
+      .find((c) => c.props.pointerEvents === 'none');
+    expect(layer).toBeDefined();
+    // Kandyan chips are outlined, so the selected state has a fill to glide to.
+    expect(chip.selected.fill).toBeTruthy();
+    expect(flat(layer?.props.style).backgroundColor).toBe(chip.selected.fill);
+  });
+
+  it('raised surfaces carry the material wash; a world with an even temperature does not', async () => {
+    const w = resolveWorld('wewa', 'morning', 'light');
+    await render(
+      <WorldScope world="wewa" phase="morning" mode="light">
+        <Surface testID="s" tone="raised" />
+        <Surface testID="i" tone="inset" />
+      </WorldScope>,
+    );
+    const wash = w.recipes.surface.raised.wash;
+    expect(wash).toBeTruthy();
+    expect(flat(screen.getByTestId('s').props.style).backgroundImage).toBe(
+      `radial-gradient(120% 100% at 50% 35%, ${wash?.centre}, ${wash?.edge})`,
+    );
+    expect(flat(screen.getByTestId('i').props.style).backgroundImage).toBeUndefined();
   });
 });

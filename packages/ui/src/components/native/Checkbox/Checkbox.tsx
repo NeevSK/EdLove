@@ -1,7 +1,10 @@
 import { Pressable, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import Animated from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { alpha } from '../../../theme/color';
 import type { CheckboxContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
+import { useLivingStyle } from '../../../theme/native/motion';
 import { radiusStyle } from '../../../theme/native/style';
 import { useWorld } from '../../../theme/native/WorldContext';
 import { Text } from '../Text/Text';
@@ -39,6 +42,12 @@ export function Checkbox({ checked, onChange, label, hint, disabled, style }: Ch
   const r = useWorld().recipes.toggle;
   const feedback = useFeedback();
   const on = checked !== false;
+  // The box fills with light rather than snapping; off is the lamp at zero, so
+  // the blend never passes through grey.
+  const light = useLivingStyle({
+    borderColor: on ? r.on.fill : r.edge.color,
+    backgroundColor: on ? r.on.fill : alpha(r.on.fill, 0),
+  });
   return (
     <Pressable
       role="checkbox"
@@ -53,16 +62,11 @@ export function Checkbox({ checked, onChange, label, hint, disabled, style }: Ch
       }}
       style={({ pressed }) => [styles.row, { opacity: disabled ? 0.5 : pressed ? 0.85 : 1 }, style]}
     >
-      <View
+      <Animated.View
         style={[
-          {
-            width: r.size,
-            height: r.size,
-            borderWidth: r.edge.width,
-            borderColor: on ? r.on.fill : r.edge.color,
-          },
+          { width: r.size, height: r.size, borderWidth: r.edge.width },
           radiusStyle(r.radius),
-          on ? { backgroundColor: r.on.fill } : null,
+          light,
         ]}
       >
         {on ? (
@@ -72,7 +76,7 @@ export function Checkbox({ checked, onChange, label, hint, disabled, style }: Ch
             color={r.on.mark}
           />
         ) : null}
-      </View>
+      </Animated.View>
       <View style={styles.words}>
         <Text kind="body">{label}</Text>
         {hint ? (

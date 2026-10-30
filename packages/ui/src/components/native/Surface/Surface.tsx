@@ -24,6 +24,11 @@ export function surfaceStyle(r: SurfaceToneRecipe, flush = false): ViewStyle {
     ...(r.ruleBottom
       ? { borderBottomWidth: r.ruleBottom.width, borderBottomColor: r.ruleBottom.color }
       : null),
+    ...(r.wash && r.fill
+      ? {
+          backgroundImage: `radial-gradient(120% 100% at 50% 35%, ${r.wash.centre}, ${r.wash.edge})`,
+        }
+      : null),
   };
 }
 

@@ -155,6 +155,8 @@ export interface SurfaceToneRecipe {
   /** Ruled lines instead of a box (the `plain` tone in most worlds). */
   ruleTop: Edge | null;
   ruleBottom: Edge | null;
+  /** Light inside the fill: a warmer centre fading to a cooler edge (the material wash). */
+  wash?: { centre: string; edge: string } | null;
 }
 
 export type SurfaceRecipe = Record<SurfaceTone, SurfaceToneRecipe>;
