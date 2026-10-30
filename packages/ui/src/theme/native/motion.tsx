@@ -2,6 +2,7 @@ import { type ReactNode, useCallback, useEffect, useMemo } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   Easing,
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
@@ -88,16 +89,31 @@ export function WorldEnter({ children, index = 0, style }: WorldEnterProps) {
  */
 export function usePressMotion() {
   const m = useWorldMotion();
+  const material = useWorld().recipes.material;
   const scale = useSharedValue(1);
+  const lift = useSharedValue(0);
   const to = useCallback(
-    (value: number) => {
-      if (!m.animates || m.press >= 1) return;
+    (pressed: boolean) => {
+      if (!m.animates) return;
+      // Living light: the fill brightens from within while held.
+      lift.set(
+        withTiming(pressed ? material.states.press.lift : 0, { duration: material.responseMs }),
+      );
+      if (m.press >= 1) return;
+      const value = pressed ? m.press : 1;
       scale.set(m.spring ? withSpring(value, m.spring) : withTiming(value, m.timing('micro')));
     },
-    [m, scale],
+    [m, material, scale, lift],
   );
   const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
-  return { style, pressIn: () => to(m.press), pressOut: () => to(1) };
+  /** For a non-interactive layer filling the control, coloured `light.color`. */
+  const glow = useAnimatedStyle(() => ({ opacity: lift.get() }));
+  return {
+    style,
+    light: { style: glow, color: material.states.press.glow },
+    pressIn: () => to(true),
+    pressOut: () => to(false),
+  };
 }
 
 /** How far a shake travels, in dp, and how many times it turns. */
@@ -122,4 +138,48 @@ export function useShake() {
   }, [m, x]);
   const style = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
   return { style, shake };
+}
+
+/** Style keys whose colours living light may move. */
+export type LivingColorKey =
+  | 'backgroundColor'
+  | 'borderColor'
+  | 'borderBottomColor'
+  | 'shadowColor';
+
+/**
+ * Living light: colours glide to their new state instead of snapping (an edge
+ * warms on focus, a fill brightens on press, an error edge flares). Pass the
+ * colours the recipe gives for the current state; the move takes the world's
+ * `material.responseMs` on the UI thread. Still when motion is off.
+ */
+export function useLivingStyle(colors: Partial<Record<LivingColorKey, string>>) {
+  const m = useWorldMotion();
+  const ms = useWorld().recipes.material.responseMs;
+  const from = useSharedValue(colors);
+  const to = useSharedValue(colors);
+  const progress = useSharedValue(1);
+  // Callers pass a fresh object each render; the JSON is its identity.
+  const signature = JSON.stringify(colors);
+  useEffect(() => {
+    from.set(to.get());
+    to.set(JSON.parse(signature) as Partial<Record<LivingColorKey, string>>);
+    if (!m.animates) {
+      progress.set(1);
+      return;
+    }
+    progress.set(0);
+    progress.set(withTiming(1, { duration: ms, easing: m.timing().easing }));
+  }, [signature, m, ms, from, to, progress]);
+  return useAnimatedStyle(() => {
+    const out: Partial<Record<LivingColorKey, string>> = {};
+    const target = to.get();
+    const start = from.get();
+    for (const key of Object.keys(target) as LivingColorKey[]) {
+      const end = target[key];
+      if (end === undefined) continue;
+      out[key] = interpolateColor(progress.get(), [0, 1], [start[key] ?? end, end]);
+    }
+    return out;
+  });
 }

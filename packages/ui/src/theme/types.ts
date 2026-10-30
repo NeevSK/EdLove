@@ -358,6 +358,59 @@ export interface StatusRecipe {
   avatar: { fill: string; ink: string; edge: Edge };
 }
 
+/**
+ * The moments a lit element answers: resting, focused, pressed, refused,
+ * confirmed. Living light moves between them instead of snapping.
+ */
+export type LightMoment = 'rest' | 'focus' | 'press' | 'invalid' | 'success';
+
+/** How light sits on an element in one moment. */
+export interface LightState {
+  /** Edge (border, underline) colour. */
+  edge: string;
+  /** Colour of the light around or within the element. */
+  glow: string;
+  /** 0 = no light. */
+  glowOpacity: number;
+  /** How far a solid fill brightens toward the world's glow, 0–1. */
+  lift: number;
+}
+
+/**
+ * What a world's surfaces are made of, beyond fill and corners: the
+ * "alive, not manufactured" layer (intentional-ui-design, gurudevi-aliveness).
+ * Every value is derived from tokens, so a world can tune it but never needs to.
+ * Some fields are affordances that renderers adopt step by step (see the
+ * requirements ledger); they are resolved now so worlds can already say them.
+ */
+export interface MaterialRecipe {
+  /** Where light comes from: within the surface, cast over it, or none. */
+  light: 'within' | 'over' | 'none';
+  /** Paper or vellum texture strength, 0–1 (0 = smooth). */
+  grain: number;
+  /** Micro-variation inside raised surfaces: a warmer centre, a cooler edge. */
+  wash: { centre: string; edge: string };
+  /** Shadow colour: tinted by the world's ink, never neutral black in light mode. */
+  shadow: string;
+  /** Where detail gathers: nowhere, only at meaningful moments, or richly. */
+  detail: 'sparse' | 'focused' | 'rich';
+  /** Living light: how each moment looks, and how long the move takes. */
+  states: Record<LightMoment, LightState>;
+  responseMs: number;
+}
+
+/** A world's say over its material. Everything is optional. */
+export interface WorldMaterial {
+  light?: MaterialRecipe['light'];
+  grain?: number;
+  /** -1 (cool centre) to 1 (warm centre); 0 for an even fill. */
+  temperature?: number;
+  shadow?: 'chromatic' | 'neutral';
+  detail?: MaterialRecipe['detail'];
+  /** How strongly living light answers: quietly or vividly. */
+  response?: 'quiet' | 'vivid';
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -370,6 +423,7 @@ export interface WorldRecipes {
   overlay: OverlayRecipe;
   toggle: ToggleRecipe;
   status: StatusRecipe;
+  material: MaterialRecipe;
   motion: { settleMs: number; breatheMs: number };
 }
 
@@ -392,6 +446,8 @@ export interface WorldStyle {
   lineWeight: number;
   boundary: Record<SectionDensity, BoundaryKind>;
   ornament: OrnamentKind;
+  /** Material character; derived from the rest of the style when absent. */
+  material?: WorldMaterial;
 }
 
 export interface WorldPalette {

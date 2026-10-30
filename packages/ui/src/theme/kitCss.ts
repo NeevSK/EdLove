@@ -270,9 +270,12 @@ const BASE_CSS = `
 @media (hover:none){.gd-swiperow-actions{opacity:1}}
 .gd-button,.gd-chip,.gd-icon-button,.gd-segment{transition:opacity var(--w-settle),transform var(--w-settle),background var(--w-settle),box-shadow var(--w-settle)}
 .gd-button:active:not(:disabled),.gd-chip:active:not(:disabled),.gd-icon-button:active:not(:disabled){transform:scale(var(--w-press))}
+.gd-button{transition:opacity var(--w-settle),transform var(--w-settle),background var(--w-settle),box-shadow var(--w-settle),filter var(--w-light-ms)}
+.gd-button:active:not(:disabled){filter:brightness(calc(1 + var(--w-light-press-lift)))}
+.gd-field-input{transition:box-shadow var(--w-light-ms) ease-out}
 .gd-field[data-state="error"] .gd-field-input{animation:gd-shake 320ms ease-out 1}
 @keyframes gd-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
-@media (prefers-reduced-motion:reduce){.gd-button:active,.gd-chip:active,.gd-icon-button:active{transform:none}.gd-field[data-state="error"] .gd-field-input{animation:none}}
+@media (prefers-reduced-motion:reduce){.gd-button:active,.gd-chip:active,.gd-icon-button:active{transform:none;filter:none}.gd-button,.gd-field-input{transition:none}.gd-field[data-state="error"] .gd-field-input{animation:none}}
 .gd-picker{display:flex;flex-direction:column;gap:8px;padding:6px 0}
 .gd-picker-choice{appearance:none;margin:0;font:inherit;text-align:start;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 14px;border-radius:14px;background:var(--w-ground);border:1px solid var(--w-line);color:var(--w-ink)}
 .gd-picker-choice[aria-checked="true"]{border:2px solid var(--w-focus)}

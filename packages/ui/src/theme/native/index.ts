@@ -7,6 +7,8 @@
 
 export { useErrorFeedback, useFeedback } from './feedback';
 export {
+  type LivingColorKey,
+  useLivingStyle,
   usePressMotion,
   useShake,
   useWorldMotion,

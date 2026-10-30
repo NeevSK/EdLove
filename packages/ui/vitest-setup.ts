@@ -104,3 +104,11 @@ vi.mock('react-native-gesture-handler', async (importOriginal) => {
     usePanGesture: vi.fn((config: unknown) => config),
   };
 });
+
+// vitest-native's reanimated preset has no `interpolateColor` (living light in
+// the kit). Substitute one that lands on the end colour, as a finished timing does.
+vi.mock('react-native-reanimated', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  interpolateColor: (value: number, input: readonly number[], output: readonly string[]) =>
+    output[value >= (input.at(-1) ?? 1) ? output.length - 1 : 0],
+}));

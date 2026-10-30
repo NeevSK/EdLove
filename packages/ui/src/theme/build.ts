@@ -12,16 +12,17 @@ import type {
   ButtonRecipe,
   ChipRecipe,
   FieldRecipe,
+  MaterialRecipe,
   OverlayRecipe,
-  StatusRecipe,
-  ToggleRecipe,
   Radius,
   RowRecipe,
   SectionDensity,
   SectionRecipe,
+  StatusRecipe,
   SurfaceRecipe,
   SurfaceToneRecipe,
   TextRole,
+  ToggleRecipe,
   TypeStyle,
   WorldMode,
   WorldRecipes,
@@ -181,7 +182,55 @@ function buildButton(t: WorldTokens, s: WorldStyle, mode: WorldMode): ButtonReci
   };
 }
 
-function buildSurface(t: WorldTokens, s: WorldStyle, mode: WorldMode): SurfaceRecipe {
+function buildMaterial(t: WorldTokens, s: WorldStyle, mode: WorldMode): MaterialRecipe {
+  const m = s.material ?? {};
+  const light = m.light ?? (s.primary.glow ? 'within' : 'over');
+  const vivid = m.response === 'vivid';
+  const lit = light === 'none' ? 0 : 1;
+  // A warm centre leans toward the world's own light; a cool edge toward its line.
+  const temperature = m.temperature ?? 0.4;
+  const warm = Math.max(0, temperature) * 0.08;
+  const cool = Math.max(0, -temperature) * 0.08;
+  const shadow =
+    m.shadow === 'neutral'
+      ? mode === 'dark'
+        ? '#000000'
+        : mix(t.ink, '#000000', 0.3)
+      : mode === 'dark'
+        ? mix('#000000', t.glow, 0.12)
+        : mix(mix(t.ink, t.ornament, 0.3), '#000000', 0.25);
+  const glow = (base: number) => (vivid ? base * 1.6 : base) * lit;
+  return {
+    light,
+    grain: m.grain ?? 0,
+    wash: {
+      centre: mix(mix(t.raised, t.glow, warm), t.line, cool),
+      edge: mix(t.raised, warm > 0 ? t.line : t.glow, 0.06),
+    },
+    shadow,
+    detail: m.detail ?? (s.ornament === 'hairline' ? 'sparse' : 'focused'),
+    states: {
+      rest: { edge: mix(t.ground, t.ink, 0.4), glow: t.glow, glowOpacity: 0, lift: 0 },
+      focus: { edge: t.focus, glow: t.glow, glowOpacity: glow(0.22), lift: 0.04 * lit },
+      press: {
+        edge: visibleLamp(t),
+        glow: t.glow,
+        glowOpacity: glow(0.16),
+        lift: (vivid ? 0.14 : 0.08) * lit,
+      },
+      invalid: { edge: t.danger, glow: t.danger, glowOpacity: glow(0.14), lift: 0 },
+      success: { edge: t.success, glow: t.success, glowOpacity: glow(0.2), lift: 0.04 * lit },
+    },
+    responseMs: vivid ? 260 : 200,
+  };
+}
+
+function buildSurface(
+  t: WorldTokens,
+  s: WorldStyle,
+  mode: WorldMode,
+  material: MaterialRecipe,
+): SurfaceRecipe {
   const rule = { width: s.lineWeight, color: t.line };
   return {
     plain: {
@@ -209,7 +258,7 @@ function buildSurface(t: WorldTokens, s: WorldStyle, mode: WorldMode): SurfaceRe
       innerEdge: s.raised.edge === 'frame' ? { width: 1, color: t.ornament, inset: 4 } : null,
       shadow: s.raised.shadow
         ? {
-            color: mode === 'dark' ? '#000000' : mix(t.ink, '#000000', 0.3),
+            color: material.shadow,
             opacity: mode === 'dark' ? 0.35 : 0.16,
             radius: 18,
             offsetY: 8,
@@ -419,7 +468,9 @@ function buildOverlay(
 
 /** A radius, each corner capped at `max`. */
 function capRadius(r: Radius, max: number): Radius {
-  return typeof r === 'number' ? Math.min(r, max) : [Math.min(r[0], max), Math.min(r[1], max), Math.min(r[2], max), Math.min(r[3], max)];
+  return typeof r === 'number'
+    ? Math.min(r, max)
+    : [Math.min(r[0], max), Math.min(r[1], max), Math.min(r[2], max), Math.min(r[3], max)];
 }
 
 function buildToggle(t: WorldTokens, s: WorldStyle): ToggleRecipe {
@@ -453,7 +504,8 @@ function buildStatus(t: WorldTokens, s: WorldStyle): StatusRecipe {
 
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
-  const surface = buildSurface(t, s, mode);
+  const material = buildMaterial(t, s, mode);
+  const surface = buildSurface(t, s, mode, material);
   return {
     text,
     button: buildButton(t, s, mode),
@@ -465,6 +517,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     overlay: buildOverlay(t, s, mode, surface),
     toggle: buildToggle(t, s),
     status: buildStatus(t, s),
+    material,
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },
   };

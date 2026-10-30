@@ -258,6 +258,21 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   }
 
   v['--w-settle'] = `${r.motion.settleMs}ms`;
+
+  // Material: inner light, wash, grain, tinted shadow, and living light per moment.
+  const mat = r.material;
+  v['--w-light'] = mat.light;
+  v['--w-light-ms'] = `${mat.responseMs}ms`;
+  v['--w-grain'] = String(mat.grain);
+  v['--w-wash-centre'] = mat.wash.centre;
+  v['--w-wash-edge'] = mat.wash.edge;
+  v['--w-shadow-tint'] = mat.shadow;
+  for (const [moment, l] of Object.entries(mat.states)) {
+    v[`--w-light-${moment}-edge`] = l.edge;
+    v[`--w-light-${moment}-glow`] = l.glow;
+    v[`--w-light-${moment}-glow-opacity`] = String(l.glowOpacity);
+    v[`--w-light-${moment}-lift`] = String(l.lift);
+  }
   return v;
 }
 

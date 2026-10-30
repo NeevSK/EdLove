@@ -120,6 +120,17 @@ export function Button({
             style={[StyleSheet.absoluteFill, radiusStyle(radius)]}
           />
         ) : null}
+        {isText ? null : (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              StyleSheet.absoluteFill,
+              radiusStyle(radius),
+              { backgroundColor: press.light.color },
+              press.light.style,
+            ]}
+          />
+        )}
         {v.innerEdge ? (
           <View
             pointerEvents="none"

@@ -9,6 +9,7 @@ import {
 import Animated from 'react-native-reanimated';
 import type { FieldContract } from '../../../theme/contracts';
 import { useErrorFeedback } from '../../../theme/native/feedback';
+import { useLivingStyle } from '../../../theme/native/motion';
 import { glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { FieldState } from '../../../theme/types';
@@ -43,17 +44,21 @@ export function TextField({
   const state: FieldState = disabled ? 'disabled' : error ? 'error' : focused ? 'focus' : 'rest';
   const s = r.states[state];
   const empty = value === undefined || value === '';
-  const lineStyle =
-    r.form === 'underline'
-      ? { borderBottomWidth: s.edge.width, borderBottomColor: s.edge.color }
-      : { borderWidth: s.edge.width, borderColor: s.edge.color, ...radiusStyle(r.radius) };
+  // The edge lives on the wrapper so its colour can glide between states.
+  const underline = r.form === 'underline';
+  const lineWidth = underline
+    ? { borderBottomWidth: s.edge.width }
+    : { borderWidth: s.edge.width, ...radiusStyle(r.radius) };
+  const light = useLivingStyle(
+    underline ? { borderBottomColor: s.edge.color } : { borderColor: s.edge.color },
+  );
 
   return (
     <View style={{ gap: 6 }}>
       <RNText nativeID={`${nativeId}-label`} style={typeStyle(r.label, language, world)}>
         {label}
       </RNText>
-      <Animated.View style={shake}>
+      <Animated.View style={[lineWidth, light, glowStyle(s.glow), shake]}>
         <TextInput
           ref={ref}
           accessibilityLabel={label}
@@ -84,8 +89,7 @@ export function TextField({
               opacity: disabled ? 0.6 : 1,
               textAlignVertical: multiline ? 'top' : 'center',
             },
-            lineStyle,
-            glowStyle(s.glow),
+            underline ? null : radiusStyle(r.radius),
           ]}
         />
       </Animated.View>
