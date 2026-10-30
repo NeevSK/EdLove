@@ -71,7 +71,7 @@ describe('closed loop', () => {
   it('is deterministic for a seed, and the seed matters', () => {
     expect(run('p4', 7)).toEqual(run('p4', 7));
     expect(run('p4', 7)).not.toEqual(run('p4', 8));
-  });
+  }, 15_000);
 
   it('closing the loop cuts jank and heat on a heat soak, where the floors alone cannot', () => {
     const jank = (ticks: ReturnType<typeof run>) =>

@@ -8,6 +8,8 @@ import {
   type ExitRecord,
   foldSession,
   freshRecord,
+  guardedRecord,
+  LADDER_HISTORY_MAX,
   parseMarker,
   parseRecord,
   planLaunch,
@@ -18,6 +20,7 @@ import {
   snapshotOf,
   staticFloors,
   type VergerRecord,
+  whyRung,
 } from './index';
 
 const KEY = 'p4:abc:1.0';
@@ -469,7 +472,11 @@ describe('review fixes', () => {
         10_005 + i * 10,
       );
     }
-    expect(record.ladder).toEqual(start.ladder);
+    const { history, ...ladder } = record.ladder;
+    expect(ladder).toEqual(start.ladder);
+    // Each kill is kept with its cause, and moved no rung.
+    expect(history).toHaveLength(5);
+    expect(history?.every((s) => s.kind === 'visible-kill' && s.cause === 'low-memory' && s.from === 1 && s.to === 1)).toBe(true);
     expect(record.profile).toMatchObject({ trust: 0.7, grant: 0, proving: 0 });
   });
 
@@ -523,5 +530,93 @@ describe('review fixes', () => {
     }
     expect(snapshotOf(state).priorHeld).toEqual({});
     expect(snapshotOf(state).levels['rows-ahead'] ?? 0).toBe(0);
+  });
+});
+
+describe('every step of the ladder keeps its cause (2026-10-29)', () => {
+  it('two failures in the window step down, and the launch names the one that did it', () => {
+    let record = freshRecord(KEY, 'dev1', R);
+    record = fold(record, marker({ foreground: true }), [crash(9_800)], 10_000);
+    record = fold(record, marker({ foreground: true }), [crash(19_800, 'anr')], 20_000);
+    expect(record.ladder.rung).toBe(1);
+    expect(record.ladder.history).toMatchObject([
+      { kind: 'failure', cause: 'crash', from: 0, to: 0, failuresInWindow: 1, exitAtWall: 9_800 },
+      { kind: 'failure', cause: 'anr', from: 0, to: 1, failuresInWindow: 2, exitAtWall: 19_800 },
+    ]);
+    const plan = planLaunch(record, 'active', 0.5, R);
+    expect(plan.cause).toMatchObject({ kind: 'failure', cause: 'anr', from: 0, to: 1 });
+    expect(plan.cause?.session).toMatchObject({ runtime: 'active', rung: 0, foreground: true });
+  });
+
+  it('a death during native start is a boot failure to rung 4, and rung 4 says so', () => {
+    const record = fold(
+      freshRecord(KEY, 'dev1', R),
+      marker({ phase: 'starting', foreground: true }),
+      null,
+      10_000,
+    );
+    expect(record.ladder.rung).toBe(4);
+    const plan = planLaunch(record, 'active', 0.5, R);
+    expect(plan).toMatchObject({ runtime: 'off', reason: 'rung-4-off' });
+    expect(plan.cause).toMatchObject({ kind: 'boot-failure', cause: 'unclean', from: 0, to: 4 });
+  });
+
+  it('a died-visible session with no exit record is named unclean, not left blank', () => {
+    const record = fold(freshRecord(KEY, 'dev1', R), marker({ foreground: true }), null, 10_000);
+    expect(record.ladder.history?.[0]).toMatchObject({ kind: 'failure', cause: 'unclean', exitAtWall: null });
+  });
+
+  it('recovering and forgiving are kept; rung 0 answers for nothing', () => {
+    let record: VergerRecord = {
+      ...freshRecord(KEY, 'dev1', R),
+      ladder: { rung: 1, failures: [], clean: 2, relapses: 1 },
+    };
+    record = fold(record, marker({ rung: 1 }), null, 10_000);
+    expect(record.ladder.rung).toBe(0);
+    expect(record.ladder.history?.at(-1)).toMatchObject({ kind: 'recovered', from: 1, to: 0 });
+    expect(planLaunch(record, 'active', 0.5, R).cause).toBeNull();
+  });
+
+  it('a new ladder keeps the old causes and records which ladder ended', () => {
+    const old = fold(
+      freshRecord(KEY, 'dev1', R),
+      marker({ phase: 'starting', foreground: true }),
+      null,
+      10_000,
+    );
+    const next = foldSession(
+      old,
+      { kind: 'none' },
+      { key: 'p5:abc:2.0', device: 'dev1', nowWall: 20_000 },
+      R,
+    ).record;
+    expect(next.ladder.rung).toBe(0);
+    expect(next.ladder.history).toMatchObject([
+      { kind: 'boot-failure', key: KEY, to: 4 },
+      { kind: 'new-ladder', key: 'p5:abc:2.0', previousKey: KEY, from: 4, to: 0 },
+    ]);
+  });
+
+  it('an unreadable record starts guarded and says why', () => {
+    const record = guardedRecord(KEY, null, R, 3, 7_000);
+    expect(whyRung(record)).toMatchObject({ kind: 'unreadable-record', to: 3, atWall: 7_000 });
+  });
+
+  it('history survives storage; a malformed step makes the record untrusted, never half-read', () => {
+    const record = fold(freshRecord(KEY, 'dev1', R), marker({ foreground: true }), [crash(9_800)], 10_000);
+    expect(parseRecord(JSON.stringify(record))).toEqual(record);
+    const broken = {
+      ...record,
+      ladder: { ...record.ladder, history: [{ ...record.ladder.history?.[0], cause: 'gremlins' }] },
+    };
+    expect(parseRecord(JSON.stringify(broken))).toBeNull();
+  });
+
+  it('keeps at most LADDER_HISTORY_MAX steps, newest last', () => {
+    let record = freshRecord(KEY, 'dev1', R);
+    for (let i = 0; i < LADDER_HISTORY_MAX + 5; i += 1)
+      record = fold(record, marker({ foreground: true }), [{ reason: 'low-memory', atWallMs: 1_000 + i * 100, foreground: true }], 1_050 + i * 100);
+    expect(record.ladder.history).toHaveLength(LADDER_HISTORY_MAX);
+    expect(record.ladder.history?.at(-1)?.atWall).toBe(1_050 + (LADDER_HISTORY_MAX + 4) * 100);
   });
 });

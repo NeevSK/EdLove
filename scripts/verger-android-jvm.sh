@@ -48,7 +48,12 @@ echo "compile ${#sources[@]} files against android.jar 36"
 
 # org.json first: android.jar carries a stub org.json without the methods the tests use.
 TEST_CP="$CACHE/json.jar:$OUT/main:$ANDROID_JAR:$CACHE/junit.jar:$CACHE/hamcrest.jar"
-"$KOTLINC" "$TEST"/*.kt -cp "$TEST_CP" -d "$OUT/test" -jvm-target 17 -nowarn
+test_sources=()
+for f in "$TEST"/*.kt; do
+  [ "$(basename "$f")" = "VergerModuleBindingTest.kt" ] || test_sources+=("$f")
+done
+echo "compile ${#test_sources[@]} test files against desktop JVM test classpath"
+"$KOTLINC" "${test_sources[@]}" -cp "$TEST_CP" -d "$OUT/test" -jvm-target 17 -nowarn
 
 classes=$(cd "$OUT/test" && find . -name '*Test.class' | sed 's|^\./||; s|\.class$||; s|/|.|g')
 cd "$PKG"

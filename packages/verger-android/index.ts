@@ -31,6 +31,8 @@ declare class VergerNativeModule extends NativeModule<VergerAndroidEvents> {
   setRefreshCap(hz: number | null): void;
   setCpuBoost(enabled: boolean): void;
   readTotals(): { frames?: number; missedVsyncs?: number; costMs?: number };
+  readMonotonicMs(): number;
+  traceCounters(counters: Readonly<Record<string, number>>): void;
 }
 
 /** What the module senses itself; long tasks come from React Native, in JavaScript. */
@@ -54,6 +56,36 @@ function nativeModule(): VergerNativeModule | null {
 
 export function isVergerAndroidAvailable(): boolean {
   return nativeModule() !== null;
+}
+
+/**
+ * One tick's reading of both clocks, to prove on a phone that native and JavaScript time are one
+ * clock before joins are trusted as exact (`offsetMs` near zero; a module built before the probe,
+ * or no module, gives null).
+ */
+export function probeVergerClocks(): {
+  readonly jsMs: number;
+  readonly nativeMs: number;
+  readonly offsetMs: number;
+} | null {
+  const native = nativeModule();
+  if (!native || typeof native.readMonotonicMs !== 'function') return null;
+  const before = performance.now();
+  const nativeMs = native.readMonotonicMs();
+  const after = performance.now();
+  // The native read sits between two JS reads; its midpoint bounds the call's own cost.
+  const jsMs = (before + after) / 2;
+  return { jsMs, nativeMs, offsetMs: nativeMs - jsMs };
+}
+
+/**
+ * Verger's published state as Perfetto counter tracks (`verger.*`), written by the module only
+ * while a system trace records. Without the module, or a module built before it, nothing happens.
+ */
+export function traceVergerCounters(counters: Readonly<Record<string, number>>): void {
+  const native = nativeModule();
+  if (!native || typeof native.traceCounters !== 'function') return;
+  native.traceCounters(counters);
 }
 
 export function readFrameTotals(): { frames: number; missedVsyncs: number; costMs: number } {

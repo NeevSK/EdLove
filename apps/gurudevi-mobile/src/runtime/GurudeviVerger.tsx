@@ -1,5 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
+  activationAtLevel,
+  activationForMode,
+  decisionCounters,
   type CapacityFacts,
   type ExperimentAssignment,
   type FidelityPreference,
@@ -9,6 +12,7 @@ import {
   labTune,
   screenNameOf,
   UNKNOWN_CAPACITY,
+  VERGER_EXHAUSTIVE_STORE_PREFIX,
   VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_PATCH_KEY,
   VERGER_LAB_RECORD_EVENTS,
@@ -18,14 +22,20 @@ import {
   type VergerTelemetrySink,
 } from '@repo/core/verger';
 import { useFidelityOptional } from '@repo/ui/context';
-import { createVergerAndroidPlatform } from '@repo/verger-android';
-import { useScreenAnnouncement, useVerger } from '@repo/verger-react';
+import {
+  createVergerAndroidPlatform,
+  probeVergerClocks,
+  traceVergerCounters,
+} from '@repo/verger-android';
+import { useScreenAnnouncement, useVerger, useVergerSnapshot } from '@repo/verger-react';
 import { VergerRoot } from '@repo/verger-react-native';
 import { nativeApplicationVersion, nativeBuildVersion } from 'expo-application';
 import { totalMemory } from 'expo-device';
 import { usePathname } from 'expo-router';
 import { type ReactNode, useEffect, useState } from 'react';
 import {
+  enableExhaustiveCapture,
+  isExhaustiveCapture,
   recordDevelopmentVergerEvent,
   recordDevelopmentVergerLaunch,
   recordDevelopmentVergerTransition,
@@ -34,10 +44,10 @@ import {
 } from '@/telemetry/localDevelopmentTelemetry';
 import { deviceSignals } from './deviceSignals';
 import {
-  isolatedVergerMode,
   type RuntimeMode,
   readVergerConfig,
   readVergerLaunch,
+  readVergerLevel,
   readVergerPolicy,
 } from './runtimeMode';
 import { vergerTelemetrySink } from './telemetrySink';
@@ -50,6 +60,8 @@ interface GurudeviVergerProps {
   readonly telemetrySink?: VergerTelemetrySink;
   /** The user's fidelity setting; defaults to the app's fidelity setting. */
   readonly fidelity?: FidelityPreference;
+  /** Suppresses active JS samplers during benchmarking and automated device profiling. */
+  readonly suppressAutoCapture?: boolean;
 }
 
 /**
@@ -61,6 +73,16 @@ const VERGER_STORE: VergerStore = {
   get: (key) => AsyncStorage.getItem(key),
   set: (key, value) => AsyncStorage.setItem(key, value),
   remove: (key) => AsyncStorage.removeItem(key),
+};
+
+/**
+ * An exhaustive development run's own ladder: the same store under its own keys, so experiments
+ * keep their recovery history and causes and never move the normal ladder.
+ */
+const EXHAUSTIVE_DEV_STORE: VergerStore = {
+  get: (key) => AsyncStorage.getItem(VERGER_EXHAUSTIVE_STORE_PREFIX + key),
+  set: (key, value) => AsyncStorage.setItem(VERGER_EXHAUSTIVE_STORE_PREFIX + key, value),
+  remove: (key) => AsyncStorage.removeItem(VERGER_EXHAUSTIVE_STORE_PREFIX + key),
 };
 
 const platform = () => createVergerAndroidPlatform();
@@ -84,13 +106,30 @@ function ScreenAnnouncer() {
   const screen = screenNameOf(usePathname());
   useScreenAnnouncement(screen);
   useEffect(() => {
-    if (!__DEV__) return;
+    if (!isExhaustiveCapture()) return;
     saveDevelopmentTelemetry({
       source: 'performance',
       name: 'screen-transition',
       attributes: { screen },
     });
   }, [screen]);
+  return null;
+}
+
+/**
+ * Each published decision on the two timelines engineers read, at the exhaustive level: a user
+ * timing mark in the React Native DevTools Performance panel, and counter tracks in a Perfetto
+ * system trace (written by the native module only while one records). Renders nothing.
+ */
+function DecisionTrace() {
+  const snapshot = useVergerSnapshot();
+  useEffect(() => {
+    if (!snapshot) return;
+    performance.mark(`verger:${snapshot.lastAction}`, {
+      detail: { version: snapshot.version, reason: snapshot.lastReason },
+    });
+    traceVergerCounters(decisionCounters(snapshot));
+  }, [snapshot]);
   return null;
 }
 
@@ -147,11 +186,18 @@ export function GurudeviVerger({
   assignment,
   telemetrySink,
   fidelity,
+  suppressAutoCapture,
 }: GurudeviVergerProps) {
   const setting = useFidelityOptional().fidelityLevel;
-  // An explicitly requested development experiment gets a disposable runtime. The
-  // normal recovery record remains untouched and the ordinary kill switches still win.
-  const isolatedLab = isolatedVergerMode(process.env.EXPO_PUBLIC_GURUDEVI_VERGER_ISOLATED, __DEV__);
+  // One verger at two levels: exhaustive senses and keeps everything (development builds, or a
+  // phone switched for diagnosis); normal is what release phones run. Known before launch.
+  const [level] = useState(() => {
+    const read = readVergerLevel();
+    if (read.rejected) console.warn('[verger] level choice ignored:', read.rejected);
+    if (read.level === 'exhaustive') enableExhaustiveCapture();
+    return read;
+  });
+  const exhaustive = level.level === 'exhaustive';
   // Thresholds and policy hold whether verger runs or not (the floors run the policy too).
   const [host] = useState<VergerHost>(() => {
     const read = readVergerConfig(GURUDEVI_MOBILE_HOST.config);
@@ -170,42 +216,57 @@ export function GurudeviVerger({
     if (read.rejected) console.warn('[verger] remote activation ignored:', read.rejected);
     if (read.mode === 'off' || mode === 'off' || assignment?.runtime === 'off')
       return { mode: 'off' };
-    if (isolatedLab)
-      return isolatedLab === 'active' && read.mode === 'active'
-        ? {
-            mode: 'active',
-            activation: read.activation ?? undefined,
-          }
-        : { mode: 'shadow' };
     const explicit = mode ?? assignment?.runtime;
     // An explicit mode keeps its own preset; the resolved activation belongs to the resolved mode.
-    return explicit
+    const chosen: { mode: Exclude<RuntimeMode, 'off'>; activation?: VergerActivation } = explicit
       ? { mode: explicit }
       : { mode: read.mode, activation: read.activation ?? undefined };
+    // The level widens what verger senses and keeps, never what it may do.
+    return exhaustive
+      ? {
+          mode: chosen.mode,
+          activation: activationAtLevel(
+            chosen.activation ?? activationForMode(chosen.mode),
+            'exhaustive',
+          ),
+        }
+      : chosen;
   });
   useEffect(() => {
-    if (!__DEV__) return;
+    if (!exhaustive) return;
     const details =
       launch.mode === 'off'
         ? 'Verger runtime mode is off; no reducer events are expected.'
         : 'Waiting for the resolved Verger launch result.';
     setDevelopmentTelemetrySource('verger-inputs', 'disabled', details);
-    if (isolatedLab) {
-      saveDevelopmentTelemetry({
-        source: 'runtime',
-        name: 'verger-isolated-lab',
-        attributes: { enabled: true, requested: isolatedLab, recovery: 'temporary' },
-      });
-    }
+    saveDevelopmentTelemetry({
+      source: 'runtime',
+      name: 'verger-level',
+      attributes: {
+        level: level.level,
+        source: level.source,
+        recovery: __DEV__ ? 'exhaustive ladder' : 'normal ladder',
+      },
+    });
+    // Whether native and JavaScript time are one clock on this phone: joins are exact only if so.
+    const clocks = probeVergerClocks();
+    saveDevelopmentTelemetry({
+      source: 'runtime',
+      name: 'verger-clock-probe',
+      attributes: clocks
+        ? { js_ms: clocks.jsMs, native_ms: clocks.nativeMs, offset_ms: clocks.offsetMs }
+        : { unavailable: true },
+    });
     return () =>
       setDevelopmentTelemetrySource('verger-inputs', 'complete', 'Verger host unmounted.');
-  }, [isolatedLab, launch.mode]);
+  }, [exhaustive, level, launch.mode]);
   return (
     <VergerRoot
-      capturePresence={false}
       host={host}
       platform={platform}
-      store={isolatedLab ? undefined : VERGER_STORE}
+      // A development build's exhaustive runs keep their own ladder; a field phone switched to
+      // exhaustive stays on its real ladder, so recovery protects it as before.
+      store={exhaustive && __DEV__ ? EXHAUSTIVE_DEV_STORE : VERGER_STORE}
       facts={facts}
       signals={deviceSignals}
       fidelity={fidelity ?? setting}
@@ -214,14 +275,16 @@ export function GurudeviVerger({
       assignment={assignment}
       telemetrySink={telemetrySink ?? vergerTelemetrySink}
       release={`${nativeApplicationVersion ?? '0'}+${nativeBuildVersion ?? '0'}`}
-      recordEvents={__DEV__ ? VERGER_LAB_RECORD_EVENTS : undefined}
-      onRecordEvent={__DEV__ ? recordDevelopmentVergerEvent : undefined}
-      onSnapshotTransition={__DEV__ ? recordDevelopmentVergerTransition : undefined}
-      onLaunchPlan={__DEV__ ? recordDevelopmentVergerLaunch : undefined}
+      recordEvents={exhaustive ? VERGER_LAB_RECORD_EVENTS : undefined}
+      onRecordEvent={exhaustive ? recordDevelopmentVergerEvent : undefined}
+      onSnapshotTransition={exhaustive ? recordDevelopmentVergerTransition : undefined}
+      onLaunchPlan={exhaustive ? recordDevelopmentVergerLaunch : undefined}
       killed={killSwitchOn}
+      suppressAutoCapture={suppressAutoCapture}
     >
       <ScreenAnnouncer />
       <SavedLab host={host} />
+      {exhaustive ? <DecisionTrace /> : null}
       {children}
     </VergerRoot>
   );

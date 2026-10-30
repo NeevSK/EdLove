@@ -27,7 +27,7 @@
     "@repo/verger-core": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "~58.0.17"
+    "expo": "~58.0.21"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

@@ -89,6 +89,7 @@ export {
   flightLine,
 } from './flightRecorder';
 export { createQualityMeter, type QualityMeter, qualityCost } from './quality';
+export { decisionCounters } from './traceCounters';
 export {
   classifySession,
   DEFAULT_RECOVERY_CONFIG,
@@ -97,6 +98,9 @@ export {
   foldSession,
   freshRecord,
   guardedRecord,
+  LADDER_HISTORY_MAX,
+  type LadderStep,
+  type LadderStepKind,
   type LaunchPlan,
   parseMarker,
   parseRecord,
@@ -109,6 +113,7 @@ export {
   type Transition,
   validateRecoveryConfig,
   type VergerRecord,
+  whyRung,
 } from './recovery';
 export {
   canonicalLadderKey,

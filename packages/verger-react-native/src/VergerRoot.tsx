@@ -17,14 +17,13 @@ import {
 import {
   bindVerger,
   bindVergerEarly,
-  INTERACTION_THROTTLE_MS,
   observeEventLoopLag,
   observeInputDelay,
   observeJsHeap,
   observeLongTasks,
 } from '@repo/verger-react';
 import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { AccessibilityInfo, AppState, type AppStateStatus, View } from 'react-native';
+import { AccessibilityInfo, AppState, type AppStateStatus } from 'react-native';
 import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
 
 /** `off` runs nothing; `shadow` senses and decides but applies nothing new; `active` applies. */
@@ -47,8 +46,6 @@ function sendPreferences(
 
 export interface VergerRootProps {
   readonly children: ReactNode;
-  /** False only when the existing host root reports presence with reportVergerInteraction. */
-  readonly capturePresence?: boolean;
   /** The host's definition (`defineHost`): its levers, rules, thresholds and recovery. */
   readonly host: VergerHost;
   /** The platform (`createVergerAndroidPlatform`). Called only if the launch lets verger run. */
@@ -92,12 +89,18 @@ export interface VergerRootProps {
    * reads true, a running verger stops and only the floors remain until the next launch.
    */
   readonly killed?: () => boolean;
+  /**
+   * Suppresses active JS samplers (event loop lag, Hermes heap polling) during benchmarking
+   * and automated device profiling to avoid observer noise / GC pauses.
+   */
+  readonly suppressAutoCapture?: boolean;
 }
 
 /**
  * Runs verger for a React Native app and binds it, so `useVergerSnapshot` and friends read it
- * anywhere without a provider. It renders only what must sit in the tree: the touch-presence
- * boundary and the app-wide reduced-motion config.
+ * anywhere without a provider. It adds no view: it renders its children and, only while verger
+ * forces it, Reanimated's app-wide reduced-motion config. Presence comes from the host's existing
+ * root, which passes `reportVergerInteraction` to its responder-capture handlers.
  *
  * Mounts verger around an app. In `off` mode, or under the kill switch, it never starts verger:
  * no store, no native module, no sensing; only the floors run, in JavaScript, fed app state and
@@ -109,7 +112,6 @@ export interface VergerRootProps {
  */
 export function VergerRoot({
   children,
-  capturePresence = true,
   host,
   platform,
   store,
@@ -126,6 +128,7 @@ export function VergerRoot({
   onSnapshotTransition,
   onLaunchPlan,
   killed,
+  suppressAutoCapture,
 }: VergerRootProps) {
   const [runs] = useState(() => mode !== 'off' && assignment?.runtime !== 'off');
   // Read once, like the rest of the launch: a new function must not restart verger.
@@ -204,12 +207,12 @@ export function VergerRoot({
         )
       : () => {};
     // JS stalls the scheduler's long tasks miss: late timers and Hermes GC pauses; paused while
-    // the app is not visible, as verger itself reads it.
-    const hidden = () => verger.getSnapshot()?.visibility !== 'active';
+    // the app is not visible, as verger itself reads it, or when auto-capture is suppressed for profiling.
+    const paused = () => suppressAutoCapture === true || verger.getSnapshot()?.visibility !== 'active';
     const stopLag = runs
       ? observeEventLoopLag(
           (lagMs) => verger.dispatch({ type: 'event-loop-lag', at: now(), lagMs }),
-          hidden,
+          paused,
           now,
         )
       : () => {};
@@ -217,7 +220,7 @@ export function VergerRoot({
       ? observeJsHeap(
           (gcPauseShare, allocatedBytes) =>
             verger.dispatch({ type: 'js-heap', at: now(), gcPauseShare, allocatedBytes }),
-          hidden,
+          paused,
           now,
         )
       : () => {};
@@ -236,37 +239,9 @@ export function VergerRoot({
 
   return (
     <>
-      {runs && capturePresence ? (
-        <PresenceBoundary verger={verger}>{children}</PresenceBoundary>
-      ) : (
-        children
-      )}
+      {children}
       <GlobalMotion verger={verger} />
     </>
-  );
-}
-
-/** Records that someone touched the screen without taking part in the responder system. */
-function PresenceBoundary({ verger, children }: { verger: Verger; children: ReactNode }) {
-  const last = useRef(Number.NEGATIVE_INFINITY);
-  // Touch start and every move (throttled): a long scroll keeps the gesture alive, so the
-  // gesture freeze holds for its whole length. Momentum after the finger lifts is not seen.
-  const present = () => {
-    const at = now();
-    if (at - last.current >= INTERACTION_THROTTLE_MS) {
-      last.current = at;
-      verger.dispatch({ type: 'interaction', at });
-    }
-    return false;
-  };
-  return (
-    <View
-      style={{ flex: 1 }}
-      onStartShouldSetResponderCapture={present}
-      onMoveShouldSetResponderCapture={present}
-    >
-      {children}
-    </View>
   );
 }
 

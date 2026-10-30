@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { ROOT_DIR } from '../utils/constants.js';
 import { runCommand } from '../utils/execution.js';
 import { captureDeviceProfile, type DeviceProfileCaptureInput } from './deviceProfileCapture.js';
@@ -15,118 +16,227 @@ function toMcpText(stdout: string, isError?: boolean) {
   };
 }
 
-type DeviceParams = Record<string, any>;
+export type DeviceParams = Record<string, any>;
+
+export const AGENT_DEVICE_BIN = path.resolve(
+  ROOT_DIR,
+  'packages/platform-mcp/node_modules/agent-device/bin/agent-device.mjs',
+);
+
+export const ARGENT_BIN = path.resolve(
+  ROOT_DIR,
+  'packages/platform-mcp/node_modules/@swmansion/argent/dist/cli.js',
+);
 
 // ─── agent-device (Callstack) ──────────────────────────────────────────────
-// Maps sovereign_device action verbs → argv fragments for the `agent-device` CLI.
-// Capabilities: UI inspection, interaction, evidence capture, Metro bundler control.
-const AGENT_DEVICE_ACTIONS: Record<string, (params: DeviceParams) => string[]> = {
+// Maps sovereign_device action verbs → argv fragments for the `agent-device` CLI (v0.21.33+).
+export const AGENT_DEVICE_ACTIONS: Record<string, (params: DeviceParams) => string[]> = {
   // ── Diagnostics ────────────────────────────────────────────────────────────
   doctor: () => ['doctor'],
 
   // ── UI Inspection ──────────────────────────────────────────────────────────
-  /** Accessibility tree snapshot (XML + bounding boxes) */
-  snapshot: (p) => (p.platform ? ['snapshot', '--platform', p.platform] : ['snapshot']),
+  /** Accessibility tree snapshot */
+  snapshot: (p) => (p.platform ? ['snapshot', '--platform', String(p.platform)] : ['snapshot']),
 
   // ── Visuals ────────────────────────────────────────────────────────────────
-  screenshot: (p) => (p.platform ? ['screenshot', '--platform', p.platform] : ['screenshot']),
+  screenshot: (p) =>
+    p.platform ? ['screenshot', '--platform', String(p.platform)] : ['screenshot'],
 
   // ── App Lifecycle ──────────────────────────────────────────────────────────
   open_app: (p) => {
     const args = ['open'];
-    if (p.appId) args.push(p.appId);
-    if (p.platform) args.push('--platform', p.platform);
+    const app = p.appId ?? p.app;
+    if (app) args.push(String(app));
+    if (p.platform) args.push('--platform', String(p.platform));
     return args;
   },
 
   // ── Interaction ────────────────────────────────────────────────────────────
-  press: (p) => (p.element ? ['press', p.element] : ['press']),
-  type: (p) => (p.text ? ['type', p.text] : ['type']),
-  scroll: (p) => (p.direction ? ['scroll', p.direction] : ['scroll']),
-  tap: (p) =>
-    p.x !== undefined && p.y !== undefined ? ['tap', String(p.x), String(p.y)] : ['tap'],
-
-  // ── Element Finders (0.20.x ./finders + ./selectors exports) ─────────────
-  /** Find element by visible text content */
-  'find-text': (p) => {
-    const args = ['find', '--text', String(p.text ?? '')];
-    if (p.platform) args.push('--platform', p.platform);
+  press: (p) => {
+    const target = p.element ?? p.target;
+    if (!target) return ['press'];
+    const args = ['press', String(target)];
+    if (p.settle !== false) args.push('--settle');
     return args;
   },
-  /** Find element by ARIA role (e.g. 'button', 'textbox') */
-  'find-role': (p) => {
-    const args = ['find', '--role', String(p.role ?? '')];
-    if (p.label) args.push('--label', String(p.label));
-    if (p.platform) args.push('--platform', p.platform);
+  type: (p) => ['type', String(p.text ?? '')],
+  scroll: (p) => {
+    const args = ['scroll', String(p.direction ?? 'down')];
+    if (p.amount !== undefined) args.push(String(p.amount));
+    if (p.settle !== false) args.push('--settle');
     return args;
   },
-
-  // ── Evidence & Logs ───────────────────────────────────────────────────────
-  logs: () => ['logs'],
-  /** Dump network traffic captured by the device proxy */
-  network: () => ['network'],
-
-  // ── Metro Bundler Control (./metro export, 0.20.x) ────────────────────────
-  /** Hot-reload the Metro JS bundle without restarting the app */
-  reload: () => ['metro', 'reload'],
-  /** Clear Metro's transform cache and reload */
-  'clear-cache': () => ['metro', 'clear-cache'],
-
-  // ── Performance & Profiling ───────────────────────────────────────────────
-  /** Capture a CPU/memory sample (returns JSON) */
-  profile: (p) => {
-    const args = ['profile'];
-    if (p.duration) args.push('--duration', String(p.duration));
-    return args;
-  },
-};
-
-// ─── argent (SWM) ─────────────────────────────────────────────────────────
-// Maps sovereign_device action verbs → argv fragments for the `argent` CLI.
-// Capabilities expand significantly across 0.21–0.23 with gestures, visual
-const ARGENT_ACTIONS: Record<string, (params: DeviceParams) => string[]> = {
-  doctor: () => ['tools'],
-  screenshot: () => ['screenshot'],
-  'visual-diff': (p) =>
-    p.baseline ? ['visual-diff', '--baseline', String(p.baseline)] : ['visual-diff'],
-  record: (p) => {
-    if (p.stop) {
-      const args = ['record', '--stop'];
-      if (p.output) args.push('--output', String(p.output));
+  tap: (p) => {
+    if (p.x !== undefined && p.y !== undefined) {
+      const args = ['press', String(p.x), String(p.y)];
+      if (p.settle !== false) args.push('--settle');
       return args;
     }
-    return ['record'];
+    return ['press'];
   },
-  'component-tree': () => ['component-tree'],
+
+  // ── Element Finders ────────────────────────────────────────────────────────
+  'find-text': (p) => {
+    const args = ['find', String(p.text ?? ''), p.action ?? 'get'];
+    if (p.first) args.push('--first');
+    return args;
+  },
+  'find-role': (p) => {
+    const query = p.role ? `role=${p.role}` : String(p.label ?? '');
+    const args = ['find', query, p.action ?? 'get'];
+    if (p.first) args.push('--first');
+    return args;
+  },
+
+  // ── Evidence, Logs & Network ───────────────────────────────────────────────
+  logs: (p) => {
+    if (p.message) return ['logs', 'mark', String(p.message)];
+    return ['logs', p.subcommand ?? 'doctor'];
+  },
+  network: () => ['network'],
+
+  // ── Metro Bundler Control ──────────────────────────────────────────────────
+  reload: (p) => {
+    const args = ['metro', 'reload'];
+    if (p.metroHost) args.push('--metro-host', String(p.metroHost));
+    if (p.metroPort) args.push('--metro-port', String(p.metroPort));
+    return args;
+  },
+  'clear-cache': () => ['metro', 'reload'],
+
+  // ── Performance & Profiling ───────────────────────────────────────────────
+  profile: (p) => {
+    if (p.kind === 'memory') return ['perf', 'memory', 'sample', '--json'];
+    return ['perf', 'frames', '--json'];
+  },
+  trace: (p) => {
+    const action = p.stop ? 'stop' : 'start';
+    const args = ['perf', 'trace', action, '--kind', p.kind ?? 'perfetto'];
+    if (p.out) args.push('--out', String(p.out));
+    return args;
+  },
+  'cpu-profile': (p) => {
+    const action = p.stop ? 'stop' : p.report ? 'report' : 'start';
+    const kind = p.kind ?? 'simpleperf';
+    const args = ['perf', 'cpu', 'profile', action, '--kind', kind];
+    if (p.out) args.push('--out', String(p.out));
+    return args;
+  },
+  mark: (p) => ['logs', 'mark', String(p.message ?? 'checkpoint')],
+};
+
+export function getTargetUdid(p: DeviceParams): string | undefined {
+  return p.udid ?? p.serial ?? p.deviceId ?? p.device;
+}
+
+// ─── argent (Software Mansion) ─────────────────────────────────────────────
+// Maps sovereign_device action verbs → argv fragments for the `argent` CLI (v0.31.0+).
+export const ARGENT_ACTIONS: Record<string, (params: DeviceParams) => string[]> = {
+  doctor: () => ['tools'],
+  screenshot: (p) => {
+    const args = ['run', 'screenshot'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    return args;
+  },
+  'visual-diff': (p) => {
+    const args = ['run', 'screenshot-diff'];
+    if (p.baseline) args.push('--baseline', String(p.baseline));
+    if (p.current) args.push('--current', String(p.current));
+    return args;
+  },
+  record: (p) => {
+    if (p.stop) {
+      const args = ['run', 'screen-recording-stop'];
+      const udid = getTargetUdid(p);
+      if (udid) args.push('--udid', udid);
+      return args;
+    }
+    const args = ['run', 'screen-recording-start'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    return args;
+  },
+  'component-tree': (p) => {
+    const args = ['run', 'debugger-component-tree'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    return args;
+  },
   swipe: (p) => {
-    const args = ['swipe', String(p.direction ?? 'up')];
-    if (p.element) args.push('--element', String(p.element));
+    const args = ['run', 'gesture-swipe'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    if (p.direction) args.push('--direction', String(p.direction));
     return args;
   },
   pinch: (p) => {
-    const args = ['pinch', String(p.direction ?? 'in')];
+    const args = ['run', 'gesture-pinch'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
     if (p.scale !== undefined) args.push('--scale', String(p.scale));
     return args;
   },
   'long-press': (p) => {
-    const args = ['long-press'];
-    if (p.element) args.push(String(p.element));
+    const args = ['run', 'gesture-tap'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
     if (p.duration !== undefined) args.push('--duration', String(p.duration));
     return args;
   },
   wait: (p) => {
-    const args = ['wait', String(p.element ?? '')];
-    if (p.timeout !== undefined) args.push('--timeout', String(p.timeout));
+    const args = ['run', 'await-ui-element'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    if (p.condition) args.push('--condition', String(p.condition));
     return args;
   },
   assert: (p) => {
-    const args = ['assert', String(p.element ?? '')];
-    if (p.text) args.push('--text', String(p.text));
+    const args = ['run', 'await-ui-element'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    if (p.text) args.push('--expectedText', String(p.text));
     return args;
   },
-  network: () => ['network'],
-  logs: () => ['logs'],
+  network: (p) => {
+    const args = ['run', 'view-network-logs'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    return args;
+  },
+  logs: (p) => {
+    const args = ['run', 'debugger-log-registry'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    return args;
+  },
+  trace: (p) => {
+    const args = ['run', 'debugger-profiler'];
+    const udid = getTargetUdid(p);
+    if (udid) args.push('--udid', udid);
+    return args;
+  },
 };
+
+export function buildArgentArgs(action: string, params: DeviceParams): string[] {
+  const handler = ARGENT_ACTIONS[action];
+  if (handler) {
+    return handler(params);
+  }
+  const extra = Array.isArray(params.args) ? (params.args as string[]) : [];
+  const args = ['run', action];
+  const udid = getTargetUdid(params);
+  if (udid && !extra.includes('--udid')) {
+    args.push('--udid', udid);
+  }
+  return [...args, ...extra];
+}
+
+export function buildAgentDeviceArgs(action: string, params: DeviceParams): string[] | null {
+  const builder = AGENT_DEVICE_ACTIONS[action];
+  if (!builder) return null;
+  return builder(params);
+}
 
 const DEVICE_CAPABILITIES = {
   agentDevice: Object.keys(AGENT_DEVICE_ACTIONS),
@@ -143,15 +253,6 @@ const DEVICE_CAPABILITIES = {
     'bounded structured runtime trace events from captured logcat',
   ],
 } as const;
-
-function buildArgentArgs(action: string, params: DeviceParams): string[] {
-  const handler = ARGENT_ACTIONS[action];
-  if (handler) {
-    return handler(params);
-  }
-  const extra = Array.isArray(params.args) ? (params.args as string[]) : [];
-  return ['run', action, ...extra];
-}
 
 export class DeviceService {
   async handleDeviceAction(action: string, params: DeviceParams = {}) {
@@ -247,22 +348,20 @@ export class DeviceService {
       }
     }
 
-    const command = 'pnpm';
-    const base: string[] = ['--filter', '@repo/platform-mcp', 'exec'];
-
     if (params.tool === 'argent') {
-      return this.execute(command, [...base, 'argent', ...buildArgentArgs(action, params)]);
+      const args = buildArgentArgs(action, params);
+      return this.execute(process.execPath, [ARGENT_BIN, ...args]);
     }
 
     // Default to agent-device (Callstack)
-    const builder = AGENT_DEVICE_ACTIONS[action];
-    if (!builder) return toMcpText(`Unsupported action "${action}" for agent-device`, true);
-    return this.execute(command, [...base, 'agent-device', ...builder(params)]);
+    const agentArgs = buildAgentDeviceArgs(action, params);
+    if (!agentArgs) return toMcpText(`Unsupported action "${action}" for agent-device`, true);
+    return this.execute(process.execPath, [AGENT_DEVICE_BIN, ...agentArgs]);
   }
 
   private execute(command: string, args: string[]) {
     try {
-      const result = runCommand(command, args, { cwd: ROOT_DIR, shell: true });
+      const result = runCommand(command, args, { cwd: ROOT_DIR, shell: false });
       return toMcpText(result.combined, !result.ok);
     } catch (err: any) {
       return toMcpText(err.message || String(err), true);

@@ -40,6 +40,59 @@ export interface ExitRecord {
 }
 
 /**
+ * Why the ladder moved, or why a session counted against it. Every fold that is evidence leaves a
+ * step, so a rung is never unexplained: the A52 reached rung 4 through four relapses whose causes
+ * were never kept (2026-10-28); the ladder now keeps them.
+ *
+ * - `failure`: the app failed (crash, native crash, ANR, excessive resource, or died visible with
+ *   no exit record); it steps down once failures reach `failuresToEscalate` in the window.
+ * - `boot-failure`: died before verger's native side was up, so straight to rung 4.
+ * - `visible-kill`: the system ended the app in front of the user; moves no rung, gives back growth.
+ * - `recovered`: enough clean sessions stepped one rung back up.
+ * - `forgiven`: clean sessions at rung 0 forgave one relapse.
+ * - `unreadable-record`: the stored record could not be read, so the launch starts guarded.
+ * - `new-ladder`: a new policy version or release started the ladder over.
+ */
+export type LadderStepKind =
+  | 'failure'
+  | 'boot-failure'
+  | 'visible-kill'
+  | 'recovered'
+  | 'forgiven'
+  | 'unreadable-record'
+  | 'new-ladder';
+
+export interface LadderStep {
+  readonly kind: LadderStepKind;
+  /** Wall-clock milliseconds when the step was folded. */
+  readonly atWall: number;
+  readonly from: Rung;
+  readonly to: Rung;
+  /** The platform's exit reason; `unclean` when the process died visible with no exit record. */
+  readonly cause: ExitReason | 'unclean' | null;
+  /** When the platform says the process ended, if it recorded the exit. */
+  readonly exitAtWall: number | null;
+  /** The session the evidence came from: what verger was running when it ended. */
+  readonly session: {
+    readonly startedAtWall: number;
+    readonly phase: 'starting' | 'running' | 'stopped';
+    readonly runtime: RuntimeLevel;
+    readonly rung: Rung;
+    readonly foreground: boolean;
+    readonly pid: number | null;
+  } | null;
+  /** Failures inside `failureWindowMs`, this one included, against `failuresToEscalate`. */
+  readonly failuresInWindow: number | null;
+  /** The ladder key (policy and release) the step belongs to. */
+  readonly key: string;
+  /** For `new-ladder`: the key that ended. */
+  readonly previousKey: string | null;
+}
+
+/** Steps kept, newest last; older ones fall off. */
+export const LADDER_HISTORY_MAX = 32;
+
+/**
  * Endings that are not failures of the app's code but, while visible, are the very thing a
  * resource supervisor exists to prevent: the system killing the app in front of the user.
  * They prove nothing either way, so they count neither as failures nor as clean sessions.
@@ -147,6 +200,12 @@ export interface VergerRecord {
     readonly failures: readonly number[];
     readonly clean: number;
     readonly relapses: number;
+    /**
+     * Why the ladder is where it is, newest last (`LADDER_HISTORY_MAX`). Kept across a new
+     * ladder, so a release that restarts it does not erase why the last one fell. Absent in
+     * records written before 2026-10-29: their causes were not kept.
+     */
+    readonly history?: readonly LadderStep[];
   };
   readonly profile: {
     /** Hash of the build fingerprint the profile was learned on, or null if unknown. */
@@ -175,12 +234,15 @@ export type SessionOutcome =
       readonly kind: 'neutral';
       readonly marker: SessionMarker;
       readonly exit: ExitReason;
+      readonly exitAtWall: number;
     }
   | {
       readonly kind: 'failure';
       readonly marker: SessionMarker;
       /** The platform's exit reason, or `unclean` when the process died visible with no record. */
       readonly cause: ExitReason | 'unclean';
+      /** When the platform says the process ended; null without an exit record. */
+      readonly exitAtWall: number | null;
       /** Died before verger's native side was up: the strongest evidence against verger. */
       readonly boot: boolean;
     };
@@ -199,6 +261,11 @@ export interface LaunchPlan {
   /** Lever gains measured on this device in earlier sessions (R6). */
   readonly gains: Readonly<Record<string, LeverGain>>;
   readonly reason: string;
+  /**
+   * The step that put the ladder on this rung (`whyRung`), or null at rung 0, or when the record
+   * predates kept causes. Explicit, so a refused or degraded launch says what it answers for.
+   */
+  readonly cause: LadderStep | null;
 }
 
 export interface Transition {
@@ -221,11 +288,52 @@ export function guardedRecord(
   key: string,
   device: string | null,
   config: RecoveryConfig,
-  atLeast: Rung = 3,
+  atLeast: Rung,
+  atWall: number,
 ): VergerRecord {
   const fresh = freshRecord(key, device, config);
   const rung: Rung = atLeast > 3 ? atLeast : 3;
-  return { ...fresh, ladder: { ...fresh.ladder, rung, relapses: 1 } };
+  const step: LadderStep = {
+    kind: 'unreadable-record',
+    atWall,
+    from: 0,
+    to: rung,
+    cause: null,
+    exitAtWall: null,
+    session: null,
+    failuresInWindow: null,
+    key,
+    previousKey: null,
+  };
+  return { ...fresh, ladder: { ...fresh.ladder, rung, relapses: 1, history: [step] } };
+}
+
+const withSteps = (
+  history: readonly LadderStep[] | undefined,
+  steps: readonly LadderStep[],
+): readonly LadderStep[] => [...(history ?? []), ...steps].slice(-LADDER_HISTORY_MAX);
+
+const sessionOf = (marker: SessionMarker): LadderStep['session'] => ({
+  startedAtWall: marker.startedAtWall,
+  phase: marker.phase,
+  runtime: marker.runtime,
+  rung: marker.rung,
+  foreground: marker.foreground,
+  pid: marker.pid,
+});
+
+/**
+ * The step that put the ladder on its rung: the newest step that changed the rung, under this
+ * ladder. Null at rung 0 (nothing to answer for), or when the record predates kept causes.
+ */
+export function whyRung(record: VergerRecord): LadderStep | null {
+  if (record.ladder.rung === 0) return null;
+  const history = record.ladder.history ?? [];
+  for (let i = history.length - 1; i >= 0; i -= 1) {
+    const step = history[i];
+    if (step && step.key === record.key && step.from !== step.to) return step;
+  }
+  return null;
 }
 
 export function freshRecord(
@@ -265,13 +373,14 @@ export function classifySession(
   const exit = exitOf(marker, exits);
   const boot = marker.phase === 'starting';
   if (exit) {
-    if (FAILURES.has(exit.reason)) return { kind: 'failure', marker, cause: exit.reason, boot };
+    if (FAILURES.has(exit.reason))
+      return { kind: 'failure', marker, cause: exit.reason, exitAtWall: exit.atWallMs, boot };
     if (exit.foreground && VISIBLE_STRAIN.has(exit.reason))
-      return { kind: 'neutral', marker, exit: exit.reason };
+      return { kind: 'neutral', marker, exit: exit.reason, exitAtWall: exit.atWallMs };
     return { kind: 'clean', marker, exit: exit.reason };
   }
   return marker.foreground
-    ? { kind: 'failure', marker, cause: 'unclean', boot }
+    ? { kind: 'failure', marker, cause: 'unclean', exitAtWall: null, boot }
     : { kind: 'clean', marker, exit: null };
 }
 
@@ -331,6 +440,40 @@ export function foldSession(
       : freshProfile(context.device, config);
   const from = { rung: ladder.rung, trust: profile.trust, grant: profile.grant };
   let lastFolded = record.key === context.key ? record.lastFolded : null;
+  // Why the ladder moves, kept across a new ladder (see `LadderStep`).
+  const steps: LadderStep[] = [];
+  const step = (
+    kind: LadderStepKind,
+    rungFrom: Rung,
+    rungTo: Rung,
+    evidence: Partial<Pick<LadderStep, 'cause' | 'exitAtWall' | 'session' | 'failuresInWindow'>>,
+  ) =>
+    steps.push({
+      kind,
+      atWall: context.nowWall,
+      from: rungFrom,
+      to: rungTo,
+      cause: evidence.cause ?? null,
+      exitAtWall: evidence.exitAtWall ?? null,
+      session: evidence.session ?? null,
+      failuresInWindow: evidence.failuresInWindow ?? null,
+      key: context.key,
+      previousKey: null,
+    });
+  if (record.key !== context.key) {
+    steps.push({
+      kind: 'new-ladder',
+      atWall: context.nowWall,
+      from: record.ladder.rung,
+      to: ladder.rung,
+      cause: null,
+      exitAtWall: null,
+      session: null,
+      failuresInWindow: null,
+      key: context.key,
+      previousKey: record.key,
+    });
+  }
 
   // Only a session that ran verger, under this ladder, and was not folded before is evidence.
   const counts =
@@ -351,6 +494,11 @@ export function foldSession(
     if (outcome.kind === 'neutral') {
       // Strain without blame: give back growth, learn nothing, move no rung.
       profile = { ...profile, grant: Math.max(0, profile.grant - 1), proving: 0 };
+      step('visible-kill', ladder.rung, ladder.rung, {
+        cause: outcome.exit,
+        exitAtWall: outcome.exitAtWall,
+        session: sessionOf(outcome.marker),
+      });
     } else if (outcome.kind === 'failure') {
       const failures = [
         ...ladder.failures.filter(
@@ -366,7 +514,14 @@ export function foldSession(
         : escalate
           ? (Math.min(4, ladder.rung + 1) as Rung)
           : ladder.rung;
+      step(outcome.boot ? 'boot-failure' : 'failure', ladder.rung, rung, {
+        cause: outcome.cause,
+        exitAtWall: outcome.exitAtWall,
+        session: sessionOf(outcome.marker),
+        failuresInWindow: failures.length,
+      });
       ladder = {
+        ...ladder,
         rung,
         failures: escalate ? [] : failures,
         clean: 0,
@@ -385,6 +540,10 @@ export function foldSession(
       const clean = ladder.clean + 1;
       const recovers = ladder.rung > 0 && ladder.rung < 4 && clean >= needed;
       const forgives = ladder.rung === 0 && ladder.relapses > 0 && clean >= config.relapseDecayClean;
+      if (recovers || forgives)
+        step(recovers ? 'recovered' : 'forgiven', ladder.rung, recovers ? ((ladder.rung - 1) as Rung) : 0, {
+          session: sessionOf(outcome.marker),
+        });
       ladder = {
         ...ladder,
         rung: recovers ? ((ladder.rung - 1) as Rung) : ladder.rung,
@@ -399,6 +558,10 @@ export function foldSession(
       if (learns) profile = learn(profile, report, config);
     }
   }
+
+  // History rides on the stored record whatever the key; absent until there is something to keep.
+  const history = record.ladder.history;
+  if (steps.length > 0 || history) ladder = { ...ladder, history: withSteps(history, steps) };
 
   return {
     record: { v: 1, key: context.key, lastFolded, ladder, profile },
@@ -491,6 +654,7 @@ export function planLaunch(
       grant: 0,
       gains: {},
       reason: 'rung-4-off',
+      cause: whyRung(record),
     };
   }
   if (rung === 3) {
@@ -503,6 +667,7 @@ export function planLaunch(
       grant: 0,
       gains: {},
       reason: 'rung-3-shadow',
+      cause: whyRung(record),
     };
   }
   const exercise = rung === 0 && requested === 'active' && random * 100 < config.exercisePercent;
@@ -516,6 +681,7 @@ export function planLaunch(
       grant: 0,
       gains: {},
       reason: 'exercise',
+      cause: null,
     };
   }
   const prior: Record<string, number> = {};
@@ -536,6 +702,7 @@ export function planLaunch(
     // keeps them.
     gains: record.profile.gains ?? {},
     reason: `rung-${rung}`,
+    cause: whyRung(record),
   };
 }
 
@@ -562,6 +729,51 @@ const isGainMap = (v: unknown): boolean =>
       Number.isInteger(g.samples) &&
       g.samples >= 0,
   );
+const STEP_KINDS: readonly unknown[] = [
+  'failure',
+  'boot-failure',
+  'visible-kill',
+  'recovered',
+  'forgiven',
+  'unreadable-record',
+  'new-ladder',
+];
+const CAUSES: readonly unknown[] = [
+  'crash',
+  'native-crash',
+  'anr',
+  'excessive-resource',
+  'low-memory',
+  'user',
+  'self',
+  'signaled',
+  'other',
+  'unclean',
+];
+const RUNTIMES: readonly unknown[] = ['off', 'shadow', 'active'];
+const PHASES: readonly unknown[] = ['starting', 'running', 'stopped'];
+const isNullableNumber = (v: unknown) => v === null || isFiniteNumber(v);
+const isStepSession = (v: unknown): boolean =>
+  v === null ||
+  (isObject(v) &&
+    isFiniteNumber(v.startedAtWall) &&
+    PHASES.includes(v.phase) &&
+    RUNTIMES.includes(v.runtime) &&
+    isRung(v.rung) &&
+    typeof v.foreground === 'boolean' &&
+    isNullableNumber(v.pid));
+const isLadderStep = (v: unknown): boolean =>
+  isObject(v) &&
+  STEP_KINDS.includes(v.kind) &&
+  isFiniteNumber(v.atWall) &&
+  isRung(v.from) &&
+  isRung(v.to) &&
+  (v.cause === null || CAUSES.includes(v.cause)) &&
+  isNullableNumber(v.exitAtWall) &&
+  isStepSession(v.session) &&
+  isNullableNumber(v.failuresInWindow) &&
+  typeof v.key === 'string' &&
+  (v.previousKey === null || typeof v.previousKey === 'string');
 const THERMALS: readonly unknown[] = ['unknown', 'nominal', 'warm', 'hot', 'critical'];
 const MEMORIES: readonly unknown[] = ['unknown', 'normal', 'trimmed', 'low'];
 
@@ -623,7 +835,11 @@ export function parseRecord(text: string | null | undefined): VergerRecord | nul
     isFiniteNumber(ladder.clean) &&
     ladder.clean >= 0 &&
     isFiniteNumber(ladder.relapses) &&
-    ladder.relapses >= 0;
+    ladder.relapses >= 0 &&
+    (ladder.history === undefined ||
+      (Array.isArray(ladder.history) &&
+        ladder.history.length <= LADDER_HISTORY_MAX &&
+        ladder.history.every(isLadderStep)));
   const profileOk =
     (profile.device === null || typeof profile.device === 'string') &&
     isFiniteNumber(profile.trust) &&

@@ -36,6 +36,7 @@ import {
   foldSession,
   freshRecord,
   guardedRecord,
+  type LadderStep,
   type LaunchPlan,
   parseMarker,
   parseRecord,
@@ -44,6 +45,7 @@ import {
   type SessionMarker,
   type SessionOutcome,
   type VergerRecord,
+  whyRung,
 } from './recovery';
 import { UNKNOWN_CAPACITY } from './reducer';
 import { createSelfBudgetGuard, SELF_BUDGET_SHED } from './selfBudget';
@@ -204,7 +206,7 @@ export interface Verger {
 const PERSIST_EVERY_MS = 10_000;
 const FLIGHT_SENT_CHARS = 1_800;
 
-const offPlan = (reason: string, rung: Rung = 0): LaunchPlan => ({
+const offPlan = (reason: string, rung: Rung = 0, cause: LadderStep | null = null): LaunchPlan => ({
   runtime: 'off',
   rung,
   exercise: false,
@@ -213,6 +215,7 @@ const offPlan = (reason: string, rung: Rung = 0): LaunchPlan => ({
   grant: 0,
   gains: {},
   reason,
+  cause,
 });
 
 /**
@@ -476,7 +479,7 @@ export function createVerger(options: VergerOptions): Verger {
     let base =
       parsed ??
       (corrupt
-        ? guardedRecord(ladderKey, null, recovery, markerRung)
+        ? guardedRecord(ladderKey, null, recovery, markerRung, wallNow())
         : freshRecord(ladderKey, null, recovery));
 
     // 2. May verger touch native code at all? Decided from the store alone.
@@ -492,7 +495,7 @@ export function createVerger(options: VergerOptions): Verger {
       if (base.ladder.rung === 4) {
         const ok = await remember(base);
         await write(keys.marker, JSON.stringify(markerFor('off', 4, 'running')));
-        return offPlan(ok ? 'rung-4-off' : 'rung-4-off-unrecorded', 4);
+        return offPlan(ok ? 'rung-4-off' : 'rung-4-off-unrecorded', 4, whyRung(base));
       }
     }
 

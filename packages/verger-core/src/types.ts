@@ -122,7 +122,17 @@ export type NetworkLimit = 'offline' | 'data-saver' | 'unstable' | 'slow' | 'non
 /** A phone's capacity class, from its memory. */
 export type CapacityClass = 'low' | 'mid' | 'high' | 'unknown';
 
-export type VergerEvent =
+/**
+ * When a platform sensed an event, beside `at` (when verger received it), on the same clock: on
+ * Android both are CLOCK_MONOTONIC milliseconds. The reducer never reads it; diagnostics read the
+ * bridge's delay and join sources by it. Absent where the platform does not stamp its events.
+ */
+export interface SensedAt {
+  readonly sensedAt?: number;
+}
+
+export type VergerEvent = SensedAt &
+  (
   | { readonly type: 'frame-window'; readonly at: number; readonly window: FrameWindow }
   | {
       readonly type: 'thermal';
@@ -262,7 +272,8 @@ export type VergerEvent =
    * reports the budget as `data-budget`; the reducer itself only hears it. Heard with network.
    */
   | { readonly type: 'data-usage'; readonly at: number; readonly totalBytes: number }
-  | { readonly type: 'tick'; readonly at: number };
+  | { readonly type: 'tick'; readonly at: number }
+  );
 
 /** Unity-style indexer action, extended with verger's reasons. */
 export type IndexerAction = 'fast-decrease' | 'decrease' | 'stale' | 'increase';
@@ -672,4 +683,6 @@ export interface VergerSnapshot {
   readonly lastReason: string;
   /** What verger was allowed to do when this snapshot was taken. */
   readonly activation: VergerActivation;
+  /** The current active screen or workload regime, if announced; null otherwise. */
+  readonly screen: string | null;
 }

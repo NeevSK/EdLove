@@ -1,62 +1,126 @@
 package expo.modules.verger
 
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import android.os.Build
+import android.os.Trace
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
+import io.github.expo.modules.v2.react.reactContext
 
-/**
- * Thin Expo binding over [VergerSense]. Everything that measures lives there, independent of
- * Expo; this file only maps it to constants, functions and events.
- */
+/** Only the Expo boundary; sensing, cadence and hardware ownership remain in VergerSense. */
+@ExpoModule("Verger")
 class VergerModule : Module() {
   private var sense: VergerSense? = null
 
-  private fun context() = requireNotNull(appContext.reactContext) { "React context is not available" }
+  // Explicit names preserve the existing JS wire contract; v2 otherwise strips the `on` prefix.
+  @Event(name = "onFrameWindow")
+  val onFrameWindow = event<Map<String, Any?>>()
+  @Event(name = "onThermal")
+  val onThermal = event<Map<String, Any?>>()
+  @Event(name = "onMemoryTrim")
+  val onMemoryTrim = event<Map<String, Any?>>()
+  @Event(name = "onPowerSaver")
+  val onPowerSaver = event<Map<String, Any?>>()
+  @Event(name = "onThreadLoad")
+  val onThreadLoad = event<Map<String, Any?>>()
+  @Event(name = "onMemory")
+  val onMemory = event<Map<String, Any?>>()
+  @Event(name = "onNetwork")
+  val onNetwork = event<Map<String, Any?>>()
+  @Event(name = "onBattery")
+  val onBattery = event<Map<String, Any?>>()
+  @Event(name = "onCpuHeadroom")
+  val onCpuHeadroom = event<Map<String, Any?>>()
+  @Event(name = "onDataUsage")
+  val onDataUsage = event<Map<String, Any?>>()
+  @Event(name = "onLever")
+  val onLever = event<Map<String, Any?>>()
 
   private fun sense(): VergerSense {
     sense?.let { return it }
-    val context = context()
+    val react = reactContext
     val emitter = object : SenseEmitter {
-      override fun emit(name: String, body: Map<String, Any?>) = sendEvent(name, body)
+      override fun emit(name: String, body: Map<String, Any?>) {
+        when (name) {
+          VergerSense.EVENT_FRAME_WINDOW -> onFrameWindow.emit(body)
+          VergerSense.EVENT_THERMAL -> onThermal.emit(body)
+          VergerSense.EVENT_MEMORY_TRIM -> onMemoryTrim.emit(body)
+          VergerSense.EVENT_POWER_SAVER -> onPowerSaver.emit(body)
+          VergerSense.EVENT_THREAD_LOAD -> onThreadLoad.emit(body)
+          VergerSense.EVENT_MEMORY -> onMemory.emit(body)
+          VergerSense.EVENT_NETWORK -> onNetwork.emit(body)
+          VergerSense.EVENT_BATTERY -> onBattery.emit(body)
+          VergerSense.EVENT_CPU_HEADROOM -> onCpuHeadroom.emit(body)
+          VergerSense.EVENT_DATA_USAGE -> onDataUsage.emit(body)
+          VergerSense.EVENT_LEVER -> onLever.emit(body)
+          else -> error("Unknown Verger event: $name")
+        }
+      }
     }
-    return VergerSense(context, emitter) { appContext.currentActivity }.also { sense = it }
+    // Teardown is queued: resolve the activity live without depending on an open ExpoContext.
+    return VergerSense(react.applicationContext, emitter) { react.currentActivity }.also { sense = it }
   }
 
-  override fun definition() = ModuleDefinition {
-    // Must match `requireOptionalNativeModule('Verger')` in index.ts.
-    Name("Verger")
+  // Remain methods: capacity and exits must not be cached or create the sensor.
+  @JS
+  fun readCapacity(): Map<String, Any?> = DeviceFacts.capacity(androidContext)
 
-    Events(*VergerSense.EVENTS)
+  @JS
+  fun readExits(sinceWallMs: Double): List<Map<String, Any?>>? = DeviceFacts.exits(androidContext, sinceWallMs)
 
-    // A function, not a constant: Expo caches constants on first read, and capacity read
-    // before the first activity resumes would be wrong for the life of the process.
-    // Facts are read without creating the sensor: judging the last session must not start one.
-    Function("readCapacity") { DeviceFacts.capacity(context()) }
+  @JS
+  fun readProcessId(): Int = android.os.Process.myPid()
 
-    Function("readExits") { sinceWallMs: Double -> DeviceFacts.exits(context(), sinceWallMs) }
+  @JS
+  fun start(options: Map<String, Any?>) {
+    val config = parseConfig(options)
+    sense().start(config, currentActivity)
+  }
 
-    // Lets the next launch match the exit record to this process, not merely to a time.
-    Function("readProcessId") { android.os.Process.myPid() }
+  @JS
+  fun stop() { sense?.stop() }
 
-    Function("start") { options: Map<String, Any?> ->
-      sense().start(parseConfig(options), appContext.currentActivity)
+  @JS
+  fun setSensors(sensors: Map<String, Any?>) { sense?.setSensors(Sensors.parse(sensors)) }
+
+  @JS
+  fun setRefreshCap(hz: Double?) { sense().setRefreshCap(hz) }
+
+  @JS
+  fun setCpuBoost(enabled: Boolean) { sense().setCpuBoost(enabled) }
+
+  @JS
+  fun readTotals(): Map<String, Any?> = sense?.totals() ?: emptyMap()
+
+  /**
+   * CLOCK_MONOTONIC in milliseconds, the clock of every native payload's `sensedAtMs` and frame
+   * window. Read beside JavaScript's `performance.now()` in one tick to prove the two are one
+   * clock on a phone before joins are trusted as exact. Starts nothing.
+   */
+  @JS
+  fun readMonotonicMs(): Double = System.nanoTime() / 1e6
+
+  /**
+   * Verger's decisions as Perfetto counter tracks (`android.os.Trace.setCounter`, API 29+), so a
+   * system trace shows lever levels, rung and heat on the same timeline as the scheduler and the
+   * frames. Written only while a trace is recording; values that are not numbers are skipped.
+   * Starts nothing.
+   */
+  @JS
+  fun traceCounters(counters: Map<String, Any?>) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !Trace.isEnabled()) return
+    for ((name, value) in counters) {
+      if (value is Number) Trace.setCounter(name, value.toLong())
     }
+  }
 
-    Function("stop") { sense?.stop() }
-
-    Function("setSensors") { sensors: Map<String, Any?> -> sense?.setSensors(Sensors.parse(sensors)) }
-
-    Function("setRefreshCap") { hz: Double? -> sense().setRefreshCap(hz) }
-
-    Function("setCpuBoost") { enabled: Boolean -> sense().setCpuBoost(enabled) }
-
-    Function("readTotals") { sense?.totals() ?: emptyMap<String, Any?>() }
-
-    // Foreground and background are followed by VergerSense itself, from the platform's
-    // activity callbacks: this binding keeps only what any module API offers.
-    OnDestroy {
-      sense?.destroy()
-      sense = null
-    }
+  override fun onDestroy() {
+    sense?.destroy()
+    sense = null
+    super.onDestroy()
   }
 
   /**

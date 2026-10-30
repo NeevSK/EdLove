@@ -43,7 +43,8 @@ export const VERGER_POLICY: VergerPolicy<VergerState> = {
 
 /**
  * verger-p5: p4 plus per-lever expansion on evidence (the accounts each lever relieves, weighted
- * by confidence, with per-lever back-off). Not the default: compare it with p4 first.
+ * by confidence, with per-lever back-off). A host chooses it (`defineHost({ policy })`); a host
+ * that names none gets `VERGER_POLICY`.
  */
 export const VERGER_POLICY_P5: VergerPolicy<VergerState> = {
   ...VERGER_POLICY,

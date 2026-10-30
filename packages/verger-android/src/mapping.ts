@@ -14,8 +14,17 @@ import type {
   TrimSeverity,
 } from '@repo/verger-core';
 
+/**
+ * When the payload was sensed: CLOCK_MONOTONIC milliseconds, the clock of JavaScript's
+ * `performance.now()` on Android. Added by `VergerSense.emit` to every payload; optional so a
+ * module built before it still maps.
+ */
+export interface NativeSensed {
+  readonly sensedAtMs?: number;
+}
+
 /** Payloads exactly as `VergerSense.kt` emits them. */
-export interface NativeFrameWindow {
+export interface NativeFrameWindow extends NativeSensed {
   readonly startMs: number;
   readonly endMs: number;
   readonly frames: number;
@@ -27,18 +36,18 @@ export interface NativeFrameWindow {
   /** `gpuMs` is null before Android 12, where GPU time is not reported. */
   readonly stages?: (Omit<FrameStages, 'gpuMs'> & { readonly gpuMs: number | null }) | null;
 }
-export interface NativeThermal {
+export interface NativeThermal extends NativeSensed {
   readonly status: ThermalStatus | null;
   readonly headroom: number | null;
 }
-export interface NativeMemoryTrim {
+export interface NativeMemoryTrim extends NativeSensed {
   readonly severity: TrimSeverity;
   readonly level: number;
 }
-export interface NativePowerSaver {
+export interface NativePowerSaver extends NativeSensed {
   readonly saver: boolean;
 }
-export interface NativeThreadLoad {
+export interface NativeThreadLoad extends NativeSensed {
   readonly intervalMs: number;
   readonly processCores: number;
   readonly cores: Readonly<Partial<Record<ThreadRoleName, number>>>;
@@ -47,21 +56,21 @@ export interface NativeThreadLoad {
   readonly rssMb: number | null;
 }
 /** The device's CPU headroom (API 36, R11), 0 to 100; null while the platform has no value. */
-export interface NativeCpuHeadroom {
+export interface NativeCpuHeadroom extends NativeSensed {
   readonly percent: number | null;
 }
 /** This app's bytes since boot (B3.1); -1 where the platform does not count. */
-export interface NativeDataUsage {
+export interface NativeDataUsage extends NativeSensed {
   readonly totalBytes: number;
 }
-export interface NativeMemory {
+export interface NativeMemory extends NativeSensed {
   readonly availableMb: number;
   readonly thresholdMb: number;
   readonly lowMemory: boolean;
   readonly rssMb: number | null;
 }
 /** The default network as `NetworkSignals.kt` builds it; bandwidth is bucketed natively. */
-export interface NativeNetwork {
+export interface NativeNetwork extends NativeSensed {
   readonly transport: NetworkTransport;
   readonly validated: boolean | null;
   readonly metered: boolean | null;
@@ -69,13 +78,13 @@ export interface NativeNetwork {
   readonly dataSaver: DataSaver | null;
 }
 /** The battery as `BatterySignals.kt` builds it; temperature rounded to half a degree natively. */
-export interface NativeBattery {
+export interface NativeBattery extends NativeSensed {
   readonly levelPercent: number | null;
   readonly pluggedIn: boolean | null;
   readonly temperatureC: number | null;
 }
 /** What a hardware lever actually did; for diagnostics and telemetry, not for decisions. */
-export interface NativeLever {
+export interface NativeLever extends NativeSensed {
   readonly lever: 'refresh-cap' | 'cpu-boost';
   readonly requested: number | boolean | null;
   readonly applied: boolean;
@@ -236,13 +245,20 @@ export type NativeEvent =
   | { readonly name: 'onDataUsage'; readonly payload: NativeDataUsage };
 
 /**
- * Native payload to verger event. `at` is the JavaScript clock at receipt: verger's
- * timing runs on one clock, and the window's own start and end stay on the sensor's timeline.
+ * Native payload to verger event. `at` is the JavaScript clock at receipt, which verger's timing
+ * runs on; `sensedAt` is when the platform sensed it. On Android both are CLOCK_MONOTONIC
+ * milliseconds, as are a frame window's start and end, so all of them join exactly.
  */
 export function toVergerEvent(event: NativeEvent, at: number): VergerEvent {
+  const sensedAt = finite(event.payload.sensedAtMs);
+  const mapped = eventOf(event, at);
+  return sensedAt === null ? mapped : { ...mapped, sensedAt };
+}
+
+function eventOf(event: NativeEvent, at: number): VergerEvent {
   switch (event.name) {
     case 'onFrameWindow': {
-      const { state: _state, stages, ...window } = event.payload;
+      const { state: _state, stages, sensedAtMs: _sensedAtMs, ...window } = event.payload;
       if (!stages) return { type: 'frame-window', at, window };
       const gpuMs = stages.gpuMs ?? Number.NaN;
       return { type: 'frame-window', at, window: { ...window, stages: { ...stages, gpuMs } } };

@@ -155,6 +155,21 @@ const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 const ms = (x: number) => `${x < 10 ? x.toFixed(2) : Math.round(x)} ms`;
 const onOff = (on: boolean) => (on ? 'on' : 'off');
 
+/** The step that put the ladder on this rung, in one line; rung 0 answers for nothing. */
+function describeStep(plan: LaunchPlan): string {
+  const step = plan.cause;
+  if (step === null) return plan.rung === 0 ? 'full trust' : 'not recorded (record predates kept causes)';
+  const parts = [
+    step.cause ? `${step.kind} (${step.cause})` : step.kind,
+    `rung ${step.from} → ${step.to}`,
+    new Date(step.atWall).toISOString(),
+  ];
+  if (step.failuresInWindow !== null) parts.push(`${step.failuresInWindow} in window`);
+  if (step.session) parts.push(`session ran ${step.session.runtime} on rung ${step.session.rung}, ${step.session.phase}`);
+  if (step.previousKey) parts.push(`after ${step.previousKey}`);
+  return parts.join(' · ');
+}
+
 /**
  * The lab's read-out as text, the same on every platform (the screens only lay it out): what
  * runs and why, what verger reads, the accounts, outcomes and self-cost. Levers are shown apart,
@@ -175,6 +190,7 @@ export function labSections(report: LabReport): LabSection[] {
             ['hardware', onOff(plan.hardware)],
             ['grant', String(plan.grant)],
             ['reason', plan.reason],
+            ['why this rung', describeStep(plan)],
           ] as const)
         : []),
       ...(activation

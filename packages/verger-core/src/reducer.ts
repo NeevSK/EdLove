@@ -1051,20 +1051,25 @@ function slopeOf(trace: readonly (readonly [number, number])[], minSamples: numb
 
 /**
  * Heat projected `thermalTrendHorizonMs` ahead on the rising slope of its own source (R1). Only a
- * rise is projected: a falling trend relaxes nothing, the held level (P4) decides that.
+ * rise is projected: a falling trend relaxes nothing, the held level (P4) decides that. The slope
+ * is taken over the readings still inside `thermalTrendWindowMs` now: heat is reported only on
+ * change, so a quiet sensor would otherwise keep an old rise projecting forever (counterexample
+ * of 2026-10-29: two near-zero headrooms then 0.3 held nine levers down through a calm half hour).
  */
 function thermalProjected(state: VergerState): ThermalLevel {
   const reading = thermalReading(state);
   if (reading.level === 'unknown') return 'unknown';
   const c = state.config;
   const ahead = c.thermalTrendHorizonMs / 1000;
+  const recent = (trace: readonly (readonly [number, number])[]) =>
+    trace.filter(([t]) => state.at - t <= c.thermalTrendWindowMs);
   let projected: ThermalLevel = reading.level;
   if (reading.source === 'platform' && state.headroom !== null) {
-    const slope = slopeOf(state.headroomTrace, c.thermalTrendMinSamples);
+    const slope = slopeOf(recent(state.headroomTrace), c.thermalTrendMinSamples);
     if (slope !== null && slope > 0)
       projected = thermalLevelOf(state.thermalStatus, state.headroom + slope * ahead, c);
   } else if (reading.source === 'battery' && state.battery.temperatureC !== null) {
-    const slope = slopeOf(state.batteryTrace, c.thermalTrendMinSamples);
+    const slope = slopeOf(recent(state.batteryTrace), c.thermalTrendMinSamples);
     if (slope !== null && slope > 0) {
       const t = state.battery.temperatureC + slope * ahead;
       projected =
@@ -2043,6 +2048,7 @@ export function snapshotOf(state: VergerState, at: number = state.at): VergerSna
     lastAction: state.lastAction,
     lastReason: state.lastReason,
     activation: state.activation,
+    screen: state.screen ?? null,
   };
 }
 

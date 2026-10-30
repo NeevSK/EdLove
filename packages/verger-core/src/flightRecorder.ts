@@ -46,6 +46,8 @@ export function flightLine(snapshot: VergerSnapshot, sessionStartAt: number): st
     .map(([id, level]) => `${id}=${level}`)
     .sort()
     .join(',');
+  const rawReason = reasonCode(snapshot.lastReason).replace(/\|/g, '/');
+  const reason = snapshot.screen ? `${rawReason}[${snapshot.screen}]` : rawReason;
   return [
     seconds,
     snapshot.lastAction,
@@ -57,7 +59,7 @@ export function flightLine(snapshot: VergerSnapshot, sessionStartAt: number): st
     snapshot.refreshCapHz ?? '-',
     snapshot.cpuBoost ? 'B' : '-',
     snapshot.globalReducedMotion ? 'M' : '-',
-    reasonCode(snapshot.lastReason).replace(/\|/g, '/'),
+    reason,
     lowered,
   ].join('|');
 }

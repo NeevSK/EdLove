@@ -17,7 +17,7 @@ for (const name of ['verger-core', 'verger-android', 'verger-web']) {
   steps.push([`test ${name}`, `packages/${name}`, ['vitest', 'run']]);
 }
 steps.push(
-  ['test Gurudevi host', 'packages/core', ['vitest', 'run', 'src/verger']],
+  ['test Gurudevi host', 'packages/core', ['vitest', 'run', 'src/verger', 'src/scene']],
   [
     'test UI context',
     'packages/ui',
@@ -39,6 +39,7 @@ steps.push(
       'run',
       'src/__tests__/runtime',
       'src/__tests__/architecture/efficiency-policy-boundaries.test.ts',
+      'src/__tests__/architecture/startupTelemetry.test.ts',
     ],
   ],
   [
@@ -50,6 +51,7 @@ steps.push(
       'tests/integration/gurudeviWebVerger.test.tsx',
       'tests/integration/workspaceWallpaperLayer.test.tsx',
       'tests/integration/vergerLab.test.tsx',
+      'tests/unit/runtime',
     ],
   ],
 );

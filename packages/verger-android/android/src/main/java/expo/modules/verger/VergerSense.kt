@@ -91,7 +91,6 @@ class VergerSense(
   // exactly the load the runtime must see, and the platform then drops frame reports.
   private val thread = HandlerThread("VergerSense", Process.THREAD_PRIORITY_DEFAULT).apply { start() }
   private val handler = Handler(thread.looper)
-  private val originNs = System.nanoTime()
 
   private var config: SenseConfig? = null
   private var estimator: FrameWindowEstimator? = null
@@ -351,7 +350,7 @@ class VergerSense(
     est.addDroppedReports(dropped)
     if (metrics.getMetric(FrameMetrics.FIRST_DRAW_FRAME) == 1L) return@OnFrameMetricsAvailableListener
     val durMs = metrics.getMetric(FrameMetrics.TOTAL_DURATION) / 1e6
-    val tMs = (metrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP) - originNs) / 1e6
+    val tMs = metrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP) / 1e6
     val modern = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val deadlineMs = if (modern) metrics.getMetric(FrameMetrics.DEADLINE) / 1e6 else Double.NaN
     val uiMs = (metrics.getMetric(FrameMetrics.INPUT_HANDLING_DURATION) +
@@ -725,11 +724,15 @@ class VergerSense(
 
   // endregion
 
-  /** The one exit to JavaScript: dropped after destroy, and never allowed to throw. */
+  /**
+   * The one exit to JavaScript: dropped after destroy, and never allowed to throw. Every payload
+   * carries `sensedAtMs` (CLOCK_MONOTONIC, `nowMs`), so JavaScript keeps when it was sensed beside
+   * when it arrived; the difference is the bridge's delay.
+   */
   private fun emit(name: String, body: Map<String, Any?>) {
     if (destroyed) return
     try {
-      emitter.emit(name, body)
+      emitter.emit(name, body + (SENSED_AT_MS to nowMs()))
     } catch (_: Throwable) {
       // A failed emit (runtime torn down mid-reload) must not crash the app.
     }
@@ -741,7 +744,13 @@ class VergerSense(
     state.importance <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
   }.getOrDefault(false)
 
-  private fun nowMs(): Double = (System.nanoTime() - originNs) / 1e6
+  /**
+   * Milliseconds on CLOCK_MONOTONIC, unshifted: the clock of React Native's `performance.now()`
+   * on Android (`steady_clock`) and of DevTools traces, so frame windows join JavaScript's events
+   * exactly. An origin of its own made window times incomparable with `at`, which silently
+   * stopped the reducer's gain probe on phones (2026-10-29).
+   */
+  private fun nowMs(): Double = System.nanoTime() / 1e6
 
   companion object {
     const val EVENT_FRAME_WINDOW = "onFrameWindow"
@@ -755,6 +764,8 @@ class VergerSense(
     const val EVENT_BATTERY = "onBattery"
     const val EVENT_CPU_HEADROOM = "onCpuHeadroom"
     const val EVENT_DATA_USAGE = "onDataUsage"
+    /** The key every payload's sensing time travels under (see `emit`). */
+    const val SENSED_AT_MS = "sensedAtMs"
     val EVENTS = arrayOf(
       EVENT_FRAME_WINDOW, EVENT_THERMAL, EVENT_MEMORY_TRIM, EVENT_POWER_SAVER,
       EVENT_THREAD_LOAD, EVENT_MEMORY, EVENT_LEVER, EVENT_NETWORK, EVENT_BATTERY,

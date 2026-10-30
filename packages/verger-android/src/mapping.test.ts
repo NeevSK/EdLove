@@ -101,6 +101,36 @@ describe('verger-android mapping', () => {
     });
   });
 
+  it('keeps when the platform sensed an event beside when verger received it (one clock)', () => {
+    const window = {
+      startMs: 9_000_000,
+      endMs: 9_000_500,
+      frames: 30,
+      averageMs: 9,
+      targetMs: 16.67,
+      worstMs: 14,
+      droppedRatio: 0,
+    };
+    const frame = toVergerEvent(
+      { name: 'onFrameWindow', payload: { ...window, state: 'neutral', sensedAtMs: 9_000_501 } },
+      9_000_512,
+    );
+    // The window is the window; the sensing time travels on the event, not inside the window.
+    expect(frame).toEqual({ type: 'frame-window', at: 9_000_512, sensedAt: 9_000_501, window });
+    expect(
+      toVergerEvent({ name: 'onPowerSaver', payload: { saver: true, sensedAtMs: 7 } }, 9),
+    ).toEqual({ type: 'power', at: 9, saver: true, sensedAt: 7 });
+    // A module built before the stamp, or a stamp that is not a finite number, adds nothing.
+    expect(toVergerEvent({ name: 'onPowerSaver', payload: { saver: true } }, 9)).toEqual({
+      type: 'power',
+      at: 9,
+      saver: true,
+    });
+    expect(
+      toVergerEvent({ name: 'onPowerSaver', payload: { saver: true, sensedAtMs: Number.NaN } }, 9),
+    ).not.toHaveProperty('sensedAt');
+  });
+
   it('carries frame stages, thread load and polled memory into the verger vocabulary', () => {
     const stages = { uiMs: 9, renderMs: 3, gpuMs: 4, delayMs: 0.5 };
     const window = {
