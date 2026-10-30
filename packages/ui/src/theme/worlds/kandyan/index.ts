@@ -1,14 +1,59 @@
-import { FACES, MOTION } from '../faces';
-import type { WorldDefinition } from '../types';
-import { tokens } from './tokens';
+import type { WorldDefinition } from '../../types';
+import { NOTO_SERIF_TA } from '../shared/faces';
+import { W } from '../shared/perch';
+import { tokens } from '../tokens';
 
 export const kandyan: WorldDefinition = {
   id: 'kandyan',
   names: { en: 'Temple walls', si: 'විහාර බිතු', ta: 'கோயில் சுவர்கள்' },
   description: 'Lime plaster and mural earth, with a vine band at the edge.',
   family: 'cultural',
-  faces: FACES.kandyan,
-  motion: MOTION.kandyan,
+  faces: {
+    // Abhaya Libre is Sinhala-first and draws small, so it is set a size up.
+    serif: {
+      upright: 'AbhayaLibre-Regular',
+      weights: { '400': 'AbhayaLibre-Regular', '600': 'AbhayaLibre-SemiBold' },
+      scale: 1.08,
+    },
+    sans: {
+      upright: 'AbhayaLibre-Regular',
+      weights: { '400': 'AbhayaLibre-Regular', '600': 'AbhayaLibre-SemiBold' },
+      scale: 1.08,
+    },
+    si: {
+      serif: {
+        upright: 'AbhayaLibre-Regular',
+        weights: { '400': 'AbhayaLibre-Regular', '600': 'AbhayaLibre-SemiBold' },
+        scale: 1.12,
+      },
+      sans: {
+        upright: 'AbhayaLibre-Regular',
+        weights: { '400': 'AbhayaLibre-Regular', '600': 'AbhayaLibre-SemiBold' },
+        scale: 1.12,
+      },
+    },
+    ta: { serif: NOTO_SERIF_TA, sans: NOTO_SERIF_TA },
+  },
+  motion: {
+    tempo: 1.1,
+    curve: 'decelerate',
+    travel: 0,
+    axis: 'none',
+    settle: 'eased',
+    stagger: 0,
+    haptic: 'crisp',
+  },
+  sign: 'band',
+  // A niche in the temple wall: a doubled arch frame.
+  perch: {
+    stroke: 'ornament',
+    fill: 'none',
+    shapes: [
+      { el: 'path', attrs: { d: 'M66 162 V128 Q110 96 154 128 V162', strokeWidth: W * 1.5 } },
+      { el: 'path', attrs: { d: 'M74 162 V131 Q110 106 146 131 V162', strokeWidth: W * 0.8 } },
+      { el: 'rect', attrs: { x: 60, y: 158, width: 100, height: 4 }, fill: 'ornament' },
+    ],
+  },
   preferredMode: 'light',
   palette: {
     light: tokens(

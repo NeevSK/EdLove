@@ -1,14 +1,42 @@
-import { FACES, MOTION } from '../faces';
-import type { WorldDefinition } from '../types';
-import { tokens } from './tokens';
+import type { WorldDefinition } from '../../types';
+import { NOTO_SANS_SI, NOTO_SANS_TA, variable } from '../shared/faces';
+import { W } from '../shared/perch';
+import { tokens } from '../tokens';
 
 export const colombo: WorldDefinition = {
   id: 'colombo',
   names: { en: 'Colombo night', si: 'කොළඹ රාත්‍රිය', ta: 'கொழும்பு இரவு' },
   description: 'City lights on the harbour. Clean, precise, a little futuristic.',
   family: 'modern',
-  faces: FACES.colombo,
-  motion: MOTION.colombo,
+  faces: {
+    serif: variable('SpaceGrotesk-VF', {
+      weights: { '400': 420, '500': 480, '600': 560, '700': 640 },
+    }),
+    sans: variable('IBMPlexSans-Regular', { axes: { wdth: 92 } }),
+    si: { serif: NOTO_SANS_SI, sans: NOTO_SANS_SI },
+    ta: { serif: NOTO_SANS_TA, sans: NOTO_SANS_TA },
+  },
+  motion: {
+    tempo: 0.9,
+    curve: 'standard',
+    travel: 16,
+    axis: 'side',
+    settle: 'none',
+    stagger: 0,
+    haptic: 'crisp',
+  },
+  sign: 'signal',
+  // The spire over the city line.
+  perch: {
+    stroke: 'ornament',
+    strokeWidth: W,
+    fill: 'none',
+    shapes: [
+      { el: 'path', attrs: { d: 'M20 162 V148 H44 V140 H62 V154 H158 V138 H176 V150 H200 V162' } },
+      { el: 'path', attrs: { d: 'M182 150 L188 90 L194 150' } },
+      { el: 'circle', attrs: { cx: 188, cy: 86, r: 2.4 }, fill: 'lamp', stroke: 'none' },
+    ],
+  },
   preferredMode: 'dark',
   palette: {
     light: tokens({

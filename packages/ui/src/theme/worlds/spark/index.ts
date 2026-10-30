@@ -1,0 +1,111 @@
+import type { WorldDefinition } from '../../types';
+import { variable } from '../shared/faces';
+import { W } from '../shared/perch';
+import { tokens } from '../tokens';
+
+export const spark: WorldDefinition = {
+  id: 'spark',
+  names: { en: 'Spark', si: 'පුපුර', ta: 'தீப்பொறி' },
+  description: 'Neon lines, hard light and wide type. Loud, fast, a little rebellious.',
+  family: 'modern',
+  faces: {
+    // Anybody ships as its italic only: the slant is the world. Titles stretch wider after dark.
+    serif: variable('Anybody-Italic-VF', {
+      weights: { '400': 640, '500': 720, '600': 800, '700': 860 },
+      axes: { wdth: 122 },
+      nightAxes: { wdth: 150 },
+    }),
+    sans: variable('Inter-VF', {
+      optical: [14, 32],
+      weights: { '400': 420, '500': 520, '600': 640, '700': 760 },
+    }),
+    si: {
+      serif: variable('NotoSansSinhala-Width-VF', {
+        axes: { wdth: 82 },
+        weights: { '400': 600, '500': 660, '600': 720, '700': 800 },
+      }),
+      sans: variable('NotoSansSinhala-Width-VF', { axes: { wdth: 90 } }),
+    },
+    ta: {
+      serif: variable('NotoSansTamil-Width-VF', {
+        axes: { wdth: 82 },
+        weights: { '400': 600, '500': 660, '600': 720, '700': 800 },
+      }),
+      sans: variable('NotoSansTamil-Width-VF', { axes: { wdth: 90 } }),
+    },
+  },
+  motion: {
+    tempo: 0.75,
+    curve: 'spring',
+    travel: 20,
+    axis: 'side',
+    settle: 'overshoot',
+    stagger: 40,
+    haptic: 'crisp',
+  },
+  sign: 'charge',
+  // A floodlight on its mast.
+  perch: {
+    shapes: [
+      { el: 'path', attrs: { d: 'M176 92 L120 160 L150 160 Z', opacity: 0.18 }, fill: 'glow' },
+      { el: 'line', attrs: { x1: 186, y1: 164, x2: 186, y2: 96, strokeWidth: 3 }, stroke: 'ink' },
+      {
+        el: 'rect',
+        attrs: { x: 170, y: 86, width: 22, height: 10, transform: 'rotate(-24 181 91)' },
+        fill: 'lamp',
+      },
+      { el: 'path', attrs: { d: 'M60 160 H150', strokeWidth: W }, stroke: 'ink' },
+    ],
+  },
+  preferredMode: 'dark',
+  palette: {
+    light: tokens({
+      ground: '#F1F1EC',
+      raised: '#FFFFFF',
+      sunken: '#E4E4DD',
+      ink: '#0E0E11',
+      inkSoft: '#45454E',
+      inkFaint: '#75757F',
+      lamp: '#0E0E11',
+      onLamp: '#C6FF3D',
+      lampDeep: '#3A3A44',
+      glow: '#C6FF3D',
+      ornament: '#E84A10',
+      danger: '#C62828',
+      onDanger: '#FFFFFF',
+      success: '#2E7D32',
+      focus: '#0E0E11',
+    }),
+    dark: tokens({
+      ground: '#0B0B0E',
+      raised: '#16161B',
+      sunken: '#060608',
+      ink: '#F4F6EE',
+      inkSoft: '#B8BCB0',
+      inkFaint: '#7C8076',
+      lamp: '#C6FF3D',
+      onLamp: '#0B0B0E',
+      lampDeep: '#C6FF3D',
+      glow: '#C6FF3D',
+      ornament: '#FF5A1F',
+      danger: '#FF6B57',
+      onDanger: '#1A0604',
+      success: '#C6FF3D',
+      focus: '#C6FF3D',
+    }),
+  },
+  style: {
+    // Slashed corners: sharp on one diagonal, cut round on the other.
+    corner: { control: [0, 14, 0, 14], surface: [0, 18, 0, 18], chip: [0, 10, 0, 10], field: 0 },
+    primary: { fill: 'solid', doubleEdge: false, glow: true },
+    quietForm: 'text',
+    raised: { edge: 'hairline', shadow: false },
+    field: 'box',
+    chip: 'outlined',
+    label: 'boldcaps',
+    display: { weight: '700', uppercase: true, letterSpacing: 0 },
+    lineWeight: 1.5,
+    boundary: { dense: 'margin', calm: 'boxes' },
+    ornament: 'bolt',
+  },
+};

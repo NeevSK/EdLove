@@ -8,6 +8,7 @@
  */
 
 import type { WorldId } from './types';
+import { byWorld } from './worlds';
 
 export type SignKind =
   | 'flame'
@@ -22,19 +23,8 @@ export type SignKind =
   | 'signal'
   | 'charge';
 
-export const SIGNS: Readonly<Record<WorldId, SignKind>> = {
-  sanctuary: 'flame',
-  wewa: 'ripple',
-  ratna: 'glint',
-  kele: 'leaf',
-  tea: 'rows',
-  kandyan: 'band',
-  angampora: 'lamp',
-  perahera: 'beat',
-  rosa: 'petal',
-  colombo: 'signal',
-  spark: 'charge',
-};
+/** Each world's sign, from its folder (`worlds/<id>`). */
+export const SIGNS: Readonly<Record<WorldId, SignKind>> = byWorld((w) => w.sign);
 
 /** One loop of each sign at tempo 1, in ms. A world's motion tempo scales it. */
 export const SIGN_CYCLE_MS: Readonly<Record<SignKind, number>> = {

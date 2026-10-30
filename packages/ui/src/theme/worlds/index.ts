@@ -1,5 +1,5 @@
 /**
- * The eleven worlds Gurudevi ships, in five families (quiet, nature,
+ * The worlds Gurudevi ships (eleven today, not a limit), in five families (quiet, nature,
  * cultural, bloom, modern). The World Atelier is where they were chosen:
  * https://claude.ai/artifact/NsvcH2ixJxNGyVQ6JQwa33
  *
@@ -10,21 +10,24 @@
  * a vine band, still water, brass). They never use sacred figures or scenes.
  */
 
-import type { WorldDefinition, WorldId } from '../types';
-import { sanctuary } from './sanctuary';
-import { kandyan } from './kandyan';
-import { wewa } from './wewa';
-import { kele } from './kele';
+import type { WorldDefinition } from '../types';
 import { angampora } from './angampora';
-import { ratna } from './ratna';
-import { tea } from './tea';
-import { perahera } from './perahera';
-import { rosa } from './rosa';
 import { colombo } from './colombo';
+import { kandyan } from './kandyan';
+import { kele } from './kele';
+import { perahera } from './perahera';
+import { ratna } from './ratna';
+import { rosa } from './rosa';
+import { sanctuary } from './sanctuary';
 import { spark } from './spark';
+import { tea } from './tea';
+import { wewa } from './wewa';
 
-/** In family order: quiet, nature, cultural, bloom, modern. */
-export const WORLDS: Readonly<Record<WorldId, WorldDefinition>> = {
+/**
+ * The registry: the one list of worlds. In family order: quiet, nature,
+ * cultural, bloom, modern. Add a world = its folder + one line here.
+ */
+export const WORLDS = {
   sanctuary,
   wewa,
   ratna,
@@ -36,9 +39,17 @@ export const WORLDS: Readonly<Record<WorldId, WorldDefinition>> = {
   rosa,
   colombo,
   spark,
-};
+} as const satisfies Record<string, WorldDefinition>;
 
+type WorldId = keyof typeof WORLDS;
+
+// Object.keys is typed string[]; these are exactly the registry's keys.
 export const WORLD_IDS = Object.keys(WORLDS) as WorldId[];
+
+/** One value per world, picked from its definition (signs, perches, faces). */
+export function byWorld<T>(pick: (world: WorldDefinition) => T): Readonly<Record<WorldId, T>> {
+  return Object.fromEntries(WORLD_IDS.map((id) => [id, pick(WORLDS[id])])) as Record<WorldId, T>;
+}
 
 export const DEFAULT_WORLD: WorldId = 'sanctuary';
 

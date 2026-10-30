@@ -1,14 +1,58 @@
-import { FACES, MOTION } from '../faces';
-import type { WorldDefinition } from '../types';
-import { tokens } from './tokens';
+import type { WorldDefinition } from '../../types';
+import { NOTO_SANS_SI, NOTO_SERIF_SI, variable } from '../shared/faces';
+import { round, W } from '../shared/perch';
+import { tokens } from '../tokens';
 
 export const rosa: WorldDefinition = {
   id: 'rosa',
   names: { en: 'Rose and pichcha', si: 'රෝස සහ පිච්ච', ta: 'ரோஜாவும் மல்லிகையும்' },
   description: 'Rose petals and white pichcha jasmine. Gentle, warm, blooming.',
   family: 'bloom',
-  faces: FACES.rosa,
-  motion: MOTION.rosa,
+  faces: {
+    serif: variable('Lora-Regular', {
+      italic: 'Lora-Italic',
+      weights: { '400': 430, '500': 480, '600': 560, '700': 640 },
+    }),
+    // Nunito reads best a little above regular; 520 sits between regular and medium.
+    sans: variable('Nunito-VF', { weights: { '400': 520, '500': 600, '600': 700, '700': 780 } }),
+    si: { serif: NOTO_SERIF_SI, sans: NOTO_SANS_SI },
+    ta: {
+      serif: variable('Arima-VF', { weights: { '400': 430, '500': 500, '600': 600, '700': 680 } }),
+      sans: variable('Arima-VF'),
+    },
+  },
+  motion: {
+    tempo: 1.2,
+    curve: 'spring',
+    travel: 6,
+    axis: 'up',
+    settle: 'overshoot',
+    stagger: 30,
+    haptic: 'soft',
+  },
+  sign: 'petal',
+  // A rose stem with a leaf and thorns.
+  perch: {
+    shapes: [
+      {
+        el: 'path',
+        attrs: { d: 'M40 156 Q110 136 184 150', strokeWidth: 2.4, ...round },
+        stroke: 'ornament',
+        fill: 'none',
+      },
+      {
+        el: 'path',
+        attrs: { d: 'M150 146 q8 -14 22 -12 q-6 14 -22 12 Z', opacity: 0.7 },
+        fill: 'ornament',
+      },
+      {
+        el: 'path',
+        attrs: { d: 'M80 148 l-3 -6 M118 142 l2 -6', strokeWidth: W, ...round },
+        stroke: 'ornament',
+      },
+      { el: 'circle', attrs: { cx: 184, cy: 148, r: 5 }, fill: 'lamp' },
+    ],
+  },
   preferredMode: 'light',
   palette: {
     light: tokens({

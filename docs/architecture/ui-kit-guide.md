@@ -99,27 +99,28 @@ feature, not a kit component (the Todo view was moved out for this reason).
 
 ### 3.3 Add a world
 
-Until 1b.0 lands (one folder per world), a world touches seven places:
+A world is one folder and one line:
 
-1. `theme/types.ts`: add the id to `WorldId`.
-2. `theme/worlds/<id>.ts`: names (en, si, ta), description, family, palette
-   (light and dark tokens via `tokens()`), style decisions, preferred mode.
-3. `theme/worlds/index.ts`: register it in `WORLDS`.
-4. `theme/faces.ts`: its `FACES` and `MOTION` entries.
-5. `theme/signs.ts`: its waiting sign in `SIGNS` (reuse a kind or add one, with
-   native drawing + web keyframes).
-6. `theme/perches.ts`: its perch shapes.
-7. `scripts/fonts/world-fonts.json` and the embedded font files if it brings
-   new faces.
+1. `theme/worlds/<id>/index.ts`: copy a world of the same family and change
+   it: names (en, si, ta), description, family, faces (shared ones come from
+   `worlds/shared/faces.ts`), motion, `sign`, `perch` (stroke from
+   `worlds/shared/perch.ts`), preferred mode, palette (light and dark via
+   `tokens()`), style decisions, and optionally `style.material`.
+2. `theme/worlds/index.ts`: one line in `WORLDS`. `WorldId`, `FACES`,
+   `MOTION`, `SIGNS` and `PERCHES` follow from the registry.
+3. Only if it brings new typefaces: `scripts/fonts/world-fonts.json` and the
+   embedded font files. A new sign kind needs its native drawing and web
+   keyframes; reusing a kind needs nothing.
 
-Then run the contrast test: it checks the new world in all 12 mode × phase
-themes. Nothing in components changes.
+Then run the theme tests. `world.registry` fails if the folder isn't
+registered or has no fonts; the contrast tests check the world in all 12
+mode × phase themes and every recipe pair. Nothing in components changes.
 
 ### 3.4 Remove a world
 
-Delete it from the same places. People who had chosen it fall back to the
-default (`isWorldId` guards saved choices). Removing a world deletes working
-behaviour, so ask for sign-off first (Deletion Veto).
+Delete its folder and its registry line. People who had chosen it fall back to
+the default (`isWorldId` guards saved choices). Removing a world deletes
+working behaviour, so ask for sign-off first (Deletion Veto).
 
 ### 3.5 Migrate a screen off legacy
 

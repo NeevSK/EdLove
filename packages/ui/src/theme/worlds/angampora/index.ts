@@ -1,14 +1,48 @@
-import { FACES, MOTION } from '../faces';
-import type { WorldDefinition } from '../types';
-import { tokens } from './tokens';
+import type { WorldDefinition } from '../../types';
+import { CATAMARAN, variable } from '../shared/faces';
+import { tokens } from '../tokens';
 
 export const angampora: WorldDefinition = {
   id: 'angampora',
   names: { en: 'Angampora', si: 'අංගම්පොර', ta: 'அங்கம்பொற' },
   description: 'Packed earth and brass. Square, grounded, exact.',
   family: 'cultural',
-  faces: FACES.angampora,
-  motion: MOTION.angampora,
+  faces: {
+    serif: variable('GemunuLibre-VF', {
+      weights: { '400': 480, '500': 560, '600': 680, '700': 760 },
+    }),
+    sans: CATAMARAN,
+    si: {
+      serif: variable('GemunuLibre-VF', {
+        weights: { '400': 480, '500': 560, '600': 680, '700': 760 },
+      }),
+      sans: variable('GemunuLibre-VF', {
+        weights: { '400': 460, '500': 540, '600': 640, '700': 720 },
+      }),
+    },
+    ta: { serif: CATAMARAN, sans: CATAMARAN },
+  },
+  motion: {
+    tempo: 0.85,
+    curve: 'sharp',
+    travel: 12,
+    axis: 'up',
+    settle: 'none',
+    stagger: 0,
+    haptic: 'crisp',
+  },
+  sign: 'lamp',
+  // A brass lamp stand.
+  perch: {
+    fill: 'ornament',
+    shapes: [
+      { el: 'rect', attrs: { x: 84, y: 146, width: 52, height: 5 } },
+      { el: 'rect', attrs: { x: 106, y: 151, width: 8, height: 9 } },
+      { el: 'rect', attrs: { x: 92, y: 160, width: 36, height: 4 } },
+      { el: 'circle', attrs: { cx: 88, cy: 141, r: 3.5 }, fill: 'lamp' },
+      { el: 'circle', attrs: { cx: 132, cy: 141, r: 3.5 }, fill: 'lamp' },
+    ],
+  },
   preferredMode: 'dark',
   palette: {
     light: tokens(

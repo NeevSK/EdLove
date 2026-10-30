@@ -1,14 +1,52 @@
-import { FACES, MOTION } from '../faces';
-import type { WorldDefinition } from '../types';
-import { tokens } from './tokens';
+import type { WorldDefinition } from '../../types';
+import {
+  INTER,
+  NOTO_SANS_SI,
+  NOTO_SANS_TA,
+  NOTO_SERIF_SI,
+  NOTO_SERIF_TA,
+  variable,
+} from '../shared/faces';
+import { round, W } from '../shared/perch';
+import { tokens } from '../tokens';
 
 export const sanctuary: WorldDefinition = {
   id: 'sanctuary',
   names: { en: 'Sanctuary', si: 'අභයභූමිය', ta: 'சரணாலயம்' },
   description: 'Washi paper and lamp light. The quiet default.',
   family: 'quiet',
-  faces: FACES.sanctuary,
-  motion: MOTION.sanctuary,
+  faces: {
+    serif: variable('Newsreader-VF', {
+      italic: 'Newsreader-Italic-VF',
+      weights: { '400': 380, '500': 460, '600': 560, '700': 640 },
+      optical: [6, 72],
+    }),
+    sans: INTER,
+    si: { serif: NOTO_SERIF_SI, sans: NOTO_SANS_SI },
+    ta: { serif: NOTO_SERIF_TA, sans: NOTO_SANS_TA },
+  },
+  motion: {
+    tempo: 1,
+    curve: 'decelerate',
+    travel: 8,
+    axis: 'up',
+    settle: 'none',
+    stagger: 0,
+    haptic: 'soft',
+  },
+  sign: 'flame',
+  // The clay lamp.
+  perch: {
+    shapes: [
+      { el: 'path', attrs: { d: 'M76 136 Q110 162 144 136 Z', opacity: 0.85 }, fill: 'ornament' },
+      {
+        el: 'path',
+        attrs: { d: 'M144 136 L156 131', strokeWidth: W, ...round },
+        stroke: 'ornament',
+      },
+      { el: 'ellipse', attrs: { cx: 158, cy: 127, rx: 3, ry: 5 }, fill: 'lamp' },
+    ],
+  },
   preferredMode: 'light',
   palette: {
     light: tokens({

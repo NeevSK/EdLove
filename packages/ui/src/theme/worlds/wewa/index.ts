@@ -1,14 +1,56 @@
-import { FACES, MOTION } from '../faces';
-import type { WorldDefinition } from '../types';
-import { tokens } from './tokens';
+import type { WorldDefinition } from '../../types';
+import { INTER, NOTO_SANS_SI, NOTO_SANS_TA, variable } from '../shared/faces';
+import { W } from '../shared/perch';
+import { tokens } from '../tokens';
 
 export const wewa: WorldDefinition = {
   id: 'wewa',
   names: { en: 'Wewa', si: 'වැව', ta: 'குளம்' },
   description: 'Still tank water and moonlight. Calm, cool, deep.',
   family: 'quiet',
-  faces: FACES.wewa,
-  motion: MOTION.wewa,
+  faces: {
+    serif: variable('Fraunces-VF', {
+      italic: 'Fraunces-Italic-VF',
+      weights: { '400': 360, '500': 440, '600': 540, '700': 620 },
+      optical: [9, 144],
+      axes: { SOFT: 40 },
+      nightAxes: { SOFT: 100 },
+    }),
+    sans: INTER,
+    si: { serif: NOTO_SANS_SI, sans: NOTO_SANS_SI },
+    ta: { serif: NOTO_SANS_TA, sans: NOTO_SANS_TA },
+  },
+  motion: {
+    tempo: 1.25,
+    curve: 'decelerate',
+    travel: 6,
+    axis: 'up',
+    settle: 'eased',
+    stagger: 0,
+    haptic: 'soft',
+  },
+  sign: 'ripple',
+  // A lotus pad on still water.
+  perch: {
+    shapes: [
+      {
+        el: 'path',
+        attrs: {
+          d: 'M110 148 L133 138.5 A46 11 0 1 0 149.8 142.5 Z',
+          fillOpacity: 0.4,
+          strokeWidth: W,
+        },
+        fill: 'ornament',
+        stroke: 'ornament',
+      },
+      {
+        el: 'path',
+        attrs: { d: 'M40 156 Q60 152 80 156 M140 156 Q160 152 180 156', strokeWidth: W },
+        stroke: 'line',
+        fill: 'none',
+      },
+    ],
+  },
   preferredMode: 'dark',
   palette: {
     light: tokens({

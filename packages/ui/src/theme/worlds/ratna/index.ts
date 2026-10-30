@@ -1,14 +1,53 @@
-import { FACES, MOTION } from '../faces';
-import type { WorldDefinition } from '../types';
-import { tokens } from './tokens';
+import type { PerchShape } from '../../perches';
+import type { WorldDefinition } from '../../types';
+import {
+  NOTO_SANS_SI,
+  NOTO_SANS_TA,
+  NOTO_SERIF_SI,
+  NOTO_SERIF_TA,
+  variable,
+} from '../shared/faces';
+import { W } from '../shared/perch';
+import { tokens } from '../tokens';
 
 export const ratna: WorldDefinition = {
   id: 'ratna',
   names: { en: 'Gems and lace', si: 'මැණික් සහ බීරළු', ta: 'மாணிக்கமும் சரிகையும்' },
   description: 'Ivory, beeralu lace and one sapphire.',
   family: 'quiet',
-  faces: FACES.ratna,
-  motion: MOTION.ratna,
+  faces: {
+    // Cormorant is fine and light; body sizes need it a little heavier and larger.
+    serif: variable('CormorantGaramond-VF', {
+      italic: 'CormorantGaramond-Italic-VF',
+      weights: { '400': 500, '500': 560, '600': 620, '700': 700 },
+      scale: 1.08,
+    }),
+    sans: variable('Jost-VF', { weights: { '400': 400, '500': 480, '600': 560, '700': 640 } }),
+    si: { serif: NOTO_SERIF_SI, sans: NOTO_SANS_SI },
+    ta: { serif: NOTO_SERIF_TA, sans: NOTO_SANS_TA },
+  },
+  motion: {
+    tempo: 1.1,
+    curve: 'decelerate',
+    travel: 4,
+    axis: 'up',
+    settle: 'none',
+    stagger: 0,
+    haptic: 'soft',
+  },
+  sign: 'glint',
+  // A lace window: an arch with a lattice of dots.
+  perch: {
+    stroke: 'ornament',
+    strokeWidth: W,
+    fill: 'none',
+    shapes: [
+      { el: 'path', attrs: { d: 'M70 162 V126 A40 26 0 0 1 150 126 V162' } },
+      ...[86, 98, 110, 122, 134].map(
+        (x): PerchShape => ({ el: 'circle', attrs: { cx: x, cy: 152, r: 1.6 }, fill: 'ornament' }),
+      ),
+    ],
+  },
   preferredMode: 'light',
   palette: {
     light: tokens({

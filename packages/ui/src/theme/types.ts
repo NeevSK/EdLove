@@ -13,18 +13,11 @@
  * (DOM + CSS variables) render from one source.
  */
 
-export type WorldId =
-  | 'sanctuary'
-  | 'wewa'
-  | 'ratna'
-  | 'kele'
-  | 'tea'
-  | 'kandyan'
-  | 'angampora'
-  | 'perahera'
-  | 'rosa'
-  | 'colombo'
-  | 'spark';
+/**
+ * A world's id: whatever the registry (`worlds/index.ts`) lists. Adding a
+ * world is one folder and one line there; nothing else names the worlds.
+ */
+export type WorldId = keyof typeof import('./worlds').WORLDS;
 
 /** Worlds are chosen by mood and place; the family groups them in the picker. */
 export type WorldFamily = 'quiet' | 'nature' | 'cultural' | 'bloom' | 'modern';
@@ -499,6 +492,10 @@ export interface WorldDefinition {
   family: WorldFamily;
   faces: WorldFaces;
   motion: WorldMotion;
+  /** The waiting sign this world shows (see `signs.ts`). */
+  sign: import('./signs').SignKind;
+  /** The small drawing that sits on empty and error states (see `perches.ts`). */
+  perch: import('./perches').PerchGroup;
   /** The mode this world is happiest in, used by previews. */
   preferredMode: WorldMode;
   palette: WorldPalette;
