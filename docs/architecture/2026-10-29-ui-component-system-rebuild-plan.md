@@ -395,7 +395,8 @@ should re-export its types rather than keep a copy.
 ## 15. Status ledger
 
 Updated with every commit. If this conversation's context is lost, this
-section plus the guide (`ui-kit-guide.md`) is the state of the work.
+section plus the guide (`ui-kit-guide.md`) and the requirements ledger
+(`ui-kit-requirements-ledger.md`) is the state of the work.
 
 ### Done
 
@@ -414,6 +415,8 @@ section plus the guide (`ui-kit-guide.md`) is the state of the work.
 | `875ee53b3` | Scoreboard, open-ended worlds, Phase 1b |
 | `a550af520` | Kit guide, ui-kit skill, Phase 1c, this ledger |
 | `aaee20fe3` | Feedback grammar (`useFeedback`, `usePressMotion`, `useErrorFeedback`, web `--w-press` and shake) across native kit; intentional-ui-design references restored |
+| `814ec2753` | Feedback grammar in guide and skill; 1b.7 living light step |
+| `3bbfe14b8` | World material (light, grain, wash, tinted shadow, detail, lit moments) and living light: `useLivingStyle`, TextField edges, Button press light, web `--w-light-*` |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4

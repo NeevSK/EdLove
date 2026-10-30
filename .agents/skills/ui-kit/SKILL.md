@@ -16,6 +16,8 @@ before touching UI; it replaces `branded-ui` (which describes the legacy
    screen, retire legacy), rules and known traps.
 2. `docs/architecture/2026-10-29-ui-component-system-rebuild-plan.md` — the
    plan, decisions, scoreboard (old vs kit), Phase 1b/1c and the status ledger.
+3. `docs/architecture/ui-kit-requirements-ledger.md` — every requirement
+   (structure, components, space, feedback and aliveness) with its status.
 
 ## The five rules
 
@@ -40,6 +42,7 @@ before touching UI; it replaces `branded-ui` (which describes the legacy
 - [ ] native `components/native/X/X.tsx`, web `components/web/X/X.tsx`
 - [ ] web rules in `theme/kitCss.ts` (only `var(--w-*)`)
 - [ ] exported from both barrels
+- [ ] living light: state colours through `useLivingStyle` / `--w-light-*`, never hard-coded per state
 - [ ] feedback: `useFeedback()` with an event name (no direct haptics), `usePressMotion()` on pressables, `useErrorFeedback(error)` on fields
 - [ ] native tests in `components/native/__tests__`, web tests in
       `apps/gurudevi-web/tests/unit/kit`

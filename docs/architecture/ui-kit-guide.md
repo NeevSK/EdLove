@@ -13,8 +13,9 @@ tags: [ui, kit, worlds, theme, tokens, components, guide, a11y]
 The working manual for the Gurudevi UI kit. Read it before adding or changing
 any UI. The plan and its history are in
 [`2026-10-29-ui-component-system-rebuild-plan.md`](2026-10-29-ui-component-system-rebuild-plan.md);
-this page is how to do the work. The skill `.agents/skills/ui-kit/SKILL.md`
-points here.
+this page is how to do the work. Every requirement and its status is in
+[`ui-kit-requirements-ledger.md`](ui-kit-requirements-ledger.md). The skill
+`.agents/skills/ui-kit/SKILL.md` points here.
 
 ## 1. The model in one picture
 
@@ -148,6 +149,15 @@ section 7) and signed off.
   and spring; web reads `--w-press`); fields take `useErrorFeedback(error)`,
   which buzzes and shakes once when an error appears (web: `gd-shake`). An
   explicit `haptic` prop still wins; `haptic={false}` silences it.
+- **Material and living light**: a world's surfaces have a material
+  (`recipes.material`: light within/over/none, grain, wash, tinted shadow,
+  detail, and a lit look per moment rest/focus/press/invalid/success). Worlds
+  tune it through `style.material`; never colour states in a component.
+  On native, move state colours with `useLivingStyle({ borderColor: ... })`
+  and press light with `usePressMotion().light`. On web, read
+  `--w-light-<moment>-*`, `--w-wash-*`, `--w-grain`, `--w-shadow-tint`.
+  In tests the substituted Reanimated only recomputes on render: re-render
+  once before reading an animated colour.
 - **Gestures**: RNGH 3 hook API (`usePanGesture`, `GestureDetector`). Every
   gesture has a non-gesture path (accessibility actions, buttons).
 - **Accessibility**: the element that is the control carries the role and
