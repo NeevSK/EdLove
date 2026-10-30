@@ -1,4 +1,4 @@
-import { Pressable, Text as RNText, ScrollView, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Pressable, Text as RNText, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import type { TabsContract } from '../../../theme/contracts';
 import { typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
@@ -12,7 +12,7 @@ export interface TabsProps<V extends string = string> extends TabsContract<V> {
 /**
  * Switch between sibling views of one thing ("Overview", "Students", "Notes").
  * Tabs wear the world's chip look (an underline in some worlds, a filled pill
- * in others) and scroll sideways when there are many.
+ * in others). A long set wraps onto a second line rather than hiding off-screen.
  */
 export function Tabs<V extends string = string>({ value, onChange, label, tabs, children, style }: TabsProps<V>) {
   const { world, language } = useWorldContext();
@@ -21,13 +21,7 @@ export function Tabs<V extends string = string>({ value, onChange, label, tabs, 
 
   return (
     <View style={[styles.wrap, style]}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        role="tablist"
-        aria-label={label}
-        contentContainerStyle={[styles.list, { gap: r.gap }]}
-      >
+      <View role="tablist" aria-label={label} style={[styles.list, { gap: r.gap }]}>
         {tabs.map((tab) => {
           const selected = tab.value === value;
           const s = selected ? r.selected : r.rest;
@@ -54,7 +48,7 @@ export function Tabs<V extends string = string>({ value, onChange, label, tabs, 
             </Pressable>
           );
         })}
-      </ScrollView>
+      </View>
       {children === undefined ? null : (
         <View role="tabpanel" aria-label={current?.label}>
           {children}
@@ -66,6 +60,6 @@ export function Tabs<V extends string = string>({ value, onChange, label, tabs, 
 
 const styles = StyleSheet.create({
   wrap: { gap: 12 },
-  list: { paddingVertical: 4 },
+  list: { flexDirection: 'row', flexWrap: 'wrap', paddingVertical: 4 },
   tab: { minHeight: 44, justifyContent: 'center' },
 });

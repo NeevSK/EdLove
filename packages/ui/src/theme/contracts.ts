@@ -339,3 +339,35 @@ export interface ErrorStateContract {
   /** Usually "Try again". Omit when nothing the person does will help. */
   retry?: StateAction;
 }
+
+export interface ListContract<T> {
+  items: readonly T[];
+  keyOf: (item: T) => string;
+  renderItem: (item: T, index: number) => ReactNode;
+  /** Names the list for assistive technology ("Students"). */
+  label: string;
+  /** Shown when there are no items (and not loading). */
+  empty?: EmptyStateContract;
+  /** While the first page loads: placeholder rows instead of items. */
+  loading?: boolean;
+  /** Load the next page when the end comes near. */
+  onEndReached?: () => void;
+}
+
+export interface TableColumn<R> {
+  key: string;
+  header: string;
+  cell: (row: R) => ReactNode;
+  /** Numbers read best aligned to the end. */
+  align?: 'start' | 'end';
+}
+
+export interface TableContract<R> {
+  /** What the table holds; its accessible name and visible caption. */
+  caption: string;
+  columns: readonly TableColumn<R>[];
+  rows: readonly R[];
+  rowKey: (row: R) => string;
+  /** Shown in place of rows when there are none. */
+  empty?: string;
+}

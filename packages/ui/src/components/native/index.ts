@@ -62,3 +62,5 @@ export {
   type ProgressProps,
 } from './Status/Status';
 export { initialsOf } from '../shared/initials';
+export { List, type ListProps } from './List/List';
+export { Table, type TableProps } from './Table/Table';
