@@ -34,8 +34,8 @@ Updated 2026-10-30.
 | # | Requirement | Status |
 | :--- | :--- | :--- |
 | B1 | Production-grade buttons and controls | done (1.1–1.8): Button, IconButton, Text, Surface, TextField, Chip, Row, Section, Switch, Checkbox, Radio, Select, Menu, Slider, Tabs, Segmented, Dialog, Sheet, Toast, Popover, Tooltip, Progress, Badge, Avatar, Divider, Empty/ErrorState, List, Table, SwipeRow |
-| B2 | Layout pieces: Stack, Inline, Grid, Icon | Stack and Inline done; Grid and Icon planned 1b.1 |
-| B3 | Cards, tiles, pills, shapes and sizes; horizontal rails; carousels | planned 1b.2 |
+| B2 | Layout pieces: Stack, Inline, Grid, Icon | done (both kits); Icon takes the caller's glyph (kit has no icon library) |
+| B3 | Cards, tiles, pills, shapes and sizes; horizontal rails; carousels | done: `Card` (tile, wide, square, pill; sm/md/lg), `Rail`, `Carousel` (buttons + swipe, announced, never autoplays) |
 | B4 | Grouped settings like Claude or Grok (proximity, one surface per group) | done: `Group` (both kits); Section `boxes` still to move onto it |
 | B5 | Forms, quizzes, assignments, lessons, PDF and file types | planned 1c (plan §14) |
 | B6 | Todo out of the kit, built on kit pieces | done in the working tree, but someone else's uncommitted work |
@@ -45,9 +45,9 @@ Updated 2026-10-30.
 | # | Requirement | Status |
 | :--- | :--- | :--- |
 | C1 | Spacing as relations: inside, between, group, section | done: `tokens/space.ts` (`gapFor`), used by Stack, Inline and Group; other components to adopt |
-| C2 | Space-aware components that adapt to their container | planned 1b.4 |
+| C2 | Space-aware components that adapt to their container | done for Grid and wide Card (`useContainerWidth` native, CSS grid / container query web); Row still to adopt |
 | C3 | System accessibility settings feed the world (high contrast, reduce transparency, font scale) | planned 1b.4 |
-| C4 | Contrast checked on every recipe pair, not just tokens | tokens and lit edges done (`world.contrast`, `material` tests); every pair planned 1b.5 |
+| C4 | Contrast checked on every recipe pair, not just tokens | done: `recipe.contrast.test.ts` (every pair, 132 themes); it found and fixed checkbox edges, gradient labels, the photo veil and the selected ring |
 | C5 | Roles, names, 44pt targets, a non-gesture path for every gesture | done (kit tests) |
 
 ## D. Feedback and aliveness
@@ -57,9 +57,9 @@ Updated 2026-10-30.
 | D1 | One feedback grammar: components name the event, the world picks the haptic | `theme/feedback.ts`, `useFeedback` | done (native); web has no haptics |
 | D2 | Press motion in the world's scale and spring | `usePressMotion`, `--w-press` | done |
 | D3 | Errors shake once, without relying on colour | `useErrorFeedback`, `gd-shake` | done (TextField, Select) |
-| D4 | Living light: colour, brightness and edges answer state | `material.states`, `useLivingStyle`, `--w-light-*` | foundation; TextField edge and Button press light done; Chip, Checkbox, Switch, Row and Surface still to adopt |
+| D4 | Living light: colour, brightness and edges answer state | `material.states`, `useLivingStyle`, `--w-light-*` | done in TextField, Button, Card, Checkbox, Chip; Switch is the platform switch (animates itself); Row and Tabs still to adopt |
 | D5 | Light from within vs outer glow | `material.light` | foundation (resolved, not yet drawn differently) |
-| D6 | Variation inside a surface: warmer centre, cooler edge | `material.wash`, `--w-wash-*` | foundation; Surface to paint it (radial wash) |
+| D6 | Variation inside a surface: warmer centre, cooler edge | `material.wash`, `surface.raised.wash` | done: raised Surface, Group, Card (RN 0.88 radial-gradient; CSS on web) |
 | D7 | Shadows tinted by the world, never neutral black in light mode | `material.shadow` | done (raised surfaces) |
 | D8 | Grain or vellum texture | `material.grain`, `--w-grain` | foundation (0 everywhere); needs one texture asset per platform |
 | D9 | Detail gathered at meaningful moments, not everywhere | `material.detail` | foundation; ornaments to read it |
@@ -71,7 +71,7 @@ Updated 2026-10-30.
 
 | # | Requirement | Status |
 | :--- | :--- | :--- |
-| E1 | A component tree to inspect (like Flutter's) | planned 1b.6: kit names in DevTools; the galleries (1.9) are the visual tree |
+| E1 | A component tree to inspect (like Flutter's) | done: every export named in DevTools, `gd-<name>` classes on web (tests on both sets); the galleries (1.9) are the visual tree |
 | E2 | Galleries on both platforms (every component, every world) | planned 1.9 |
 | E3 | Evidence levels G4 (browser) and G5 (device) | planned with 1.9 |
 | E4 | rn-terrain and verified installed APIs only | done (skill "APIs verified" list) |

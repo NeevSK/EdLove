@@ -167,7 +167,17 @@ section 7) and signed off.
 - **Lists**: no `ScrollView` + `.map()` for data (`check:native-slop` blocks it);
   use `List`. Chrome like tabs wraps instead.
 - **Spacing**: say the relation (inside, between, group, section), not a number
-  (plan section 13).
+  (`tokens/space.ts`, `gapFor`). Lay out with `Stack`, `Inline`, `Grid`;
+  hold related rows in `Group`.
+- **Space-aware**: a component lays itself out for the width it is given, not
+  the screen's: `useContainerWidth()` on native, CSS grid or a container query
+  on web (see `Grid`, wide `Card`).
+- **Contrast**: every colour pair a component draws is checked in all themes by
+  `recipe.contrast.test.ts`. A new pair goes into that test; fix failures in
+  `theme/build.ts` (`legible`, `lampSheen`), never in the component.
+- **Names**: every kit export is a named function with its export name (tests
+  on both sets), and web elements carry `gd-<name>` classes, so DevTools shows
+  the kit tree.
 - **Overlays and wrappers**: never wrap screens in views for runtime concerns;
   feed them from existing roots and hooks.
 
