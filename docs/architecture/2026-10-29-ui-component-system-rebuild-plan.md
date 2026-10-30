@@ -289,3 +289,75 @@ only after its replacement exists.
 - [`docs/Core/design/gurudevi-design-system-audit-and-plan.md`](../Core/design/gurudevi-design-system-audit-and-plan.md)
 - [`docs/current_progress/2026-09-07-ui-primitives-production-hardening-plan.md`](../current_progress/2026-09-07-ui-primitives-production-hardening-plan.md) (its targets move from Gluestack primitives to this kit)
 - [`docs/architecture/2026-10-28-living-worlds-real-integration-master-spec.md`](2026-10-28-living-worlds-real-integration-master-spec.md) (backdrop and ground work; runs alongside this plan)
+
+## 11. Scoreboard: old versus kit (2026-10-30)
+
+Counts are consumer files outside `@repo/ui` (G0, `rg` over `apps/gurudevi-mobile` and `packages`).
+
+| Old | Used in | Kit now | Gap |
+| :--- | ---: | :--- | :--- |
+| `Text`, `Heading` (primitives) | 476, 174 | `Text` (kinds, tones, trilingual faces) | none; migrate |
+| `Box`, `VStack`, `HStack`, `Center` | 383, 388, 361, 34 | none | **Stack, Inline, Grid** (1b.1) |
+| `Icon` | 262 | `icon` props on Button/IconButton | **Icon** (1b.1) |
+| `Button` + `ButtonText`, `SanctuaryButton` | 125, 39 | `Button`, `IconButton` | none; migrate |
+| `SanctuaryCard`, `GlassCard`, `CollectionCard` | 26, 6, 3 | `Surface` | **Card / Tile** (1b.2) |
+| horizontal lists, `HorizontalChipRow`, `SmartShelf` | 30, 2, 3 | none | **Rail, Carousel** (1b.2) |
+| `numColumns` grids | 4 | none | **Grid** (1b.1) |
+| `SettingsGroup` | 4 | `Section` + `Row` (world boundaries incl. inset boxes) | **Group** with proximity spacing (1b.3) |
+| `BrandPulse`, `SkeletonLoader`, loaders | 68, 43 | `Waiting`, `WaitingSign`, `WorldSkeleton`, `Progress` | none; migrate |
+| `ErrorState`, `BrandedEmptyState` | 30, 20 | `ErrorState`, `EmptyState` | none; migrate |
+| `UniversalModal`, actionsheets, toasts | 4+ | `Dialog`, `Sheet`, `ToastHost`, `Popover`, `Menu` | none; migrate |
+| `SanctuaryFlashList`, `SanctuaryLegendList` | 14, 2 | `List` (FlashList) | none; migrate |
+| `UserAvatar`, badges, progress bars | 9, 1, 3 | `Avatar`, `Badge`, `Progress` | none; migrate |
+| `useTheme`, `useThemedColors` | 64, 38 | `useWorld`, `useWorldContext` | none; migrate |
+| `useResponsive` | 10 | none | **container size** (1b.4) |
+| `useAccessibility` | 12 | partial (motion via verger) | **system a11y settings** (1b.4) |
+| `useSafeAction` | 2 | — | keep as a hook |
+
+Only 18 consumer files use the kit yet. Coverage of what screens need is the
+point of 1b; adoption is Phase 3.
+
+## 12. Worlds: open-ended, one folder each
+
+Worlds are data, so there is no limit of eleven. Every stylesheet, picker
+and contrast test already loops over `WORLD_IDS`, and a saved choice that no
+longer exists falls back to the default (`isWorldId`). Adding a world today
+still touches seven places (`WorldId` union, world file, registry, `FACES`,
+`MOTION`, `SIGNS`, `PERCHES`, font manifest). 1b.0 makes a world one folder:
+
+```
+theme/worlds/kandyan/index.ts   palette, style, faces, motion, sign, perch, names
+theme/worlds/index.ts           the registry (one line per world)
+```
+
+`WorldId` is derived from the registry (`keyof typeof WORLDS`), the font
+manifest is generated from each world's faces, and a test fails if a world
+is missing any part or fails contrast in any of its 12 mode × phase themes.
+Add = one folder + one line. Remove = delete both.
+
+## 13. Phase 1b: layout, grouping and space
+
+| Step | Work |
+| :--- | :--- |
+| 1b.0 | One folder per world (section 12). |
+| 1b.1 | `Stack` and `Inline` (gap from the spacing relations below), `Grid` (columns from container width), `Icon` (lucide, sized and inked by role). |
+| 1b.2 | `Card` / `Tile` (pressable Surface with media, title, meta; shapes: tile, wide, square, pill; sizes sm/md/lg; corners from the world), `Rail` (horizontal, snapping; FlashList horizontal on native, CSS scroll-snap on web), `Carousel` (paged, with position and announced page; no autoplay by default). |
+| 1b.3 | `Group`: rows share one surface, only the outer corners round, hairlines inside; groups stand apart. Section's `boxes` boundary becomes this. |
+| 1b.4 | Space-aware components: `useContainerSize` (onLayout on native, container queries on web) so a Row puts its detail under its label when narrow, a Grid drops columns, a Card moves media above text. System accessibility settings (`isHighTextContrastEnabled`, `isDarkerSystemColorsEnabled`, `isReduceTransparencyEnabled`, font scale) feed the world: stronger edges, no glass, larger targets. |
+| 1b.5 | Contrast guard: every recipe pair in every theme (text on fill, on-lamp on lamp, focus ring on ground), not only tokens; ink chosen over imagery with `inkOn` (theme/scene) rather than Reanimated's `contrastColor`, which returns pure white or black and the worlds never use those. |
+| 1b.6 | Inspector: the gallery (1.9) is the component tree to look at; every kit element carries its name (`data-kit` on web, `testID` prefix on native) so React DevTools and React Native DevTools (built into RN 0.88) show `kit.Button` rather than anonymous views. No overlays or wrappers (runtime concerns stay out of the tree). |
+
+### Spacing relations (proximity)
+
+Space says what belongs together. Four relations, each a token in
+`@repo/ui/tokens`, scaled by density (compact, comfortable) and by font scale:
+
+| Relation | Meaning | Comfortable |
+| :--- | :--- | ---: |
+| `inside` | within one control (icon to label, label to hint) | 4–8 |
+| `between` | siblings in one group (rows, chips) | 0 + hairline, or 8 |
+| `group` | group to group | 24 |
+| `section` | section to section, and screen edges | 40 |
+
+Components read the relation, never a number, so a world, a density or a
+person's font size can open or close the whole page consistently.
