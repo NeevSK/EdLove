@@ -315,7 +315,7 @@ When performing specialized tasks, dynamically view the authoritative skill in `
 | Domain / Task | Specialized Skill Path |
 | :--- | :--- |
 | **Android Builds & WSL 2 / WSL 3** | [`.agents/skills/android-build/SKILL.md`](file:///c:/x/.agents/skills/android-build/SKILL.md) & [`docs/infra/2026-10-09-wsl3-modern-architecture-capabilities-and-patterns.md`](file:///c:/x/docs/infra/2026-10-09-wsl3-modern-architecture-capabilities-and-patterns.md) |
-| **Branded UI & Motion Tokens** | [`.agents/skills/branded-ui/SKILL.md`](file:///c:/x/.agents/skills/branded-ui/SKILL.md) |
+| **UI kit: components, worlds, recipes, tokens (mobile and web)** | [`.agents/skills/ui-kit/SKILL.md`](.agents/skills/ui-kit/SKILL.md), then [`docs/architecture/ui-kit-guide.md`](docs/architecture/ui-kit-guide.md). `branded-ui` describes the legacy `@repo/ui` root exports; use it only when reading legacy code. |
 
 | **Expo & React Native Architecture** | Load [`.agents/skills/expo-overview/SKILL.md`](file:///c:/x/.agents/skills/expo-overview/SKILL.md), then the task-specific skill. Mobile agent setup and cloud/device workflow: [`apps/gurudevi-mobile/docs/architecture/2026-10-16-agent-native-mobile-workflow.md`](apps/gurudevi-mobile/docs/architecture/2026-10-16-agent-native-mobile-workflow.md). |
 | **Verger (adaptive runtime) & its phases** | [`.agents/skills/verger/SKILL.md`](.agents/skills/verger/SKILL.md), then [`docs/engineering/runtime-performance/verger/playbook/README.md`](docs/engineering/runtime-performance/verger/playbook/README.md). Gate: `pnpm verger:check`. |

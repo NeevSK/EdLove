@@ -361,3 +361,82 @@ Space says what belongs together. Four relations, each a token in
 
 Components read the relation, never a number, so a world, a density or a
 person's font size can open or close the whole page consistently.
+
+## 14. Phase 1c: forms, assessments and media
+
+The form engine (`@intuitui-labs/form-builder-engine@0.3.0`, re-exported by
+`@repo/form-builder/engine`) already models much more than the UI renders:
+
+- 16 field types: text, email, password, select, textarea, number, heading,
+  divider, slider, likert, **rich-text, statement, file, image-capture,
+  audio-record, visualization**.
+- 8 form kinds: survey, **quiz, exam, assessment**, poll, intake, feedback,
+  form. Questions carry rubrics; forms have pages, branching (`Condition`,
+  `PageJumpRule`) and attempt governance (reservation, drafts, offline outbox).
+- Validators include `fileSize`, `fileType` (MIME list) and `maxFiles`; media
+  descriptors (image, gif, video, audio, embed, lottie) carry required `alt`,
+  captions and aspect ratio. Fields carry semantic intents (autocomplete).
+
+Today `@repo/form-builder` renders with 17 legacy `@repo/ui/primitives`
+imports, and the web builder floor (`apps/gurudevi-web/app/(sanctuary)/admin/forms/builder`)
+is hand-built (21 raw inputs and buttons). `@repo/core`'s `FieldType` lists
+only the first 10 engine types: the engine is the source of truth and core
+should re-export its types rather than keep a copy.
+
+| Step | Kit work |
+| :--- | :--- |
+| 1c.1 | `Scale` (Likert and rating: a radio group of 3–11 points with end labels, emoji or numeric), `Stepper`/`FormPager` (page n of m, back/next, Progress), field `autoComplete` from semantic intents. |
+| 1c.2 | `FileField`: pick (and drop on web), each file a row with name, size, progress, retry and remove; enforces `fileType`, `fileSize`, `maxFiles` with announced errors; offline-safe (queues with the outbox). `ImageCapture` (camera, retake), `AudioRecord` (record, pause, play back, length). |
+| 1c.3 | `Media` (image, video, audio, embed, lottie) honouring `alt`, captions, poster, aspect ratio and reduced motion; `DocumentViewer` for PDFs (page, zoom, search, download; replaces legacy `PdfViewer` / `UniversalDocumentPortal`). |
+| 1c.4 | Assessment states: a field shows correct, incorrect or awaiting review (from the rubric), a `Timer` for exams that announces at set marks, and a review summary. `RichText` (editor and reader) after a library decision (needs research against installed versions). |
+| 1c.5 | Rebuild `@repo/form-builder` renderers and the web builder floor on the kit; one renderer per field type, chosen from the engine schema. |
+
+## 15. Status ledger
+
+Updated with every commit. If this conversation's context is lost, this
+section plus the guide (`ui-kit-guide.md`) is the state of the work.
+
+### Done
+
+| Commit | Step |
+| :--- | :--- |
+| `cbfeb4942` | Phase 0: canonical theme, tokens, components; one clock; boundary check |
+| `8dd7a1d59` | 1.1 shared contracts; web kit one folder per component |
+| `def84347d` | 1.2 motion scales into tokens; kit button pulse; no kit → legacy links |
+| `828f93d44`, `190aa14b4` | 1.3 web parity: Switch, Waiting, WaitingSign, Perch, WorldPicker |
+| `3533705df` | 1.4 overlays: Dialog, Sheet, Toast, Popover, Tooltip |
+| `7488e1459` | 1.5 choices: Checkbox, RadioGroup, Select, Menu, Slider |
+| `7969a48b1` | 1.6 navigation: Tabs, SegmentedControl, Breadcrumb (web) |
+| `de62a8f2b` | 1.7 IconButton, Link, Progress, Badge, Avatar, Divider, EmptyState, ErrorState |
+| `e1b0b9d0b` | 1.8 List (FlashList / content-visibility), Table |
+| `1e0d1c76a` | SwipeRow; AGENTS.md worklets rule matches installed APIs |
+| `875ee53b3` | Scoreboard, open-ended worlds, Phase 1b |
+
+Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
+1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4
+(browser) and G5 (device), which come with the galleries.
+
+### Next, in order
+
+1. 1b.0 one folder per world.
+2. 1b.1–1b.6 layout (Stack, Inline, Grid, Icon), Card/Tile, Rail, Carousel,
+   Group, space-aware components, contrast guard, inspector naming.
+3. 1.9 galleries on both platforms (G4 browser, G5 device).
+4. 1c forms, assessments and media.
+5. Phase 2 harden, Phase 3 migrate (web floors, then packages smallest first),
+   Phase 4 retire (ledger sign-off), Phase 5 polish.
+
+### Open items
+
+- The Todo feature (native `TodoView` and row in `@repo/self`, web `TodoView`
+  in `apps/gurudevi-web/app/(sanctuary)/components`, `@repo/core/todos`) was
+  moved out of the kit and fixed, but is someone else's uncommitted work: left
+  for its owner to commit.
+- Security: `apps/sanctuary-api/src/ai/routes.ts` lets the request choose its
+  role (`?role=` and `body.role`, default `'teacher'`); use only the
+  server-resolved capacity and answer 403 when missing. Not UI work; not fixed.
+- Pre-existing failing tests: `gestureLifecycle.test.tsx` (gesture mock lacks
+  `Gesture`), `worldBootstrap.test.tsx` (renders the async `RootLayout`
+  synchronously).
+- Ratchets read above baseline because of other uncommitted work; do not
+  raise the baselines.
