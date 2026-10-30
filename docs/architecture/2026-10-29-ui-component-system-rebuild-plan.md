@@ -428,7 +428,7 @@ Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 
 1. 1b.0 one folder per world.
 2. 1b.1–1b.7 remaining: Grid, Icon, Card/Tile, Rail, Carousel,
-   Group, space-aware components, contrast guard, inspector naming, living light.
+   space-aware components, contrast guard, inspector naming, living light in the remaining components.
 3. 1.9 galleries on both platforms (G4 browser, G5 device).
 4. 1c forms, assessments and media.
 5. Phase 2 harden, Phase 3 migrate (web floors, then packages smallest first),
