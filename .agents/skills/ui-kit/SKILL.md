@@ -40,6 +40,7 @@ before touching UI; it replaces `branded-ui` (which describes the legacy
 - [ ] native `components/native/X/X.tsx`, web `components/web/X/X.tsx`
 - [ ] web rules in `theme/kitCss.ts` (only `var(--w-*)`)
 - [ ] exported from both barrels
+- [ ] feedback: `useFeedback()` with an event name (no direct haptics), `usePressMotion()` on pressables, `useErrorFeedback(error)` on fields
 - [ ] native tests in `components/native/__tests__`, web tests in
       `apps/gurudevi-web/tests/unit/kit`
 - [ ] gallery entry on both platforms

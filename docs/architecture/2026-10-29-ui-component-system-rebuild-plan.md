@@ -346,6 +346,7 @@ Add = one folder + one line. Remove = delete both.
 | 1b.4 | Space-aware components: `useContainerSize` (onLayout on native, container queries on web) so a Row puts its detail under its label when narrow, a Grid drops columns, a Card moves media above text. System accessibility settings (`isHighTextContrastEnabled`, `isDarkerSystemColorsEnabled`, `isReduceTransparencyEnabled`, font scale) feed the world: stronger edges, no glass, larger targets. |
 | 1b.5 | Contrast guard: every recipe pair in every theme (text on fill, on-lamp on lamp, focus ring on ground), not only tokens; ink chosen over imagery with `inkOn` (theme/scene) rather than Reanimated's `contrastColor`, which returns pure white or black and the worlds never use those. |
 | 1b.6 | Inspector: the gallery (1.9) is the component tree to look at; every kit element carries its name (`data-kit` on web, `testID` prefix on native) so React DevTools and React Native DevTools (built into RN 0.88) show `kit.Button` rather than anonymous views. No overlays or wrappers (runtime concerns stay out of the tree). |
+| 1b.7 | Living light: colour, brightness and edges answer state, not only size. On native, `interpolateColor` (Reanimated 4.7.1) between two recipe colours driven by one shared value per component (pressed, focused, invalid, success): an edge warms from `edge` to `lamp` on focus, a fill brightens on press, an error edge goes to `danger` and settles back to a held tint, a success glow blooms and fades. On web, the same pairs as `--w-*` transitions (`color-mix` for in-between tints). The pairs come from the recipe (`world.recipes.*.states`), never from the component, so a world can choose a quiet or a vivid response; motion level `still` and reduced motion jump to the end colour. No new colours: every endpoint is already a token that passes the contrast guard (1b.5). Cost: one shared value and an animated style per pressed or focused element, on the UI thread. |
 
 ### Spacing relations (proximity)
 
@@ -411,6 +412,8 @@ section plus the guide (`ui-kit-guide.md`) is the state of the work.
 | `e1b0b9d0b` | 1.8 List (FlashList / content-visibility), Table |
 | `1e0d1c76a` | SwipeRow; AGENTS.md worklets rule matches installed APIs |
 | `875ee53b3` | Scoreboard, open-ended worlds, Phase 1b |
+| `a550af520` | Kit guide, ui-kit skill, Phase 1c, this ledger |
+| `aaee20fe3` | Feedback grammar (`useFeedback`, `usePressMotion`, `useErrorFeedback`, web `--w-press` and shake) across native kit; intentional-ui-design references restored |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4
@@ -419,8 +422,8 @@ Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 ### Next, in order
 
 1. 1b.0 one folder per world.
-2. 1b.1–1b.6 layout (Stack, Inline, Grid, Icon), Card/Tile, Rail, Carousel,
-   Group, space-aware components, contrast guard, inspector naming.
+2. 1b.1–1b.7 layout (Stack, Inline, Grid, Icon), Card/Tile, Rail, Carousel,
+   Group, space-aware components, contrast guard, inspector naming, living light.
 3. 1.9 galleries on both platforms (G4 browser, G5 device).
 4. 1c forms, assessments and media.
 5. Phase 2 harden, Phase 3 migrate (web floors, then packages smallest first),

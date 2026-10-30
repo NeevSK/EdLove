@@ -140,6 +140,14 @@ section 7) and signed off.
   (`runOnJS`/`runOnUI` are deprecated in the installed 0.13.1 and in
   Reanimated 4.7.1); shared values with `.get()` / `.set()`; respect the world's
   motion level (`useWorldMotion().animates`) and `prefers-reduced-motion`.
+- **Feedback**: components name the event, never the haptic. Call
+  `useFeedback()` from `theme/native` and fire `press`, `select`, `step`,
+  `commit`, `success`, `warning`, `error` or `destructive`; the world's
+  `motion.haptic` ('soft' or 'crisp') picks the haptic (`theme/feedback.ts`,
+  one table). Pressables scale with `usePressMotion()` (the world's `press`
+  and spring; web reads `--w-press`); fields take `useErrorFeedback(error)`,
+  which buzzes and shakes once when an error appears (web: `gd-shake`). An
+  explicit `haptic` prop still wins; `haptic={false}` silences it.
 - **Gestures**: RNGH 3 hook API (`usePanGesture`, `GestureDetector`). Every
   gesture has a non-gesture path (accessibility actions, buttons).
 - **Accessibility**: the element that is the control carries the role and
@@ -164,6 +172,7 @@ section 7) and signed off.
 | RN 0.88 `Text` has no `hitSlop` | pad the parent instead |
 | `@repo/self`, `@repo/admin` typecheck against `packages/ui/dist` | after kit changes run `tsc --build` in `packages/ui` to refresh declarations |
 | PowerShell `WriteAllLines` writes CRLF | join with `` `n `` or fix endings before committing |
+| A wrapper view around a disabled Pressable lets RNTL reach the parent's `onPress` | give the wrapper `pointerEvents={disabled ? 'none' : 'box-none'}` (true on device too) |
 | Other sessions edit this checkout | commit only your files; for shared files stage HEAD + your hunks |
 
 ## 6. Checks before you call it done
