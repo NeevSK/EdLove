@@ -56,6 +56,30 @@ function shrink(radius: Radius, by: number): Radius {
   return radius.map((r) => Math.max(4, r - by)) as unknown as Radius;
 }
 
+/**
+ * `fg` moved toward `toward` in small steps until it reaches `min` contrast
+ * on `bg`. Keeps a world's chosen softness where it is already legible.
+ */
+function legible(fg: string, toward: string, bg: string, min: number): string {
+  for (let step = 0; step <= 20; step++) {
+    const c = mix(fg, toward, step / 20);
+    if (contrastRatio(c, bg) >= min) return c;
+  }
+  return toward;
+}
+
+/**
+ * The lit end of a gradient lamp: brighter by up to `amount`, but never so far
+ * that the label on it stops reading.
+ */
+function lampSheen(t: WorldTokens, amount: number): string {
+  for (let a = amount; a > 0; a -= 0.05) {
+    const c = mix(t.lamp, '#FFFFFF', a);
+    if (contrastRatio(t.onLamp, c) >= 4.5) return c;
+  }
+  return t.lamp;
+}
+
 /** A visible state colour: `lamp` when it reads against the ground, else `lampDeep`. */
 function visibleLamp(t: WorldTokens): string {
   return contrastRatio(t.lamp, t.ground) >= 3 ? t.lamp : t.lampDeep;
@@ -121,10 +145,7 @@ function buildButton(t: WorldTokens, s: WorldStyle, mode: WorldMode): ButtonReci
     variants: {
       primary: {
         form: 'filled',
-        fill:
-          s.primary.fill === 'gradient'
-            ? { from: mix(t.lamp, '#FFFFFF', 0.3), to: t.lamp }
-            : t.lamp,
+        fill: s.primary.fill === 'gradient' ? { from: lampSheen(t, 0.3), to: t.lamp } : t.lamp,
         ink: t.onLamp,
         edge: null,
         innerEdge: s.primary.doubleEdge ? { width: 1.25, color: t.ornament, inset: 2 } : null,
@@ -477,7 +498,11 @@ function capRadius(r: Radius, max: number): Radius {
 }
 
 function buildToggle(t: WorldTokens, s: WorldStyle): ToggleRecipe {
-  const edge = { width: Math.max(1.5, s.lineWeight), color: mix(t.ground, t.ink, 0.45) };
+  // An empty box must still be seen as a control (WCAG 1.4.11, 3:1).
+  const edge = {
+    width: Math.max(1.5, s.lineWeight),
+    color: legible(mix(t.ground, t.ink, 0.45), t.ink, t.ground, 3),
+  };
   return {
     size: 22,
     radius: capRadius(s.corner.chip, 6),
@@ -529,6 +554,15 @@ function buildCard(
   surface: SurfaceRecipe,
 ): CardRecipe {
   const raised = surface.raised;
+  // Words over a photo: thick enough to read over the lightest and darkest one.
+  let veilOpacity = 0.62;
+  while (
+    veilOpacity < 0.95 &&
+    ['#FFFFFF', '#000000'].some(
+      (photo) => contrastRatio(t.ground, mix(photo, t.ink, veilOpacity)) < 4.5,
+    )
+  )
+    veilOpacity = Math.round((veilOpacity + 0.03) * 100) / 100;
   return {
     surface: { ...raised, padding: 0, paddingX: 0 },
     radius: {
@@ -541,8 +575,9 @@ function buildCard(
     meta: text.caption,
     gap: 8,
     padding: 12,
-    selectedEdge: { width: 2, color: visibleLamp(t) },
-    veil: alpha(t.ink, 0.62),
+    selectedEdge: { width: 2, color: legible(visibleLamp(t), t.ink, raised.fill ?? t.ground, 3) },
+    veil: alpha(t.ink, veilOpacity),
+    veilOpacity,
     veilInk: t.ground,
     dot: { off: mix(t.ground, t.ink, 0.25), on: visibleLamp(t), size: 6 },
   };

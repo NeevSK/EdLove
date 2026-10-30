@@ -437,6 +437,8 @@ export interface CardRecipe {
   selectedEdge: Edge;
   /** Veil under words laid over media (square cards). */
   veil: string;
+  /** How thick the veil is; chosen so the words read over any photo. */
+  veilOpacity: number;
   veilInk: string;
   /** Carousel position marks. */
   dot: { off: string; on: string; size: number };
