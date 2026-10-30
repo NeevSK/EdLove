@@ -209,4 +209,12 @@ export const tokens = {
 export type Tokens = typeof tokens;
 export default tokens;
 export { duration, easingPoints, scale } from './motion';
+export {
+  cardWidth,
+  columnsFor,
+  gridMin,
+  iconSize,
+  type KitSize,
+  WIDE_CARD_STACKS_BELOW,
+} from './sizes';
 export { gapFor, type SpaceDensity, type SpaceRelation, space } from './space';

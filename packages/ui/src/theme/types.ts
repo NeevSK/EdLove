@@ -421,6 +421,25 @@ export interface GroupRecipe {
   footer: TypeStyle;
 }
 
+/** Cards and tiles: the world's held surface, lit like a control when pressable. */
+export interface CardRecipe {
+  surface: SurfaceToneRecipe;
+  /** Corners by shape; `pill` is always fully round. */
+  radius: Record<'tile' | 'wide' | 'square' | 'pill', Radius>;
+  title: TypeStyle;
+  meta: TypeStyle;
+  /** Gap between media and words, and inside the words. */
+  gap: number;
+  padding: number;
+  /** Edge when selected. */
+  selectedEdge: Edge;
+  /** Veil under words laid over media (square cards). */
+  veil: string;
+  veilInk: string;
+  /** Carousel position marks. */
+  dot: { off: string; on: string; size: number };
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -434,6 +453,7 @@ export interface WorldRecipes {
   toggle: ToggleRecipe;
   status: StatusRecipe;
   group: GroupRecipe;
+  card: CardRecipe;
   material: MaterialRecipe;
   motion: { settleMs: number; breatheMs: number };
 }

@@ -10,6 +10,7 @@ import { alpha, contrastRatio, mix } from './color';
 import type {
   BoundaryKind,
   ButtonRecipe,
+  CardRecipe,
   ChipRecipe,
   FieldRecipe,
   GroupRecipe,
@@ -520,6 +521,32 @@ function buildGroup(
   };
 }
 
+function buildCard(
+  t: WorldTokens,
+  s: WorldStyle,
+  text: Record<TextRole, TypeStyle>,
+  surface: SurfaceRecipe,
+): CardRecipe {
+  const raised = surface.raised;
+  return {
+    surface: { ...raised, padding: 0, paddingX: 0 },
+    radius: {
+      tile: raised.radius,
+      wide: raised.radius,
+      square: raised.radius,
+      pill: 999,
+    },
+    title: type(text.title.family, 16, 21, t.ink, { weight: '600' }),
+    meta: text.caption,
+    gap: 8,
+    padding: 12,
+    selectedEdge: { width: 2, color: visibleLamp(t) },
+    veil: alpha(t.ink, 0.62),
+    veilInk: t.ground,
+    dot: { off: mix(t.ground, t.ink, 0.25), on: visibleLamp(t), size: 6 },
+  };
+}
+
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
   const material = buildMaterial(t, s, mode);
@@ -536,6 +563,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     toggle: buildToggle(t, s),
     status: buildStatus(t, s),
     group: buildGroup(t, s, text, surface),
+    card: buildCard(t, s, text, surface),
     material,
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },

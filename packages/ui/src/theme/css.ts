@@ -273,6 +273,21 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
     v[`--w-light-${moment}-glow-opacity`] = String(l.glowOpacity);
     v[`--w-light-${moment}-lift`] = String(l.lift);
   }
+
+  // Cards, rails and carousels.
+  const card = r.card;
+  for (const [shape, radius] of Object.entries(card.radius))
+    v[`--w-card-${shape}-radius`] = radiusCss(radius);
+  Object.assign(v, typeVars('--w-card-title', card.title));
+  Object.assign(v, typeVars('--w-card-meta', card.meta));
+  v['--w-card-gap'] = px(card.gap);
+  v['--w-card-pad'] = px(card.padding);
+  v['--w-card-selected'] = card.selectedEdge.color;
+  v['--w-card-selected-w'] = px(card.selectedEdge.width);
+  v['--w-card-veil'] = card.veil;
+  v['--w-card-veil-ink'] = card.veilInk;
+  v['--w-dot-off'] = card.dot.off;
+  v['--w-dot-on'] = card.dot.on;
   return v;
 }
 

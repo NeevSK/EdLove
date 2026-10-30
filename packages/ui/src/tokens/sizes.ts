@@ -1,0 +1,21 @@
+/**
+ * Fixed size scales for kit pieces that do not change per world: icons,
+ * the narrowest a grid column may get, and how wide a card in a rail is.
+ */
+
+export type KitSize = 'sm' | 'md' | 'lg';
+
+export const iconSize: Record<KitSize, number> = { sm: 16, md: 20, lg: 24 };
+
+/** A grid adds a column whenever another one this wide fits. */
+export const gridMin: Record<KitSize, number> = { sm: 140, md: 200, lg: 280 };
+
+/** Card widths in a rail, and the width under which a wide card stacks. */
+export const cardWidth: Record<KitSize, number> = { sm: 148, md: 220, lg: 300 };
+export const WIDE_CARD_STACKS_BELOW = 360;
+
+/** Columns that fit `width` when each must be at least `min` wide, between 1 and `max`. */
+export function columnsFor(width: number, min: number, gap: number, max = 6): number {
+  if (width <= 0) return 1;
+  return Math.max(1, Math.min(max, Math.floor((width + gap) / (min + gap))));
+}

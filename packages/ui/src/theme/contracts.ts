@@ -8,6 +8,7 @@
  */
 
 import type { ComponentType, ReactNode } from 'react';
+import type { KitSize } from '../tokens/sizes';
 import type { SpaceDensity, SpaceRelation } from '../tokens/space';
 import type { SignKind } from './signs';
 import type {
@@ -73,6 +74,66 @@ export interface GroupContract {
   label?: string;
   /** A note under the group explaining its rows. */
   footer?: string;
+}
+
+/** An icon drawn in a text tone at a fixed size. Decorative unless it has a label. */
+export interface IconContract {
+  icon: ComponentType<KitIconProps>;
+  size?: KitSize;
+  tone?: TextTone;
+  /** Only when the icon means something on its own (no text beside it). */
+  label?: string;
+}
+
+/** Equal columns that come and go with the space available. */
+export interface GridContract {
+  /** The narrowest a column may get before one is dropped. Default `md`. */
+  min?: KitSize;
+  /** Never more columns than this. */
+  max?: number;
+  gap?: SpaceRelation;
+}
+
+/**
+ * Card shapes: `tile` (media above words), `wide` (media beside words,
+ * stacking when narrow), `square` (media fills, words over a veil at the
+ * foot), `pill` (a small rounded chip-like card: icon and title).
+ */
+export type CardShape = 'tile' | 'wide' | 'square' | 'pill';
+
+export interface CardContract {
+  title: string;
+  /** One short line under the title ("12 students", "Due Friday"). */
+  meta?: string;
+  shape?: CardShape;
+  size?: KitSize;
+  /** An image or illustration; the card clips it to its corners. */
+  media?: ReactNode;
+  icon?: ComponentType<KitIconProps>;
+  selected?: boolean;
+  disabled?: boolean;
+}
+
+/** A short horizontal run of cards that scrolls and snaps. */
+export interface RailContract<T> {
+  /** Names the rail ("Recent lessons"); shown above it. */
+  label: string;
+  items: readonly T[];
+  keyOf: (item: T) => string;
+  renderItem: (item: T, index: number) => ReactNode;
+  /** Width of each item. Default `md`. */
+  size?: KitSize;
+}
+
+/** One item per page, with buttons as well as swipes. Never moves by itself. */
+export interface CarouselContract<T> {
+  label: string;
+  items: readonly T[];
+  keyOf: (item: T) => string;
+  renderItem: (item: T, index: number) => ReactNode;
+  /** Names for the page buttons and position ("Previous", "Next", "{n} of {total}"). */
+  labels?: { previous: string; next: string; position: (n: number, total: number) => string };
+  onPageChange?: (index: number) => void;
 }
 
 export interface SurfaceContract {
