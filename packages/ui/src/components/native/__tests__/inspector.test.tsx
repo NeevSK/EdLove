@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-import * as web from '../../web/index';
 import * as native from '../index';
 
 vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
@@ -22,6 +21,9 @@ function components(barrel: Record<string, unknown>) {
   );
 }
 
+/** Pieces both sets must have; the web suite checks the same list. */
+const SHARED = ['Button', 'Card', 'Carousel', 'Grid', 'Group', 'Icon', 'Inline', 'Rail', 'Stack'];
+
 describe('kit pieces are named in the component tree', { tags: ['unit'] }, () => {
   it('native: every component shows under its own name', () => {
     const named = components(native);
@@ -29,29 +31,8 @@ describe('kit pieces are named in the component tree', { tags: ['unit'] }, () =>
     for (const [name, fn] of named) expect(fn.name, name).toBe(name);
   });
 
-  it('web: every component shows under its own name', () => {
-    const named = components(web);
-    expect(named.length).toBeGreaterThan(30);
-    for (const [name, fn] of named) expect(fn.name, name).toBe(name);
-  });
-
-  it('both sets share their component names', () => {
-    const n = new Set(components(native).map(([name]) => name));
-    const w = new Set(components(web).map(([name]) => name));
-    const shared = [
-      'Button',
-      'Card',
-      'Carousel',
-      'Grid',
-      'Group',
-      'Icon',
-      'Inline',
-      'Rail',
-      'Stack',
-    ];
-    for (const name of shared) {
-      expect(n.has(name), `native ${name}`).toBe(true);
-      expect(w.has(name), `web ${name}`).toBe(true);
-    }
+  it('has the pieces the web set has, under the same names', () => {
+    const names = new Set(components(native).map(([name]) => name));
+    for (const name of SHARED) expect(names.has(name), name).toBe(true);
   });
 });
