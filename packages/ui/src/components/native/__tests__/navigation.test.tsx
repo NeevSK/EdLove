@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { StyleSheet, Text } from 'react-native';
 import { describe, expect, it, vi } from 'vitest';
+import { alpha } from '../../../theme/color';
 import { WorldScope } from '../../../theme/native';
 import { resolveWorld } from '../../../theme/resolve';
 import { WORLD_IDS } from '../../../theme/worlds';
@@ -44,9 +45,17 @@ describe('Tabs', { tags: ['a11y', 'interaction', 'unit'] }, () => {
           <Tabs label="Views" value="overview" tabs={VIEWS} onChange={() => {}} />
         </WorldScope>,
       );
-      const selected = resolveWorld(id, 'morning', 'light').recipes.chip.selected;
-      const style = flat(screen.getByRole('tab', { name: 'Overview' }).props.style);
-      expect(style.backgroundColor).toBe(selected.fill ?? undefined);
+      const w = resolveWorld(id, 'morning', 'light');
+      const { rest, selected } = w.recipes.chip;
+      // The look is painted on a layer inside the tab so it can glide (living light);
+      // a state with no fill holds the other's colour at zero.
+      const paint = screen
+        .getByRole('tab', { name: 'Overview' })
+        .children.flatMap((c) => (typeof c === 'string' ? [] : [c]))
+        .find((c) => c.props.pointerEvents === 'none');
+      expect(flat(paint?.props.style).backgroundColor).toBe(
+        selected.fill ?? alpha(rest.fill ?? w.tokens.ink, 0),
+      );
       await unmount();
     }
   });

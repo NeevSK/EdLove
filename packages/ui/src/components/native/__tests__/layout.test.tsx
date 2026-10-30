@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react-native';
+import { act, render, screen } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import { describe, expect, it, vi } from 'vitest';
 import { WorldScope } from '../../../theme/native';
 import { resolveWorld } from '../../../theme/resolve';
 import { WORLD_IDS } from '../../../theme/worlds';
+import { ROW_STACKS_BELOW } from '../../../tokens/sizes';
 import { gapFor, space } from '../../../tokens/space';
 import { Group } from '../Group/Group';
 import { Inline, Stack } from '../Layout/Layout';
@@ -78,5 +79,35 @@ describe('Stack, Inline and Group', { tags: ['a11y', 'unit'] }, () => {
       expect(screen.getByText('Applies everywhere.')).toBeTruthy();
       await unmount();
     }
+  });
+});
+
+describe('Row is space-aware', { tags: ['a11y', 'unit'] }, () => {
+  const layout = (width: number) => ({
+    nativeEvent: { layout: { width, height: 48, x: 0, y: 0 } },
+  });
+
+  it('puts its detail beside the label when there is room, under it when narrow', async () => {
+    await render(<Row label="Backup" detail="Every night at 2am" onPress={() => {}} />);
+    const row = screen.getByRole('button', { name: 'Backup, Every night at 2am' });
+    const line = () => screen.getByText('Backup').parent;
+    await act(() => row.props.onLayout(layout(ROW_STACKS_BELOW + 60)));
+    expect(flat(line()?.props.style).flexDirection).toBe('row');
+    await act(() => row.props.onLayout(layout(ROW_STACKS_BELOW - 60)));
+    expect(flat(line()?.props.style).flexDirection).toBeUndefined();
+    expect(flat(screen.getByText('Every night at 2am').props.style).textAlign).toBe('left');
+  });
+
+  it('a pressable row has a press light layer; a plain row does not', async () => {
+    const glow = resolveWorld('sanctuary', 'morning', 'light').recipes.material.states.press.glow;
+    const layers = (node: ReturnType<typeof screen.getByText>['parent']) =>
+      hostNodes(node).filter(
+        (n) => n.props.pointerEvents === 'none' && flat(n.props.style).backgroundColor === glow,
+      );
+    const { unmount } = await render(<Row label="Open" onPress={() => {}} />);
+    expect(layers(screen.getByRole('button', { name: 'Open' }))).toHaveLength(1);
+    await unmount();
+    await render(<Row label="Plain" detail="Value" />);
+    expect(layers(screen.root)).toHaveLength(0);
   });
 });

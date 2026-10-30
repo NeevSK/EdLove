@@ -309,6 +309,8 @@ const BASE_CSS = `
 .gd-dot{width:6px;height:6px;border-radius:50%;background:var(--w-dot-off);transition:background var(--w-settle)}.gd-dot[data-on]{background:var(--w-dot-on)}
 @media (prefers-reduced-motion:reduce){.gd-carousel-track{scroll-behavior:auto}.gd-card{transition:none}.gd-card:is(a,button):active{transform:none;filter:none}}
 .gd-surface[data-tone="raised"],.gd-group-body,.gd-card{background-image:radial-gradient(120% 100% at 50% 35%, var(--w-wash-centre), var(--w-wash-edge))}
+.gd-row{container-type:inline-size}@container (max-width: 299px){.gd-row-line{flex-direction:column;align-items:flex-start;gap:4px}.gd-row-detail{text-align:left}}
+.gd-row[data-pressable]{transition:background-color var(--w-light-ms)}.gd-row[data-pressable]:active{background-color:color-mix(in srgb, var(--w-light-press-glow) calc(var(--w-light-press-lift) * 100%), transparent)}
 .gd-group-row{position:relative;padding:0 var(--w-group-indent)}.gd-group-row+.gd-group-row::before{content:"";position:absolute;top:0;left:var(--w-group-indent);right:0;height:var(--w-group-divider-w);background:var(--w-line)}
 .gd-field[data-state="error"] .gd-field-input{animation:gd-shake 320ms ease-out 1}
 @keyframes gd-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}

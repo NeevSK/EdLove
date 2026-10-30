@@ -1,8 +1,21 @@
 import type { ComponentRef, Ref } from 'react';
-import { Pressable, Text as RNText, type StyleProp, View, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  Text as RNText,
+  type StyleProp,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
+import Animated from 'react-native-reanimated';
 import type { RowContract } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
+import { usePressMotion } from '../../../theme/native/motion';
 import { glowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import { ROW_STACKS_BELOW } from '../../../tokens/sizes';
+import { gapFor } from '../../../tokens/space';
+import { useContainerWidth } from '../Layout/useContainerWidth';
 
 export interface RowProps extends RowContract {
   accessibilityHint?: string;
@@ -10,7 +23,11 @@ export interface RowProps extends RowContract {
   ref?: Ref<ComponentRef<typeof View>>;
 }
 
-/** One line of a list or a settings group. Dividers come from the Section around it. */
+/**
+ * One line of a list or a settings group. Dividers come from the Section or
+ * Group around it. When its own width is narrow, the detail moves under the
+ * label rather than squeezing it; a pressable row brightens while held.
+ */
 export function Row({
   label,
   detail,
@@ -27,16 +44,24 @@ export function Row({
   const { world, language } = useWorldContext();
   const r = world.recipes.row;
   const showChevron = chevron ?? (!!onPress && !accessory);
+  const feedback = useFeedback();
+  const press = usePressMotion();
+  const { width, onLayout } = useContainerWidth();
+  const stacked = !accessory && !!detail && width < ROW_STACKS_BELOW;
 
   const body = (
     <>
       <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: r.gap,
-        }}
+        style={
+          stacked
+            ? { gap: gapFor('inside', 'compact') }
+            : {
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: r.gap,
+              }
+        }
       >
         <RNText style={[typeStyle(r.label, language, world), { flexShrink: 1 }]}>{label}</RNText>
         {accessory ??
@@ -62,7 +87,7 @@ export function Row({
                   numberOfLines={2}
                   style={[
                     typeStyle(r.detail, language, world),
-                    { textAlign: 'right', flexShrink: 1 },
+                    { textAlign: stacked ? 'left' : 'right', flexShrink: 1 },
                     signal ? { color: world.tokens.lampDeep } : null,
                   ]}
                 >
@@ -101,14 +126,28 @@ export function Row({
         accessibilityLabel={a11yLabel}
         accessibilityHint={accessibilityHint ?? note}
         onPress={onPress}
+        onPressIn={() => {
+          press.pressIn();
+          feedback('press');
+        }}
+        onPressOut={press.pressOut}
+        onLayout={onLayout}
         style={({ pressed }) => [container, pressed ? { opacity: 0.7 } : null, style]}
       >
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: press.light.color },
+            press.light.style,
+          ]}
+        />
         {body}
       </Pressable>
     );
   }
   return (
-    <View ref={ref} style={[container, style]}>
+    <View ref={ref} onLayout={onLayout} style={[container, style]}>
       {body}
     </View>
   );

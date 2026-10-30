@@ -37,6 +37,56 @@ export function chipStyle(r: ChipRecipe, s: ChipStateRecipe): ViewStyle {
   };
 }
 
+/** Edge widths a chip keeps in every state, so selecting never shifts layout. */
+function chipEdges(r: ChipRecipe) {
+  const edge = Math.max(r.rest.edge?.width ?? 0, r.selected.edge?.width ?? 0);
+  const line = Math.max(r.rest.underline?.width ?? 0, r.selected.underline?.width ?? 0);
+  return { edge, line };
+}
+
+/** A chip's frame (padding, corners, glow) when its paint is a `ChipPaint` layer. */
+export function chipFrame(r: ChipRecipe, s: ChipStateRecipe): ViewStyle {
+  const { edge, line } = chipEdges(r);
+  return {
+    // The paint layer draws edges outside the flow; padding keeps their room.
+    paddingVertical: r.paddingY + (edge || line),
+    paddingHorizontal: r.paddingX + edge,
+    ...radiusStyle(r.radius),
+    ...glowStyle(s.glow),
+  };
+}
+
+/**
+ * Living light for chips and tabs: fill and edges glide between rest and
+ * selected. A state without an edge holds the other state's colour at zero,
+ * so the blend fades rather than passing through grey.
+ */
+export function ChipPaint({ recipe: r, selected }: { recipe: ChipRecipe; selected: boolean }) {
+  const ink = useWorldContext().world.tokens.ink;
+  const s = selected ? r.selected : r.rest;
+  const other = selected ? r.rest : r.selected;
+  const { edge, line } = chipEdges(r);
+  const clear = (colour: string | null | undefined) => alpha(colour ?? ink, 0);
+  const paint = useLivingStyle({
+    backgroundColor: s.fill ?? clear(other.fill),
+    ...(edge > 0 ? { borderColor: s.edge?.color ?? clear(other.edge?.color) } : null),
+    ...(line > 0 && edge === 0
+      ? { borderBottomColor: s.underline?.color ?? clear(other.underline?.color) }
+      : null),
+  });
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        StyleSheet.absoluteFill,
+        radiusStyle(r.radius),
+        edge > 0 ? { borderWidth: edge } : line > 0 ? { borderBottomWidth: line } : null,
+        paint,
+      ]}
+    />
+  );
+}
+
 export function Chip({
   label,
   selected = false,
@@ -52,21 +102,7 @@ export function Chip({
   const r = world.recipes.chip;
   const feedback = useFeedback();
   const s = selected ? r.selected : r.rest;
-  const other = selected ? r.rest : r.selected;
   const underline = r.form === 'underline';
-  // Living light: fill and edges glide between rest and selected. A state
-  // without an edge holds the other state's colour at zero, so the blend
-  // fades rather than passing through grey.
-  const edgeWidth = Math.max(s.edge?.width ?? 0, other.edge?.width ?? 0);
-  const lineWidth = Math.max(s.underline?.width ?? 0, other.underline?.width ?? 0);
-  const clear = (colour: string | undefined) => alpha(colour ?? world.tokens.ink, 0);
-  const paint = useLivingStyle({
-    backgroundColor: s.fill ?? clear(other.fill ?? undefined),
-    ...(edgeWidth > 0 ? { borderColor: s.edge?.color ?? clear(other.edge?.color) } : null),
-    ...(lineWidth > 0 && edgeWidth === 0
-      ? { borderBottomColor: s.underline?.color ?? clear(other.underline?.color) }
-      : null),
-  });
 
   return (
     <Pressable
@@ -85,31 +121,13 @@ export function Chip({
         onPress?.(e);
       }}
       style={({ pressed }) => [
-        {
-          // The paint layer draws edges outside the flow; padding keeps their room.
-          paddingVertical: r.paddingY + (edgeWidth || lineWidth),
-          paddingHorizontal: r.paddingX + edgeWidth,
-          ...radiusStyle(r.radius),
-          ...glowStyle(s.glow),
-        },
+        chipFrame(r, s),
         { opacity: disabled ? 0.4 : pressed ? 0.8 : 1 },
         style,
       ]}
       {...rest}
     >
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          StyleSheet.absoluteFill,
-          radiusStyle(r.radius),
-          edgeWidth > 0
-            ? { borderWidth: edgeWidth }
-            : lineWidth > 0
-              ? { borderBottomWidth: lineWidth }
-              : null,
-          paint,
-        ]}
-      />
+      <ChipPaint recipe={r} selected={selected} />
       <RNText style={[typeStyle(r.label, lang ?? language, world), { color: s.ink }]}>
         {label}
       </RNText>

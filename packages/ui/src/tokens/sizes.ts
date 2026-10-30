@@ -14,6 +14,9 @@ export const gridMin: Record<KitSize, number> = { sm: 140, md: 200, lg: 280 };
 export const cardWidth: Record<KitSize, number> = { sm: 148, md: 220, lg: 300 };
 export const WIDE_CARD_STACKS_BELOW = 360;
 
+/** Under this width a row puts its detail below its label instead of beside it. */
+export const ROW_STACKS_BELOW = 300;
+
 /** Columns that fit `width` when each must be at least `min` wide, between 1 and `max`. */
 export function columnsFor(width: number, min: number, gap: number, max = 6): number {
   if (width <= 0) return 1;

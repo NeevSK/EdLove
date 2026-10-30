@@ -215,6 +215,7 @@ export {
   gridMin,
   iconSize,
   type KitSize,
+  ROW_STACKS_BELOW,
   WIDE_CARD_STACKS_BELOW,
 } from './sizes';
 export { gapFor, type SpaceDensity, type SpaceRelation, space } from './space';

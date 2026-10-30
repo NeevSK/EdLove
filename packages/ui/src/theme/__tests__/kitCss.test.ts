@@ -37,6 +37,11 @@ describe('kit stylesheet', () => {
     }
   });
 
+  it('lets rows and wide cards lay out for their own width, not the screen', () => {
+    expect(css).toContain('.gd-row{container-type:inline-size}@container (max-width: 299px)');
+    expect(css).toContain('@container (max-width: 359px){.gd-card[data-shape="wide"]');
+  });
+
   it('holds signs still for people who ask for reduced motion', () => {
     expect(css).toMatch(
       /@media \(prefers-reduced-motion:reduce\)\{\.gd-s \*\{animation-play-state:paused/,

@@ -10,7 +10,7 @@ import type { TabsContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
 import { typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
-import { chipStyle } from '../Chip/Chip';
+import { ChipPaint, chipFrame } from '../Chip/Chip';
 
 export interface TabsProps<V extends string = string> extends TabsContract<V> {
   style?: StyleProp<ViewStyle>;
@@ -54,11 +54,12 @@ export function Tabs<V extends string = string>({
                 onChange(tab.value);
               }}
               style={({ pressed }) => [
-                chipStyle(r, s),
+                chipFrame(r, s),
                 styles.tab,
                 { opacity: tab.disabled ? 0.4 : pressed ? 0.8 : 1 },
               ]}
             >
+              <ChipPaint recipe={r} selected={selected} />
               <RNText style={[typeStyle(r.label, language, world), { color: s.ink }]}>
                 {tab.label}
               </RNText>
