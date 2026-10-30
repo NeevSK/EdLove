@@ -10,6 +10,7 @@
 import type { ComponentType, ReactNode } from 'react';
 import type { SignKind } from './signs';
 import type {
+  BadgeTone,
   ButtonSize,
   ButtonVariant,
   Radius,
@@ -285,4 +286,56 @@ export interface BreadcrumbContract {
   items: readonly BreadcrumbItem[];
   /** Names the trail; defaults to "Breadcrumb". Pass it translated. */
   label?: string;
+}
+
+export interface IconButtonContract {
+  icon: ComponentType<KitIconProps>;
+  /** The action's name: the accessible name, and the tooltip on the web. */
+  label: string;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+}
+
+export interface LinkContract {
+  label: string;
+}
+
+export interface ProgressContract {
+  /** 0 to 1. Omit while the amount is unknown; the bar then moves without a value. */
+  value?: number;
+  /** What is progressing, already translated ("Uploading photos"). */
+  label: string;
+}
+
+export interface BadgeContract {
+  label: string;
+  tone?: BadgeTone;
+}
+
+export type AvatarSize = 'sm' | 'md' | 'lg';
+
+export interface AvatarContract {
+  /** The person's name: the image's description and the source of the initials. */
+  name: string;
+  /** A photo; initials show while it loads or if it fails. */
+  src?: string;
+  size?: AvatarSize;
+}
+
+export interface StateAction {
+  label: string;
+  onPress: () => void;
+}
+
+export interface EmptyStateContract {
+  title: string;
+  message?: string;
+  action?: StateAction;
+}
+
+export interface ErrorStateContract {
+  title: string;
+  message?: string;
+  /** Usually "Try again". Omit when nothing the person does will help. */
+  retry?: StateAction;
 }

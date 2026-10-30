@@ -13,6 +13,7 @@ import type {
   ChipRecipe,
   FieldRecipe,
   OverlayRecipe,
+  StatusRecipe,
   ToggleRecipe,
   Radius,
   RowRecipe,
@@ -433,6 +434,23 @@ function buildToggle(t: WorldTokens, s: WorldStyle): ToggleRecipe {
   };
 }
 
+function buildStatus(t: WorldTokens, s: WorldStyle): StatusRecipe {
+  const hair = (color: string) => ({ width: Math.max(1, s.lineWeight), color });
+  return {
+    badge: {
+      neutral: { fill: t.sunken, ink: t.inkSoft, edge: null },
+      lamp: { fill: t.lamp, ink: t.onLamp, edge: null },
+      // Success and danger keep the page's paper and carry their colour in the
+      // edge and words, so they stay legible in every world.
+      success: { fill: t.raised, ink: t.ink, edge: hair(t.success) },
+      danger: { fill: t.danger, ink: t.onDanger, edge: null },
+    },
+    badgeRadius: s.corner.chip,
+    progress: { track: t.sunken, fill: t.lamp, height: 6 },
+    avatar: { fill: t.raised, ink: t.ink, edge: hair(t.ornament) },
+  };
+}
+
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
   const surface = buildSurface(t, s, mode);
@@ -446,6 +464,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     section: buildSection(t, s, mode, text, surface),
     overlay: buildOverlay(t, s, mode, surface),
     toggle: buildToggle(t, s),
+    status: buildStatus(t, s),
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },
   };

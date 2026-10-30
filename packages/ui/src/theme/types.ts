@@ -347,6 +347,17 @@ export interface ToggleRecipe {
   thumb: { fill: string; edge: Edge; size: number };
 }
 
+export type BadgeTone = 'neutral' | 'lamp' | 'success' | 'danger';
+
+/** Small status marks: badges, progress bars and avatars. */
+export interface StatusRecipe {
+  badge: Record<BadgeTone, { fill: string; ink: string; edge: Edge | null }>;
+  badgeRadius: Radius;
+  progress: { track: string; fill: string; height: number };
+  /** Initials when there is no photo: the world's raised paper with its ornament ring. */
+  avatar: { fill: string; ink: string; edge: Edge };
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -358,6 +369,7 @@ export interface WorldRecipes {
   ornament: { kind: OrnamentKind; color: string; accent: string };
   overlay: OverlayRecipe;
   toggle: ToggleRecipe;
+  status: StatusRecipe;
   motion: { settleMs: number; breatheMs: number };
 }
 

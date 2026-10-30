@@ -38,3 +38,16 @@ export { Slider, type SliderProps } from './Slider/Slider';
 export { Breadcrumb, type BreadcrumbProps } from './Breadcrumb/Breadcrumb';
 export { SegmentedControl, type SegmentedControlProps } from './Segmented/SegmentedControl';
 export { Tabs, type TabsProps } from './Tabs/Tabs';
+export { IconButton, type IconButtonProps } from './IconButton/IconButton';
+export { Link, type LinkProps } from './Link/Link';
+export { EmptyState, type EmptyStateProps, ErrorState, type ErrorStateProps } from './States/States';
+export {
+  Avatar,
+  type AvatarProps,
+  Badge,
+  type BadgeProps,
+  Divider,
+  Progress,
+  type ProgressProps,
+} from './Status/Status';
+export { initialsOf } from '../shared/initials';
