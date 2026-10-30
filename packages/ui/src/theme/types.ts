@@ -504,6 +504,17 @@ export interface WorldDefinition {
   refine?: (recipes: WorldRecipes, tokens: WorldTokens, mode: WorldMode) => WorldRecipes;
 }
 
+/**
+ * What the person's system asks of every world (iOS and Android accessibility
+ * settings, `prefers-contrast` and `prefers-reduced-transparency` on the web).
+ */
+export interface WorldAccess {
+  /** `more`: stronger secondary text, hairlines and edges. */
+  contrast: 'standard' | 'more';
+  /** `reduced`: no glows or see-through veils; solid layers instead. */
+  transparency: 'standard' | 'reduced';
+}
+
 export interface ResolvedWorld {
   id: WorldId;
   phase: Phase;
@@ -511,4 +522,5 @@ export interface ResolvedWorld {
   definition: WorldDefinition;
   tokens: WorldTokens;
   recipes: WorldRecipes;
+  access: WorldAccess;
 }

@@ -8,13 +8,14 @@
  */
 
 import { buildRecipes } from './build';
-import { mix } from './color';
+import { alpha, legible, mix } from './color';
 import type {
+  Phase,
   ResolvedWorld,
+  WorldAccess,
   WorldDefinition,
   WorldId,
   WorldMode,
-  Phase,
   WorldTokens,
 } from './types';
 import { DEFAULT_WORLD, isWorldId, WORLDS } from './worlds';
@@ -52,21 +53,61 @@ export function phaseTokens(base: WorldTokens, mode: WorldMode, phase: Phase): W
 
 const cache = new Map<string, ResolvedWorld>();
 
+export const STANDARD_ACCESS: WorldAccess = { contrast: 'standard', transparency: 'standard' };
+
+/** Tokens with secondary ink, faint ink and hairlines raised to stronger contrast. */
+function moreContrast(t: WorldTokens): WorldTokens {
+  return {
+    ...t,
+    inkSoft: legible(t.inkSoft, t.ink, t.ground, 7),
+    inkFaint: legible(t.inkFaint, t.ink, t.ground, 4.5),
+    line: legible(t.line, t.ink, t.ground, 3),
+  };
+}
+
 export function resolveWorld(
   world: WorldId | WorldDefinition,
   phase: Phase = 'morning',
   mode: WorldMode = 'light',
+  access: WorldAccess = STANDARD_ACCESS,
 ): ResolvedWorld {
   const definition =
     typeof world === 'string' ? WORLDS[isWorldId(world) ? world : DEFAULT_WORLD] : world;
-  const key = `${definition.id}:${phase}:${mode}`;
+  const key = `${definition.id}:${phase}:${mode}:${access.contrast}:${access.transparency}`;
   const cached = typeof world === 'string' ? cache.get(key) : undefined;
   if (cached) return cached;
 
-  const tokens = phaseTokens(definition.palette[mode], mode, phase);
-  const built = buildRecipes(tokens, definition.style, mode);
-  const recipes = definition.refine ? definition.refine(built, tokens, mode) : built;
-  const resolved: ResolvedWorld = { id: definition.id, phase, mode, definition, tokens, recipes };
+  const phased = phaseTokens(definition.palette[mode], mode, phase);
+  const more = access.contrast === 'more';
+  const solid = access.transparency === 'reduced';
+  const tokens = more ? moreContrast(phased) : phased;
+  const style = {
+    ...definition.style,
+    ...(more ? { lineWeight: Math.max(1, definition.style.lineWeight) } : null),
+    ...(solid ? { material: { ...definition.style.material, light: 'none' as const } } : null),
+  };
+  const built = buildRecipes(tokens, style, mode);
+  const refined = definition.refine ? definition.refine(built, tokens, mode) : built;
+  // Reduced transparency: the veils that let a screen or photo show through go solid.
+  const recipes = solid
+    ? {
+        ...refined,
+        overlay: {
+          ...refined.overlay,
+          scrim: alpha(mode === 'dark' ? tokens.ground : tokens.ink, 0.92),
+        },
+        card: { ...refined.card, veil: alpha(tokens.ink, 0.92), veilOpacity: 0.92 },
+      }
+    : refined;
+  const resolved: ResolvedWorld = {
+    id: definition.id,
+    phase,
+    mode,
+    definition,
+    tokens,
+    recipes,
+    access,
+  };
 
   if (typeof world === 'string') cache.set(key, resolved);
   return resolved;

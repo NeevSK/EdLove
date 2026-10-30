@@ -1,9 +1,9 @@
 import { View } from '@repo/ui/primitives';
+import { resolveWorld } from '@repo/ui/theme';
+import { useSystemAccess, WorldContext } from '@repo/ui/theme/native';
 import { colors } from '@repo/ui/theme/Theme';
 import { worldPhaseTokens } from '@repo/ui/theme/worldBridge';
 import { getTextOnBackground } from '@repo/ui/utils/colorUtils';
-import { WorldContext } from '@repo/ui/theme/native';
-import { resolveWorld } from '@repo/ui/theme';
 import { VariableContextProvider } from 'nativewind';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
@@ -19,9 +19,11 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
   const { temporalPhase, isDark, worldId, enableLivingTheme, language } = useEnvironment();
   const phase = enableLivingTheme ? temporalPhase : isDark ? 'night' : 'morning';
 
+  // The phone's contrast and transparency settings reach every world component.
+  const access = useSystemAccess();
   const world = useMemo(
-    () => resolveWorld(worldId, phase, isDark ? 'dark' : 'light'),
-    [worldId, phase, isDark],
+    () => resolveWorld(worldId, phase, isDark ? 'dark' : 'light', access),
+    [worldId, phase, isDark, access],
   );
 
   const circadianVars = useMemo(() => {

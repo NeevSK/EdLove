@@ -9,8 +9,8 @@
 
 import { createContext, type ReactNode, useContext, useMemo, useSyncExternalStore } from 'react';
 import { resolveWorld } from '../resolve';
+import type { Phase, ResolvedWorld, WorldId, WorldLanguage, WorldMode } from '../types';
 import { getWorldFontEpoch, subscribeWorldFonts } from './style';
-import type { ResolvedWorld, WorldId, WorldLanguage, WorldMode, Phase } from '../types';
 
 export interface WorldContextValue {
   world: ResolvedWorld;
@@ -47,7 +47,12 @@ export function WorldScope({ world, phase, mode, children }: WorldScopeProps) {
   const parent = useWorldContext();
   const value = useMemo(
     () => ({
-      world: resolveWorld(world, phase ?? parent.world.phase, mode ?? parent.world.mode),
+      world: resolveWorld(
+        world,
+        phase ?? parent.world.phase,
+        mode ?? parent.world.mode,
+        parent.world.access,
+      ),
       language: parent.language,
     }),
     [world, phase, mode, parent],

@@ -6,7 +6,7 @@
  * read the result, so mobile and web cannot drift apart.
  */
 
-import { alpha, contrastRatio, mix } from './color';
+import { alpha, contrastRatio, legible, mix } from './color';
 import type {
   BoundaryKind,
   ButtonRecipe,
@@ -54,18 +54,6 @@ function type(
 function shrink(radius: Radius, by: number): Radius {
   if (typeof radius === 'number') return Math.max(4, radius - by);
   return radius.map((r) => Math.max(4, r - by)) as unknown as Radius;
-}
-
-/**
- * `fg` moved toward `toward` in small steps until it reaches `min` contrast
- * on `bg`. Keeps a world's chosen softness where it is already legible.
- */
-function legible(fg: string, toward: string, bg: string, min: number): string {
-  for (let step = 0; step <= 20; step++) {
-    const c = mix(fg, toward, step / 20);
-    if (contrastRatio(c, bg) >= min) return c;
-  }
-  return toward;
 }
 
 /**

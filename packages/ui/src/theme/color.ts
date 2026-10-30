@@ -68,3 +68,15 @@ export function contrastRatio(a: string, b: string): number {
   const [hi, lo] = la > lb ? [la, lb] : [lb, la];
   return (hi + 0.05) / (lo + 0.05);
 }
+
+/**
+ * `fg` moved toward `toward` in small steps until it reaches `min` contrast
+ * on `bg`. Keeps a world's chosen softness where it is already legible.
+ */
+export function legible(fg: string, toward: string, bg: string, min: number): string {
+  for (let step = 0; step <= 20; step++) {
+    const c = mix(fg, toward, step / 20);
+    if (contrastRatio(c, bg) >= min) return c;
+  }
+  return toward;
+}

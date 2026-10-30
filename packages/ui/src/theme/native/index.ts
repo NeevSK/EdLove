@@ -5,6 +5,7 @@
  * Components themselves live in `@repo/ui/components/native`.
  */
 
+export { useSystemAccess } from './access';
 export { useErrorFeedback, useFeedback } from './feedback';
 export {
   type LivingColorKey,
