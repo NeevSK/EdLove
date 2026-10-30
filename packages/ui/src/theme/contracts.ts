@@ -256,3 +256,33 @@ export interface SliderContract {
   valueText?: (value: number) => string;
   disabled?: boolean;
 }
+
+export interface TabsContract<V extends string = string> {
+  value: V;
+  onChange: (value: V) => void;
+  /** Names the set of tabs for assistive technology. */
+  label: string;
+  tabs: readonly ChoiceOption<V>[];
+  /** The selected tab's content, shown in its panel. */
+  children?: ReactNode;
+}
+
+export interface SegmentedContract<V extends string = string> {
+  value: V;
+  onChange: (value: V) => void;
+  label: string;
+  /** Two to four short choices that switch a view in place. */
+  options: readonly ChoiceOption<V>[];
+}
+
+export interface BreadcrumbItem {
+  label: string;
+  /** Omit for the current page (the last item). */
+  href?: string;
+}
+
+export interface BreadcrumbContract {
+  items: readonly BreadcrumbItem[];
+  /** Names the trail; defaults to "Breadcrumb". Pass it translated. */
+  label?: string;
+}

@@ -10,11 +10,25 @@ import {
 import type { ChipContract, ChipsContract } from '../../../theme/contracts';
 import { edgeStyle, glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import type { ChipRecipe, ChipStateRecipe } from '../../../theme/types';
 import { hapticImpact } from '../../../utils/haptics';
 
 export interface ChipProps extends ChipContract, Omit<PressableProps, 'children' | 'style'> {
   style?: StyleProp<ViewStyle>;
   ref?: Ref<ComponentRef<typeof View>>;
+}
+
+/** A chip's shape and paint in one state: shared with Tabs, which wear the same look. */
+export function chipStyle(r: ChipRecipe, s: ChipStateRecipe): ViewStyle {
+  return {
+    paddingVertical: r.paddingY,
+    paddingHorizontal: r.paddingX,
+    backgroundColor: s.fill ?? undefined,
+    ...radiusStyle(r.radius),
+    ...edgeStyle(s.edge),
+    ...glowStyle(s.glow),
+    ...(s.underline ? { borderBottomWidth: s.underline.width, borderBottomColor: s.underline.color } : null),
+  };
 }
 
 export function Chip({
@@ -50,18 +64,8 @@ export function Chip({
         onPress?.(e);
       }}
       style={({ pressed }) => [
-        {
-          paddingVertical: r.paddingY,
-          paddingHorizontal: r.paddingX,
-          backgroundColor: s.fill ?? undefined,
-          ...radiusStyle(r.radius),
-          ...edgeStyle(s.edge),
-          ...glowStyle(s.glow),
-          ...(s.underline
-            ? { borderBottomWidth: s.underline.width, borderBottomColor: s.underline.color }
-            : null),
-          opacity: disabled ? 0.4 : pressed ? 0.8 : 1,
-        },
+        chipStyle(r, s),
+        { opacity: disabled ? 0.4 : pressed ? 0.8 : 1 },
         style,
       ]}
       {...rest}

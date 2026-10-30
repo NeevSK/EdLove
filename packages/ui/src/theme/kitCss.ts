@@ -12,6 +12,7 @@
 
 import { radiusCss } from './css';
 import { resolveWorld } from './resolve';
+import type { Radius, WorldId } from './types';
 import { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
 import { WORLD_IDS, WORLDS } from './worlds';
 
@@ -24,12 +25,20 @@ function signTimingCss(): string {
   ).join('');
 }
 
+/** Shape variables that follow a world's corners but not its mode or phase. */
+function shapeVars(id: WorldId): string {
+  const r = resolveWorld(id).recipes;
+  const shrink = (x: Radius, by: number): Radius =>
+    typeof x === 'number' ? Math.max(0, x - by) : [Math.max(0, x[0] - by), Math.max(0, x[1] - by), Math.max(0, x[2] - by), Math.max(0, x[3] - by)];
+  return `--w-toggle-radius:${radiusCss(r.toggle.radius)};--w-segment-radius:${radiusCss(shrink(r.surface.inset.radius, 3))}`;
+}
+
 /** Per world: its tempo, and which sign and perch an auto sign or perch shows. */
 function worldPickCss(): string {
   const parts: string[] = [];
   const defaultSign = SIGNS.sanctuary;
   parts.push(`.gd-sign{--gd-tempo:${WORLDS.sanctuary.motion.tempo}}`);
-  parts.push(`:root{--w-toggle-radius:${radiusCss(resolveWorld('sanctuary').recipes.toggle.radius)}}`);
+  parts.push(`:root{${shapeVars('sanctuary')}}`);
   parts.push(`.gd-sign[data-auto]>.gd-s:not([data-sign="${defaultSign}"]){display:none}`);
   parts.push('.gd-perch[data-auto]>g:not([data-perch="sanctuary"]){display:none}');
   for (const id of WORLD_IDS) {
@@ -37,7 +46,7 @@ function worldPickCss(): string {
     const sign = SIGNS[id];
     for (const s of scopes) {
       parts.push(`${s} .gd-sign{--gd-tempo:${WORLDS[id].motion.tempo}}`);
-      parts.push(`${s}{--w-toggle-radius:${radiusCss(resolveWorld(id).recipes.toggle.radius)}}`);
+      parts.push(`${s}{${shapeVars(id)}}`);
       parts.push(`${s} .gd-sign[data-auto]>.gd-s{display:none}`);
       parts.push(`${s} .gd-sign[data-auto]>.gd-s[data-sign="${sign}"]{display:flex}`);
       parts.push(`${s} .gd-perch[data-auto]>g{display:none}`);
@@ -186,6 +195,23 @@ const BASE_CSS = `
 .gd-slider:focus-visible::-webkit-slider-thumb{outline:2px solid var(--w-focus);outline-offset:2px}
 .gd-slider:focus-visible::-moz-range-thumb{outline:2px solid var(--w-focus);outline-offset:2px}
 .gd-slider:disabled{opacity:.5;cursor:not-allowed}
+.gd-tabs{display:flex;flex-direction:column;gap:12px}
+.gd-tablist{display:flex;gap:var(--w-chip-gap);overflow-x:auto;scrollbar-width:none;padding:4px 2px}
+.gd-tablist::-webkit-scrollbar{display:none}
+.gd-tab{flex:none;min-height:44px}
+.gd-chip[aria-selected="true"]{background:var(--w-chip-selected-bg);color:var(--w-chip-selected-ink);box-shadow:var(--w-chip-selected-shadow)}
+.gd-tab:disabled{opacity:.4;cursor:not-allowed}
+.gd-tabpanel:focus-visible{outline:2px solid var(--w-focus);outline-offset:4px}
+.gd-segmented{display:flex;gap:3px;padding:3px;background:var(--w-surface-inset-bg);border-radius:var(--w-surface-inset-radius)}
+.gd-segment{appearance:none;flex:1;min-height:38px;margin:0;padding:0 10px;border:0;border-radius:var(--w-segment-radius);background:transparent;color:var(--w-ink-soft);font-family:var(--w-chip-label-font);font-size:var(--w-chip-label-size);font-weight:var(--w-chip-label-weight);cursor:pointer;white-space:nowrap;transition:background var(--w-settle),color var(--w-settle)}
+.gd-segment[aria-checked="true"]{background:var(--w-surface-raised-bg);color:var(--w-ink);box-shadow:var(--w-surface-raised-shadow)}
+.gd-segment:focus-visible{outline:2px solid var(--w-focus);outline-offset:1px}
+.gd-segment:disabled{opacity:.4;cursor:not-allowed}
+.gd-breadcrumb ol{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0;padding:0;list-style:none;font-size:.875rem;color:var(--w-ink-soft)}
+.gd-breadcrumb li{display:inline-flex;align-items:center;gap:6px}
+.gd-breadcrumb li+li::before{content:"/" / "";color:var(--w-ink-faint)}
+.gd-breadcrumb a{color:var(--w-lamp-deep);text-underline-offset:3px}
+.gd-breadcrumb [aria-current="page"]{color:var(--w-ink)}
 .gd-picker{display:flex;flex-direction:column;gap:8px;padding:6px 0}
 .gd-picker-choice{appearance:none;margin:0;font:inherit;text-align:start;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 14px;border-radius:14px;background:var(--w-ground);border:1px solid var(--w-line);color:var(--w-ink)}
 .gd-picker-choice[aria-checked="true"]{border:2px solid var(--w-focus)}

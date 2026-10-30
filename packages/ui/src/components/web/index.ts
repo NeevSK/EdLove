@@ -35,3 +35,6 @@ export { Menu, type MenuProps } from './Menu/Menu';
 export { RadioGroup, type RadioGroupProps } from './Radio/RadioGroup';
 export { Select, type SelectProps } from './Select/Select';
 export { Slider, type SliderProps } from './Slider/Slider';
+export { Breadcrumb, type BreadcrumbProps } from './Breadcrumb/Breadcrumb';
+export { SegmentedControl, type SegmentedControlProps } from './Segmented/SegmentedControl';
+export { Tabs, type TabsProps } from './Tabs/Tabs';
