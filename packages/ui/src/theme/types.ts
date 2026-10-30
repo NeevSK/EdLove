@@ -330,6 +330,23 @@ export interface OverlayRecipe {
   toast: Record<ToastTone, { edge: string }>;
 }
 
+/**
+ * Choice controls: checkbox, radio and slider. Corners follow the world's chip
+ * corners (capped, so a box never becomes a circle), edges its line weight,
+ * the lit state its lamp.
+ */
+export interface ToggleRecipe {
+  /** Checkbox and radio size, in dp/px. */
+  size: number;
+  /** Checkbox corners. Radios are always round. */
+  radius: Radius;
+  edge: Edge;
+  /** When checked: the box fills with the lamp and the mark is drawn in onLamp. */
+  on: { fill: string; mark: string };
+  track: { off: string; on: string; height: number };
+  thumb: { fill: string; edge: Edge; size: number };
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -340,6 +357,7 @@ export interface WorldRecipes {
   section: Record<SectionDensity, SectionRecipe>;
   ornament: { kind: OrnamentKind; color: string; accent: string };
   overlay: OverlayRecipe;
+  toggle: ToggleRecipe;
   motion: { settleMs: number; breatheMs: number };
 }
 

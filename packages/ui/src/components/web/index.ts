@@ -30,3 +30,8 @@ export { Sheet, type SheetProps } from './Sheet/Sheet';
 export { ToastHost } from './Toast/ToastHost';
 export { Tooltip, type TooltipProps } from './Tooltip/Tooltip';
 export { toast } from '../shared/toasts';
+export { Checkbox, type CheckboxProps } from './Checkbox/Checkbox';
+export { Menu, type MenuProps } from './Menu/Menu';
+export { RadioGroup, type RadioGroupProps } from './Radio/RadioGroup';
+export { Select, type SelectProps } from './Select/Select';
+export { Slider, type SliderProps } from './Slider/Slider';

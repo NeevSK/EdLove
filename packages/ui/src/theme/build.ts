@@ -13,6 +13,7 @@ import type {
   ChipRecipe,
   FieldRecipe,
   OverlayRecipe,
+  ToggleRecipe,
   Radius,
   RowRecipe,
   SectionDensity,
@@ -415,6 +416,23 @@ function buildOverlay(
   };
 }
 
+/** A radius, each corner capped at `max`. */
+function capRadius(r: Radius, max: number): Radius {
+  return typeof r === 'number' ? Math.min(r, max) : [Math.min(r[0], max), Math.min(r[1], max), Math.min(r[2], max), Math.min(r[3], max)];
+}
+
+function buildToggle(t: WorldTokens, s: WorldStyle): ToggleRecipe {
+  const edge = { width: Math.max(1.5, s.lineWeight), color: mix(t.ground, t.ink, 0.45) };
+  return {
+    size: 22,
+    radius: capRadius(s.corner.chip, 6),
+    edge,
+    on: { fill: t.lamp, mark: t.onLamp },
+    track: { off: t.line, on: t.lamp, height: 4 },
+    thumb: { fill: t.raised, edge: { width: 2, color: t.lamp }, size: 24 },
+  };
+}
+
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
   const surface = buildSurface(t, s, mode);
@@ -427,6 +445,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     row: buildRow(t, text),
     section: buildSection(t, s, mode, text, surface),
     overlay: buildOverlay(t, s, mode, surface),
+    toggle: buildToggle(t, s),
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },
   };

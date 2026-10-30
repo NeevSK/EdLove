@@ -190,3 +190,69 @@ export interface PopoverContract {
   label: string;
   children?: ReactNode;
 }
+
+export interface CheckboxContract {
+  /** `mixed` for a parent whose children are partly checked. */
+  checked: boolean | 'mixed';
+  onChange: (checked: boolean) => void;
+  /** Shown beside the box; its accessible name. */
+  label: string;
+  hint?: string;
+  disabled?: boolean;
+}
+
+export interface ChoiceOption<V extends string = string> {
+  value: V;
+  label: string;
+  hint?: string;
+  disabled?: boolean;
+}
+
+export interface RadioGroupContract<V extends string = string> {
+  value: V | null;
+  onChange: (value: V) => void;
+  /** Names the group; shown above it. */
+  label: string;
+  options: readonly ChoiceOption<V>[];
+}
+
+export interface SelectContract<V extends string = string> {
+  value: V | null;
+  onChange: (value: V) => void;
+  label: string;
+  options: readonly ChoiceOption<V>[];
+  /** Shown while nothing is chosen. */
+  placeholder?: string;
+  hint?: string;
+  error?: string;
+  disabled?: boolean;
+}
+
+export interface MenuItem {
+  key: string;
+  label: string;
+  onSelect: () => void;
+  /** Deletes, leaves, ends: drawn in the world's danger ink. */
+  destructive?: boolean;
+  disabled?: boolean;
+}
+
+export interface MenuContract {
+  open: boolean;
+  onClose: () => void;
+  /** Names the menu for assistive technology. */
+  label: string;
+  items: readonly MenuItem[];
+}
+
+export interface SliderContract {
+  value: number;
+  onChange: (value: number) => void;
+  label: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  /** How the value is read aloud and shown ("3 of 5", "60%"); defaults to the number. */
+  valueText?: (value: number) => string;
+  disabled?: boolean;
+}

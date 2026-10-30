@@ -11,6 +11,8 @@ export interface PopoverProps extends PopoverContract {
   anchorRef: RefObject<ComponentRef<typeof View> | null>;
   /** Width in dp; the popover never leaves the screen. */
   width?: number;
+  /** A menu of actions announces itself as one. */
+  role?: 'dialog' | 'menu';
 }
 
 interface Place {
@@ -26,7 +28,15 @@ const EDGE = 12;
  * opens below its anchor (above it when there is no room) in the world's
  * raised surface. A tap outside or Android back closes it.
  */
-export function Popover({ open, onClose, label, children, anchorRef, width = 260 }: PopoverProps) {
+export function Popover({
+  open,
+  onClose,
+  label,
+  children,
+  anchorRef,
+  width = 260,
+  role = 'dialog',
+}: PopoverProps) {
   const panel = useWorld().recipes.overlay.panel;
   const { animates } = useWorldMotion();
   const screen = useWindowDimensions();
@@ -61,7 +71,7 @@ export function Popover({ open, onClose, label, children, anchorRef, width = 260
       <Pressable accessible={false} style={StyleSheet.absoluteFill} onPress={onClose} />
       {place ? (
         <View
-          role="dialog"
+          role={role}
           aria-label={label}
           accessibilityViewIsModal
           onLayout={(e) => setHeight(e.nativeEvent.layout.height)}

@@ -7,6 +7,8 @@ export interface PopoverProps extends PopoverContract {
   anchorRef: RefObject<HTMLElement | null>;
   /** Width in px; the popover never leaves the viewport. */
   width?: number;
+  /** A menu of actions announces itself as one. */
+  role?: 'dialog' | 'menu';
   className?: string;
 }
 
@@ -18,7 +20,16 @@ const EDGE = 12;
  * opens below its anchor (above it when there is no room). Escape or a click
  * outside closes it and focus returns to the anchor.
  */
-export function Popover({ open, onClose, label, children, anchorRef, width = 260, className }: PopoverProps) {
+export function Popover({
+  open,
+  onClose,
+  label,
+  children,
+  anchorRef,
+  width = 260,
+  role = 'dialog',
+  className,
+}: PopoverProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [place, setPlace] = useState<{ top: number; left: number } | null>(null);
 
@@ -61,7 +72,7 @@ export function Popover({ open, onClose, label, children, anchorRef, width = 260
   return (
     <div
       ref={ref}
-      role="dialog"
+      role={role}
       aria-label={label}
       tabIndex={-1}
       className={cx('gd-overlay-panel gd-popover', className)}

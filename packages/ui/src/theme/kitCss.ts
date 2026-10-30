@@ -10,6 +10,8 @@
  * so it shows the pose native shows.
  */
 
+import { radiusCss } from './css';
+import { resolveWorld } from './resolve';
 import { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
 import { WORLD_IDS, WORLDS } from './worlds';
 
@@ -27,6 +29,7 @@ function worldPickCss(): string {
   const parts: string[] = [];
   const defaultSign = SIGNS.sanctuary;
   parts.push(`.gd-sign{--gd-tempo:${WORLDS.sanctuary.motion.tempo}}`);
+  parts.push(`:root{--w-toggle-radius:${radiusCss(resolveWorld('sanctuary').recipes.toggle.radius)}}`);
   parts.push(`.gd-sign[data-auto]>.gd-s:not([data-sign="${defaultSign}"]){display:none}`);
   parts.push('.gd-perch[data-auto]>g:not([data-perch="sanctuary"]){display:none}');
   for (const id of WORLD_IDS) {
@@ -34,6 +37,7 @@ function worldPickCss(): string {
     const sign = SIGNS[id];
     for (const s of scopes) {
       parts.push(`${s} .gd-sign{--gd-tempo:${WORLDS[id].motion.tempo}}`);
+      parts.push(`${s}{--w-toggle-radius:${radiusCss(resolveWorld(id).recipes.toggle.radius)}}`);
       parts.push(`${s} .gd-sign[data-auto]>.gd-s{display:none}`);
       parts.push(`${s} .gd-sign[data-auto]>.gd-s[data-sign="${sign}"]{display:flex}`);
       parts.push(`${s} .gd-perch[data-auto]>g{display:none}`);
@@ -147,6 +151,41 @@ const BASE_CSS = `
 .gd-tipwrap:hover>.gd-tip,.gd-tipwrap:focus-within>.gd-tip{opacity:1;visibility:visible}
 .gd-tipwrap[data-dismissed]>.gd-tip{opacity:0;visibility:hidden}
 .gd-popover{position:absolute;z-index:1050;outline:none}
+.gd-choice{display:flex;align-items:flex-start;gap:12px;min-height:44px;padding:10px 0}
+.gd-choice-words{display:flex;flex-direction:column;gap:2px;padding-top:1px}
+.gd-choice-words>.gd-text{margin:0}
+.gd-choice label{cursor:pointer}
+.gd-check,.gd-radio{appearance:none;flex:none;display:grid;place-content:center;margin:0;width:22px;height:22px;cursor:pointer;background:transparent;border:1.5px solid color-mix(in srgb, var(--w-ink) 45%, var(--w-ground));border-radius:var(--w-toggle-radius);transition:background var(--w-settle),border-color var(--w-settle)}
+.gd-radio{border-radius:50%}
+.gd-check::before{content:"";width:12px;height:12px;background:var(--w-on-lamp);clip-path:polygon(12% 52%, 0 66%, 38% 100%, 100% 22%, 86% 8%, 38% 72%);transform:scale(0);transition:transform var(--w-settle)}
+.gd-check:indeterminate::before{clip-path:inset(40% 8% 40% 8%)}
+.gd-radio::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--w-lamp);transform:scale(0);transition:transform var(--w-settle)}
+.gd-check:checked,.gd-check:indeterminate{background:var(--w-lamp);border-color:var(--w-lamp)}
+.gd-radio:checked{border-color:var(--w-lamp)}
+.gd-check:checked::before,.gd-check:indeterminate::before,.gd-radio:checked::before{transform:scale(1)}
+.gd-check:focus-visible,.gd-radio:focus-visible{outline:2px solid var(--w-focus);outline-offset:2px}
+.gd-check:disabled,.gd-radio:disabled{opacity:.5;cursor:not-allowed}
+.gd-radios{display:flex;flex-direction:column;gap:2px;margin:0;padding:0;border:0;min-width:0}
+.gd-radios>legend{padding:0;margin:0 0 4px}
+.gd-field-input.gd-select{appearance:none;cursor:pointer;padding-right:40px;background-image:linear-gradient(45deg, transparent 50%, var(--w-ink-soft) 50%),linear-gradient(135deg, var(--w-ink-soft) 50%, transparent 50%);background-position:calc(100% - 20px) 55%,calc(100% - 14px) 55%;background-size:6px 6px;background-repeat:no-repeat}
+.gd-select[data-empty]{color:var(--w-field-placeholder);font-style:var(--w-field-placeholder-style)}
+.gd-menu{display:flex;flex-direction:column}
+.gd-menu-item{appearance:none;margin:0;border:0;background:none;font:inherit;text-align:start;min-height:44px;padding:0 10px;border-radius:var(--w-button-radius);color:var(--w-ink);cursor:pointer}
+.gd-menu-item:hover,.gd-menu-item:focus-visible{background:color-mix(in srgb, var(--w-ink) 8%, transparent);outline:none}
+.gd-menu-item[data-destructive]{color:var(--w-danger)}
+.gd-menu-item[aria-disabled]{opacity:.5;cursor:not-allowed}
+.gd-slider-field{display:flex;flex-direction:column;gap:6px}
+.gd-slider-head{display:flex;justify-content:space-between;align-items:baseline}
+.gd-slider-head>.gd-text{margin:0}
+.gd-slider{appearance:none;width:100%;height:44px;margin:0;background:transparent;cursor:pointer}
+.gd-slider::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(to right, var(--w-lamp) var(--gd-fill), var(--w-line) var(--gd-fill))}
+.gd-slider::-moz-range-track{height:4px;border-radius:2px;background:linear-gradient(to right, var(--w-lamp) var(--gd-fill), var(--w-line) var(--gd-fill))}
+.gd-slider::-webkit-slider-thumb{appearance:none;width:24px;height:24px;margin-top:-10px;border-radius:50%;background:var(--w-raised);border:2px solid var(--w-lamp)}
+.gd-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--w-raised);border:2px solid var(--w-lamp)}
+.gd-slider:focus-visible{outline:none}
+.gd-slider:focus-visible::-webkit-slider-thumb{outline:2px solid var(--w-focus);outline-offset:2px}
+.gd-slider:focus-visible::-moz-range-thumb{outline:2px solid var(--w-focus);outline-offset:2px}
+.gd-slider:disabled{opacity:.5;cursor:not-allowed}
 .gd-picker{display:flex;flex-direction:column;gap:8px;padding:6px 0}
 .gd-picker-choice{appearance:none;margin:0;font:inherit;text-align:start;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 14px;border-radius:14px;background:var(--w-ground);border:1px solid var(--w-line);color:var(--w-ink)}
 .gd-picker-choice[aria-checked="true"]{border:2px solid var(--w-focus)}
