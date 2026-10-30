@@ -9,6 +9,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 import type { SheetContract } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
 import { useWorldMotion } from '../../../theme/native/motion';
 import { radiusStyle } from '../../../theme/native/style';
 import { useWorld } from '../../../theme/native/WorldContext';
@@ -35,6 +36,11 @@ export function Sheet({ open, onClose, title, children, dismissable = true }: Sh
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const drag = useSharedValue(0);
+  const feedback = useFeedback();
+  const letGo = () => {
+    feedback('commit');
+    onClose();
+  };
   const dismiss = dismissable ? onClose : undefined;
 
   const pan = usePanGesture({
@@ -52,7 +58,7 @@ export function Sheet({ open, onClose, title, children, dismissable = true }: Sh
     onDeactivate: (event) => {
       'worklet';
       if (event.translationY > DISMISS_DISTANCE || event.velocityY > DISMISS_VELOCITY) {
-        scheduleOnRN(onClose);
+        scheduleOnRN(letGo);
         return;
       }
       drag.set(withSpring(0, SETTLE));

@@ -14,7 +14,7 @@ import { Sheet } from '../Sheet/Sheet';
 import { ToastHost } from '../Toast/ToastHost';
 import { Tooltip } from '../Tooltip/Tooltip';
 
-vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn() }));
+vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
 vi.mock('react-native-worklets', () => ({
   scheduleOnRN: (fn: (...args: unknown[]) => void, ...args: unknown[]) => fn(...args),
 }));
@@ -151,7 +151,10 @@ describe('Popover', { tags: ['a11y', 'unit'] }, () => {
   it('opens as a named panel below its anchor and closes from outside', async () => {
     // The test renderer has no layout; the anchor reports where it sits.
     const anchor = {
-      current: { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => cb(40, 100, 48, 32) },
+      current: {
+        measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) =>
+          cb(40, 100, 48, 32),
+      },
     } as unknown as RefObject<ComponentRef<typeof View> | null>;
     const onClose = vi.fn();
     await render(

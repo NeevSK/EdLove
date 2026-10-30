@@ -7,7 +7,7 @@ import { WORLD_IDS } from '../../../theme/worlds';
 import { SegmentedControl } from '../Segmented/SegmentedControl';
 import { Tabs } from '../Tabs/Tabs';
 
-vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn() }));
+vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
 
 function flat(style: unknown) {
   return StyleSheet.flatten(style as never) ?? {};

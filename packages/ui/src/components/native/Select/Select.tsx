@@ -1,6 +1,8 @@
 import { useId, useState } from 'react';
 import { Pressable, Text as RNText, type StyleProp, View, type ViewStyle } from 'react-native';
+import Animated from 'react-native-reanimated';
 import type { SelectContract } from '../../../theme/contracts';
+import { useErrorFeedback } from '../../../theme/native/feedback';
 import { glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { FieldState } from '../../../theme/types';
@@ -29,6 +31,7 @@ export function Select<V extends string = string>({
   const { world, language } = useWorldContext();
   const r = world.recipes.field;
   const [open, setOpen] = useState(false);
+  const shake = useErrorFeedback(error);
   const labelId = useId();
   const chosen = options.find((o) => o.value === value);
 
@@ -44,46 +47,60 @@ export function Select<V extends string = string>({
       <RNText nativeID={`${labelId}-label`} style={typeStyle(r.label, language, world)}>
         {label}
       </RNText>
-      <Pressable
-        role="combobox"
-        aria-expanded={open}
-        aria-disabled={disabled}
-        accessibilityLabel={label}
-        accessibilityLabelledBy={`${labelId}-label`}
-        accessibilityValue={{ text: chosen?.label ?? placeholder ?? '' }}
-        accessibilityHint={error ?? hint}
-        disabled={disabled}
-        onPress={() => setOpen(true)}
-        style={[
-          {
-            minHeight: r.minHeight,
-            paddingHorizontal: r.paddingX,
-            backgroundColor: r.fill ?? undefined,
-            opacity: disabled ? 0.6 : 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 8,
-          },
-          lineStyle,
-          glowStyle(s.glow),
-        ]}
-      >
-        <RNText
-          numberOfLines={1}
+      <Animated.View style={shake}>
+        <Pressable
+          role="combobox"
+          aria-expanded={open}
+          aria-disabled={disabled}
+          accessibilityLabel={label}
+          accessibilityLabelledBy={`${labelId}-label`}
+          accessibilityValue={{ text: chosen?.label ?? placeholder ?? '' }}
+          accessibilityHint={error ?? hint}
+          disabled={disabled}
+          onPress={() => setOpen(true)}
           style={[
-            typeStyle(r.value, language, world),
-            { flex: 1 },
-            chosen ? null : { color: r.placeholder.color, fontStyle: r.placeholder.italic && language === 'en' ? 'italic' : 'normal' },
+            {
+              minHeight: r.minHeight,
+              paddingHorizontal: r.paddingX,
+              backgroundColor: r.fill ?? undefined,
+              opacity: disabled ? 0.6 : 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+            },
+            lineStyle,
+            glowStyle(s.glow),
           ]}
         >
-          {chosen?.label ?? placeholder ?? ''}
-        </RNText>
-        <RNText aria-hidden style={[typeStyle(r.value, language, world), { color: world.tokens.inkSoft }]}>
-          ⌄
-        </RNText>
-      </Pressable>
+          <RNText
+            numberOfLines={1}
+            style={[
+              typeStyle(r.value, language, world),
+              { flex: 1 },
+              chosen
+                ? null
+                : {
+                    color: r.placeholder.color,
+                    fontStyle: r.placeholder.italic && language === 'en' ? 'italic' : 'normal',
+                  },
+            ]}
+          >
+            {chosen?.label ?? placeholder ?? ''}
+          </RNText>
+          <RNText
+            aria-hidden
+            style={[typeStyle(r.value, language, world), { color: world.tokens.inkSoft }]}
+          >
+            ⌄
+          </RNText>
+        </Pressable>
+      </Animated.View>
       {error ? (
-        <RNText role="alert" accessibilityLiveRegion="polite" style={typeStyle(r.error, language, world)}>
+        <RNText
+          role="alert"
+          accessibilityLiveRegion="polite"
+          style={typeStyle(r.error, language, world)}
+        >
           {error}
         </RNText>
       ) : hint ? (

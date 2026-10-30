@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { List } from '../List/List';
 import { Table } from '../Table/Table';
 
-vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn() }));
+vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
 
 const STUDENTS = [
   { id: 's1', name: 'Amal', present: 18 },

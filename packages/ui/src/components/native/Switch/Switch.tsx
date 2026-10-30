@@ -1,7 +1,7 @@
 import { Switch as RNSwitch, type SwitchProps as RNSwitchProps } from 'react-native';
 import type { SwitchContract } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
 import { useWorld } from '../../../theme/native/WorldContext';
-import { hapticImpact } from '../../../utils/haptics';
 
 export interface SwitchProps
   extends SwitchContract,
@@ -10,6 +10,7 @@ export interface SwitchProps
 /** An on/off setting. Lit with the world's lamp when on, a quiet line when off. */
 export function Switch({ value, onValueChange, label, disabled, ...rest }: SwitchProps) {
   const t = useWorld().tokens;
+  const feedback = useFeedback();
   return (
     <RNSwitch
       accessibilityRole="switch"
@@ -18,7 +19,7 @@ export function Switch({ value, onValueChange, label, disabled, ...rest }: Switc
       value={value}
       disabled={disabled}
       onValueChange={(next) => {
-        hapticImpact('light');
+        feedback('select');
         onValueChange(next);
       }}
       trackColor={{ false: t.line, true: t.lamp }}

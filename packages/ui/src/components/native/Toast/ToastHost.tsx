@@ -2,6 +2,7 @@ import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { AccessibilityInfo, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFeedback } from '../../../theme/native/feedback';
 import { useWorldMotion } from '../../../theme/native/motion';
 import { useWorld } from '../../../theme/native/WorldContext';
 import { getToasts, subscribeToasts, type ToastItem, toast } from '../../shared/toasts';
@@ -50,6 +51,7 @@ export function ToastHost({ bottomOffset = 72 }: { bottomOffset?: number }) {
   const items = useSyncExternalStore(subscribeToasts, getToasts, getToasts);
   const insets = useSafeAreaInsets();
   const announced = useRef(new Set<number>());
+  const feedback = useFeedback();
 
   useEffect(() => {
     for (const item of items) {
@@ -57,8 +59,10 @@ export function ToastHost({ bottomOffset = 72 }: { bottomOffset?: number }) {
       announced.current.add(item.id);
       // Live regions are announced on Android; iOS needs the explicit call.
       AccessibilityInfo.announceForAccessibility(item.message);
+      if (item.tone === 'success') feedback('success');
+      else if (item.tone === 'danger') feedback('error');
     }
-  }, [items]);
+  }, [items, feedback]);
 
   if (items.length === 0) return null;
   return (

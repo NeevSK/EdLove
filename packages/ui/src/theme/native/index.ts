@@ -5,7 +5,15 @@
  * Components themselves live in `@repo/ui/components/native`.
  */
 
-export { useWorldMotion, WorldEnter, type WorldEnterProps, type WorldMotionTokens } from './motion';
+export { useErrorFeedback, useFeedback } from './feedback';
+export {
+  usePressMotion,
+  useShake,
+  useWorldMotion,
+  WorldEnter,
+  type WorldEnterProps,
+  type WorldMotionTokens,
+} from './motion';
 export {
   edgeStyle,
   glowStyle,

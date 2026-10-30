@@ -8,7 +8,7 @@ import { Link } from '../Link/Link';
 import { EmptyState, ErrorState } from '../States/States';
 import { Avatar, Badge, Divider, Progress } from '../Status/Status';
 
-vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn() }));
+vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
 
 function flat(style: unknown) {
   return StyleSheet.flatten(style as never) ?? {};
@@ -31,7 +31,10 @@ describe('IconButton and Link', { tags: ['a11y', 'interaction', 'unit'] }, () =>
     await render(<Link label="Read the policy" onPress={onPress} />);
     const link = screen.getByRole('link', { name: 'Read the policy' });
     const t = resolveWorld('sanctuary', 'morning', 'light').tokens;
-    expect(flat(link.props.style)).toMatchObject({ color: t.lampDeep, textDecorationLine: 'underline' });
+    expect(flat(link.props.style)).toMatchObject({
+      color: t.lampDeep,
+      textDecorationLine: 'underline',
+    });
     await fireEvent.press(link);
     expect(onPress).toHaveBeenCalledTimes(1);
   });
@@ -74,7 +77,13 @@ describe('Progress, Badge, Avatar, Divider', { tags: ['a11y', 'unit'] }, () => {
 describe('EmptyState and ErrorState', { tags: ['a11y', 'interaction', 'unit'] }, () => {
   it('an empty state has a heading and its one action', async () => {
     const onPress = vi.fn();
-    await render(<EmptyState title="No classes yet" message="Add your first class." action={{ label: 'Add a class', onPress }} />);
+    await render(
+      <EmptyState
+        title="No classes yet"
+        message="Add your first class."
+        action={{ label: 'Add a class', onPress }}
+      />,
+    );
     expect(screen.getByRole('heading', { name: 'No classes yet' })).toBeTruthy();
     await fireEvent.press(screen.getByRole('button', { name: 'Add a class' }));
     expect(onPress).toHaveBeenCalledTimes(1);

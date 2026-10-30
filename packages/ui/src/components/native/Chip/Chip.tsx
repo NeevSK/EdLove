@@ -8,10 +8,10 @@ import {
   type ViewStyle,
 } from 'react-native';
 import type { ChipContract, ChipsContract } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
 import { edgeStyle, glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { ChipRecipe, ChipStateRecipe } from '../../../theme/types';
-import { hapticImpact } from '../../../utils/haptics';
 
 export interface ChipProps extends ChipContract, Omit<PressableProps, 'children' | 'style'> {
   style?: StyleProp<ViewStyle>;
@@ -27,7 +27,9 @@ export function chipStyle(r: ChipRecipe, s: ChipStateRecipe): ViewStyle {
     ...radiusStyle(r.radius),
     ...edgeStyle(s.edge),
     ...glowStyle(s.glow),
-    ...(s.underline ? { borderBottomWidth: s.underline.width, borderBottomColor: s.underline.color } : null),
+    ...(s.underline
+      ? { borderBottomWidth: s.underline.width, borderBottomColor: s.underline.color }
+      : null),
   };
 }
 
@@ -44,6 +46,7 @@ export function Chip({
 }: ChipProps) {
   const { world, language } = useWorldContext();
   const r = world.recipes.chip;
+  const feedback = useFeedback();
   const s = selected ? r.selected : r.rest;
   const underline = r.form === 'underline';
 
@@ -60,7 +63,7 @@ export function Chip({
       disabled={disabled}
       hitSlop={underline ? { top: 10, bottom: 10, left: 6, right: 6 } : { top: 6, bottom: 6 }}
       onPress={(e) => {
-        hapticImpact('light');
+        feedback(kind === 'button' ? 'press' : 'select');
         onPress?.(e);
       }}
       style={({ pressed }) => [

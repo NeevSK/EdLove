@@ -1,8 +1,15 @@
-import { Pressable, Text as RNText, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  Text as RNText,
+  type StyleProp,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import type { TabsContract } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
 import { typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
-import { hapticImpact } from '../../../utils/haptics';
 import { chipStyle } from '../Chip/Chip';
 
 export interface TabsProps<V extends string = string> extends TabsContract<V> {
@@ -14,8 +21,16 @@ export interface TabsProps<V extends string = string> extends TabsContract<V> {
  * Tabs wear the world's chip look (an underline in some worlds, a filled pill
  * in others). A long set wraps onto a second line rather than hiding off-screen.
  */
-export function Tabs<V extends string = string>({ value, onChange, label, tabs, children, style }: TabsProps<V>) {
+export function Tabs<V extends string = string>({
+  value,
+  onChange,
+  label,
+  tabs,
+  children,
+  style,
+}: TabsProps<V>) {
   const { world, language } = useWorldContext();
+  const feedback = useFeedback();
   const r = world.recipes.chip;
   const current = tabs.find((t) => t.value === value);
 
@@ -35,7 +50,7 @@ export function Tabs<V extends string = string>({ value, onChange, label, tabs, 
               disabled={tab.disabled}
               onPress={() => {
                 if (selected) return;
-                hapticImpact('light');
+                feedback('select');
                 onChange(tab.value);
               }}
               style={({ pressed }) => [
@@ -44,7 +59,9 @@ export function Tabs<V extends string = string>({ value, onChange, label, tabs, 
                 { opacity: tab.disabled ? 0.4 : pressed ? 0.8 : 1 },
               ]}
             >
-              <RNText style={[typeStyle(r.label, language, world), { color: s.ink }]}>{tab.label}</RNText>
+              <RNText style={[typeStyle(r.label, language, world), { color: s.ink }]}>
+                {tab.label}
+              </RNText>
             </Pressable>
           );
         })}

@@ -4,10 +4,10 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 import { scheduleOnRN } from 'react-native-worklets';
 import { alpha } from '../../../theme/color';
 import type { SwipeAction, SwipeRowContract, SwipeTone } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
 import { radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { WorldTokens } from '../../../theme/types';
-import { hapticImpact } from '../../../utils/haptics';
 
 export type SwipeRowProps = SwipeRowContract;
 
@@ -27,12 +27,13 @@ function toneInk(t: WorldTokens, tone: SwipeTone): string {
  */
 export function SwipeRow({ children, start, end, label }: SwipeRowProps) {
   const { world, language } = useWorldContext();
+  const feedback = useFeedback();
   const t = world.tokens;
   const radius = world.recipes.surface.raised.radius;
   const shift = useSharedValue(0);
 
   const run = (action: SwipeAction) => {
-    hapticImpact(action.tone === 'danger' ? 'heavy' : 'medium');
+    feedback(action.tone === 'danger' ? 'destructive' : 'commit');
     action.onAction();
   };
 
@@ -68,9 +69,18 @@ export function SwipeRow({ children, start, end, label }: SwipeRowProps) {
       }}
       style={styles.wrap}
     >
-      <View style={[StyleSheet.absoluteFill, styles.under]} importantForAccessibility="no-hide-descendants">
+      <View
+        style={[StyleSheet.absoluteFill, styles.under]}
+        importantForAccessibility="no-hide-descendants"
+      >
         {start ? (
-          <View style={[styles.side, { backgroundColor: alpha(toneInk(t, start.tone), 0.14) }, radiusStyle(radius)]}>
+          <View
+            style={[
+              styles.side,
+              { backgroundColor: alpha(toneInk(t, start.tone), 0.14) },
+              radiusStyle(radius),
+            ]}
+          >
             <RNText style={[labelStyle, { color: toneInk(t, start.tone) }]}>{start.label}</RNText>
           </View>
         ) : (

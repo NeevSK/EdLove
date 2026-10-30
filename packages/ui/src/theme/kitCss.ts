@@ -11,9 +11,10 @@
  */
 
 import { radiusCss } from './css';
+import { resolveMotion } from './motion';
 import { resolveWorld } from './resolve';
-import type { Radius, WorldId } from './types';
 import { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
+import type { Radius, WorldId } from './types';
 import { WORLD_IDS, WORLDS } from './worlds';
 
 const SIGN_KINDS = Object.keys(SIGN_CYCLE_MS) as SignKind[];
@@ -29,8 +30,16 @@ function signTimingCss(): string {
 function shapeVars(id: WorldId): string {
   const r = resolveWorld(id).recipes;
   const shrink = (x: Radius, by: number): Radius =>
-    typeof x === 'number' ? Math.max(0, x - by) : [Math.max(0, x[0] - by), Math.max(0, x[1] - by), Math.max(0, x[2] - by), Math.max(0, x[3] - by)];
-  return `--w-toggle-radius:${radiusCss(r.toggle.radius)};--w-segment-radius:${radiusCss(shrink(r.surface.inset.radius, 3))}`;
+    typeof x === 'number'
+      ? Math.max(0, x - by)
+      : [
+          Math.max(0, x[0] - by),
+          Math.max(0, x[1] - by),
+          Math.max(0, x[2] - by),
+          Math.max(0, x[3] - by),
+        ];
+  const press = resolveMotion(WORLDS[id].motion, 'refined').press;
+  return `--w-toggle-radius:${radiusCss(r.toggle.radius)};--w-segment-radius:${radiusCss(shrink(r.surface.inset.radius, 3))};--w-press:${press}`;
 }
 
 /** Per world: its tempo, and which sign and perch an auto sign or perch shows. */
@@ -259,6 +268,11 @@ const BASE_CSS = `
 .gd-swiperow-actions{display:flex;gap:4px;opacity:0;transition:opacity var(--w-settle)}
 .gd-swiperow:hover .gd-swiperow-actions,.gd-swiperow:focus-within .gd-swiperow-actions{opacity:1}
 @media (hover:none){.gd-swiperow-actions{opacity:1}}
+.gd-button,.gd-chip,.gd-icon-button,.gd-segment{transition:opacity var(--w-settle),transform var(--w-settle),background var(--w-settle),box-shadow var(--w-settle)}
+.gd-button:active:not(:disabled),.gd-chip:active:not(:disabled),.gd-icon-button:active:not(:disabled){transform:scale(var(--w-press))}
+.gd-field[data-state="error"] .gd-field-input{animation:gd-shake 320ms ease-out 1}
+@keyframes gd-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@media (prefers-reduced-motion:reduce){.gd-button:active,.gd-chip:active,.gd-icon-button:active{transform:none}.gd-field[data-state="error"] .gd-field-input{animation:none}}
 .gd-picker{display:flex;flex-direction:column;gap:8px;padding:6px 0}
 .gd-picker-choice{appearance:none;margin:0;font:inherit;text-align:start;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 14px;border-radius:14px;background:var(--w-ground);border:1px solid var(--w-line);color:var(--w-ink)}
 .gd-picker-choice[aria-checked="true"]{border:2px solid var(--w-focus)}

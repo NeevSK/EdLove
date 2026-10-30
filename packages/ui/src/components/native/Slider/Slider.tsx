@@ -1,10 +1,16 @@
 import { useState } from 'react';
-import { type AccessibilityActionEvent, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import {
+  type AccessibilityActionEvent,
+  type StyleProp,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import type { SliderContract } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
 import { useWorld } from '../../../theme/native/WorldContext';
-import { hapticImpact } from '../../../utils/haptics';
 import { fraction, type Range, snap, valueAt } from '../../shared/range';
 import { Text } from '../Text/Text';
 
@@ -29,13 +35,14 @@ export function Slider({
   style,
 }: SliderProps) {
   const r = useWorld().recipes.toggle;
+  const feedback = useFeedback();
   const [width, setWidth] = useState(0);
   const range: Range = { min, max, step };
   const text = valueText ? valueText(value) : String(value);
 
   const set = (next: number) => {
     if (next === value) return;
-    hapticImpact('light');
+    feedback('step');
     onChange(next);
   };
 
@@ -80,8 +87,24 @@ export function Slider({
           onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
           style={[styles.hit, { opacity: disabled ? 0.5 : 1 }]}
         >
-          <View style={[styles.track, { height: r.track.height, borderRadius: r.track.height / 2, backgroundColor: r.track.off }]}>
-            <View style={{ width: `${f * 100}%`, height: '100%', borderRadius: r.track.height / 2, backgroundColor: r.track.on }} />
+          <View
+            style={[
+              styles.track,
+              {
+                height: r.track.height,
+                borderRadius: r.track.height / 2,
+                backgroundColor: r.track.off,
+              },
+            ]}
+          >
+            <View
+              style={{
+                width: `${f * 100}%`,
+                height: '100%',
+                borderRadius: r.track.height / 2,
+                backgroundColor: r.track.on,
+              }}
+            />
           </View>
           <View
             pointerEvents="none"

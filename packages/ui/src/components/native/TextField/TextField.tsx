@@ -6,7 +6,9 @@ import {
   type TextInputProps,
   View,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import type { FieldContract } from '../../../theme/contracts';
+import { useErrorFeedback } from '../../../theme/native/feedback';
 import { glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { FieldState } from '../../../theme/types';
@@ -35,6 +37,7 @@ export function TextField({
   const { world, language } = useWorldContext();
   const r = world.recipes.field;
   const [focused, setFocused] = useState(false);
+  const shake = useErrorFeedback(error);
   const nativeId = useId();
 
   const state: FieldState = disabled ? 'disabled' : error ? 'error' : focused ? 'focus' : 'rest';
@@ -50,40 +53,42 @@ export function TextField({
       <RNText nativeID={`${nativeId}-label`} style={typeStyle(r.label, language, world)}>
         {label}
       </RNText>
-      <TextInput
-        ref={ref}
-        accessibilityLabel={label}
-        accessibilityLabelledBy={`${nativeId}-label`}
-        accessibilityHint={error ?? hint}
-        accessibilityState={{ disabled }}
-        editable={!disabled}
-        value={value}
-        multiline={multiline}
-        placeholderTextColor={r.placeholder.color}
-        onFocus={(e: TextInputFocusEvent) => {
-          setFocused(true);
-          onFocus?.(e);
-        }}
-        onBlur={(e: TextInputFocusEvent) => {
-          setFocused(false);
-          onBlur?.(e);
-        }}
-        {...rest}
-        style={[
-          typeStyle(r.value, language, world),
-          empty && r.placeholder.italic && language === 'en' ? { fontStyle: 'italic' } : null,
-          {
-            minHeight: r.minHeight,
-            paddingHorizontal: r.paddingX,
-            paddingVertical: 6,
-            backgroundColor: r.fill ?? undefined,
-            opacity: disabled ? 0.6 : 1,
-            textAlignVertical: multiline ? 'top' : 'center',
-          },
-          lineStyle,
-          glowStyle(s.glow),
-        ]}
-      />
+      <Animated.View style={shake}>
+        <TextInput
+          ref={ref}
+          accessibilityLabel={label}
+          accessibilityLabelledBy={`${nativeId}-label`}
+          accessibilityHint={error ?? hint}
+          accessibilityState={{ disabled }}
+          editable={!disabled}
+          value={value}
+          multiline={multiline}
+          placeholderTextColor={r.placeholder.color}
+          onFocus={(e: TextInputFocusEvent) => {
+            setFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e: TextInputFocusEvent) => {
+            setFocused(false);
+            onBlur?.(e);
+          }}
+          {...rest}
+          style={[
+            typeStyle(r.value, language, world),
+            empty && r.placeholder.italic && language === 'en' ? { fontStyle: 'italic' } : null,
+            {
+              minHeight: r.minHeight,
+              paddingHorizontal: r.paddingX,
+              paddingVertical: 6,
+              backgroundColor: r.fill ?? undefined,
+              opacity: disabled ? 0.6 : 1,
+              textAlignVertical: multiline ? 'top' : 'center',
+            },
+            lineStyle,
+            glowStyle(s.glow),
+          ]}
+        />
+      </Animated.View>
       {error ? (
         <RNText
           accessibilityRole="alert"

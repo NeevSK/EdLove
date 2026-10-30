@@ -1,7 +1,7 @@
 import { Pressable, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import type { RadioGroupContract } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
 import { useWorld } from '../../../theme/native/WorldContext';
-import { hapticImpact } from '../../../utils/haptics';
 import { Text } from '../Text/Text';
 
 export interface RadioGroupProps<V extends string = string> extends RadioGroupContract<V> {
@@ -17,6 +17,7 @@ export function RadioGroup<V extends string = string>({
   style,
 }: RadioGroupProps<V>) {
   const r = useWorld().recipes.toggle;
+  const feedback = useFeedback();
   return (
     <View role="radiogroup" aria-label={label} style={[styles.group, style]}>
       <Text kind="label" tone="soft">
@@ -35,10 +36,13 @@ export function RadioGroup<V extends string = string>({
             disabled={option.disabled}
             onPress={() => {
               if (selected) return;
-              hapticImpact('light');
+              feedback('select');
               onChange(option.value);
             }}
-            style={({ pressed }) => [styles.row, { opacity: option.disabled ? 0.5 : pressed ? 0.85 : 1 }]}
+            style={({ pressed }) => [
+              styles.row,
+              { opacity: option.disabled ? 0.5 : pressed ? 0.85 : 1 },
+            ]}
           >
             <View
               style={[
@@ -54,7 +58,12 @@ export function RadioGroup<V extends string = string>({
             >
               {selected ? (
                 <View
-                  style={{ width: r.size / 2, height: r.size / 2, borderRadius: r.size / 4, backgroundColor: r.on.fill }}
+                  style={{
+                    width: r.size / 2,
+                    height: r.size / 2,
+                    borderRadius: r.size / 4,
+                    backgroundColor: r.on.fill,
+                  }}
                 />
               ) : null}
             </View>
@@ -75,7 +84,13 @@ export function RadioGroup<V extends string = string>({
 
 const styles = StyleSheet.create({
   group: { gap: 2 },
-  row: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, minHeight: 44, paddingVertical: 10 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    minHeight: 44,
+    paddingVertical: 10,
+  },
   ring: { alignItems: 'center', justifyContent: 'center' },
   words: { flex: 1, gap: 2, paddingTop: 1 },
 });

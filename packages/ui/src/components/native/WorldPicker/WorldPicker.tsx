@@ -1,10 +1,10 @@
 import { Pressable, Text as RNText, View } from 'react-native';
 import type { WorldPickerContract } from '../../../theme/contracts';
+import { useFeedback } from '../../../theme/native/feedback';
 import { radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext, WorldScope } from '../../../theme/native/WorldContext';
 import type { Radius, WorldId } from '../../../theme/types';
 import { WORLD_IDS, WORLDS } from '../../../theme/worlds';
-import { hapticImpact } from '../../../utils/haptics';
 
 export type WorldPickerProps = WorldPickerContract;
 
@@ -14,6 +14,7 @@ export type WorldPickerProps = WorldPickerContract;
  * choosing rather than a name and a swatch.
  */
 export function WorldPicker({ value, onChange, label }: WorldPickerProps) {
+  const feedback = useFeedback();
   return (
     <View
       accessibilityRole="radiogroup"
@@ -26,7 +27,7 @@ export function WorldPicker({ value, onChange, label }: WorldPickerProps) {
             id={id}
             selected={id === value}
             onPress={() => {
-              hapticImpact('light');
+              feedback('select');
               onChange(id);
             }}
           />

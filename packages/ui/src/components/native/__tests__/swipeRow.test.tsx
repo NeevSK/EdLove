@@ -4,7 +4,7 @@ import { usePanGesture } from 'react-native-gesture-handler';
 import { describe, expect, it, vi } from 'vitest';
 import { SwipeRow } from '../SwipeRow/SwipeRow';
 
-vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn() }));
+vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
 vi.mock('react-native-worklets', () => ({
   scheduleOnRN: (fn: (...args: unknown[]) => void, ...args: unknown[]) => fn(...args),
 }));
@@ -46,7 +46,10 @@ describe('SwipeRow', { tags: ['a11y', 'interaction', 'unit'] }, () => {
     const r = row();
     await render(r.node);
     const el = screen.getByLabelText('Buy chalk');
-    expect(el.props.accessibilityActions.map((a: { name: string }) => a.name)).toEqual(['Done', 'Delete']);
+    expect(el.props.accessibilityActions.map((a: { name: string }) => a.name)).toEqual([
+      'Done',
+      'Delete',
+    ]);
     await fireEvent(el, 'accessibilityAction', { nativeEvent: { actionName: 'Delete' } });
     expect(r.onDelete).toHaveBeenCalledTimes(1);
   });

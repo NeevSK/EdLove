@@ -12,7 +12,7 @@ import { RadioGroup } from '../Radio/RadioGroup';
 import { Select } from '../Select/Select';
 import { Slider } from '../Slider/Slider';
 
-vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn() }));
+vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
 vi.mock('react-native-worklets', () => ({
   scheduleOnRN: (fn: (...args: unknown[]) => void, ...args: unknown[]) => fn(...args),
 }));
@@ -33,7 +33,9 @@ const CLASSES = [
 describe('Checkbox', { tags: ['a11y', 'interaction', 'unit'] }, () => {
   it('reports its state and flips it; mixed turns on', async () => {
     const onChange = vi.fn();
-    const { rerender } = await render(<Checkbox label="Notify parents" checked={false} onChange={onChange} />);
+    const { rerender } = await render(
+      <Checkbox label="Notify parents" checked={false} onChange={onChange} />,
+    );
     const box = screen.getByRole('checkbox', { name: 'Notify parents' });
     expect(box.props['aria-checked']).toBe(false);
     await fireEvent.press(box);
@@ -76,7 +78,13 @@ describe('Select', { tags: ['a11y', 'interaction', 'unit'] }, () => {
   it('shows the choice or the placeholder, opens a sheet of choices, and closes on choosing', async () => {
     const onChange = vi.fn();
     await render(
-      <Select label="Class" value={null} placeholder="Choose a class" options={CLASSES} onChange={onChange} />,
+      <Select
+        label="Class"
+        value={null}
+        placeholder="Choose a class"
+        options={CLASSES}
+        onChange={onChange}
+      />,
     );
     const field = screen.getByRole('combobox', { name: 'Class' });
     expect(field.props['aria-expanded']).toBe(false);
@@ -89,7 +97,9 @@ describe('Select', { tags: ['a11y', 'interaction', 'unit'] }, () => {
   });
 
   it('marks an error and announces it', async () => {
-    await render(<Select label="Class" value="a" options={CLASSES} onChange={() => {}} error="Pick a class" />);
+    await render(
+      <Select label="Class" value="a" options={CLASSES} onChange={() => {}} error="Pick a class" />,
+    );
     expect(screen.getByText('Pick a class').props.role).toBe('alert');
     expect(screen.getByRole('combobox').props.accessibilityHint).toBe('Pick a class');
   });
@@ -98,7 +108,10 @@ describe('Select', { tags: ['a11y', 'interaction', 'unit'] }, () => {
 describe('Menu', { tags: ['a11y', 'interaction', 'unit'] }, () => {
   it('is a named menu of items; choosing one closes it first, then acts', async () => {
     const anchor = {
-      current: { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => cb(0, 0, 40, 40) },
+      current: {
+        measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) =>
+          cb(0, 0, 40, 40),
+      },
     } as unknown as RefObject<ComponentRef<typeof View> | null>;
     const order: string[] = [];
     await render(
@@ -109,7 +122,12 @@ describe('Menu', { tags: ['a11y', 'interaction', 'unit'] }, () => {
         anchorRef={anchor}
         items={[
           { key: 'edit', label: 'Edit', onSelect: () => order.push('edit') },
-          { key: 'delete', label: 'Delete', onSelect: () => order.push('delete'), destructive: true },
+          {
+            key: 'delete',
+            label: 'Delete',
+            onSelect: () => order.push('delete'),
+            destructive: true,
+          },
         ]}
       />,
     );
@@ -130,7 +148,14 @@ describe('Slider', { tags: ['a11y', 'interaction', 'unit'] }, () => {
   it('is adjustable with its value read aloud, and steps with accessibility actions', async () => {
     const onChange = vi.fn();
     await render(
-      <Slider label="Energy" value={3} min={1} max={5} onChange={onChange} valueText={(v) => `${v} of 5`} />,
+      <Slider
+        label="Energy"
+        value={3}
+        min={1}
+        max={5}
+        onChange={onChange}
+        valueText={(v) => `${v} of 5`}
+      />,
     );
     const slider = screen.getByRole('slider', { name: 'Energy' });
     expect(slider.props.accessibilityValue).toEqual({ min: 1, max: 5, now: 3, text: '3 of 5' });

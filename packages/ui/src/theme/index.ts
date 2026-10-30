@@ -21,14 +21,28 @@ export {
 } from './css';
 export { FACES, fontNamesOf, MOTION } from './faces';
 export {
+  type FeedbackEvent,
+  type FeedbackMotion,
+  type HapticKind,
+  hapticFor,
+  motionFor,
+} from './feedback';
+export {
   type Bezier,
   CURVES,
   type ResolvedMotion,
   resolveMotion,
   type WorldSpring,
 } from './motion';
+export {
+  PERCH_VIEWBOX,
+  PERCHES,
+  type PerchElement,
+  type PerchGroup,
+  type PerchInk,
+  type PerchShape,
+} from './perches';
 export { phaseTokens, resolveWorld } from './resolve';
+export { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
 export type * from './types';
 export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS } from './worlds';
-export { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
-export { PERCH_VIEWBOX, PERCHES, type PerchElement, type PerchGroup, type PerchInk, type PerchShape } from './perches';

@@ -147,7 +147,7 @@ When the request is exploratory or broad, provide these artifacts implicitly in 
 
 ## Polymath Platform Guidance
 
-When working in `C:\Users\Naween\projects\polymath-platform`, read [references/polymath-platform.md](./references/polymath-platform.md).
+When working in this repo (the Polymath platform, `C:\x`), read [references/polymath-platform.md](./references/polymath-platform.md). To build within the current kit, follow `.agents/skills/ui-kit/SKILL.md`; this skill sets direction, that one says where the code goes.
 Use it to align with the repo's shared doctrine, app dialects, shared UI package, and app-specific context files.
 
 When defining or extending a house design system, read [references/design-system-playbook.md](./references/design-system-playbook.md).

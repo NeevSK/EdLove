@@ -1,10 +1,11 @@
-import { type ReactNode, useEffect, useMemo } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
+  withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -77,4 +78,48 @@ export function WorldEnter({ children, index = 0, style }: WorldEnterProps) {
   });
 
   return <Animated.View style={[style, animated]}>{children}</Animated.View>;
+}
+
+/**
+ * The world's press: controls shrink to its press scale and settle back on its
+ * spring (or its timing curve when it has none). Nothing moves when the world's
+ * motion level is off. Spread `pressIn`/`pressOut` onto a Pressable and put
+ * `style` on the Animated.View that wraps it.
+ */
+export function usePressMotion() {
+  const m = useWorldMotion();
+  const scale = useSharedValue(1);
+  const to = useCallback(
+    (value: number) => {
+      if (!m.animates || m.press >= 1) return;
+      scale.set(m.spring ? withSpring(value, m.spring) : withTiming(value, m.timing('micro')));
+    },
+    [m, scale],
+  );
+  const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
+  return { style, pressIn: () => to(m.press), pressOut: () => to(1) };
+}
+
+/** How far a shake travels, in dp, and how many times it turns. */
+const SHAKE = { distance: 6, turns: 3 } as const;
+
+/**
+ * The error motion from the feedback grammar: a short sideways shake, so a
+ * failure is noticed without relying on colour. Still when motion is off.
+ */
+export function useShake() {
+  const m = useWorldMotion();
+  const x = useSharedValue(0);
+  const shake = useCallback(() => {
+    if (!m.animates) return;
+    const leg = Math.max(40, Math.round(m.duration.micro / 3));
+    const steps = Array.from({ length: SHAKE.turns * 2 }, (_, i) =>
+      withTiming((i % 2 === 0 ? 1 : -1) * SHAKE.distance * (1 - i / (SHAKE.turns * 2)), {
+        duration: leg,
+      }),
+    );
+    x.set(withSequence(...steps, withTiming(0, { duration: leg })));
+  }, [m, x]);
+  const style = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
+  return { style, shake };
 }
