@@ -64,3 +64,4 @@ export {
 export { initialsOf } from '../shared/initials';
 export { List, type ListProps } from './List/List';
 export { Table, type TableProps } from './Table/Table';
+export { SwipeRow, type SwipeRowProps } from './SwipeRow/SwipeRow';

@@ -6,7 +6,15 @@
  */
 
 export { useWorldMotion, WorldEnter, type WorldEnterProps, type WorldMotionTokens } from './motion';
-export { isFontAvailable, registerAvailableFonts, typeStyle } from './style';
+export {
+  edgeStyle,
+  glowStyle,
+  isFontAvailable,
+  radiusStyle,
+  registerAvailableFonts,
+  shadowStyle,
+  typeStyle,
+} from './style';
 export {
   useWorld,
   useWorldContext,

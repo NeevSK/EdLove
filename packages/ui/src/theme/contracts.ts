@@ -371,3 +371,22 @@ export interface TableContract<R> {
   /** Shown in place of rows when there are none. */
   empty?: string;
 }
+
+export type SwipeTone = 'lamp' | 'success' | 'danger';
+
+export interface SwipeAction {
+  /** Already translated ("Done", "Delete"). Shown behind the row and offered to screen readers. */
+  label: string;
+  tone: SwipeTone;
+  onAction: () => void;
+}
+
+export interface SwipeRowContract {
+  children: ReactNode;
+  /** Revealed by swiping towards the end (right in left-to-right languages). */
+  start?: SwipeAction;
+  /** Revealed by swiping towards the start. Usually the destructive one. */
+  end?: SwipeAction;
+  /** The row's accessible name. */
+  label: string;
+}

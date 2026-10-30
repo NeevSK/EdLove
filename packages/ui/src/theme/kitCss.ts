@@ -254,6 +254,11 @@ const BASE_CSS = `
 .gd-table td{padding:10px;border-bottom:1px solid var(--w-line)}
 .gd-table [data-align="end"]{text-align:end;font-variant-numeric:tabular-nums}
 .gd-table-empty{text-align:center;color:var(--w-ink-soft);padding:16px}
+.gd-swiperow{display:flex;align-items:center;gap:8px}
+.gd-swiperow-body{flex:1;min-width:0}
+.gd-swiperow-actions{display:flex;gap:4px;opacity:0;transition:opacity var(--w-settle)}
+.gd-swiperow:hover .gd-swiperow-actions,.gd-swiperow:focus-within .gd-swiperow-actions{opacity:1}
+@media (hover:none){.gd-swiperow-actions{opacity:1}}
 .gd-picker{display:flex;flex-direction:column;gap:8px;padding:6px 0}
 .gd-picker-choice{appearance:none;margin:0;font:inherit;text-align:start;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 14px;border-radius:14px;background:var(--w-ground);border:1px solid var(--w-line);color:var(--w-ink)}
 .gd-picker-choice[aria-checked="true"]{border:2px solid var(--w-focus)}
