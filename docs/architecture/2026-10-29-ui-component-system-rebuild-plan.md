@@ -417,6 +417,8 @@ section plus the guide (`ui-kit-guide.md`) and the requirements ledger
 | `aaee20fe3` | Feedback grammar (`useFeedback`, `usePressMotion`, `useErrorFeedback`, web `--w-press` and shake) across native kit; intentional-ui-design references restored |
 | `814ec2753` | Feedback grammar in guide and skill; 1b.7 living light step |
 | `3bbfe14b8` | World material (light, grain, wash, tinted shadow, detail, lit moments) and living light: `useLivingStyle`, TextField edges, Button press light, web `--w-light-*` |
+| `60594f4c0` | Requirements ledger (`ui-kit-requirements-ledger.md`) |
+| `bceeb8d9e` | Spacing relations (`tokens/space.ts`), Stack, Inline, Group on both kits |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4
@@ -425,7 +427,7 @@ Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 ### Next, in order
 
 1. 1b.0 one folder per world.
-2. 1b.1–1b.7 layout (Stack, Inline, Grid, Icon), Card/Tile, Rail, Carousel,
+2. 1b.1–1b.7 remaining: Grid, Icon, Card/Tile, Rail, Carousel,
    Group, space-aware components, contrast guard, inspector naming, living light.
 3. 1.9 galleries on both platforms (G4 browser, G5 device).
 4. 1c forms, assessments and media.

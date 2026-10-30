@@ -34,9 +34,9 @@ Updated 2026-10-30.
 | # | Requirement | Status |
 | :--- | :--- | :--- |
 | B1 | Production-grade buttons and controls | done (1.1–1.8): Button, IconButton, Text, Surface, TextField, Chip, Row, Section, Switch, Checkbox, Radio, Select, Menu, Slider, Tabs, Segmented, Dialog, Sheet, Toast, Popover, Tooltip, Progress, Badge, Avatar, Divider, Empty/ErrorState, List, Table, SwipeRow |
-| B2 | Layout pieces: Stack, Inline, Grid, Icon | planned 1b.1 |
+| B2 | Layout pieces: Stack, Inline, Grid, Icon | Stack and Inline done; Grid and Icon planned 1b.1 |
 | B3 | Cards, tiles, pills, shapes and sizes; horizontal rails; carousels | planned 1b.2 |
-| B4 | Grouped settings like Claude or Grok (proximity, one surface per group) | planned 1b.3 |
+| B4 | Grouped settings like Claude or Grok (proximity, one surface per group) | done: `Group` (both kits); Section `boxes` still to move onto it |
 | B5 | Forms, quizzes, assignments, lessons, PDF and file types | planned 1c (plan §14) |
 | B6 | Todo out of the kit, built on kit pieces | done in the working tree, but someone else's uncommitted work |
 
@@ -44,7 +44,7 @@ Updated 2026-10-30.
 
 | # | Requirement | Status |
 | :--- | :--- | :--- |
-| C1 | Spacing as relations: inside, between, group, section | planned (plan §13), used by 1b.1 |
+| C1 | Spacing as relations: inside, between, group, section | done: `tokens/space.ts` (`gapFor`), used by Stack, Inline and Group; other components to adopt |
 | C2 | Space-aware components that adapt to their container | planned 1b.4 |
 | C3 | System accessibility settings feed the world (high contrast, reduce transparency, font scale) | planned 1b.4 |
 | C4 | Contrast checked on every recipe pair, not just tokens | tokens and lit edges done (`world.contrast`, `material` tests); every pair planned 1b.5 |
