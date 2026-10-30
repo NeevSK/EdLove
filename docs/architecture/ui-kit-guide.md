@@ -176,6 +176,9 @@ section 7) and signed off.
 - **Contrast**: every colour pair a component draws is checked in all themes by
   `recipe.contrast.test.ts`. A new pair goes into that test; fix failures in
   `theme/build.ts` (`legible`, `lampSheen`), never in the component.
+- **System settings**: never read contrast or transparency settings in a
+  component. The world already carries them (`world.access`, from
+  `useSystemAccess` at the app root); recipes come out stronger or solid.
 - **Names**: every kit export is a named function with its export name (tests
   on both sets), and web elements carry `gd-<name>` classes, so DevTools shows
   the kit tree.

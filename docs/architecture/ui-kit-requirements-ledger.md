@@ -23,7 +23,7 @@ Updated 2026-10-30.
 | A1 | Two platform sets, same names and props | `components/native`, `components/web`, `theme/contracts.ts` | done |
 | A2 | Looks come from the world engine; fixed scales come from tokens | `theme/`, `tokens/` | done |
 | A3 | Hard break from legacy, no facades; deletions need sign-off | `tooling/ui-legacy-ratchet.json`, Phase 4 | done (ratchet); retirement planned |
-| A4 | Worlds are open-ended (not 11), easy to add, change or remove | plan §12, guide §3.3–3.4 | foundation; 1b.0 (one folder per world) planned |
+| A4 | Worlds are open-ended (not 11), easy to add, change or remove | `theme/worlds/<id>/`, registry in `worlds/index.ts`, guide §3.3–3.4 | done: one folder + one registry line; `WorldId` derived; `world.registry` test |
 | A5 | One clock; phase styling retired | `theme/scene` `phaseAt` | done |
 | A6 | Scene lives in theme | `theme/scene` | done |
 | A7 | NativeWind for layout only | AGENTS.md UI kit rules | done |
@@ -36,7 +36,7 @@ Updated 2026-10-30.
 | B1 | Production-grade buttons and controls | done (1.1–1.8): Button, IconButton, Text, Surface, TextField, Chip, Row, Section, Switch, Checkbox, Radio, Select, Menu, Slider, Tabs, Segmented, Dialog, Sheet, Toast, Popover, Tooltip, Progress, Badge, Avatar, Divider, Empty/ErrorState, List, Table, SwipeRow |
 | B2 | Layout pieces: Stack, Inline, Grid, Icon | done (both kits); Icon takes the caller's glyph (kit has no icon library) |
 | B3 | Cards, tiles, pills, shapes and sizes; horizontal rails; carousels | done: `Card` (tile, wide, square, pill; sm/md/lg), `Rail`, `Carousel` (buttons + swipe, announced, never autoplays) |
-| B4 | Grouped settings like Claude or Grok (proximity, one surface per group) | done: `Group` (both kits); Section `boxes` still to move onto it |
+| B4 | Grouped settings like Claude or Grok (proximity, one surface per group) | done: `Group` (both kits); boxed Sections render as a Group |
 | B5 | Forms, quizzes, assignments, lessons, PDF and file types | planned 1c (plan §14) |
 | B6 | Todo out of the kit, built on kit pieces | done in the working tree, but someone else's uncommitted work |
 
@@ -45,8 +45,8 @@ Updated 2026-10-30.
 | # | Requirement | Status |
 | :--- | :--- | :--- |
 | C1 | Spacing as relations: inside, between, group, section | done: `tokens/space.ts` (`gapFor`), used by Stack, Inline and Group; other components to adopt |
-| C2 | Space-aware components that adapt to their container | done for Grid and wide Card (`useContainerWidth` native, CSS grid / container query web); Row still to adopt |
-| C3 | System accessibility settings feed the world (high contrast, reduce transparency, font scale) | planned 1b.4 |
+| C2 | Space-aware components that adapt to their container | done: Grid, wide Card, Row (`useContainerWidth` native, CSS grid / container queries web) |
+| C3 | System accessibility settings feed the world (high contrast, reduce transparency, font scale) | done: `WorldAccess` in `resolveWorld`, `useSystemAccess` (Android high text contrast, iOS darker colours and reduce transparency), web `prefers-contrast` / `prefers-reduced-transparency`; font scale through `gapFor`. Web adjusts the base inks only; recipe colours already resolved to hex stay standard there |
 | C4 | Contrast checked on every recipe pair, not just tokens | done: `recipe.contrast.test.ts` (every pair, 132 themes); it found and fixed checkbox edges, gradient labels, the photo veil and the selected ring |
 | C5 | Roles, names, 44pt targets, a non-gesture path for every gesture | done (kit tests) |
 
@@ -57,7 +57,7 @@ Updated 2026-10-30.
 | D1 | One feedback grammar: components name the event, the world picks the haptic | `theme/feedback.ts`, `useFeedback` | done (native); web has no haptics |
 | D2 | Press motion in the world's scale and spring | `usePressMotion`, `--w-press` | done |
 | D3 | Errors shake once, without relying on colour | `useErrorFeedback`, `gd-shake` | done (TextField, Select) |
-| D4 | Living light: colour, brightness and edges answer state | `material.states`, `useLivingStyle`, `--w-light-*` | done in TextField, Button, Card, Checkbox, Chip; Switch is the platform switch (animates itself); Row and Tabs still to adopt |
+| D4 | Living light: colour, brightness and edges answer state | `material.states`, `useLivingStyle`, `ChipPaint`, `--w-light-*` | done in TextField, Button, Card, Checkbox, Chip, Tabs, Row; Switch is the platform switch (animates itself) |
 | D5 | Light from within vs outer glow | `material.light` | foundation (resolved, not yet drawn differently) |
 | D6 | Variation inside a surface: warmer centre, cooler edge | `material.wash`, `surface.raised.wash` | done: raised Surface, Group, Card (RN 0.88 radial-gradient; CSS on web) |
 | D7 | Shadows tinted by the world, never neutral black in light mode | `material.shadow` | done (raised surfaces) |

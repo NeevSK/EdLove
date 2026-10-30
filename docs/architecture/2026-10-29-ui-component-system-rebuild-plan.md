@@ -423,6 +423,10 @@ section plus the guide (`ui-kit-guide.md`) and the requirements ledger
 | `dd5926629` | Living light in Checkbox and Chip; material wash on raised surfaces |
 | `e2b6719d6` | Recipe contrast guard (every pair, 132 themes) and the fixes it found |
 | `429940109`, `0803183be` | Inspector naming checks on both sets |
+| `8e158aa79` | 1b.0 one folder per world; `WorldId` from the registry |
+| `c0706eee8` | Row space-aware with press light; Tabs on living light (`ChipPaint`) |
+| `46726d173` | Boxed Sections render as Group |
+| `db829df75` | System accessibility settings (`WorldAccess`, `useSystemAccess`, web media queries) |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4
@@ -430,13 +434,11 @@ Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 
 ### Next, in order
 
-1. 1b.0 one folder per world.
-2. 1b leftovers: Row and Tabs on living light and spacing relations; Row
-   space-aware; Section `boxes` onto Group; system accessibility settings into
-   the world (1b.4).
-3. 1.9 galleries on both platforms (G4 browser, G5 device).
-4. 1c forms, assessments and media.
-5. Phase 2 harden, Phase 3 migrate (web floors, then packages smallest first),
+Phase 1b is done.
+
+1. 1.9 galleries on both platforms (G4 browser, G5 device).
+2. 1c forms, assessments and media.
+3. Phase 2 harden, Phase 3 migrate (web floors, then packages smallest first),
    Phase 4 retire (ledger sign-off), Phase 5 polish.
 
 ### Open items
