@@ -8,6 +8,7 @@
  */
 
 import type { ComponentType, ReactNode } from 'react';
+import type { SpaceDensity, SpaceRelation } from '../tokens/space';
 import type { SignKind } from './signs';
 import type {
   BadgeTone,
@@ -46,6 +47,32 @@ export interface ButtonContract {
   icon?: ComponentType<KitIconProps>;
   loading?: boolean;
   fullWidth?: boolean;
+}
+
+/** How things are spaced: by what relation they have (see `tokens/space.ts`). */
+export interface StackContract {
+  /** `none` for content that brings its own spacing. Default `between`. */
+  gap?: SpaceRelation | 'none';
+  density?: SpaceDensity;
+  align?: 'start' | 'center' | 'end' | 'stretch';
+}
+
+/** Side by side, wrapping onto new lines when there is no room. */
+export interface InlineContract extends StackContract {
+  justify?: 'start' | 'center' | 'end' | 'between';
+  /** Default true: a row of chips or actions wraps instead of overflowing. */
+  wrap?: boolean;
+}
+
+/**
+ * Rows that belong together (a settings group): one surface, only the outer
+ * corners round, hairlines between rows. Groups stand apart by `group` space.
+ */
+export interface GroupContract {
+  /** Small heading above the group; also the group's accessible name. */
+  label?: string;
+  /** A note under the group explaining its rows. */
+  footer?: string;
 }
 
 export interface SurfaceContract {

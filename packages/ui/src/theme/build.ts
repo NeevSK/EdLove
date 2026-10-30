@@ -12,6 +12,7 @@ import type {
   ButtonRecipe,
   ChipRecipe,
   FieldRecipe,
+  GroupRecipe,
   MaterialRecipe,
   OverlayRecipe,
   Radius,
@@ -502,6 +503,23 @@ function buildStatus(t: WorldTokens, s: WorldStyle): StatusRecipe {
   };
 }
 
+function buildGroup(
+  t: WorldTokens,
+  s: WorldStyle,
+  text: Record<TextRole, TypeStyle>,
+  surface: SurfaceRecipe,
+): GroupRecipe {
+  const raised = surface.raised;
+  return {
+    // Rows bring their own padding; the group only holds them.
+    surface: { ...raised, padding: 0, paddingX: 0 },
+    divider: { width: s.lineWeight, color: t.line },
+    indent: raised.paddingX,
+    label: text.label,
+    footer: text.caption,
+  };
+}
+
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
   const material = buildMaterial(t, s, mode);
@@ -517,6 +535,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     overlay: buildOverlay(t, s, mode, surface),
     toggle: buildToggle(t, s),
     status: buildStatus(t, s),
+    group: buildGroup(t, s, text, surface),
     material,
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },

@@ -39,7 +39,7 @@ function shapeVars(id: WorldId): string {
           Math.max(0, x[3] - by),
         ];
   const press = resolveMotion(WORLDS[id].motion, 'refined').press;
-  return `--w-toggle-radius:${radiusCss(r.toggle.radius)};--w-segment-radius:${radiusCss(shrink(r.surface.inset.radius, 3))};--w-press:${press}`;
+  return `--w-toggle-radius:${radiusCss(r.toggle.radius)};--w-segment-radius:${radiusCss(shrink(r.surface.inset.radius, 3))};--w-press:${press};--w-group-indent:${r.group.indent}px;--w-group-divider-w:${r.group.divider.width}px`;
 }
 
 /** Per world: its tempo, and which sign and perch an auto sign or perch shows. */
@@ -273,6 +273,13 @@ const BASE_CSS = `
 .gd-button{transition:opacity var(--w-settle),transform var(--w-settle),background var(--w-settle),box-shadow var(--w-settle),filter var(--w-light-ms)}
 .gd-button:active:not(:disabled){filter:brightness(calc(1 + var(--w-light-press-lift)))}
 .gd-field-input{transition:box-shadow var(--w-light-ms) ease-out}
+.gd-stack{display:flex;flex-direction:column;min-width:0}.gd-inline{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;min-width:0}.gd-inline[data-wrap="no"]{flex-wrap:nowrap}
+.gd-stack[data-gap="none"],.gd-inline[data-gap="none"]{gap:0}.gd-stack[data-gap="inside"],.gd-inline[data-gap="inside"]{gap:min(0.5rem, 12px)}.gd-stack[data-gap="inside"][data-density="compact"],.gd-inline[data-gap="inside"][data-density="compact"]{gap:min(0.25rem, 6px)}.gd-stack[data-gap="between"],.gd-inline[data-gap="between"]{gap:min(0.75rem, 18px)}.gd-stack[data-gap="between"][data-density="compact"],.gd-inline[data-gap="between"][data-density="compact"]{gap:min(0.5rem, 12px)}.gd-stack[data-gap="group"],.gd-inline[data-gap="group"]{gap:min(1.5rem, 36px)}.gd-stack[data-gap="group"][data-density="compact"],.gd-inline[data-gap="group"][data-density="compact"]{gap:min(1.25rem, 30px)}.gd-stack[data-gap="section"],.gd-inline[data-gap="section"]{gap:min(2.5rem, 60px)}.gd-stack[data-gap="section"][data-density="compact"],.gd-inline[data-gap="section"][data-density="compact"]{gap:min(2rem, 48px)}
+.gd-stack[data-align="start"],.gd-inline[data-align="start"]{align-items:flex-start}.gd-stack[data-align="center"],.gd-inline[data-align="center"]{align-items:center}.gd-stack[data-align="end"],.gd-inline[data-align="end"]{align-items:flex-end}.gd-stack[data-align="stretch"],.gd-inline[data-align="stretch"]{align-items:stretch}
+.gd-inline[data-justify="center"]{justify-content:center}.gd-inline[data-justify="end"]{justify-content:flex-end}.gd-inline[data-justify="between"]{justify-content:space-between}
+.gd-group{display:flex;flex-direction:column;gap:min(0.5rem, 12px)}.gd-group-label,.gd-group>.gd-text{margin:0}
+.gd-group-body{background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);overflow:hidden}
+.gd-group-row{position:relative;padding:0 var(--w-group-indent)}.gd-group-row+.gd-group-row::before{content:"";position:absolute;top:0;left:var(--w-group-indent);right:0;height:var(--w-group-divider-w);background:var(--w-line)}
 .gd-field[data-state="error"] .gd-field-input{animation:gd-shake 320ms ease-out 1}
 @keyframes gd-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 @media (prefers-reduced-motion:reduce){.gd-button:active,.gd-chip:active,.gd-icon-button:active{transform:none;filter:none}.gd-button,.gd-field-input{transition:none}.gd-field[data-state="error"] .gd-field-input{animation:none}}

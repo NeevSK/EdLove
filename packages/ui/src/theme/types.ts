@@ -411,6 +411,16 @@ export interface WorldMaterial {
   response?: 'quiet' | 'vivid';
 }
 
+/** A settings group: the world's held surface, with hairlines between rows. */
+export interface GroupRecipe {
+  surface: SurfaceToneRecipe;
+  /** Between rows; starts at `indent` so it reads as one surface, not a stack of boxes. */
+  divider: Edge;
+  indent: number;
+  label: TypeStyle;
+  footer: TypeStyle;
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -423,6 +433,7 @@ export interface WorldRecipes {
   overlay: OverlayRecipe;
   toggle: ToggleRecipe;
   status: StatusRecipe;
+  group: GroupRecipe;
   material: MaterialRecipe;
   motion: { settleMs: number; breatheMs: number };
 }
