@@ -364,8 +364,10 @@ function boundaryRules(
       ].join('');
     case 'boxes':
       return [
-        `${sec}{margin:0 16px 16px;padding:16px;background:var(${p}-box-bg);border-radius:var(${p}-box-radius);box-shadow:var(${p}-box-shadow)}`,
-        `${sec} .gd-row+.gd-row{border-top:var(${p}-divider)}`,
+        // The same look as Group: title above, one held surface, hairlines from the row inset.
+        `${sec}{margin:0 16px 16px;padding:0}${sec} .gd-section-title{margin:0 6px 8px}${sec} .gd-section-voice{margin:0 6px 10px}`,
+        `${sec} .gd-section-body{background:var(${p}-box-bg);border-radius:var(${p}-box-radius);box-shadow:var(${p}-box-shadow);overflow:hidden}`,
+        `${sec} .gd-section-body>.gd-row{position:relative;padding-inline:var(--w-group-indent)}${sec} .gd-row+.gd-row{border-top:0}${sec} .gd-section-body>.gd-row+.gd-row::before{content:"";position:absolute;top:0;left:var(--w-group-indent);right:0;height:var(--w-group-divider-w);background:var(--w-line)}`,
       ].join('');
   }
 }

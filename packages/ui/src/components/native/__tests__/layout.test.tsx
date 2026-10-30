@@ -9,6 +9,7 @@ import { gapFor, space } from '../../../tokens/space';
 import { Group } from '../Group/Group';
 import { Inline, Stack } from '../Layout/Layout';
 import { Row } from '../Row/Row';
+import { Section } from '../Section/Section';
 
 vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
 
@@ -109,5 +110,30 @@ describe('Row is space-aware', { tags: ['a11y', 'unit'] }, () => {
     await unmount();
     await render(<Row label="Plain" detail="Value" />);
     expect(layers(screen.root)).toHaveLength(0);
+  });
+});
+
+describe('Section boxes are a Group', { tags: ['a11y', 'unit'] }, () => {
+  it('a boxed world holds its rows on one surface with hairlines between them', async () => {
+    const w = resolveWorld('perahera', 'morning', 'light');
+    expect(w.recipes.section.dense.kind).toBe('boxes');
+    const g = w.recipes.group;
+    await render(
+      <WorldScope world="perahera" phase="morning" mode="light">
+        <Section title="Look and light">
+          <Row label="World" detail="Perahera" />
+          <Row label="Text size" detail="Comfortable" />
+          <Row label="Motion" detail="Calm" />
+        </Section>
+      </WorldScope>,
+    );
+    expect(screen.getAllByRole('header')).toHaveLength(1);
+    const hairlines = hostNodes(screen.root).filter(
+      (n) =>
+        n.props.importantForAccessibility === 'no-hide-descendants' &&
+        flat(n.props.style).height === g.divider.width &&
+        flat(n.props.style).backgroundColor === g.divider.color,
+    );
+    expect(hairlines).toHaveLength(2);
   });
 });

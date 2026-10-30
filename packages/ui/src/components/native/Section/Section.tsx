@@ -13,7 +13,7 @@ import type { SectionContract } from '../../../theme/contracts';
 import { glowStyle, radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { SectionRecipe } from '../../../theme/types';
-import { InnerFrame, surfaceStyle } from '../Surface/Surface';
+import { Group } from '../Group/Group';
 
 export interface SectionProps extends SectionContract {
   /** The last section on a screen draws no closing boundary. */
@@ -200,14 +200,12 @@ export function Section({
       );
     }
     case 'boxes': {
+      // The familiar card is a Group: one held surface, hairlines from the row inset.
       return (
         <View style={[{ marginHorizontal: 16, marginBottom: 16 }, style]}>
           <View style={{ marginBottom: 8, marginHorizontal: 6 }}>{heading}</View>
-          <View style={surfaceStyle(r.box)}>
-            <InnerFrame recipe={r.box} />
-            {voiceLine}
-            {body}
-          </View>
+          {voiceLine ? <View style={{ marginHorizontal: 6 }}>{voiceLine}</View> : null}
+          <Group>{children}</Group>
         </View>
       );
     }
