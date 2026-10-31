@@ -1,4 +1,5 @@
 import type { DocumentAdapterProps } from '../../../theme/contracts';
+import { safeFileUrl } from '../../shared/files';
 import { FileCard } from './FileCard';
 
 /**
@@ -7,10 +8,18 @@ import { FileCard } from './FileCard';
  * always offered as a download beside it.
  */
 export function BrowserPdfAdapter({ file }: DocumentAdapterProps) {
+  const src = safeFileUrl(file.uri);
+  // An address that is not safe to frame is never framed or linked: just the file, named.
+  if (!src) return <FileCard file={file} />;
   return (
     <div className="gd-document-pdf">
-      <iframe className="gd-document-frame" src={file.uri} title={file.name} />
-      <FileCard file={file} href={file.uri} />
+      <iframe
+        className="gd-document-frame"
+        src={src}
+        title={file.name}
+        sandbox="allow-scripts allow-same-origin allow-downloads"
+      />
+      <FileCard file={file} href={src} />
     </div>
   );
 }

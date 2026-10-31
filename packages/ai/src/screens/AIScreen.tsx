@@ -31,7 +31,7 @@ import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticSuccess, hapticWarning } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Platform, ScrollView, StyleSheet } from 'react-native';
 import Animated, {
@@ -213,15 +213,21 @@ export default function AIScreen({
 
   const userRole = useScopeSessionStore((state) => state.snapshot?.activeBond?.capacity ?? null);
 
-  // Apply initial privacy mode or route query params (mode / threadId) if provided
+  // Apply the requested privacy mode once, on arrival. A link may make a chat more
+  // private but never less: it cannot turn incognito back into a saved chat, and
+  // the person's own toggle is never overridden afterwards.
+  const appliedRouteMode = useRef(false);
   useEffect(() => {
+    if (appliedRouteMode.current) return;
+    appliedRouteMode.current = true;
     const requestedMode =
       params.mode === 'incognito' || params.mode === 'saved' || params.mode === 'temporary'
         ? params.mode
         : initialPrivacyMode;
-    if (requestedMode && requestedMode !== privacyMode) {
-      void setPrivacyMode(requestedMode);
-    }
+    if (!requestedMode || requestedMode === privacyMode) return;
+    if (privacyMode === 'incognito') return;
+    if (privacyMode === 'temporary' && requestedMode === 'saved') return;
+    void setPrivacyMode(requestedMode);
   }, [initialPrivacyMode, params.mode, privacyMode, setPrivacyMode]);
 
   useEffect(() => {
@@ -250,14 +256,20 @@ export default function AIScreen({
     void setPrivacyMode(next);
   };
 
-  const handleAcceptProposal = () => {
+  // Human-in-the-loop: only a proposal that is this agent run can be promoted, and it
+  // shows as accepted only once the service confirms the promotion.
+  const handleAcceptProposal = async () => {
+    if (!activeProposal || !activeAgentRun?.runId || activeProposal.id !== activeAgentRun.runId) {
+      hapticWarning();
+      return;
+    }
+    const promoted = await promoteAgentRun(activeAgentRun.runId);
+    if (!promoted) {
+      hapticWarning();
+      return;
+    }
     hapticSuccess();
-    if (activeAgentRun?.runId) {
-      void promoteAgentRun(activeAgentRun.runId);
-    }
-    if (activeProposal) {
-      setActiveProposal({ ...activeProposal, status: 'accepted' });
-    }
+    setActiveProposal({ ...activeProposal, status: 'accepted' });
   };
 
   const handleCommissionAgent = () => {
@@ -1378,7 +1390,7 @@ export default function AIScreen({
 
                       <Pressable
                         accessibilityRole="button"
-                        onPress={handleAcceptProposal}
+                        onPress={() => void handleAcceptProposal()}
                         style={[styles.proposalButton, { backgroundColor: w.success }]}
                       >
                         <CircleCheck size={13} color={w.onLamp} />

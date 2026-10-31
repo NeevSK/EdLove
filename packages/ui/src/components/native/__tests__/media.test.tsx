@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { DocumentAdapterProps, NativeMarkdownAdapterProps } from '../../../theme/contracts';
 import { WorldScope } from '../../../theme/native';
 import { resolveWorld } from '../../../theme/resolve';
-import { fileKindOf, formatBytes } from '../../shared/files';
+import { fileKindOf, formatBytes, safeFileUrl } from '../../shared/files';
 import { MediaAdapters } from '../Media/adapters';
 import { DocumentView } from '../Media/DocumentView';
 import { FILE_CARD_ENGLISH, FileCard } from '../Media/FileCard';
@@ -30,6 +30,16 @@ describe('file kinds', { tags: ['unit'] }, () => {
     expect(fileKindOf({ name: 'notes.md' })).toBe('markdown');
     expect(fileKindOf({ name: 'voice.m4a' })).toBe('audio');
     expect(fileKindOf({ name: 'README' })).toBe('other');
+  });
+
+  it('only web, blob, file and relative addresses are safe to link or frame', () => {
+    expect(safeFileUrl('https://x.org/a.pdf')).toBe('https://x.org/a.pdf');
+    expect(safeFileUrl('blob:https://x.org/1')).toBe('blob:https://x.org/1');
+    expect(safeFileUrl('/files/a.pdf')).toBe('/files/a.pdf');
+    expect(safeFileUrl('javascript:alert(1)')).toBeNull();
+    expect(safeFileUrl(' JavaScript:alert(1)')).toBeNull();
+    expect(safeFileUrl('data:text/html,<script>')).toBeNull();
+    expect(safeFileUrl('')).toBeNull();
   });
 
   it('formats sizes for people', () => {

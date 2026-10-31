@@ -116,3 +116,15 @@ export const FILE_CARD_ENGLISH: FileCardLabels = {
   remove: 'Remove',
   progress: (percent) => `${percent}% uploaded`,
 };
+
+/**
+ * The file's address if it is safe to use as a link or frame source: web,
+ * blob, file or relative addresses. Anything else (javascript:, data: HTML)
+ * returns null and the file shows without a link.
+ */
+export function safeFileUrl(uri: string): string | null {
+  const value = uri.trim();
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(value)?.[1]?.toLowerCase();
+  if (scheme === undefined) return value === '' ? null : value;
+  return ['https', 'http', 'blob', 'file'].includes(scheme) ? value : null;
+}

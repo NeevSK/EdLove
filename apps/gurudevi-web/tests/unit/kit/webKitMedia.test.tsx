@@ -77,6 +77,14 @@ describe('web kit: FileCard and DocumentView', () => {
     expect(screen.getByRole('table', { name: 'Marks.xlsx' })).toBeTruthy();
   });
 
+  it('an unsafe address is never linked or framed', () => {
+    const evil = { name: 'x.pdf', uri: 'javascript:alert(1)', mime: 'application/pdf' };
+    const { container } = render(<DocumentView file={evil} />);
+    expect(container.querySelector('iframe')).toBeNull();
+    expect(container.querySelector('a')).toBeNull();
+    expect(screen.getByText('x.pdf')).toBeTruthy();
+  });
+
   it('prose variables come from the world recipe', () => {
     const vars = worldCssVariables(resolveWorld('wewa', 'morning', 'light'));
     expect(vars['--w-prose-lamp-link']).toBe(resolveWorld('wewa').recipes.prose.lamp.link.ink);

@@ -1,5 +1,11 @@
 import type { FileCardContract } from '../../../theme/contracts';
-import { extensionOf, FILE_CARD_ENGLISH, fileKindOf, formatBytes } from '../../shared/files';
+import {
+  extensionOf,
+  FILE_CARD_ENGLISH,
+  fileKindOf,
+  formatBytes,
+  safeFileUrl,
+} from '../../shared/files';
 import { Button } from '../Button/Button';
 import { Progress } from '../Status/Status';
 
@@ -33,6 +39,8 @@ export function FileCard({
     .filter(Boolean)
     .join(' · ');
   const percent = progress === undefined ? null : Math.round(progress * 100);
+  // Never link an unsafe address (javascript:, data: HTML); the file then shows unlinked.
+  const link = href === undefined ? null : safeFileUrl(href);
   const summary = (
     <>
       <span className="gd-file-mark" aria-hidden>
@@ -46,8 +54,8 @@ export function FileCard({
   );
   return (
     <div className="gd-file" data-kind={kind} data-state={error ? 'error' : undefined}>
-      {href ? (
-        <a className="gd-file-summary" href={href} download={file.name}>
+      {link ? (
+        <a className="gd-file-summary" href={link} download={file.name}>
           {summary}
         </a>
       ) : onOpen ? (
