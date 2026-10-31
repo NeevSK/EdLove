@@ -16,6 +16,7 @@ before touching UI; it replaces `branded-ui` (which describes the legacy
    screen, retire legacy), rules and known traps.
 2. `docs/architecture/2026-10-29-ui-component-system-rebuild-plan.md` — the
    plan, decisions, scoreboard (old vs kit), Phase 1b/1c and the status ledger.
+4. `docs/architecture/ui-kit-gallery-guide.md` — how to build the gallery (G4/G5 evidence) when it is time.
 3. `docs/architecture/ui-kit-requirements-ledger.md` — every requirement
    (structure, components, space, feedback and aliveness) with its status.
 
