@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { experienceOf } from '@repo/core/verger';
+import { describe, expect, it } from 'vitest';
 import {
   behindGreeting,
   resolveScene,

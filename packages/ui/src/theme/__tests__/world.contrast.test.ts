@@ -1,6 +1,6 @@
 import { contrastRatio } from '../color';
 import { resolveWorld } from '../resolve';
-import type { WorldMode, Phase } from '../types';
+import type { Phase, WorldMode } from '../types';
 import { WORLD_IDS } from '../worlds';
 
 const PHASES: Phase[] = ['predawn', 'dawn', 'morning', 'afternoon', 'dusk', 'night'];

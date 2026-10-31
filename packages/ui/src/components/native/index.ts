@@ -24,9 +24,22 @@ export { Inline, type InlineProps, Stack, type StackProps } from './Layout/Layou
 export { useContainerWidth } from './Layout/useContainerWidth';
 export { Link, type LinkProps } from './Link/Link';
 export { List, type ListProps } from './List/List';
+export { type MediaAdapterSet, MediaAdapters, useMediaAdapters } from './Media/adapters';
+export { DocumentView, type DocumentViewProps } from './Media/DocumentView';
+export { EnrichedMarkdownAdapter, proseMarkdownStyle } from './Media/EnrichedMarkdownAdapter';
+export { FILE_CARD_ENGLISH, FileCard, type FileCardProps } from './Media/FileCard';
+export { Markdown, type MarkdownProps } from './Media/Markdown';
 export { Menu, type MenuProps } from './Menu/Menu';
 export { Perch } from './Perch/Perch';
 export { Popover, type PopoverProps } from './Popover/Popover';
+export {
+  ChoiceQuestion,
+  type ChoiceQuestionProps,
+  PrivacyNote,
+  type PrivacyNoteProps,
+  Scale,
+  type ScaleProps,
+} from './Question/Question';
 export { RadioGroup, type RadioGroupProps } from './Radio/RadioGroup';
 export { Rail, type RailProps } from './Rail/Rail';
 export { Row, type RowProps } from './Row/Row';
@@ -78,8 +91,3 @@ export {
 } from './Waiting/Waiting';
 export { WaitingSign, type WaitingSignProps } from './WaitingSign/WaitingSign';
 export { WorldPicker, type WorldPickerProps } from './WorldPicker/WorldPicker';
-export { MediaAdapters, type MediaAdapterSet, useMediaAdapters } from './Media/adapters';
-export { DocumentView, type DocumentViewProps } from './Media/DocumentView';
-export { EnrichedMarkdownAdapter, proseMarkdownStyle } from './Media/EnrichedMarkdownAdapter';
-export { FILE_CARD_ENGLISH, FileCard, type FileCardProps } from './Media/FileCard';
-export { Markdown, type MarkdownProps } from './Media/Markdown';

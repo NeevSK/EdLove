@@ -10,17 +10,16 @@
  * the default world changes nothing for current screens.
  */
 
-import type { Phase } from './types';
 import { alpha } from './color';
 import { resolveWorld } from './resolve';
-import type { WorldId, WorldTokens } from './types';
-import { DEFAULT_WORLD, isWorldId } from './worlds';
 import {
   enrichPhaseTokens,
   type PhaseTokens,
   phaseMatrix,
   type ResolvedThemeTokens,
 } from './Theme';
+import type { Phase, WorldId, WorldTokens } from './types';
+import { DEFAULT_WORLD, isWorldId } from './worlds';
 
 export function worldToPhaseTokens(t: WorldTokens): PhaseTokens {
   return {

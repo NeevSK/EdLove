@@ -1,3 +1,7 @@
+import { experienceOf } from '@repo/core/verger';
+import { resolveWorld } from '../../resolve';
+import type { Phase } from '../../types';
+import { WORLD_IDS } from '../../worlds';
 import {
   contrastRatio,
   daylightAt,
@@ -7,10 +11,6 @@ import {
   type SceneWeather,
   WEATHER,
 } from '..';
-import { experienceOf } from '@repo/core/verger';
-import { resolveWorld } from '../../resolve';
-import type { Phase } from '../../types';
-import { WORLD_IDS } from '../../worlds';
 import { BAND_WASH_TEXT } from '../wash';
 
 const budget = experienceOf({ levels: {}, capacityClass: 'high' }, { fidelity: 'auto' });

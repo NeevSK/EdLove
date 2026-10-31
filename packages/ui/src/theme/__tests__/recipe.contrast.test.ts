@@ -60,7 +60,17 @@ function pairs(w: ResolvedWorld): Pair[] {
   add('card meta', r.card.meta.color, raised, TEXT);
   add('card selected ring', r.card.selectedEdge.color, raised, MARK);
   add('carousel current dot', r.card.dot.on, t.ground, MARK);
-  for (const [where, bg] of [['ground', t.ground], ['lamp', t.lamp]] as const) {
+  // Answer marks are words on raised paper; the result line sits on the page.
+  add('answer correct', r.question.mark.correct, raised, TEXT);
+  add('answer incorrect', r.question.mark.incorrect, raised, TEXT);
+  add('answer missed', r.question.mark.missed, raised, TEXT);
+  add('result right', r.question.result.right, t.ground, TEXT);
+  add('result wrong', r.question.result.wrong, t.ground, TEXT);
+  add('chosen option edge', r.question.chosenEdge, raised, MARK);
+  for (const [where, bg] of [
+    ['ground', t.ground],
+    ['lamp', t.lamp],
+  ] as const) {
     const p = r.prose[where];
     add(`prose ${where} body`, p.body.color, bg, TEXT);
     add(`prose ${where} heading`, p.h1.color, bg, TEXT);

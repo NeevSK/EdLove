@@ -298,6 +298,15 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   v['--w-dot-off'] = card.dot.off;
   v['--w-dot-on'] = card.dot.on;
 
+  // Questions: mark words, result lines and the chosen edge.
+  const q = r.question;
+  v['--w-q-correct'] = q.mark.correct;
+  v['--w-q-incorrect'] = q.mark.incorrect;
+  v['--w-q-missed'] = q.mark.missed;
+  v['--w-q-right'] = q.result.right;
+  v['--w-q-wrong'] = q.result.wrong;
+  v['--w-q-chosen'] = q.chosenEdge;
+
   // Prose (Markdown, rich text, documents), on the page and on the lamp.
   for (const [where, p] of Object.entries(r.prose)) {
     const q = `--w-prose-${where}`;

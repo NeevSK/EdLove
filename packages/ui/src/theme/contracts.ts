@@ -218,13 +218,74 @@ export interface DocumentAdapterProps {
 }
 
 /** Kinds a document adapter can be registered for. */
-export type DocumentKind = Extract<FileKind, 'pdf' | 'document' | 'sheet' | 'slides' | 'markdown' | 'text'>;
+export type DocumentKind = Extract<
+  FileKind,
+  'pdf' | 'document' | 'sheet' | 'slides' | 'markdown' | 'text'
+>;
 
 /** A document shown in place (PDF, Word, Excel, PowerPoint), by an adapter the app chooses. */
 export interface DocumentContract {
   file: FileRef;
   /** Shown when no adapter can draw this kind, and on failure. */
   onOpenElsewhere?: () => void;
+}
+
+/**
+ * A rating or agreement scale (Likert, 1–5 stars, 0–10). One choice from
+ * 3 to 11 points; the ends say what they mean.
+ */
+export interface ScaleContract {
+  label: string;
+  value: number | null;
+  onChange: (value: number) => void;
+  /** Points from `min` to `max` inclusive. Default 1–5. */
+  min?: number;
+  max?: number;
+  /** What the lowest and highest points mean ("Not at all", "Completely"). */
+  ends?: { low: string; high: string };
+  /** Words for every point, when each has one (a 5-point Likert). */
+  pointLabels?: readonly string[];
+  disabled?: boolean;
+}
+
+/** How an answer reads once a quiz reveals it (instant timing) or after review. */
+export type AnswerMark = 'correct' | 'incorrect' | 'missed' | 'none';
+
+/**
+ * A question with choices (single or several). The form engine evaluates; the
+ * kit only shows the result it is given, never decides it.
+ */
+export interface ChoiceQuestionContract<V extends string = string> {
+  prompt: string;
+  options: readonly ChoiceOption<V>[];
+  multiple?: boolean;
+  value: readonly V[];
+  onChange: (value: V[]) => void;
+  /** After evaluation: the right answers and why. Locks the question. */
+  reveal?: { correct: readonly V[]; explanation?: string };
+  /** Words for marks and the result, in the reader's language. */
+  labels?: Partial<AnswerLabels>;
+}
+
+export interface AnswerLabels {
+  correct: string;
+  incorrect: string;
+  missed: string;
+  /** Said when the reveal lands: all right, or not. */
+  resultRight: string;
+  resultWrong: string;
+  explanationHeading: string;
+}
+
+/**
+ * Who will see this person's answers. The service decides; the kit says it
+ * plainly before the first question, so no one guesses.
+ */
+export interface PrivacyNoteContract {
+  identity: 'named' | 'anonymous' | 'pseudonymous';
+  /** Who reads the answers ("Your class teacher"). */
+  audience?: string;
+  labels?: Partial<Record<'named' | 'anonymous' | 'pseudonymous', string>>;
 }
 
 export interface SurfaceContract {

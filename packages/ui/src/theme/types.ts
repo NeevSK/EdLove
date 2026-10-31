@@ -459,6 +459,16 @@ export interface ProseTone {
 /** Prose on the page, and on the lamp (a person's own message bubble). */
 export type ProseRecipe = Record<'ground' | 'lamp', ProseTone>;
 
+/** Question marks and results, each legible where it is drawn. */
+export interface QuestionRecipe {
+  /** Mark words on an option (raised paper). */
+  mark: Record<'correct' | 'incorrect' | 'missed', string>;
+  /** The result line under a revealed question (the page). */
+  result: { right: string; wrong: string };
+  /** Edge of a chosen option before any reveal. */
+  chosenEdge: string;
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -474,6 +484,7 @@ export interface WorldRecipes {
   group: GroupRecipe;
   card: CardRecipe;
   prose: ProseRecipe;
+  question: QuestionRecipe;
   material: MaterialRecipe;
   motion: { settleMs: number; breatheMs: number };
 }

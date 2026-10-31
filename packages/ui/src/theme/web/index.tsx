@@ -10,7 +10,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import { worldStylesheet } from '../css';
 import { kitStylesheet } from '../kitCss';
-import type { WorldId, WorldMode, Phase } from '../types';
+import type { Phase, WorldId, WorldMode } from '../types';
 import { WORLDS } from '../worlds';
 
 /** Inline every world's variables and component rules. Render once, in <head>. */

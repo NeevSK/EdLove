@@ -8,9 +8,9 @@
  * Philosophy: Every value has meaning and serves the sanctuary aesthetic.
  */
 
-import type { Phase } from './types';
 import { compositeColorOverBackground, getTextOnBackground } from '@repo/ui/utils/colorUtils';
 import { tokens } from '../tokens';
+import type { Phase } from './types';
 
 export const colors = {
   // Primary Actions & Highlights

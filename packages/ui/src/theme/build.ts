@@ -11,13 +11,14 @@ import type {
   BoundaryKind,
   ButtonRecipe,
   CardRecipe,
-  ProseRecipe,
-  ProseTone,
   ChipRecipe,
   FieldRecipe,
   GroupRecipe,
   MaterialRecipe,
   OverlayRecipe,
+  ProseRecipe,
+  ProseTone,
+  QuestionRecipe,
   Radius,
   RowRecipe,
   SectionDensity,
@@ -552,9 +553,7 @@ function buildCard(
   let veilOpacity = 0.62;
   while (
     veilOpacity < 0.95 &&
-    [WHITE, BLACK].some(
-      (photo) => contrastRatio(t.ground, mix(photo, t.ink, veilOpacity)) < 4.5,
-    )
+    [WHITE, BLACK].some((photo) => contrastRatio(t.ground, mix(photo, t.ink, veilOpacity)) < 4.5)
   )
     veilOpacity = Math.round((veilOpacity + 0.03) * 100) / 100;
   return {
@@ -610,6 +609,20 @@ function buildProse(t: WorldTokens, s: WorldStyle, text: Record<TextRole, TypeSt
   };
 }
 
+function buildQuestion(t: WorldTokens, surface: SurfaceRecipe): QuestionRecipe {
+  const paper = surface.raised.fill ?? t.ground;
+  const on = (c: string, bg: string) => legible(c, t.ink, bg, 4.5);
+  return {
+    mark: {
+      correct: on(t.success, paper),
+      incorrect: on(t.danger, paper),
+      missed: on(t.lampDeep, paper),
+    },
+    result: { right: on(t.success, t.ground), wrong: on(t.danger, t.ground) },
+    chosenEdge: legible(t.lamp, t.ink, paper, 3),
+  };
+}
+
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
   const material = buildMaterial(t, s, mode);
@@ -628,6 +641,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     group: buildGroup(t, s, text, surface),
     card: buildCard(t, s, text, surface),
     prose: buildProse(t, s, text),
+    question: buildQuestion(t, surface),
     material,
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },
