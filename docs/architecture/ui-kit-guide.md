@@ -184,6 +184,10 @@ section 7) and signed off.
   `DocumentView`; the app registers the renderer with `MediaAdapters`
   (plan §14, "1c design"). A file address is linked or framed only through
   `safeFileUrl`.
+- **Shell placement is kept**: when re-dressing a shell part, keep its places
+  and behaviour (props, callers, haptics, navigation) and change only how it is
+  drawn; screens keep their API (`GlobalHeader` keeps its 36 callers). The
+  selected tab and other lit marks use `lampDeep` when they are text.
 - **Capture is a port**: never import a picker, recorder or player in a
   screen or a kit component. Use `FileField`, `ImageCapture`,
   `AudioRecord`, `Media`; the mobile app fills the ports once with

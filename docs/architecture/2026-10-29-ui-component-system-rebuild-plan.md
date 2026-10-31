@@ -585,8 +585,15 @@ from kit pieces in place, never redesigned.
    | Settings | \`AppSettingsScreen.shared\` (1200 lines) | \`Group\` + \`Row\` + \`Switch\` + \`Select\` + \`WorldPicker\` (all built) |
 
    Each part is one step: compose from the kit, keep its place and behaviour,
-   check it in the gallery in several worlds, then retire the legacy piece
-   with sign-off.
+   then retire the legacy piece with sign-off. (No gallery for now, by
+   decision; `ui-kit-gallery-guide.md` says how to build one later.)
+
+   **Done (`62e2c6e3d`):** `AppHeader` on both kits; `GlobalHeader` drawn by
+   it with every prop and behaviour kept; bottom tabs lit by the world (both
+   mobile variants); the web shell stylesheet entirely on world variables with
+   the kit's press and light feedback. **Next:** sub-header and strip onto
+   `Tabs`, notifications (`NotificationItem`), settings onto `Group`/`Row`,
+   the FAB onto `ActionFab` + `FabMenu`.
 3. **Layer 1 screens:** AIScreen, the DM screen and the FAB overlay onto the
    agent kit.
 4. **Layer 2 remainder:** upload pipeline (engine \`IAttachmentPort\`, offline
@@ -645,6 +652,7 @@ section plus the guide (`ui-kit-guide.md`) and the requirements ledger
 | `7ef3230b2` | Native agent kit (AG-UI shaped): bubble, list on Legend List, composer, thinking, tool call, approval, run status, actions, citation, artifact, privacy, ActionFab, FabMenu, RichTextEditor port |
 | `efed8524c` | Web agent kit with the same names and props; shared-name checks on both kits |
 | `730882848` | Media foundation: Media, FileField, ImageCapture, AudioRecord on both kits; capture ports; mobile adapters registered at boot |
+| `62e2c6e3d` | Shell refresh, placement kept: AppHeader (both kits), GlobalHeader on it, bottom tabs and web shell from the world |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4
