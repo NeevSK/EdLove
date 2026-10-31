@@ -437,6 +437,69 @@ expo-image, expo-video, expo-audio on native are installed), `FileField`
 rewards (felt through the feedback grammar, never required to answer), then
 the form-builder renderers (1c.5).
 
+### 1c roadmap: agent kit, then media foundation, then forms
+
+Agreed order (2026-10-31). Kit pieces only: screens (AIScreen, DM, FAB
+overlays) are composed from them later. Each layer finishes before the next
+starts, because the next one is built from it.
+
+**Why this order.** Chat and agent surfaces are where the person meets the
+AI every day (FAB, AIScreen, DM), and today they sit on legacy UI: the
+legacy ratchet cannot reach baseline until they move. Forms need the media
+layer (file, image and voice answers, rich text) and the agent layer
+(AI-drafted questions, review gates), so they come last and stay granular.
+
+**Layer 1 — agent kit (AG-UI shaped).** One piece per AG-UI event family
+(`2026-10-29-ai-stack-and-agui-architectural-blueprint.md`) and per chat
+parity pillar (`2026-10-29-production-2026-chat-and-agent-parity-blueprint.md`).
+The kit renders events; it never speaks the wire protocol (that stays in
+`packages/ai`, `@tanstack/ai`).
+
+| Piece | AG-UI family / pillar | Notes |
+| :--- | :--- | :--- |
+| `MessageBubble` (kit) | Text stream | own words on the lamp, replies on paper; streaming Markdown through the `Markdown` port; announces once when a message completes, never per token |
+| `MessageList` | Text stream | virtualized (FlashList); keeps the latest in view; date and author grouping |
+| `Composer` | Attachments, controls | multiline field, send / stop, attachment tray of `FileCard`s, think-depth chip, Sinhala and Tamil input |
+| `MessageActions` | Lifecycle controls | copy, regenerate, edit, stop; each with a name |
+| `ThinkingTrace` | Reasoning | collapsed by default, says "Thought for 12 s", expandable |
+| `ToolCallCard` | Tool calls | name, arguments summary, running / done / failed, result preview |
+| `ApprovalCard` | Human approval | what will change, Accept / Discard; accepted only when the service confirms (as fixed in AIScreen) |
+| `RunStatus` | Lifecycle | steps with progress, elapsed time, cancel |
+| `Citation` | Grounding | numbered badge, source sheet |
+| `ArtifactCard` | Artifacts | preview tile that opens a `DocumentView` or sandboxed frame |
+| `PrivacyState` | Incognito / temporary | always visible while not saved; same words as `PrivacyNote` |
+| `ActionFab` + `FabMenu` | FAB ingress | world-dressed floating action and its menu (primary action, AI companion, breathing reset, incognito), replacing `LotusPetalFAB` after sign-off |
+| `RichTextEditor` port | Rich text | native default: Software Mansion `EnrichedMarkdownTextInput` (installed); web adapter open |
+
+**Layer 2 — media foundation.** Done when every format below has its port,
+default adapter or honest fallback, capture where it applies, and tests, so
+a later library swap cannot regress a screen.
+
+| Format | View | Capture / pick | Foundation still needed |
+| :--- | :--- | :--- | :--- |
+| Image | `Media` (alt required, caption, aspect, blur-up) | camera, library (expo-image-picker, expo-camera) | compression before upload, permission prompts in plain words |
+| Video | `Media` (poster, captions, reduced motion: no autoplay) | library | thumbnails (expo-video-thumbnails), size limits |
+| Voice / audio | `Media` audio, waveform-free player (play, seek, speed) | `AudioRecord` (expo-audio) | transcript slot for accessibility |
+| PDF | `DocumentView` (web: browser viewer) | `FileField` pick | native PDF adapter decision |
+| Markdown | `Markdown` (native: enriched-markdown) | `RichTextEditor` | web adapter decision |
+| Office | `DocumentView` fallback card | `FileField` pick | read-only adapters decision |
+| Any file | `FileCard` | `FileField` (pick, drop on web, progress, retry, offline queue via the engine's `IAttachmentPort`) | `safeFileUrl`, `fileKindOf` (done) |
+
+**Layer 3 — forms, granular.** One renderer per engine field type (16), each
+its own step with its own tests: text, email, password, select, textarea,
+number, heading, divider, slider, likert (`Scale`), rich-text, statement,
+file, image-capture, audio-record, visualization. Then pages (`FormPager`),
+branching, attempt governance, assessment states (`ChoiceQuestion` reveal,
+`Timer`), playful moments from the engine's streak and rewards (felt, never
+required), anonymous and named identity (`PrivacyNote`), and finally the
+web builder floor (1c.5).
+
+**Cross-cutting, every layer:** world recipes only; contrast guard for each
+new pair; the feedback grammar for every outcome; failure paths (network
+drop, 503, permission denied, file too large); 2 GB devices (virtualized
+lists, no per-token re-render storms); evidence beyond G1 through the
+galleries (1.9) before a layer is called done.
+
 ## 15. Status ledger
 
 Updated with every commit. If this conversation's context is lost, this
