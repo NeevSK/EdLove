@@ -188,6 +188,10 @@ section 7) and signed off.
   and behaviour (props, callers, haptics, navigation) and change only how it is
   drawn; screens keep their API (`GlobalHeader` keeps its 36 callers). The
   selected tab and other lit marks use `lampDeep` when they are text.
+- **The shell stays quiet**: no scene or imagery behind the header or tabs;
+  the world shows through its ground, ink, lamp and light. Connection state
+  belongs on the header's top line (`AppHeader` `status`), never a banner
+  over content. Shell work is components only: screens compose them.
 - **Capture is a port**: never import a picker, recorder or player in a
   screen or a kit component. Use `FileField`, `ImageCapture`,
   `AudioRecord`, `Media`; the mobile app fills the ports once with

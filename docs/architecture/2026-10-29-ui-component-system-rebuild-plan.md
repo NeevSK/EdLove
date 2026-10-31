@@ -591,9 +591,14 @@ from kit pieces in place, never redesigned.
    **Done (`62e2c6e3d`):** `AppHeader` on both kits; `GlobalHeader` drawn by
    it with every prop and behaviour kept; bottom tabs lit by the world (both
    mobile variants); the web shell stylesheet entirely on world variables with
-   the kit's press and light feedback. **Next:** sub-header and strip onto
-   `Tabs`, notifications (`NotificationItem`), settings onto `Group`/`Row`,
-   the FAB onto `ActionFab` + `FabMenu`.
+   the kit's press and light feedback. **Then (`027223ace`):** no scene band
+   behind the header (a quiet world ground, by Naveen's call); actions in the
+   familiar round wells; the connection said on the header's top line instead
+   of a banner; the tab layout's own header buttons as kit actions; the
+   sub-tab strip on the new `TaskTabs`. **Next, components only (no screens):**
+   `DomainSubHeader` (the compact header variant) onto `AppHeader`, a
+   `NotificationItem`, settings pieces onto `Group`/`Row`, the FAB onto
+   `ActionFab` + `FabMenu`, and the web shell's connection line.
 3. **Layer 1 screens:** AIScreen, the DM screen and the FAB overlay onto the
    agent kit.
 4. **Layer 2 remainder:** upload pipeline (engine \`IAttachmentPort\`, offline
@@ -653,6 +658,7 @@ section plus the guide (`ui-kit-guide.md`) and the requirements ledger
 | `efed8524c` | Web agent kit with the same names and props; shared-name checks on both kits |
 | `730882848` | Media foundation: Media, FileField, ImageCapture, AudioRecord on both kits; capture ports; mobile adapters registered at boot |
 | `62e2c6e3d` | Shell refresh, placement kept: AppHeader (both kits), GlobalHeader on it, bottom tabs and web shell from the world |
+| `027223ace` | Header: no scene band, round wells, connection status line, kit actions from the tab layout; TaskTabs (both kits) for the sub-tab strip |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4
