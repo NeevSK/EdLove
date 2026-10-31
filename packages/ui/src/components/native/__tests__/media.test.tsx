@@ -14,6 +14,7 @@ vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn(
 // The test engine cannot draw the native markdown view; the default adapter is
 // replaced by name so the port's own behaviour is what is tested.
 vi.mock('../Media/EnrichedMarkdownAdapter', () => ({ EnrichedMarkdownAdapter: undefined }));
+vi.mock('../Media/EnrichedRichTextAdapter', () => ({ EnrichedRichTextAdapter: undefined }));
 
 const PDF = {
   name: 'Term plan.pdf',

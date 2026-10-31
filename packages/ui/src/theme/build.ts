@@ -15,6 +15,7 @@ import type {
   FieldRecipe,
   GroupRecipe,
   MaterialRecipe,
+  MessageRecipe,
   OverlayRecipe,
   ProseRecipe,
   ProseTone,
@@ -623,6 +624,34 @@ function buildQuestion(t: WorldTokens, surface: SurfaceRecipe): QuestionRecipe {
   };
 }
 
+function buildMessage(
+  t: WorldTokens,
+  s: WorldStyle,
+  text: Record<TextRole, TypeStyle>,
+  surface: SurfaceRecipe,
+): MessageRecipe {
+  const paper = surface.raised.fill ?? t.ground;
+  const corner = typeof s.corner.surface === 'number' ? s.corner.surface : s.corner.surface[0];
+  const radius = Math.min(20, Math.max(8, corner));
+  const hair = { width: s.lineWeight, color: t.line };
+  const well = mix(t.ground, t.ink, 0.04);
+  return {
+    self: { fill: t.lamp, ink: t.onLamp, edge: null },
+    other: { fill: paper, ink: t.ink, edge: hair },
+    radius,
+    tucked: Math.min(4, radius),
+    padding: { x: 14, y: 10 },
+    meta: text.caption,
+    card: { fill: well, edge: hair, radius: shrink(s.corner.surface, 4) },
+    approval: { fill: paper, edge: { width: 2, color: legible(t.lamp, t.ink, paper, 3) } },
+    state: {
+      running: legible(t.lampDeep, t.ink, well, 4.5),
+      done: legible(t.success, t.ink, well, 4.5),
+      failed: legible(t.danger, t.ink, well, 4.5),
+    },
+  };
+}
+
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
   const material = buildMaterial(t, s, mode);
@@ -642,6 +671,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     card: buildCard(t, s, text, surface),
     prose: buildProse(t, s, text),
     question: buildQuestion(t, surface),
+    message: buildMessage(t, s, text, surface),
     material,
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },

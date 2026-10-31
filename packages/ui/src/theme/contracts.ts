@@ -630,3 +630,241 @@ export interface SwipeRowContract {
   /** The row's accessible name. */
   label: string;
 }
+
+// ---------------------------------------------------------------------------
+// Agent kit (1c layer 1). Shaped by the AG-UI event families: text stream,
+// tool calls, human approval, lifecycle. The kit renders what the agent
+// client (packages/ai) tells it; it never speaks the wire protocol.
+// ---------------------------------------------------------------------------
+
+/** Who wrote a message: the person, the assistant, or someone else in a group. */
+export type MessageAuthor = 'self' | 'assistant' | 'other';
+
+/** Where a message is in its life. Only `complete` is announced, once. */
+export type MessageState = 'streaming' | 'complete' | 'stopped' | 'failed';
+
+export interface MessageBubbleContract {
+  author: MessageAuthor;
+  /** Markdown. Drawn through the `Markdown` port, never as raw HTML. */
+  content: string;
+  state?: MessageState;
+  /** Shown for `other` in group conversations. */
+  authorName?: string;
+  /** Already formatted for the reader ("9:41", "Yesterday"). */
+  time?: string;
+  attachments?: readonly FileRef[];
+  onOpenAttachment?: (file: FileRef) => void;
+  /** Offered when the message failed or was stopped. */
+  onRetry?: () => void;
+  labels?: Partial<AgentLabels>;
+}
+
+export interface MessageListContract<T> {
+  items: readonly T[];
+  keyOf: (item: T) => string;
+  renderItem: (item: T, index: number) => ReactNode;
+  /** Names the conversation ("Conversation with Gurudevi"). */
+  label: string;
+  /** Shown before the first message. */
+  empty?: EmptyStateContract;
+  /** Load older messages when the top comes near. */
+  onStartReached?: () => void;
+}
+
+export interface ComposerContract {
+  value: string;
+  onChange: (value: string) => void;
+  onSend: () => void;
+  /** Field name for assistive technology ("Message"). */
+  label: string;
+  placeholder?: string;
+  /** A reply is streaming: Send becomes Stop. */
+  busy?: boolean;
+  onStop?: () => void;
+  attachments?: readonly FileRef[];
+  onAttach?: () => void;
+  onRemoveAttachment?: (file: FileRef) => void;
+  /** Characters allowed; the count shows near the end and blocks sending past it. */
+  maxLength?: number;
+  disabled?: boolean;
+  labels?: Partial<AgentLabels>;
+}
+
+export interface MessageActionsContract {
+  onCopy?: () => void;
+  onRegenerate?: () => void;
+  onEdit?: () => void;
+  labels?: Partial<AgentLabels>;
+}
+
+export interface ThinkingTraceContract {
+  /** The reasoning text (Markdown), as streamed so far. */
+  content: string;
+  state: 'thinking' | 'done';
+  /** How long it took, once done. */
+  seconds?: number;
+  labels?: Partial<AgentLabels>;
+}
+
+export type ToolCallState = 'running' | 'done' | 'failed';
+
+export interface ToolCallContract {
+  /** Said in words ("Searching attendance records"), not a function name. */
+  title: string;
+  state: ToolCallState;
+  /** A short summary of the arguments ("Grade 7B, this week"). */
+  detail?: string;
+  /** A short summary of the result, once done. */
+  result?: string;
+  onRetry?: () => void;
+  labels?: Partial<AgentLabels>;
+}
+
+export type ApprovalState =
+  | 'pending'
+  | 'submitting'
+  | 'accepted'
+  | 'discarded'
+  | 'failed'
+  | 'expired';
+
+/**
+ * Human in the loop: the agent stops and asks. Accepted shows only once the
+ * service confirms; failure and expiry say so and can be tried again.
+ */
+export interface ApprovalCardContract {
+  title: string;
+  /** What will change if accepted (Markdown). */
+  changes?: string;
+  /** Where it will land ("Teacher notes, Grade 8 Science"). */
+  target?: string;
+  state: ApprovalState;
+  onAccept: () => void;
+  onDiscard: () => void;
+  labels?: Partial<AgentLabels>;
+}
+
+export interface RunStep {
+  label: string;
+  state: 'pending' | 'running' | 'done' | 'failed';
+}
+
+export interface RunStatusContract {
+  steps: readonly RunStep[];
+  /** Formatted by the caller ("1 min 12 s"). */
+  elapsed?: string;
+  onCancel?: () => void;
+  labels?: Partial<AgentLabels>;
+}
+
+export interface CitationContract {
+  /** 1-based. */
+  index: number;
+  title: string;
+  source?: string;
+  onOpen?: () => void;
+}
+
+export interface ArtifactCardContract {
+  title: string;
+  /** A document kind, or `html` for a generated page (always sandboxed). */
+  kind: FileKind | 'html';
+  summary?: string;
+  onOpen: () => void;
+  labels?: Partial<AgentLabels>;
+}
+
+export type ChatPrivacy = 'saved' | 'temporary' | 'incognito';
+
+/** Always visible while a chat is not saved, in the same words as `PrivacyNote`. */
+export interface PrivacyStateContract {
+  mode: ChatPrivacy;
+  onChange?: (mode: ChatPrivacy) => void;
+  labels?: Partial<AgentLabels>;
+}
+
+export interface FabAction {
+  key: string;
+  label: string;
+  hint?: string;
+  icon?: ComponentType<KitIconProps>;
+  /** `lamp` for the primary action; `danger` for one that ends or deletes. */
+  tone?: 'plain' | 'lamp' | 'danger';
+  onPress: () => void;
+}
+
+/** The floating action: one lit control that opens what this screen offers. */
+export interface ActionFabContract {
+  label: string;
+  icon?: ComponentType<KitIconProps>;
+  onPress: () => void;
+  /** A quiet mark that something needs the person (gaps, unread). */
+  signal?: boolean;
+  signalLabel?: string;
+  hidden?: boolean;
+}
+
+export interface FabMenuContract {
+  open: boolean;
+  onClose: () => void;
+  /** Names the menu ("Classroom actions"). */
+  label: string;
+  actions: readonly FabAction[];
+}
+
+/** Rich text editing (Markdown out). Drawn by the adapter the app chooses. */
+export interface RichTextEditorContract {
+  label: string;
+  value: string;
+  onChange: (markdown: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+}
+
+export interface RichTextAdapterProps {
+  value: string;
+  onChange: (markdown: string) => void;
+  placeholder?: string;
+  editable: boolean;
+  accessibilityLabel: string;
+}
+
+export interface AgentLabels {
+  you: string;
+  assistant: string;
+  send: string;
+  stop: string;
+  attach: string;
+  remove: string;
+  retry: string;
+  copy: string;
+  regenerate: string;
+  edit: string;
+  cancel: string;
+  stopped: string;
+  failed: string;
+  /** "{n} characters left". */
+  charactersLeft: (n: number) => string;
+  thinking: string;
+  /** "Thought for {s} s". */
+  thoughtFor: (seconds: number) => string;
+  showThinking: string;
+  hideThinking: string;
+  running: string;
+  done: string;
+  toolFailed: string;
+  accept: string;
+  discard: string;
+  submitting: string;
+  accepted: string;
+  discarded: string;
+  approvalFailed: string;
+  expired: string;
+  open: string;
+  sandboxed: string;
+  privacy: Record<ChatPrivacy, string>;
+  /** "Source {n}: {title}". */
+  source: (n: number, title: string) => string;
+  menu: string;
+  close: string;
+}

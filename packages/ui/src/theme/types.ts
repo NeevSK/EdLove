@@ -469,6 +469,26 @@ export interface QuestionRecipe {
   chosenEdge: string;
 }
 
+/** Conversation bubbles and agent cards. */
+export interface MessageRecipe {
+  /** The person's own words: on the world's lamp. */
+  self: { fill: string; ink: string; edge: Edge | null };
+  /** The assistant and others: on raised paper. */
+  other: { fill: string; ink: string; edge: Edge | null };
+  /** Corners; the corner nearest the author is tucked. */
+  radius: number;
+  tucked: number;
+  padding: { x: number; y: number };
+  /** Names and times under a bubble. */
+  meta: TypeStyle;
+  /** Tool, thinking and run cards: a quiet well. */
+  card: { fill: string; edge: Edge; radius: Radius };
+  /** Approval cards: raised, edged in the lamp. */
+  approval: { fill: string; edge: Edge };
+  /** Running, done and failed marks. */
+  state: { running: string; done: string; failed: string };
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -485,6 +505,7 @@ export interface WorldRecipes {
   card: CardRecipe;
   prose: ProseRecipe;
   question: QuestionRecipe;
+  message: MessageRecipe;
   material: MaterialRecipe;
   motion: { settleMs: number; breatheMs: number };
 }

@@ -10,6 +10,24 @@
 
 export { initialsOf } from '../shared/initials';
 export { toast } from '../shared/toasts';
+export {
+  ApprovalCard,
+  ArtifactCard,
+  Citation,
+  MessageActions,
+  PrivacyState,
+  RunStatus,
+  ThinkingTrace,
+  ToolCallCard,
+} from './Agent/AgentCards';
+export { Composer, type ComposerProps } from './Agent/Composer';
+export { ActionFab, type ActionFabProps, FabMenu, type FabMenuProps } from './Agent/Fab';
+export {
+  MessageBubble,
+  type MessageBubbleProps,
+  MessageList,
+  type MessageListProps,
+} from './Agent/Message';
 export { Button, type ButtonProps } from './Button/Button';
 export { Card, type CardProps } from './Card/Card';
 export { Carousel, type CarouselProps } from './Carousel/Carousel';
@@ -27,8 +45,10 @@ export { List, type ListProps } from './List/List';
 export { type MediaAdapterSet, MediaAdapters, useMediaAdapters } from './Media/adapters';
 export { DocumentView, type DocumentViewProps } from './Media/DocumentView';
 export { EnrichedMarkdownAdapter, proseMarkdownStyle } from './Media/EnrichedMarkdownAdapter';
+export { EnrichedRichTextAdapter } from './Media/EnrichedRichTextAdapter';
 export { FILE_CARD_ENGLISH, FileCard, type FileCardProps } from './Media/FileCard';
 export { Markdown, type MarkdownProps } from './Media/Markdown';
+export { RichTextEditor, type RichTextEditorProps } from './Media/RichTextEditor';
 export { Menu, type MenuProps } from './Menu/Menu';
 export { Perch } from './Perch/Perch';
 export { Popover, type PopoverProps } from './Popover/Popover';

@@ -67,6 +67,14 @@ function pairs(w: ResolvedWorld): Pair[] {
   add('result right', r.question.result.right, t.ground, TEXT);
   add('result wrong', r.question.result.wrong, t.ground, TEXT);
   add('chosen option edge', r.question.chosenEdge, raised, MARK);
+  const m = r.message;
+  add('own message', m.self.ink, m.self.fill, TEXT);
+  add('reply message', m.other.ink, m.other.fill, TEXT);
+  add('message meta', m.meta.color, t.ground, TEXT);
+  for (const [k, c] of Object.entries(m.state)) add(`agent ${k}`, c, m.card.fill, TEXT);
+  add('agent card text', t.ink, m.card.fill, TEXT);
+  add('agent card soft text', t.inkSoft, m.card.fill, TEXT);
+  add('approval edge', m.approval.edge.color, m.approval.fill, MARK);
   for (const [where, bg] of [
     ['ground', t.ground],
     ['lamp', t.lamp],

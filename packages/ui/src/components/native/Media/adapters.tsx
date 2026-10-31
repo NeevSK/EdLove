@@ -3,8 +3,10 @@ import type {
   DocumentAdapterProps,
   DocumentKind,
   NativeMarkdownAdapterProps,
+  RichTextAdapterProps,
 } from '../../../theme/contracts';
 import { EnrichedMarkdownAdapter } from './EnrichedMarkdownAdapter';
+import { EnrichedRichTextAdapter } from './EnrichedRichTextAdapter';
 
 /**
  * The renderers this app has chosen for media and documents (the adapters
@@ -13,11 +15,15 @@ import { EnrichedMarkdownAdapter } from './EnrichedMarkdownAdapter';
  */
 export interface MediaAdapterSet {
   markdown?: ComponentType<NativeMarkdownAdapterProps>;
+  richText?: ComponentType<RichTextAdapterProps>;
   documents?: Partial<Record<DocumentKind, ComponentType<DocumentAdapterProps>>>;
 }
 
-/** Installed with the kit: enriched-markdown draws Markdown. Documents have no default. */
-const DEFAULTS: MediaAdapterSet = { markdown: EnrichedMarkdownAdapter };
+/** Installed with the kit: Software Mansion's enriched-markdown reads and edits Markdown. Documents have no default. */
+const DEFAULTS: MediaAdapterSet = {
+  markdown: EnrichedMarkdownAdapter,
+  richText: EnrichedRichTextAdapter,
+};
 
 const MediaAdaptersContext = createContext<MediaAdapterSet>(DEFAULTS);
 
@@ -37,6 +43,7 @@ export function MediaAdapters({
   const value = useMemo(
     () => ({
       markdown: adapters.markdown ?? parent.markdown,
+      richText: adapters.richText ?? parent.richText,
       documents: { ...parent.documents, ...adapters.documents },
     }),
     [adapters, parent],
