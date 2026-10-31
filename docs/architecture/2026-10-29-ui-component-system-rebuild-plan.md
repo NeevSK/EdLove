@@ -563,6 +563,44 @@ drop, 503, permission denied, file too large); 2 GB devices (virtualized
 lists, no per-token re-render storms); evidence beyond G1 through the
 galleries (1.9) before a layer is called done.
 
+### Order from here (2026-10-31)
+
+Naveen keeps layout and placement; the visuals are what need refining, and
+they must come from the world on both platforms. So the shell is re-dressed
+from kit pieces in place, never redesigned.
+
+1. **Galleries (1.9) first.** Visual refinement is judged by eye, so every kit
+   piece and every shell piece is shown in every world, mode and phase, on a
+   phone and in the browser, before and after. This is also the G4/G5
+   evidence the agent and media layers still lack.
+2. **Shell refresh, both platforms, placement kept.**
+
+   | Shell part | Today | Kit pieces it becomes |
+   | :--- | :--- | :--- |
+   | Global header | \`GlobalHeader\` (447 lines, legacy) | \`AppHeader\` (new): title, back, actions, avatar, notification bell with a spoken count |
+   | Domain sub-header and strip | \`DomainSubHeader\`, \`ActiveSubTabStrip\` (legacy) | \`Tabs\`, \`SegmentedControl\` |
+   | Bottom tabs | \`NativeShellTabs\` (system tabs, world colours) | same system tabs; icons and the selected mark from the world; web: \`SanctuaryShell\` nav on kit \`Tabs\` |
+   | Floating action | \`LotusPetalFAB\` (legacy) | \`ActionFab\` + \`FabMenu\` (built) |
+   | Notifications | \`NotificationsScreen\` (+ \`.web.tsx\`) | \`NotificationItem\` (new: \`Row\` with unread signal, time, actions), grouped by day in \`Group\`s on \`List\` |
+   | Settings | \`AppSettingsScreen.shared\` (1200 lines) | \`Group\` + \`Row\` + \`Switch\` + \`Select\` + \`WorldPicker\` (all built) |
+
+   Each part is one step: compose from the kit, keep its place and behaviour,
+   check it in the gallery in several worlds, then retire the legacy piece
+   with sign-off.
+3. **Layer 1 screens:** AIScreen, the DM screen and the FAB overlay onto the
+   agent kit.
+4. **Layer 2 remainder:** upload pipeline (engine \`IAttachmentPort\`, offline
+   outbox), video thumbnails, native sidecar captions.
+5. **Layer 3, forms and quizzes, granular.** Built so far: \`Scale\`,
+   \`ChoiceQuestion\` with reveal, \`PrivacyNote\`. Still to build, one step
+   each: short answer and number answers with their marks, true/false,
+   ordering and matching (if the engine's rubrics carry them), \`Timer\`
+   (announces at marks), \`FormPager\` (page n of m, back and next, progress),
+   the review summary (score, each question, explanations), playful moments
+   (streak and speed bonus from the engine, felt and shown, never required),
+   attempt states (locked, drift, offline draft), then one renderer per
+   engine field type (16) and the web builder floor (1c.5).
+
 ## 15. Status ledger
 
 Updated with every commit. If this conversation's context is lost, this
