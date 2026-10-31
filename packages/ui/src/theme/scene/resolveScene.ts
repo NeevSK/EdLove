@@ -96,6 +96,7 @@ export interface Scene {
   readonly room: SceneRoom;
   readonly view: SceneView;
   readonly presence: ScenePresence;
+  readonly ground: SceneGround;
   readonly paint: ScenePaint;
   /** The solid colour when `paint` is `colour`. */
   readonly colour: string | null;
@@ -244,6 +245,7 @@ export function resolveScene(input: SceneInput): Scene {
     room: input.room,
     view: viewOf(input),
     presence: input.presence,
+    ground,
     paint,
     colour,
     tier,

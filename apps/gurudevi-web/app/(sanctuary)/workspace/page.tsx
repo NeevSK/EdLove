@@ -1,4 +1,5 @@
 import { cookies, headers } from 'next/headers';
+import { GURUDEVI_SCHOOL_WHATSAPP } from '@repo/core/config/publicUrls';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
@@ -9,6 +10,7 @@ import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { WorkspaceFloor } from './WorkspaceFloor';
+import { SchoolSetupContact } from './SchoolSetupContact';
 
 export const metadata = { title: 'Workspace | Gurudevi Sanctuary' };
 
@@ -107,6 +109,7 @@ export default async function WorkspacePage({
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
             <Link href="/self">Return to Self</Link>
             <Link href="/welcome">Guest House</Link>
+            <SchoolSetupContact phone={GURUDEVI_SCHOOL_WHATSAPP} />
           </div>
         }
         displayName={entry.displayName}

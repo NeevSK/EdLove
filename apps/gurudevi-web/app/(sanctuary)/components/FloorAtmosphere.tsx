@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import styles from './floor-atmosphere.module.css';
 
 export type FloorAtmosphereKind = 'none' | 'washi-grain' | 'aurora-mesh' | 'celestial-embers';
@@ -33,9 +34,11 @@ export function FloorAtmosphere({
   preset?: SanctuaryPreset;
 }>) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  // Embers are ambient: verger allows them, and until verger is known nothing optional runs.
+  const ambient = useGurudeviView()?.experience.allowAmbientEffects ?? false;
 
   useEffect(() => {
-    if (kind !== 'celestial-embers') return;
+    if (kind !== 'celestial-embers' || !ambient) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -125,7 +128,7 @@ export function FloorAtmosphere({
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
-  }, [kind, preset]);
+  }, [kind, preset, ambient]);
 
   if (kind === 'none') {
     return null;

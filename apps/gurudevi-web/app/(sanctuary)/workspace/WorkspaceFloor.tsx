@@ -52,6 +52,7 @@ import {
   getWorkspaceOverviewPosture,
   WORKSPACE_FEATURES,
 } from './workspaceFeatureRegistry';
+import { WorkspaceNav } from './WorkspaceNav';
 
 type AuthorizedEntryScope = Readonly<{ bondId: string; entityId: string }>;
 
@@ -891,6 +892,7 @@ export function WorkspaceFloor({
                 : 'Open a classroom practice from your selected school scope. Keep the roster, day’s marks, and next action together.'}
             </p>
           </header>
+          <WorkspaceNav roleFilter={activeRole} />
           <LivingCard
             className={styles.overview}
             variant={

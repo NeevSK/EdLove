@@ -9,3 +9,4 @@ export * from '@repo/classroom/hooks/usePrincipalObservations';
 export * from '@repo/classroom/hooks/useResources';
 export * from '@repo/classroom/hooks/useSchoolInvites';
 export * from '@repo/classroom/hooks/useSchoolStats';
+export * from '@repo/classroom/hooks/useTeacherPeriodDispatcher';

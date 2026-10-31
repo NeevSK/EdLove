@@ -75,6 +75,7 @@ export function TeacherWorkspaceShell({
   ];
 
   const mobilePanels = [
+    surfaceSlots['active-period'],
     surfaceSlots['primary-actions'],
     surfaceSlots['classroom-registry'],
     surfaceSlots['temporal-context'],
@@ -135,6 +136,7 @@ export function TeacherWorkspaceShell({
       {isDesktop ? (
         <HStack className="items-start gap-8">
           <VStack className="flex-[1.75] gap-8">
+            <SurfacePanel slot={surfaceSlots['active-period']} />
             <SurfacePanel slot={surfaceSlots['classroom-registry']} emphasis="primary" />
             <HStack className="items-start gap-8">
               <Box className="flex-[1.1]">
@@ -180,6 +182,7 @@ function createSurfaceSlotMap(
     },
     {
       'temporal-context': null,
+      'active-period': null,
       'primary-actions': null,
       'support-tools': null,
       pulse: null,

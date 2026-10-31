@@ -1,6 +1,9 @@
 import { useAuthStore } from '@repo/core/store';
 import { useScaffoldDismissal, useTracking } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
+import { usePublishAIContext } from '@repo/core';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { useRouter } from 'expo-router';
 
 import { FeaturePicker } from '@repo/self/components/FeaturePicker';
 import { RoleWeightEditor } from '@repo/self/components/RoleWeightEditor';
@@ -157,6 +160,50 @@ export default function SelfScreenUnified() {
     () => getPinnedFeatures(),
     [getPinnedFeatures, store.features.customOrder, store.features.hiddenIds],
   );
+  const router = useRouter();
+
+  // Publish non-private 'today' zone Self signals into the Policy-Driven AI Context Engine
+  const todaySpaceLabels = useMemo(
+    () =>
+      featureSet.selected
+        .filter((f) => (store.features.zoneOverrides[f.id] ?? f.defaultZone) !== 'private')
+        .map((f) => f.label)
+        .slice(0, 6),
+    [featureSet.selected, store.features.zoneOverrides],
+  );
+
+  const selfContextSummary = useMemo(
+    () => `Sadhana · ${mindfulMinutesToday}m mindful · ${todaySpaceLabels.length} active spaces`,
+    [mindfulMinutesToday, todaySpaceLabels.length],
+  );
+
+  usePublishAIContext('self', selfContextSummary, [
+    {
+      slotId: 'self.mindful_pulse',
+      summary: `${mindfulMinutesToday} mindful minutes today · Somatic recovery level: ${recoverySignal?.level ?? 'serene'}`,
+    },
+    {
+      slotId: 'self.active_spaces',
+      summary:
+        todaySpaceLabels.length > 0
+          ? `Active Today & Growth spaces: ${todaySpaceLabels.join(', ')}`
+          : 'Exploring personal sanctuary spaces',
+    },
+  ]);
+
+  useRegisterFAB({
+    tabType: 'self',
+    visible: true,
+    onBreathingReset: () => setBreathingOpen(true),
+    contextSummary: selfContextSummary,
+    onOpenAICompanion: (opts?: { mode?: 'saved' | 'incognito'; tab?: 'chat' | 'agent'; threadId?: string }) => {
+      const params = new URLSearchParams();
+      if (opts?.mode) params.set('mode', opts.mode);
+      if (opts?.tab) params.set('tab', opts.tab);
+      const qs = params.toString();
+      router.push((qs ? `/a-i-assistant?${qs}` : '/a-i-assistant') as any);
+    },
+  });
 
   const handleToggleHidden = useCallback(
     (id: string, hidden: boolean) => store.setHidden(id, hidden),

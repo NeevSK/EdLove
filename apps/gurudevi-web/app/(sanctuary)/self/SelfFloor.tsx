@@ -65,6 +65,7 @@ import { VoiceJournaling } from './components/VoiceJournaling';
 import { WarmMirrorCard } from './components/WarmMirrorCard';
 import { WindDownRitual } from './components/WindDownRitual';
 import { WisdomSeeds } from './components/WisdomSeeds';
+import { SelfCatalogRail } from './components/SelfCatalogRail';
 import styles from './self-floor.module.css';
 
 const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
@@ -669,6 +670,12 @@ export function SelfFloor({
           data-layout-mode={canvas.layoutMode}
           key={focusedTask?.taskKey ?? 'self-feature'}
         >
+          <SelfCatalogRail
+            canvas={canvas}
+            focusedTask={focusedTask}
+            onOpenFeature={openFeature}
+            visible={!showOverview}
+          />
           <div className={styles.activePracticeStage}>{practiceContent}</div>
         </div>
       )}

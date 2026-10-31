@@ -1,4 +1,5 @@
 import { identityAPI } from '@repo/core/api/client';
+import { usePublishAIContext } from '@repo/core';
 import { useIsGuest } from '@repo/core/hooks';
 import { useExperienceState } from '@repo/core/lib/experienceState';
 import { useTemporalStore } from '@repo/core/logic';
@@ -46,10 +47,34 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
     setUiState((prev) => ({ ...prev, isScannerOpen: value }));
   }, []);
 
+  const workspaceContextSummary = `${stats.activeClasses} classrooms · ${stats.totalStudents} students${classrooms[0] ? ` · ${classrooms[0].name}` : ''}`;
+
+  usePublishAIContext('workspace', workspaceContextSummary, [
+    {
+      slotId: 'workspace.active_classroom',
+      summary: workspaceContextSummary,
+      data: {
+        activeClasses: stats.activeClasses,
+        totalStudents: stats.totalStudents,
+        primaryClassroomId: classrooms[0]?.id,
+        primaryClassroomName: classrooms[0]?.name,
+      },
+    },
+  ]);
+
   useRegisterFAB({
     tabType: 'classroom',
+    primaryActionLabel: 'Create or Join Classroom',
     onPress: () => {
       setUiState((prev) => ({ ...prev, modalMode: 'create', isCreateModalOpen: true }));
+    },
+    contextSummary: workspaceContextSummary,
+    onOpenAICompanion: (opts?: { mode?: 'saved' | 'incognito'; tab?: 'chat' | 'agent'; threadId?: string }) => {
+      const params = new URLSearchParams();
+      if (opts?.mode) params.set('mode', opts.mode);
+      if (opts?.tab) params.set('tab', opts.tab);
+      const qs = params.toString();
+      router.push((qs ? `/a-i-assistant?${qs}` : '/a-i-assistant') as any);
     },
     icon: <Icon as={Plus} size={24} color="#FFF" />,
     visible: !isGuest && !isPastView,

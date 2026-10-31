@@ -1,4 +1,4 @@
-import type { ActionItem, TabType } from '@repo/ui/types/fab';
+import type { ActionItem, AICompanionLaunchOptions, TabType } from '@repo/ui/types/fab';
 import React, {
   createContext,
   type ReactNode,
@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 
-export type { ActionItem, TabType };
+export type { ActionItem, AICompanionLaunchOptions, TabType };
 
 interface FABState {
   actions: ActionItem[];
@@ -16,7 +16,10 @@ interface FABState {
   icon?: ReactNode;
   visible: boolean;
   onPress?: () => void;
+  primaryActionLabel?: string;
   onBreathingReset?: () => void;
+  onOpenAICompanion?: (options?: AICompanionLaunchOptions) => void;
+  contextSummary?: string;
   hasActiveGaps?: boolean;
   gapPriority?: 'low' | 'medium' | 'high';
 }

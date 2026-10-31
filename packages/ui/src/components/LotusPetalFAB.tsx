@@ -2,7 +2,7 @@ import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { UniversalModal } from '@repo/ui/components/UniversalModal';
 import { useFAB } from '@repo/ui/context/FABContext';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
-import { Wind } from '@repo/ui/icons';
+import { EyeOff, MessageSquare, Sparkles, Wind, Zap } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import type React from 'react';
@@ -32,11 +32,12 @@ import { useWorld } from '../theme/native/WorldContext';
 // TYPES
 // ============================================================================
 
-import type { ActionItem, TabType } from '@repo/ui/types/fab';
+import type { ActionItem, AICompanionLaunchOptions, TabType } from '@repo/ui/types/fab';
 
 interface LotusPetalFABProps {
   currentTab?: TabType | null;
   onPress?: () => void;
+  primaryActionLabel?: string;
   icon?: React.ReactNode;
   actions?: ActionItem[];
   scrollY?: SharedValue<number>;
@@ -45,6 +46,8 @@ interface LotusPetalFABProps {
   hasActiveGaps?: boolean;
   gapPriority?: 'low' | 'medium' | 'high';
   onBreathingReset?: () => void;
+  onOpenAICompanion?: (options?: AICompanionLaunchOptions) => void;
+  contextSummary?: string;
   useGlobal?: boolean;
   className?: string;
 }
@@ -145,12 +148,15 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
   ({
     currentTab: propTab,
     onPress: propPress,
+    primaryActionLabel: propPrimaryLabel,
     icon: customIcon,
     actions: propActions,
     disabled = false,
     bottomInset = 24,
     hasActiveGaps: propGaps,
     onBreathingReset: propReset,
+    onOpenAICompanion: propOpenAI,
+    contextSummary: propContextSummary,
     useGlobal = true,
     className,
   }: LotusPetalFABProps) => {
@@ -170,7 +176,10 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     const actions = propActions || globalState.actions;
     const hasActiveGaps = propGaps ?? globalState.hasActiveGaps;
     const onPress = propPress || globalState.onPress;
+    const primaryActionLabel = propPrimaryLabel || globalState.primaryActionLabel;
     const onBreathingReset = propReset || globalState.onBreathingReset;
+    const onOpenAICompanion = propOpenAI || globalState.onOpenAICompanion;
+    const contextSummary = propContextSummary || globalState.contextSummary;
     const isVisible = useGlobal
       ? globalState.visible &&
         propTab !== null &&
@@ -239,7 +248,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
       if (disabled) return;
       hapticLight();
 
-      if (actions && actions.length > 0) {
+      if ((actions && actions.length > 0) || onOpenAICompanion || onBreathingReset) {
         scheduleOnRN(setIsDrawerVisible, true);
         return;
       }
@@ -248,7 +257,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
         pressScale.set(withSequence(withTiming(0.9, { duration: 100 }), withSpring(1)));
         onPress();
       }
-    }, [disabled, onPress, actions, pressScale]);
+    }, [disabled, onPress, actions, onOpenAICompanion, onBreathingReset, pressScale]);
 
     useEffect(() => {
       let initialized = false;
@@ -445,6 +454,24 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
                   {config.label} Actions
                 </Text>
 
+                {onPress && (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => {
+                      scheduleOnRN(setIsDrawerVisible, false);
+                      onPress();
+                    }}
+                    className="p-4 rounded-xl bg-phase-interactive/15 active:bg-phase-interactive/25"
+                  >
+                    <HStack className="items-center gap-3">
+                      <Text className="text-lg">{config.emoji}</Text>
+                      <Text className="text-phase-text-primary font-bold">
+                        {primaryActionLabel || `New ${config.label} Action`}
+                      </Text>
+                    </HStack>
+                  </Pressable>
+                )}
+
                 {onBreathingReset && (
                   <Pressable
                     accessibilityRole="button"
@@ -461,6 +488,93 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
                 {actions?.map((action: ActionItem, idx: number) => (
                   <FABActionItem key={idx} action={action} onPress={handleActionPress} />
                 ))}
+
+                {onOpenAICompanion && (
+                  <VStack className="gap-2 pt-2 border-t border-white/10">
+                    <Text className="text-xs font-bold uppercase tracking-wider text-phase-text-secondary">
+                      Sanctuary AI Companion
+                    </Text>
+
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => {
+                        scheduleOnRN(setIsDrawerVisible, false);
+                        onOpenAICompanion({ mode: 'saved', tab: 'chat' });
+                      }}
+                      className="p-4 rounded-xl bg-amber-500/15 active:bg-amber-500/25"
+                    >
+                      <VStack className="gap-1">
+                        <HStack className="items-center gap-3">
+                          <Sparkles size={20} color={world.lampDeep} strokeWidth={2} />
+                          <Text className="text-phase-text-primary font-bold">
+                            Ask AI Companion ({config.label})
+                          </Text>
+                        </HStack>
+                        {contextSummary ? (
+                          <Text className="text-xs text-phase-text-secondary pl-8">
+                            Context ready: {contextSummary}
+                          </Text>
+                        ) : null}
+                      </VStack>
+                    </Pressable>
+
+                    {currentTab === 'community' && (
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() => {
+                          scheduleOnRN(setIsDrawerVisible, false);
+                          onOpenAICompanion({
+                            mode: 'saved',
+                            tab: 'chat',
+                            threadId: 'mentor-dm',
+                          });
+                        }}
+                        className="p-4 rounded-xl hover:bg-white/5 active:bg-white/10"
+                      >
+                        <HStack className="items-center gap-3">
+                          <MessageSquare size={20} color={world.lampDeep} strokeWidth={2} />
+                          <Text className="text-phase-text-primary font-semibold">
+                            Open Persistent AI Mentor DM
+                          </Text>
+                        </HStack>
+                      </Pressable>
+                    )}
+
+                    {(currentTab === 'classroom' || currentTab === 'library') && (
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() => {
+                          scheduleOnRN(setIsDrawerVisible, false);
+                          onOpenAICompanion({ mode: 'saved', tab: 'agent' });
+                        }}
+                        className="p-4 rounded-xl hover:bg-white/5 active:bg-white/10"
+                      >
+                        <HStack className="items-center gap-3">
+                          <Zap size={20} color={world.lampDeep} strokeWidth={2} />
+                          <Text className="text-phase-text-primary font-semibold">
+                            Commission Deep Agent Mission
+                          </Text>
+                        </HStack>
+                      </Pressable>
+                    )}
+
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => {
+                        scheduleOnRN(setIsDrawerVisible, false);
+                        onOpenAICompanion({ mode: 'incognito', tab: 'chat' });
+                      }}
+                      className="p-4 rounded-xl hover:bg-white/5 active:bg-white/10"
+                    >
+                      <HStack className="items-center gap-3">
+                        <EyeOff size={20} color={world.danger} strokeWidth={2} />
+                        <Text className="text-phase-text-primary">
+                          Quick Incognito Ask (Zero-Trace)
+                        </Text>
+                      </HStack>
+                    </Pressable>
+                  </VStack>
+                )}
               </VStack>
             </Box>
           </Pressable>

@@ -74,7 +74,11 @@ export default async function FounderPage() {
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <FounderFloor displayName={entry.displayName} capacity={entry.activeCapacity} />
+      <FounderFloor
+        displayName={entry.displayName}
+        capacity={entry.activeCapacity}
+        userId={entry.accountId}
+      />
     </SanctuaryShell>
   );
 }

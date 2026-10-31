@@ -1,20 +1,20 @@
 .card {
   position: relative;
-  border-radius: 1.25rem;
+  border-radius: var(--w-surface-raised-radius, 1.25rem);
   overflow: hidden;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.4s ease;
   box-sizing: border-box;
 }
 
-/* Base Vellum: Warm Sandstone paper with radiant center */
+/* Base Vellum: Warm Sandstone paper with radiant center, aligned to World Surface */
 .vellum {
-  background: radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--paper-light) 95%, #fff) 0%, var(--paper) 100%);
-  border: 1px solid var(--line);
-  box-shadow: 0 4px 20px -2px rgba(45, 35, 20, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+  background: var(--w-surface-raised-bg, radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--paper-light) 95%, #fff) 0%, var(--paper) 100%));
+  border: 1px solid var(--w-line, var(--line));
+  box-shadow: var(--w-surface-raised-shadow, 0 4px 20px -2px rgba(45, 35, 20, 0.05));
 }
 
 .vellum:hover {
-  border-color: color-mix(in srgb, var(--lotus) 35%, var(--line));
+  border-color: color-mix(in srgb, var(--w-lamp, var(--lotus)) 35%, var(--w-line, var(--line)));
   box-shadow: 0 8px 30px -4px rgba(45, 35, 20, 0.09), inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
 }
 

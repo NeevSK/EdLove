@@ -24,6 +24,7 @@ import { FloorStudioDrawer, type FurnitureDefinition } from './FloorStudioDrawer
 import studioStyles from './floor-studio.module.css';
 import { WorkspaceLayoutRecoveryControl } from './WorkspaceLayoutRecoveryControl';
 import { WorkspaceWallpaperLayer } from './WorkspaceWallpaperLayer';
+import { WorldGroundSurface } from './WorldGroundSurface';
 
 export type SanctuaryFloorCanvasRenderProps = {
   isModuleVisible: (id: string) => boolean;
@@ -57,6 +58,8 @@ export interface SanctuaryFloorCanvasProps {
   onReapplyLayoutChanges?: () => Promise<void>;
   showPageActions?: boolean;
   topControls?: React.ReactNode | ((actions: FloorHeaderActions) => React.ReactNode);
+  customScene?: React.ReactNode;
+  customSvg?: React.ReactNode;
   children: React.ReactNode | ((props: SanctuaryFloorCanvasRenderProps) => React.ReactNode);
 }
 
@@ -79,6 +82,8 @@ export function SanctuaryFloorCanvas({
   onReapplyLayoutChanges,
   topControls,
   showPageActions = true,
+  customScene,
+  customSvg,
   children,
 }: Readonly<SanctuaryFloorCanvasProps>) {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
@@ -202,11 +207,13 @@ export function SanctuaryFloorCanvas({
     activeAppearance.wallpaper,
   );
 
-  const effectiveWallpaper =
-    activeWallpaper ??
-    (dataMode === 'explore'
-      ? EXPLORE_DEFAULT_APPEARANCE.wallpaper
-      : (getBackdropsForWorld(activeWorld)[0] ?? null));
+  const isImageGround = groundMode === 'image';
+  const effectiveWallpaper = isImageGround
+    ? (activeWallpaper ??
+      (dataMode === 'explore'
+        ? EXPLORE_DEFAULT_APPEARANCE.wallpaper
+        : (getBackdropsForWorld(activeWorld)[0] ?? null)))
+    : null;
 
   const customWash = activeAppearance.wallpaperConfig?.customWashColor;
   const customWashStyle =
@@ -230,12 +237,23 @@ export function SanctuaryFloorCanvas({
       data-world={activeWorld}
       style={customWashStyle}
     >
-      <WorkspaceWallpaperLayer
+      <WorldGroundSurface
+        customScene={customScene}
+        customSvg={customSvg}
         fixed
+        groundMode={groundMode}
         isCrossFading={isCrossFading}
         nextWallpaper={nextWallpaper}
         pure={activeAppearance.preset === 'none'}
+        room={
+          domain === 'workspace'
+            ? 'classroom'
+            : domain === 'self' || domain === 'community' || domain === 'library'
+              ? domain
+              : 'self'
+        }
         wallpaper={effectiveWallpaper}
+        worldId={activeWorld}
       />
 
       <FloorAtmosphere

@@ -11,6 +11,12 @@ export type TabType =
   | 'principal'
   | 'founder';
 
+export interface AICompanionLaunchOptions {
+  mode?: 'saved' | 'incognito';
+  tab?: 'chat' | 'agent';
+  threadId?: string;
+}
+
 export interface ActionItem {
   label: string;
   onPress: () => void;

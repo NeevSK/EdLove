@@ -5,6 +5,7 @@ import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { MockFounderSchool as SchoolItem } from '@repo/core/api/founder';
 import { SchoolSchema } from '@repo/core/logic/schemas/school.schema';
+import { TodoView } from '../../components/TodoView';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import styles from './founder.module.css';
@@ -12,10 +13,11 @@ import styles from './founder.module.css';
 interface FounderFloorProps {
   displayName: string;
   capacity?: string;
+  userId?: string;
 }
 
-export function FounderFloor({ displayName, capacity }: Readonly<FounderFloorProps>) {
-  const [tab, setTab] = useState<'pulse' | 'schools' | 'sentinel'>('pulse');
+export function FounderFloor({ displayName, capacity, userId }: Readonly<FounderFloorProps>) {
+  const [tab, setTab] = useState<'pulse' | 'directives' | 'schools' | 'sentinel'>('pulse');
   const [broadcastMsg, setBroadcastMsg] = useState('');
   const [notice, setNotice] = useState<string | null>(null);
   const [schools, setSchools] = useState<readonly SchoolItem[]>(() =>
@@ -91,6 +93,14 @@ export function FounderFloor({ displayName, capacity }: Readonly<FounderFloorPro
           <button
             type="button"
             className={styles.tabBtn}
+            data-active={tab === 'directives'}
+            onClick={() => setTab('directives')}
+          >
+            🎯 Directives & Priorities
+          </button>
+          <button
+            type="button"
+            className={styles.tabBtn}
             data-active={tab === 'schools'}
             onClick={() => setTab('schools')}
           >
@@ -136,6 +146,12 @@ export function FounderFloor({ displayName, capacity }: Readonly<FounderFloorPro
             </div>
           </div>
 
+          <TodoView
+            listName="Founder Priorities"
+            displayTitle="Strategic Founder Priorities"
+            userId={userId}
+          />
+
           <div className={styles.sectionCard}>
             <h2
               style={{
@@ -152,6 +168,16 @@ export function FounderFloor({ displayName, capacity }: Readonly<FounderFloorPro
               sync conflicts in the past 24 hours.
             </p>
           </div>
+        </div>
+      )}
+
+      {tab === 'directives' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <TodoView
+            listName="Founder Priorities"
+            displayTitle="Founder Command Deck Directives"
+            userId={userId}
+          />
         </div>
       )}
 

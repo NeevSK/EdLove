@@ -62,6 +62,31 @@
   background: transparent;
 }
 
+/* Living Sky & Phase Backdrops when wallpaper is not active */
+.floor[data-has-wallpaper="false"][data-ground-mode="live"] {
+  background: linear-gradient(
+    180deg,
+    var(--gd-sky-top) 0%,
+    var(--gd-sky-horizon) 65%,
+    var(--gd-sky-glow) 100%
+  );
+  background-attachment: fixed;
+}
+
+.floor[data-has-wallpaper="false"][data-ground-mode="still"] {
+  background: linear-gradient(
+    180deg,
+    var(--gd-sky-top) 0%,
+    var(--gd-sky-horizon) 100%
+  );
+  background-attachment: fixed;
+}
+
+.floor[data-has-wallpaper="false"][data-ground-mode="quiet"],
+.floor[data-has-wallpaper="false"][data-ground-mode="plain"] {
+  background: var(--paper, var(--w-ground));
+}
+
 .floor[data-has-wallpaper="true"][data-appearance="default"] {
   background:
     radial-gradient(
@@ -195,7 +220,7 @@
 }
 .eyebrow {
   margin: 0;
-  color: var(--lotus);
+  color: var(--w-lamp-deep, var(--lotus));
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -204,9 +229,9 @@
 .arrival h1,
 .alcove h2,
 .history h2 {
-  font-family: Georgia, serif;
+  font-family: var(--w-font-serif, var(--font-display, Georgia, serif));
   font-weight: 500;
-  letter-spacing: -0.045em;
+  letter-spacing: var(--w-text-display-ls, -0.045em);
 }
 .arrival h1 {
   max-width: 32rem;
@@ -242,9 +267,10 @@
   max-width: 72rem;
   margin-top: clamp(1rem, 3vw, 2rem);
   padding: clamp(1.25rem, 3vw, 2rem);
-  border: 1px solid var(--line);
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--paper-light) 56%, transparent);
+  border: var(--w-line-weight, 1px) solid var(--w-line, var(--line));
+  border-radius: var(--w-surface-raised-radius, 1rem);
+  background: var(--w-surface-raised-bg, color-mix(in srgb, var(--paper-light) 56%, transparent));
+  box-shadow: var(--w-surface-raised-shadow, none);
 }
 
 @media (max-width: 48rem) {
@@ -624,10 +650,10 @@
   align-self: flex-start;
   margin-top: auto;
   padding: 0.45rem 0.95rem;
-  border-radius: 9999px;
-  border: 1px solid color-mix(in srgb, var(--lotus, #d97706) 24%, transparent);
-  background: color-mix(in srgb, var(--lotus, #d97706) 10%, transparent);
-  color: var(--lotus, #d97706);
+  border-radius: var(--w-button-radius, 9999px);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, var(--lotus, #d97706)) 24%, transparent);
+  background: color-mix(in srgb, var(--w-lamp, var(--lotus, #d97706)) 10%, transparent);
+  color: var(--w-lamp-deep, var(--lotus, #d97706));
   cursor: pointer;
   font: inherit;
   font-size: 0.82rem;
@@ -636,8 +662,8 @@
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .catalogOpen:hover {
-  background: color-mix(in srgb, var(--lotus, #d97706) 20%, transparent);
-  border-color: color-mix(in srgb, var(--lotus, #d97706) 40%, transparent);
+  background: color-mix(in srgb, var(--w-lamp, var(--lotus, #d97706)) 20%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp, var(--lotus, #d97706)) 40%, transparent);
   transform: translateY(-1px);
 }
 .catalogOpen:active {
@@ -646,7 +672,7 @@
 .catalogOpen:focus-visible,
 .burnButton:focus-visible,
 .retryButton:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--lotus) 35%, transparent);
+  outline: 3px solid var(--w-focus, color-mix(in srgb, var(--lotus) 35%, transparent));
   outline-offset: 3px;
 }
 .alcove,

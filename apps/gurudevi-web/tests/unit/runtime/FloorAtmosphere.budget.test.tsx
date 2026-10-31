@@ -2,24 +2,19 @@ import { act, cleanup, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  useBrowserVisualBudget: vi.fn(),
+  useGurudeviView: vi.fn(),
 }));
 
-vi.mock('../../../lib/runtime/useBrowserVisualBudget', () => ({
-  useBrowserVisualBudget: mocks.useBrowserVisualBudget,
+vi.mock('../../../lib/runtime/useGurudeviView', () => ({
+  useGurudeviView: mocks.useGurudeviView,
 }));
 
 import { FloorAtmosphere } from '../../../app/(sanctuary)/components/FloorAtmosphere';
 
-const balancedBudget = {
-  quality: 'balanced' as const,
-  allowAnimation: true,
-  allowBlur: false,
-  maxCanvasPixels: 1_500_000,
-  maxDevicePixelRatio: 1,
-  particleCount: 12,
-  minFrameIntervalMs: 50,
-};
+const viewAllowing = (allowAmbientEffects: boolean) => ({
+  experience: { allowAmbientEffects },
+  reading: { visibility: 'active' },
+});
 
 describe('FloorAtmosphere runtime budget', () => {
   let frameCallbacks: FrameRequestCallback[];
@@ -34,7 +29,7 @@ describe('FloorAtmosphere runtime budget', () => {
     });
     vi.stubGlobal('requestAnimationFrame', requestFrame);
     vi.stubGlobal('cancelAnimationFrame', vi.fn());
-    mocks.useBrowserVisualBudget.mockReturnValue(balancedBudget);
+    mocks.useGurudeviView.mockReturnValue(viewAllowing(true));
 
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
   });
@@ -54,14 +49,21 @@ describe('FloorAtmosphere runtime budget', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it('does not start the particle loop when animation is disabled by the budget', () => {
-    mocks.useBrowserVisualBudget.mockReturnValue({
-      ...balancedBudget,
-      allowAnimation: false,
-    });
+  it('does not start the particle loop when verger disallows ambient effects', () => {
+    mocks.useGurudeviView.mockReturnValue(viewAllowing(false));
 
     render(<FloorAtmosphere kind="celestial-embers" />);
 
+    expect(HTMLCanvasElement.prototype.getContext).not.toHaveBeenCalled();
+    expect(requestFrame).not.toHaveBeenCalled();
+  });
+
+  it('does not start the particle loop before verger is known', () => {
+    mocks.useGurudeviView.mockReturnValue(null);
+
+    render(<FloorAtmosphere kind="celestial-embers" />);
+
+    expect(HTMLCanvasElement.prototype.getContext).not.toHaveBeenCalled();
     expect(requestFrame).not.toHaveBeenCalled();
   });
 });

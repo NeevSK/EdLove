@@ -1,4 +1,3 @@
-import { useStore } from '@repo/core/store/useStore';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';

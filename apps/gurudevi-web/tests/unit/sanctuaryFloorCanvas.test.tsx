@@ -87,4 +87,26 @@ describe('SanctuaryFloorCanvas and FloorStudioDrawer (G1)', () => {
     fireEvent.click(closeBtn);
     expect(screen.queryByRole('dialog', { name: /floor studio/i })).toBeNull();
   });
+
+  it('switches ground mode between Live Sky and Photo in FloorStudioDrawer', () => {
+    render(<TestCanvasWrapper />);
+
+    const studioTrigger = screen.getByRole('button', { name: /open test-floor floor studio/i });
+    fireEvent.click(studioTrigger);
+
+    // Click Live Sky
+    const liveSkyBtn = screen.getByRole('button', { name: /live sky/i });
+    fireEvent.click(liveSkyBtn);
+
+    const floorArticle = document.querySelector('article[data-domain="test-floor"]');
+    expect(floorArticle?.getAttribute('data-ground-mode')).toBe('live');
+    expect(floorArticle?.getAttribute('data-has-wallpaper')).toBe('false');
+
+    // Click Photo
+    const photoBtn = screen.getByRole('button', { name: /photo/i });
+    fireEvent.click(photoBtn);
+
+    expect(floorArticle?.getAttribute('data-ground-mode')).toBe('image');
+    expect(floorArticle?.getAttribute('data-has-wallpaper')).toBe('true');
+  });
 });

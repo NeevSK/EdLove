@@ -1,4 +1,4 @@
-import { ClassroomList } from '@repo/classroom/components';
+import { ClassroomList, TeacherActivePeriodCard } from '@repo/classroom/components';
 import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
@@ -21,6 +21,7 @@ import { type ComponentType, type ReactNode, useMemo } from 'react';
 
 export type TeacherDashboardSurfaceId =
   | 'temporal-context'
+  | 'active-period'
   | 'primary-actions'
   | 'support-tools'
   | 'pulse'
@@ -28,6 +29,7 @@ export type TeacherDashboardSurfaceId =
 
 export type TeacherDashboardCapabilityKey =
   | 'TeacherTemporalContext'
+  | 'TeacherActivePeriod'
   | 'TeacherPrimaryActions'
   | 'TeacherSupportTools'
   | 'TeacherPulse'
@@ -180,6 +182,38 @@ export function useTeacherDashboardSurfaces({
         temporalLabel: 'Today',
         metadata: ['Temporal', 'Context'],
         content: <TemporalNavigator />,
+      },
+      {
+        surfaceId: 'active-period',
+        workspaceId: 'teacher-dashboard',
+        capabilityKey: 'TeacherActivePeriod',
+        ownerPackage: 'classroom',
+        defaultZone: 'today',
+        defaultOrder: 15,
+        kind: 'widget',
+        domain: 'temporal',
+        groupId: 'today',
+        mobileSupport: true,
+        webSupport: true,
+        title: 'Active Period Dispatch',
+        subtitle: 'Timetable rhythm',
+        summary: 'Follow the active teaching period and take roll call directly as bells ring.',
+        temporalLabel: 'Now',
+        metadata: ['Timetable', 'Periods', 'Now'],
+        content: (
+          <TeacherActivePeriodCard
+            onTakeAttendance={(classroomId, className) => {
+              if (classroomId) {
+                onOpenClassroom({ id: classroomId, name: className || 'Classroom' });
+              }
+            }}
+            onOpenClassroom={(classroomId, className) => {
+              if (classroomId) {
+                onOpenClassroom({ id: classroomId, name: className || 'Classroom' });
+              }
+            }}
+          />
+        ),
       },
       {
         surfaceId: 'primary-actions',

@@ -27,3 +27,4 @@ export { default as StudentList } from '@repo/classroom/components/StudentList';
 export { default as SubmissionModal } from '@repo/classroom/components/SubmissionModal';
 export { StudentAnalysisModal } from '@repo/classroom/components/teacher/StudentAnalysisModal';
 export { TactilePulseGesture } from '@repo/classroom/components/teacher/TactilePulseGesture';
+export { TeacherActivePeriodCard } from '@repo/classroom/components/teacher/TeacherActivePeriodCard';

@@ -46,7 +46,7 @@
 }
 .eyebrow {
   margin: 0;
-  color: var(--sanctuary-saffron, #a45d25);
+  color: var(--w-lamp-deep, var(--sanctuary-saffron, #a45d25));
   font-size: 0.72rem;
   font-weight: 750;
   letter-spacing: 0.12em;
@@ -57,15 +57,15 @@
   display: grid;
   gap: 1.35rem;
   padding: clamp(1rem, 3vw, 2rem);
-  border: 1px solid var(--border, #ded8cf);
-  border-radius: 1.25rem;
-  background: var(--glass-surface, #fffdf8);
-  box-shadow: 0 1rem 3.5rem #3023150a;
+  border: var(--w-line-weight, 1px) solid var(--w-line, var(--border, #ded8cf));
+  border-radius: var(--w-surface-raised-radius, 1.25rem);
+  background: var(--w-surface-raised-bg, var(--glass-surface, #fffdf8));
+  box-shadow: var(--w-surface-raised-shadow, 0 1rem 3.5rem #3023150a);
 }
 .overview h2,
 .attendance h2 {
   margin: 0.4rem 0;
-  font-family: var(--font-display, Georgia, serif);
+  font-family: var(--w-font-serif, var(--font-display, Georgia, serif));
   font-size: clamp(1.5rem, 3vw, 2.3rem);
   font-weight: 500;
 }
@@ -82,22 +82,22 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 0.85rem;
-  border: 1px solid var(--border, #ded8cf);
-  border-radius: 999px;
+  border: var(--w-line-weight, 1px) solid var(--w-line, var(--border, #ded8cf));
+  border-radius: var(--w-chip-radius, 999px);
   font-size: 0.9rem;
 }
 .localTag {
-  color: #6b542c;
-  background: #faf0d9;
+  color: var(--w-ink-soft, #6b542c);
+  background: var(--w-surface-inset-bg, #faf0d9);
 }
 .primary {
   width: fit-content;
   min-height: 2.8rem;
   padding: 0.7rem 1.1rem;
   border: 0;
-  border-radius: 0.75rem;
-  color: white;
-  background: var(--sanctuary-saffron, #9d5b25);
+  border-radius: var(--w-button-radius, 0.75rem);
+  color: var(--w-on-lamp, white);
+  background: var(--w-lamp, var(--sanctuary-saffron, #9d5b25));
   font: inherit;
   font-weight: 700;
   cursor: pointer;

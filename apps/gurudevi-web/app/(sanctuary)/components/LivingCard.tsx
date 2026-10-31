@@ -8,22 +8,23 @@ export interface LivingCardProps extends React.HTMLAttributes<HTMLElement> {
   as?: 'div' | 'article' | 'section' | 'li';
   variant?: 'vellum' | 'glass' | 'ember' | 'lotus';
   elevation?: 'flat' | 'raised' | 'floating';
+  tone?: 'plain' | 'raised' | 'inset';
   withGrain?: boolean;
+  ref?: React.Ref<HTMLElement>;
 }
 
-export const LivingCard = React.forwardRef<HTMLElement, LivingCardProps>(function LivingCard(
-  {
-    children,
-    as: Component = 'div',
-    className = '',
-    variant = 'vellum',
-    elevation = 'floating',
-    withGrain = true,
-    style,
-    ...props
-  },
+export function LivingCard({
+  children,
+  as: Component = 'div',
+  className = '',
+  variant = 'vellum',
+  elevation = 'floating',
+  tone = 'raised',
+  withGrain = true,
+  style,
   ref,
-) {
+  ...props
+}: Readonly<LivingCardProps>) {
   const variantClass = styles[variant] ?? styles.vellum;
   const elevationClass = elevation === 'floating' ? styles.floating : '';
 
@@ -31,6 +32,7 @@ export const LivingCard = React.forwardRef<HTMLElement, LivingCardProps>(functio
     <Component
       ref={ref as any}
       className={`${styles.card} ${variantClass} ${elevationClass} ${className}`}
+      data-tone={tone}
       style={style}
       {...props}
     >
@@ -38,4 +40,4 @@ export const LivingCard = React.forwardRef<HTMLElement, LivingCardProps>(functio
       <div className={styles.content}>{children}</div>
     </Component>
   );
-});
+}

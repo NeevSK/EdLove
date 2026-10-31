@@ -3,6 +3,8 @@ import type { TeacherDashboardSurfaceId } from '@repo/classroom/workspace/useTea
 const TEACHER_PREVIEW_SUMMARY: Record<TeacherDashboardSurfaceId, string> = {
   'temporal-context':
     'Preview how a teacher begins the day with context already visible, so planning and care start from rhythm rather than reaction.',
+  'active-period':
+    'Preview how a teacher transitions between timetable periods in real time with immediate access to attendance and current lesson units.',
   'primary-actions':
     'Preview the core teacher motions in a mature workspace: opening classrooms, joining new ones, and moving quickly into live teaching flow.',
   'support-tools':
