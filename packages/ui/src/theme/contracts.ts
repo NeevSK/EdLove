@@ -1399,3 +1399,44 @@ export interface DangerRowContract {
   busy?: boolean;
   labels?: Partial<{ working: string }>;
 }
+
+// ---------------------------------------------------------------------------
+// Launcher: the rooms, tools and actions a place offers, found by search,
+// grouped by kind, opened with a press and kept in the task strip with a
+// long press.
+// ---------------------------------------------------------------------------
+
+export interface LauncherItem {
+  id: string;
+  title: string;
+  description?: string;
+  icon?: ComponentType<KitIconProps>;
+  /** A short word that needs the person ("New", "3 due"); drawn lit and said. */
+  badge?: string;
+  /** Items sharing a group sit together under its name ("Teaching", "Records"). */
+  group?: string;
+}
+
+export interface LauncherLabels {
+  search: string;
+  recent: string;
+  keep: string;
+  kept: (title: string) => string;
+  results: (count: number) => string;
+  empty: string;
+  other: string;
+}
+
+export interface LauncherContract {
+  /** The launcher's accessible name ("Workspace rooms and tools"). */
+  label: string;
+  items: readonly LauncherItem[];
+  onOpen: (id: string) => void;
+  /** Keep in the task strip without opening (long press, or an action for readers). */
+  onKeep?: (id: string) => void;
+  /** Ids shown first under "Recent", most recent first. */
+  recent?: readonly string[];
+  /** Search words; filters by title, description and group. */
+  placeholder?: string;
+  labels?: Partial<LauncherLabels>;
+}

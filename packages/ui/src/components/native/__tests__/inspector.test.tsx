@@ -55,6 +55,7 @@ const SHARED = [
   'Icon',
   'ImageCapture',
   'Inline',
+  'Launcher',
   'LinkRow',
   'Markdown',
   'Media',

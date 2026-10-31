@@ -80,12 +80,12 @@ export function Sheet({ open, onClose, title, children, dismissable = true }: Sh
     >
       <View style={styles.fill}>
         <Scrim onPress={dismiss} />
-        <GestureDetector gesture={pan}>
-          <Animated.View
+        <Animated.View
             role="dialog"
             aria-modal
             aria-label={title}
             accessibilityViewIsModal
+            onAccessibilityEscape={dismiss}
             entering={animates ? SlideInDown.springify().damping(SETTLE.damping) : undefined}
             style={[
               surfaceStyle(panel),
@@ -96,15 +96,19 @@ export function Sheet({ open, onClose, title, children, dismissable = true }: Sh
             ]}
           >
             <InnerFrame recipe={panel} />
-            {dismissable ? (
-              <View style={[styles.grabber, { backgroundColor: overlay.grabber }]} aria-hidden />
-            ) : null}
-            <Text kind="title" role="heading">
-              {title}
-            </Text>
+            {/* Dragging starts from the top only, so content inside can scroll freely. */}
+            <GestureDetector gesture={pan}>
+              <View collapsable={false} style={styles.head}>
+                {dismissable ? (
+                  <View style={[styles.grabber, { backgroundColor: overlay.grabber }]} aria-hidden />
+                ) : null}
+                <Text kind="title" role="heading">
+                  {title}
+                </Text>
+              </View>
+            </GestureDetector>
             {children}
           </Animated.View>
-        </GestureDetector>
       </View>
     </Modal>
   );
@@ -113,5 +117,6 @@ export function Sheet({ open, onClose, title, children, dismissable = true }: Sh
 const styles = StyleSheet.create({
   fill: { flex: 1, justifyContent: 'flex-end' },
   sheet: { width: '100%', gap: 12 },
+  head: { gap: 12, paddingTop: 4 },
   grabber: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, marginBottom: 4 },
 });

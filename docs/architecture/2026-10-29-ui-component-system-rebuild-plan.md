@@ -654,6 +654,29 @@ from kit pieces in place, never redesigned.
    action is the danger button, and says "Working…" while it runs. With
    `SwitchRow`, `Group` and `Row` this is the whole settings vocabulary.
 
+   **Task strip, redrawn (Naveen: "elegance").** `TaskTabs` was a row of
+   chips, each with a grip, a close mark and an underline. It is now one quiet
+   well (the world's inset) with a single raised marker that glides to the
+   chosen task in the world's motion (it simply moves when motion is off);
+   unchosen tasks are soft words; only the chosen task shows its close mark;
+   long-press anywhere on a task lifts it to drag. Screen readers close and
+   move any task with actions on the tab itself (the separate grip is gone).
+   Web: the same well; the close mark shows on the chosen task and on hover
+   or focus; Alt+arrows and Delete unchanged. The chosen task scrolls into
+   view.
+
+   **Launcher (built, both kits).** The rooms, tools and actions a place
+   offers: search at the top (all words, across title, purpose and kind),
+   Recent first, then each kind under its name, as quiet tiles (an icon in a
+   soft lit well, the name, one line of purpose, a lit dot and word for a
+   badge) that reflow from two columns to four. Press opens; long press (an
+   action for readers, a keep button on the web) keeps it in the task strip
+   and says so. `TabFeatureCatalogSheet` now draws it in the kit `Sheet`,
+   keeping its registry, role badge, open-in-tab default and pin; tasks
+   already in the strip are its Recent. The kit `Sheet` now drags to
+   dismiss from its top only (content inside scrolls freely) and closes on
+   the VoiceOver escape gesture.
+
    **Still missing (fundamentals, components only):** tag input; pagination (web); side
    navigation and command palette for the web shell; a chart port (charts as
    an adapter, like media); a range `DateTravel`. Then layer 3 forms and

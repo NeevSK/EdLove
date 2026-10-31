@@ -1,5 +1,5 @@
 {
-  "legacyImports": 1285,
+  "legacyImports": 1284,
   "webTsxFiles": 112,
   "note": "Imports of legacy UI from outside it, and *.web.tsx files. May only go down. node scripts/check-ui-boundaries.mjs --update"
 }

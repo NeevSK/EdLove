@@ -58,7 +58,7 @@ describe('TaskTabs', { tags: ['a11y', 'interaction', 'unit'] }, () => {
     expect(onHome).toHaveBeenCalled();
   });
 
-  it('closes by name; screen readers move tabs with actions, within bounds', async () => {
+  it('closes by name; screen readers close and move tabs with actions, within bounds', async () => {
     const onClose = vi.fn();
     const onReorder = vi.fn();
     await render(
@@ -71,9 +71,16 @@ describe('TaskTabs', { tags: ['a11y', 'interaction', 'unit'] }, () => {
         onReorder={onReorder}
       />,
     );
-    await fireEvent.press(screen.getByRole('button', { name: 'Close Marks' }));
+    // The visible close mark belongs to the open task only; every task can
+    // still be closed by name, as an action on the tab, so nothing is lost.
+    await fireEvent.press(screen.getByRole('button', { name: 'Close Attendance' }));
+    expect(onClose).toHaveBeenCalledWith('a');
+    expect(screen.queryByRole('button', { name: 'Close Marks' })).toBeNull();
+    const marks = screen.getByRole('tab', { name: 'Marks' });
+    expect(marks.props.accessibilityActions[0]).toEqual({ name: 'close', label: 'Close Marks' });
+    await fireEvent(marks, 'accessibilityAction', { nativeEvent: { actionName: 'close' } });
     expect(onClose).toHaveBeenCalledWith('b');
-    const handle = screen.getByRole('button', { name: 'Reorder Notes' });
+    const handle = screen.getByRole('tab', { name: 'Notes' });
     await fireEvent(handle, 'accessibilityAction', { nativeEvent: { actionName: 'moveEarlier' } });
     expect(onReorder).toHaveBeenCalledWith('c', 1);
     await fireEvent(handle, 'accessibilityAction', { nativeEvent: { actionName: 'moveLater' } });

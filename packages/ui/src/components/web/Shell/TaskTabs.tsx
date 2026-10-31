@@ -40,7 +40,7 @@ export function TaskTabs({
           type="button"
           role="tab"
           aria-selected={home.selected}
-          className="gd-chip gd-task-tab"
+          className="gd-task-tab"
           data-state={home.selected ? 'selected' : 'rest'}
           onClick={home.onPress}
         >
@@ -56,7 +56,7 @@ export function TaskTabs({
               role="tab"
               aria-selected={active}
               aria-description={`${l.moveEarlier} / ${l.moveLater}: Alt+←/→`}
-              className="gd-chip gd-task-tab"
+              className="gd-task-tab"
               data-state={active ? 'selected' : 'rest'}
               onClick={() => onSelect(tab.id)}
               onKeyDown={keys(tab.id)}
