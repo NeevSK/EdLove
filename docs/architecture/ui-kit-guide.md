@@ -184,6 +184,12 @@ section 7) and signed off.
   `DocumentView`; the app registers the renderer with `MediaAdapters`
   (plan §14, "1c design"). A file address is linked or framed only through
   `safeFileUrl`.
+- **Chat is Legend List**: `MessageList` uses Legend List on both kits
+  (`@legendapp/list/react-native` / `@legendapp/list/react`); never a
+  ScrollView or FlashList for a conversation. A streaming message is busy
+  and is announced once, when it completes.
+- **Agent pieces render, they do not decide**: an `ApprovalCard` shows
+  `accepted` only when the agent client says the service confirmed.
 - **Questions show, the engine decides**: `ChoiceQuestion` takes a
   `reveal` from the form engine; it never scores. Mark meaning in words as
   well as colour.

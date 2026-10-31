@@ -471,6 +471,29 @@ The kit renders events; it never speaks the wire protocol (that stays in
 | `ActionFab` + `FabMenu` | FAB ingress | world-dressed floating action and its menu (primary action, AI companion, breathing reset, incognito), replacing `LotusPetalFAB` after sign-off |
 | `RichTextEditor` port | Rich text | native default: Software Mansion `EnrichedMarkdownTextInput` (installed); web adapter open |
 
+**Layer 1 status (2026-10-31): built on both kits.** Every piece in the table
+above exists natively and on the web with the same names and props
+(`7ef3230b2`, `efed8524c`). Decisions taken:
+
+- **Lists for chat: Legend List 3.6.0**, not FlashList. It gives the same chat
+  props on both platforms (`alignItemsAtEnd`, `initialScrollAtEnd`,
+  `maintainScrollAtEnd`, `maintainVisibleContentPosition`, `onStartReached`),
+  and its DOM build (`@legendapp/list/react`) depends only on React, so it
+  passes the web boundary. Its keyboard build (`KeyboardAwareLegendList`,
+  `useKeyboardChatComposerInset` on the installed keyboard controller) is
+  for the chat pane a screen composes. FlashList stays for `List` and
+  `Rail`.
+- **Rich text on native: Software Mansion's `EnrichedMarkdownTextInput`**
+  (part of the installed `react-native-enriched-markdown`) is the default
+  `RichTextEditor` adapter. Web has no editor yet; a plain Markdown field
+  stands in.
+
+Still open in layer 1: moving AIScreen, the DM screen and the FAB overlay
+onto these pieces (screen work), then retiring `LotusPetalFAB`, legacy
+`MessageBubble` and `ChatComposer` after sign-off. Not yet seen in a
+browser or on a device: list pinning, keyboard behaviour and streaming
+performance need the galleries (G4, G5).
+
 **Layer 2 — media foundation.** Done when every format below has its port,
 default adapter or honest fallback, capture where it applies, and tests, so
 a later library swap cannot regress a screen.
@@ -557,6 +580,10 @@ section plus the guide (`ui-kit-guide.md`) and the requirements ledger
 | `0ddd06e7f` | Owned open UI work: FAB AI companion, chat bubble on world prose, AIScreen on world colours, Todo, web floors, period card on the kit |
 | `b5df866f3` | Security: safe file links and frames; agent promotion only when confirmed; route cannot lower chat privacy |
 | `b094d69ad` | Question kit: `Scale`, `ChoiceQuestion` (reveal), `PrivacyNote`; question recipe in the contrast guard |
+| `b96b6dffd` | Security: file addresses with control or space characters refused |
+| `f4766d648`, `16db140ff` | 1c roadmap (agent kit, media foundation, forms) and the gaps that are part of done |
+| `7ef3230b2` | Native agent kit (AG-UI shaped): bubble, list on Legend List, composer, thinking, tool call, approval, run status, actions, citation, artifact, privacy, ActionFab, FabMenu, RichTextEditor port |
+| `efed8524c` | Web agent kit with the same names and props; shared-name checks on both kits |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4

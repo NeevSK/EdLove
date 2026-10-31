@@ -39,6 +39,9 @@ Updated 2026-10-30.
 | B4 | Grouped settings like Claude or Grok (proximity, one surface per group) | done: `Group` (both kits); boxed Sections render as a Group |
 | B5 | Forms, quizzes, assignments, lessons, PDF and file types | in progress (plan §14, "1c design"): `Markdown`, `FileCard`, `DocumentView` with adapters; `Scale`, `ChoiceQuestion`, `PrivacyNote` done; media, file field, recording, timer, playful moments next |
 | B7 | Every format behind a port: images, voice, video, PDF, Word, Excel, PowerPoint, Markdown, rich text, slides | ports done for Markdown and documents; library choices open (plan §14) |
+| B9 | AI and agent pieces (chat, thinking, tools, approvals, runs, citations, artifacts, privacy) | done on both kits, AG-UI shaped (plan §14 layer 1); screens not yet moved |
+| B10 | FAB as a kit piece | done: `ActionFab`, `FabMenu`; `LotusPetalFAB` retires after sign-off |
+| B11 | Rich text (Software Mansion Markdown or HTML) | port done; native default Software Mansion `EnrichedMarkdownTextInput`; web editor open |
 | B8 | Quizzes, surveys, playful and anonymous forms done well | first pieces done; the form engine evaluates, the kit shows; anonymity said plainly |
 | B6 | Todo out of the kit, built on kit pieces | done in the working tree, but someone else's uncommitted work |
 
