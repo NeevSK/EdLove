@@ -36,7 +36,9 @@ describe('web kit: Tabs', () => {
     render(<TabsDemo />);
     await userEvent.click(screen.getByRole('tab', { name: 'Overview' }));
     await userEvent.keyboard('{ArrowRight}');
-    expect(screen.getByRole('tab', { name: 'Students' }).getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByRole('tab', { name: 'Students' }).getAttribute('aria-selected')).toBe(
+      'true',
+    );
     await userEvent.keyboard('{ArrowRight}');
     expect(screen.getByRole('tab', { name: 'Files' }).getAttribute('aria-selected')).toBe('true');
     expect(document.activeElement).toBe(screen.getByRole('tab', { name: 'Files' }));
@@ -87,7 +89,9 @@ describe('web kit: Breadcrumb', () => {
     );
     const nav = screen.getByRole('navigation', { name: 'Breadcrumb' });
     expect(nav.querySelectorAll('li')).toHaveLength(3);
-    expect(screen.getByRole('link', { name: 'Grade 6A' }).getAttribute('href')).toBe('/workspace/6a');
+    expect(screen.getByRole('link', { name: 'Grade 6A' }).getAttribute('href')).toBe(
+      '/workspace/6a',
+    );
     expect(screen.getByText('Attendance').getAttribute('aria-current')).toBe('page');
     expect(screen.queryByRole('link', { name: 'Attendance' })).toBeNull();
   });

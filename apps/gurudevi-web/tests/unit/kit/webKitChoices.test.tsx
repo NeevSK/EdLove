@@ -43,7 +43,13 @@ describe('web kit: Select', () => {
   it('is a labelled native select with a placeholder until chosen', async () => {
     const onChange = vi.fn();
     render(
-      <Select label="Class" value={null} placeholder="Choose a class" options={CLASSES} onChange={onChange} />,
+      <Select
+        label="Class"
+        value={null}
+        placeholder="Choose a class"
+        options={CLASSES}
+        onChange={onChange}
+      />,
     );
     const select = screen.getByRole('combobox', { name: 'Class' }) as HTMLSelectElement;
     expect(select.value).toBe('');
@@ -53,7 +59,9 @@ describe('web kit: Select', () => {
   });
 
   it('marks an error, describes the field with it and announces it', () => {
-    render(<Select label="Class" value="a" options={CLASSES} onChange={() => {}} error="Pick a class" />);
+    render(
+      <Select label="Class" value="a" options={CLASSES} onChange={() => {}} error="Pick a class" />,
+    );
     const select = screen.getByRole('combobox', { name: 'Class' });
     expect(select.getAttribute('aria-invalid')).toBe('true');
     expect(select.getAttribute('aria-describedby')).toBe(screen.getByRole('alert').id);
@@ -109,7 +117,16 @@ describe('web kit: Menu', () => {
 describe('web kit: Slider', () => {
   it('is a labelled native range that reads its value aloud and snaps', () => {
     const onChange = vi.fn();
-    render(<Slider label="Energy" value={3} min={1} max={5} onChange={onChange} valueText={(v) => `${v} of 5`} />);
+    render(
+      <Slider
+        label="Energy"
+        value={3}
+        min={1}
+        max={5}
+        onChange={onChange}
+        valueText={(v) => `${v} of 5`}
+      />,
+    );
     const slider = screen.getByRole('slider', { name: 'Energy' }) as HTMLInputElement;
     expect(slider.getAttribute('aria-valuetext')).toBe('3 of 5');
     expect(slider.style.getPropertyValue('--gd-fill')).toBe('50%');

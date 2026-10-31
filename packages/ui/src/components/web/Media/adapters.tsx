@@ -3,6 +3,7 @@ import type {
   DocumentAdapterProps,
   DocumentKind,
   MarkdownAdapterProps,
+  RichTextAdapterProps,
 } from '../../../theme/contracts';
 import { BrowserPdfAdapter } from './BrowserPdfAdapter';
 
@@ -13,6 +14,7 @@ import { BrowserPdfAdapter } from './BrowserPdfAdapter';
  */
 export interface MediaAdapterSet {
   markdown?: ComponentType<MarkdownAdapterProps>;
+  richText?: ComponentType<RichTextAdapterProps>;
   documents?: Partial<Record<DocumentKind, ComponentType<DocumentAdapterProps>>>;
 }
 
@@ -37,6 +39,7 @@ export function MediaAdapters({
   const value = useMemo(
     () => ({
       markdown: adapters.markdown ?? parent.markdown,
+      richText: adapters.richText ?? parent.richText,
       documents: { ...parent.documents, ...adapters.documents },
     }),
     [adapters, parent],

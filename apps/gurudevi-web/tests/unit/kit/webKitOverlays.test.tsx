@@ -1,4 +1,4 @@
-import { Dialog, Popover, Sheet, Tooltip, ToastHost, toast } from '@repo/ui/components/web';
+import { Dialog, Popover, Sheet, ToastHost, Tooltip, toast } from '@repo/ui/components/web';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRef } from 'react';
@@ -24,7 +24,9 @@ afterEach(() => {
 
 describe('web kit: Dialog', () => {
   it('is a modal dialog named by its title and described by its description', () => {
-    render(<Dialog open onClose={() => {}} title="Leave the class?" description="Your notes stay." />);
+    render(
+      <Dialog open onClose={() => {}} title="Leave the class?" description="Your notes stay." />,
+    );
     const dialog = screen.getByRole('dialog', { name: 'Leave the class?' });
     expect(dialog.hasAttribute('open')).toBe(true);
     expect(screen.getByRole('heading', { name: 'Leave the class?' })).toBeTruthy();
@@ -92,7 +94,9 @@ describe('web kit: Tooltip', () => {
       </Tooltip>,
     );
     const control = screen.getByRole('button', { name: 'All present' });
-    expect(control.getAttribute('aria-describedby')).toBe(screen.getByRole('tooltip', { hidden: true }).id);
+    expect(control.getAttribute('aria-describedby')).toBe(
+      screen.getByRole('tooltip', { hidden: true }).id,
+    );
     await userEvent.tab();
     expect(document.activeElement).toBe(control);
     await userEvent.keyboard('{Escape}');

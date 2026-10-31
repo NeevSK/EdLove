@@ -17,14 +17,26 @@ afterEach(() => {
 
 describe('web kit: List', () => {
   it('is a named list of items', () => {
-    render(<List label="Students" items={STUDENTS} keyOf={(s) => s.id} renderItem={(s) => s.name} />);
+    render(
+      <List label="Students" items={STUDENTS} keyOf={(s) => s.id} renderItem={(s) => s.name} />,
+    );
     const list = screen.getByRole('list', { name: 'Students' });
-    expect(within(list).getAllByRole('listitem').map((li) => li.textContent)).toEqual(['Amal', 'Nila']);
+    expect(
+      within(list)
+        .getAllByRole('listitem')
+        .map((li) => li.textContent),
+    ).toEqual(['Amal', 'Nila']);
   });
 
   it('is busy with placeholders while loading, and shows its empty state when empty', () => {
     const { rerender } = render(
-      <List label="Students" items={[] as Student[]} loading keyOf={(s) => s.id} renderItem={(s) => s.name} />,
+      <List
+        label="Students"
+        items={[] as Student[]}
+        loading
+        keyOf={(s) => s.id}
+        renderItem={(s) => s.name}
+      />,
     );
     expect(screen.getByRole('list', { name: 'Students' }).getAttribute('aria-busy')).toBe('true');
     rerender(
@@ -52,7 +64,13 @@ describe('web kit: List', () => {
     );
     const onEndReached = vi.fn();
     render(
-      <List label="Students" items={STUDENTS} keyOf={(s) => s.id} renderItem={(s) => s.name} onEndReached={onEndReached} />,
+      <List
+        label="Students"
+        items={STUDENTS}
+        keyOf={(s) => s.id}
+        renderItem={(s) => s.name}
+        onEndReached={onEndReached}
+      />,
     );
     observed.at(-1)?.([{ isIntersecting: true }]);
     expect(onEndReached).toHaveBeenCalledTimes(1);
@@ -75,7 +93,11 @@ describe('web kit: Table', () => {
     const region = screen.getByRole('region', { name: 'Attendance this term' });
     expect(region.tabIndex).toBe(0);
     const table = screen.getByRole('table', { name: 'Attendance this term' });
-    expect(within(table).getAllByRole('columnheader').map((th) => th.textContent)).toEqual(['Student', 'Days present']);
+    expect(
+      within(table)
+        .getAllByRole('columnheader')
+        .map((th) => th.textContent),
+    ).toEqual(['Student', 'Days present']);
     expect(within(table).getAllByRole('row')).toHaveLength(3);
     expect(screen.getByRole('cell', { name: '20' }).getAttribute('data-align')).toBe('end');
   });

@@ -19,14 +19,18 @@ describe('web kit: IconButton and Link', () => {
     const onClick = vi.fn();
     render(<IconButton icon={Dot} label="Close" onClick={onClick} />);
     const button = screen.getByRole('button', { name: 'Close' });
-    expect(button.getAttribute('aria-describedby')).toBe(screen.getByRole('tooltip', { hidden: true }).id);
+    expect(button.getAttribute('aria-describedby')).toBe(
+      screen.getByRole('tooltip', { hidden: true }).id,
+    );
     await userEvent.click(button);
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it('a link is a real anchor', () => {
     render(<Link label="Read the policy" href="/policy" />);
-    expect(screen.getByRole('link', { name: 'Read the policy' }).getAttribute('href')).toBe('/policy');
+    expect(screen.getByRole('link', { name: 'Read the policy' }).getAttribute('href')).toBe(
+      '/policy',
+    );
   });
 });
 
@@ -63,7 +67,13 @@ describe('web kit: Progress, Badge, Avatar, Divider', () => {
 describe('web kit: EmptyState and ErrorState', () => {
   it('an empty state has a heading and its one action', async () => {
     const onPress = vi.fn();
-    render(<EmptyState title="No classes yet" message="Add your first class." action={{ label: 'Add a class', onPress }} />);
+    render(
+      <EmptyState
+        title="No classes yet"
+        message="Add your first class."
+        action={{ label: 'Add a class', onPress }}
+      />,
+    );
     expect(screen.getByRole('heading', { name: 'No classes yet' })).toBeTruthy();
     await userEvent.click(screen.getByRole('button', { name: 'Add a class' }));
     expect(onPress).toHaveBeenCalledTimes(1);

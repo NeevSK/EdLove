@@ -2,7 +2,38 @@ import * as web from '@repo/ui/components/web';
 import { describe, expect, it } from 'vitest';
 
 /** Pieces both sets must have; the native suite checks the same list. */
-const SHARED = ['Button', 'Card', 'Carousel', 'Grid', 'Group', 'Icon', 'Inline', 'Rail', 'Stack'];
+const SHARED = [
+  'ActionFab',
+  'ApprovalCard',
+  'ArtifactCard',
+  'Button',
+  'Card',
+  'Carousel',
+  'ChoiceQuestion',
+  'Citation',
+  'Composer',
+  'DocumentView',
+  'FabMenu',
+  'FileCard',
+  'Grid',
+  'Group',
+  'Icon',
+  'Inline',
+  'Markdown',
+  'MediaAdapters',
+  'MessageActions',
+  'MessageBubble',
+  'MessageList',
+  'PrivacyNote',
+  'PrivacyState',
+  'Rail',
+  'RichTextEditor',
+  'RunStatus',
+  'Scale',
+  'Stack',
+  'ThinkingTrace',
+  'ToolCallCard',
+];
 
 const components = Object.entries(web).flatMap(([name, value]) =>
   /^[A-Z]/.test(name) && typeof value === 'function' ? [{ name, fn: value }] : [],

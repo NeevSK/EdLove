@@ -37,7 +37,9 @@ describe('web kit: WaitingSign', () => {
     const sign = container.querySelector('.gd-sign') as HTMLElement;
     expect(sign.hasAttribute('data-auto')).toBe(true);
     expect(sign.getAttribute('aria-hidden')).toBe('true');
-    expect([...sign.querySelectorAll('.gd-s')].map((s) => s.getAttribute('data-sign'))).toEqual(KINDS);
+    expect([...sign.querySelectorAll('.gd-s')].map((s) => s.getAttribute('data-sign'))).toEqual(
+      KINDS,
+    );
   });
 
   it('draws one named sign, and holds it still when asked', () => {

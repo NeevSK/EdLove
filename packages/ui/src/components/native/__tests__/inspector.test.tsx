@@ -27,7 +27,38 @@ function components(barrel: Record<string, unknown>) {
 }
 
 /** Pieces both sets must have; the web suite checks the same list. */
-const SHARED = ['Button', 'Card', 'Carousel', 'Grid', 'Group', 'Icon', 'Inline', 'Rail', 'Stack'];
+const SHARED = [
+  'ActionFab',
+  'ApprovalCard',
+  'ArtifactCard',
+  'Button',
+  'Card',
+  'Carousel',
+  'ChoiceQuestion',
+  'Citation',
+  'Composer',
+  'DocumentView',
+  'FabMenu',
+  'FileCard',
+  'Grid',
+  'Group',
+  'Icon',
+  'Inline',
+  'Markdown',
+  'MediaAdapters',
+  'MessageActions',
+  'MessageBubble',
+  'MessageList',
+  'PrivacyNote',
+  'PrivacyState',
+  'Rail',
+  'RichTextEditor',
+  'RunStatus',
+  'Scale',
+  'Stack',
+  'ThinkingTrace',
+  'ToolCallCard',
+];
 
 describe('kit pieces are named in the component tree', { tags: ['unit'] }, () => {
   it('native: every component shows under its own name', () => {

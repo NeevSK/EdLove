@@ -298,6 +298,26 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   v['--w-dot-off'] = card.dot.off;
   v['--w-dot-on'] = card.dot.on;
 
+  // Conversation bubbles and agent cards.
+  const msg = r.message;
+  v['--w-msg-self-bg'] = msg.self.fill;
+  v['--w-msg-self-ink'] = msg.self.ink;
+  v['--w-msg-other-bg'] = msg.other.fill;
+  v['--w-msg-other-ink'] = msg.other.ink;
+  v['--w-msg-other-edge'] = msg.other.edge ? `inset 0 0 0 ${px(msg.other.edge.width)} ${msg.other.edge.color}` : 'none';
+  v['--w-msg-radius'] = px(msg.radius);
+  v['--w-msg-tucked'] = px(msg.tucked);
+  v['--w-msg-pad'] = `${px(msg.padding.y)} ${px(msg.padding.x)}`;
+  Object.assign(v, typeVars('--w-msg-meta', msg.meta));
+  v['--w-agent-bg'] = msg.card.fill;
+  v['--w-agent-edge'] = `inset 0 0 0 ${px(msg.card.edge.width)} ${msg.card.edge.color}`;
+  v['--w-agent-radius'] = radiusCss(msg.card.radius);
+  v['--w-agent-running'] = msg.state.running;
+  v['--w-agent-done'] = msg.state.done;
+  v['--w-agent-failed'] = msg.state.failed;
+  v['--w-approval-bg'] = msg.approval.fill;
+  v['--w-approval-edge'] = `inset 0 0 0 ${px(msg.approval.edge.width)} ${msg.approval.edge.color}`;
+
   // Questions: mark words, result lines and the chosen edge.
   const q = r.question;
   v['--w-q-correct'] = q.mark.correct;
