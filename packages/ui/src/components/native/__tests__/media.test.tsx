@@ -40,6 +40,13 @@ describe('file kinds', { tags: ['unit'] }, () => {
     expect(safeFileUrl(' JavaScript:alert(1)')).toBeNull();
     expect(safeFileUrl('data:text/html,<script>')).toBeNull();
     expect(safeFileUrl('')).toBeNull();
+    // Browsers drop these inside a URL, so each one would still run as javascript:.
+    expect(safeFileUrl('java\tscript:alert(1)')).toBeNull();
+    expect(safeFileUrl('java\nscript:alert(1)')).toBeNull();
+    expect(safeFileUrl('\u0000javascript:alert(1)')).toBeNull();
+    expect(safeFileUrl('//evil.example/a.pdf')).toBeNull();
+    expect(safeFileUrl('files/a.pdf')).toBe('files/a.pdf');
+    expect(safeFileUrl('a.pdf?x=1:2')).toBe('a.pdf?x=1:2');
   });
 
   it('formats sizes for people', () => {

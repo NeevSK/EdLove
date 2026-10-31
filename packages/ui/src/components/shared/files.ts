@@ -124,7 +124,15 @@ export const FILE_CARD_ENGLISH: FileCardLabels = {
  */
 export function safeFileUrl(uri: string): string | null {
   const value = uri.trim();
+  // Browsers drop tabs, newlines and other control characters inside a URL
+  // ("java\tscript:" runs as javascript:), so any such address is refused.
+  if (value === '' || /[\u0000-\u001F\u007F\s]/.test(value)) return null;
   const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(value)?.[1]?.toLowerCase();
-  if (scheme === undefined) return value === '' ? null : value;
+  if (scheme === undefined) {
+    // Relative addresses only: "//host" would be another site, and a colon
+    // before any slash could still be read as a scheme.
+    if (value.startsWith('//') || /^[^/?#]*:/.test(value)) return null;
+    return value;
+  }
   return ['https', 'http', 'blob', 'file'].includes(scheme) ? value : null;
 }
