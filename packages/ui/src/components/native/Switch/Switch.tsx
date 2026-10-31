@@ -9,7 +9,8 @@ export interface SwitchProps
 
 /** An on/off setting. Lit with the world's lamp when on, a quiet line when off. */
 export function Switch({ value, onValueChange, label, disabled, ...rest }: SwitchProps) {
-  const t = useWorld().tokens;
+  const world = useWorld();
+  const t = world.tokens;
   const feedback = useFeedback();
   return (
     <RNSwitch
@@ -22,7 +23,7 @@ export function Switch({ value, onValueChange, label, disabled, ...rest }: Switc
         feedback('select');
         onValueChange(next);
       }}
-      trackColor={{ false: t.line, true: t.lamp }}
+      trackColor={{ false: t.line, true: world.recipes.toggle.track.on }}
       thumbColor={t.raised}
       ios_backgroundColor={t.line}
       {...rest}

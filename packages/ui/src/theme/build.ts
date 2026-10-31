@@ -504,7 +504,8 @@ function buildToggle(t: WorldTokens, s: WorldStyle): ToggleRecipe {
     radius: capRadius(s.corner.chip, 6),
     edge,
     on: { fill: t.lamp, mark: t.onLamp },
-    track: { off: t.line, on: t.lamp, height: 4 },
+    // The on track must read as on: the lamp, deepened only as far as 3:1 on the ground.
+    track: { off: t.line, on: legible(t.lamp, t.lampDeep, t.ground, 3), height: 4 },
     thumb: { fill: t.raised, edge: { width: 2, color: t.lamp }, size: 24 },
   };
 }

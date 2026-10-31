@@ -48,6 +48,7 @@ function pairs(w: ResolvedWorld): Pair[] {
 
   add('checkbox mark', r.toggle.on.mark, r.toggle.on.fill, MARK);
   add('checkbox edge', r.toggle.edge.color, t.ground, MARK);
+  add('switch track on', r.toggle.track.on, t.ground, MARK);
 
   for (const [tone, b] of Object.entries(r.status.badge)) add(`badge ${tone}`, b.ink, b.fill, TEXT);
   add('avatar initials', r.status.avatar.ink, r.status.avatar.fill, TEXT);

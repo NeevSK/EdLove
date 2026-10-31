@@ -320,6 +320,10 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   v['--w-approval-bg'] = msg.approval.fill;
   v['--w-approval-edge'] = `inset 0 0 0 ${px(msg.approval.edge.width)} ${msg.approval.edge.color}`;
 
+  // Toggles: the edge every empty control is drawn with (3:1 on the ground).
+  v['--w-toggle-edge'] = r.toggle.edge.color;
+  v['--w-toggle-on'] = r.toggle.track.on;
+
   // Questions: mark words, result lines and the chosen edge.
   const q = r.question;
   v['--w-q-correct'] = q.mark.correct;

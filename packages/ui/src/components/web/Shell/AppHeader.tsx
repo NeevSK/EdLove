@@ -63,6 +63,7 @@ export function AppHeader({
   perspective,
   actions = [],
   trailing,
+  subtitle,
   status,
   search,
   raised = false,
@@ -111,23 +112,42 @@ export function AppHeader({
           ) : eyebrow && !compact ? (
             <p className="gd-app-header-eyebrow">{eyebrow}</p>
           ) : null}
-          {perspective ? <Heading className="gd-visually-hidden">{title}</Heading> : null}
-          {perspective ? (
-            <button
-              type="button"
-              className="gd-chip gd-app-header-perspective"
-              data-state="rest"
-              aria-label={perspective.label}
-              aria-description={perspective.switchLabel}
-              disabled={!perspective.onPress}
-              onClick={perspective.onPress}
-            >
-              <span>{perspective.label}</span>
-              {perspective.onPress ? <span aria-hidden>▾</span> : null}
-            </button>
+          {perspective && !perspective.beside ? (
+            <>
+              <Heading className="gd-visually-hidden">{title}</Heading>
+              <button
+                type="button"
+                className="gd-chip gd-app-header-perspective"
+                data-state="rest"
+                aria-label={perspective.label}
+                aria-description={perspective.switchLabel}
+                disabled={!perspective.onPress}
+                onClick={perspective.onPress}
+              >
+                <span>{perspective.label}</span>
+                {perspective.onPress ? <span aria-hidden>▾</span> : null}
+              </button>
+            </>
+          ) : perspective?.beside ? (
+            <div className="gd-app-header-beside">
+              <Heading className="gd-app-header-title">{title}</Heading>
+              <button
+                type="button"
+                className="gd-chip gd-app-header-perspective"
+                data-state="rest"
+                aria-label={perspective.label}
+                aria-description={perspective.switchLabel}
+                disabled={!perspective.onPress}
+                onClick={perspective.onPress}
+              >
+                <span>{perspective.label}</span>
+                {perspective.onPress ? <span aria-hidden>▾</span> : null}
+              </button>
+            </div>
           ) : (
             <Heading className="gd-app-header-title">{title}</Heading>
           )}
+          {subtitle ? <p className="gd-app-header-subtitle">{subtitle}</p> : null}
         </div>
         {actions.length > 0 || trailing ? (
           <div className="gd-app-header-actions">

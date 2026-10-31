@@ -83,7 +83,7 @@ const s = (k: number) => `calc(var(--s) * ${k})`;
 
 const BASE_CSS = `
 .gd-switch{appearance:none;border:0;margin:0;padding:0;cursor:pointer;position:relative;flex:none;width:48px;height:28px;border-radius:14px;background:var(--w-line);transition:background var(--w-settle);-webkit-tap-highlight-color:transparent}
-.gd-switch[aria-checked="true"]{background:var(--w-lamp)}
+.gd-switch[aria-checked="true"]{background:var(--w-toggle-on)}
 .gd-switch-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--w-raised);box-shadow:0 1px 2px color-mix(in srgb, var(--w-ink) 22%, transparent);transition:transform var(--w-settle)}
 .gd-switch[aria-checked="true"] .gd-switch-thumb{transform:translateX(20px)}
 .gd-switch:focus-visible{outline:2px solid var(--w-focus);outline-offset:2px}
@@ -427,6 +427,8 @@ video.gd-media-frame{object-fit:contain;background:var(--w-ink)}
 .gd-app-header[data-compact] .gd-app-header-title{font-size:17px;line-height:22px}
 .gd-app-header-avatar{appearance:none;border:0;background:none;padding:0;margin:0;border-radius:50%;cursor:pointer;min-width:44px;min-height:44px;display:grid;place-items:center;transition:transform var(--w-settle)}
 .gd-app-header-avatar:active{transform:scale(var(--w-press))}.gd-app-header-avatar:focus-visible{outline:2px solid var(--w-focus);outline-offset:2px}
+.gd-app-header-beside{display:flex;align-items:center;gap:8px;min-width:0}.gd-app-header-beside .gd-app-header-title{flex:0 1 auto}
+.gd-app-header-subtitle{margin:0;font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size);color:var(--w-ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gd-app-header-perspective{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;max-width:100%}
 .gd-app-header-perspective span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gd-app-header-actions{display:flex;align-items:center;gap:4px;flex:none}
@@ -458,6 +460,30 @@ video.gd-media-frame{object-fit:contain;background:var(--w-ink)}
 .gd-task-tab-pill[data-active] .gd-task-tab-close{color:var(--w-ink);background:color-mix(in srgb, var(--w-ink) 6%, transparent)}
 .gd-task-tab-close:hover{color:var(--w-ink)}.gd-task-tab-close:active{transform:scale(var(--w-press))}
 @media (prefers-reduced-motion:reduce){.gd-task-tab::after,.gd-task-tab-close,.gd-app-header-action{transition:none}.gd-task-tab-close:active{transform:none}}
+.gd-notification{display:flex;align-items:center;gap:8px}
+.gd-notification-main{appearance:none;border:0;margin:0;padding:10px 0;background:none;font:inherit;color:inherit;text-align:start;flex:1;min-width:0;min-height:56px;display:flex;align-items:flex-start;gap:10px;border-radius:8px}
+button.gd-notification-main{cursor:pointer;transition:background-color var(--w-light-ms)}
+button.gd-notification-main:active{background-color:color-mix(in srgb, var(--w-light-press-glow) calc(var(--w-light-press-lift) * 100%), transparent)}
+button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{outline:2px solid var(--w-focus);outline-offset:2px}
+.gd-notification-mark{flex:none;width:8px;height:8px;margin:7px 1px 0;border-radius:50%;background:transparent}
+.gd-notification[data-unread] .gd-notification-mark{background:var(--w-lamp);box-shadow:var(--w-row-signal-glow)}
+.gd-notification[data-unread][data-tone="danger"] .gd-notification-mark{background:var(--w-danger);box-shadow:none}
+.gd-notification-icon{flex:none;display:inline-flex;color:var(--w-ink-soft)}.gd-notification[data-unread] .gd-notification-icon{color:var(--w-ink)}.gd-notification[data-tone="danger"] .gd-notification-icon{color:var(--w-danger)}
+.gd-notification-words{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gd-notification-title{font-family:var(--w-text-body-font);font-size:var(--w-text-body-size);line-height:var(--w-text-body-lh);color:var(--w-ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gd-notification[data-unread] .gd-notification-title{color:var(--w-ink);font-weight:600}
+.gd-notification-body,.gd-notification-time{font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size);color:var(--w-text-caption-color)}
+.gd-notification-body{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gd-notification-time{flex:none;padding-top:2px;white-space:nowrap}
+.gd-notification-read{appearance:none;border:0;background:none;margin:0;padding:0 8px;min-height:44px;font:inherit;font-size:var(--w-text-caption-size);color:var(--w-lamp-deep);cursor:pointer}
+.gd-switch-row{appearance:none;border:0;margin:0;background:none;font:inherit;color:inherit;text-align:start;width:100%;min-height:var(--w-row-min-height);padding:var(--w-row-py) 0;display:flex;align-items:center;gap:12px;cursor:pointer;border-radius:8px}
+.gd-switch-row:focus-visible{outline:2px solid var(--w-focus);outline-offset:2px}.gd-switch-row:disabled{opacity:.5;cursor:default}
+.gd-switch-row-words{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gd-switch-row-track{flex:none;position:relative;width:48px;height:28px;border-radius:14px;background:var(--w-toggle-edge);transition:background-color var(--w-light-ms)}
+.gd-switch-row-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--w-raised);box-shadow:0 1px 2px color-mix(in srgb, var(--w-shadow-tint) 30%, transparent);transition:transform var(--w-settle)}
+.gd-switch-row[aria-checked="true"] .gd-switch-row-track{background:var(--w-toggle-on)}
+.gd-switch-row[aria-checked="true"] .gd-switch-row-thumb{transform:translateX(20px)}
+@media (prefers-reduced-motion:reduce){.gd-switch-row-track,.gd-switch-row-thumb{transition:none}}
 .gd-group-row{position:relative;padding:0 var(--w-group-indent)}.gd-group-row+.gd-group-row::before{content:"";position:absolute;top:0;left:var(--w-group-indent);right:0;height:var(--w-group-divider-w);background:var(--w-line)}
 .gd-field[data-state="error"] .gd-field-input{animation:gd-shake 320ms ease-out 1}
 @keyframes gd-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}

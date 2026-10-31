@@ -121,3 +121,5 @@ export { ExpoVideoAdapter } from './Media/ExpoVideoAdapter';
 export { Media, type MediaProps } from './Media/Media';
 export { AppHeader, type AppHeaderProps } from './Shell/AppHeader';
 export { TaskTabs, type TaskTabsProps } from './Shell/TaskTabs';
+export { NotificationItem, type NotificationItemProps } from './Shell/NotificationItem';
+export { SwitchRow, type SwitchRowProps } from './Shell/SwitchRow';

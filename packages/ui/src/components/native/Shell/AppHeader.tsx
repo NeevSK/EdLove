@@ -108,6 +108,7 @@ export function AppHeader({
   actions = [],
   search,
   trailing,
+  subtitle,
   status,
   raised = false,
   ruled = false,
@@ -126,6 +127,38 @@ export function AppHeader({
   }, [search?.open]);
 
   const titleStyle = typeStyle(world.recipes.text.title, language, world, compact ? 17 : undefined);
+
+  const pill = perspective ? (
+    <Pressable
+                role="button"
+                accessibilityLabel={perspective.label}
+                accessibilityHint={perspective.switchLabel}
+                disabled={!perspective.onPress}
+                onPress={() => {
+                  feedback('select');
+                  perspective.onPress?.();
+                }}
+                style={[chipFrame(chip, chip.rest), styles.pill]}
+              >
+                <ChipPaint recipe={chip} selected={false} />
+                <RNText
+                  numberOfLines={1}
+                  style={[typeStyle(chip.label, language, world), { color: chip.rest.ink }]}
+                >
+                  {perspective.label}
+                </RNText>
+                {perspective.onPress ? (
+                  <RNText aria-hidden style={{ color: t.inkSoft }}>
+                    ▾
+                  </RNText>
+                ) : null}
+              </Pressable>
+  ) : null;
+  const heading = (
+    <RNText accessibilityRole="header" numberOfLines={1} style={[titleStyle, perspective?.beside ? { flexShrink: 1 } : null]}>
+      {title}
+    </RNText>
+  );
 
   return (
     <Animated.View
@@ -189,36 +222,21 @@ export function AppHeader({
               {eyebrow}
             </RNText>
           ) : null}
-          {perspective ? (
-            <Pressable
-              role="button"
-              accessibilityLabel={perspective.label}
-              accessibilityHint={perspective.switchLabel}
-              disabled={!perspective.onPress}
-              onPress={() => {
-                feedback('select');
-                perspective.onPress?.();
-              }}
-              style={[chipFrame(chip, chip.rest), styles.pill]}
-            >
-              <ChipPaint recipe={chip} selected={false} />
-              <RNText
-                numberOfLines={1}
-                style={[typeStyle(chip.label, language, world), { color: chip.rest.ink }]}
-              >
-                {perspective.label}
-              </RNText>
-              {perspective.onPress ? (
-                <RNText aria-hidden style={{ color: t.inkSoft }}>
-                  ▾
-                </RNText>
-              ) : null}
-            </Pressable>
+          {perspective && !perspective.beside ? (
+            pill
+          ) : perspective?.beside ? (
+            <View style={styles.besideRow}>
+              {heading}
+              {pill}
+            </View>
           ) : (
-            <RNText accessibilityRole="header" numberOfLines={1} style={titleStyle}>
-              {title}
-            </RNText>
+            heading
           )}
+          {subtitle ? (
+            <RNText numberOfLines={1} style={[typeStyle(world.recipes.text.caption, language, world), { color: t.inkSoft }]}>
+              {subtitle}
+            </RNText>
+          ) : null}
         </View>
         {actions.length > 0 || trailing ? (
           <View style={[styles.row, { gap: 4 }]}>
@@ -261,6 +279,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   identity: { flex: 1, gap: 2, minWidth: 0 },
   pill: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start' },
+  besideRow: { flexDirection: 'row', alignItems: 'center', gap: 8, minWidth: 0 },
   action: { position: 'relative' },
   well: { borderRadius: 999 },
   status: { flexDirection: 'row', alignItems: 'center', gap: 6 },

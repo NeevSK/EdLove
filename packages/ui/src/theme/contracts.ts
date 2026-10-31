@@ -1048,7 +1048,15 @@ export interface AppHeaderContract {
   /** The person, opening their profile. */
   avatar?: { name: string; src?: string; label: string; onPress: () => void };
   /** Shown in place of the title when acting under another identity (a school, a child). */
-  perspective?: { label: string; onPress?: () => void; switchLabel?: string };
+  perspective?: {
+    label: string;
+    onPress?: () => void;
+    switchLabel?: string;
+    /** Beside the title (the compact header) instead of in its place. */
+    beside?: boolean;
+  };
+  /** A quiet line under the title (the compact header's context). */
+  subtitle?: string;
   /** Right side, in order; at most three read well on a phone. */
   actions?: readonly HeaderAction[];
   /** A screen's own control at the far right, after the actions. */
@@ -1105,4 +1113,32 @@ export interface TaskTabsLabels {
   moveLater: string;
   /** Said for the drag handle. */
   reorderHint: string;
+}
+
+/**
+ * One notification. Unread ones carry a lit mark and say "Unread" first;
+ * the time is already formatted for the reader. Grouped by day in `Group`s.
+ */
+export interface NotificationItemContract {
+  title: string;
+  body?: string;
+  /** "9:41", "Yesterday". */
+  time: string;
+  unread: boolean;
+  icon?: ComponentType<KitIconProps>;
+  /** `danger` for something that needs action now. */
+  tone?: 'plain' | 'danger';
+  onPress?: () => void;
+  onMarkRead?: () => void;
+  labels?: Partial<{ unread: string; markRead: string }>;
+}
+
+/** A settings row that is itself the switch: one control, one name, a large target. */
+export interface SwitchRowContract {
+  label: string;
+  /** What it changes, under the label; also the switch's description. */
+  hint?: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+  disabled?: boolean;
 }
