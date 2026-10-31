@@ -791,6 +791,8 @@ export interface FabAction {
   /** `lamp` for the primary action; `danger` for one that ends or deletes. */
   tone?: 'plain' | 'lamp' | 'danger';
   onPress: () => void;
+  /** Actions sharing a group sit together under its name ("AI companion"). */
+  group?: string;
 }
 
 /** The floating action: one lit control that opens what this screen offers. */
@@ -960,7 +962,10 @@ export interface ImageCaptureContract {
 }
 
 /** What a capture port answers: files, nothing (cancelled), or permission refused. */
-export type CaptureResult<T> = { status: 'ok'; value: T } | { status: 'cancelled' } | { status: 'denied' };
+export type CaptureResult<T> =
+  | { status: 'ok'; value: T }
+  | { status: 'cancelled' }
+  | { status: 'denied' };
 
 /** A recorder, as a hook the platform provides (recording is stateful). */
 export interface RecorderPort {
@@ -974,7 +979,10 @@ export interface RecorderPort {
 }
 
 export interface CapturePorts {
-  pickFiles?: (options: { accept?: readonly FileKind[]; multiple: boolean }) => Promise<CaptureResult<FileRef[]>>;
+  pickFiles?: (options: {
+    accept?: readonly FileKind[];
+    multiple: boolean;
+  }) => Promise<CaptureResult<FileRef[]>>;
   pickImage?: (source: 'camera' | 'library') => Promise<CaptureResult<FileRef>>;
   useRecorder?: () => RecorderPort;
 }

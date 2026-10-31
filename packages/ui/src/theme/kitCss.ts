@@ -397,7 +397,7 @@ button.gd-agent-card{cursor:pointer}button.gd-agent-card:focus-visible{outline:2
 .gd-fab{appearance:none;border:0;margin:0;position:relative;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;cursor:pointer;background:var(--w-lamp);color:var(--w-on-lamp);box-shadow:var(--w-surface-raised-shadow),var(--w-button-primary-shadow);font-size:1.5rem;transition:transform var(--w-settle),filter var(--w-light-ms)}
 .gd-fab:active{transform:scale(var(--w-press));filter:brightness(calc(1 + var(--w-light-press-lift)))}.gd-fab:focus-visible{outline:2px solid var(--w-focus);outline-offset:3px}
 .gd-fab-signal{position:absolute;top:6px;right:6px;width:12px;height:12px;border-radius:50%;background:var(--w-row-signal);box-shadow:0 0 0 2px var(--w-lamp)}
-.gd-fab-menu{display:flex;flex-direction:column;gap:4px}.gd-fab-danger .gd-row-label{color:var(--w-danger)}.gd-fab-lit .gd-row-label{color:var(--w-lamp-deep)}
+.gd-fab-menu{display:flex;flex-direction:column;gap:16px}.gd-fab-danger .gd-row-label{color:var(--w-danger)}.gd-fab-lit .gd-row-label{color:var(--w-lamp-deep)}
 .gd-rich-fallback{min-height:8rem;resize:vertical}
 @media (prefers-reduced-motion:reduce){.gd-fab{transition:none}.gd-fab:active{transform:none;filter:none}}
 .gd-media{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}

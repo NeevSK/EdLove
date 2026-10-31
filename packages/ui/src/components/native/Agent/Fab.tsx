@@ -14,6 +14,8 @@ import { glowStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { iconSize } from '../../../tokens/sizes';
 import { gapFor } from '../../../tokens/space';
+import { groupFabActions } from '../../shared/agent';
+import { Group } from '../Group/Group';
 import { Row } from '../Row/Row';
 import { Sheet } from '../Sheet/Sheet';
 
@@ -107,32 +109,36 @@ export function FabMenu({ open, onClose, label, actions }: FabMenuProps) {
   const { world } = useWorldContext();
   return (
     <Sheet open={open} onClose={onClose} title={label}>
-      <View style={{ gap: gapFor('inside') }}>
-        {actions.map((a) => (
-          <Row
-            key={a.key}
-            label={a.label}
-            note={a.hint}
-            accessory={
-              a.icon ? (
-                <a.icon
-                  size={iconSize.md}
-                  color={
-                    a.tone === 'danger'
-                      ? world.tokens.danger
-                      : a.tone === 'lamp'
-                        ? world.tokens.lampDeep
-                        : world.tokens.inkSoft
-                  }
-                  aria-hidden
-                />
-              ) : undefined
-            }
-            onPress={() => {
-              onClose();
-              a.onPress();
-            }}
-          />
+      <View style={{ gap: gapFor('between') }}>
+        {groupFabActions(actions).map((section) => (
+          <Group key={section.group ?? ''} label={section.group}>
+            {section.actions.map((a) => (
+              <Row
+                key={a.key}
+                label={a.label}
+                note={a.hint}
+                accessory={
+                  a.icon ? (
+                    <a.icon
+                      size={iconSize.md}
+                      color={
+                        a.tone === 'danger'
+                          ? world.tokens.danger
+                          : a.tone === 'lamp'
+                            ? world.tokens.lampDeep
+                            : world.tokens.inkSoft
+                      }
+                      aria-hidden
+                    />
+                  ) : undefined
+                }
+                onPress={() => {
+                  onClose();
+                  a.onPress();
+                }}
+              />
+            ))}
+          </Group>
         ))}
       </View>
     </Sheet>

@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { WorldScope } from '../../../theme/native';
 import { resolveWorld } from '../../../theme/resolve';
 import { haptic } from '../../../utils/haptics';
-import { remainingNote, shouldAnnounce } from '../../shared/agent';
+import { groupFabActions, remainingNote, shouldAnnounce } from '../../shared/agent';
 import {
   ApprovalCard,
   ArtifactCard,
@@ -335,6 +335,24 @@ describe('ActionFab and FabMenu', { tags: ['a11y', 'interaction', 'unit'] }, () 
     await act(async () => {});
     await fireEvent.press(screen.getByRole('button', { name: 'Ask Gurudevi' }));
     expect(order).toEqual(['close', 'ai']);
+  });
+
+  it('groups actions: loose ones first, then each named group in listed order', async () => {
+    const run = () => {};
+    const actions = [
+      { key: 'new', label: 'New lesson', onPress: run },
+      { key: 'ask', label: 'Ask', group: 'AI companion', onPress: run },
+      { key: 'reset', label: 'Breathing reset', onPress: run },
+      { key: 'quiet', label: 'Incognito ask', group: 'AI companion', onPress: run },
+    ];
+    expect(groupFabActions(actions).map((s) => [s.group, s.actions.map((a) => a.key)])).toEqual([
+      [undefined, ['new', 'reset']],
+      ['AI companion', ['ask', 'quiet']],
+    ]);
+    await render(<FabMenu open onClose={() => {}} label="Actions" actions={actions} />);
+    await act(async () => {});
+    expect(screen.getByText('AI companion')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Incognito ask' })).toBeTruthy();
   });
 });
 

@@ -1,6 +1,8 @@
 import type { ActionFabContract, FabMenuContract } from '../../../theme/contracts';
 import { iconSize } from '../../../tokens/sizes';
+import { groupFabActions } from '../../shared/agent';
 import { cx } from '../cx';
+import { Group } from '../Group/Group';
 import { Row } from '../Row/Row';
 import { Sheet } from '../Sheet/Sheet';
 
@@ -39,19 +41,27 @@ export function FabMenu({ open, onClose, label, actions }: FabMenuProps) {
   return (
     <Sheet open={open} onClose={onClose} title={label}>
       <div className="gd-fab-menu">
-        {actions.map((a) => (
-          <Row
-            key={a.key}
-            label={a.label}
-            note={a.hint}
-            className={
-              a.tone === 'danger' ? 'gd-fab-danger' : a.tone === 'lamp' ? 'gd-fab-lit' : undefined
-            }
-            onPress={() => {
-              onClose();
-              a.onPress();
-            }}
-          />
+        {groupFabActions(actions).map((section) => (
+          <Group key={section.group ?? ''} label={section.group}>
+            {section.actions.map((a) => (
+              <Row
+                key={a.key}
+                label={a.label}
+                note={a.hint}
+                className={
+                  a.tone === 'danger'
+                    ? 'gd-fab-danger'
+                    : a.tone === 'lamp'
+                      ? 'gd-fab-lit'
+                      : undefined
+                }
+                onPress={() => {
+                  onClose();
+                  a.onPress();
+                }}
+              />
+            ))}
+          </Group>
         ))}
       </div>
     </Sheet>

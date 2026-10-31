@@ -595,10 +595,15 @@ from kit pieces in place, never redesigned.
    behind the header (a quiet world ground, by Naveen's call); actions in the
    familiar round wells; the connection said on the header's top line instead
    of a banner; the tab layout's own header buttons as kit actions; the
-   sub-tab strip on the new `TaskTabs`. **Next, components only (no screens):**
-   `DomainSubHeader` (the compact header variant) onto `AppHeader`, a
-   `NotificationItem`, settings pieces onto `Group`/`Row`, the FAB onto
-   `ActionFab` + `FabMenu`, and the web shell's connection line.
+   sub-tab strip on the new `TaskTabs`. **Then (`598c80c0a`):**
+   `DomainSubHeader` on the compact `AppHeader`; `NotificationItem`;
+   `SwitchRow`. **Then:** `LotusPetalFAB` drawn by `ActionFab` + `FabMenu`,
+   every prop, registration, drag, saved place and menu action kept; the gaps
+   state is a worded signal ("urgent") and the breath runs only when motion
+   allows; menu actions take an optional `group` (the AI companion section).
+   Taps go to the kit button; a drag past 8 px moves it and the release that
+   ends a drag is not a tap. **Next, components only:** more settings rows on
+   `Group`/`Row`, and the web shell's connection line.
 3. **Layer 1 screens:** AIScreen, the DM screen and the FAB overlay onto the
    agent kit.
 4. **Layer 2 remainder:** upload pipeline (engine \`IAttachmentPort\`, offline

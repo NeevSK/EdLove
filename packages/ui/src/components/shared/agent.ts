@@ -1,4 +1,4 @@
-import type { AgentLabels, ChatPrivacy } from '../../theme/contracts';
+import type { AgentLabels, ChatPrivacy, FabAction } from '../../theme/contracts';
 
 /** English words for the agent kit; screens pass their own for si and ta. */
 export const AGENT_ENGLISH: AgentLabels = {
@@ -82,4 +82,25 @@ export function dropIndex(
     .sort((a, b) => a.c - b.c);
   const i = others.findIndex((x) => target < x.c);
   return i < 0 ? others.length : i;
+}
+
+/**
+ * Menu actions in sections: ungrouped ones first, then each named group in
+ * the order its first action appears, so callers decide the order by listing.
+ */
+export function groupFabActions(
+  actions: readonly FabAction[],
+): { group: string | undefined; actions: FabAction[] }[] {
+  const sections: { group: string | undefined; actions: FabAction[] }[] = [];
+  const loose: FabAction[] = [];
+  for (const action of actions) {
+    if (!action.group) {
+      loose.push(action);
+      continue;
+    }
+    const section = sections.find((s) => s.group === action.group);
+    if (section) section.actions.push(action);
+    else sections.push({ group: action.group, actions: [action] });
+  }
+  return loose.length ? [{ group: undefined, actions: loose }, ...sections] : sections;
 }
