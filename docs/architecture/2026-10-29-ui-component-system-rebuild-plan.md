@@ -392,6 +392,51 @@ should re-export its types rather than keep a copy.
 | 1c.4 | Assessment states: a field shows correct, incorrect or awaiting review (from the rubric), a `Timer` for exams that announces at set marks, and a review summary. `RichText` (editor and reader) after a library decision (needs research against installed versions). |
 | 1c.5 | Rebuild `@repo/form-builder` renderers and the web builder floor on the kit; one renderer per field type, chosen from the engine schema. |
 
+### 1c design: ports and adapters
+
+The kit owns the frame, the world's look, the states and an honest
+fallback. Anything that parses or renders a format is an adapter the app
+plugs in through `MediaAdapters` (one registry per platform, inherited down
+the tree). A library choice is therefore reversible, and a missing adapter
+never loses the person's content.
+
+| Port (kit) | Adapter props | Native default | Web default | Fallback |
+| :--- | :--- | :--- | :--- | :--- |
+| `Markdown` | source, onLinkPress (+ world prose on native) | enriched-markdown (installed) | none yet | paragraphs as plain text, never HTML |
+| `DocumentView` (pdf, document, sheet, slides, markdown, text) | file, onError | none yet | browser PDF viewer, download beside it | `FileCard` that opens or downloads |
+| `FileCard` | (kit piece) | | | unsafe addresses (javascript:, data: HTML) are never linked or framed |
+
+Shared and platform-neutral: `fileKindOf`, `formatBytes`, `safeFileUrl`,
+labels (`components/shared/files.ts`); question rules
+(`components/shared/questions.ts`). The `prose` and `question` recipes
+carry the look; both are in the contrast guard.
+
+Questions speak the form engine's vocabulary (`@intuitui-labs/form-builder-engine`
+0.3.0: instant or deferred evaluation, rubrics, explanation, streak and
+speed bonus, hints, reward port). The engine evaluates; the kit shows the
+result it is given (`ChoiceQuestion` `reveal`). Anonymity exists in the
+engine only as a transport `anonymousId`, so the service decides it and
+`PrivacyNote` says it plainly.
+
+Open library decisions (each lands as one adapter, nothing else changes):
+
+| Port | Candidates being weighed | What the adapter must pass |
+| :--- | :--- | :--- |
+| Markdown on web | (none chosen) | sanitised output, GFM tables, KaTeX optional, Sinhala and Tamil shaping |
+| Rich text (editor and reader) | Software Mansion enriched text (Markdown) vs HTML rich text | round-trip without loss; offline drafts through the engine's outbox |
+| PDF on native | react-native-pdf vs a better maintained PDF engine | page, zoom, search; 2 GB devices |
+| Office (docx, xlsx, pptx) | to be researched | read-only first; falls back to download |
+| Slides | reveal.js vs Marp | from Markdown; keyboard and swipe; no autoplay |
+
+Built so far: `Markdown`, `FileCard`, `DocumentView`, `MediaAdapters`,
+`Scale`, `ChoiceQuestion`, `PrivacyNote` (both kits). Next in 1c: `Media`
+(image with alt and caption, video and audio with poster and reduced motion;
+expo-image, expo-video, expo-audio on native are installed), `FileField`
+(pick, drop, progress, offline queue), `AudioRecord`, `ImageCapture`,
+`Timer` (announces at marks), playful moments from the engine's streak and
+rewards (felt through the feedback grammar, never required to answer), then
+the form-builder renderers (1c.5).
+
 ## 15. Status ledger
 
 Updated with every commit. If this conversation's context is lost, this
@@ -427,6 +472,10 @@ section plus the guide (`ui-kit-guide.md`) and the requirements ledger
 | `c0706eee8` | Row space-aware with press light; Tabs on living light (`ChipPaint`) |
 | `46726d173` | Boxed Sections render as Group |
 | `db829df75` | System accessibility settings (`WorldAccess`, `useSystemAccess`, web media queries) |
+| `dcac5d532` | 1c media ports: prose recipe, `Markdown`, `FileCard`, `DocumentView`, `MediaAdapters`; floor sky from theme/scene |
+| `0ddd06e7f` | Owned open UI work: FAB AI companion, chat bubble on world prose, AIScreen on world colours, Todo, web floors, period card on the kit |
+| `b5df866f3` | Security: safe file links and frames; agent promotion only when confirmed; route cannot lower chat privacy |
+| `b094d69ad` | Question kit: `Scale`, `ChoiceQuestion` (reveal), `PrivacyNote`; question recipe in the contrast guard |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4

@@ -37,7 +37,9 @@ Updated 2026-10-30.
 | B2 | Layout pieces: Stack, Inline, Grid, Icon | done (both kits); Icon takes the caller's glyph (kit has no icon library) |
 | B3 | Cards, tiles, pills, shapes and sizes; horizontal rails; carousels | done: `Card` (tile, wide, square, pill; sm/md/lg), `Rail`, `Carousel` (buttons + swipe, announced, never autoplays) |
 | B4 | Grouped settings like Claude or Grok (proximity, one surface per group) | done: `Group` (both kits); boxed Sections render as a Group |
-| B5 | Forms, quizzes, assignments, lessons, PDF and file types | planned 1c (plan §14) |
+| B5 | Forms, quizzes, assignments, lessons, PDF and file types | in progress (plan §14, "1c design"): `Markdown`, `FileCard`, `DocumentView` with adapters; `Scale`, `ChoiceQuestion`, `PrivacyNote` done; media, file field, recording, timer, playful moments next |
+| B7 | Every format behind a port: images, voice, video, PDF, Word, Excel, PowerPoint, Markdown, rich text, slides | ports done for Markdown and documents; library choices open (plan §14) |
+| B8 | Quizzes, surveys, playful and anonymous forms done well | first pieces done; the form engine evaluates, the kit shows; anonymity said plainly |
 | B6 | Todo out of the kit, built on kit pieces | done in the working tree, but someone else's uncommitted work |
 
 ## C. Space, accessibility, contrast

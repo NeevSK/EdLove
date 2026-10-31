@@ -179,6 +179,14 @@ section 7) and signed off.
 - **System settings**: never read contrast or transparency settings in a
   component. The world already carries them (`world.access`, from
   `useSystemAccess` at the app root); recipes come out stronger or solid.
+- **Formats are adapters**: never import a markdown, PDF, office or slide
+  library in a screen or a kit component. Render `Markdown` or
+  `DocumentView`; the app registers the renderer with `MediaAdapters`
+  (plan §14, "1c design"). A file address is linked or framed only through
+  `safeFileUrl`.
+- **Questions show, the engine decides**: `ChoiceQuestion` takes a
+  `reveal` from the form engine; it never scores. Mark meaning in words as
+  well as colour.
 - **Names**: every kit export is a named function with its export name (tests
   on both sets), and web elements carry `gd-<name>` classes, so DevTools shows
   the kit tree.
