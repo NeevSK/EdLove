@@ -207,6 +207,7 @@ section 7) and signed off.
   `reveal` from the form engine; it never scores. Mark meaning in words as
   well as colour.
 - **Time is one model**: days `YYYY-MM-DD`, times `HH:MM`, intent `review`/`current`/`plan` from `@repo/core/logic/workbench`; words from `Intl` (`components/shared/time.ts`), colours from `recipes.time` (past recedes, today ringed, future warmed). Never format dates by hand in a screen, never colour a day without words.
+- **Settings are rows**: value = `Row` with `detail`; on/off = `SwitchRow`; pick one = `ChoiceRow`; go elsewhere = `LinkRow` (`external` when it leaves the app); end or delete = `DangerRow` with `confirm`. All inside `Group`s. Never a bare button in a settings list.
 - **Prefer the browser on the web**: `<details>` for disclosure, `<input type=date|time|number|search>` for fields; the kit styles them and keeps the contract.
 - **Names**: every kit export is a named function with its export name (tests
   on both sets), and web elements carry `gd-<name>` classes, so DevTools shows

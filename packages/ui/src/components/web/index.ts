@@ -90,6 +90,14 @@ export { Row, type RowProps } from './Row/Row';
 export { Section, type SectionProps } from './Section/Section';
 export { SegmentedControl, type SegmentedControlProps } from './Segmented/SegmentedControl';
 export { Select, type SelectProps } from './Select/Select';
+export {
+  ChoiceRow,
+  type ChoiceRowProps,
+  DangerRow,
+  type DangerRowProps,
+  LinkRow,
+  type LinkRowProps,
+} from './Settings/SettingsRows';
 export { Sheet, type SheetProps } from './Sheet/Sheet';
 export { AppHeader, type AppHeaderProps } from './Shell/AppHeader';
 export { NotificationItem, type NotificationItemProps } from './Shell/NotificationItem';

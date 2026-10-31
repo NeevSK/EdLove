@@ -199,6 +199,8 @@ export interface RowRecipe {
   chevron: string;
   /** The small lit dot a row shows when it needs the person. */
   signal: { color: string; size: number; glow: Glow };
+  /** Label of a row that ends or deletes something, on the page and on a group. */
+  danger: string;
 }
 
 /**

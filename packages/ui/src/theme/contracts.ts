@@ -327,6 +327,8 @@ export interface RowContract {
   signal?: boolean;
   signalLabel?: string;
   chevron?: boolean;
+  /** `danger` for a row that ends or deletes something: its label in danger words. */
+  tone?: 'plain' | 'danger';
 }
 
 export interface SectionContract {
@@ -1351,4 +1353,49 @@ export interface StepsContract {
   /** Going back to a step; steps up to the current one, and done ones, are offered. */
   onSelect?: (index: number) => void;
   labels?: Partial<{ step: (n: number, total: number) => string; done: string; error: string }>;
+}
+
+// ---------------------------------------------------------------------------
+// Settings rows: Row is the value row (label and detail); these add the
+// three behaviours settings need: pick one, go elsewhere, end something.
+// ---------------------------------------------------------------------------
+
+/** A setting with one chosen value; the row shows it, pressing opens the choices. */
+export interface ChoiceRowContract<V extends string = string> {
+  label: string;
+  value: V | null;
+  options: readonly ChoiceOption<V>[];
+  onChange: (value: V) => void;
+  note?: string;
+  /** Shown when nothing is chosen. Default "Not set". */
+  placeholder?: string;
+}
+
+/** A row that goes somewhere: another screen, or (`external`) outside the app. */
+export interface LinkRowContract {
+  label: string;
+  detail?: string;
+  note?: string;
+  /** Web: an address the row links to. Native: opened with the system when `external`. */
+  href?: string;
+  onPress?: () => void;
+  /** Leaves the app (a browser, mail); said in words and drawn with ↗. */
+  external?: boolean;
+  labels?: Partial<{ opensOutside: string }>;
+}
+
+/** A row that ends or deletes something, asking first when `confirm` is given. */
+export interface DangerRowContract {
+  label: string;
+  note?: string;
+  onConfirm: () => void;
+  confirm?: {
+    title: string;
+    description?: string;
+    confirmLabel: string;
+    cancelLabel?: string;
+  };
+  /** While the action runs: the row is off and says so. */
+  busy?: boolean;
+  labels?: Partial<{ working: string }>;
 }

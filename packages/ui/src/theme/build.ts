@@ -388,7 +388,12 @@ function buildChip(t: WorldTokens, s: WorldStyle): ChipRecipe {
   };
 }
 
-function buildRow(t: WorldTokens, text: Record<TextRole, TypeStyle>): RowRecipe {
+function buildRow(
+  t: WorldTokens,
+  text: Record<TextRole, TypeStyle>,
+  surface: SurfaceRecipe,
+): RowRecipe {
+  const paper = surface.raised.fill ?? t.ground;
   return {
     minHeight: 48,
     paddingY: 10,
@@ -398,6 +403,7 @@ function buildRow(t: WorldTokens, text: Record<TextRole, TypeStyle>): RowRecipe 
     note: type('sans', 12.5, 17, t.inkSoft),
     chevron: t.inkFaint,
     signal: { color: t.lamp, size: 7, glow: { color: t.glow, radius: 8, opacity: 0.6 } },
+    danger: legible(legible(t.danger, t.ink, t.ground, 4.5), t.ink, paper, 4.5),
   };
 }
 
@@ -697,7 +703,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     surface,
     field: buildField(t, s, text),
     chip: buildChip(t, s),
-    row: buildRow(t, text),
+    row: buildRow(t, text, surface),
     section: buildSection(t, s, mode, text, surface),
     overlay: buildOverlay(t, s, mode, surface),
     toggle: buildToggle(t, s),

@@ -543,6 +543,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-steps-step[data-lit]::before{background:var(--w-toggle-on)}.gd-steps-step[data-state="error"]::before{background:var(--w-danger)}
 .gd-steps-press{appearance:none;border:0;margin:0;padding:0;background:none;position:absolute;inset:-14px 0;cursor:pointer;border-radius:6px}.gd-steps-press:focus-visible{outline:2px solid var(--w-focus)}
 @media (prefers-reduced-motion:reduce){.gd-disclosure-chevron,.gd-steps-step::before,.gd-number-step,.gd-search-well{transition:none}}
+.gd-row[data-tone="danger"] .gd-row-label{color:var(--w-row-danger)}
 `;
 
 let cache: string | null = null;

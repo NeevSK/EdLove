@@ -643,8 +643,18 @@ from kit pieces in place, never redesigned.
    reached steps can be gone back to). The touch minimum is now a token
    (`touchTarget.min`, 44).
 
-   **Still missing (fundamentals, components only):** settings rows (value,
-   choice, link, danger) on `Group`/`Row`; tag input; pagination (web); side
+   **Settings rows (built, both kits).** `Row` is the value row (label and
+   detail) and gains `tone="danger"` (a new `recipes.row.danger`, 4.5:1 on
+   the page and on a group). `ChoiceRow` says the chosen value and opens the
+   choices in a sheet (`RadioGroup`), closing on choice. `LinkRow` goes
+   elsewhere; outside the app it is said in words and drawn with ↗, opened
+   through `safeLinkUrl` (web, http(s), mailto, tel only; web links open
+   `noopener noreferrer`, native through `Linking` with error feedback when
+   nothing can open it). `DangerRow` asks first in a `Dialog` whose own
+   action is the danger button, and says "Working…" while it runs. With
+   `SwitchRow`, `Group` and `Row` this is the whole settings vocabulary.
+
+   **Still missing (fundamentals, components only):** tag input; pagination (web); side
    navigation and command palette for the web shell; a chart port (charts as
    an adapter, like media); a range `DateTravel`. Then layer 3 forms and
    quizzes, which `Steps`, `NumberStepper`, `DateField` and `TimeField` now

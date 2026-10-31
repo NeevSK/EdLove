@@ -19,6 +19,7 @@ export function Row({
   signal = false,
   signalLabel,
   chevron,
+  tone,
   className,
   style,
 }: RowProps) {
@@ -49,6 +50,7 @@ export function Row({
     className: cx('gd-row', className),
     style,
     'data-signal': signal || undefined,
+    'data-tone': tone === 'danger' ? 'danger' : undefined,
   };
   if (href) {
     return (

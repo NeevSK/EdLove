@@ -37,6 +37,7 @@ export function Row({
   signal = false,
   signalLabel,
   chevron,
+  tone = 'plain',
   accessibilityHint,
   style,
   ref,
@@ -63,7 +64,15 @@ export function Row({
               }
         }
       >
-        <RNText style={[typeStyle(r.label, language, world), { flexShrink: 1 }]}>{label}</RNText>
+        <RNText
+          style={[
+            typeStyle(r.label, language, world),
+            { flexShrink: 1 },
+            tone === 'danger' ? { color: r.danger } : null,
+          ]}
+        >
+          {label}
+        </RNText>
         {accessory ??
           (detail || showChevron ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 }}>

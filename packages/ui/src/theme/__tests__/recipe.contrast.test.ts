@@ -71,6 +71,8 @@ function pairs(w: ResolvedWorld): Pair[] {
     add(`notice ${tone} words`, n.ink, n.fill, TEXT);
     add(`notice ${tone} accent`, n.accent, n.fill, MARK);
   }
+  add('row danger label', r.row.danger, t.ground, TEXT);
+  add('row danger label on a group', r.row.danger, raised, TEXT);
   add('time selected', r.time.selected.ink, r.time.selected.fill, TEXT);
   add('time now line', r.time.now, t.ground, MARK);
   add('time activity dot', r.time.dot, raised, MARK);

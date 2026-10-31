@@ -324,6 +324,8 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   v['--w-toggle-edge'] = r.toggle.edge.color;
   v['--w-toggle-on'] = r.toggle.track.on;
 
+  v['--w-row-danger'] = r.row.danger;
+
   // Notices: a quiet well per tone with an accent bar.
   for (const [tone, n] of Object.entries(r.notice)) {
     v[`--w-notice-${tone}-bg`] = n.fill;
