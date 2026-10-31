@@ -19,8 +19,10 @@ const mocks = vi.hoisted(() => ({
   },
 }));
 
+// The floors read the route (the web verger keys its budget on it).
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
+  usePathname: () => '/workspace',
 }));
 
 function renderWorkspace(children: ReactNode) {

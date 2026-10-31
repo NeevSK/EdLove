@@ -32,6 +32,7 @@ import { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { LinkWardModal } from '@repo/ui/components/LinkWardModal';
+import { Text as WText } from '@repo/ui/components/native';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
 import {
@@ -46,9 +47,8 @@ import {
   X,
 } from '@repo/ui/icons/native';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
-import { tokens } from '@repo/ui/tokens';
-import { Text as WText } from '@repo/ui/components/native';
 import { useWorld } from '@repo/ui/theme/native';
+import { tokens } from '@repo/ui/tokens';
 import { router, useGlobalSearchParams, usePathname } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -802,7 +802,8 @@ function TabsLayoutContent() {
           screenOptions={{
             headerShown: !autoHideChromeOnScroll || isChromeVisible,
             tabBarHideOnKeyboard: true,
-            tabBarActiveTintColor: wt.ink,
+            // The selected tab is the lit thing, at text strength (as in NativeShellTabs).
+            tabBarActiveTintColor: wt.lampDeep,
             tabBarInactiveTintColor: wt.inkSoft,
             tabBarShowLabel: shell.visibleChrome.tabLabels,
             tabBarStyle: {

@@ -1019,3 +1019,52 @@ export interface MediaLabels {
   /** Image with no words given: a warning for authors, never silent. */
   missingAlt: string;
 }
+
+// ---------------------------------------------------------------------------
+// Shell (the frame every screen shares). Placement follows the app's long-
+// standing header: leading control and identity on the left, actions on the
+// right, search opening underneath.
+// ---------------------------------------------------------------------------
+
+export interface HeaderAction {
+  key: string;
+  label: string;
+  icon: ComponentType<KitIconProps>;
+  onPress: () => void;
+  /** A toggle's state (search open), said to assistive technology. */
+  expanded?: boolean;
+  /** A count (unread) or a dot; said as part of the name via `badgeLabel`. */
+  badge?: number | 'dot';
+  badgeTone?: 'lamp' | 'danger' | 'quiet';
+  /** "3 unread". Required when `badge` is set, so the mark is never only colour. */
+  badgeLabel?: string;
+}
+
+export interface AppHeaderContract {
+  title: string;
+  /** The quiet line above the title (a greeting, a context). */
+  eyebrow?: string;
+  leading?: { kind: 'back' | 'menu'; label: string; onPress: () => void };
+  /** The person, opening their profile. */
+  avatar?: { name: string; src?: string; label: string; onPress: () => void };
+  /** Shown in place of the title when acting under another identity (a school, a child). */
+  perspective?: { label: string; onPress?: () => void; switchLabel?: string };
+  /** Right side, in order; at most three read well on a phone. */
+  actions?: readonly HeaderAction[];
+  /** A screen's own control at the far right, after the actions. */
+  trailing?: ReactNode;
+  /** Search that opens under the header. */
+  search?: {
+    open: boolean;
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    label: string;
+  };
+  /** Content has scrolled under the header: it lifts with a hairline and shadow. */
+  raised?: boolean;
+  /** A hairline under the header even at rest. */
+  ruled?: boolean;
+  /** Short landscape phones: one tight line. */
+  compact?: boolean;
+}

@@ -416,6 +416,29 @@ video.gd-media-frame{object-fit:contain;background:var(--w-ink)}
 .gd-capture-messages p{margin:0;font-family:var(--w-field-error-font);font-size:var(--w-field-error-size);color:var(--w-field-error-color)}
 .gd-image-capture,.gd-audio-record,.gd-file-field{display:flex;flex-direction:column;gap:8px}
 .gd-image-capture>.gd-field-label,.gd-audio-record>.gd-field-label{margin:0}
+.gd-app-header{position:sticky;top:0;z-index:20;display:flex;flex-direction:column;gap:10px;padding:10px 16px;padding-top:max(10px, env(safe-area-inset-top));background:var(--w-ground);color:var(--w-ink);box-shadow:0 0 0 0 transparent;transition:box-shadow var(--w-light-ms) ease-out}
+.gd-app-header[data-ruled]{box-shadow:inset 0 -1px 0 var(--w-line)}
+.gd-app-header[data-raised]{box-shadow:inset 0 -1px 0 var(--w-line),0 8px 18px -12px var(--w-shadow-tint)}
+.gd-app-header[data-compact]{gap:6px;padding-block:6px}
+.gd-app-header-row{display:flex;align-items:center;gap:8px;min-width:0}
+.gd-app-header-identity{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gd-app-header-eyebrow{margin:0;font-family:var(--w-text-label-font);font-size:var(--w-text-label-size);font-weight:var(--w-text-label-weight);letter-spacing:var(--w-text-label-ls);text-transform:var(--w-text-label-case);color:var(--w-text-label-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gd-app-header-title{margin:0;font-family:var(--w-text-title-font);font-size:var(--w-text-title-size);line-height:var(--w-text-title-lh);font-weight:var(--w-text-title-weight);color:var(--w-text-title-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gd-app-header[data-compact] .gd-app-header-title{font-size:17px;line-height:22px}
+.gd-app-header-avatar{appearance:none;border:0;background:none;padding:0;margin:0;border-radius:50%;cursor:pointer;min-width:44px;min-height:44px;display:grid;place-items:center;transition:transform var(--w-settle)}
+.gd-app-header-avatar:active{transform:scale(var(--w-press))}.gd-app-header-avatar:focus-visible{outline:2px solid var(--w-focus);outline-offset:2px}
+.gd-app-header-perspective{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;max-width:100%}
+.gd-app-header-perspective span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gd-app-header-actions{display:flex;align-items:center;gap:4px;flex:none}
+.gd-app-header-action{position:relative;display:inline-flex}
+.gd-app-header-dot{position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%;background:var(--w-lamp);box-shadow:0 0 0 1.5px var(--w-ground),var(--w-row-signal-glow);pointer-events:none}
+.gd-app-header-dot[data-tone="danger"]{background:var(--w-danger);box-shadow:0 0 0 1.5px var(--w-ground)}.gd-app-header-dot[data-tone="quiet"]{background:var(--w-ink-faint);box-shadow:0 0 0 1.5px var(--w-ground)}
+.gd-app-header-count{position:absolute;top:4px;right:2px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;display:grid;place-items:center;background:var(--w-lamp);color:var(--w-on-lamp);font-family:var(--w-text-label-font);font-size:10px;font-weight:700;box-shadow:0 0 0 1.5px var(--w-ground);pointer-events:none}
+.gd-app-header-count[data-tone="danger"]{background:var(--w-danger);color:var(--w-on-danger)}
+.gd-app-header-search input{width:100%;min-height:44px;padding:10px 14px;background:var(--w-sunken)}
+@media (prefers-reduced-motion:no-preference){.gd-app-header-search{animation:gd-header-search-in var(--w-settle) ease-out}}
+@keyframes gd-header-search-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (min-width:1024px){.gd-app-header{padding-inline:24px}}
 .gd-group-row{position:relative;padding:0 var(--w-group-indent)}.gd-group-row+.gd-group-row::before{content:"";position:absolute;top:0;left:var(--w-group-indent);right:0;height:var(--w-group-divider-w);background:var(--w-line)}
 .gd-field[data-state="error"] .gd-field-input{animation:gd-shake 320ms ease-out 1}
 @keyframes gd-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}

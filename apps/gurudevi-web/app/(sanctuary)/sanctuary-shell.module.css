@@ -6,8 +6,8 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  color: var(--ink);
-  background: var(--paper);
+  color: var(--w-ink);
+  background: var(--w-ground);
   font-family: Arial, sans-serif;
 }
 .skipLink {
@@ -16,8 +16,8 @@
   top: 0.75rem;
   left: 0.75rem;
   padding: 0.7rem 1rem;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--w-ink);
+  color: var(--w-ground);
   transform: translateY(-160%);
 }
 .skipLink:focus {
@@ -35,8 +35,8 @@
   gap: 0.75rem;
   padding: max(env(safe-area-inset-top), 0px) max(env(safe-area-inset-right), 1rem) 0
     max(env(safe-area-inset-left), 1rem);
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  border-bottom: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-ground) 94%, transparent);
   backdrop-filter: blur(12px);
 }
 .wordmarkArea {
@@ -55,17 +55,17 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--ink);
+  color: var(--w-ink);
   text-decoration: none;
 }
 .menuBrandButton {
   cursor: pointer;
 }
 .menuBrandButton:hover {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 6%, transparent);
 }
 .menuBrandButton:focus-visible {
-  outline: 2px solid var(--color-sanctuary-saffron, #a85022);
+  outline: 2px solid var(--w-focus);
   outline-offset: 2px;
 }
 .brandLotus {
@@ -82,18 +82,18 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 1px solid var(--line);
+  border: 1px solid var(--w-line);
   border-radius: 50%;
-  background: var(--paper-light);
-  color: var(--ink-soft);
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
   font-size: 0.78rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 .commandPaletteTrigger:hover {
-  background: var(--paper);
-  border-color: var(--ink-soft);
-  color: var(--ink);
+  background: var(--w-ground);
+  border-color: var(--w-ink-soft);
+  color: var(--w-ink);
 }
 .searchGlyph {
   width: 1.25rem;
@@ -109,8 +109,8 @@
   font-family: monospace;
   padding: 0.1rem 0.3rem;
   border-radius: 0.25rem;
-  background: var(--paper);
-  border: 1px solid var(--line);
+  background: var(--w-ground);
+  border: 1px solid var(--w-line);
 }
 .diurnalToggleWrapper {
   display: flex;
@@ -142,38 +142,38 @@
   height: 2.5rem;
   flex: 0 0 2.5rem;
   place-items: center;
-  border: 1px solid var(--line);
+  border: 1px solid var(--w-line);
   border-radius: 999px;
-  background: var(--paper-light);
-  color: var(--ink-soft);
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
   font: inherit;
   text-decoration: none;
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 .headerAction:hover,
 .headerAction[aria-current="page"] {
-  background: color-mix(in srgb, var(--paper-light) 72%, var(--lotus) 8%);
-  border-color: var(--line);
-  color: var(--ink);
+  background: color-mix(in srgb, var(--w-raised) 72%, var(--w-lamp) 8%);
+  border-color: var(--w-line);
+  color: var(--w-ink);
 }
 .commandPaletteTrigger:hover,
 .diurnalToggleWrapper :is(button, a):hover {
-  background: color-mix(in srgb, var(--paper-light) 72%, var(--lotus) 8%);
-  border-color: var(--line);
-  color: var(--ink);
+  background: color-mix(in srgb, var(--w-raised) 72%, var(--w-lamp) 8%);
+  border-color: var(--w-line);
+  color: var(--w-ink);
 }
 .profileAction {
-  background: var(--paper-light);
-  color: var(--ink-soft);
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
 }
 .commandPaletteTrigger,
 .headerAction,
 .diurnalToggleWrapper :is(button, a) {
   box-sizing: border-box;
-  border: 1px solid var(--line);
+  border: 1px solid var(--w-line);
   border-radius: 50%;
-  background: var(--paper-light);
-  color: var(--ink-soft);
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
   box-shadow: none;
   transform: none;
 }
@@ -190,9 +190,9 @@
 }
 .diurnalToggleWrapper :is(button, a):hover,
 .diurnalToggleWrapper :is(button, a):active {
-  border-color: var(--line);
-  background: var(--paper-light);
-  color: var(--ink-soft);
+  border-color: var(--w-line);
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
   box-shadow: none;
   transform: none;
 }
@@ -219,10 +219,10 @@
   right: -0.15rem;
   min-width: 1rem;
   padding: 0.1rem 0.2rem;
-  border: 1.5px solid var(--paper);
+  border: 1.5px solid var(--w-ground);
   border-radius: 999px;
-  background: #b94f3a;
-  color: white;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
   font-size: 0.6rem;
   font-weight: 700;
   line-height: 1.1;
@@ -235,21 +235,21 @@
   justify-content: center;
   gap: 1rem;
   padding: 0.25rem 1rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  background: color-mix(in srgb, var(--paper-light) 86%, #dce9dc);
-  color: var(--ink-soft);
+  border-bottom: 1px solid color-mix(in srgb, var(--w-line) 70%, transparent);
+  background: color-mix(in srgb, var(--w-raised) 86%, var(--w-success));
+  color: var(--w-ink-soft);
   font-size: 0.74rem;
   line-height: 1.3;
 }
 .exploreBanner a {
-  color: var(--ink);
+  color: var(--w-ink);
   font-weight: 700;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.15em;
   white-space: nowrap;
 }
 .exploreBanner a:hover {
-  color: var(--color-sanctuary-saffron, #a85022);
+  color: var(--w-lamp-deep);
 }
 .exploreBannerActions {
   display: inline-flex;
@@ -258,7 +258,7 @@
   white-space: nowrap;
 }
 .exploreReturnLink {
-  color: var(--ink-soft);
+  color: var(--w-ink-soft);
   font-weight: 600;
 }
 .exploreBannerDivider {
@@ -275,8 +275,8 @@
   justify-content: center;
   gap: clamp(1rem, 4vw, 3.5rem);
   padding: 0.25rem 1.25rem;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper-light) 92%, transparent);
+  border-bottom: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 92%, transparent);
 }
 .horizontalNavigation .navLink {
   min-height: 2.5rem;
@@ -286,7 +286,7 @@
   background: transparent;
 }
 .horizontalNavigation .navLink[aria-current="page"] {
-  color: var(--ink);
+  color: var(--w-ink);
   box-shadow: none;
 }
 .horizontalNavigation .navLink[aria-current="page"]::before {
@@ -352,8 +352,8 @@
   flex: 0 0 auto;
   align-items: center;
   padding-inline: clamp(0.75rem, 2vw, 2rem);
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper-light) 88%, transparent);
+  border-bottom: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 88%, transparent);
 }
 .taskStripSlot:empty { display: none; }
 .shell[data-sidebar="collapsed"] .body {
@@ -387,17 +387,17 @@
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .shell[data-sidebar="collapsed"] .navLink:hover {
-  background: var(--paper);
-  border-color: var(--line);
+  background: var(--w-ground);
+  border-color: var(--w-line);
   transform: scale(1.05);
 }
 .shell[data-sidebar="collapsed"] .navLink[aria-current="page"] {
-  background: var(--paper);
-  border-color: color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 50%, var(--line));
-  color: var(--color-sanctuary-saffron, #a85022);
+  background: var(--w-ground);
+  border-color: color-mix(in srgb, var(--w-lamp) 50%, var(--w-line));
+  color: var(--w-lamp-deep);
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    0 0 0 2px color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 15%, transparent);
+    0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 14%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 .shell[data-sidebar="collapsed"] .navLink[aria-current="page"]::before {
   display: none;
@@ -409,7 +409,7 @@
   width: 3.5px;
   height: 1.25rem;
   border-radius: 999px 0 0 999px;
-  background: var(--color-sanctuary-saffron, #a85022);
+  background: var(--w-lamp);
 }
 .shell[data-sidebar="collapsed"] .navLabel {
   position: absolute;
@@ -432,9 +432,9 @@
   z-index: 2;
   width: 13rem;
   margin-top: 0.4rem;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 12%);
+  border: 1px solid var(--w-line);
+  background: var(--w-ground);
+  box-shadow: 0 0.8rem 2rem color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);
 }
 .rail {
   height: 100%;
@@ -445,13 +445,13 @@
   flex-direction: column;
   justify-content: flex-start;
   padding: 1rem 0.75rem;
-  border-right: 1px solid var(--line);
-  background: var(--paper-light);
+  border-right: 1px solid var(--w-line);
+  background: var(--w-raised);
   z-index: 2;
 }
 .railTitle {
   overflow: hidden;
-  color: var(--ink-ghost, #8a8275);
+  color: var(--w-ink-faint);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -478,22 +478,22 @@
   padding: 0 0.85rem;
   border: 1px solid transparent;
   border-radius: 0.65rem;
-  color: var(--ink-soft);
+  color: var(--w-ink-soft);
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .navLink:hover {
-  background: color-mix(in srgb, var(--paper) 75%, transparent);
-  border-color: var(--line);
-  color: var(--ink);
+  background: color-mix(in srgb, var(--w-ground) 75%, transparent);
+  border-color: var(--w-line);
+  color: var(--w-ink);
 }
 .navLink[aria-current="page"] {
-  background: var(--paper);
-  border-color: color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 28%, var(--line));
-  color: var(--ink);
+  background: var(--w-ground);
+  border-color: color-mix(in srgb, var(--w-lamp) 28%, var(--w-line));
+  color: var(--w-ink);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
 }
 .navLink[aria-current="page"]::before {
   content: '';
@@ -502,7 +502,7 @@
   width: 3.5px;
   height: 1.35rem;
   border-radius: 999px;
-  background: var(--color-sanctuary-saffron, #a85022);
+  background: var(--w-lamp);
 }
 .navSymbol {
   display: inline-flex;
@@ -511,15 +511,15 @@
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;
-  color: var(--ink-soft);
+  color: var(--w-ink-soft);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
 }
 .navLink:hover .navSymbol {
-  color: var(--ink);
+  color: var(--w-ink);
   transform: scale(1.06);
 }
 .navLink[aria-current="page"] .navSymbol {
-  color: var(--color-sanctuary-saffron, #a85022);
+  color: var(--w-lamp-deep);
   transform: scale(1.1);
 }
 .navLabel {
@@ -533,8 +533,8 @@
   min-width: 1.15rem;
   padding: 0.1rem 0.35rem;
   border-radius: 999px;
-  background: var(--lotus);
-  color: white;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
   font-size: 0.65rem;
   font-weight: 700;
   line-height: 1.1;
@@ -556,14 +556,14 @@
   border: 0;
   border-radius: 0.35rem;
   background: transparent;
-  color: var(--ink-soft);
+  color: var(--w-ink-soft);
   font: inherit;
   font-size: 0.7rem;
   cursor: pointer;
 }
 .quickAccessEdit:hover {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--w-ground);
+  color: var(--w-ink);
 }
 .quickAccessList,
 .quickAccessOptions {
@@ -585,7 +585,7 @@
   border: 1px solid transparent;
   border-radius: 0.55rem;
   background: transparent;
-  color: var(--ink-soft);
+  color: var(--w-ink-soft);
   font: inherit;
   font-size: 0.78rem;
   text-align: left;
@@ -594,9 +594,9 @@
 }
 .quickAccessLink:hover,
 .quickAccessOption:hover:not(:disabled) {
-  border-color: var(--line);
-  background: var(--paper);
-  color: var(--ink);
+  border-color: var(--w-line);
+  background: var(--w-ground);
+  color: var(--w-ink);
 }
 .quickAccessLabel,
 .quickAccessOption > span:nth-child(2) {
@@ -607,13 +607,13 @@
 }
 .quickAccessOptions {
   padding: 0.35rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--w-line);
   border-radius: 0.65rem;
-  background: var(--paper);
+  background: var(--w-ground);
 }
 .quickAccessOptions p {
   margin: 0.15rem 0.3rem 0.25rem;
-  color: var(--ink-soft);
+  color: var(--w-ink-soft);
   font-size: 0.68rem;
 }
 .quickAccessList li[draggable="true"] {
@@ -635,7 +635,7 @@
 }
 .quickAccessCheck {
   margin-left: auto;
-  color: var(--color-sanctuary-saffron, #a85022);
+  color: var(--w-lamp-deep);
   font-weight: 700;
 }
 .shell[data-sidebar="collapsed"] .quickAccess {
@@ -670,7 +670,7 @@
   z-index: 3;
   width: 13rem;
   margin-left: 3rem;
-  box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 12%);
+  box-shadow: 0 0.8rem 2rem color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);
 }
 .shell[data-sidebar="collapsed"] .navBadge {
   position: absolute;
@@ -688,10 +688,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 0.7rem;
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--w-line);
   border-radius: 0.65rem;
   background: transparent;
-  color: var(--ink-soft);
+  color: var(--w-ink-soft);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 700;
@@ -699,7 +699,7 @@
 }
 .advancedPanel {
   padding: 0.6rem 0.7rem;
-  color: var(--ink-soft);
+  color: var(--w-ink-soft);
   font-size: 0.8rem;
 }
 .advancedPanel p {
@@ -734,10 +734,10 @@
   max-width: min(100%, 34rem);
   margin: 0 auto 0.65rem;
   padding: 0.55rem 0.8rem;
-  border: 1px solid color-mix(in srgb, #b94f3a 35%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--w-danger) 35%, var(--w-line));
   border-radius: 0.65rem;
-  background: color-mix(in srgb, var(--paper-light) 88%, #b94f3a 12%);
-  color: var(--ink);
+  background: color-mix(in srgb, var(--w-raised) 88%, var(--w-danger) 12%);
+  color: var(--w-ink);
   font-size: 0.82rem;
 }
 .srOnly {
@@ -749,7 +749,7 @@
   white-space: nowrap;
 }
 .shell :is(a, button):focus-visible {
-  outline: 3px solid var(--gd-border-focus);
+  outline: 3px solid var(--w-focus);
   outline-offset: 3px;
 }
 @container sanctuary-canvas (max-width: 68rem) {
@@ -767,7 +767,7 @@
     padding: 0 0.75rem;
   }
   .navLink[aria-current="page"] {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
   }
   .navLabel {
     position: static;
@@ -793,9 +793,9 @@
     z-index: 2;
     width: 13rem;
     margin-top: 0.4rem;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    box-shadow: 0 0.8rem 2rem rgb(0 0 0 / 12%);
+    border: 1px solid var(--w-line);
+    background: var(--w-ground);
+    box-shadow: 0 0.8rem 2rem color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);
   }
   .quickAccess {
     width: 100%;
@@ -963,9 +963,9 @@
     align-items: center;
     gap: 0;
     padding: 0.2rem 0.35rem max(env(safe-area-inset-bottom, 0px), 0.35rem) 0.35rem;
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--w-line);
     border-bottom: 0;
-    background: color-mix(in srgb, var(--paper-light) 94%, transparent);
+    background: color-mix(in srgb, var(--w-raised) 94%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     z-index: 10;
@@ -1022,7 +1022,7 @@
     width: 1.6rem;
     height: 2px;
     border-radius: 999px;
-    background: var(--color-sanctuary-saffron, #a85022);
+    background: var(--w-lamp);
     transform: translateX(-50%);
   }
   .rail nav {
@@ -1094,7 +1094,7 @@
     border-color: transparent;
     background: transparent;
     border-radius: 0;
-    color: var(--color-sanctuary-saffron, #a85022);
+    color: var(--w-lamp-deep);
     font-weight: 700;
   }
   .navLink[aria-current="page"]::before {
@@ -1106,7 +1106,7 @@
     width: 1.3rem;
     height: 2px;
     border-radius: 999px;
-    background: var(--color-sanctuary-saffron, #a85022);
+    background: var(--w-lamp);
     transform: translateX(-50%);
   }
   .navLink[aria-current="page"]::after {
@@ -1116,7 +1116,7 @@
     width: 1.85rem;
     height: 1.85rem;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 10%, transparent);
+    background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
   }
   .shell[data-sidebar="collapsed"] .navLink[aria-current="page"] {
     border-color: transparent;
@@ -1135,11 +1135,11 @@
     width: 1.35rem;
     height: 2px;
     border-radius: 999px;
-    background: var(--color-sanctuary-saffron, #a85022);
+    background: var(--w-lamp);
     transform: translateX(-50%);
   }
   .navLink[aria-current="page"] .navSymbol {
-    color: var(--color-sanctuary-saffron, #a85022);
+    color: var(--w-lamp-deep);
     transform: none;
   }
   .navSymbol {
@@ -1224,7 +1224,7 @@
     padding: 0;
   }
   .navLink[aria-current="page"] {
-    box-shadow: inset 0 -0.2rem 0 var(--lotus);
+    box-shadow: inset 0 -0.2rem 0 var(--w-lamp);
   }
   .navLabel {
     position: absolute;
@@ -1242,5 +1242,46 @@
   }
   .canvasFrame {
     padding: clamp(0.5rem, 2cqi, 1.25rem);
+  }
+}
+
+/* Feedback from the world: controls press with its scale and spring, nav items
+   brighten while held, colour moves at the world's light speed. */
+.headerAction,
+.commandPaletteTrigger,
+.menuBrandButton,
+.navLink {
+  transition:
+    transform var(--w-settle),
+    filter var(--w-light-ms),
+    background-color var(--w-light-ms),
+    color var(--w-light-ms),
+    border-color var(--w-light-ms);
+}
+
+.headerAction:active,
+.commandPaletteTrigger:active,
+.menuBrandButton:active {
+  transform: scale(var(--w-press));
+}
+
+.navLink:active {
+  filter: brightness(calc(1 + var(--w-light-press-lift)));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .headerAction,
+  .commandPaletteTrigger,
+  .menuBrandButton,
+  .navLink {
+    transition: none;
+  }
+
+  .headerAction:active,
+  .commandPaletteTrigger:active,
+  .menuBrandButton:active,
+  .navLink:active {
+    transform: none;
+    filter: none;
   }
 }

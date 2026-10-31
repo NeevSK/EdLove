@@ -1,26 +1,18 @@
 import { useAuthStore } from '@repo/core/store';
 import { useScopedNotifications } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-import { BondBadge } from '@repo/ui/components/BondBadge';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
-import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
-import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { Bell, ChevronDown, ChevronLeft, Menu, QrCode, Search, X } from '@repo/ui/icons';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { tokens } from '@repo/ui/tokens';
-import { SceneBackdrop, useScene, Text as WText } from '@repo/ui/components/native';
+import { AppHeader, type AppHeaderProps, SceneBackdrop, useScene } from '@repo/ui/components/native';
+import { Bell, ChevronLeft, Menu, QrCode, Search, X } from '@repo/ui/icons';
 import { useWorld } from '@repo/ui/theme/native';
 import { BAND_WASH_EDGE, BAND_WASH_TEXT } from '@repo/ui/theme/scene';
-import { hapticLight } from '@repo/ui/utils/haptics';
 import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
 import type React from 'react';
 import { useCallback, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useWindowDimensions } from 'react-native';
-import Reanimated, { FadeInDown, FadeOutUp, LinearTransition } from 'react-native-reanimated';
+import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface GlobalHeaderProps {
@@ -57,7 +49,6 @@ interface HeaderState {
 
 type HeaderAction =
   | { type: 'SET_NOTIFICATIONS'; show: boolean }
-  | { type: 'SET_SEARCH_ACTIVE'; active: boolean }
   | { type: 'SET_SEARCH_QUERY'; query: string }
   | { type: 'TOGGLE_SEARCH' };
 
@@ -65,8 +56,6 @@ function headerReducer(state: HeaderState, action: HeaderAction): HeaderState {
   switch (action.type) {
     case 'SET_NOTIFICATIONS':
       return { ...state, showNotifications: action.show };
-    case 'SET_SEARCH_ACTIVE':
-      return { ...state, isSearchActive: action.active };
     case 'SET_SEARCH_QUERY':
       return { ...state, internalSearchQuery: action.query };
     case 'TOGGLE_SEARCH':
@@ -76,6 +65,12 @@ function headerReducer(state: HeaderState, action: HeaderAction): HeaderState {
   }
 }
 
+/**
+ * The app's header: the same places and behaviour as always (back or menu,
+ * the person, greeting and title or perspective; search, QR and the bell),
+ * drawn by the kit's AppHeader so every world dresses it. The scene band and
+ * safe area stay here, the frame's concerns.
+ */
 export default function GlobalHeader({
   title,
   subtitle,
@@ -94,13 +89,12 @@ export default function GlobalHeader({
 }: GlobalHeaderProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
-  const theme = useTheme();
   const wt = useWorld().tokens;
   const user = useAuthStore((state) => state.user);
   const scene = useScene({ presence: 'band' });
   const insets = useSafeAreaInsets();
-  const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
-  const isCompactLandscape = viewportWidth > viewportHeight && viewportHeight < 600;
+  const { width, height } = useWindowDimensions();
+  const compact = width > height && height < 600;
 
   const [state, dispatch] = useReducer(headerReducer, {
     showNotifications: false,
@@ -108,16 +102,11 @@ export default function GlobalHeader({
     internalSearchQuery: '',
   });
 
-
   const searchQuery = searchProps?.value ?? state.internalSearchQuery;
-
   const setSearchQuery = useCallback(
     (text: string) => {
-      if (searchProps?.onChangeText) {
-        searchProps.onChangeText(text);
-      } else {
-        dispatch({ type: 'SET_SEARCH_QUERY', query: text });
-      }
+      if (searchProps?.onChangeText) searchProps.onChangeText(text);
+      else dispatch({ type: 'SET_SEARCH_QUERY', query: text });
     },
     [searchProps],
   );
@@ -125,323 +114,136 @@ export default function GlobalHeader({
   const displayName = userName || user?.display_name?.split(' ')[0] || '';
   const userFullName = userName || user?.display_name || '';
   const showFullNameAsPrimary = can('manage', 'StudentDashboard');
-
   const roleContext = useMemo(() => getHeaderRoleContext(can, t), [can, t]);
   const greetingDetails = useMemo(() => getHeaderGreeting(t), [t]);
 
-  const handleToggleSearch = useCallback(() => {
-    hapticLight();
-    dispatch({ type: 'TOGGLE_SEARCH' });
-  }, []);
-
-  const handleOpenNotifications = useCallback(() => {
-    hapticLight();
-    dispatch({ type: 'SET_NOTIFICATIONS', show: true });
-  }, []);
-
-  const handleOpenDrawer = useCallback(() => {
-    hapticLight();
-    router.push('/self');
-  }, []);
-
-  const handleCloseNotifications = useCallback(() => {
-    dispatch({ type: 'SET_NOTIFICATIONS', show: false });
-  }, []);
-
   const handleBack = useCallback(() => {
-    hapticLight();
-    if (onBack) {
-      onBack();
-      return;
-    }
-    safeBack('/self');
+    if (onBack) onBack();
+    else safeBack('/self');
   }, [onBack]);
 
-  const handleNavigateProfile = useCallback(() => {
-    hapticLight();
-    router.push('/profile');
-  }, []);
+  const { notifications, unreadCount, isLoading, isRealtimeConnected, error, markAsRead, markAllRead } =
+    useScopedNotifications(user?.id);
 
-  const handlePerspectivePress = useCallback(() => {
-    if (perspectivePill?.onPress) {
-      hapticLight();
-      perspectivePill.onPress();
-    }
-  }, [perspectivePill]);
+  const resolvedTitle = title
+    ? title
+    : isSelfView
+      ? showFullNameAsPrimary
+        ? userFullName
+        : roleContext.label
+      : displayName;
 
-  const {
-    notifications,
-    unreadCount,
-    isLoading,
-    isRealtimeConnected,
-    error,
-    markAsRead,
-    markAllRead,
-  } = useScopedNotifications(user?.id);
-
+  const actions: NonNullable<AppHeaderProps['actions']>[number][] = [];
+  if (showSearch) {
+    actions.push({
+      key: 'search',
+      label: state.isSearchActive ? t('common.closeSearch', 'Close search') : t('common.search', 'Search'),
+      icon: state.isSearchActive ? X : Search,
+      expanded: state.isSearchActive,
+      onPress: () => dispatch({ type: 'TOGGLE_SEARCH' }),
+    });
+  }
+  if (showQRScan) {
+    actions.push({
+      key: 'qr',
+      label: t('common.scanQr', 'Scan QR code'),
+      icon: QrCode,
+      onPress: () => (onQRScan ? onQRScan() : router.push('/qr')),
+    });
+  }
+  if (!rightAction) {
+    actions.push({
+      key: 'notifications',
+      label: t('notifications.title', 'Notifications'),
+      icon: Bell,
+      onPress: () => dispatch({ type: 'SET_NOTIFICATIONS', show: true }),
+      // Error and loading are a quiet dot; unread is a counted lamp. Both are said.
+      ...(error
+        ? { badge: 'dot' as const, badgeTone: 'danger' as const, badgeLabel: t('notifications.unavailable', 'not updating') }
+        : unreadCount > 0
+          ? {
+              badge: unreadCount,
+              badgeTone: 'lamp' as const,
+              badgeLabel: t('notifications.unreadCount', '{{count}} unread', { count: unreadCount }),
+            }
+          : isLoading
+            ? { badge: 'dot' as const, badgeTone: 'quiet' as const, badgeLabel: t('common.loading', 'loading') }
+            : {}),
+    });
+  }
 
   return (
-    <Box
-      accessibilityRole="header"
-      className="w-full relative"
-      style={{
-        paddingTop: insets.top + (isCompactLandscape ? 6 : 10),
-        paddingBottom: isCompactLandscape ? 6 : 12,
-      }}
-    >
+    <View style={{ width: '100%', paddingTop: insets.top + (compact ? 2 : 4) }}>
       {/* The world's ground, with the room's scene showing through as a band when verger allows. */}
-      <Box
-        className="absolute inset-0 border-b"
-        style={{
-          backgroundColor: wt.ground,
-          borderBottomColor: wt.line,
-          borderBottomWidth: 0.75,
-        }}
+      <View
+        pointerEvents="none"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: wt.ground }}
       />
       <SceneBackdrop
         scene={scene}
         wash={{ colour: wt.ground, edge: BAND_WASH_EDGE, text: BAND_WASH_TEXT, textFrom: 0.42 }}
       />
-
-      <VStack
-        className="flex-1 px-4"
-        style={{
-          gap: isCompactLandscape ? 6 : 10,
+      <AppHeader
+        title={resolvedTitle}
+        eyebrow={title ? subtitle : greetingDetails.text}
+        leading={
+          showBack
+            ? { kind: 'back', label: t('common.back', 'Go back'), onPress: handleBack }
+            : showMenu
+              ? { kind: 'menu', label: t('common.openSelf', 'Open Self'), onPress: () => router.push('/self') }
+              : undefined
+        }
+        icons={{ back: ChevronLeft, menu: Menu }}
+        avatar={
+          isSelfView
+            ? {
+                name: userFullName || roleContext.label,
+                src: avatarUrl || user?.avatar_url || undefined,
+                label: t('profile.open', 'Open profile'),
+                onPress: () => router.push('/profile'),
+              }
+            : undefined
+        }
+        perspective={
+          perspectivePill
+            ? {
+                label: perspectivePill.badge ? `${perspectivePill.label} · ${perspectivePill.badge}` : perspectivePill.label,
+                onPress: perspectivePill.onPress,
+                switchLabel: perspectivePill.onPress ? t('perspective.switch', 'Switch perspective') : undefined,
+              }
+            : undefined
+        }
+        actions={actions}
+        trailing={rightAction}
+        search={
+          showSearch
+            ? {
+                open: state.isSearchActive,
+                value: searchQuery,
+                onChange: setSearchQuery,
+                placeholder: searchProps?.placeholder ?? t('searchPlaceholder', 'Search...'),
+                label: t('common.search', 'Search'),
+              }
+            : undefined
+        }
+        compact={compact}
+        ruled
+      />
+      <NotificationDrawer
+        isVisible={state.showNotifications}
+        onClose={() => dispatch({ type: 'SET_NOTIFICATIONS', show: false })}
+        notifications={notifications}
+        unreadCount={unreadCount}
+        isLoading={isLoading}
+        isRealtimeConnected={isRealtimeConnected}
+        error={error}
+        onMarkRead={(id) => {
+          void markAsRead(id);
         }}
-      >
-        <HStack className="items-center justify-between gap-2">
-          {/* Left / Center Navigation Section */}
-          <HStack className="items-center gap-2 flex-1">
-            {showBack ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('common.back', 'Go back')}
-                accessibilityHint={t('common.backHint', 'Returns to the previous screen')}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                onPress={handleBack}
-              >
-                <Box
-                  className="p-2 rounded-xl"
-                  style={{ backgroundColor: wt.sunken }}
-                >
-                  <ChevronLeft size={24} className="text-phase-text-primary" />
-                </Box>
-              </Pressable>
-            ) : (
-              showMenu && (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={t('common.openSelf', 'Open Self')}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  onPress={handleOpenDrawer}
-                >
-                  <Menu className="text-phase-text-primary" size={24} />
-                </Pressable>
-              )
-            )}
-
-            {isSelfView && (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('profile.open', 'Open profile')}
-                hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
-                onPress={handleNavigateProfile}
-              >
-                <Box className="mr-1.5">
-                  <UserAvatar
-                    avatarUrl={avatarUrl || user?.avatar_url}
-                    fullName={userFullName}
-                    fallbackEmoji={roleContext.emoji}
-                    size={32}
-                    borderRadius={12}
-                  />
-                </Box>
-              </Pressable>
-            )}
-
-            <VStack className="gap-0.5 flex-1">
-              {!isCompactLandscape && (subtitle || (!title && greetingDetails.text)) && (
-                <HStack className="items-center gap-1">
-                  <WText kind="label" numberOfLines={1}>
-                    {title ? subtitle : greetingDetails.text}
-                  </WText>
-                </HStack>
-              )}
-
-              {perspectivePill ? (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`Current perspective: ${perspectivePill.label}. Tap to switch perspective.`}
-                  onPress={handlePerspectivePress}
-                  style={{
-                    alignSelf: 'flex-start',
-                    marginTop: 2,
-                  }}
-                >
-                  <HStack
-                    style={{
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
-                  >
-                    <BondBadge
-                      label={perspectivePill.label}
-                      kind={perspectivePill.kind || 'personal'}
-                      size="sm"
-                    />
-                    {perspectivePill.onPress ? (
-                      <ChevronDown size={14} color={wt.inkSoft} />
-                    ) : null}
-                  </HStack>
-                </Pressable>
-              ) : (
-                <WText kind="title" numberOfLines={1} style={isCompactLandscape ? { fontSize: 17, lineHeight: 22 } : undefined}>
-                  {title
-                    ? title
-                    : isSelfView
-                      ? showFullNameAsPrimary
-                        ? userFullName
-                        : roleContext.label
-                      : displayName}
-                </WText>
-              )}
-            </VStack>
-          </HStack>
-
-          {/* Right Action Bar */}
-          <HStack className="items-center gap-2.5">
-            {showSearch && (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={
-                  state.isSearchActive
-                    ? t('common.closeSearch', 'Close search')
-                    : t('common.search', 'Search')
-                }
-                accessibilityState={{ expanded: state.isSearchActive }}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                onPress={handleToggleSearch}
-              >
-                <Box
-                  className="p-2 rounded-full"
-                  style={{
-                    backgroundColor: state.isSearchActive
-                      ? wt.sunken
-                      : 'transparent',
-                  }}
-                >
-                  {state.isSearchActive ? (
-                    <X size={22} className="text-phase-text-primary" />
-                  ) : (
-                    <Search size={22} className="text-phase-text-primary" />
-                  )}
-                </Box>
-              </Pressable>
-            )}
-
-            {showQRScan && (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Scan QR Code"
-                accessibilityHint="Opens the camera to scan a QR code"
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                onPress={() => {
-                  hapticLight();
-                  if (onQRScan) {
-                    onQRScan();
-                  } else {
-                    router.push('/qr');
-                  }
-                }}
-              >
-                <Box
-                  className="p-2 rounded-full"
-                  style={{ backgroundColor: wt.sunken }}
-                >
-                  <QrCode size={22} className="text-phase-text-primary" />
-                </Box>
-              </Pressable>
-            )}
-
-            {rightAction ? (
-              rightAction
-            ) : (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('notifications.title', 'Notifications')}
-                accessibilityHint={
-                  unreadCount > 0
-                    ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`
-                    : 'Open your notifications'
-                }
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                onPress={handleOpenNotifications}
-              >
-                <Box
-                  className="relative p-2 rounded-full"
-                  style={{ backgroundColor: wt.sunken }}
-                >
-                  <Bell
-                    size={22}
-                    className={
-                      error ? 'text-phase-text-secondary opacity-50' : 'text-phase-text-primary'
-                    }
-                  />
-                  {(error || isLoading || (unreadCount > 0 && !error)) && (
-                    <Box
-                      className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full"
-                      style={{
-                        backgroundColor: error
-                          ? wt.danger
-                          : isLoading
-                            ? wt.inkFaint
-                            : wt.lamp,
-                        borderWidth: 1.5,
-                        borderColor: wt.ground,
-                      }}
-                    />
-                  )}
-                </Box>
-              </Pressable>
-            )}
-          </HStack>
-        </HStack>
-
-        {/* Smooth Animated In-Place Search Input Row */}
-        {state.isSearchActive && (
-          <Reanimated.View
-            entering={FadeInDown.duration(200)}
-            exiting={FadeOutUp.duration(150)}
-            layout={LinearTransition.duration(200)}
-            style={{ overflow: 'hidden' }}
-          >
-            <Box className="pt-1">
-              <SanctuaryInput
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder={searchProps?.placeholder ?? t('searchPlaceholder', 'Search...')}
-                leftIcon={Search}
-              />
-            </Box>
-          </Reanimated.View>
-        )}
-
-        <NotificationDrawer
-          isVisible={state.showNotifications}
-          onClose={handleCloseNotifications}
-          notifications={notifications}
-          unreadCount={unreadCount}
-          isLoading={isLoading}
-          isRealtimeConnected={isRealtimeConnected}
-          error={error}
-          onMarkRead={(id) => {
-            void markAsRead(id);
-          }}
-          onMarkAllRead={() => {
-            void markAllRead();
-          }}
-        />
-      </VStack>
-    </Box>
+        onMarkAllRead={() => {
+          void markAllRead();
+        }}
+      />
+    </View>
   );
 }

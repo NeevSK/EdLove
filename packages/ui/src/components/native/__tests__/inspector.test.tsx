@@ -32,6 +32,7 @@ function components(barrel: Record<string, unknown>) {
 const SHARED = [
   'ActionFab',
   'AudioRecord',
+  'AppHeader',
   'ApprovalCard',
   'ArtifactCard',
   'Button',
