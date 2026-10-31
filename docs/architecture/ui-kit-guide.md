@@ -184,6 +184,11 @@ section 7) and signed off.
   `DocumentView`; the app registers the renderer with `MediaAdapters`
   (plan §14, "1c design"). A file address is linked or framed only through
   `safeFileUrl`.
+- **Capture is a port**: never import a picker, recorder or player in a
+  screen or a kit component. Use `FileField`, `ImageCapture`,
+  `AudioRecord`, `Media`; the mobile app fills the ports once with
+  `registerMediaAdapters` (`apps/gurudevi-mobile/src/media`). Every refusal
+  (kind, size, count, permission) is said in words.
 - **Chat is Legend List**: `MessageList` uses Legend List on both kits
   (`@legendapp/list/react-native` / `@legendapp/list/react`); never a
   ScrollView or FlashList for a conversation. A streaming message is busy

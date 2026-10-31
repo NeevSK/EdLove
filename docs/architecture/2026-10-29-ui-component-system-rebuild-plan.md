@@ -508,6 +508,28 @@ a later library swap cannot regress a screen.
 | Office | `DocumentView` fallback card | `FileField` pick | read-only adapters decision |
 | Any file | `FileCard` | `FileField` (pick, drop on web, progress, retry, offline queue via the engine's `IAttachmentPort`) | `safeFileUrl`, `fileKindOf` (done) |
 
+**Layer 2 status (2026-10-31): foundation built on both kits** (`730882848`).
+`Media`, `FileField`, `ImageCapture`, `AudioRecord` with the same names
+and props on both kits; every capture tool is a port.
+
+| Port | Native adapter | Web | Missing adapter |
+| :--- | :--- | :--- | :--- |
+| image view | expo-image (kit) | `<img>` | file card + words |
+| video view | expo-video (kit) | `<video controls>` + captions track | file card + words |
+| audio view | expo-audio (mobile app) | `<audio controls>` | file card + words |
+| pick files | expo-document-picker (app) | file input + drop | says "cannot here", no dead button |
+| pick / take photo | expo-image-picker (app), compressed to 0.7 | file input, `capture="environment"` | same |
+| record voice | expo-audio recorder (app) | MediaRecorder | same |
+
+The mobile app fills the ports once at boot (`registerMediaAdapters` inside
+`registerAppCatalog`), so nothing wraps the tree. Still to do in layer 2:
+the upload pipeline (form engine `IAttachmentPort`: progress, retry and the
+offline outbox feeding `FileItem.progress` and `error`), video thumbnails
+(`expo-video-thumbnails` is installed), sidecar captions on native video
+(expo-video plays embedded subtitle tracks only), and the open adapter
+decisions (native PDF, office, web Markdown, web rich text). G4/G5 evidence
+(real pickers, permission prompts, recording) needs the galleries.
+
 **Layer 3 — forms, granular.** One renderer per engine field type (16), each
 its own step with its own tests: text, email, password, select, textarea,
 number, heading, divider, slider, likert (`Scale`), rich-text, statement,
@@ -584,6 +606,7 @@ section plus the guide (`ui-kit-guide.md`) and the requirements ledger
 | `f4766d648`, `16db140ff` | 1c roadmap (agent kit, media foundation, forms) and the gaps that are part of done |
 | `7ef3230b2` | Native agent kit (AG-UI shaped): bubble, list on Legend List, composer, thinking, tool call, approval, run status, actions, citation, artifact, privacy, ActionFab, FabMenu, RichTextEditor port |
 | `efed8524c` | Web agent kit with the same names and props; shared-name checks on both kits |
+| `730882848` | Media foundation: Media, FileField, ImageCapture, AudioRecord on both kits; capture ports; mobile adapters registered at boot |
 
 Evidence at `1e0d1c76a`: G0 `@repo/ui` 0 type errors; G1 kit native + theme
 1558+ tests, web kit 45/45 (`apps/gurudevi-web/tests/unit/kit`). Not yet: G4
