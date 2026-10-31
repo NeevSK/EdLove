@@ -494,6 +494,24 @@ branching, attempt governance, assessment states (`ChoiceQuestion` reveal,
 required), anonymous and named identity (`PrivacyNote`), and finally the
 web builder floor (1c.5).
 
+**Gaps named on 2026-10-31 (each is part of "done" for its layer):**
+
+- Seeing it: galleries (1.9) before forms at the latest, ideally before the
+  FAB replacement, which touches every screen.
+- Streaming: screen readers hear a message once, when it completes, never
+  per token; a streaming reply re-renders only its own bubble (2 GB devices).
+- Agent failure states: stream dropped mid-reply, tool failed, approval
+  timed out, offline. Each has its own words and a retry, not only the
+  happy path.
+- Voice and video carry a transcript or captions slot (deaf learners, loud
+  classrooms).
+- AI output is untrusted: links pass `safeFileUrl`; HTML artifacts render
+  only in a sandboxed frame; Markdown is never raw HTML.
+- Capture: permission prompts in plain words, compression before upload,
+  size limits enforced and announced before sending.
+- Retirement: `LotusPetalFAB`, legacy `MessageBubble` and `ChatComposer`
+  go only with sign-off, once their kit versions carry every behaviour.
+
 **Cross-cutting, every layer:** world recipes only; contrast guard for each
 new pair; the feedback grammar for every outcome; failure paths (network
 drop, 503, permission denied, file too large); 2 GB devices (virtualized
