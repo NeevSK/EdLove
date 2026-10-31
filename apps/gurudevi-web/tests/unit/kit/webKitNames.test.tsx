@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 /** Pieces both sets must have; the native suite checks the same list. */
 const SHARED = [
   'ActionFab',
+  'AudioRecord',
   'ApprovalCard',
   'ArtifactCard',
   'Button',
@@ -14,12 +15,15 @@ const SHARED = [
   'Composer',
   'DocumentView',
   'FabMenu',
+  'FileField',
   'FileCard',
   'Grid',
   'Group',
   'Icon',
+  'ImageCapture',
   'Inline',
   'Markdown',
+  'Media',
   'MediaAdapters',
   'MessageActions',
   'MessageBubble',

@@ -103,3 +103,5 @@ export {
 } from './Waiting/Waiting';
 export { WaitingSign, type WaitingSignProps } from './WaitingSign/WaitingSign';
 export { WorldPicker, type WorldPickerProps } from './WorldPicker/WorldPicker';
+export { AudioRecord, type AudioRecordProps, FileField, type FileFieldProps, ImageCapture, type ImageCaptureProps } from './Media/Capture';
+export { Media, type MediaProps } from './Media/Media';

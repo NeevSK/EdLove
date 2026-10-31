@@ -400,6 +400,22 @@ button.gd-agent-card{cursor:pointer}button.gd-agent-card:focus-visible{outline:2
 .gd-fab-menu{display:flex;flex-direction:column;gap:4px}.gd-fab-danger .gd-row-label{color:var(--w-danger)}.gd-fab-lit .gd-row-label{color:var(--w-lamp-deep)}
 .gd-rich-fallback{min-height:8rem;resize:vertical}
 @media (prefers-reduced-motion:reduce){.gd-fab{transition:none}.gd-fab:active{transform:none;filter:none}}
+.gd-media{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+.gd-media-frame{display:block;width:100%;height:auto;object-fit:cover;border-radius:var(--w-surface-raised-radius);background:var(--w-sunken)}
+video.gd-media-frame{object-fit:contain;background:var(--w-ink)}
+.gd-media-audio{width:100%;min-height:44px}
+.gd-media-caption,.gd-media-note{margin:0;font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size);color:var(--w-text-caption-color)}
+.gd-media-transcript summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-family:var(--w-text-label-font);font-size:var(--w-text-label-size);font-weight:var(--w-text-label-weight);color:var(--w-lamp-deep)}
+.gd-media-transcript p{margin:0;font-family:var(--w-text-body-font);font-size:var(--w-text-body-size);color:var(--w-ink)}
+.gd-dropzone{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:16px;border-radius:var(--w-surface-raised-radius);background:var(--w-raised);outline:var(--w-line-weight, 1px) dashed var(--w-line);outline-offset:-1px;transition:outline-color var(--w-light-ms),background var(--w-light-ms)}
+.gd-dropzone[data-over]{outline:2px solid var(--w-q-chosen);background:color-mix(in srgb, var(--w-glow) calc(var(--w-light-focus-lift) * 100%), var(--w-raised))}
+.gd-dropzone[data-disabled]{opacity:var(--w-button-disabled-opacity)}
+.gd-dropzone>.gd-field-hint{margin:0}.gd-dropzone>p.gd-field-hint{flex-basis:100%}
+.gd-file-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.gd-capture-actions{display:flex;flex-wrap:wrap;gap:8px}
+.gd-capture-messages p{margin:0;font-family:var(--w-field-error-font);font-size:var(--w-field-error-size);color:var(--w-field-error-color)}
+.gd-image-capture,.gd-audio-record,.gd-file-field{display:flex;flex-direction:column;gap:8px}
+.gd-image-capture>.gd-field-label,.gd-audio-record>.gd-field-label{margin:0}
 .gd-group-row{position:relative;padding:0 var(--w-group-indent)}.gd-group-row+.gd-group-row::before{content:"";position:absolute;top:0;left:var(--w-group-indent);right:0;height:var(--w-group-divider-w);background:var(--w-line)}
 .gd-field[data-state="error"] .gd-field-input{animation:gd-shake 320ms ease-out 1}
 @keyframes gd-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}

@@ -304,7 +304,9 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   v['--w-msg-self-ink'] = msg.self.ink;
   v['--w-msg-other-bg'] = msg.other.fill;
   v['--w-msg-other-ink'] = msg.other.ink;
-  v['--w-msg-other-edge'] = msg.other.edge ? `inset 0 0 0 ${px(msg.other.edge.width)} ${msg.other.edge.color}` : 'none';
+  v['--w-msg-other-edge'] = msg.other.edge
+    ? `inset 0 0 0 ${px(msg.other.edge.width)} ${msg.other.edge.color}`
+    : 'none';
   v['--w-msg-radius'] = px(msg.radius);
   v['--w-msg-tucked'] = px(msg.tucked);
   v['--w-msg-pad'] = `${px(msg.padding.y)} ${px(msg.padding.x)}`;

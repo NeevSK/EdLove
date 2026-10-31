@@ -868,3 +868,154 @@ export interface AgentLabels {
   menu: string;
   close: string;
 }
+
+// ---------------------------------------------------------------------------
+// Media foundation (1c layer 2): view, pick, capture. The kit owns the frame,
+// limits, failure words and accessibility; pickers, recorders and players are
+// adapters (native: the mobile app's; web: the browser's own).
+// ---------------------------------------------------------------------------
+
+/**
+ * An image, video or voice clip in place. An image needs words (`alt`) unless
+ * it is decorative; video and voice carry captions or a transcript so no one
+ * is shut out.
+ */
+export interface MediaContract {
+  file: FileRef;
+  /** What the image shows, said to screen readers. Required for images unless `decorative`. */
+  alt?: string;
+  decorative?: boolean;
+  caption?: string;
+  /** Width / height. Reserves the space so nothing jumps while it loads. */
+  aspect?: number;
+  /** A still shown before a video plays. */
+  poster?: string;
+  /** WebVTT captions for video. */
+  captions?: { uri: string; language: string; label: string };
+  /** Plain-text transcript for voice and video, offered under the player. */
+  transcript?: string;
+  labels?: Partial<MediaLabels>;
+}
+
+/** Why a file was not taken; each has its own words. */
+export type FileRejection = 'type' | 'size' | 'count' | 'unsafe';
+
+export interface FileRules {
+  /** Kinds accepted; omit for any. */
+  accept?: readonly FileKind[];
+  /** Largest file, in bytes. */
+  maxBytes?: number;
+  /** Most files in the field. */
+  maxFiles?: number;
+}
+
+/** A file in a field: where it is in its upload. */
+export interface FileItem extends FileRef {
+  /** Upload progress, 0–1, while sending. */
+  progress?: number;
+  /** Why the upload failed, in words; offers retry. */
+  error?: string;
+}
+
+/**
+ * Pick (and on the web drop) files. Each file is a card with progress, an
+ * announced error, retry and remove; the rules are said before choosing and
+ * any file breaking them is refused with its reason.
+ */
+export interface FileFieldContract extends FileRules {
+  label: string;
+  hint?: string;
+  files: readonly FileItem[];
+  onAdd: (files: FileRef[]) => void;
+  onRemove: (file: FileItem) => void;
+  onRetry?: (file: FileItem) => void;
+  /** An error for the whole field (from the form). */
+  error?: string;
+  disabled?: boolean;
+  labels?: Partial<MediaLabels>;
+}
+
+/** Record a voice answer: record, stop, play back, record again; length shown and limited. */
+export interface AudioRecordContract {
+  label: string;
+  value?: FileRef & { durationMs?: number };
+  onRecorded: (file: FileRef & { durationMs: number }) => void;
+  onClear?: () => void;
+  /** Longest recording, in seconds. */
+  maxSeconds?: number;
+  disabled?: boolean;
+  labels?: Partial<MediaLabels>;
+}
+
+/** Take or choose a photo: camera or library, preview, retake. */
+export interface ImageCaptureContract {
+  label: string;
+  value?: FileRef;
+  onCaptured: (file: FileRef) => void;
+  onClear?: () => void;
+  /** Offer the camera, the library, or both (default). */
+  sources?: readonly ('camera' | 'library')[];
+  disabled?: boolean;
+  labels?: Partial<MediaLabels>;
+}
+
+/** What a capture port answers: files, nothing (cancelled), or permission refused. */
+export type CaptureResult<T> = { status: 'ok'; value: T } | { status: 'cancelled' } | { status: 'denied' };
+
+/** A recorder, as a hook the platform provides (recording is stateful). */
+export interface RecorderPort {
+  /** Asks for the microphone; false when refused. */
+  prepare: () => Promise<boolean>;
+  start: () => Promise<void>;
+  stop: () => Promise<FileRef & { durationMs: number }>;
+  /** Elapsed milliseconds while recording. */
+  elapsedMs: number;
+  recording: boolean;
+}
+
+export interface CapturePorts {
+  pickFiles?: (options: { accept?: readonly FileKind[]; multiple: boolean }) => Promise<CaptureResult<FileRef[]>>;
+  pickImage?: (source: 'camera' | 'library') => Promise<CaptureResult<FileRef>>;
+  useRecorder?: () => RecorderPort;
+}
+
+export interface AudioAdapterProps {
+  file: FileRef;
+  accessibilityLabel: string;
+  onError: () => void;
+  labels: { play: string; pause: string };
+}
+
+export interface VideoAdapterProps {
+  file: FileRef;
+  poster?: string;
+  captions?: MediaContract['captions'];
+  accessibilityLabel: string;
+  onError: () => void;
+}
+
+export interface MediaLabels {
+  choose: string;
+  drop: string;
+  /** "Up to 3 files, 10 MB each: PDF, Image". */
+  rules: (rules: { maxFiles?: number; maxSize?: string; kinds?: string }) => string;
+  rejected: Record<FileRejection, (name: string) => string>;
+  permission: { camera: string; library: string; microphone: string };
+  play: string;
+  pause: string;
+  record: string;
+  stopRecording: string;
+  recordAgain: string;
+  /** "0:42 of 2:00". */
+  recordingLength: (elapsed: string, max?: string) => string;
+  takePhoto: string;
+  choosePhoto: string;
+  retake: string;
+  remove: string;
+  transcript: string;
+  showTranscript: string;
+  /** Shown when media cannot be played or shown; the file card follows. */
+  unavailable: string;
+  /** Image with no words given: a warning for authors, never silent. */
+  missingAlt: string;
+}

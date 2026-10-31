@@ -15,6 +15,7 @@ vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn(
 // replaced by name so the port's own behaviour is what is tested.
 vi.mock('../Media/EnrichedMarkdownAdapter', () => ({ EnrichedMarkdownAdapter: undefined }));
 vi.mock('../Media/EnrichedRichTextAdapter', () => ({ EnrichedRichTextAdapter: undefined }));
+vi.mock('../Media/ExpoVideoAdapter', () => ({ ExpoVideoAdapter: undefined }));
 
 const PDF = {
   name: 'Term plan.pdf',

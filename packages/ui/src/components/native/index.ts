@@ -42,7 +42,12 @@ export { Inline, type InlineProps, Stack, type StackProps } from './Layout/Layou
 export { useContainerWidth } from './Layout/useContainerWidth';
 export { Link, type LinkProps } from './Link/Link';
 export { List, type ListProps } from './List/List';
-export { type MediaAdapterSet, MediaAdapters, useMediaAdapters } from './Media/adapters';
+export {
+  type MediaAdapterSet,
+  MediaAdapters,
+  registerMediaAdapters,
+  useMediaAdapters,
+} from './Media/adapters';
 export { DocumentView, type DocumentViewProps } from './Media/DocumentView';
 export { EnrichedMarkdownAdapter, proseMarkdownStyle } from './Media/EnrichedMarkdownAdapter';
 export { EnrichedRichTextAdapter } from './Media/EnrichedRichTextAdapter';
@@ -111,3 +116,6 @@ export {
 } from './Waiting/Waiting';
 export { WaitingSign, type WaitingSignProps } from './WaitingSign/WaitingSign';
 export { WorldPicker, type WorldPickerProps } from './WorldPicker/WorldPicker';
+export { AudioRecord, type AudioRecordProps, FileField, type FileFieldProps, ImageCapture, type ImageCaptureProps } from './Media/Capture';
+export { ExpoVideoAdapter } from './Media/ExpoVideoAdapter';
+export { Media, type MediaProps } from './Media/Media';

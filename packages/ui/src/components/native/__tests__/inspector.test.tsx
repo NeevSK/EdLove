@@ -2,8 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 import * as native from '../index';
 
 vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
-// The scene pieces need a router, Skia, the native markdown views and Legend List, none of which load in this
-// engine; only names are read here, so stand-ins for them suffice.
+// Kit pieces reach a router, Skia, the native markdown views, Legend List and
+// expo-video, none of which load in this engine; only names are read here, so
+// stand-ins for them suffice.
 vi.mock('expo-router', () => ({ useIsFocused: () => true, usePathname: () => '/' }));
 vi.mock('react-native-skia', () => ({ Skia: {}, vec: () => ({}) }));
 vi.mock('react-native-enriched-markdown', () => ({
@@ -11,6 +12,7 @@ vi.mock('react-native-enriched-markdown', () => ({
   EnrichedMarkdownTextInput: () => null,
 }));
 vi.mock('@legendapp/list/react-native', () => ({ LegendList: () => null }));
+vi.mock('expo-video', () => ({ VideoView: () => null, useVideoPlayer: () => ({}) }));
 
 /**
  * The component tree is the inspector: React DevTools and React Native
@@ -29,6 +31,7 @@ function components(barrel: Record<string, unknown>) {
 /** Pieces both sets must have; the web suite checks the same list. */
 const SHARED = [
   'ActionFab',
+  'AudioRecord',
   'ApprovalCard',
   'ArtifactCard',
   'Button',
@@ -39,12 +42,15 @@ const SHARED = [
   'Composer',
   'DocumentView',
   'FabMenu',
+  'FileField',
   'FileCard',
   'Grid',
   'Group',
   'Icon',
+  'ImageCapture',
   'Inline',
   'Markdown',
+  'Media',
   'MediaAdapters',
   'MessageActions',
   'MessageBubble',

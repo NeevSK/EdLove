@@ -6,7 +6,9 @@ import { registerDomains } from '@repo/core/logic/registry/appCatalog';
 import { FORM_BUILDER_REGISTRY } from '@repo/form-builder/constants/formBuilderRegistry';
 import { LIBRARY_REGISTRY } from '@repo/library/constants/libraryRegistry';
 import { SELF_REGISTRY } from '@repo/self/constants/selfRegistry';
+import { registerMediaAdapters } from '@repo/ui/components/native';
 import { WORKFORCE_REGISTRY } from '@repo/workforce/constants/workforceRegistry';
+import { mobileMediaAdapters } from '../media/mediaAdapters';
 
 let isAppCatalogRegistered = false;
 
@@ -24,6 +26,9 @@ let isAppCatalogRegistered = false;
  */
 export function registerAppCatalog(): void {
   if (isAppCatalogRegistered) return;
+
+  // The kit's media ports, filled with this app's native modules (audio, pickers).
+  registerMediaAdapters(mobileMediaAdapters);
 
   registerDomains({
     ...SELF_REGISTRY,
