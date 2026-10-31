@@ -607,22 +607,48 @@ from kit pieces in place, never redesigned.
    dot while online or checking, its word kept for screen readers in a polite
    `status` region; words only for offline, unstable or unreachable. **Next,
    components only:** settings rows (value, choice, link, danger) on
-   `Group`/`Row`, then the time pieces (§14 "Time pieces").
+   `Group`/`Row`. The time pieces and the basic pieces are built (below).
 
-   **Time pieces (proposed, not built).** The product already has a
-   past/today/future model: `TemporalIntent` (`review` | `current` | `plan`)
-   and civil-date helpers in `@repo/core/logic/workbench`
-   (`resolveMonthGrid`, `shiftCivilDate`, `resolveTemporalIntent`), the
-   `useTemporalStore` view date, the web `TemporalHorizon` and the legacy
-   `TemporalNavigator`. The kit has no time piece yet. Proposed, same names on
-   both kits, words from `Intl` in the person's language: `TimeAgo`
-   (relative time, `<time datetime>` on web, refreshes only while on screen);
-   `DateTravel` (previous / today / next with the intent said in words and
-   carried by the world's light: past a cooler wash, future the lamp,
-   today plain); `MonthGrid` (keyboard grid on web, activity density as a
-   dot, never colour alone); `DateField` / `TimeField` (platform pickers as
-   an adapter port, typed entry as the fallback); `Timeline` (day-grouped
-   events, the notifications' `groupByDay` reused).
+   **Time pieces (built, both kits).** One set over the product's existing
+   past/today/future model (`TemporalIntent` and the civil-date helpers in
+   `@repo/core/logic/workbench/temporalCoordinates`, reused, not copied).
+   Days are `YYYY-MM-DD`, times `HH:MM`; words come from `Intl` in the
+   reader's locale (`localeOf`: en-LK, si-LK, ta-LK; the web reads
+   `<html lang>` or takes `locale`). The world draws time with a new
+   `recipes.time`: the past recedes into a quiet well with soft words, today
+   is plain and ringed in the lamp, the future is warmed by the world's
+   light. Every pair is in the contrast guard (words 4.5:1 on their wash and
+   on raised paper, marks 3:1). The rules live in `components/shared/time.ts`
+   (`relativeTime`, `refreshAfter`, `timelineGroups`, `parseTime`,
+   `shiftTime`, ...).
+
+   | Piece | Native | Web |
+   | :--- | :--- | :--- |
+   | `TimeAgo` | caption in the moment's ink; readers hear the exact moment; refreshes every 30 s near now, hourly far away, only while the app is in front | a real `<time datetime>`, exact moment in `title` and for readers; pauses while the tab is hidden |
+   | `DateTravel` | previous / day / next / Today; steps a day, week or month within `min`/`max`; the band's wash glides between past, today and future; the day opens `MonthGrid` in a sheet; an optional time set on the dial, kept on Done | same; the time is the browser's `<input type=time>` |
+   | `MonthGrid` | 44 pt days named with Today, activity and range; the chosen day lit; activity as a dot | an ARIA grid: one day in the tab order, arrows, Page Up/Down, Home/End |
+   | `DateField` / `TimeField` | fields drawn like `TextField`, opening the kit's month and the kit's dial (hour and minute columns, each one adjustable control) | the browser's date and time inputs, bounded, the day said in words |
+   | `Timeline` | day headings (Yesterday, Today, Tomorrow, then dates), oldest first, a lit now line between past and coming | ordered lists, the same |
+
+   Not yet: a range picker (start and end days), recurring times, time zones
+   other than the device's, and moving `TemporalHorizon` /
+   `TemporalNavigator` onto `DateTravel` (screens; retire with sign-off).
+
+   **Basic pieces (built, both kits).** `Disclosure` (web: `<details>`);
+   `Notice` (inline, a new `recipes.notice` per tone with an accent bar;
+   danger is an alert, the rest polite); `SearchField` (a search landmark,
+   clear control, result count said politely); `NumberStepper` (native: one
+   adjustable value; web: a number input kept to bounds and step); `Steps`
+   ("Step 2 of 5 · Questions" over a lit trail; `aria-current="step"`; only
+   reached steps can be gone back to). The touch minimum is now a token
+   (`touchTarget.min`, 44).
+
+   **Still missing (fundamentals, components only):** settings rows (value,
+   choice, link, danger) on `Group`/`Row`; tag input; pagination (web); side
+   navigation and command palette for the web shell; a chart port (charts as
+   an adapter, like media); a range `DateTravel`. Then layer 3 forms and
+   quizzes, which `Steps`, `NumberStepper`, `DateField` and `TimeField` now
+   serve.
 3. **Layer 1 screens:** AIScreen, the DM screen and the FAB overlay onto the
    agent kit.
 4. **Layer 2 remainder:** upload pipeline (engine \`IAttachmentPort\`, offline

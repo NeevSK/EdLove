@@ -22,3 +22,6 @@ export function columnsFor(width: number, min: number, gap: number, max = 6): nu
   if (width <= 0) return 1;
   return Math.max(1, Math.min(max, Math.floor((width + gap) / (min + gap))));
 }
+
+/** The smallest a pressable thing may be, in each direction (WCAG 2.5.8, platform guides). */
+export const touchTarget = { min: 44 } as const;

@@ -324,6 +324,24 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   v['--w-toggle-edge'] = r.toggle.edge.color;
   v['--w-toggle-on'] = r.toggle.track.on;
 
+  // Notices: a quiet well per tone with an accent bar.
+  for (const [tone, n] of Object.entries(r.notice)) {
+    v[`--w-notice-${tone}-bg`] = n.fill;
+    v[`--w-notice-${tone}-ink`] = n.ink;
+    v[`--w-notice-${tone}-accent`] = n.accent;
+  }
+
+  // Time: past recedes, today is ringed, the future is warmed.
+  for (const when of ['past', 'today', 'future'] as const) {
+    v[`--w-time-${when}-ink`] = r.time[when].ink;
+    v[`--w-time-${when}-wash`] = r.time[when].wash;
+    v[`--w-time-${when}-mark`] = r.time[when].mark;
+  }
+  v['--w-time-selected'] = r.time.selected.fill;
+  v['--w-time-on-selected'] = r.time.selected.ink;
+  v['--w-time-now'] = r.time.now;
+  v['--w-time-dot'] = r.time.dot;
+
   // Questions: mark words, result lines and the chosen edge.
   const q = r.question;
   v['--w-q-correct'] = q.mark.correct;

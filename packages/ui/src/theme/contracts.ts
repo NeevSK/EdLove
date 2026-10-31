@@ -1150,3 +1150,205 @@ export interface SwitchRowContract {
   onChange: (value: boolean) => void;
   disabled?: boolean;
 }
+
+// ---------------------------------------------------------------------------
+// Time: one set of pieces for days, hours and moments. Days are civil dates
+// (`YYYY-MM-DD`), times wall-clock (`HH:MM`); the past recedes, today is
+// ringed in the lamp, the future is warmed (`recipes.time`).
+// ---------------------------------------------------------------------------
+
+/** Looking back, today, or planning ahead; the same words as core's `TemporalIntent`. */
+export type TimeIntent = 'review' | 'current' | 'plan';
+
+export interface TimeLabels {
+  today: string;
+  now: string;
+  review: string;
+  current: string;
+  plan: string;
+  previousDay: string;
+  nextDay: string;
+  previousWeek: string;
+  nextWeek: string;
+  previousMonth: string;
+  nextMonth: string;
+  chooseDate: string;
+  chooseTime: string;
+  hour: string;
+  minute: string;
+  earlier: string;
+  later: string;
+  done: string;
+  clear: string;
+  busy: string;
+  unavailable: string;
+  noDate: string;
+  noTime: string;
+}
+
+interface TimeWords {
+  /** A BCP 47 locale for dates and numbers; defaults to the world's language. */
+  locale?: string;
+  labels?: Partial<TimeLabels>;
+}
+
+/** A moment said relative to now ("5 minutes ago"), its exact time kept for readers. */
+export interface TimeAgoContract extends TimeWords {
+  at: string | Date;
+  /** Fixed now, for tests and frozen views; otherwise it keeps itself current. */
+  now?: Date;
+  /** Also show the exact day and time after the relative words. */
+  exact?: boolean;
+}
+
+/**
+ * Travel through days: previous, the day (and time) chosen, next, and back
+ * to today, with past or future said in words and drawn by the world's light.
+ */
+export interface DateTravelContract extends TimeWords {
+  date: string;
+  onChange: (date: string) => void;
+  /** How far previous and next move. Default `day`. */
+  step?: 'day' | 'week' | 'month';
+  /** A time of day with the date; shown and chosen only when `onTimeChange` is given. */
+  time?: string | null;
+  onTimeChange?: (time: string | null) => void;
+  /** Minutes the time moves by. Default 5. */
+  timeStep?: number;
+  min?: string;
+  max?: string;
+  /** Activity per day for the calendar it opens. */
+  activity?: Readonly<Record<string, number>>;
+  /** Say "Looking back" or "Planning ahead" above the day. Default true. */
+  showIntent?: boolean;
+  /** Fixed today, for tests. */
+  today?: Date;
+}
+
+/** A month of days to choose from, with activity marked by dot and words. */
+export interface MonthGridContract extends TimeWords {
+  value: string | null;
+  onChange: (date: string) => void;
+  /** The grid's accessible name ("Lesson date"). */
+  label: string;
+  /** Which month shows, `YYYY-MM`; uncontrolled from the value or today when omitted. */
+  month?: string;
+  onMonthChange?: (month: string) => void;
+  min?: string;
+  max?: string;
+  activity?: Readonly<Record<string, number>>;
+  today?: Date;
+}
+
+export interface DateFieldContract extends FieldContract, TimeWords {
+  value: string | null;
+  onChange: (date: string | null) => void;
+  min?: string;
+  max?: string;
+  activity?: Readonly<Record<string, number>>;
+  disabled?: boolean;
+}
+
+export interface TimeFieldContract extends FieldContract, TimeWords {
+  value: string | null;
+  onChange: (time: string | null) => void;
+  /** Minutes each step moves. Default 5. */
+  step?: number;
+  /** Earliest and latest times, `HH:MM`. */
+  min?: string;
+  max?: string;
+  disabled?: boolean;
+}
+
+export interface TimelineEntry {
+  id: string;
+  at: string | Date;
+  title: string;
+  body?: string;
+  tone?: 'plain' | 'lamp' | 'danger';
+  onPress?: () => void;
+}
+
+/** Moments in time order by day: the past recedes, a now line, the future warmed. */
+export interface TimelineContract extends TimeWords {
+  entries: readonly TimelineEntry[];
+  /** The list's accessible name. */
+  label: string;
+  now?: Date;
+}
+
+// ---------------------------------------------------------------------------
+// Basic pieces: things most screens need and the kit lacked.
+// ---------------------------------------------------------------------------
+
+/** A titled part that folds open and shut; closed parts keep their summary. */
+export interface DisclosureContract {
+  title: string;
+  /** A line under the title, shown open or shut ("3 answers"). */
+  summary?: string;
+  /** Controlled when given, with `onOpenChange`. */
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children?: ReactNode;
+}
+
+/** A calm message inside the page (not a banner over it). */
+export interface NoticeContract {
+  /** `danger` is announced at once; the others politely. Default `neutral`. */
+  tone?: BadgeTone;
+  title?: string;
+  message: string;
+  action?: { label: string; onPress: () => void };
+  onDismiss?: () => void;
+  /** Name of the dismiss control. Default "Dismiss". */
+  dismissLabel?: string;
+}
+
+export interface SearchFieldContract {
+  /** The field's name, heard and (by default) hidden; the placeholder is not a label. */
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  /** A magnifier from the app's icon set, drawn soft at the start. */
+  icon?: ComponentType<KitIconProps>;
+  onSubmit?: (value: string) => void;
+  /** How many results there are now; said politely as it changes. */
+  resultCount?: number;
+  labels?: Partial<{ clear: string; results: (count: number) => string }>;
+}
+
+/** A whole number chosen by steps, or typed (web), within bounds. */
+export interface NumberStepperContract {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+  /** Default 1. */
+  step?: number;
+  /** Words after the number ("minutes"); also heard. */
+  unit?: string;
+  hint?: string;
+  disabled?: boolean;
+  labels?: Partial<{ decrease: string; increase: string }>;
+}
+
+export interface StepItem {
+  key: string;
+  label: string;
+  /** Done and error are said in words and drawn; the current step comes from `current`. */
+  state?: 'done' | 'error';
+}
+
+/** Where a person is in a sequence of steps (a form, a setup); never colour alone. */
+export interface StepsContract {
+  steps: readonly StepItem[];
+  /** Index of the step on screen. */
+  current: number;
+  label: string;
+  /** Going back to a step; steps up to the current one, and done ones, are offered. */
+  onSelect?: (index: number) => void;
+  labels?: Partial<{ step: (n: number, total: number) => string; done: string; error: string }>;
+}

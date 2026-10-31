@@ -49,6 +49,8 @@ before touching UI; it replaces `branded-ui` (which describes the legacy
       `apps/gurudevi-web/tests/unit/kit`
 - [ ] gallery entry on both platforms
 - [ ] typecheck, both test runs, `check:ui-boundaries`, `check:world`
+- [ ] dates and times through `components/shared/time.ts` and `recipes.time` (never hand-formatted); on the web prefer the browser control (`<details>`, `<input type=date|time|number|search>`) and style it
+- [ ] new names added to both `SHARED` lists (native `inspector.test.tsx`, web `webKitNames.test.tsx`)
 
 ## APIs verified against installed packages (2026-10-30)
 

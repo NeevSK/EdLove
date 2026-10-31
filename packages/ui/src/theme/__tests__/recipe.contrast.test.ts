@@ -61,6 +61,19 @@ function pairs(w: ResolvedWorld): Pair[] {
   add('card meta', r.card.meta.color, raised, TEXT);
   add('card selected ring', r.card.selectedEdge.color, raised, MARK);
   add('carousel current dot', r.card.dot.on, t.ground, MARK);
+  for (const when of ['past', 'today', 'future'] as const) {
+    const tone = r.time[when];
+    add(`time ${when} words`, tone.ink, tone.wash, TEXT);
+    add(`time ${when} words on paper`, tone.ink, raised, TEXT);
+    add(`time ${when} mark`, tone.mark, tone.wash, MARK);
+  }
+  for (const [tone, n] of Object.entries(r.notice)) {
+    add(`notice ${tone} words`, n.ink, n.fill, TEXT);
+    add(`notice ${tone} accent`, n.accent, n.fill, MARK);
+  }
+  add('time selected', r.time.selected.ink, r.time.selected.fill, TEXT);
+  add('time now line', r.time.now, t.ground, MARK);
+  add('time activity dot', r.time.dot, raised, MARK);
   // Answer marks are words on raised paper; the result line sits on the page.
   add('answer correct', r.question.mark.correct, raised, TEXT);
   add('answer incorrect', r.question.mark.incorrect, raised, TEXT);

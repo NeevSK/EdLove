@@ -489,6 +489,35 @@ export interface MessageRecipe {
   state: { running: string; done: string; failed: string };
 }
 
+/** One way a moment is drawn: words, the band behind it, its mark. */
+export interface TimeTone {
+  /** Words for the moment, legible on its wash and on raised paper. */
+  ink: string;
+  /** The band behind a date bar for this moment. */
+  wash: string;
+  /** Its mark (a day's ring, a timeline dot), 3:1 where it is drawn. */
+  mark: string;
+}
+
+/**
+ * How time is drawn: the past recedes into a quiet well, today is plain and
+ * ringed in the lamp, the future is warmed by the world's light.
+ */
+export interface TimeRecipe {
+  past: TimeTone;
+  today: TimeTone;
+  future: TimeTone;
+  /** The chosen day or hour. */
+  selected: { fill: string; ink: string };
+  /** The line that marks now in a timeline. */
+  now: string;
+  /** Activity on a day, a dot that is never the only sign. */
+  dot: string;
+}
+
+/** An inline notice: a quiet well, an accent bar in its tone, plain words. */
+export type NoticeRecipe = Record<BadgeTone, { fill: string; ink: string; accent: string }>;
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -506,6 +535,8 @@ export interface WorldRecipes {
   prose: ProseRecipe;
   question: QuestionRecipe;
   message: MessageRecipe;
+  time: TimeRecipe;
+  notice: NoticeRecipe;
   material: MaterialRecipe;
   motion: { settleMs: number; breatheMs: number };
 }

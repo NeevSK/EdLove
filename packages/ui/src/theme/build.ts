@@ -16,6 +16,7 @@ import type {
   GroupRecipe,
   MaterialRecipe,
   MessageRecipe,
+  NoticeRecipe,
   OverlayRecipe,
   ProseRecipe,
   ProseTone,
@@ -28,6 +29,7 @@ import type {
   SurfaceRecipe,
   SurfaceToneRecipe,
   TextRole,
+  TimeRecipe,
   ToggleRecipe,
   TypeStyle,
   WorldMode,
@@ -625,6 +627,38 @@ function buildQuestion(t: WorldTokens, surface: SurfaceRecipe): QuestionRecipe {
   };
 }
 
+function buildTime(t: WorldTokens, surface: SurfaceRecipe): TimeRecipe {
+  const paper = surface.raised.fill ?? t.ground;
+  // Legible on the band it sits on and on raised paper (a sheet, a card).
+  const words = (c: string, wash: string) =>
+    legible(legible(c, t.ink, wash, 4.5), t.ink, paper, 4.5);
+  const mark = (c: string, wash: string) => legible(legible(c, t.ink, wash, 3), t.ink, paper, 3);
+  const pastWash = mix(t.ground, t.ink, 0.04);
+  const futureWash = mix(t.ground, t.glow, 0.12);
+  return {
+    past: { ink: words(t.inkSoft, pastWash), wash: pastWash, mark: mark(t.inkFaint, pastWash) },
+    today: { ink: words(t.ink, t.ground), wash: t.ground, mark: mark(t.lamp, t.ground) },
+    future: { ink: words(t.ink, futureWash), wash: futureWash, mark: mark(t.lampDeep, futureWash) },
+    selected: { fill: t.lamp, ink: t.onLamp },
+    now: mark(t.lamp, t.ground),
+    dot: mark(t.lampDeep, paper),
+  };
+}
+
+function buildNotice(t: WorldTokens): NoticeRecipe {
+  const well = (c: string) => mix(t.ground, c, 0.08);
+  const tone = (c: string) => {
+    const fill = well(c);
+    return { fill, ink: legible(t.ink, t.ink, fill, 4.5), accent: legible(c, t.ink, fill, 3) };
+  };
+  return {
+    neutral: tone(t.inkSoft),
+    lamp: tone(t.lamp),
+    success: tone(t.success),
+    danger: tone(t.danger),
+  };
+}
+
 function buildMessage(
   t: WorldTokens,
   s: WorldStyle,
@@ -673,6 +707,8 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     prose: buildProse(t, s, text),
     question: buildQuestion(t, surface),
     message: buildMessage(t, s, text, surface),
+    time: buildTime(t, surface),
+    notice: buildNotice(t),
     material,
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },
