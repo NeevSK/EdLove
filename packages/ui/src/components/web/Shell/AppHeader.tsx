@@ -32,7 +32,7 @@ function Action({ action }: { action: HeaderAction }) {
       ? `${action.label}, ${action.badgeLabel}`
       : action.label;
   return (
-    <span className="gd-app-header-action">
+    <span className="gd-app-header-action" data-expanded={action.expanded ? '' : undefined}>
       <IconButton
         icon={action.icon}
         label={name}
@@ -63,6 +63,7 @@ export function AppHeader({
   perspective,
   actions = [],
   trailing,
+  status,
   search,
   raised = false,
   ruled = false,
@@ -103,7 +104,13 @@ export function AppHeader({
           </button>
         ) : null}
         <div className="gd-app-header-identity">
-          {eyebrow && !compact ? <p className="gd-app-header-eyebrow">{eyebrow}</p> : null}
+          {status ? (
+            <p className="gd-app-header-status" data-tone={status.tone} aria-live="polite">
+              {status.label}
+            </p>
+          ) : eyebrow && !compact ? (
+            <p className="gd-app-header-eyebrow">{eyebrow}</p>
+          ) : null}
           {perspective ? <Heading className="gd-visually-hidden">{title}</Heading> : null}
           {perspective ? (
             <button

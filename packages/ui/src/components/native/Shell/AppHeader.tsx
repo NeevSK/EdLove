@@ -1,7 +1,7 @@
 import { type ComponentRef, useEffect, useRef } from 'react';
 import { Pressable, Text as RNText, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { alpha } from '../../../theme/color';
+import { alpha, mix } from '../../../theme/color';
 import type { AppHeaderContract, HeaderAction, KitIconProps } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
 import { useLivingStyle, useWorldMotion } from '../../../theme/native/motion';
@@ -50,8 +50,10 @@ function Action({ action }: { action: HeaderAction }) {
   const fill =
     action.badgeTone === 'danger' ? t.danger : action.badgeTone === 'quiet' ? t.inkFaint : t.lamp;
   const ink = action.badgeTone === 'danger' ? t.onDanger : t.onLamp;
+  // The app's familiar round well, warming toward the lamp while its toggle is open.
+  const well = useLivingStyle({ backgroundColor: action.expanded ? mix(t.sunken, t.lamp, 0.2) : t.sunken });
   return (
-    <View style={styles.action}>
+    <Animated.View style={[styles.action, styles.well, well]}>
       <IconButton
         icon={action.icon}
         label={name}
@@ -87,7 +89,7 @@ function Action({ action }: { action: HeaderAction }) {
           </RNText>
         </View>
       ) : null}
-    </View>
+    </Animated.View>
   );
 }
 
@@ -106,6 +108,7 @@ export function AppHeader({
   actions = [],
   search,
   trailing,
+  status,
   raised = false,
   ruled = false,
   compact = false,
@@ -160,7 +163,28 @@ export function AppHeader({
           </Pressable>
         ) : null}
         <View style={styles.identity}>
-          {eyebrow && !compact ? (
+          {status ? (
+            <View
+              accessibilityLiveRegion="polite"
+              accessibilityLabel={status.label}
+              accessible
+              style={styles.status}
+            >
+              <View
+                style={[
+                  styles.statusDot,
+                  {
+                    backgroundColor:
+                      status.tone === 'offline' ? t.inkFaint : status.tone === 'attention' ? t.danger : t.lamp,
+                  },
+                ]}
+              />
+              <RNText numberOfLines={1} style={[typeStyle(world.recipes.text.caption, language, world), { color: t.inkSoft }]}>
+                {status.label}
+              </RNText>
+            </View>
+          ) : null}
+          {eyebrow && !compact && !status ? (
             <RNText numberOfLines={1} style={typeStyle(world.recipes.text.label, language, world)}>
               {eyebrow}
             </RNText>
@@ -238,6 +262,9 @@ const styles = StyleSheet.create({
   identity: { flex: 1, gap: 2, minWidth: 0 },
   pill: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start' },
   action: { position: 'relative' },
+  well: { borderRadius: 999 },
+  status: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  statusDot: { width: 7, height: 7, borderRadius: 4 },
   dot: {
     position: 'absolute',
     top: 8,

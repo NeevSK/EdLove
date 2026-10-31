@@ -106,3 +106,4 @@ export { WorldPicker, type WorldPickerProps } from './WorldPicker/WorldPicker';
 export { AudioRecord, type AudioRecordProps, FileField, type FileFieldProps, ImageCapture, type ImageCaptureProps } from './Media/Capture';
 export { Media, type MediaProps } from './Media/Media';
 export { AppHeader, type AppHeaderProps } from './Shell/AppHeader';
+export { TaskTabs, type TaskTabsProps } from './Shell/TaskTabs';

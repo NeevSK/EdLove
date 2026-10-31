@@ -120,3 +120,4 @@ export { AudioRecord, type AudioRecordProps, FileField, type FileFieldProps, Ima
 export { ExpoVideoAdapter } from './Media/ExpoVideoAdapter';
 export { Media, type MediaProps } from './Media/Media';
 export { AppHeader, type AppHeaderProps } from './Shell/AppHeader';
+export { TaskTabs, type TaskTabsProps } from './Shell/TaskTabs';

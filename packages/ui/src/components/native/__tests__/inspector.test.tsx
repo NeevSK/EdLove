@@ -63,6 +63,7 @@ const SHARED = [
   'RunStatus',
   'Scale',
   'Stack',
+  'TaskTabs',
   'ThinkingTrace',
   'ToolCallCard',
 ];

@@ -103,3 +103,12 @@ describe('AppHeader', { tags: ['a11y', 'interaction', 'unit'] }, () => {
     );
   });
 });
+
+describe('AppHeader connection status', { tags: ['a11y', 'unit'] }, () => {
+  it('says the connection on the top line, politely, in place of the greeting', async () => {
+    await render(<AppHeader title="Self" eyebrow="Good morning" status={{ tone: 'offline', label: 'Offline · 3 waiting' }} />);
+    const status = screen.getByLabelText('Offline · 3 waiting');
+    expect(status.props.accessibilityLiveRegion).toBe('polite');
+    expect(screen.queryByText('Good morning')).toBeNull();
+  });
+});

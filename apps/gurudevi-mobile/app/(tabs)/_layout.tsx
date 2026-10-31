@@ -36,7 +36,6 @@ import { Text as WText } from '@repo/ui/components/native';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
 import {
-  Bell,
   FileText,
   Heart,
   Library,
@@ -46,7 +45,7 @@ import {
   Users,
   X,
 } from '@repo/ui/icons/native';
-import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
+import { Box, Modal, ModalContent, Pressable } from '@repo/ui/primitives';
 import { useWorld } from '@repo/ui/theme/native';
 import { tokens } from '@repo/ui/tokens';
 import { router, useGlobalSearchParams, usePathname } from 'expo-router';
@@ -563,95 +562,22 @@ function TabsLayoutContent() {
     router.replace(overviewRoute[currentDomain]);
   }, [currentDomain]);
 
-  const globalHeaderRightAction = (
-    <Box
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: tokens.spacing.sm,
-        paddingHorizontal: shell.header.horizontalPadding - tokens.spacing.md,
-      }}
-    >
-      {pathname.startsWith('/workspace') ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Open editorial workspace"
-          accessibilityHint="Write or review editorial submissions"
-          onPress={() => router.push('/workspace/editorial')}
-          style={{
-            width: tokens.interaction.minTouchTarget,
-            height: tokens.interaction.minTouchTarget,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: tokens.radii.full,
-            backgroundColor: wt.sunken,
-          }}
-        >
-          <FileText size={18} color={wt.ink} />
-        </Pressable>
-      ) : null}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Open notifications"
-        accessibilityHint="Navigates to the notifications page to view updates"
-        onPress={() => router.push('/notifications')}
-        style={{
-          position: 'relative',
-          width: tokens.interaction.minTouchTarget,
-          height: tokens.interaction.minTouchTarget,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: tokens.radii.full,
-          backgroundColor: wt.sunken,
-        }}
-      >
-        <Bell size={18} color={wt.ink} />
-        {unreadCount > 0 ? (
-          <Box
-            style={{
-              position: 'absolute',
-              top: 7,
-              right: 8,
-              minWidth: 16,
-              height: 16,
-              borderRadius: 8,
-              backgroundColor: wt.lamp,
-              paddingHorizontal: 4,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Text
-              style={{
-                color: wt.onLamp,
-                fontSize: tokens.typography.sizes.xs,
-                fontWeight: '800',
-              }}
-            >
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </Text>
-          </Box>
-        ) : null}
-      </Pressable>
+  // The shell's own header actions, as data: the kit draws them with the world's
+  // press, light and spoken counts. The bell goes to the notifications page.
+  const globalHeaderActions = [
+    ...(pathname.startsWith('/workspace')
+      ? [
+          {
+            key: 'editorial',
+            label: 'Open editorial workspace',
+            icon: FileText,
+            onPress: () => router.push('/workspace/editorial'),
+          },
+        ]
+      : []),
+    { key: 'settings', label: 'Open settings', icon: Settings, onPress: () => router.push('/settings') },
+  ];
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Open settings"
-        accessibilityHint="Navigates to the settings page to configure user preferences"
-        onPress={() => router.push('/settings')}
-        style={{
-          width: tokens.interaction.minTouchTarget,
-          height: tokens.interaction.minTouchTarget,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: tokens.radii.full,
-          backgroundColor: wt.sunken,
-        }}
-      >
-        <Settings size={18} color={wt.ink} />
-      </Pressable>
-    </Box>
-  );
 
   const renderHeader = () => {
     if (headerStyle === 'minimal_tabs_only') {
@@ -715,7 +641,8 @@ function TabsLayoutContent() {
                   }
                 : undefined
             }
-            rightAction={globalHeaderRightAction}
+            extraActions={globalHeaderActions}
+          onNotificationsPress={() => router.push('/notifications')}
           />
           {showActiveSubTabs && (
             <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
@@ -776,7 +703,8 @@ function TabsLayoutContent() {
                 }
               : undefined
           }
-          rightAction={globalHeaderRightAction}
+          extraActions={globalHeaderActions}
+          onNotificationsPress={() => router.push('/notifications')}
         />
         {showActiveSubTabs && domainTabs.length > 0 && (
           <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />

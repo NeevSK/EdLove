@@ -1065,6 +1065,44 @@ export interface AppHeaderContract {
   raised?: boolean;
   /** A hairline under the header even at rest. */
   ruled?: boolean;
+  /**
+   * The connection, said quietly on the header's top line while it matters
+   * (offline, syncing) instead of a banner over the content. Announced politely.
+   */
+  status?: { tone: 'offline' | 'syncing' | 'attention'; label: string };
   /** Short landscape phones: one tight line. */
   compact?: boolean;
+}
+
+export interface TaskTab {
+  id: string;
+  title: string;
+}
+
+/**
+ * Open tasks as a strip of tabs (like a browser's): Home stays first, each task
+ * can be chosen, closed and reordered (drag on touch, actions for screen
+ * readers, Alt+arrows on the web).
+ */
+export interface TaskTabsContract {
+  /** Names the strip ("Open workspace tasks"). */
+  label: string;
+  home?: { label: string; selected: boolean; onPress: () => void };
+  tabs: readonly TaskTab[];
+  activeId: string | null;
+  onSelect: (id: string) => void;
+  onClose: (id: string) => void;
+  onReorder: (id: string, toIndex: number) => void;
+  labels?: Partial<TaskTabsLabels>;
+}
+
+export interface TaskTabsLabels {
+  /** "Close {title}". */
+  close: (title: string) => string;
+  /** "Reorder {title}": the drag handle's name. */
+  reorder: (title: string) => string;
+  moveEarlier: string;
+  moveLater: string;
+  /** Said for the drag handle. */
+  reorderHint: string;
 }

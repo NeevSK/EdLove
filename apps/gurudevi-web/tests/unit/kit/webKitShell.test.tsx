@@ -67,3 +67,43 @@ describe('web kit: AppHeader', () => {
     expect(onSwitch).toHaveBeenCalled();
   });
 });
+
+describe('web kit: connection status and TaskTabs', () => {
+  it('the header says the connection politely in place of the greeting', () => {
+    render(<AppHeader title="Self" eyebrow="Good morning" status={{ tone: 'syncing', label: 'Syncing 3…' }} />);
+    expect(screen.getByText('Syncing 3…').getAttribute('aria-live')).toBe('polite');
+    expect(screen.queryByText('Good morning')).toBeNull();
+  });
+
+  it('task tabs: a named tablist, choose, close, and Alt+arrows reorder within bounds', async () => {
+    const { TaskTabs } = await import('@repo/ui/components/web');
+    const onSelect = vi.fn();
+    const onClose = vi.fn();
+    const onReorder = vi.fn();
+    render(
+      <TaskTabs
+        label="Open tasks"
+        home={{ label: 'Home', selected: false, onPress: () => {} }}
+        tabs={[
+          { id: 'a', title: 'Attendance' },
+          { id: 'b', title: 'Marks' },
+        ]}
+        activeId="a"
+        onSelect={onSelect}
+        onClose={onClose}
+        onReorder={onReorder}
+      />,
+    );
+    expect(screen.getByRole('tablist', { name: 'Open tasks' })).toBeTruthy();
+    expect(screen.getByRole('tab', { name: 'Attendance' }).getAttribute('aria-selected')).toBe('true');
+    await userEvent.click(screen.getByRole('tab', { name: 'Marks' }));
+    expect(onSelect).toHaveBeenCalledWith('b');
+    await userEvent.click(screen.getByRole('button', { name: 'Close Attendance' }));
+    expect(onClose).toHaveBeenCalledWith('a');
+    screen.getByRole('tab', { name: 'Marks' }).focus();
+    await userEvent.keyboard('{Alt>}{ArrowLeft}{/Alt}');
+    expect(onReorder).toHaveBeenCalledWith('b', 0);
+    await userEvent.keyboard('{Alt>}{ArrowRight}{/Alt}');
+    expect(onReorder).toHaveBeenCalledTimes(1);
+  });
+});

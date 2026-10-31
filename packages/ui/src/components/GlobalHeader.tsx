@@ -1,11 +1,11 @@
 import { useAuthStore } from '@repo/core/store';
 import { useScopedNotifications } from '@repo/core/hooks';
-import { usePermissions } from '@repo/core/logic';
+import { useMutationQueue, usePermissions } from '@repo/core/logic';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
-import { AppHeader, type AppHeaderProps, SceneBackdrop, useScene } from '@repo/ui/components/native';
+import { AppHeader, type AppHeaderProps } from '@repo/ui/components/native';
 import { Bell, ChevronLeft, Menu, QrCode, Search, X } from '@repo/ui/icons';
 import { useWorld } from '@repo/ui/theme/native';
-import { BAND_WASH_EDGE, BAND_WASH_TEXT } from '@repo/ui/theme/scene';
 import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
@@ -25,6 +25,10 @@ export interface GlobalHeaderProps {
   showQRScan?: boolean;
   onQRScan?: () => void;
   rightAction?: React.ReactNode;
+  /** More header actions, after search and QR and before the bell (settings, editorial). */
+  extraActions?: NonNullable<AppHeaderProps['actions']>;
+  /** Where the bell goes; without it the bell opens the notifications drawer. */
+  onNotificationsPress?: () => void;
   userName?: string;
   searchProps?: {
     value?: string;
@@ -68,8 +72,8 @@ function headerReducer(state: HeaderState, action: HeaderAction): HeaderState {
 /**
  * The app's header: the same places and behaviour as always (back or menu,
  * the person, greeting and title or perspective; search, QR and the bell),
- * drawn by the kit's AppHeader so every world dresses it. The scene band and
- * safe area stay here, the frame's concerns.
+ * drawn by the kit's AppHeader so every world dresses it. The safe area stays
+ * here (the frame's concern); the connection is said on its top line.
  */
 export default function GlobalHeader({
   title,
@@ -81,6 +85,8 @@ export default function GlobalHeader({
   showQRScan = false,
   onQRScan,
   rightAction,
+  extraActions,
+  onNotificationsPress,
   userName,
   searchProps,
   isSelfView = false,
@@ -91,7 +97,8 @@ export default function GlobalHeader({
   const { can } = usePermissions();
   const wt = useWorld().tokens;
   const user = useAuthStore((state) => state.user);
-  const scene = useScene({ presence: 'band' });
+  const { status: network } = useOfflineStatus();
+  const { isSyncing, queue } = useMutationQueue();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const compact = width > height && height < 600;
@@ -151,12 +158,13 @@ export default function GlobalHeader({
       onPress: () => (onQRScan ? onQRScan() : router.push('/qr')),
     });
   }
+  if (extraActions) actions.push(...extraActions);
   if (!rightAction) {
     actions.push({
       key: 'notifications',
       label: t('notifications.title', 'Notifications'),
       icon: Bell,
-      onPress: () => dispatch({ type: 'SET_NOTIFICATIONS', show: true }),
+      onPress: onNotificationsPress ?? (() => dispatch({ type: 'SET_NOTIFICATIONS', show: true })),
       // Error and loading are a quiet dot; unread is a counted lamp. Both are said.
       ...(error
         ? { badge: 'dot' as const, badgeTone: 'danger' as const, badgeLabel: t('notifications.unavailable', 'not updating') }
@@ -172,16 +180,26 @@ export default function GlobalHeader({
     });
   }
 
+  // The connection is said where people look (the header's top line), only while it matters.
+  const status: AppHeaderProps['status'] =
+    network === 'offline'
+      ? {
+          tone: 'offline',
+          label:
+            queue.length > 0
+              ? t('network.offlineWaiting', 'Offline · {{count}} waiting', { count: queue.length })
+              : t('network.offline', 'Offline'),
+        }
+      : isSyncing && queue.length > 0
+        ? { tone: 'syncing', label: t('network.syncing', 'Syncing {{count}}…', { count: queue.length }) }
+        : undefined;
+
   return (
     <View style={{ width: '100%', paddingTop: insets.top + (compact ? 2 : 4) }}>
-      {/* The world's ground, with the room's scene showing through as a band when verger allows. */}
+      {/* The world's ground: a quiet field, no scene behind the header. */}
       <View
         pointerEvents="none"
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: wt.ground }}
-      />
-      <SceneBackdrop
-        scene={scene}
-        wash={{ colour: wt.ground, edge: BAND_WASH_EDGE, text: BAND_WASH_TEXT, textFrom: 0.42 }}
       />
       <AppHeader
         title={resolvedTitle}
@@ -227,6 +245,7 @@ export default function GlobalHeader({
             : undefined
         }
         compact={compact}
+        status={status}
         ruled
       />
       <NotificationDrawer

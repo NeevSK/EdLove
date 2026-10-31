@@ -55,3 +55,31 @@ export function remainingNote(length: number, max: number | undefined): number |
   const left = max - length;
   return left <= Math.ceil(max / 5) ? left : null;
 }
+
+/** English words for task tabs. */
+export const TASK_TABS_ENGLISH = {
+  close: (title: string) => `Close ${title}`,
+  reorder: (title: string) => `Reorder ${title}`,
+  moveEarlier: 'Move earlier',
+  moveLater: 'Move later',
+  reorderHint: 'Hold and drag to reorder. Screen reader users can move it earlier or later.',
+};
+
+/** Where a dragged tab lands, from its new centre among the others' centres. */
+export function dropIndex(
+  movedId: string,
+  translationX: number,
+  centres: ReadonlyMap<string, number>,
+  order: readonly string[],
+): number | null {
+  const from = centres.get(movedId);
+  if (from === undefined) return null;
+  const target = from + translationX;
+  const others = order
+    .filter((id) => id !== movedId)
+    .map((id) => ({ id, c: centres.get(id) }))
+    .filter((x): x is { id: string; c: number } => x.c !== undefined)
+    .sort((a, b) => a.c - b.c);
+  const i = others.findIndex((x) => target < x.c);
+  return i < 0 ? others.length : i;
+}
