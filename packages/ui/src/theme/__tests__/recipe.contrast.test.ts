@@ -60,6 +60,15 @@ function pairs(w: ResolvedWorld): Pair[] {
   add('card meta', r.card.meta.color, raised, TEXT);
   add('card selected ring', r.card.selectedEdge.color, raised, MARK);
   add('carousel current dot', r.card.dot.on, t.ground, MARK);
+  for (const [where, bg] of [['ground', t.ground], ['lamp', t.lamp]] as const) {
+    const p = r.prose[where];
+    add(`prose ${where} body`, p.body.color, bg, TEXT);
+    add(`prose ${where} heading`, p.h1.color, bg, TEXT);
+    add(`prose ${where} link`, p.link.ink, bg, TEXT);
+    add(`prose ${where} quote`, p.quote.ink, p.quote.fill, TEXT);
+    add(`prose ${where} code`, p.code.ink, p.code.fill, TEXT);
+    add(`prose ${where} code block`, p.codeBlock.ink, p.codeBlock.fill, TEXT);
+  }
   // Words over media sit on a veil; check them over the lightest and darkest photo.
   const veilOpacity = r.card.veilOpacity;
   for (const photo of ['#FFFFFF', '#000000'])

@@ -42,6 +42,13 @@ describe('kit stylesheet', () => {
     expect(css).toContain('@container (max-width: 359px){.gd-card[data-shape="wide"]');
   });
 
+  it('sets prose, file cards and documents from world variables', () => {
+    expect(css).toContain('.gd-prose[data-tone="lamp"] a{color:var(--w-prose-lamp-link)');
+    expect(css).toContain('.gd-prose[data-tone="ground"] pre{color:var(--w-prose-ground-pre-ink)');
+    expect(css).toContain('.gd-file-summary{');
+    expect(css).toContain('.gd-document-frame{');
+  });
+
   it('holds signs still for people who ask for reduced motion', () => {
     expect(css).toMatch(
       /@media \(prefers-reduced-motion:reduce\)\{\.gd-s \*\{animation-play-state:paused/,

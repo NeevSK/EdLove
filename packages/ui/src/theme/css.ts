@@ -12,11 +12,13 @@
 
 import { alpha, rgbTriple } from './color';
 import { phaseTokens, resolveWorld } from './resolve';
+import { PHASE_START_HOUR, skyPaletteAt } from './scene/sky';
 import type {
   BoundaryKind,
   Edge,
   Glow,
   Paint,
+  Phase,
   Radius,
   ResolvedWorld,
   SectionDensity,
@@ -25,7 +27,6 @@ import type {
   TypeStyle,
   WorldId,
   WorldMode,
-  Phase,
 } from './types';
 import { DEFAULT_WORLD, WORLD_IDS, WORLDS } from './worlds';
 
@@ -105,6 +106,14 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   }
   v['--w-glow-rgb'] = rgbTriple(t.glow);
   v['--w-lamp-rgb'] = rgbTriple(t.lamp);
+
+  // The sky behind floors (`--gd-sky-*`), from the one sky in theme/scene: an
+  // hour into the world's phase, clear weather, warmed by the world's glow.
+  const phase = w.phase ?? 'morning';
+  const sky = skyPaletteAt((PHASE_START_HOUR[phase] + 1) * 60, 'maha', 'clear', t.glow);
+  v['--gd-sky-top'] = sky.top;
+  v['--gd-sky-horizon'] = sky.horizon;
+  v['--gd-sky-glow'] = t.glow;
 
   // Bridge to the web app's existing variable names, so current screens follow
   // the world. Sanctuary keeps the web's hand-tuned palette untouched.
@@ -288,6 +297,30 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   v['--w-card-veil-ink'] = card.veilInk;
   v['--w-dot-off'] = card.dot.off;
   v['--w-dot-on'] = card.dot.on;
+
+  // Prose (Markdown, rich text, documents), on the page and on the lamp.
+  for (const [where, p] of Object.entries(r.prose)) {
+    const q = `--w-prose-${where}`;
+    Object.assign(v, typeVars(`${q}-body`, p.body));
+    Object.assign(v, typeVars(`${q}-h1`, p.h1));
+    Object.assign(v, typeVars(`${q}-h2`, p.h2));
+    Object.assign(v, typeVars(`${q}-h3`, p.h3));
+    v[`${q}-code-ink`] = p.code.ink;
+    v[`${q}-code-fill`] = p.code.fill;
+    v[`${q}-pre-ink`] = p.codeBlock.ink;
+    v[`${q}-pre-fill`] = p.codeBlock.fill;
+    v[`${q}-pre-edge`] = `${px(p.codeBlock.edge.width)} solid ${p.codeBlock.edge.color}`;
+    v[`${q}-pre-radius`] = radiusCss(p.codeBlock.radius);
+    v[`${q}-quote-ink`] = p.quote.ink;
+    v[`${q}-quote-fill`] = p.quote.fill;
+    v[`${q}-quote-edge`] = `${px(p.quote.edge.width)} solid ${p.quote.edge.color}`;
+    v[`${q}-bullet`] = p.bullet;
+    v[`${q}-link`] = p.link.ink;
+    v[`${q}-rule`] = `${px(p.rule.width)} solid ${p.rule.color}`;
+    v[`${q}-table-edge`] = `${px(p.table.edge.width)} solid ${p.table.edge.color}`;
+    v[`${q}-table-head`] = p.table.headerFill;
+    v[`${q}-gap`] = px(p.gap);
+  }
   return v;
 }
 

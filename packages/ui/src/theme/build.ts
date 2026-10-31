@@ -6,11 +6,13 @@
  * read the result, so mobile and web cannot drift apart.
  */
 
-import { alpha, contrastRatio, legible, mix } from './color';
+import { alpha, contrastRatio, legible, mix, relativeLuminance } from './color';
 import type {
   BoundaryKind,
   ButtonRecipe,
   CardRecipe,
+  ProseRecipe,
+  ProseTone,
   ChipRecipe,
   FieldRecipe,
   GroupRecipe,
@@ -31,6 +33,10 @@ import type {
   WorldStyle,
   WorldTokens,
 } from './types';
+
+/** The two ends every mix can lean toward (shadows, sheens, wells). */
+const BLACK = '#000000';
+const WHITE = '#FFFFFF';
 
 function type(
   family: TypeStyle['family'],
@@ -62,7 +68,7 @@ function shrink(radius: Radius, by: number): Radius {
  */
 function lampSheen(t: WorldTokens, amount: number): string {
   for (let a = amount; a > 0; a -= 0.05) {
-    const c = mix(t.lamp, '#FFFFFF', a);
+    const c = mix(t.lamp, WHITE, a);
     if (contrastRatio(t.onLamp, c) >= 4.5) return c;
   }
   return t.lamp;
@@ -205,11 +211,11 @@ function buildMaterial(t: WorldTokens, s: WorldStyle, mode: WorldMode): Material
   const shadow =
     m.shadow === 'neutral'
       ? mode === 'dark'
-        ? '#000000'
-        : mix(t.ink, '#000000', 0.3)
+        ? BLACK
+        : mix(t.ink, BLACK, 0.3)
       : mode === 'dark'
-        ? mix('#000000', t.glow, 0.12)
-        : mix(mix(t.ink, t.ornament, 0.3), '#000000', 0.25);
+        ? mix(BLACK, t.glow, 0.12)
+        : mix(mix(t.ink, t.ornament, 0.3), BLACK, 0.25);
   const glow = (base: number) => (vivid ? base * 1.6 : base) * lit;
   return {
     light,
@@ -437,7 +443,7 @@ function buildSection(
         fill: t.raised,
         radius: [5, 5, 5, 5],
         shadow: {
-          color: mode === 'dark' ? '#000000' : mix(t.ink, '#000000', 0.3),
+          color: mode === 'dark' ? BLACK : mix(t.ink, BLACK, 0.3),
           opacity: mode === 'dark' ? 0.4 : 0.2,
           radius: 10,
           offsetY: 6,
@@ -546,7 +552,7 @@ function buildCard(
   let veilOpacity = 0.62;
   while (
     veilOpacity < 0.95 &&
-    ['#FFFFFF', '#000000'].some(
+    [WHITE, BLACK].some(
       (photo) => contrastRatio(t.ground, mix(photo, t.ink, veilOpacity)) < 4.5,
     )
   )
@@ -571,6 +577,39 @@ function buildCard(
   };
 }
 
+function buildProse(t: WorldTokens, s: WorldStyle, text: Record<TextRole, TypeStyle>): ProseRecipe {
+  const tone = (ink: string, soft: string, ground: string, accent: string): ProseTone => {
+    const recolour = (style: TypeStyle, color: string): TypeStyle => ({ ...style, color });
+    const hair = { width: s.lineWeight, color: mix(ground, ink, 0.25) };
+    // Wells and washes move away from the ink, so the ink on them only gains contrast.
+    const away = relativeLuminance(ink) > 0.5 ? BLACK : WHITE;
+    return {
+      body: recolour(text.body, ink),
+      h1: recolour(type(text.title.family, 20, 26, ink, { weight: '600' }), ink),
+      h2: recolour(type(text.title.family, 17, 23, ink, { weight: '600' }), ink),
+      h3: recolour(type(text.body.family, 15, 21, ink, { weight: '600' }), ink),
+      code: { ink, fill: mix(ground, away, 0.1) },
+      codeBlock: {
+        ink,
+        fill: mix(ground, away, 0.08),
+        edge: hair,
+        radius: shrink(s.corner.surface, 4),
+      },
+      quote: { ink: soft, edge: { width: 3, color: accent }, fill: mix(ground, away, 0.06) },
+      bullet: accent,
+      link: { ink: accent, underline: true },
+      rule: hair,
+      table: { edge: hair, headerFill: mix(ground, away, 0.06) },
+      gap: 10,
+    };
+  };
+  return {
+    ground: tone(t.ink, t.inkSoft, t.ground, t.lampDeep),
+    // On the lamp everything is onLamp; the accent is onLamp too, so links stay legible.
+    lamp: tone(t.onLamp, t.onLamp, t.lamp, t.onLamp),
+  };
+}
+
 export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): WorldRecipes {
   const text = buildText(t, s);
   const material = buildMaterial(t, s, mode);
@@ -588,6 +627,7 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
     status: buildStatus(t, s),
     group: buildGroup(t, s, text, surface),
     card: buildCard(t, s, text, surface),
+    prose: buildProse(t, s, text),
     material,
     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
     motion: { settleMs: 220, breatheMs: 4200 },

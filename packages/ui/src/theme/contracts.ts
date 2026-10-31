@@ -136,6 +136,97 @@ export interface CarouselContract<T> {
   onPageChange?: (index: number) => void;
 }
 
+/** What kind of file something is (see `fileKindOf` in components/shared/files). */
+export type FileKind =
+  | 'image'
+  | 'audio'
+  | 'video'
+  | 'pdf'
+  | 'document'
+  | 'sheet'
+  | 'slides'
+  | 'markdown'
+  | 'text'
+  | 'archive'
+  | 'other';
+
+/** A file a component can show: where it is and what it is. */
+export interface FileRef {
+  name: string;
+  uri: string;
+  /** MIME type when known; otherwise the extension decides. */
+  mime?: string;
+  /** Bytes. */
+  size?: number;
+}
+
+/**
+ * Long-form text in Markdown. The kit sets it in the world's prose; which
+ * library parses and draws it is an adapter the app chooses (`MediaAdapters`).
+ */
+export interface MarkdownContract {
+  source: string;
+  /** `lamp` inside a person's own message bubble. */
+  tone?: 'ground' | 'lamp';
+  onLinkPress?: (url: string) => void;
+}
+
+/** A file shown as a held thing: its kind, name and size, and what can be done with it. */
+export interface FileCardContract {
+  file: FileRef;
+  /** Opening it (a viewer, the system). Without it the card is not a button. */
+  onOpen?: () => void;
+  /** Upload or download progress, 0–1. */
+  progress?: number;
+  error?: string;
+  onRetry?: () => void;
+  onRemove?: () => void;
+  /** Names for actions and kinds, in the reader's language. English by default. */
+  labels?: Partial<FileCardLabels>;
+}
+
+export interface FileCardLabels {
+  kinds: Record<FileKind, string>;
+  open: string;
+  retry: string;
+  remove: string;
+  /** "{n}% uploaded". */
+  progress: (percent: number) => string;
+}
+
+/**
+ * Ports: what an adapter receives. The kit chooses which adapter by the file's
+ * kind and hands it the world's prose; the adapter only draws.
+ */
+export interface MarkdownAdapterProps {
+  source: string;
+  onLinkPress?: (url: string) => void;
+}
+
+/**
+ * On native the adapter also gets the world's prose to style itself. On the
+ * web it emits plain semantic HTML and `.gd-prose` styles it from the world.
+ */
+export interface NativeMarkdownAdapterProps extends MarkdownAdapterProps {
+  prose: import('./types').ProseTone;
+}
+
+export interface DocumentAdapterProps {
+  file: FileRef;
+  /** Call when the document cannot be drawn; the kit falls back to a file card. */
+  onError: () => void;
+}
+
+/** Kinds a document adapter can be registered for. */
+export type DocumentKind = Extract<FileKind, 'pdf' | 'document' | 'sheet' | 'slides' | 'markdown' | 'text'>;
+
+/** A document shown in place (PDF, Word, Excel, PowerPoint), by an adapter the app chooses. */
+export interface DocumentContract {
+  file: FileRef;
+  /** Shown when no adapter can draw this kind, and on failure. */
+  onOpenElsewhere?: () => void;
+}
+
 export interface SurfaceContract {
   /** `plain`: ruled lines, no box. `raised`: a held sheet. `inset`: a quiet well. */
   tone?: SurfaceTone;

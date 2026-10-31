@@ -437,6 +437,28 @@ export interface CardRecipe {
   dot: { off: string; on: string; size: number };
 }
 
+/** How long-form text (Markdown, rich text, documents) is set on one background. */
+export interface ProseTone {
+  body: TypeStyle;
+  h1: TypeStyle;
+  h2: TypeStyle;
+  h3: TypeStyle;
+  /** Inline `code`. */
+  code: { ink: string; fill: string };
+  /** Fenced code: a quiet well. */
+  codeBlock: { ink: string; fill: string; edge: Edge; radius: Radius };
+  quote: { ink: string; edge: Edge; fill: string };
+  bullet: string;
+  link: { ink: string; underline: boolean };
+  rule: Edge;
+  table: { edge: Edge; headerFill: string };
+  /** Space between blocks. */
+  gap: number;
+}
+
+/** Prose on the page, and on the lamp (a person's own message bubble). */
+export type ProseRecipe = Record<'ground' | 'lamp', ProseTone>;
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -451,6 +473,7 @@ export interface WorldRecipes {
   status: StatusRecipe;
   group: GroupRecipe;
   card: CardRecipe;
+  prose: ProseRecipe;
   material: MaterialRecipe;
   motion: { settleMs: number; breatheMs: number };
 }

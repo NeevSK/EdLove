@@ -2,10 +2,11 @@ import { describe, expect, it, vi } from 'vitest';
 import * as native from '../index';
 
 vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
-// The scene pieces need a router and Skia, neither of which load in this
-// engine; only names are read here, so stand-ins for those two suffice.
+// The scene pieces need a router, Skia and the native markdown view, none of which load in this
+// engine; only names are read here, so stand-ins for them suffice.
 vi.mock('expo-router', () => ({ useIsFocused: () => true, usePathname: () => '/' }));
 vi.mock('react-native-skia', () => ({ Skia: {}, vec: () => ({}) }));
+vi.mock('react-native-enriched-markdown', () => ({ EnrichedMarkdownText: () => null }));
 
 /**
  * The component tree is the inspector: React DevTools and React Native
