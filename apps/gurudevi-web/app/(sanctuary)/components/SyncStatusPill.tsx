@@ -97,7 +97,9 @@ export function SyncStatusPill() {
             : 'Online';
 
   return (
+    // Quiet while all is well: a lit dot, its word kept for screen readers only.
     <div
+      role="status"
       aria-live="polite"
       aria-label={`Connection status: ${label === 'Checking' ? 'checking reachability' : label}`}
       className={styles.pill}
@@ -109,7 +111,7 @@ export function SyncStatusPill() {
       }
     >
       <span aria-hidden="true" className={styles.statusDot} />
-      <span>{label}</span>
+      <span className={styles.word}>{label}</span>
     </div>
   );
 }

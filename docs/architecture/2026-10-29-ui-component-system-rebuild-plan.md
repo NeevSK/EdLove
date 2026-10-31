@@ -602,8 +602,27 @@ from kit pieces in place, never redesigned.
    state is a worded signal ("urgent") and the breath runs only when motion
    allows; menu actions take an optional `group` (the AI companion section).
    Taps go to the kit button; a drag past 8 px moves it and the release that
-   ends a drag is not a tap. **Next, components only:** more settings rows on
-   `Group`/`Row`, and the web shell's connection line.
+   ends a drag is not a tap. **Then:** the web shell's connection pill
+   (`SyncStatusPill`, same place) goes quiet like the mobile top line: a lit
+   dot while online or checking, its word kept for screen readers in a polite
+   `status` region; words only for offline, unstable or unreachable. **Next,
+   components only:** settings rows (value, choice, link, danger) on
+   `Group`/`Row`, then the time pieces (§14 "Time pieces").
+
+   **Time pieces (proposed, not built).** The product already has a
+   past/today/future model: `TemporalIntent` (`review` | `current` | `plan`)
+   and civil-date helpers in `@repo/core/logic/workbench`
+   (`resolveMonthGrid`, `shiftCivilDate`, `resolveTemporalIntent`), the
+   `useTemporalStore` view date, the web `TemporalHorizon` and the legacy
+   `TemporalNavigator`. The kit has no time piece yet. Proposed, same names on
+   both kits, words from `Intl` in the person's language: `TimeAgo`
+   (relative time, `<time datetime>` on web, refreshes only while on screen);
+   `DateTravel` (previous / today / next with the intent said in words and
+   carried by the world's light: past a cooler wash, future the lamp,
+   today plain); `MonthGrid` (keyboard grid on web, activity density as a
+   dot, never colour alone); `DateField` / `TimeField` (platform pickers as
+   an adapter port, typed entry as the fallback); `Timeline` (day-grouped
+   events, the notifications' `groupByDay` reused).
 3. **Layer 1 screens:** AIScreen, the DM screen and the FAB overlay onto the
    agent kit.
 4. **Layer 2 remainder:** upload pipeline (engine \`IAttachmentPort\`, offline

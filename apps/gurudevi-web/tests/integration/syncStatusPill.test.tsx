@@ -36,6 +36,15 @@ describe('Unit/Integration: SyncStatusPill Ambient Network Telemetry', () => {
     expect(screen.queryByText('Synced')).toBeNull();
   });
 
+  it('is a polite status region that keeps its word for screen readers while quiet', async () => {
+    await act(async () => {
+      render(<SyncStatusPill />);
+    });
+    const status = screen.getByRole('status', { name: 'Connection status: Online' });
+    expect(status.getAttribute('data-status')).toBe('online');
+    expect(screen.getByText('Online').className).toContain('word');
+  });
+
   it('transitions offline when the shared browser observation goes offline', async () => {
     await act(async () => {
       render(<SyncStatusPill />);
