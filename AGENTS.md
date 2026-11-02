@@ -74,7 +74,8 @@ Modules follow [`docs/architecture/module-structure.md`](docs/architecture/modul
 follows [`docs/architecture/authority-model.md`](docs/architecture/authority-model.md);
 security and AI agents follow [`docs/architecture/security-and-ai-threat-model.md`](docs/architecture/security-and-ai-threat-model.md).
 Removing product screens or routes because their API is missing is a Deletion Veto
-case: ask first.
+case: ask first. **Current foundation work, its state and how to resume it in any tool:**
+[`apps/sanctuary-api/docs/current_progress/2026-11-02-foundation-follow-ups.md`](apps/sanctuary-api/docs/current_progress/2026-11-02-foundation-follow-ups.md).
 
 Never treat the monorepo as an empty workspace or create ad-hoc "islands" (throwaway scripts, redundant utilities, or disconnected client configs). Integration is not just about where files go-it is a strict **Cognitive Order of Operations** that must precede any attempt to write code:
 
