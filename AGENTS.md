@@ -60,6 +60,22 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 
 ### The Sovereign Context & Integration Pattern (The Anti-Island Law)
 
+**Platform structure (read before any API, package or screen design):**
+[`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) is the
+top-down map: channels, places (tabs), business domains, platform services, runtime,
+substrate. Tabs are places, not domains; every fact has one owning subdomain. Before
+adding a procedure, follow [`docs/architecture/domain-design-method.md`](docs/architecture/domain-design-method.md)
+(namespace = `<domain>.<subdomain>`, procedure = capability, a subdomain card before
+code). Privacy, sharing, audit, soft delete, retention and export follow
+[`docs/architecture/data-governance-and-records.md`](docs/architecture/data-governance-and-records.md).
+Modules follow [`docs/architecture/module-structure.md`](docs/architecture/module-structure.md)
+(modular monolith, walking skeleton; every module listed in
+[`docs/architecture/domains/README.md`](docs/architecture/domains/README.md)); authority
+follows [`docs/architecture/authority-model.md`](docs/architecture/authority-model.md);
+security and AI agents follow [`docs/architecture/security-and-ai-threat-model.md`](docs/architecture/security-and-ai-threat-model.md).
+Removing product screens or routes because their API is missing is a Deletion Veto
+case: ask first.
+
 Never treat the monorepo as an empty workspace or create ad-hoc "islands" (throwaway scripts, redundant utilities, or disconnected client configs). Integration is not just about where files go-it is a strict **Cognitive Order of Operations** that must precede any attempt to write code:
 
 ```
