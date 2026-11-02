@@ -212,7 +212,7 @@ What exists and its state, so layer 2 extends rather than replaces:
 | Scope switching | `store/scopeSessionCoordinator.ts`, `providers/CapabilityHydrationProvider.tsx` | Present |
 | Bonds listing | `identity.scopes` in `/api/v1` | Built |
 | Default-deny domain namespaces | `packages/policies/src/modules/*.cedarschema` | Skeleton; `platform.cedarschema` declares `Platform::Account` and `Platform::Bond` |
-| Live authority boundary | `apps/sanctuary-api/src/security/security.ts` | `resolveScope` re-checks the bond live and under lock in transactions; `authorize` (role-shaped engine) unchanged; **`authorizeCapability`** (domain namespaces) added 2026-11-02 |
+| Live authority boundary | `apps/sanctuary-api/src/security/security.ts` | `resolveScope` re-checks the bond live and under lock in transactions; `authorize` (role-shaped engine) unchanged; **`authorizeCapability`** (domain namespaces) added 2026-11-02; **`assertCommandAuthority`** and **`authorizeCommand`** bridge `executeAccountCommand` to either authority |
 | Domain-namespaced engine | `packages/policies/src/modules/engine.ts` | Added 2026-11-02: assembles and validates fragments and policies at startup, denies by default, fails closed on errors |
 
 ## Layer 2 plan
@@ -226,7 +226,10 @@ smaller items are listed in the
    `<Namespace>::<capability>`, re-reads the bond live (under lock inside a transaction),
    resolves the target fact, and asks the domain-namespaced engine. Default deny; an
    unknown namespace or an evaluation error fails closed as unavailable; the decision is
-   returned so it can be audited once layer 5 exists. Wiring every domain procedure
+   returned so it can be audited once layer 5 exists. In addition, `executeAccountCommand`
+   accepts `CommandAuthority` (either a domain capability decided by `authorizeCapability`
+   or a legacy role policy decided by `authorize`), enforced pre-flight by `assertCommandAuthority`
+   and executed within the command transaction by `authorizeCommand`. Wiring every domain procedure
    through it is a follow-up for the first admitted module.
 2. **Snapshot issuance**: built as `authority.refreshSnapshot` (a command, since it writes
    a row). `issueSnapshot` re-checks the identity and the bond under lock in one
@@ -258,10 +261,11 @@ current shape or gains a version field.
   `identity.scopes` lists bonds with an admission state.
 - Cedar: policies exist in `packages/policies` but are organised by role, with a
   single `capacity` and `school_id` on the principal and generic actions. The API calls
-  them through `security.authorize` for account commands (`platform.ts`). Domain
+  them through `security.authorize` for legacy account commands (`platform.ts`). Domain
   capabilities go through `authorizeCapability` and the domain namespaces, which permit
-  nothing yet. Moving the role rules into domain namespaces is described in
-  [module structure](module-structure.md#cedar-as-modules-too).
+  nothing yet. `executeAccountCommand` accepts `CommandAuthority` (either a domain capability
+  or a role policy, strictly rejecting both or neither). Moving the role rules into domain
+  namespaces is described in [module structure](module-structure.md#cedar-as-modules-too).
 - Grants, delegation and device trust levels: not built.
 - The older client-side permission design
   ([sanctuary permission architecture](gurudevi-sanctuary-permission-architecture.md))

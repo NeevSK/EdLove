@@ -41,15 +41,15 @@ Where the work is:
 | --- | --- |
 | Foundation docs | Committed in `3da58e50a` on `integrate/worlds-and-upstream` |
 | 2026-11-02 code (skeleton, authority boundary, snapshots) | **Uncommitted** in the working tree of `C:\x`, on top of the uncommitted API v1 reset |
-| Backup of the whole working tree, including that code | Branch `backup/wip-snapshot-20261102-b` (`bb9c840ee`). The earlier `backup/wip-snapshot-20261102` predates the code |
+| Backup of the whole working tree, including that code | Branch `backup/wip-snapshot-20261102-b` (`bb9c840ee`). Refreshed in `backup/wip-snapshot-20261102-c` with command authority & tests |
 | Interactive map | [Gurudevi Platform Map](https://claude.ai/artifact/L1YK1DrYaAcs2LPeULdtBE) (private to the owner's account) |
 
 The 2026-11-02 code files, for review or for the track 0.2 commit:
 
 - `apps/sanctuary-api/src/modules/catalog.ts`, `catalog.test.ts`
 - `apps/sanctuary-api/src/security/security.ts` (citizenship on `ActiveScope`,
-  `authorizeCapability`, `issueSnapshot`, `withIdentityTransaction`),
-  `__tests__/capability.test.ts`, `__tests__/snapshot.test.ts`
+  `authorizeCapability`, `issueSnapshot`, `withIdentityTransaction`, `assertCommandAuthority`, `authorizeCommand`),
+  `__tests__/capability.test.ts`, `__tests__/snapshot.test.ts`, `__tests__/command-authority.test.ts`
 - `apps/sanctuary-api/src/core/router.ts`, `src/config.ts`, `src/platform.ts`,
   `src/__tests__/config.test.ts`
 - `packages/core/src/api/v1/contract.ts` (`authority.refreshSnapshot`),
@@ -88,6 +88,10 @@ commit only the files you changed: other sessions edit this checkout at the same
   fitness tests; one default-deny Cedar namespace per domain plus `Platform`.
 - [x] Authority boundary: citizenship on every bond; domain-namespaced Cedar engine
   (`packages/policies/src/modules/engine.ts`); `authorizeCapability` in `security.ts`.
+- [x] Command authority bridge: `executeAccountCommand` accepts `CommandAuthority` (either
+  `domainCapability: Capability` or `policy: { action: 'create' | 'update' | 'delete', ... }`),
+  rejecting both or neither pre-flight with `assertCommandAuthority` and checking under transaction
+  lock via `authorizeCommand` (78/78 tests in `__tests__/command-authority.test.ts`).
 - [x] Offline permission snapshots, server side: `issueSnapshot` and
   `authority.refreshSnapshot`; Ed25519 key from `SNAPSHOT_SIGNING_PRIVATE_KEY`, required
   in production.
@@ -137,6 +141,9 @@ Read: [authority model](../../../../docs/architecture/authority-model.md).
   - [ ] `issueSnapshot`: row written, readable only by its owner under RLS, ended bond
     gets nothing, missing policy version.
 - [ ] 1.3 Make the boundary unskippable
+  - [x] Command authority bridge (2026-11-02): `executeAccountCommand` accepts `CommandAuthority`
+    (either `domainCapability: Capability` or `policy: { action: 'create' | 'update' | 'delete', ... }`),
+    preventing arbitrary authority manipulation and enforcing in-transaction checks via `authorizeCommand`.
   - [ ] A handler helper or middleware so every domain command calls
     `authorizeCapability`.
   - [ ] A composition-audit check that no domain handler skips it.
