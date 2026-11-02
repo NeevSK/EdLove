@@ -41,7 +41,7 @@ Where the work is:
 | --- | --- |
 | Foundation docs | Committed in `3da58e50a` on `integrate/worlds-and-upstream` |
 | 2026-11-02 code (skeleton, authority boundary, snapshots) | **Uncommitted** in the working tree of `C:\x`, on top of the uncommitted API v1 reset |
-| Backup of the whole working tree, including that code | Branch `backup/wip-snapshot-20261102-b` (`ba0263265`). The earlier `backup/wip-snapshot-20261102` predates the code |
+| Backup of the whole working tree, including that code | Branch `backup/wip-snapshot-20261102-b` (`bb9c840ee`). The earlier `backup/wip-snapshot-20261102` predates the code |
 | Interactive map | [Gurudevi Platform Map](https://claude.ai/artifact/L1YK1DrYaAcs2LPeULdtBE) (private to the owner's account) |
 
 The 2026-11-02 code files, for review or for the track 0.2 commit:
@@ -56,6 +56,10 @@ The 2026-11-02 code files, for review or for the track 0.2 commit:
   `packages/core/src/types/Identity.ts` (`resolveBondCitizenship` parameter)
 - `packages/policies/src/modules/` (all), `src/index.ts`, `src/snapshot/generator.ts`, `src/engine/evaluator.ts` (`cedarPolicyVersion`), `src/__tests__/policy-version.test.ts`,
   `src/__tests__/domain-namespaces.test.ts`, `src/__tests__/modular-engine.test.ts`
+- `packages/core/src/api/v1/client.ts` (`createAuthenticatedV1Client`),
+  `api/v1/__tests__/foundation.test.ts` (admitted list),
+  `logic/permissions/snapshotRefresh.ts`, `logic/permissions/__tests__/snapshotRefresh.test.ts`,
+  `store/scopeSessionCoordinator.ts` (`permissionScopeId` exported)
 - `scripts/audit-api-composition.mjs`, `scripts/tests/audit-api-composition.test.mjs`,
   `render.yaml` (`SNAPSHOT_SIGNING_PRIVATE_KEY`)
 
@@ -155,12 +159,23 @@ Read: [authority model](../../../../docs/architecture/authority-model.md).
 Nothing in the apps can call the new API yet; only tests create a v1 client. This blocks
 every app feature, including snapshot refresh.
 
-- [ ] 2.1 One authenticated v1 client per app (session token, account switching, request
-  identifiers), in `@repo/core` next to `api/v1/client.ts`.
+- [x] 2.1 `createAuthenticatedV1Client({ origin, getAccessToken })` in
+  `packages/core/src/api/v1/client.ts` (2026-11-02): reads the active account token per
+  request; with no token it fails locally as UNAUTHORIZED. It does not reuse the legacy
+  `api/clientRuntime.ts`, which sends decorative post-quantum headers, fabricates 503
+  offline responses and swallows token errors.
 - [ ] 2.2 Commands carry idempotency keys and replay safely from the offline queue (see
   [local-first writes](../architecture/api-foundations/local-first-writes-and-sync.md)).
-- [ ] 2.3 Call `authority.refreshSnapshot` when a scope session commits
-  (`packages/core/src/store/scopeSessionCoordinator.ts`) and before expiry.
+- [x] 2.3 `startPermissionSnapshotRefresh(client)` in
+  `packages/core/src/logic/permissions/snapshotRefresh.ts` (2026-11-02): refreshes on
+  every `perspective:transition_completed`, again an hour before expiry, retries outages
+  after five minutes (not UNAUTHORIZED or FORBIDDEN), drops results for a replaced scope,
+  and reloads `useCedarDecisionStore` on the next `sync:completed`.
+- [ ] 2.3a [simple] Start it in each app once, after sign-in, with the app client:
+  `startPermissionSnapshotRefresh(createAuthenticatedV1Client({ origin, getAccessToken }))`,
+  where `getAccessToken` reads the active Supabase session (web:
+  `apps/gurudevi-web/lib/supabase/browser.ts` already has a token resolver; mobile: the
+  auth bootstrap). Stop it on sign-out. `origin` is the API base URL from config.
 - [ ] 2.4 Retire `packages/core/src/api/authorization.ts` (it calls the removed
   `authorization.refresh`).
 
