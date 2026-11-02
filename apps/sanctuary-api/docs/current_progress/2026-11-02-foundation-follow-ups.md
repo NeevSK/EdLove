@@ -41,7 +41,7 @@ Where the work is:
 | --- | --- |
 | Foundation docs | Committed in `3da58e50a` on `integrate/worlds-and-upstream` |
 | 2026-11-02 code (skeleton, authority boundary, snapshots) | **Uncommitted** in the working tree of `C:\x`, on top of the uncommitted API v1 reset |
-| Backup of the whole working tree, including that code | Branch `backup/wip-snapshot-20261102-b` (`a0144fad2`). The earlier `backup/wip-snapshot-20261102` predates the code |
+| Backup of the whole working tree, including that code | Branch `backup/wip-snapshot-20261102-b` (`ba0263265`). The earlier `backup/wip-snapshot-20261102` predates the code |
 | Interactive map | [Gurudevi Platform Map](https://claude.ai/artifact/L1YK1DrYaAcs2LPeULdtBE) (private to the owner's account) |
 
 The 2026-11-02 code files, for review or for the track 0.2 commit:
@@ -54,7 +54,7 @@ The 2026-11-02 code files, for review or for the track 0.2 commit:
   `src/__tests__/config.test.ts`
 - `packages/core/src/api/v1/contract.ts` (`authority.refreshSnapshot`),
   `packages/core/src/types/Identity.ts` (`resolveBondCitizenship` parameter)
-- `packages/policies/src/modules/` (all), `src/index.ts`, `src/snapshot/generator.ts`,
+- `packages/policies/src/modules/` (all), `src/index.ts`, `src/snapshot/generator.ts`, `src/engine/evaluator.ts` (`cedarPolicyVersion`), `src/__tests__/policy-version.test.ts`,
   `src/__tests__/domain-namespaces.test.ts`, `src/__tests__/modular-engine.test.ts`
 - `scripts/audit-api-composition.mjs`, `scripts/tests/audit-api-composition.test.mjs`,
   `render.yaml` (`SNAPSHOT_SIGNING_PRIVATE_KEY`)
@@ -108,12 +108,26 @@ working tree, on top of ~320 deleted old-API files. A full snapshot is on
 
 Read: [authority model](../../../../docs/architecture/authority-model.md).
 
-- [ ] 1.1 Database permissions
-  - [ ] Grant the API's database role write on `public.permission_snapshots` and read on
-    `public.policy_version` (migration `20260726000000` grants only `service_role` and
-    read-only `authenticated`).
-  - [ ] Add both to the readiness probe in `platform.ts`.
-- [ ] 1.2 Real-database scenarios through `test:database`
+- [x] 1.1 Snapshot storage readiness (2026-11-02)
+  - [x] Grants: none needed. The API connects as `service_role` (its readiness probe
+    requires full privileges on its own `service_role`-only tables), and migration
+    `20260726000000` already grants `service_role` everything on both tables;
+    `service_role` bypasses RLS.
+  - [x] **Nothing ever wrote `public.policy_version`**, so every refresh would have failed
+    closed. The role engine now fingerprints exactly what it enforces
+    (`cedarPolicyVersion()`, `sha256:<hex>`), and `issueSnapshot` records it as the
+    `cedar` row in the same transaction before signing. A policy change gives a new
+    version, so devices reject snapshots made under the old policies.
+  - [x] Readiness probe checks both tables exist and the API role can read and write them.
+  - [ ] Watch for: during a rolling deploy with different policies, instances overwrite
+    each other's version and snapshots flip between valid and rejected until one version
+    remains. Acceptable (fails closed); revisit if deploys get long.
+  - [ ] Old `policy_version` rows with other ids, if any exist, would confuse the client
+    (it reads the first row). Check production; the server only writes id `cedar`.
+- [ ] 1.2 Real-database scenarios through `test:database`. [owner] It creates a new
+  database on the server Doppler's `DATABASE_URL` points to and needs
+  `API_DATABASE_CREATE_ACK=create-isolated-database`; give the go-ahead (or a local
+  Postgres) first.
   - [ ] `authorizeCapability`: bond ended between resolve and decide (under row lock),
     another school's record, suspended bond, deleted account.
   - [ ] `issueSnapshot`: row written, readable only by its owner under RLS, ended bond
