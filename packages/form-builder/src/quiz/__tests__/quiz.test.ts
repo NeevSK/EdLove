@@ -1,7 +1,9 @@
+import type { TextMatchRubric } from '@intuitui-labs/form-builder-engine/assessment';
 import type { FormSchema } from '@intuitui-labs/form-builder-engine/schema';
 import { describe, expect, it } from 'vitest';
 import {
   blankRubricFor,
+  type GradedField,
   checkQuizReadiness,
   gradeQuiz,
   missingQuizModeConfig,
@@ -153,7 +155,8 @@ describe('readiness', () => {
 
   it('blocks a broken pattern and warns about an unanchored one', () => {
     const s = quiz();
-    const rubric = (s.pages[0]!.fields[2] as unknown as { rubric: Record<string, unknown> }).rubric;
+    const field = s.pages[0]!.fields[2] as GradedField;
+    const rubric = field.rubric as TextMatchRubric;
     rubric.regexPattern = '([';
     expect(checkQuizReadiness(s).problems.map((p) => p.code)).toContain('invalid-pattern');
     rubric.regexPattern = '\\d+';

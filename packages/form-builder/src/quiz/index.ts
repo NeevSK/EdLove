@@ -32,6 +32,7 @@ export {
   type QuizQuestionResult,
   type QuizTagResult,
 } from './grade';
+export { asAssessmentState, nextPageId } from './navigation';
 export { isBlankAnswer, normalizeAnswerText, parseNumberAnswer } from './normalize';
 export {
   checkQuizReadiness,

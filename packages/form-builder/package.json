@@ -26,6 +26,7 @@
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_form-builder-check-cycles\"",
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_form-builder-test\" --evidence-level G1",
     "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_form-builder-test_watch\" --evidence-level G1",
+    "test:native": "node ../../scripts/run-and-report.mjs --cmd \"vitest run --config vitest.native.config.mts\" --name \"packages_form-builder-test_native\" --evidence-level G3",
     "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_form-builder-test_ui\" --evidence-level G1",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_form-builder-clean\""
   },
@@ -60,6 +61,7 @@
     "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:native": "vitest run --config vitest.native.config.mts",
     "test:ui": "vitest --ui",
     "clean": "rm -rf .turbo node_modules dist"
   }

@@ -38,6 +38,9 @@ const DRESSED = [
   'packages/ui/src/components/ActiveSubTabStrip.tsx',
   'apps/gurudevi-mobile/app/(tabs)/_layout.tsx',
   'apps/gurudevi-mobile/src/boot/WorldFonts.tsx',
+  'packages/form-builder/src/studio/MobileFormStudio.tsx',
+  'packages/form-builder/src/studio/sheets/QuizRubricSheet.tsx',
+  'packages/form-builder/src/runner',
 ];
 
 /** Where palettes are defined; raw colours are the point here. */

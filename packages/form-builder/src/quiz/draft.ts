@@ -17,6 +17,8 @@ export interface ChoiceDraft {
 }
 
 export interface MarkingDraft {
+  /** The question as students read it. */
+  label: string;
   graded: boolean;
   points: string;
   choices: ChoiceDraft[];
@@ -36,6 +38,7 @@ const str = (n: unknown) => (typeof n === 'number' && Number.isFinite(n) ? Strin
 export function draftFromField(field: FieldWithRubric): MarkingDraft {
   const r = field.rubric;
   return {
+    label: field.label ?? '',
     graded: Boolean(r),
     points: r ? str(r.points) : '1',
     choices: (field.options ?? []).map((o) => ({ value: String(o.value), label: o.label })),
@@ -79,6 +82,8 @@ export function toggleCorrect(draft: MarkingDraft, value: string, multiple: bool
 }
 
 export interface AppliedDraft {
+  /** The question text, tidied. */
+  label: string;
   /** New choices for the field, when it is a choice question. */
   options?: FormFieldOption[];
   /** The rubric to store, or `undefined` to stop marking the question. */
@@ -99,7 +104,8 @@ export function applyDraft(field: Pick<FormField, 'type' | 'config'>, draft: Mar
         .filter((c) => c.label !== '')
     : undefined;
 
-  if (!draft.graded || !kind) return { options, rubric: undefined };
+  const label = normalizeAnswerText(draft.label);
+  if (!draft.graded || !kind) return { label, options, rubric: undefined };
 
   const points = parseNumberAnswer(draft.points) ?? Number.NaN;
   const explanation = normalizeAnswerText(draft.explanation) || undefined;
@@ -109,14 +115,16 @@ export function applyDraft(field: Pick<FormField, 'type' | 'config'>, draft: Mar
 
   switch (kind) {
     case 'single-choice':
-      return { options, rubric: { ...base, kind, correctValue: correct[0] ?? '' } };
+      return { label, options, rubric: { ...base, kind, correctValue: correct[0] ?? '' } };
     case 'multiple-choice':
       return {
+        label,
         options,
         rubric: { ...base, kind, correctValues: correct, partialCreditStrategy: 'all-or-nothing' },
       };
     case 'numeric-range':
       return {
+        label,
         options,
         rubric: {
           ...base,
@@ -130,9 +138,9 @@ export function applyDraft(field: Pick<FormField, 'type' | 'config'>, draft: Mar
         .split('\n')
         .map(normalizeAnswerText)
         .filter(Boolean);
-      return { options, rubric: { ...base, kind, acceptableAnswers, trimWhitespace: true } };
+      return { label, options, rubric: { ...base, kind, acceptableAnswers, trimWhitespace: true } };
     }
     default:
-      return { options, rubric: undefined };
+      return { label, options, rubric: undefined };
   }
 }
