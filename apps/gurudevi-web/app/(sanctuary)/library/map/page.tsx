@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+﻿import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../../lib/host-routing';
@@ -6,7 +6,7 @@ import { resolveAuthorizedEntry } from '../../../../lib/sanctuary/authorizedEntr
 import { createServerSupabaseClient } from '../../../../lib/supabase/server';
 import { signInPath } from '../../auth/routeSafety';
 import { SanctuaryShell } from '../../components/SanctuaryShell';
-import { LibraryMapFloor } from './LibraryMapFloor';
+import { LibraryAtlasDesk } from './LibraryAtlasDesk';
 
 export const metadata = { title: 'Library Map | Gurudevi Sanctuary' };
 
@@ -23,7 +23,7 @@ export default async function LibraryMapPage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <LibraryMapFloor displayName="Guest Explorer" capacity="guest" />
+        <LibraryAtlasDesk displayName="Guest Explorer" capacity="guest" />
       </SanctuaryShell>
     );
   }
@@ -37,7 +37,7 @@ export default async function LibraryMapPage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <LibraryMapFloor displayName="Guest Explorer" capacity="guest" />
+        <LibraryAtlasDesk displayName="Guest Explorer" capacity="guest" />
       </SanctuaryShell>
     );
   }
@@ -51,7 +51,7 @@ export default async function LibraryMapPage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <LibraryMapFloor displayName="Guest Explorer" capacity="guest" />
+        <LibraryAtlasDesk displayName="Guest Explorer" capacity="guest" />
       </SanctuaryShell>
     );
   }
@@ -78,7 +78,7 @@ export default async function LibraryMapPage() {
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <LibraryMapFloor displayName={entry.displayName} capacity={entry.activeCapacity} />
+      <LibraryAtlasDesk displayName={entry.displayName} capacity={entry.activeCapacity} />
     </SanctuaryShell>
   );
 }

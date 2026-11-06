@@ -59,7 +59,11 @@ export function SignInFlow({ returnTo, intent = 'signin' }: Readonly<SignInFlowP
     }
 
     clearActiveDeviceAccountId();
-    setAccountMessage(`Enter your password to open ${account.displayName}.`);
+    setAccountMessage(
+      account.displayName
+        ? `Enter your password to open ${account.displayName}.`
+        : 'Please sign in to open your account.',
+    );
     if (account.rawEmail) {
       setSelectedAccountEmail(account.rawEmail);
       setAuthMode('password');

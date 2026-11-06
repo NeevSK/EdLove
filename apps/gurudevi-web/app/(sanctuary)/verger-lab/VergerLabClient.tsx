@@ -11,8 +11,13 @@ import {
   VERGER_LAB_POLICY_KEY,
   type VergerPolicyName,
   type Verger,
+  type GurudeviScenario,
+  GURUDEVI_SCENARIOS,
+  SCENARIO_METADATA,
+  activationPatchForScenario,
+  diagnoseVerger,
 } from '@repo/core/verger';
-import { useVergerLab } from '@repo/verger-react';
+import { useVergerLab, runHardwareCalibration, type HardwareCalibrationResult } from '@repo/verger-react';
 import { useState } from 'react';
 
 const LEVERS = GURUDEVI_WEB_HOST.levers;
@@ -89,18 +94,132 @@ export function VergerLabClient() {
   const { verger, report } = useVergerLab(LEVERS);
   const [patchText, setPatchText] = useState('');
   const [tuneText, setTuneText] = useState('');
+  const [activeScenario, setActiveScenario] = useState<GurudeviScenario>('auto');
+  const [calibrationResult, setCalibrationResult] = useState<HardwareCalibrationResult | null>(null);
+  const [calibrating, setCalibrating] = useState(false);
   const [result, setResult] = useState<{ readonly what: string; readonly outcome: LabResult } | null>(
     null,
   );
 
   if (!verger || !report) return <p className="text-sm text-ink-soft">No verger is bound.</p>;
 
+  const diagnosis = diagnoseVerger(report.snapshot, {
+    scenario: activeScenario,
+    rung: report.plan?.rung ?? 0,
+    running: report.running,
+  });
+
+  const handleScenarioChange = (scenario: GurudeviScenario) => {
+    setActiveScenario(scenario);
+    const patch = activationPatchForScenario(scenario);
+    verger.configure(patch);
+    setResult({
+      what: `scenario: ${scenario}`,
+      outcome: { ok: true },
+    });
+  };
+
+  const handleRunCalibration = async () => {
+    setCalibrating(true);
+    try {
+      const res = await runHardwareCalibration({ jitterSamples: 4 });
+      setCalibrationResult(res);
+    } finally {
+      setCalibrating(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-6 font-sans">
-      <header className="border-b border-line pb-4">
-        <p className="text-[11px] font-mono uppercase tracking-widest text-ink-soft">Development only</p>
-        <h1 className="text-2xl font-bold font-display text-ink m-0">Verger lab</h1>
+      <header className="border-b border-line pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <p className="text-[11px] font-mono uppercase tracking-widest text-ink-soft">Development only</p>
+          <h1 className="text-2xl font-bold font-display text-ink m-0">Verger lab</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${
+              diagnosis.health === 'healthy'
+                ? 'bg-emerald-100 text-emerald-800'
+                : diagnosis.health === 'warning'
+                  ? 'bg-amber-100 text-amber-800'
+                  : 'bg-rose-100 text-rose-800'
+            }`}
+          >
+            ● {diagnosis.health} (Rung {diagnosis.recoveryRung})
+          </span>
+        </div>
       </header>
+
+      {/* MSI System Diagnosis & Scenarios Synthesis */}
+      <section className="rounded-xl border border-line p-4 bg-paper-light/50 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-line/60 pb-3">
+          <div>
+            <h2 className="text-sm font-semibold text-ink m-0">Operational Scenarios</h2>
+            <p className="text-xs text-ink-soft m-0">Intentional operational presets overlaying Verger&apos;s envelope.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {GURUDEVI_SCENARIOS.map((id) => {
+              const meta = SCENARIO_METADATA[id];
+              const isSelected = activeScenario === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => handleScenarioChange(id)}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                    isSelected
+                      ? 'bg-action text-paper-light shadow-sm'
+                      : 'border border-line bg-paper text-ink hover:bg-paper-light'
+                  }`}
+                  title={meta.description}
+                >
+                  {meta.title}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* System Diagnosis Details */}
+        <div className="grid gap-3 sm:grid-cols-2 text-xs">
+          <div>
+            <span className="font-semibold text-ink block mb-1">Subsystem Health & Recommendations</span>
+            <ul className="list-disc list-inside space-y-0.5 text-ink-soft">
+              {diagnosis.recommendations.map((rec, i) => (
+                <li key={i}>{rec}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-ink">Empirical Hardware Benchmark</span>
+              <button
+                type="button"
+                disabled={calibrating}
+                onClick={handleRunCalibration}
+                className="text-[11px] text-action hover:underline disabled:opacity-50 font-medium"
+              >
+                {calibrating ? 'Benchmarking...' : 'Run Self-Test'}
+              </button>
+            </div>
+            {calibrationResult ? (
+              <div className="p-2.5 rounded-lg border border-line/80 bg-paper space-y-1">
+                <div className="flex justify-between font-mono">
+                  <span className="text-ink-soft">Capability Index:</span>
+                  <span className="font-bold text-ink">{calibrationResult.score} ({calibrationResult.tier} tier)</span>
+                </div>
+                <div className="flex justify-between text-ink-soft font-mono text-[11px]">
+                  <span>Loop Jitter: {calibrationResult.eventLoopJitterMs} ms</span>
+                  <span>Compute: {calibrationResult.computeDurationMs} ms</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-ink-soft m-0">Click &ldquo;Run Self-Test&rdquo; to benchmark event loop jitter &amp; throughput.</p>
+            )}
+          </div>
+        </div>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-2">
         {labSections(report).map((section) => (

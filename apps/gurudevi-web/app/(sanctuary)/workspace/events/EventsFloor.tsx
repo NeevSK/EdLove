@@ -5,8 +5,8 @@ import React, { useEffect, useState } from 'react';
 import {
   DEFAULT_CANONICAL_EVENTS,
   DEFAULT_CANONICAL_INVENTORY,
-  erpHexagonalService,
-} from '@/lib/domain/adapters/erp/erpHexagonalService';
+  erpAdapter,
+} from '@/lib/domain/adapters/erp/erp.adapter';
 import styles from './events.module.css';
 
 interface EventsFloorProps {
@@ -22,8 +22,8 @@ export function EventsFloor({ schoolId = 'school-ananda-colombo' }: Readonly<Eve
   useEffect(() => {
     async function loadData() {
       try {
-        const evts = await erpHexagonalService.getInstitutionalEvents(schoolId);
-        const inv = await erpHexagonalService.getInventoryItems(schoolId);
+        const evts = await erpAdapter.getInstitutionalEvents(schoolId);
+        const inv = await erpAdapter.getInventoryItems(schoolId);
         setEvents(evts);
         setInventory(inv);
       } catch {
@@ -46,14 +46,14 @@ export function EventsFloor({ schoolId = 'school-ananda-colombo' }: Readonly<Eve
   const handleQuickDispatch = async (item: InventoryAssetItem) => {
     try {
       const dispatchQty = item.category === 'nutrition_pantry' ? 10 : 1;
-      const res = await erpHexagonalService.dispatchStock(item, dispatchQty, {
+      const res = await erpAdapter.dispatchStock(item, dispatchQty, {
         eventId: 'evt-midday-meal-daily',
         performedByUserId: 'usr-current-operator',
         unitCostCents: 24000,
         reason: 'Daily routine dispatch for Midday Nutrition Program',
       });
 
-      const updatedInv = await erpHexagonalService.getInventoryItems(schoolId);
+      const updatedInv = await erpAdapter.getInventoryItems(schoolId);
       setInventory(updatedInv);
 
       setNotice(

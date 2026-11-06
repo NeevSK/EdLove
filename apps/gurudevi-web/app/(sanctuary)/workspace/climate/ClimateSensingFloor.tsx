@@ -6,7 +6,7 @@ import {
   CANONICAL_CLIMATE_DIMENSIONS,
   type ClimateDimensionRating,
   useClimateSensing,
-} from '@/lib/repositories/climateSensingRepository';
+} from '@/lib/hooks/useClimateSensing';
 import styles from './climate.module.css';
 
 const defaultDimensions: readonly ClimateDimensionRating[] = CANONICAL_CLIMATE_DIMENSIONS;

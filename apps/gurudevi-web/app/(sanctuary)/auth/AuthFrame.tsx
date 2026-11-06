@@ -1,9 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { DiurnalThemeToggle } from '../components/DiurnalThemeToggle';
+import { LivingGround } from '@repo/ui/components/web';
 import { GatewayFooter } from '../components/GatewayFooter';
 import { GatewayHeader } from '../components/GatewayHeader';
-import { LanguageToggle } from '../components/LanguageToggle';
 import styles from './auth.module.css';
 
 export function AuthFrame({
@@ -17,20 +18,16 @@ export function AuthFrame({
   showOnboardingLink?: boolean;
 }>) {
   return (
-    <div className={styles.viewport}>
+    <LivingGround atmosphere="canopy" dither className={styles.viewport}>
       <div className={styles.ambientOrb1} aria-hidden="true" />
       <div className={styles.ambientOrb2} aria-hidden="true" />
 
       <GatewayHeader
-        actions={
-          <>
-            <LanguageToggle />
-            <DiurnalThemeToggle />
-            <Link className={styles.backLink} href="/welcome">
-              <span>Guest House</span>
-              <span aria-hidden="true">→</span>
-            </Link>
-          </>
+        extraActions={
+          <Link className={styles.backLink} href="/welcome">
+            <span>Guest House</span>
+            <span aria-hidden="true">→</span>
+          </Link>
         }
       />
 
@@ -57,6 +54,6 @@ export function AuthFrame({
       </main>
 
       <GatewayFooter />
-    </div>
+    </LivingGround>
   );
 }

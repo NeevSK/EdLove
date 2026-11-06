@@ -6,8 +6,12 @@ const mock = vi.hoisted(() => ({ bootstrap: vi.fn(), resolve: vi.fn(), accounts:
 const account = {
   accountId: '123e4567-e89b-8101-8100-426614174001',
   authUserId: 'f0560000-0000-4000-8000-000000000001',
+  rawEmail: 'user@example.com',
 };
-vi.mock('@/lib/sanctuary/deviceAccountRegistry', () => ({ getDeviceAccounts: mock.accounts }));
+vi.mock('@/lib/sanctuary/deviceAccountRegistry', () => ({
+  getDeviceAccounts: mock.accounts,
+  clearActiveDeviceAccountId: vi.fn(),
+}));
 vi.mock('@/lib/sanctuary/canonicalDeviceAccount', () => ({
   resolveCanonicalDeviceAccount: mock.resolve,
 }));

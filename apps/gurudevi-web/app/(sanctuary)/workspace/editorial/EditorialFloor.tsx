@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   type EditorialContentKind,
   type EditorialLanguage,
-  editorialHexagonalService,
+  editorialAdapter,
   type SchoolEditorialDraft,
 } from '@/lib/domain';
 import styles from './editorial.module.css';
@@ -46,7 +46,7 @@ export function EditorialFloor({
   // Load drafts on mount
   useEffect(() => {
     let active = true;
-    void editorialHexagonalService.listDrafts(schoolId).then((loaded) => {
+    void editorialAdapter.listDrafts(schoolId).then((loaded) => {
       if (active) setDrafts(loaded);
     });
     return () => {
@@ -74,7 +74,7 @@ export function EditorialFloor({
     setStatusMessage(null);
 
     try {
-      const created = await editorialHexagonalService.submitDraft({
+      const created = await editorialAdapter.submitDraft({
         schoolId,
         schoolName: 'Ananda College',
         subEntityId: activeSociety?.id ?? 'society-media-unit',
@@ -108,7 +108,7 @@ export function EditorialFloor({
     try {
       const note =
         decision === 'approved' ? 'Verified by Teacher-in-Charge.' : 'Revision requested.';
-      const updated = await editorialHexagonalService.reviewDraft(
+      const updated = await editorialAdapter.reviewDraft(
         id,
         'tic-faculty-reviewer',
         decision,
@@ -122,7 +122,7 @@ export function EditorialFloor({
 
   const handlePublish = async (id: string, proposedSlug: string) => {
     try {
-      const published = await editorialHexagonalService.publishApproved(id, proposedSlug);
+      const published = await editorialAdapter.publishApproved(id, proposedSlug);
       setDrafts((prev) => prev.map((d) => (d.id === id ? published : d)));
       setStatusMessage(`Article published to edge commons! Slug: /articles/${published.slug}`);
     } catch (err: unknown) {

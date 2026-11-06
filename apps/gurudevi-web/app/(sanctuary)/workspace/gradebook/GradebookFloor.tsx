@@ -1,8 +1,9 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useId, useState } from 'react';
 import { useAcademicDomain } from '@/lib/domain/hooks/useAcademicDomain';
 import type { GradebookStudent } from '@/lib/domain/ports/academic.port';
+import { ScrollArea } from '@repo/ui/components/web';
 import styles from './gradebook.module.css';
 
 type GradeLetter = 'A' | 'B' | 'C' | 'S' | 'W';
@@ -91,8 +92,9 @@ export function GradebookFloor({ displayName, capacity }: GradebookFloorProps) {
         </div>
 
         <div className={styles.tableWrapper}>
-          <table className={styles.gradeTable}>
-            <caption className="sr-only">Personal assessment grades and teacher feedback</caption>
+          <ScrollArea orientation="horizontal" variant="auto" label="Personal assessment grades" showEdgeGradients={false}>
+            <table className={styles.gradeTable}>
+              <caption className="sr-only">Personal assessment grades and teacher feedback</caption>
             <thead>
               <tr>
                 <th scope="col">Assessment</th>
@@ -130,6 +132,7 @@ export function GradebookFloor({ displayName, capacity }: GradebookFloorProps) {
               </tr>
             </tbody>
           </table>
+          </ScrollArea>
         </div>
       </div>
     );
@@ -297,7 +300,8 @@ export function GradebookFloor({ displayName, capacity }: GradebookFloorProps) {
 
       {/* Assessment Table */}
       <div className={styles.tableWrapper}>
-        <table className={styles.gradeTable} aria-describedby={tableCaptionId}>
+        <ScrollArea orientation="horizontal" variant="auto" label="Assessment scores and marks" showEdgeGradients={false}>
+          <table className={styles.gradeTable} aria-describedby={tableCaptionId}>
           <caption id={tableCaptionId} className="sr-only">
             Assessment scores and competency marks for {subject} - {assessment}
           </caption>
@@ -366,6 +370,7 @@ export function GradebookFloor({ displayName, capacity }: GradebookFloorProps) {
             })}
           </tbody>
         </table>
+        </ScrollArea>
       </div>
     </div>
   );

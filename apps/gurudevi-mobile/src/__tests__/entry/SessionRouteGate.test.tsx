@@ -402,7 +402,8 @@ describe('SessionRouteGate account isolation', () => {
 
     expect(tree!.toJSON()).not.toBe('protected-shell');
     expect(JSON.stringify(tree!.toJSON())).toContain('Continue to Welcome');
-    expect(JSON.stringify(tree!.toJSON())).not.toContain('protected-shell');
+    expect(JSON.stringify(tree!.toJSON())).toContain('protected-shell');
+    expect(tree!.root.findByProps({ pointerEvents: 'none' })).toBeDefined();
     expect(mocks.replace).toHaveBeenCalledTimes(1);
     expect(mocks.replace).toHaveBeenCalledWith('/welcome');
     const continueButton = tree!.root.findByProps({ accessibilityLabel: 'Continue to Welcome' });
@@ -470,6 +471,7 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     expect(mocks.splashHandoff).not.toHaveBeenCalled();
+    expect(JSON.stringify(tree!.toJSON())).toContain('protected-shell');
     await act(async () => {
       vi.advanceTimersByTime(8_000);
     });
@@ -520,6 +522,7 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     expect(JSON.stringify(tree!.toJSON())).toContain('Opening Gurudevi');
+    expect(JSON.stringify(tree!.toJSON())).toContain('protected-shell');
     expect(
       tree!.root.findAllByProps({ accessibilityLabel: 'Retry restoring your sanctuary' }),
     ).toHaveLength(0);

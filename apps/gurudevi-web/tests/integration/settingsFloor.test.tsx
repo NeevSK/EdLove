@@ -41,15 +41,15 @@ describe('SettingsFloor Integration (G1 boundary / jsdom)', () => {
     const user = userEvent.setup();
     render(<SettingsFloor displayName="Aria Star" />);
 
-    // Switch to Night preset
+    // Switch to Night mode
     const nightBtn = screen.getByRole('button', { name: /night/i });
     await user.click(nightBtn);
-    expect(window.localStorage.getItem('gurudevi_appearance_preset')).toBe('night');
+    expect(window.localStorage.getItem('gurudevi_mode')).toBe('dark');
 
-    // Switch to Dawn preset
-    const dawnBtn = screen.getByRole('button', { name: /dawn/i });
-    await user.click(dawnBtn);
-    expect(window.localStorage.getItem('gurudevi_appearance_preset')).toBe('dawn');
+    // Switch to Day mode
+    const dayBtn = screen.getByRole('button', { name: /day/i });
+    await user.click(dayBtn);
+    expect(window.localStorage.getItem('gurudevi_mode')).toBe('light');
 
     // Toggle High Contrast
     const highContrastBtn = screen.getByRole('button', { name: /^standard$/i });

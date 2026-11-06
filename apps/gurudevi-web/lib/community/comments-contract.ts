@@ -1,4 +1,5 @@
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import '@repo/core/api/community';
 
 export type CommunityComment = Readonly<{
   id: string;

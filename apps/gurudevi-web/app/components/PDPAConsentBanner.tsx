@@ -44,10 +44,11 @@ export function PDPAConsentBanner() {
     <aside
       role="region"
       aria-label="Privacy and PDPA Consent"
-      className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 bg-sacred-white border-t border-line shadow-2xl backdrop-blur-md"
+      className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 border-t shadow-2xl backdrop-blur-xl"
       style={{
-        backgroundColor: 'var(--color-sacred-white, #fffdf8)',
-        borderColor: 'var(--color-line, rgba(104, 94, 85, 0.16))',
+        backgroundColor: 'color-mix(in srgb, var(--w-raised, #fffdf8) 84%, transparent)',
+        borderColor: 'var(--w-line, rgba(104, 94, 85, 0.16))',
+        color: 'var(--w-ink, #18201a)',
       }}
     >
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">

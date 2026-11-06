@@ -4,27 +4,14 @@ import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { LivingGround } from '@repo/ui/components/web';
 import { type ExploreCapacity, setExploreCapacity } from '../../../lib/explore/exploreCapacity';
-import { DiurnalThemeToggle } from '../components/DiurnalThemeToggle';
 import { GatewayFooter } from '../components/GatewayFooter';
-import { LanguageToggle } from '../components/LanguageToggle';
+import { GatewayHeader } from '../components/GatewayHeader';
+import { RoleCardGrid, CANONICAL_ROLE_OPTIONS } from '../components/RoleCardGrid';
 import styles from './welcome.module.css';
 
 export type WelcomeMode = 'explore' | 'sanctuary';
-
-const EXPLORE_ROLES = [
-  { id: 'teacher' as const, label: 'Teacher', emoji: '🧑‍🏫', verb: 'Teach & guide classes' },
-  { id: 'principal' as const, label: 'School Leader', emoji: '🏫', verb: 'Guide the school' },
-  { id: 'student' as const, label: 'Student', emoji: '🎒', verb: 'Learn & practice' },
-  {
-    id: 'guardian' as const,
-    label: 'Family & Guardian',
-    emoji: '👨‍👩‍👧',
-    verb: 'Follow student growth',
-  },
-  { id: 'founder' as const, label: 'Founder', emoji: '🏛️', verb: 'Shape sanctuary' },
-  { id: 'researcher' as const, label: 'Researcher', emoji: '🔬', verb: 'Observe learning data' },
-] as const;
 
 type WelcomeStageProps = Readonly<{
   mode?: WelcomeMode;
@@ -56,24 +43,11 @@ export function WelcomeStage(props?: WelcomeStageProps) {
     router.replace(targetUrl);
   }
   return (
-    <div className={styles.viewport}>
+    <LivingGround atmosphere="canopy" dither className={styles.viewport}>
       <div className={styles.ambientOrb1} aria-hidden="true" />
       <div className={styles.ambientOrb2} aria-hidden="true" />
 
-      <header className={styles.gatewayHeader}>
-        <Link className={styles.brandLink} href="/welcome">
-          <div className={styles.brandMark} aria-hidden="true">
-            🪷
-          </div>
-          <div>
-            <span className={styles.brandText}>Gurudevi</span>
-          </div>
-        </Link>
-        <div className={styles.headerActions}>
-          <LanguageToggle />
-          <DiurnalThemeToggle />
-        </div>
-      </header>
+      <GatewayHeader />
 
       <main className={styles.stageContainer} id="main-content">
         <div className={styles.stageContent}>
@@ -106,9 +80,6 @@ export function WelcomeStage(props?: WelcomeStageProps) {
                   <Link href={signInHref} className={styles.primaryBtn} autoFocus>
                     <span>Sign in to Sanctuary</span>
                     <span aria-hidden="true">→</span>
-                  </Link>
-                  <Link href="/onboarding" className={styles.editorialSanctuaryLink}>
-                    New member? Choose your role
                   </Link>
                 </div>
 
@@ -254,35 +225,11 @@ export function WelcomeStage(props?: WelcomeStageProps) {
                   I’ll shape this sample around your role.
                 </p>
 
-                <div
-                  className={styles.roleChoiceGrid}
-                  role="radiogroup"
-                  aria-label="Choose your role"
-                >
-                  {EXPLORE_ROLES.map((role) => (
-                    <button
-                      key={role.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={selectedRole === role.id}
-                      className={`${styles.roleChoiceBtn} ${selectedRole === role.id ? styles.roleChoiceBtnActive : ''}`}
-                      onClick={() => setSelectedRole(role.id)}
-                    >
-                      <span className={styles.roleChoiceIcon} aria-hidden="true">
-                        {role.emoji}
-                      </span>
-                      <div className={styles.roleChoiceInfo}>
-                        <span className={styles.roleChoiceLabel}>{role.label}</span>
-                        <span className={styles.roleChoiceVerb}>{role.verb}</span>
-                      </div>
-                      {selectedRole === role.id ? (
-                        <span className={styles.roleChoiceCheck} aria-hidden="true">
-                          ✓
-                        </span>
-                      ) : null}
-                    </button>
-                  ))}
-                </div>
+                <RoleCardGrid<ExploreCapacity>
+                  selectedRoleId={selectedRole}
+                  onSelectRole={(role) => setSelectedRole(role)}
+                  ariaLabel="Choose your role"
+                />
 
                 <div className={styles.editorialActionRow}>
                   <button
@@ -309,6 +256,6 @@ export function WelcomeStage(props?: WelcomeStageProps) {
       </main>
 
       <GatewayFooter />
-    </div>
+    </LivingGround>
   );
 }

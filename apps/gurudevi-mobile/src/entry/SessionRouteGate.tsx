@@ -82,6 +82,14 @@ export function SessionRouteGate({
     presentation.mountProtectedServices &&
     Boolean(routeState.session?.user);
 
+  const content = (
+    <>
+      <OptionalStartupServices phase={mountCloudServices ? 'protected-ready' : 'public-ready'} />
+      {children}
+      {mountCloudServices ? appServices : null}
+    </>
+  );
+
   const sessionMode = routeState.session
     ? routeState.session.user.is_anonymous
       ? 'anonymous'
@@ -150,95 +158,109 @@ export function SessionRouteGate({
     if (action.target) router.replace(action.target as any);
   }, [isDevelopmentToolRoute, pathname, decision, redirectTo, router]);
 
-  // router.replace() updates the browser location before Expo Router commits
-  // the destination tree. Keeping children mounted in that gap can show the
-  // previous route at the new URL (for example, Welcome at /self).
+  // Keep Expo Router's navigator mounted during admission and redirects. The
+  // opaque surface covers it while the destination is not ready, avoiding a
+  // temporary fallback to the null index route.
   if (presentation.kind === 'restoring') {
-    if (presentation.message) {
-      return (
-        <View className="flex-1 items-center justify-center bg-phase-canvas px-8">
-          <Mascot mode="offline" state="interrupted" size={140} podVariant="raw" />
-          <Text className="mt-6 text-center text-xl font-bold text-phase-text-primary">
-            Sanctuary Connection Paused
-          </Text>
-          <Text className="mt-2 text-center text-sm text-phase-text-muted">
-            {presentation.message}
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Retry restoring your sanctuary"
-            onPress={() => void refreshProfile()}
-            className="mt-6 w-full max-w-xs items-center rounded-xl bg-phase-interactive py-3.5 px-6 shadow-sm active:opacity-90"
-          >
-            <Text className="font-semibold text-white">Reconnect Sanctuary</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Return to Welcome"
-            onPress={() => router.replace('/welcome')}
-            className="mt-3 py-2 px-4"
-          >
-            <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
-          </Pressable>
-        </View>
-      );
-    }
-
     return (
-      <View className="flex-1 items-center justify-center bg-phase-canvas px-8">
-        <BrandPulse size={32} tintColor="#D4843A" accessibilityLabel="Opening Gurudevi" />
-        <Text className="mt-6 text-center text-base font-semibold text-phase-text-primary">
-          Opening Gurudevi…
-        </Text>
-        {entryWaitExpired ? (
-          <>
-            <Text className="mt-2 text-center text-sm text-phase-text-muted">
-              This is taking longer than usual.
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Retry restoring your sanctuary"
-              onPress={() => void refreshProfile()}
-              className="mt-5 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
-            >
-              <Text className="font-semibold text-white">Retry</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Return to Welcome"
-              onPress={() => router.replace('/welcome')}
-              className="mt-3 py-2 px-4"
-            >
-              <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
-            </Pressable>
-          </>
-        ) : null}
+      <View className="flex-1">
+        <View
+          className="absolute inset-0"
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
+          {children}
+        </View>
+        <View className="absolute inset-0 flex-1 items-center justify-center bg-phase-canvas px-8">
+          {presentation.message ? (
+            <>
+              <Mascot mode="offline" state="interrupted" size={140} podVariant="raw" />
+              <Text className="mt-6 text-center text-xl font-bold text-phase-text-primary">
+                Sanctuary Connection Paused
+              </Text>
+              <Text className="mt-2 text-center text-sm text-phase-text-muted">
+                {presentation.message}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Retry restoring your sanctuary"
+                onPress={() => void refreshProfile()}
+                className="mt-6 w-full max-w-xs items-center rounded-xl bg-phase-interactive py-3.5 px-6 shadow-sm active:opacity-90"
+              >
+                <Text className="font-semibold text-white">Reconnect Sanctuary</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Return to Welcome"
+                onPress={() => router.replace('/welcome')}
+                className="mt-3 py-2 px-4"
+              >
+                <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <BrandPulse size={32} tintColor="#D4843A" accessibilityLabel="Opening Gurudevi" />
+              <Text className="mt-6 text-center text-base font-semibold text-phase-text-primary">
+                Opening Gurudevi…
+              </Text>
+              {entryWaitExpired ? (
+                <>
+                  <Text className="mt-2 text-center text-sm text-phase-text-muted">
+                    This is taking longer than usual.
+                  </Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Retry restoring your sanctuary"
+                    onPress={() => void refreshProfile()}
+                    className="mt-5 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
+                  >
+                    <Text className="font-semibold text-white">Retry</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Return to Welcome"
+                    onPress={() => router.replace('/welcome')}
+                    className="mt-3 py-2 px-4"
+                  >
+                    <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
+                  </Pressable>
+                </>
+              ) : null}
+            </>
+          )}
+        </View>
       </View>
     );
   }
 
-  const content = (
-    <>
-      <OptionalStartupServices phase={mountCloudServices ? 'protected-ready' : 'public-ready'} />
-      {children}
-      {mountCloudServices ? appServices : null}
-    </>
-  );
-  if (presentation.kind !== 'transition') return content;
+  if (presentation.kind === 'content') return content;
+
   const destination = presentation.target === '/welcome' ? 'Welcome' : 'your sanctuary';
   return (
-    <View className="flex-1 items-center justify-center bg-phase-canvas px-8">
-      <Text className="text-center text-base font-semibold text-phase-text-primary">
-        Continue to {destination}
-      </Text>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`Continue to ${destination}`}
-        onPress={() => router.replace(presentation.target as Href)}
-        className="mt-5 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
+    <View className="flex-1">
+      <View
+        className="absolute inset-0"
+        pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
       >
-        <Text className="font-semibold text-white">Continue</Text>
-      </Pressable>
+        {children}
+      </View>
+      <View className="absolute inset-0 flex-1 items-center justify-center bg-phase-canvas px-8">
+        <Text className="text-center text-base font-semibold text-phase-text-primary">
+          Continue to {destination}
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Continue to ${destination}`}
+          onPress={() => router.replace(presentation.target as Href)}
+          className="mt-5 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
+        >
+          <Text className="font-semibold text-white">Continue</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

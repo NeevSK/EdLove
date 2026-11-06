@@ -88,17 +88,14 @@ function readLocal(key: string): WorkspaceAppearance | null {
       preset: candidate.preset as WorkspaceAppearance['preset'],
       motion: candidate.motion as WorkspaceAppearance['motion'],
     };
-    if (candidate.worldId !== undefined) {
-      result.worldId = candidate.worldId;
-    }
-    if (candidate.groundMode !== undefined) {
-      result.groundMode = candidate.groundMode;
-    }
     if (candidate.wallpaper !== undefined) {
       result.wallpaper = candidate.wallpaper;
     }
     if (candidate.wallpaperConfig !== undefined) {
       result.wallpaperConfig = candidate.wallpaperConfig;
+    }
+    if (candidate.groundMode !== undefined) {
+      result.groundMode = candidate.groundMode;
     }
     return result;
   } catch {
@@ -154,6 +151,7 @@ export function useBrowserWorkspaceAppearance({
     window.addEventListener('resize', updateLayoutTarget);
     return () => window.removeEventListener('resize', updateLayoutTarget);
   }, []);
+
 
   useEffect(() => {
     let cancelled = false;

@@ -1,4 +1,3 @@
-import { assertSecureApiUrl, secureApiFetch } from '@repo/core/api/transportSecurity';
 import {
   type BrowserSupabaseClient,
   createBrowserSupabaseClient,
@@ -32,13 +31,6 @@ export type BrowserAuthRuntime = Readonly<{
 const SESSION_DURATION_REMEMBER = 30 * 24 * 60 * 60;
 const SESSION_DURATION_DEFAULT = 7 * 24 * 60 * 60;
 
-function apiOrigin(): string | null {
-  const value = process.env.NEXT_PUBLIC_API_URL?.trim();
-  if (!value) return null;
-  assertSecureApiUrl(value);
-  return value.replace(/\/+$/, '');
-}
-
 export function browserAuthRuntime(): BrowserAuthRuntime | null {
   const client = createBrowserSupabaseClient();
   if (!client) return null;
@@ -61,52 +53,6 @@ export function browserAuthRuntime(): BrowserAuthRuntime | null {
       }
     },
     async signInWithPassword({ email, password }) {
-      const origin = apiOrigin();
-      if (origin) {
-        try {
-          const res = await secureApiFetch(`${origin}/api/auth/sign-in`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-            cache: 'no-store',
-            signal: AbortSignal.timeout(5000),
-          });
-
-          if (res.ok) {
-            const body = await res.json();
-            if (body.session?.access_token && body.session?.refresh_token) {
-              const { data, error } = await client.auth.setSession({
-                access_token: body.session.access_token,
-                refresh_token: body.session.refresh_token,
-              });
-              if (!error && data.session) {
-                return { data: { session: data.session, user: data.user }, error: null };
-              }
-              return {
-                data: { session: null, user: null },
-                error: new Error(error?.message || 'Unable to establish the browser session.'),
-              };
-            }
-            return {
-              data: { session: null, user: null },
-              error: new Error('Authentication returned an invalid session.'),
-            };
-          } else {
-            const errorBody = await res.json().catch(() => ({}));
-            return {
-              data: { session: null, user: null },
-              error: new Error(errorBody.error || 'Invalid email or password'),
-            };
-          }
-        } catch (cause) {
-          return {
-            data: { session: null, user: null },
-            error:
-              cause instanceof Error ? cause : new Error('Authentication service is unavailable.'),
-          };
-        }
-      }
-
       const result = await client.auth.signInWithPassword({ email, password });
       return {
         data: { session: result.data.session, user: result.data.user },

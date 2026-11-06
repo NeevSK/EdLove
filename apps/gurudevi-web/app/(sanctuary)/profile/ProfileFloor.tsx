@@ -1,6 +1,5 @@
 'use client';
 
-import '@repo/core/api/auth';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { WorkspaceAppearance } from '@repo/core/types';
 import Link from 'next/link';
@@ -12,11 +11,12 @@ import { AccountSignOut } from '../components/AccountSignOut';
 import { CapacityPerspectiveSwitcher } from '../components/CapacityPerspectiveSwitcher';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { AccountDeletionControl } from './AccountDeletionControl';
 import { CreateAccountGuidanceModal } from './CreateAccountGuidanceModal';
 import styles from './profile.module.css';
 import { ThuthimalClaimModal } from './ThuthimalClaimModal';
-import { WebDeviceAccountManager } from './WebDeviceAccountManager';
+import { WebDeviceAccountModal } from './WebDeviceAccountModal';
 
 const FALLBACK_EXPLORE_PROFILE = {
   id: 'guest-explorer-profile',
@@ -57,8 +57,7 @@ const FALLBACK_EXPLORE_PROFILE = {
 };
 
 const PROFILE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
-  { id: 'profile-intro', label: 'Persona & Role Header', icon: '👤' },
-  { id: 'profile-stage', label: 'Active Profile Module Stage', icon: '🪷' },
+  { id: 'profile-stage', label: 'Persona & Module Stage', icon: '🪷' },
 ];
 
 const SECTION_LABELS: Record<ProfileSection, { label: string; icon: string }> = {
@@ -455,6 +454,8 @@ export function ProfileFloor({
       furnitureItems={PROFILE_FURNITURE_ITEMS}
       setAppearance={canvas.setAppearance}
       titleId="profile-title"
+      greeting={timeGreeting(profileName)}
+      breadcrumb={`Profile · ${SECTION_LABELS[activeSection]?.label ?? 'Identity'}`}
     >
       {({ isModuleVisible }) => (
         <div
@@ -463,17 +464,6 @@ export function ProfileFloor({
           data-domain="profile"
           data-motion={canvas.appearance.motion}
         >
-          {isModuleVisible('profile-intro') && (
-            <header className={styles.intro}>
-              <p className={styles.eyebrow}>Profile</p>
-              <h1 id="profile-title">Your Sanctuary Persona</h1>
-              <p>
-                {profileName}, manage your verified credentials, workspace atmosphere, and account
-                safety.
-              </p>
-            </header>
-          )}
-
           {feedbackNotice && (
             <div
               role="status"
@@ -1626,7 +1616,7 @@ export function ProfileFloor({
                           Manage your credentials or request permanent deletion of your account and
                           all associated sanctuary history.
                         </p>
-                        <WebDeviceAccountManager
+                        <WebDeviceAccountModal
                           currentAccountId={accountId}
                           currentDisplayName={displayName}
                         />

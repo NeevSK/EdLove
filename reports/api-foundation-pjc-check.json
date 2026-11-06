@@ -1,0 +1,2514 @@
+{
+  "errors": [],
+  "gaps": [
+    "binding:admin.school_connection.api-2: binding unknown",
+    "binding:admin.school_connection.api-2: reference unknown",
+    "binding:admin.school_connection.authorization-4: binding unknown",
+    "binding:admin.school_connection.data-3: binding implemented",
+    "binding:admin.school_connection.mobile-1: binding unknown",
+    "binding:admin.school_connection.web-0: binding planned",
+    "binding:admin.school_connection.web-0: reference unknown",
+    "binding:ai.flow_dag: binding implemented",
+    "binding:ai.screen_shared: binding planned",
+    "binding:ai.screen_shared: reference missing",
+    "binding:api.ai_cancel: binding implemented",
+    "binding:api.authority_failure: binding implemented",
+    "binding:api.contract_conversion: binding implemented",
+    "binding:api.contract_inspector: binding implemented",
+    "binding:api.contract_inspector_test: binding implemented",
+    "binding:api.contract_inventory: binding implemented",
+    "binding:api.contract_inventory_test: binding implemented",
+    "binding:api.contract_test: binding implemented",
+    "binding:api.daily_content_contract: binding implemented",
+    "binding:api.daily_content_contract_test: binding implemented",
+    "binding:api.daily_content_handler: binding implemented",
+    "binding:api.daily_content_test: binding implemented",
+    "binding:api.database_proof: binding implemented",
+    "binding:api.entitlement: binding implemented",
+    "binding:api.guide: binding implemented",
+    "binding:api.http: binding implemented",
+    "binding:api.mcp: binding implemented",
+    "binding:api.mcp_door: binding implemented",
+    "binding:api.native_admission: binding implemented",
+    "binding:api.native_client: binding implemented",
+    "binding:api.onboarding_client: binding implemented",
+    "binding:api.onboarding_client_test: binding implemented",
+    "binding:api.onboarding_contract: binding implemented",
+    "binding:api.onboarding_handler: binding implemented",
+    "binding:api.onboarding_test: binding implemented",
+    "binding:api.privacy_api_test: binding implemented",
+    "binding:api.privacy_contract: binding implemented",
+    "binding:api.privacy_contract_test: binding implemented",
+    "binding:api.privacy_handler: binding implemented",
+    "binding:api.privacy_policy: binding implemented",
+    "binding:api.privacy_policy_test: binding implemented",
+    "binding:api.readiness: binding implemented",
+    "binding:api.regular_rewards_test: binding implemented",
+    "binding:api.retry: binding implemented",
+    "binding:api.rewards: binding implemented",
+    "binding:api.rewards_pg: binding implemented",
+    "binding:api.rewards_storage: binding implemented",
+    "binding:api.rewards_test: binding implemented",
+    "binding:classroom.teacher_first_workspace.api-2: binding implemented",
+    "binding:classroom.teacher_first_workspace.authorization-4: binding unknown",
+    "binding:classroom.teacher_first_workspace.data-3: binding implemented",
+    "binding:classroom.teacher_first_workspace.mobile-1: binding unknown",
+    "binding:classroom.teacher_first_workspace.web-0: binding planned",
+    "binding:founder.dashboard_screen: binding implemented",
+    "binding:founder.route_mobile: binding implemented",
+    "binding:founder.route_mobile: route unverifiable",
+    "binding:founder.stats_bridge: binding implemented",
+    "binding:founder.todos_hook: binding implemented",
+    "binding:pjc.checker: binding implemented",
+    "binding:pjc.cli: binding implemented",
+    "binding:pjc.cli_tests: binding implemented",
+    "binding:pjc.flow_registry: binding implemented",
+    "binding:pjc.guide: binding implemented",
+    "binding:pjc.public_api: binding implemented",
+    "binding:pjc.schema: binding implemented",
+    "binding:pjc.skill: binding implemented",
+    "binding:pjc.tests: binding implemented",
+    "binding:principal.term_setup_flow: binding implemented",
+    "binding:principal.web_dashboard: binding implemented",
+    "binding:school.invite_repository: binding unknown",
+    "binding:student.breath_guide: binding implemented",
+    "binding:student.timetable_hook: binding implemented",
+    "binding:student.tomorrow_prep_component: binding implemented",
+    "binding:teacher.attendance_screen: binding implemented",
+    "binding:teacher.holistic_insights: binding implemented",
+    "binding:teacher.rollcall_flow: binding implemented",
+    "journey:admin.school_connection.legacy: impact analysis not recorded",
+    "journey:admin.school_connection.legacy: no requirements",
+    "journey:admin.school_connection.legacy: open question: Can the existing school creation and invitation paths safely support principal bootstrap on both platforms and recover after partial failure?",
+    "journey:admin.school_connection.legacy: open question: How do commercial tuition institutes map to principal capacity, bonds and Cedar authorization?",
+    "journey:admin.school_connection.legacy: open question: How should onboarding transition into an institution without treating a personal scope as principal authority?",
+    "journey:admin.school_connection.legacy: open question: Which existing creation, claim and invitation journeys support each institutional type end to end?",
+    "journey:admin.school_connection.legacy: planning status not declared",
+    "journey:admin.school_connection.legacy: platform analysis not recorded",
+    "journey:admin.school_connection.legacy: source observations not recorded",
+    "journey:ai.assistant_companion: impact analysis not recorded",
+    "journey:ai.assistant_companion: open question: Configure Inngest execution cluster webhook endpoint for production background agents.",
+    "journey:ai.assistant_companion: planning status not declared",
+    "journey:ai.assistant_companion: platform analysis not recorded",
+    "journey:ai.assistant_companion: source observations not recorded",
+    "journey:api.compose: open question: Legacy handler-facing type erasure remains until domain migration.",
+    "journey:api.compose: open question: Multiple-success variants do not dynamically select distinct HTTP statuses.",
+    "journey:api.compose: open question: This compiler does not establish deployed behavior or database authorization.",
+    "journey:api.compose: planning status not declared",
+    "journey:api.execute: open question: AdMob grants use one account-locked ORM transaction and explicit 503 failures. Real Postgres rollback and owner policy denial were exercised; contention, committed replay, provider delivery and historical partial-receipt reconciliation remain unverified.",
+    "journey:api.execute: open question: Bootstrap Cedar coverage and feature flag enforcement require procedure-specific audits.",
+    "journey:api.execute: open question: Daily content caps recent lookbacks at 366 days, but pagination, full query-cost budgets, all-role authorization and real database execution remain unverified.",
+    "journey:api.execute: open question: MCP catalog registration caches immutable schema conversions through the SDK extension. The 2026-10-30 full host suite no longer reproduces the catalog deadlines; sustained production load remains unverified.",
+    "journey:api.execute: open question: Ordinary reward points, badge and achievement mutations still require concurrency and idempotency verification; removing false-success catches does not make those writes atomic.",
+    "journey:api.execute: open question: Provider billing, retention and deployment canaries require external-system evidence.",
+    "journey:api.execute: open question: Real-Postgres Cedar/RLS authorization proofs still require an isolated policy-test database; the narrow receipt and bucket proof is recorded in the API guide.",
+    "journey:api.execute: open question: Shared rate-limit tables are reachable; deployed proxy trust and cross-process contention remain unverified.",
+    "journey:api.execute: open question: The latest strict compiler audit reports 624 diagnostics; the API config still disables strict checks. Privacy, daily content and onboarding use native SDK inference. Legacy handler wrappers, transaction callback any types and client index-signature fallbacks remain.",
+    "journey:api.execute: open question: The new worktree todos router required a builder syntax correction to restore compiled startup. Its CRUD, Cedar coverage and database correctness remain unverified by liveness or the existing boundary suite.",
+    "journey:api.execute: open question: WebSocket Node transport scenarios use real sockets with substituted identity, Cedar and database; browser authentication negotiation and actual Bun socket traffic remain unverified.",
+    "journey:api.execute: planning status not declared",
+    "journey:classroom.teacher_first_workspace.legacy: impact analysis not recorded",
+    "journey:classroom.teacher_first_workspace.legacy: no requirements",
+    "journey:classroom.teacher_first_workspace.legacy: open question: Can signed Cedar snapshots, account-scoped draft persistence and outbox reconciliation support this journey on both platforms?",
+    "journey:classroom.teacher_first_workspace.legacy: open question: How should a teacher provisioning command persist and reconcile across offline interruptions and account switches on web?",
+    "journey:classroom.teacher_first_workspace.legacy: open question: How should the bootstrap provisioning boundary align with Cedar and existing teacher bond checks?",
+    "journey:classroom.teacher_first_workspace.legacy: open question: Which existing school invitation and claim flows support teacher onboarding end to end?",
+    "journey:classroom.teacher_first_workspace.legacy: planning status not declared",
+    "journey:classroom.teacher_first_workspace.legacy: platform analysis not recorded",
+    "journey:classroom.teacher_first_workspace.legacy: source observations not recorded",
+    "journey:founder.fleet_pulse: impact analysis not recorded",
+    "journey:founder.fleet_pulse: open question: How frequently should aggregate fleet metrics refresh in background sync?",
+    "journey:founder.fleet_pulse: planning status not declared",
+    "journey:founder.fleet_pulse: platform analysis not recorded",
+    "journey:founder.fleet_pulse: source observations not recorded",
+    "journey:founder.manage_priorities: impact analysis not recorded",
+    "journey:founder.manage_priorities: open question: Should directives support cross-organization assignment to specific school principals?",
+    "journey:founder.manage_priorities: planning status not declared",
+    "journey:founder.manage_priorities: platform analysis not recorded",
+    "journey:founder.manage_priorities: source observations not recorded",
+    "journey:principal.school_pulse: impact analysis not recorded",
+    "journey:principal.school_pulse: open question: How are emergency school-wide notices dispatched to offline student and guardian devices?",
+    "journey:principal.school_pulse: planning status not declared",
+    "journey:principal.school_pulse: platform analysis not recorded",
+    "journey:principal.school_pulse: source observations not recorded",
+    "journey:principal.term_setup: impact analysis not recorded",
+    "journey:principal.term_setup: no implementation bindings",
+    "journey:principal.term_setup: open question: Should multi-track or semester schedules be supported concurrently within a single school?",
+    "journey:principal.term_setup: planning status not declared",
+    "journey:principal.term_setup: platform analysis not recorded",
+    "journey:principal.term_setup: source observations not recorded",
+    "journey:school.accept_invitation: impact analysis not recorded",
+    "journey:school.accept_invitation: open question: How are invitation secrets protected from authenticated enumeration and bound to intended recipients?",
+    "journey:school.accept_invitation: open question: How is a confirmed school scope selected after acceptance on each platform?",
+    "journey:school.accept_invitation: open question: Where is claim_invite_code defined and deployed?",
+    "journey:school.accept_invitation: planning status not declared",
+    "journey:school.accept_invitation: platform analysis not recorded",
+    "journey:school.accept_invitation: source observations not recorded",
+    "journey:school.founder_invitation: impact analysis not recorded",
+    "journey:school.founder_invitation: open question: Verify the database invitation redemption function, founder issuance, revocation and recipient binding.",
+    "journey:school.founder_invitation: planning status not declared",
+    "journey:school.founder_invitation: platform analysis not recorded",
+    "journey:school.founder_invitation: source observations not recorded",
+    "journey:student.daily_prep: impact analysis not recorded",
+    "journey:student.daily_prep: open question: How should unfinished prep items carry over to the next morning without guilt framing?",
+    "journey:student.daily_prep: planning status not declared",
+    "journey:student.daily_prep: platform analysis not recorded",
+    "journey:student.daily_prep: source observations not recorded",
+    "journey:student.mindful_reflection: impact analysis not recorded",
+    "journey:student.mindful_reflection: open question: Should audio bells or binaural audio support be bundled or downloaded on demand?",
+    "journey:student.mindful_reflection: planning status not declared",
+    "journey:student.mindful_reflection: platform analysis not recorded",
+    "journey:student.mindful_reflection: source observations not recorded",
+    "journey:student.timetable_schedule: impact analysis not recorded",
+    "journey:student.timetable_schedule: open question: How should room swaps or substitute teacher notices be indicated dynamically on the period card?",
+    "journey:student.timetable_schedule: planning status not declared",
+    "journey:student.timetable_schedule: platform analysis not recorded",
+    "journey:student.timetable_schedule: source observations not recorded",
+    "journey:teacher.daily_rollcall: impact analysis not recorded",
+    "journey:teacher.daily_rollcall: open question: How should multi-period secondary school attendance differentiate from primary morning roll call?",
+    "journey:teacher.daily_rollcall: planning status not declared",
+    "journey:teacher.daily_rollcall: platform analysis not recorded",
+    "journey:teacher.daily_rollcall: source observations not recorded",
+    "journey:teacher.student_attunement: impact analysis not recorded",
+    "journey:teacher.student_attunement: open question: What sensitivity thresholds should trigger proactive guidance prompts for the educator?",
+    "journey:teacher.student_attunement: planning status not declared",
+    "journey:teacher.student_attunement: platform analysis not recorded",
+    "journey:teacher.student_attunement: source observations not recorded",
+    "requirement:ai.classroom_context_safety: classification not declared",
+    "requirement:ai.human_review_gate: classification not declared",
+    "requirement:ai.incognito_privacy_boundary: classification not declared",
+    "requirement:api.explicit_failure: classification not declared",
+    "requirement:school.authority: classification not declared",
+    "scenario:admin.school_connection.authority_failure: no evidence",
+    "scenario:admin.school_connection.authority_failure: no linked binding",
+    "scenario:admin.school_connection.authority_failure: no linked requirement",
+    "scenario:admin.school_connection.existing_scope: no evidence",
+    "scenario:admin.school_connection.existing_scope: no linked binding",
+    "scenario:admin.school_connection.existing_scope: no linked requirement",
+    "scenario:admin.school_connection.first_visit: no evidence",
+    "scenario:admin.school_connection.first_visit: no linked binding",
+    "scenario:admin.school_connection.first_visit: no linked requirement",
+    "scenario:admin.school_connection.optional_contact: no evidence",
+    "scenario:admin.school_connection.optional_contact: no linked binding",
+    "scenario:admin.school_connection.optional_contact: no linked requirement",
+    "scenario:admin.school_connection.pending_request: no evidence",
+    "scenario:admin.school_connection.pending_request: no linked binding",
+    "scenario:admin.school_connection.pending_request: no linked requirement",
+    "scenario:admin.school_connection.return_to_self: no evidence",
+    "scenario:admin.school_connection.return_to_self: no linked binding",
+    "scenario:admin.school_connection.return_to_self: no linked requirement",
+    "scenario:ai.autonomous_agent_approval: no evidence",
+    "scenario:ai.autonomous_agent_approval: no linked binding",
+    "scenario:ai.autonomous_agent_approval: no linked requirement",
+    "scenario:ai.fab_ephemeral_chat: no evidence",
+    "scenario:ai.fab_ephemeral_chat: no linked binding",
+    "scenario:ai.fab_ephemeral_chat: no linked requirement",
+    "scenario:api.ai_cancel: no evidence",
+    "scenario:api.ai_cancel: no linked implementation binding",
+    "scenario:api.ai_cancel: no linked requirement",
+    "scenario:api.compose_invalid: G1 evidence unverifiable",
+    "scenario:api.compose_invalid: no linked requirement",
+    "scenario:api.compose_valid: G1 evidence unverifiable",
+    "scenario:api.compose_valid: no linked requirement",
+    "scenario:api.daily_content_read: G1 evidence unverifiable",
+    "scenario:api.daily_content_read: no linked requirement",
+    "scenario:api.daily_content_reject: G1 evidence unverifiable",
+    "scenario:api.daily_content_reject: no linked requirement",
+    "scenario:api.entitlement: no evidence",
+    "scenario:api.entitlement: no linked implementation binding",
+    "scenario:api.entitlement: no linked requirement",
+    "scenario:api.http: no evidence",
+    "scenario:api.http: no linked implementation binding",
+    "scenario:api.http: no linked requirement",
+    "scenario:api.inventory_inspect: G1 evidence unverifiable",
+    "scenario:api.inventory_inspect: no linked requirement",
+    "scenario:api.mcp: G1 evidence unverifiable",
+    "scenario:api.mcp: no linked implementation binding",
+    "scenario:api.mcp: no linked requirement",
+    "scenario:api.native_failure: G1 evidence unverifiable",
+    "scenario:api.native_failure: no linked implementation binding",
+    "scenario:api.native_failure: no linked requirement",
+    "scenario:api.onboarding_bootstrap: no evidence",
+    "scenario:api.onboarding_bootstrap: no linked requirement",
+    "scenario:api.onboarding_reject: G1 evidence unverifiable",
+    "scenario:api.onboarding_reject: no linked requirement",
+    "scenario:api.privacy_owner: G1 evidence unverifiable",
+    "scenario:api.privacy_owner: no linked requirement",
+    "scenario:api.privacy_reject: no evidence",
+    "scenario:api.privacy_reject: no linked implementation binding",
+    "scenario:api.privacy_reject: no linked requirement",
+    "scenario:api.retry: no evidence",
+    "scenario:api.retry: no linked implementation binding",
+    "scenario:api.retry: no linked requirement",
+    "scenario:api.reward_commit: no evidence",
+    "scenario:api.reward_commit: no linked requirement",
+    "scenario:api.reward_unavailable: G1 evidence unverifiable",
+    "scenario:api.reward_unavailable: G2 evidence unverifiable",
+    "scenario:classroom.teacher_first_workspace.existing: no evidence",
+    "scenario:classroom.teacher_first_workspace.existing: no linked binding",
+    "scenario:classroom.teacher_first_workspace.existing: no linked requirement",
+    "scenario:classroom.teacher_first_workspace.failure: no evidence",
+    "scenario:classroom.teacher_first_workspace.failure: no linked binding",
+    "scenario:classroom.teacher_first_workspace.failure: no linked requirement",
+    "scenario:classroom.teacher_first_workspace.first_visit: no evidence",
+    "scenario:classroom.teacher_first_workspace.first_visit: no linked binding",
+    "scenario:classroom.teacher_first_workspace.first_visit: no linked requirement",
+    "scenario:classroom.teacher_first_workspace.provision: no evidence",
+    "scenario:classroom.teacher_first_workspace.provision: no linked binding",
+    "scenario:classroom.teacher_first_workspace.provision: no linked requirement",
+    "scenario:classroom.teacher_first_workspace.self: no evidence",
+    "scenario:classroom.teacher_first_workspace.self: no linked binding",
+    "scenario:classroom.teacher_first_workspace.self: no linked requirement",
+    "scenario:founder.inspect_school_fleet: no evidence",
+    "scenario:founder.inspect_school_fleet: no linked binding",
+    "scenario:founder.inspect_school_fleet: no linked requirement",
+    "scenario:founder.quick_capture_and_complete: no evidence",
+    "scenario:founder.quick_capture_and_complete: no linked binding",
+    "scenario:founder.quick_capture_and_complete: no linked requirement",
+    "scenario:pjc.author: no evidence",
+    "scenario:pjc.query: no evidence",
+    "scenario:pjc.trace: no evidence",
+    "scenario:pjc.validate: no evidence",
+    "scenario:principal.activate_term_cycle: no evidence",
+    "scenario:principal.activate_term_cycle: no linked binding",
+    "scenario:principal.activate_term_cycle: no linked requirement",
+    "scenario:principal.audit_daily_attendance: no evidence",
+    "scenario:principal.audit_daily_attendance: no linked binding",
+    "scenario:principal.audit_daily_attendance: no linked requirement",
+    "scenario:school.accept: no evidence",
+    "scenario:school.accept: no linked binding",
+    "scenario:school.accept: no linked requirement",
+    "scenario:school.invalid: no evidence",
+    "scenario:school.invalid: no linked binding",
+    "scenario:school.invalid: no linked requirement",
+    "scenario:school.invite: no evidence",
+    "scenario:school.invite: no linked binding",
+    "scenario:school.invite: no linked requirement",
+    "scenario:student.calming_reset: no evidence",
+    "scenario:student.calming_reset: no linked binding",
+    "scenario:student.calming_reset: no linked requirement",
+    "scenario:student.check_daily_periods: no evidence",
+    "scenario:student.check_daily_periods: no linked binding",
+    "scenario:student.check_daily_periods: no linked requirement",
+    "scenario:student.plan_tomorrow_and_complete: no evidence",
+    "scenario:student.plan_tomorrow_and_complete: no linked binding",
+    "scenario:student.plan_tomorrow_and_complete: no linked requirement",
+    "scenario:teacher.complete_daily_rollcall: no evidence",
+    "scenario:teacher.complete_daily_rollcall: no linked binding",
+    "scenario:teacher.complete_daily_rollcall: no linked requirement",
+    "scenario:teacher.inspect_learner_radar: no evidence",
+    "scenario:teacher.inspect_learner_radar: no linked binding",
+    "scenario:teacher.inspect_learner_radar: no linked requirement"
+  ],
+  "bindings": [
+    {
+      "id": "binding:pjc.schema",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:pjc.checker",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:pjc.cli",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:pjc.public_api",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:pjc.flow_registry",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:pjc.guide",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:pjc.skill",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:pjc.tests",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:pjc.cli_tests",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:school.invite_repository",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_inventory",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_inspector",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_inventory_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_inspector_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.onboarding_contract",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.onboarding_handler",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.onboarding_client",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.onboarding_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.onboarding_client_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.daily_content_contract",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.daily_content_handler",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.daily_content_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.daily_content_contract_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.privacy_contract",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.privacy_handler",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.privacy_policy",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.privacy_api_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.privacy_policy_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.privacy_contract_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_conversion",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.native_client",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.native_admission",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.regular_rewards_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.readiness",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.authority_failure",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.http",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.mcp_door",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.mcp",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.entitlement",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.ai_cancel",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.retry",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.database_proof",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.rewards",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.rewards_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.rewards_pg",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.rewards_storage",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.guide",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:admin.school_connection.web-0",
+      "result": "unknown",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:admin.school_connection.mobile-1",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:admin.school_connection.api-2",
+      "result": "unknown",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:admin.school_connection.data-3",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:admin.school_connection.authorization-4",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:classroom.teacher_first_workspace.web-0",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:classroom.teacher_first_workspace.mobile-1",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:classroom.teacher_first_workspace.api-2",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:classroom.teacher_first_workspace.data-3",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:classroom.teacher_first_workspace.authorization-4",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:ai.flow_dag",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:ai.screen_shared",
+      "result": "missing",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:founder.route_mobile",
+      "result": "present_unverified",
+      "route": "unverifiable",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:founder.dashboard_screen",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:founder.todos_hook",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:founder.stats_bridge",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:principal.web_dashboard",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:principal.term_setup_flow",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:teacher.attendance_screen",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:teacher.rollcall_flow",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:teacher.holistic_insights",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:student.tomorrow_prep_component",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:student.timetable_hook",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:student.breath_guide",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    }
+  ],
+  "evidence": [
+    {
+      "scenario": "scenario:pjc.author",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:pjc.query",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:pjc.trace",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:pjc.validate",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:school.invite",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.onboarding_bootstrap",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.onboarding_reject",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.onboarding_reject_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-onboarding-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "In-process transport and synthetic storage errors"
+              ],
+              "limitations": "Full API run recorded 1167 successful assertions and six existing skips. Includes unauthenticated bootstrap, privileged-capacity rejection, storage failure and strict completion identity rejection. Core recovery cases use real SDK errors but substituted command transport in a separate 22-assertion report. No live transaction rollback, committed idempotency, concurrency or browser recovery proof; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_onboarding_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.daily_content_read",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.daily_content_read_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-daily-content-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "In-process HTTP transport"
+              ],
+              "limitations": "Full API suite: 1147 assertions passed and six existing skips. Includes both namespaces, driver-date/nullable-author normalization, separate query values and legitimate empty content. Real SDK and Cedar WASM are used. Does not prove live database execution, RLS, all-role access or deployment. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_daily_content_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.daily_content_reject",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.daily_content_reject_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-daily-content-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "Injected malformed query results and storage exceptions"
+              ],
+              "limitations": "Included in the 1147-assertion full API run: invalid calendar dates, SQL-like date text, invalid/oversized lookbacks, non-array results, invalid stored fields and storage exceptions reject with safe native errors. Does not prove live database failures or resistance to all injection paths. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_daily_content_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.privacy_reject",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.privacy_owner",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.privacy_api_g1_20261030",
+              "revision": "1e0d1c76a6e5fa80768f2054fc08f96801c983d7+working-tree:native-privacy-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "In-process HTTP transport"
+              ],
+              "limitations": "42 focused API assertions passed across privacy, entitlement and contract conversion. Privacy checks use the real installed Cedar WASM, account-bound SQL parameters, canonical envelopes, empty ledger and malformed storage rejection. Does not prove live database RLS, committed writes, deployment or all-domain typing. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_privacy_focused_20261030.log"
+            },
+            {
+              "id": "evidence:api.privacy_policy_g1_20261030",
+              "revision": "1e0d1c76a6e5fa80768f2054fc08f96801c983d7+working-tree:native-privacy-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, installed Cedar WASM",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic principal and resource attributes",
+                "Filesystem failures injected in startup tests"
+              ],
+              "limitations": "24 policy assertions passed. Includes member, teacher, principal and admin own-ledger decisions, cross-owner and missing-owner denial, and append-only restrictions. No live database or identity proof. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-packages_policies-native_privacy_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.native_failure",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.native_failure_g1_20261030",
+              "revision": "e1b0b9d0bf1f311604d01ecc90d9fff6a1c65628+working-tree:native-v2-errors-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "In-process fetch instead of deployed HTTP transport"
+              ],
+              "limitations": "Full suite: 1105 assertions passed, six existing skips. Native single/batch admission rejection, reward storage failures and corrupt snapshots are included. Does not establish production, database authority, concurrent writes or complete application coverage. Uncommitted working-tree evidence; no G0 scenario promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_v2_stable_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.reward_commit",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.reward_unavailable",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.reward_unavailable_g1",
+              "revision": "3533705df46b236a645090fd84a7ca084dc90644+working-tree:reward-hardening-20261029",
+              "environment": "Windows Node 24.22.2, Vitest 5.0.5",
+              "result": "passed",
+              "substitutions": [
+                "Database transactions and policy outcomes",
+                "Provider verification-key fetch"
+              ],
+              "limitations": "26 reward assertions within 43 reward/readiness/retention assertions. Real ECDSA with synthetic keys. Does not prove real database rollback, real provider delivery or production behavior. Evidence describes uncommitted working-tree source; G0 scenario evidence is not yet recorded, so no tier promotion is claimed.",
+              "reference": "reports/run-apps_sanctuary-api-reward_boundaries_final.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.reward_unavailable_g2",
+              "revision": "3533705df46b236a645090fd84a7ca084dc90644+working-tree:reward-hardening-20261029",
+              "environment": "Windows Node 24.22.2, Vitest 5.0.5, authorized shared PostgreSQL",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic provider signing key",
+                "Transaction completion intercepted to force rollback"
+              ],
+              "limitations": "Two reward assertions within five API database assertions. Observes receipt and balance writes together, then forces rollback and verifies absence of committed changes. Also proves owner create denial through the real ORM policy client. Does not prove successful provider delivery, contention, complete RLS isolation or production canary behavior. G0 scenario evidence remains unrecorded; no skipped-level promotion is claimed.",
+              "reference": "reports/run-apps_sanctuary-api-reward_policy_pg_final.log"
+            }
+          ]
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.http",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.mcp",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.mcp_g1_20261030",
+              "revision": "3533705df46b236a645090fd84a7ca084dc90644+working-tree:mcp-schema-cache-20261030",
+              "environment": "Windows Node 24.22.2, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "Domain procedures in the focused MCP tests"
+              ],
+              "limitations": "Full API run: 1081 assertions passed and six existing skips. MCP tests exercise real SDK dispatch, separate input/output conversion, metadata reuse, actor context isolation and registration failure cleanup. Real-router catalog and unknown-tool deadlines did not fail. Does not prove sustained production load, real identity or real Cedar/database authorization. Uncommitted working-tree evidence; no G0 scenario result or higher-tier promotion is claimed.",
+              "reference": "reports/run-apps_sanctuary-api-mcp_final_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.entitlement",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.ai_cancel",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.retry",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.compose_valid",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.compose_valid_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic route declarations and procedure handlers",
+                "In-process SDK HTTP transport"
+              ],
+              "limitations": "46 converter assertions within the 1162-assertion full API run; six existing skips. Covers schema identity/refinements, errors, native contracts, stable instances, source replacement, router own properties and real SDK 201/202/204 responses. Does not prove deployed feature behavior, database authorization or exact legacy handler inference. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-eager_contracts_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.inventory_inspect",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.inventory_inspect_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:contract-inventory-20261030",
+              "environment": "Windows Node, node:test, installed oRPC 2.0.0-beta.46 and Zod 4.6.7",
+              "result": "passed",
+              "substitutions": [
+                "Isolated output fixtures; application procedures are not executed"
+              ],
+              "limitations": "Three CLI scenarios inspect the actual local manually registered sources and test deterministic JSON, modified/ignored report preservation and invalid flags. Inspector fixtures separately record five assertions within a 14-assertion core report. Does not prove exhaustive runtime inventory, live authorization/persistence, or sandboxed output confinement. Uncommitted working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-api_contract_inventory_cli_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.compose_invalid",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.compose_invalid_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic malformed route declarations"
+              ],
+              "limitations": "Included in 46 converter assertions: malformed roots/members, missing/invalid schemas, invalid response keys/method/path/channel, obsolete error status fields and unsupported add_on scope reject during composition. Does not prove rejection of every possible malformed graph, native authority metadata or production deployment. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-eager_contracts_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:school.accept",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:school.invalid",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:admin.school_connection.first_visit",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:admin.school_connection.existing_scope",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:admin.school_connection.authority_failure",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:admin.school_connection.pending_request",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:admin.school_connection.optional_contact",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:admin.school_connection.return_to_self",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:classroom.teacher_first_workspace.existing",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:classroom.teacher_first_workspace.first_visit",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:classroom.teacher_first_workspace.failure",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:classroom.teacher_first_workspace.self",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:classroom.teacher_first_workspace.provision",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:ai.fab_ephemeral_chat",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:ai.autonomous_agent_approval",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:founder.quick_capture_and_complete",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:founder.inspect_school_fleet",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:principal.audit_daily_attendance",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:principal.activate_term_cycle",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:teacher.complete_daily_rollcall",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:teacher.inspect_learner_radar",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:student.plan_tomorrow_and_complete",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:student.check_daily_periods",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:student.calming_reset",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    }
+  ],
+  "disclaimer": "Presence does not establish correct behavior or verified evidence."
+}

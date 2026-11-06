@@ -1,16 +1,12 @@
 'use client';
 
 import {
-  activationAtLevel,
-  activationForMode,
   GURUDEVI_WEB_HOST,
   hostWith,
   resolveVergerConfig,
-  resolveVergerLevel,
   resolveVergerPolicy,
   resolveVergerLaunch,
   type RuntimeMode,
-  VERGER_LEVEL_KEY,
   VERGER_LAB_CONFIG_KEY,
   VERGER_LAB_POLICY_KEY,
   VERGER_LAB_PATCH_KEY,
@@ -32,17 +28,6 @@ declare global {
   var __GURUDEVI_VERGER_ACTIVATION__: unknown;
   var __GURUDEVI_VERGER_CONFIG__: unknown;
   var __GURUDEVI_VERGER_POLICY__: unknown;
-  var __GURUDEVI_VERGER_LEVEL__: unknown;
-}
-
-/** This browser's own level switch (`VERGER_LEVEL_KEY`, one word); unreadable is no switch. */
-function readLevelSwitch(): string | undefined {
-  if (typeof window === 'undefined') return undefined;
-  try {
-    return window.localStorage.getItem(VERGER_LEVEL_KEY) ?? undefined;
-  } catch {
-    return undefined;
-  }
 }
 
 /**
@@ -82,18 +67,6 @@ function ScreenAnnouncer() {
 }
 
 export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }>) {
-  // One verger at two levels, as on the phone: exhaustive in development or on a switched
-  // browser (every sensor, full observation, the session recorded); normal otherwise.
-  const [level] = useState(() => {
-    const read = resolveVergerLevel({
-      dev,
-      device: readLevelSwitch(),
-      remote: typeof window === 'undefined' ? undefined : globalThis.__GURUDEVI_VERGER_LEVEL__,
-    });
-    if (read.rejected) console.warn('[verger] level choice ignored:', read.rejected);
-    return read.level;
-  });
-  const exhaustive = level === 'exhaustive';
   // Thresholds hold whether verger runs or not (the floors read them): the host's, the lab's,
   // then remote, each refused whole if invalid.
   const [host] = useState<VergerHost>(() => {
@@ -131,13 +104,7 @@ export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }
     });
     if (read.rejected) console.warn('[verger] remote activation ignored:', read.rejected);
     if (read.rejectedLocal) console.warn('[verger] lab patch ignored:', read.rejectedLocal);
-    if (read.mode === 'off' || !exhaustive)
-      return { mode: read.mode, activation: read.activation ?? undefined };
-    // The level widens what verger senses and keeps, never what it may do.
-    return {
-      mode: read.mode,
-      activation: activationAtLevel(read.activation ?? activationForMode(read.mode), 'exhaustive'),
-    };
+    return { mode: read.mode, activation: read.activation ?? undefined };
   });
   const fidelity = useWebFidelity();
   return (
@@ -148,7 +115,7 @@ export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }
       fidelity={fidelity}
       activation={launch.activation}
       release={process.env.NEXT_PUBLIC_GURUDEVI_RELEASE ?? 'web'}
-      recordEvents={exhaustive ? VERGER_LAB_RECORD_EVENTS : undefined}
+      recordEvents={dev ? VERGER_LAB_RECORD_EVENTS : undefined}
       killed={killSwitchOn}
     >
       <ScreenAnnouncer />

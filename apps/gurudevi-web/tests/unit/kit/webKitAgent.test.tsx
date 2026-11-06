@@ -1,5 +1,6 @@
-import {
+﻿import {
   ActionFab,
+  FabMenu,
   ApprovalCard,
   ArtifactCard,
   Citation,
@@ -15,7 +16,17 @@ import {
 import { resolveWorld, worldCssVariables } from '@repo/ui/theme';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
+    this.setAttribute('open', '');
+  };
+  HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
+    this.removeAttribute('open');
+    this.dispatchEvent(new Event('close'));
+  };
+});
 
 describe('web kit: conversation', () => {
   it('a bubble is a named group, busy while streaming, said once when complete', () => {
@@ -163,5 +174,32 @@ describe('web kit: agent cards', () => {
     const vars = worldCssVariables(w);
     expect(vars['--w-msg-self-bg']).toBe(w.recipes.message.self.fill);
     expect(vars['--w-agent-failed']).toBe(w.recipes.message.state.failed);
+  });
+
+  it('FabMenu renders grouped actions and closes when an action is selected', async () => {
+    const onAction = vi.fn();
+    const onClose = vi.fn();
+    render(
+      <FabMenu
+        open={true}
+        onClose={onClose}
+        label="Companion & Quick Actions"
+        actions={[
+          {
+            key: 'tutii',
+            label: 'Tutii AI Companion',
+            hint: 'Direct mentor conversation',
+            tone: 'lamp',
+            group: 'Tutii & Intelligence',
+            onPress: onAction,
+          },
+        ]}
+      />,
+    );
+    expect(screen.getByText('Companion & Quick Actions')).toBeTruthy();
+    expect(screen.getByText('Tutii & Intelligence')).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: /Tutii AI Companion/ }));
+    expect(onClose).toHaveBeenCalled();
+    expect(onAction).toHaveBeenCalled();
   });
 });

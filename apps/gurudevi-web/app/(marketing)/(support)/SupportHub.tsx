@@ -138,8 +138,10 @@ export function SupportHub({
   useEffect(() => {
     void runDiagnostics();
 
-    const handleOnline = () => setDiagnostics((prev) => (prev ? { ...prev, isOnline: true } : null));
-    const handleOffline = () => setDiagnostics((prev) => (prev ? { ...prev, isOnline: false } : null));
+    const handleOnline = () =>
+      setDiagnostics((prev) => (prev ? { ...prev, isOnline: true } : null));
+    const handleOffline = () =>
+      setDiagnostics((prev) => (prev ? { ...prev, isOnline: false } : null));
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -211,10 +213,14 @@ export function SupportHub({
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <span className="flex h-3 w-3 relative">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${noticeStyle.dot}`} />
+                <span
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${noticeStyle.dot}`}
+                />
                 <span className={`relative inline-flex rounded-full h-3 w-3 ${noticeStyle.dot}`} />
               </span>
-              <span className={`rounded-full px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider ${noticeStyle.badgeBg}`}>
+              <span
+                className={`rounded-full px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider ${noticeStyle.badgeBg}`}
+              >
                 {config.badge}
               </span>
             </div>
@@ -226,8 +232,16 @@ export function SupportHub({
             </p>
           </div>
 
-          {config.bannerNotice.actionHref && (
-            <div className="shrink-0">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Link
+              href="/intro"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-ink/20 bg-white/80 px-5 py-2.5 font-sans text-xs font-bold text-ink hover:bg-white hover:border-ink transition-all shadow-xs"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <span>Walk Through with Tutii (1 min)</span>
+            </Link>
+
+            {config.bannerNotice.actionHref && (
               <a
                 href={config.bannerNotice.actionHref}
                 target={config.bannerNotice.isExternal ? '_blank' : undefined}
@@ -236,8 +250,8 @@ export function SupportHub({
               >
                 {config.bannerNotice.actionLabel ?? 'Open Surface ↗'}
               </a>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -265,12 +279,8 @@ export function SupportHub({
                   <span className="font-mono text-2xl font-bold text-lotus/80">
                     {flow.stepNumber}
                   </span>
-                  <h4 className="mt-3 text-lg font-medium tracking-tight text-ink">
-                    {flow.title}
-                  </h4>
-                  <p className="mt-2 text-xs leading-relaxed text-ink-soft">
-                    {flow.description}
-                  </p>
+                  <h4 className="mt-3 text-lg font-medium tracking-tight text-ink">{flow.title}</h4>
+                  <p className="mt-2 text-xs leading-relaxed text-ink-soft">{flow.description}</p>
                 </div>
 
                 <div className="mt-6 border-t border-line/60 pt-4">
@@ -291,10 +301,7 @@ export function SupportHub({
       )}
 
       {/* Main Tab Navigation */}
-      <nav
-        aria-label="Support sections"
-        className="flex flex-wrap gap-2 border-b border-line pb-4"
-      >
+      <nav aria-label="Support sections" className="flex flex-wrap gap-2 border-b border-line pb-4">
         <button
           type="button"
           onClick={() => setActiveTab('guides')}
@@ -373,7 +380,8 @@ export function SupportHub({
             <div>
               <h3 className="text-3xl font-medium tracking-tight">Ecology Feature Guides</h3>
               <p className="mt-2 text-ink-soft">
-                Learn how the components operate, how data is safeguarded, and how offline sync works.
+                Learn how the components operate, how data is safeguarded, and how offline sync
+                works.
               </p>
             </div>
 
@@ -428,7 +436,8 @@ export function SupportHub({
                 </div>
                 <p className="mt-2 text-sm text-ink-soft">
                   Gurudevi separates guest previewing from living institutional workspaces to ensure
-                  teachers and schools can evaluate features freely before undertaking school-wide setup.
+                  teachers and schools can evaluate features freely before undertaking school-wide
+                  setup.
                 </p>
               </div>
 
@@ -887,8 +896,8 @@ export function SupportHub({
                   </span>
                 </div>
                 <p className="mt-3 text-xs text-ink-soft">
-                  Determines whether routing serves public marketing, guest explore, or authenticated
-                  sanctuary surfaces.
+                  Determines whether routing serves public marketing, guest explore, or
+                  authenticated sanctuary surfaces.
                 </p>
               </div>
 
@@ -962,7 +971,8 @@ export function SupportHub({
                 <h4 className="text-xl font-medium tracking-tight">Need deep server telemetry?</h4>
               </div>
               <p className="mt-1 text-sm text-ink-soft">
-                View real-time API latency probes, database health, and policy engine operational status.
+                View real-time API latency probes, database health, and policy engine operational
+                status.
               </p>
             </div>
             <Link

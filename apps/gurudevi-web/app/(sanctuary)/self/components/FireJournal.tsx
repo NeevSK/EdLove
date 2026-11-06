@@ -6,7 +6,7 @@ import { type Dispatch, type FormEvent, type SetStateAction, useState } from 're
 import { useTranslation } from '@/lib/i18n';
 import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';
 import type { BurnedJournalEntry } from '../../../../lib/sanctuary/selfJournal';
-import { LivingCard } from '../../components/LivingCard';
+import { Surface } from '@repo/ui/components/web';
 import styles from '../self-floor.module.css';
 import { EmberCanvasOverlay } from './EmberCanvasOverlay';
 import { formatDate } from './formatDate';
@@ -97,10 +97,9 @@ export function FireJournal({
       </header>
       <div className={styles.grid}>
         <section className={styles.alcove} aria-labelledby="fire-journal-compose-title">
-          <LivingCard
-            variant="ember"
-            elevation="raised"
-            style={{ padding: 'clamp(1.25rem, 3vw, 2rem)' }}
+          <Surface
+            tone="raised"
+            style={{ padding: 'clamp(1.25rem, 3vw, 2rem)', borderRadius: 'var(--w-surface-raised-radius)' }}
           >
             <p className={styles.eyebrow}>
               {isReview ? 'Historical Day' : isPlan ? 'Horizon' : 'Reflection'}
@@ -287,14 +286,13 @@ export function FireJournal({
                 {screen.error}
               </p>
             ) : null}
-          </LivingCard>
+          </Surface>
         </section>
 
         <section className={styles.history} aria-labelledby="fire-journal-history-title">
-          <LivingCard
-            variant="vellum"
-            elevation="flat"
-            style={{ padding: 'clamp(1.25rem, 3vw, 1.75rem)' }}
+          <Surface
+            tone="inset"
+            style={{ padding: 'clamp(1.25rem, 3vw, 1.75rem)', borderRadius: 'var(--w-surface-raised-radius)' }}
           >
             <div className={styles.historyHeader}>
               <div>
@@ -334,7 +332,7 @@ export function FireJournal({
                 ))}
               </ol>
             </FeatureStateBoundary>
-          </LivingCard>
+          </Surface>
         </section>
       </div>
     </>

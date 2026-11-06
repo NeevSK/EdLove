@@ -1,11 +1,11 @@
 {
   "version": "1.0.0",
-  "timestamp": "2026-10-28T15:44:07.581Z",
-  "elapsedMs": 270,
+  "timestamp": "2026-10-31T07:44:27.169Z",
+  "elapsedMs": 261,
   "inventory": {
     "totalWebRoutes": 76,
     "totalMobileRoutes": 92,
-    "modularFlowDefinitions": 11,
+    "modularFlowDefinitions": 16,
     "declaredFlowFiles": 1
   },
   "sampleRoutes": {

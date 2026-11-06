@@ -1,6 +1,9 @@
+﻿import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost } from '../../../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../../../lib/sanctuary/authorizedEntry';
+import { resolveSanctuaryDevSession } from '../../../../../lib/sanctuary/devSession';
 import { createServerSupabaseClient } from '../../../../../lib/supabase/server';
 import { signInPath } from '../../../auth/routeSafety';
 import { SanctuaryShell } from '../../../components/SanctuaryShell';
@@ -10,18 +13,77 @@ export const metadata = { title: 'Discussion Circle | Gurudevi Sanctuary' };
 
 interface GroupChatPageProps {
   params: Promise<{ groupId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function GroupChatPage({ params }: GroupChatPageProps) {
+export default async function GroupChatPage({ params, searchParams }: GroupChatPageProps) {
   const { groupId } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const requestHeaders = await headers();
+  const cookieStore = await cookies();
+  const host = requestHeaders.get('host') ?? '';
+  const isExplore =
+    classifyGurudeviHost(host) === 'explore' ||
+    resolvedSearchParams?.mode === 'explore' ||
+    resolvedSearchParams?.surface === 'explore';
+
+  if (isExplore) {
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <GroupChatFloor
+          groupId={groupId}
+          displayName="Guest Explorer"
+          capacity="guest"
+        />
+      </SanctuaryShell>
+    );
+  }
+
+  const devSession = resolveSanctuaryDevSession({
+    searchParams: resolvedSearchParams as any,
+    host,
+    cookieStore,
+  });
+
+  if (devSession.isDevSession) {
+    return (
+      <SanctuaryShell
+        displayName={devSession.displayName}
+        isDevPreview
+        previewCapacity={devSession.capacity}
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={false}
+      >
+        <GroupChatFloor
+          groupId={groupId}
+          displayName={devSession.displayName}
+          capacity={devSession.capacity}
+        />
+      </SanctuaryShell>
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <ChatState
-        displayName="Explorer"
-        title="Discussion circles are unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <GroupChatFloor
+          groupId={groupId}
+          displayName="Guest Explorer"
+          capacity="guest"
+        />
+      </SanctuaryShell>
     );
   }
 

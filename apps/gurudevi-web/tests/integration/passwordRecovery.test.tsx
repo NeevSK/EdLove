@@ -23,7 +23,6 @@ vi.mock('@/lib/sanctuary/securityClient', () => ({
   verifySecurityTotp: mocks.verify,
   changeSecurityPassword: mocks.change,
   requestSecurityPasswordCode: mocks.request,
-  unlinkSecurityCredential: vi.fn(),
 }));
 vi.mock('@/lib/supabase/browser', () => ({
   createBrowserSupabaseClient: () => ({

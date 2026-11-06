@@ -1,4 +1,4 @@
-import { Group, Inline, Row, Stack } from '@repo/ui/components/web';
+import { Group, Inline, LivingGround, Row, Stack } from '@repo/ui/components/web';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -45,5 +45,19 @@ describe('web kit: Group', () => {
       </Group>,
     );
     expect(screen.getByRole('group').hasAttribute('aria-labelledby')).toBe(false);
+  });
+});
+
+describe('web kit: LivingGround', () => {
+  it('renders with gd-living-ground class and default canopy atmosphere', () => {
+    render(
+      <LivingGround data-testid="lg">
+        <div>Content</div>
+      </LivingGround>,
+    );
+    const lg = screen.getByTestId('lg');
+    expect(lg.className).toContain('gd-living-ground');
+    expect(lg.dataset.atmosphere).toBe('canopy');
+    expect(lg.dataset.dither).toBe('true');
   });
 });

@@ -61,7 +61,8 @@ The detailed mobile source inventory remains in [coverage and limits](../../../.
    by the reducer. Record fallback quality, freshness, source resolution and confidence. Only
    add finer control levels or workload levers after measuring that they provide a distinct,
    useful tradeoff and have a consumer; keep thresholds configurable and provisional.
-5. **P2 — experiment and comparison.** Make dev-only isolated shadow controls and the existing
+5. **P2 — experiment and comparison.** (2026-10-29: the isolated shadow lab became the exhaustive
+   level, `resolveVergerLevel`.) Make dev-only isolated shadow controls and the existing
    activation/tuning, replay and export discoverable with explicit mode and reset semantics.
    Record an immutable session manifest and preserve normal recovery and kill-switch behavior.
    Run identical off/shadow/active journeys on real phones; measure input, frame, CPU, memory,

@@ -1,13 +1,12 @@
 import { getOrCreateLocalGuestSession } from '@repo/core/native/localGuestSession';
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { SanctuaryWelcomeScreen } from '@repo/ui/screens';
 import { ObserveInteractiveMarker } from 'expo-observe';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
-import { Platform, View } from 'react-native';
-import { fireflyPrototypeArtwork } from '@/brand/mascotArtwork';
+import { View } from 'react-native';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
+import { WelcomeScreen } from '@/screens/WelcomeScreen';
 import { DevelopmentScreenInteractiveMarker } from '@/telemetry/DevelopmentScreenInteractiveMarker';
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -53,10 +52,8 @@ export default function WelcomeRoute() {
   return (
     <ErrorBoundary name="WelcomeRoute">
       <Suspense fallback={<Fallback />}>
-        <SanctuaryWelcomeScreen
-          exploreArtwork={fireflyPrototypeArtwork}
+        <WelcomeScreen
           onLogin={handleLogin}
-          onGuest={handleGuest}
           onStartGuest={handleStartGuest}
         />
         <DevelopmentScreenInteractiveMarker screen="welcome" />

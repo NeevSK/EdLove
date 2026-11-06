@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { DiurnalThemeToggle } from '../components/DiurnalThemeToggle';
+import { LivingGround } from '@repo/ui/components/web';
 import { GatewayFooter } from '../components/GatewayFooter';
 import { GatewayHeader } from '../components/GatewayHeader';
 import { OnboardingForm } from './OnboardingForm';
@@ -13,15 +13,12 @@ export const metadata: Metadata = {
 
 export default function OnboardingPage() {
   return (
-    <div className={styles.page}>
+    <LivingGround atmosphere="canopy" dither className={styles.page}>
       <GatewayHeader
-        actions={
-          <>
-            <DiurnalThemeToggle />
-            <Link className={styles.backLink} href="/welcome">
-              Back to welcome
-            </Link>
-          </>
+        extraActions={
+          <Link className={styles.backLink} href="/welcome">
+            Back to welcome
+          </Link>
         }
       />
 
@@ -32,6 +29,6 @@ export default function OnboardingPage() {
       </main>
 
       <GatewayFooter />
-    </div>
+    </LivingGround>
   );
 }

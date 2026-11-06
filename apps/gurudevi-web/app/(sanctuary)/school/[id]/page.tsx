@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { schoolHexagonalService } from '@/lib/domain/adapters/school/schoolHexagonalService';
+import { schoolAdapter } from '@/lib/domain/adapters/school/school.adapter';
 import { SchoolPublicFloor } from './SchoolPublicFloor';
 
 interface SchoolPublicPageProps {
@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: SchoolPublicPageProps): Promi
   const resolvedParams = await params;
   const rawId = resolvedParams.id ?? '';
   const cleanId = rawId.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
-  const profile = await schoolHexagonalService.getSchoolProfile(cleanId);
+  const profile = await schoolAdapter.getSchoolProfile(cleanId);
 
   return {
     title: `${profile.fact.name} | Official Institutional Website`,

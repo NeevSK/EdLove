@@ -1,0 +1,2880 @@
+{
+  "tools": [
+    {
+      "id": "file-archetypes",
+      "name": "Canonical 12 File Archetypes & Taxonomy Sentinel",
+      "script": "scripts/audit-canonical-file-types.mjs",
+      "category": "File Taxonomy",
+      "purpose": "Categorizes all 630 files in packages/core into the 12 Canonical Archetypes (Schema, Type, Port, Entity, Service, Adapter, Repository, Store, Slice, Hook, Flow, Barrel) to eliminate ambiguous Vibe Coder suffixes.",
+      "command": "node scripts/audit-canonical-file-types.mjs",
+      "artifacts": [
+        "reports/canonical-file-types-audit.json",
+        "docs/architecture/2026-11-01-canonical-file-archetypes-and-first-principles.md"
+      ],
+      "keyMetric": "12 Archetypes, 559/630 Core Files Classified (89%)"
+    },
+    {
+      "id": "hierarchy",
+      "name": "Canonical 7-Tier Archetype & Invariant Sentinel",
+      "script": "scripts/audit-archetype-hierarchy.mjs",
+      "category": "Architectural Hierarchy",
+      "purpose": "Enforces the 7 Clean/Hexagonal Architectural Tiers (Schemas, Ports, Logic, Adapters, Stores, Hooks, UI). Detects Dependency Inversion violations (e.g. stores directly importing adapters) and schema runtime parsing in hooks.",
+      "command": "node scripts/audit-archetype-hierarchy.mjs",
+      "artifacts": [
+        "reports/archetype-hierarchy-audit.json",
+        "docs/architecture/2026-11-01-architectural-hierarchy-and-archetypes.md"
+      ],
+      "keyMetric": "7 Tiers, 11 Adapter Couplings, 2 Runtime Schemas in Hooks"
+    },
+    {
+      "id": "code-erd",
+      "name": "Code-ERD & Topological Layer Engine",
+      "script": "scripts/code-erd.mjs",
+      "category": "Topology & AST",
+      "purpose": "Discovers the full transitive dependency graph from any root component, extracts internal functions/types, and computes topological layers from bedrock leaves (out-degree 0).",
+      "command": "node scripts/code-erd.mjs --target <root_component>",
+      "artifacts": [
+        "reports/code-erd-explorer.html",
+        "apps/gurudevi-web/.../architectureData.json"
+      ],
+      "keyMetric": "79 Subsystem Nodes, 14 Layers"
+    },
+    {
+      "id": "chronology",
+      "name": "Bedrock Archaeology & Accretion Tracker",
+      "script": "scripts/audit-layer-chronology.mjs",
+      "category": "Historical Archaeology",
+      "purpose": "Extracts git commit chronology (--follow) across all nodes to identify when Frankenstein ceremonies (like identityState.ts accretion) were introduced across 4 historical eras.",
+      "command": "node scripts/audit-layer-chronology.mjs",
+      "artifacts": [
+        "reports/bedrock-chronology-audit.md",
+        "reports/bedrock-chronology.json"
+      ],
+      "keyMetric": "31 Layer 0 Bedrock Files, 4 Eras (Feb-Nov 2026)"
+    },
+    {
+      "id": "bypasses",
+      "name": "Seam Clustering & Transitive Bypass Detector",
+      "script": "scripts/analyze-seams-and-bypasses.mjs",
+      "category": "Seams & Coupling",
+      "purpose": "Clusters files into 7 architectural seams and detects diamond bypasses where upper layers (L12) reach around intermediate facades (L6/L11) to import lower-layer internals (L2/L0).",
+      "command": "node scripts/analyze-seams-and-bypasses.mjs",
+      "artifacts": [
+        "reports/seams-and-bypasses-audit.json"
+      ],
+      "keyMetric": "40 Bypasses Detected (20 Same-Seam)"
+    },
+    {
+      "id": "folder-ontology",
+      "name": "Folder Ontology & Dispersion Auditor",
+      "script": "scripts/audit-folder-ontology.mjs",
+      "category": "Directory Architecture",
+      "purpose": "Audits all 29 top-level folders in core to map hook dispersion (80 hooks), store dispersion (27 stores), utility overlap (lib vs utils vs shared), and framework leaks.",
+      "command": "node scripts/audit-folder-ontology.mjs",
+      "artifacts": [
+        "reports/folder-ontology-audit.json"
+      ],
+      "keyMetric": "841 Core Files across 29 Folders (Spans up to 10 Layers)"
+    },
+    {
+      "id": "semantic-overlaps",
+      "name": "Semantic Overlap & Redundancy Scanner",
+      "script": "scripts/audit-semantic-overlaps.mjs",
+      "category": "Semantic Duplication",
+      "purpose": "Scans 4,057 exported symbols to isolate functional duplicates answering identical domain questions (e.g. 6 guest checkers, 5 button components, 6 storage wrappers).",
+      "command": "node scripts/audit-semantic-overlaps.mjs",
+      "artifacts": [
+        "reports/semantic-overlaps-audit.json"
+      ],
+      "keyMetric": "4,057 Symbols Audited (4 Critical Overlap Hotspots)"
+    },
+    {
+      "id": "contamination-sentinel",
+      "name": "Architectural Contamination & Modern React 19 Sentinel",
+      "script": "scripts/check-architectural-contamination.mjs",
+      "category": "Accretion & React 19 Modernization",
+      "purpose": "Monorepo-wide AST/regex sentinel detecting Java OOP anti-patterns (GoF static singletons, useless pass-through wrappers, deadweight factories) and legacy React 18 patterns (forwardRef, useFormState, defaultProps, Zustand unselected subscriptions). Equipped with false-positive firewalls for Effect-TS, dispatchers, and grandfathered legacy ratchets.",
+      "command": "pnpm run check:contamination (delta) | pnpm run audit:contamination (full)",
+      "artifacts": [
+        "reports/architectural-contamination.json",
+        "docs/architecture/2026-11-01-canonical-file-archetypes-and-first-principles.md"
+      ],
+      "keyMetric": "3,219 Files Scanned: 45 Java OOP Violations, 22 React 18 Violations (6 False Positives Protected)"
+    }
+  ],
+  "contaminationSummary": {
+    "scannedFiles": 3208,
+    "totalViolations": 67,
+    "javaViolations": 45,
+    "reactViolations": 22,
+    "debtCount": 20,
+    "falsePositivesProtected": 6,
+    "topViolations": [
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_GOF_SINGLETON",
+        "severity": "CRITICAL",
+        "path": "packages/admin/src/document-workflow/engine.ts",
+        "line": 17,
+        "detail": "Class uses GoF private static instance + getInstance(). Modern TypeScript modules are native singletons.",
+        "cure": "Export a module const instance: `export const instance = new Engine();` or export plain functions."
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_GOF_SINGLETON",
+        "severity": "CRITICAL",
+        "path": "packages/admin/src/analytics/engine.ts",
+        "line": 23,
+        "detail": "Class uses GoF private static instance + getInstance(). Modern TypeScript modules are native singletons.",
+        "cure": "Export a module const instance: `export const instance = new Engine();` or export plain functions."
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "severity": "HIGH",
+        "path": "packages/accounting/src/cheques.ts",
+        "line": 15,
+        "detail": "Manager class ChequeManager has 0 application callers across web and mobile. UI code bypassed it.",
+        "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_STATIC_CONTAINER_CLASS",
+        "severity": "MEDIUM",
+        "path": "packages/graphics/src/algorithms/KnowledgeParser.ts",
+        "line": 9,
+        "detail": "Class KnowledgeParser is purely a static container holding only static functions with no instance state. In TypeScript, standalone functions should be exported directly from the module.",
+        "cure": "Replace `class KnowledgeParser` with exported standalone functions: `export async function fromMermaid(...) { ... }`"
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_STATIC_CONTAINER_CLASS",
+        "severity": "MEDIUM",
+        "path": "packages/core/src/native/guestDataSync.ts",
+        "line": 28,
+        "detail": "Class GuestDataSync is purely a static container holding only static functions with no instance state. In TypeScript, standalone functions should be exported directly from the module.",
+        "cure": "Replace `class GuestDataSync` with exported standalone functions: `export async function rememberGuestSession(...) { ... }`"
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_STATIC_CONTAINER_CLASS",
+        "severity": "MEDIUM",
+        "path": "packages/core/src/native/guestDataManager.ts",
+        "line": 13,
+        "detail": "Class GuestStorageError is purely a static container holding only static functions with no instance state. In TypeScript, standalone functions should be exported directly from the module.",
+        "cure": "Replace `class GuestStorageError` with exported standalone functions: `export async function getTimetable(...) { ... }`"
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "severity": "HIGH",
+        "path": "packages/core/src/native/guestDataManager.ts",
+        "line": 81,
+        "detail": "Manager class GuestDataManager has 0 application callers across web and mobile. UI code bypassed it.",
+        "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/screens/SelfScreen.unified.tsx",
+        "line": 55,
+        "detail": "useSelfCanvasStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useSelfCanvasStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/core/src/lib/sync/sync/SyncManager.tsx",
+        "line": 63,
+        "detail": "useConflictStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useConflictStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/hooks/useWisdom.ts",
+        "line": 13,
+        "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/hooks/useStudentGoals.ts",
+        "line": 19,
+        "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/hooks/useProgressTree.ts",
+        "line": 12,
+        "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/hooks/useMoodLogs.ts",
+        "line": 20,
+        "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/hooks/useJourneyData.ts",
+        "line": 22,
+        "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/hooks/useJournalEntries.ts",
+        "line": 17,
+        "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/hooks/useEnergyForecast.ts",
+        "line": 16,
+        "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+      },
+      {
+        "domain": "REACT_18_LEGACY",
+        "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+        "severity": "HIGH",
+        "path": "packages/self/src/hooks/useDecisionJournal.ts",
+        "line": 13,
+        "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+        "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "severity": "HIGH",
+        "path": "packages/core/src/logic/managers/GrowthManager.ts",
+        "line": 130,
+        "detail": "Manager class GrowthManager has 0 application callers across web and mobile. UI code bypassed it.",
+        "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_DEADWEIGHT_FACTORY",
+        "severity": "MEDIUM",
+        "path": "packages/core/src/logic/managers/growth.factory.ts",
+        "line": 1,
+        "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+        "cure": "Delete factory. Export module singletons or composable functions directly."
+      },
+      {
+        "domain": "JAVA_OOP",
+        "rule": "JAVA_DEADWEIGHT_FACTORY",
+        "severity": "MEDIUM",
+        "path": "packages/core/src/logic/managers/featureFlag.factory.ts",
+        "line": 1,
+        "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+        "cure": "Delete factory. Export module singletons or composable functions directly."
+      }
+    ],
+    "protectedFalsePositives": [
+      {
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "path": "apps/gurudevi-web/app/(sanctuary)/self/components/RemindersManager.tsx",
+        "reason": "Functional React Component / Headless hook with \"Manager\" naming; not an OOP class."
+      },
+      {
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "path": "packages/core/src/lib/sync/sync/SyncManager.tsx",
+        "reason": "Functional React Component / Headless hook with \"Manager\" naming; not an OOP class."
+      },
+      {
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "path": "packages/core/src/logic/managers/TelemetryManager.ts",
+        "reason": "Legitimate Hexagonal Cross-Platform Dispatcher with external store subscription (TelemetryManager)"
+      },
+      {
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "path": "packages/core/src/logic/managers/StorageManager.ts",
+        "reason": "Legitimate Hexagonal Cross-Platform Dispatcher with external store subscription (StorageManager)"
+      },
+      {
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "path": "packages/self/src/components/RemindersManager.tsx",
+        "reason": "Functional React Component / Headless hook with \"Manager\" naming; not an OOP class."
+      },
+      {
+        "rule": "JAVA_ORPHANED_MANAGER",
+        "path": "packages/ui/src/components/DeviceAccountManager.tsx",
+        "reason": "Functional React Component / Headless hook with \"Manager\" naming; not an OOP class."
+      }
+    ]
+  },
+  "javaContaminationSummary": {
+    "totalAnalyzed": 32,
+    "totalWithZeroAppCallers": 30,
+    "contaminationRate": 94,
+    "uselessPassThrough": 5,
+    "deadweightFactories": 11,
+    "orphanedManagers": 14,
+    "topContaminatedFiles": [
+      {
+        "file": "GrowthManager.ts",
+        "loc": 721,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 4,
+        "appCallersCount": 0,
+        "coreCallersCount": 4,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/CommunityManager.ts",
+          "packages/core/src/logic/managers/EducationalManager.ts",
+          "packages/core/src/logic/managers/growth.factory.ts",
+          "packages/core/src/logic/ports/growth.tags.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "AuthManager.ts",
+        "loc": 611,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 2,
+        "appCallersCount": 0,
+        "coreCallersCount": 2,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/auth.factory.ts",
+          "packages/core/src/logic/managers/DeepLinkManager.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "EducationalManager.ts",
+        "loc": 384,
+        "classification": "USELESS PASS-THROUGH WRAPPER",
+        "reason": "Class with 2 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+        "totalCallers": 1,
+        "appCallersCount": 0,
+        "coreCallersCount": 1,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/educational.factory.ts"
+        ],
+        "passThroughMethods": 2
+      },
+      {
+        "file": "DeepLinkManager.ts",
+        "loc": 131,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 3,
+        "appCallersCount": 0,
+        "coreCallersCount": 3,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/index.ts",
+          "packages/core/src/logic/managers/misc.factory.ts",
+          "packages/core/src/logic/managers/PushNotificationManager.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "CommunityManager.ts",
+        "loc": 126,
+        "classification": "USELESS PASS-THROUGH WRAPPER",
+        "reason": "Class with 15 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+        "totalCallers": 2,
+        "appCallersCount": 0,
+        "coreCallersCount": 2,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/community.factory.ts",
+          "packages/core/src/logic/managers/EducationalManager.ts"
+        ],
+        "passThroughMethods": 15
+      },
+      {
+        "file": "PushNotificationManager.ts",
+        "loc": 125,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 1,
+        "appCallersCount": 0,
+        "coreCallersCount": 1,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/notification.factory.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "DeviceIdentityManager.ts",
+        "loc": 121,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 2,
+        "appCallersCount": 0,
+        "coreCallersCount": 2,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/misc.factory.ts",
+          "packages/core/src/native/bootstrap.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "StorageManager.ts",
+        "loc": 99,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 3,
+        "appCallersCount": 0,
+        "coreCallersCount": 3,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/lib/storage.ts",
+          "packages/core/src/logic/journey/roleJourneyMachine.v6.ts",
+          "packages/core/src/native/bootstrap.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "ProfileManager.ts",
+        "loc": 95,
+        "classification": "USELESS PASS-THROUGH WRAPPER",
+        "reason": "Class with 19 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+        "totalCallers": 2,
+        "appCallersCount": 0,
+        "coreCallersCount": 2,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/EducationalManager.ts",
+          "packages/core/src/logic/managers/profile.factory.ts"
+        ],
+        "passThroughMethods": 19
+      },
+      {
+        "file": "TeacherInsightsManager.ts",
+        "loc": 84,
+        "classification": "USELESS PASS-THROUGH WRAPPER",
+        "reason": "Class with 16 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+        "totalCallers": 1,
+        "appCallersCount": 0,
+        "coreCallersCount": 1,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/misc.factory.ts"
+        ],
+        "passThroughMethods": 16
+      },
+      {
+        "file": "IdentityManager.ts",
+        "loc": 83,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 3,
+        "appCallersCount": 0,
+        "coreCallersCount": 3,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/identity.factory.ts",
+          "packages/core/src/logic/managers/misc.factory.ts",
+          "packages/core/src/native/bootstrap.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "NetworkManager.ts",
+        "loc": 70,
+        "classification": "ACTIVE MANAGER",
+        "reason": "Active manager with 4 app callers.",
+        "totalCallers": 11,
+        "appCallersCount": 4,
+        "coreCallersCount": 7,
+        "appCallers": [
+          "apps/gurudevi-web/lib/query/getQueryClient.ts",
+          "apps/gurudevi-web/lib/runtime/browserNetwork.ts",
+          "apps/gurudevi-mobile/src/lib/queryClient.ts",
+          "apps/gurudevi-mobile/src/runtime/deviceSignals.ts"
+        ],
+        "coreCallers": [
+          "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+          "packages/core/src/adapters/NetworkBusAdapter.ts",
+          "packages/core/src/adapters/subscribeToNetwork.ts",
+          "packages/core/src/hooks/useSafeMutation.ts",
+          "packages/core/src/native/bootstrap.ts",
+          "packages/core/src/offline/useOfflineStatus.ts",
+          "packages/core/src/testing/scenarioHarness.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "misc.factory.ts",
+        "loc": 59,
+        "classification": "DEADWEIGHT FACTORY",
+        "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+        "totalCallers": 2,
+        "appCallersCount": 0,
+        "coreCallersCount": 2,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/factory.ts",
+          "packages/core/src/logic/managers/notification.factory.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "TelemetryManager.ts",
+        "loc": 53,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 3,
+        "appCallersCount": 0,
+        "coreCallersCount": 3,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/lib/monitoring/sentry.ts",
+          "packages/core/src/monitoring/sentry.ts",
+          "packages/core/src/native/bootstrap.ts"
+        ],
+        "passThroughMethods": 0
+      },
+      {
+        "file": "NotificationManager.ts",
+        "loc": 47,
+        "classification": "ORPHANED OOP MANAGER",
+        "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+        "totalCallers": 1,
+        "appCallersCount": 0,
+        "coreCallersCount": 1,
+        "appCallers": [],
+        "coreCallers": [
+          "packages/core/src/logic/managers/notification.factory.ts"
+        ],
+        "passThroughMethods": 0
+      }
+    ]
+  },
+  "fileTypesSummary": {
+    "totalFiles": 630,
+    "classifiedCount": 559,
+    "unclassifiedCount": 71,
+    "percentage": 89,
+    "archetypes": [
+      {
+        "key": "SCHEMA",
+        "name": "Schema",
+        "tier": 0,
+        "suffix": ".schema.ts",
+        "description": "Runtime data validation and Zod contracts",
+        "count": 34
+      },
+      {
+        "key": "TYPE",
+        "name": "Type Definition",
+        "tier": 0,
+        "suffix": ".types.ts | types/*.ts",
+        "description": "Compile-time pure TypeScript interfaces and types",
+        "count": 54
+      },
+      {
+        "key": "PORT",
+        "name": "Port / Interface",
+        "tier": 1,
+        "suffix": ".port.ts | interfaces/*.ts",
+        "description": "Abstract boundary contracts for Dependency Inversion",
+        "count": 24
+      },
+      {
+        "key": "DOMAIN_ENTITY",
+        "name": "Entity / Domain Logic",
+        "tier": 2,
+        "suffix": "*.ts in logic/ or domain/",
+        "description": "Pure business invariants, rules, and algorithms",
+        "count": 210
+      },
+      {
+        "key": "DOMAIN_SERVICE",
+        "name": "Domain Service",
+        "tier": 2,
+        "suffix": "*Service.ts",
+        "description": "Stateless domain coordinators",
+        "count": 3
+      },
+      {
+        "key": "ADAPTER",
+        "name": "Adapter",
+        "tier": 3,
+        "suffix": ".adapter.ts | *Adapter.ts",
+        "description": "Concrete implementation of ports binding to external technologies",
+        "count": 53
+      },
+      {
+        "key": "REPOSITORY",
+        "name": "Repository",
+        "tier": 3,
+        "suffix": "*Repository.ts",
+        "description": "Data access and persistence mapping for domain aggregates",
+        "count": 18
+      },
+      {
+        "key": "STORE",
+        "name": "Store",
+        "tier": 4,
+        "suffix": "use*Store.ts | *Store.ts",
+        "description": "Reactive client state container (Zustand)",
+        "count": 17
+      },
+      {
+        "key": "SLICE",
+        "name": "Slice",
+        "tier": 4,
+        "suffix": ".slice.ts",
+        "description": "Sub-partition of composite store state and actions",
+        "count": 3
+      },
+      {
+        "key": "HOOK",
+        "name": "Hook",
+        "tier": 5,
+        "suffix": "use*.ts | use*.tsx",
+        "description": "React lifecycle facade connecting UI to state and services",
+        "count": 48
+      },
+      {
+        "key": "FLOW",
+        "name": "Flow / Coordinator",
+        "tier": 5,
+        "suffix": ".flow.ts | *Coordinator.ts",
+        "description": "Multi-step transactional saga or user journey",
+        "count": 25
+      },
+      {
+        "key": "BARREL",
+        "name": "Barrel / Index",
+        "tier": -1,
+        "suffix": "index.ts | index.tsx",
+        "description": "Public boundary export catalog",
+        "count": 13
+      },
+      {
+        "key": "SYNC_ENGINE",
+        "name": "Sync Engine & Outbox",
+        "tier": 3,
+        "suffix": "lib/sync/*.ts",
+        "description": "Offline-first outbox, deltas, receipts, and mutation replay engine",
+        "count": 16
+      },
+      {
+        "key": "STORAGE_DRIVER",
+        "name": "Storage Driver",
+        "tier": 3,
+        "suffix": "*Storage.ts | guestScope.ts",
+        "description": "Low-level persistence drivers and key resolvers (MMKV, local session)",
+        "count": 15
+      },
+      {
+        "key": "TELEMETRY",
+        "name": "Telemetry & Observability",
+        "tier": 3,
+        "suffix": "monitoring/*.ts",
+        "description": "Crash reporting (Sentry), events (PostHog), breadcrumbs, and safe telemetry",
+        "count": 10
+      },
+      {
+        "key": "RESILIENCE_EFFECT",
+        "name": "Resilience & Effect Runtime",
+        "tier": 2,
+        "suffix": "effect/*.ts | circuit-breaker.ts",
+        "description": "Composable fiber concurrency, retry schedules, and circuit breakers",
+        "count": 6
+      },
+      {
+        "key": "PROVIDER",
+        "name": "React Context Provider",
+        "tier": 5,
+        "suffix": "*Provider.tsx",
+        "description": "React tree dependency injection and capability hydration roots",
+        "count": 4
+      },
+      {
+        "key": "MATH_SPATIAL",
+        "name": "Static Geometry & Constants",
+        "tier": 0,
+        "suffix": "spatial/*.ts | constants/*.ts",
+        "description": "Static geo-spatial coordinates, centroids, and school registries",
+        "count": 6
+      }
+    ]
+  },
+  "hierarchySummary": {
+    "totalTiers": 7,
+    "tiers": [
+      {
+        "tierKey": "TIER_0_SCHEMA",
+        "rank": 0,
+        "name": "Tier 0: Contract / Schema / Type",
+        "icon": "📜",
+        "description": "Pure data contracts, Zod schemas, TypeScript types, and constants",
+        "fileCount": 16,
+        "totalLoc": 3096,
+        "topologicalSpan": "L0..L5",
+        "files": [
+          {
+            "path": "packages/core/src/logic/schemas/capacity.schema.ts",
+            "name": "capacity.schema.ts",
+            "loc": 24,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/store/types/featureFlags.ts",
+            "name": "featureFlags.ts",
+            "loc": 34,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/Identity.ts",
+            "name": "Identity.ts",
+            "loc": 78,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/authorization.ts",
+            "name": "authorization.ts",
+            "loc": 93,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/adapters/powersync/schema.ts",
+            "name": "schema.ts",
+            "loc": 700,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/constants/SriLankanSchools.ts",
+            "name": "SriLankanSchools.ts",
+            "loc": 874,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/runtime.ts",
+            "name": "runtime.ts",
+            "loc": 173,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/Errors.ts",
+            "name": "Errors.ts",
+            "loc": 191,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/Social.ts",
+            "name": "Social.ts",
+            "loc": 23,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/logic/schemas/identity.schema.ts",
+            "name": "identity.schema.ts",
+            "loc": 214,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/Perspective.ts",
+            "name": "Perspective.ts",
+            "loc": 83,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/API.ts",
+            "name": "API.ts",
+            "loc": 42,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/logic/schemas/user.schema.ts",
+            "name": "user.schema.ts",
+            "loc": 156,
+            "topologicalLayer": 2,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/Tenancy.ts",
+            "name": "Tenancy.ts",
+            "loc": 57,
+            "topologicalLayer": 3,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/User.ts",
+            "name": "User.ts",
+            "loc": 117,
+            "topologicalLayer": 4,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          },
+          {
+            "path": "packages/core/src/types/index.ts",
+            "name": "index.ts",
+            "loc": 237,
+            "topologicalLayer": 5,
+            "archetypeKey": "TIER_0_SCHEMA",
+            "archetypeName": "Tier 0: Contract / Schema / Type",
+            "rank": 0,
+            "icon": "📜"
+          }
+        ]
+      },
+      {
+        "tierKey": "TIER_1_PORT",
+        "rank": 1,
+        "name": "Tier 1: Port / Boundary Interface",
+        "icon": "🔌",
+        "description": "Abstract interfaces defining external capabilities for DIP",
+        "fileCount": 4,
+        "totalLoc": 186,
+        "topologicalSpan": "L0..L3",
+        "files": [
+          {
+            "path": "packages/core/src/logic/ports/entitlement.port.ts",
+            "name": "entitlement.port.ts",
+            "loc": 99,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_1_PORT",
+            "archetypeName": "Tier 1: Port / Boundary Interface",
+            "rank": 1,
+            "icon": "🔌"
+          },
+          {
+            "path": "packages/core/src/logic/ports/authz.port.ts",
+            "name": "authz.port.ts",
+            "loc": 42,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_1_PORT",
+            "archetypeName": "Tier 1: Port / Boundary Interface",
+            "rank": 1,
+            "icon": "🔌"
+          },
+          {
+            "path": "packages/core/src/logic/interfaces/network.port.ts",
+            "name": "network.port.ts",
+            "loc": 25,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_1_PORT",
+            "archetypeName": "Tier 1: Port / Boundary Interface",
+            "rank": 1,
+            "icon": "🔌"
+          },
+          {
+            "path": "packages/core/src/logic/ports/featureRollout.port.ts",
+            "name": "featureRollout.port.ts",
+            "loc": 20,
+            "topologicalLayer": 3,
+            "archetypeKey": "TIER_1_PORT",
+            "archetypeName": "Tier 1: Port / Boundary Interface",
+            "rank": 1,
+            "icon": "🔌"
+          }
+        ]
+      },
+      {
+        "tierKey": "TIER_2_LOGIC",
+        "rank": 2,
+        "name": "Tier 2: Pure Domain Logic",
+        "icon": "⚙️",
+        "description": "Deterministic business evaluators, manifests, and pure calculators",
+        "fileCount": 23,
+        "totalLoc": 2193,
+        "topologicalSpan": "L0..L5",
+        "files": [
+          {
+            "path": "packages/core/src/logic/permissions/bondScope.ts",
+            "name": "bondScope.ts",
+            "loc": 36,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/registry/citizenship.ts",
+            "name": "citizenship.ts",
+            "loc": 54,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/permissions/signature.ts",
+            "name": "signature.ts",
+            "loc": 123,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/lib/accountScope.ts",
+            "name": "accountScope.ts",
+            "loc": 27,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/monitoring/breadcrumbs.ts",
+            "name": "breadcrumbs.ts",
+            "loc": 62,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/lib/sync/eventBus.ts",
+            "name": "eventBus.ts",
+            "loc": 169,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/ui/src/utils/haptics.ts",
+            "name": "haptics.ts",
+            "loc": 145,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/utils/edloveUuidV8.ts",
+            "name": "edloveUuidV8.ts",
+            "loc": 199,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/monitoring/index.ts",
+            "name": "index.ts",
+            "loc": 12,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/ui/src/utils/classNames.ts",
+            "name": "classNames.ts",
+            "loc": 10,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/lib/security/transportSecurity.ts",
+            "name": "transportSecurity.ts",
+            "loc": 71,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/ui/src/sensory/index.ts",
+            "name": "index.ts",
+            "loc": 3,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/permissions/accessContext.ts",
+            "name": "accessContext.ts",
+            "loc": 39,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/permissions/baselineCapabilities.ts",
+            "name": "baselineCapabilities.ts",
+            "loc": 39,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/registry/domainEntry.ts",
+            "name": "domainEntry.ts",
+            "loc": 306,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/runtimeRegistry.ts",
+            "name": "runtimeRegistry.ts",
+            "loc": 118,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/lib/devicePreferences.ts",
+            "name": "devicePreferences.ts",
+            "loc": 46,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/managers/NetworkManager.ts",
+            "name": "NetworkManager.ts",
+            "loc": 70,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+            "name": "sanctuaryFeature.ts",
+            "loc": 179,
+            "topologicalLayer": 2,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+            "name": "featureLifecycleManifest.ts",
+            "loc": 350,
+            "topologicalLayer": 2,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/lib/experienceState.ts",
+            "name": "experienceState.ts",
+            "loc": 83,
+            "topologicalLayer": 2,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/lib/featureRolloutSnapshot.ts",
+            "name": "featureRolloutSnapshot.ts",
+            "loc": 43,
+            "topologicalLayer": 4,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          },
+          {
+            "path": "packages/core/src/logic/managers/featureFlag.factory.ts",
+            "name": "featureFlag.factory.ts",
+            "loc": 9,
+            "topologicalLayer": 5,
+            "archetypeKey": "TIER_2_LOGIC",
+            "archetypeName": "Tier 2: Pure Domain Logic",
+            "rank": 2,
+            "icon": "⚙️"
+          }
+        ]
+      },
+      {
+        "tierKey": "TIER_3_ADAPTER",
+        "rank": 3,
+        "name": "Tier 3: Adapter / Infra / Storage",
+        "icon": "💾",
+        "description": "Concrete implementations of ports (PowerSync, Supabase, SQLite, MMKV)",
+        "fileCount": 15,
+        "totalLoc": 1512,
+        "topologicalSpan": "L0..L10",
+        "files": [
+          {
+            "path": "packages/core/src/lib/storage.ts",
+            "name": "storage.ts",
+            "loc": 40,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/native/guestScope.ts",
+            "name": "guestScope.ts",
+            "loc": 38,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/adapters/powersync/powersync-shim.ts",
+            "name": "powersync-shim.ts",
+            "loc": 81,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
+            "name": "singleActivePowerSyncRuntime.ts",
+            "loc": 125,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/adapters/powersync/databaseRegistry.ts",
+            "name": "databaseRegistry.ts",
+            "loc": 66,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/lib/scopedStateStorage.ts",
+            "name": "scopedStateStorage.ts",
+            "loc": 69,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/lib/authStorage.ts",
+            "name": "authStorage.ts",
+            "loc": 36,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/lib/storageWrapper.ts",
+            "name": "storageWrapper.ts",
+            "loc": 37,
+            "topologicalLayer": 2,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/adapters/supabaseClient.ts",
+            "name": "supabaseClient.ts",
+            "loc": 89,
+            "topologicalLayer": 2,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/native/localGuestSession.ts",
+            "name": "localGuestSession.ts",
+            "loc": 96,
+            "topologicalLayer": 3,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+            "name": "growthBookFeatureRollout.adapter.ts",
+            "loc": 233,
+            "topologicalLayer": 4,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/lib/authProfileStorage.ts",
+            "name": "authProfileStorage.ts",
+            "loc": 114,
+            "topologicalLayer": 6,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+            "name": "secureDrizzleProxy.ts",
+            "loc": 194,
+            "topologicalLayer": 8,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/adapters/powersync/database.ts",
+            "name": "database.ts",
+            "loc": 122,
+            "topologicalLayer": 9,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          },
+          {
+            "path": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+            "name": "supabaseEntitlement.adapter.ts",
+            "loc": 172,
+            "topologicalLayer": 10,
+            "archetypeKey": "TIER_3_ADAPTER",
+            "archetypeName": "Tier 3: Adapter / Infra / Storage",
+            "rank": 3,
+            "icon": "💾"
+          }
+        ]
+      },
+      {
+        "tierKey": "TIER_4_STORE",
+        "rank": 4,
+        "name": "Tier 4: State Store (Zustand)",
+        "icon": "📦",
+        "description": "Reactive client state containers and snapshot selectors",
+        "fileCount": 7,
+        "totalLoc": 964,
+        "topologicalSpan": "L2..L11",
+        "files": [
+          {
+            "path": "packages/core/src/store/scopeSession.ts",
+            "name": "scopeSession.ts",
+            "loc": 166,
+            "topologicalLayer": 2,
+            "archetypeKey": "TIER_4_STORE",
+            "archetypeName": "Tier 4: State Store (Zustand)",
+            "rank": 4,
+            "icon": "📦"
+          },
+          {
+            "path": "packages/core/src/store/useFeatureStore.ts",
+            "name": "useFeatureStore.ts",
+            "loc": 126,
+            "topologicalLayer": 6,
+            "archetypeKey": "TIER_4_STORE",
+            "archetypeName": "Tier 4: State Store (Zustand)",
+            "rank": 4,
+            "icon": "📦"
+          },
+          {
+            "path": "packages/core/src/store/slices/auth.slice.ts",
+            "name": "auth.slice.ts",
+            "loc": 21,
+            "topologicalLayer": 6,
+            "archetypeKey": "TIER_4_STORE",
+            "archetypeName": "Tier 4: State Store (Zustand)",
+            "rank": 4,
+            "icon": "📦"
+          },
+          {
+            "path": "packages/core/src/store/useAuthStore.ts",
+            "name": "useAuthStore.ts",
+            "loc": 28,
+            "topologicalLayer": 7,
+            "archetypeKey": "TIER_4_STORE",
+            "archetypeName": "Tier 4: State Store (Zustand)",
+            "rank": 4,
+            "icon": "📦"
+          },
+          {
+            "path": "packages/core/src/store/useCedarDecisionStore.ts",
+            "name": "useCedarDecisionStore.ts",
+            "loc": 250,
+            "topologicalLayer": 10,
+            "archetypeKey": "TIER_4_STORE",
+            "archetypeName": "Tier 4: State Store (Zustand)",
+            "rank": 4,
+            "icon": "📦"
+          },
+          {
+            "path": "packages/core/src/store/useEntitlementStore.ts",
+            "name": "useEntitlementStore.ts",
+            "loc": 166,
+            "topologicalLayer": 11,
+            "archetypeKey": "TIER_4_STORE",
+            "archetypeName": "Tier 4: State Store (Zustand)",
+            "rank": 4,
+            "icon": "📦"
+          },
+          {
+            "path": "packages/core/src/store/usePerspectiveStore.ts",
+            "name": "usePerspectiveStore.ts",
+            "loc": 207,
+            "topologicalLayer": 11,
+            "archetypeKey": "TIER_4_STORE",
+            "archetypeName": "Tier 4: State Store (Zustand)",
+            "rank": 4,
+            "icon": "📦"
+          }
+        ]
+      },
+      {
+        "tierKey": "TIER_5_HOOK",
+        "rank": 5,
+        "name": "Tier 5: Application Facade / Hook",
+        "icon": "🪝",
+        "description": "High-level hooks orchestrating multiple stores for client UI",
+        "fileCount": 1,
+        "totalLoc": 284,
+        "topologicalSpan": "L12..L12",
+        "files": [
+          {
+            "path": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+            "name": "useSanctuaryFeature.ts",
+            "loc": 284,
+            "topologicalLayer": 12,
+            "archetypeKey": "TIER_5_HOOK",
+            "archetypeName": "Tier 5: Application Facade / Hook",
+            "rank": 5,
+            "icon": "🪝"
+          }
+        ]
+      },
+      {
+        "tierKey": "TIER_6_UI",
+        "rank": 6,
+        "name": "Tier 6: Presentation UI",
+        "icon": "🎨",
+        "description": "User-facing components, prompts, action buttons, and guards",
+        "fileCount": 13,
+        "totalLoc": 954,
+        "topologicalSpan": "L0..L13",
+        "files": [
+          {
+            "path": "packages/ui/src/icons.ts",
+            "name": "icons.ts",
+            "loc": 2,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/primitives.ts",
+            "name": "primitives.ts",
+            "loc": 71,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/ui/spinner/index.tsx",
+            "name": "index.tsx",
+            "loc": 20,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/ui/view/index.tsx",
+            "name": "index.tsx",
+            "loc": 99,
+            "topologicalLayer": 0,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/ui/pressable/index.tsx",
+            "name": "index.tsx",
+            "loc": 69,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/ui/text/index.tsx",
+            "name": "index.tsx",
+            "loc": 73,
+            "topologicalLayer": 1,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/ui/button/index.tsx",
+            "name": "index.tsx",
+            "loc": 218,
+            "topologicalLayer": 2,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/SanctuaryButton.tsx",
+            "name": "SanctuaryButton.tsx",
+            "loc": 160,
+            "topologicalLayer": 3,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/PositiveInvitation.tsx",
+            "name": "PositiveInvitation.tsx",
+            "loc": 116,
+            "topologicalLayer": 4,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+            "name": "SchoolJoinPrompt.tsx",
+            "loc": 21,
+            "topologicalLayer": 5,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/prompts/SignupPrompt.tsx",
+            "name": "SignupPrompt.tsx",
+            "loc": 21,
+            "topologicalLayer": 5,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+            "name": "UpgradePrompt.tsx",
+            "loc": 26,
+            "topologicalLayer": 5,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          },
+          {
+            "path": "packages/ui/src/components/SanctuaryGuard.tsx",
+            "name": "SanctuaryGuard.tsx",
+            "loc": 58,
+            "topologicalLayer": 13,
+            "archetypeKey": "TIER_6_UI",
+            "archetypeName": "Tier 6: Presentation UI",
+            "rank": 6,
+            "icon": "🎨"
+          }
+        ]
+      }
+    ],
+    "violations": {
+      "adapterCouplingCount": 11,
+      "adapterCoupling": [
+        {
+          "sourceFile": "useAuthStore.ts",
+          "sourcePath": "packages/core/src/store/useAuthStore.ts",
+          "sourceTier": "Tier 4: State Store (Zustand)",
+          "targetFile": "authProfileStorage.ts",
+          "targetPath": "packages/core/src/lib/authProfileStorage.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "authProfileStorage",
+            "restoreIdentityProfile"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "useCedarDecisionStore.ts",
+          "sourcePath": "packages/core/src/store/useCedarDecisionStore.ts",
+          "sourceTier": "Tier 4: State Store (Zustand)",
+          "targetFile": "database.ts",
+          "targetPath": "packages/core/src/adapters/powersync/database.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "getDrizzleDB"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "useCedarDecisionStore.ts",
+          "sourcePath": "packages/core/src/store/useCedarDecisionStore.ts",
+          "sourceTier": "Tier 4: State Store (Zustand)",
+          "targetFile": "localGuestSession.ts",
+          "targetPath": "packages/core/src/native/localGuestSession.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "isLocalGuestSessionId"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "useEntitlementStore.ts",
+          "sourcePath": "packages/core/src/store/useEntitlementStore.ts",
+          "sourceTier": "Tier 4: State Store (Zustand)",
+          "targetFile": "supabaseEntitlement.adapter.ts",
+          "targetPath": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "SupabaseEntitlementAdapter"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "useEntitlementStore.ts",
+          "sourcePath": "packages/core/src/store/useEntitlementStore.ts",
+          "sourceTier": "Tier 4: State Store (Zustand)",
+          "targetFile": "storageWrapper.ts",
+          "targetPath": "packages/core/src/lib/storageWrapper.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "SafeZustandStorage"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "useFeatureStore.ts",
+          "sourcePath": "packages/core/src/store/useFeatureStore.ts",
+          "sourceTier": "Tier 4: State Store (Zustand)",
+          "targetFile": "storage.ts",
+          "targetPath": "packages/core/src/lib/storage.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "storage"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "useFeatureStore.ts",
+          "sourcePath": "packages/core/src/store/useFeatureStore.ts",
+          "sourceTier": "Tier 4: State Store (Zustand)",
+          "targetFile": "guestScope.ts",
+          "targetPath": "packages/core/src/native/guestScope.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "getGuestScopeRevision",
+            "guestStorageKey"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "usePerspectiveStore.ts",
+          "sourcePath": "packages/core/src/store/usePerspectiveStore.ts",
+          "sourceTier": "Tier 4: State Store (Zustand)",
+          "targetFile": "storageWrapper.ts",
+          "targetPath": "packages/core/src/lib/storageWrapper.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "SafeZustandStorage"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "featureFlag.factory.ts",
+          "sourcePath": "packages/core/src/logic/managers/featureFlag.factory.ts",
+          "sourceTier": "Tier 2: Pure Domain Logic",
+          "targetFile": "growthBookFeatureRollout.adapter.ts",
+          "targetPath": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "GrowthBookFeatureRolloutAdapter"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "experienceState.ts",
+          "sourcePath": "packages/core/src/lib/experienceState.ts",
+          "sourceTier": "Tier 2: Pure Domain Logic",
+          "targetFile": "scopedStateStorage.ts",
+          "targetPath": "packages/core/src/lib/scopedStateStorage.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "createScopedStateStorage"
+          ],
+          "isTypeOnly": false
+        },
+        {
+          "sourceFile": "devicePreferences.ts",
+          "sourcePath": "packages/core/src/lib/devicePreferences.ts",
+          "sourceTier": "Tier 2: Pure Domain Logic",
+          "targetFile": "storage.ts",
+          "targetPath": "packages/core/src/lib/storage.ts",
+          "targetTier": "Tier 3: Adapter / Infra / Storage",
+          "symbols": [
+            "storage"
+          ],
+          "isTypeOnly": false
+        }
+      ],
+      "schemaRuntimeInHookCount": 2,
+      "schemaRuntimeInHook": [
+        {
+          "hookFile": "useSanctuaryFeature.ts",
+          "hookPath": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+          "schemaFile": "capacity.schema.ts",
+          "schemaPath": "packages/core/src/logic/schemas/capacity.schema.ts",
+          "symbols": [
+            "CapacitySchema"
+          ]
+        },
+        {
+          "hookFile": "useSanctuaryFeature.ts",
+          "hookPath": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+          "schemaFile": "user.schema.ts",
+          "schemaPath": "packages/core/src/logic/schemas/user.schema.ts",
+          "symbols": [
+            "UserContextSchema"
+          ]
+        }
+      ],
+      "chainBypassesCount": 1,
+      "chainBypasses": [
+        {
+          "hookFile": "useSanctuaryFeature.ts",
+          "hookPath": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+          "portFile": "entitlement.port.ts",
+          "portPath": "packages/core/src/logic/ports/entitlement.port.ts",
+          "symbols": [
+            "resolveScopedEntitlement"
+          ]
+        }
+      ]
+    }
+  },
+  "bypassesSummary": {
+    "totalBypasses": 40,
+    "sameSeamBypasses": 20,
+    "useSanctuaryBypassesCount": 11,
+    "topSameSeam": [
+      {
+        "from": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+        "fromLayer": 2,
+        "to": "packages/core/src/logic/registry/citizenship.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+          "packages/core/src/logic/permissions/accessContext.ts",
+          "packages/core/src/logic/registry/citizenship.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+        "vSeam": "ReBAC Identity & Sanctuary Feature Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/core/src/lib/storageWrapper.ts",
+        "fromLayer": 2,
+        "to": "packages/core/src/lib/storage.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/core/src/lib/storageWrapper.ts",
+          "packages/core/src/lib/devicePreferences.ts",
+          "packages/core/src/lib/storage.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "Auth Session, Storage & Sync Seam",
+        "vSeam": "Auth Session, Storage & Sync Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/ui/src/components/ui/button/index.tsx",
+        "fromLayer": 2,
+        "to": "packages/ui/src/utils/classNames.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/ui/src/components/ui/button/index.tsx",
+          "packages/ui/src/components/ui/text/index.tsx",
+          "packages/ui/src/utils/classNames.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "UI Presentation & Prompts Seam",
+        "vSeam": "UI Presentation & Prompts Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/ui/src/components/SanctuaryButton.tsx",
+        "fromLayer": 3,
+        "to": "packages/ui/src/utils/classNames.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/ui/src/components/SanctuaryButton.tsx",
+          "packages/ui/src/components/ui/button/index.tsx",
+          "packages/ui/src/utils/classNames.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "UI Presentation & Prompts Seam",
+        "vSeam": "UI Presentation & Prompts Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/ui/src/components/SanctuaryButton.tsx",
+        "fromLayer": 3,
+        "to": "packages/ui/src/utils/haptics.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/ui/src/components/SanctuaryButton.tsx",
+          "packages/ui/src/components/ui/button/index.tsx",
+          "packages/ui/src/utils/haptics.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "UI Presentation & Prompts Seam",
+        "vSeam": "UI Presentation & Prompts Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/ui/src/components/PositiveInvitation.tsx",
+        "fromLayer": 4,
+        "to": "packages/ui/src/utils/haptics.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/ui/src/components/PositiveInvitation.tsx",
+          "packages/ui/src/components/SanctuaryButton.tsx",
+          "packages/ui/src/utils/haptics.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "UI Presentation & Prompts Seam",
+        "vSeam": "UI Presentation & Prompts Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/core/src/lib/featureRolloutSnapshot.ts",
+        "fromLayer": 4,
+        "to": "packages/core/src/store/types/featureFlags.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/core/src/lib/featureRolloutSnapshot.ts",
+          "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+          "packages/core/src/store/types/featureFlags.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "Feature Flags & Rollout Seam",
+        "vSeam": "Feature Flags & Rollout Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+        "fromLayer": 5,
+        "to": "packages/ui/src/icons.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+          "packages/ui/src/components/PositiveInvitation.tsx",
+          "packages/ui/src/icons.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "UI Presentation & Prompts Seam",
+        "vSeam": "UI Presentation & Prompts Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/ui/src/components/prompts/SignupPrompt.tsx",
+        "fromLayer": 5,
+        "to": "packages/ui/src/icons.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/ui/src/components/prompts/SignupPrompt.tsx",
+          "packages/ui/src/components/PositiveInvitation.tsx",
+          "packages/ui/src/icons.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "UI Presentation & Prompts Seam",
+        "vSeam": "UI Presentation & Prompts Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+        "fromLayer": 5,
+        "to": "packages/ui/src/icons.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+          "packages/ui/src/components/PositiveInvitation.tsx",
+          "packages/ui/src/icons.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "UI Presentation & Prompts Seam",
+        "vSeam": "UI Presentation & Prompts Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/core/src/logic/managers/featureFlag.factory.ts",
+        "fromLayer": 5,
+        "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+        "toLayer": 3,
+        "alternatePath": [
+          "packages/core/src/logic/managers/featureFlag.factory.ts",
+          "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+          "packages/core/src/logic/ports/featureRollout.port.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "Feature Flags & Rollout Seam",
+        "vSeam": "Feature Flags & Rollout Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/core/src/store/useFeatureStore.ts",
+        "fromLayer": 6,
+        "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+        "toLayer": 3,
+        "alternatePath": [
+          "packages/core/src/store/useFeatureStore.ts",
+          "packages/core/src/lib/featureRolloutSnapshot.ts",
+          "packages/core/src/logic/ports/featureRollout.port.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "Feature Flags & Rollout Seam",
+        "vSeam": "Feature Flags & Rollout Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/core/src/store/useFeatureStore.ts",
+        "fromLayer": 6,
+        "to": "packages/core/src/store/types/featureFlags.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/core/src/store/useFeatureStore.ts",
+          "packages/core/src/lib/featureRolloutSnapshot.ts",
+          "packages/core/src/store/types/featureFlags.ts"
+        ],
+        "pathLength": 3,
+        "uSeam": "Feature Flags & Rollout Seam",
+        "vSeam": "Feature Flags & Rollout Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/core/src/lib/authProfileStorage.ts",
+        "fromLayer": 6,
+        "to": "packages/core/src/lib/accountScope.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/core/src/lib/authProfileStorage.ts",
+          "packages/core/src/lib/experienceState.ts",
+          "packages/core/src/lib/scopedStateStorage.ts",
+          "packages/core/src/lib/accountScope.ts"
+        ],
+        "pathLength": 4,
+        "uSeam": "Auth Session, Storage & Sync Seam",
+        "vSeam": "Auth Session, Storage & Sync Seam",
+        "isSameSeam": true
+      },
+      {
+        "from": "packages/core/src/lib/authProfileStorage.ts",
+        "fromLayer": 6,
+        "to": "packages/core/src/native/guestScope.ts",
+        "toLayer": 0,
+        "alternatePath": [
+          "packages/core/src/lib/authProfileStorage.ts",
+          "packages/core/src/lib/experienceState.ts",
+          "packages/core/src/lib/scopedStateStorage.ts",
+          "packages/core/src/native/guestScope.ts"
+        ],
+        "pathLength": 4,
+        "uSeam": "Auth Session, Storage & Sync Seam",
+        "vSeam": "Auth Session, Storage & Sync Seam",
+        "isSameSeam": true
+      }
+    ]
+  },
+  "overlapsSummary": {
+    "totalExportedSymbols": 4057,
+    "totalFiles": 1507,
+    "guestCheckers": [
+      {
+        "name": "isLocalOnlyTable",
+        "file": "packages/core/src/adapters/powersync/schema.ts"
+      },
+      {
+        "name": "requestGuestToAccountMigration",
+        "file": "packages/core/src/lib/persistenceBoundary.ts"
+      },
+      {
+        "name": "isAnonymousSession",
+        "file": "packages/core/src/logic/auth/identityState.ts"
+      },
+      {
+        "name": "isAnonymousIdentity",
+        "file": "packages/core/src/logic/auth/identityState.ts"
+      },
+      {
+        "name": "isLocalOnlyIdentity",
+        "file": "packages/core/src/logic/auth/identityState.ts"
+      },
+      {
+        "name": "isLocalOnlyMutation",
+        "file": "packages/core/src/logic/permissions/baselineCapabilities.ts"
+      },
+      {
+        "name": "assertAnonymousGuestSource",
+        "file": "packages/core/src/native/guestConversionLedger.ts"
+      },
+      {
+        "name": "readGuestConversionRecord",
+        "file": "packages/core/src/native/guestConversionLedger.ts"
+      },
+      {
+        "name": "beginGuestConversion",
+        "file": "packages/core/src/native/guestConversionLedger.ts"
+      },
+      {
+        "name": "beginLocalGuestConversion",
+        "file": "packages/core/src/native/guestConversionLedger.ts"
+      },
+      {
+        "name": "bindGuestConversionTarget",
+        "file": "packages/core/src/native/guestConversionLedger.ts"
+      },
+      {
+        "name": "clearGuestConversionRecord",
+        "file": "packages/core/src/native/guestConversionLedger.ts"
+      },
+      {
+        "name": "discardGuestConversion",
+        "file": "packages/core/src/native/guestConversionLedger.ts"
+      },
+      {
+        "name": "getGuestDataTransferAvailability",
+        "file": "packages/core/src/native/guestDataTransferPolicy.ts"
+      },
+      {
+        "name": "getLocalGuestIdentity",
+        "file": "packages/core/src/native/guestIdentity.ts"
+      },
+      {
+        "name": "getGuestClaimIdentity",
+        "file": "packages/core/src/native/guestIdentity.ts"
+      },
+      {
+        "name": "updateLocalGuestIdentity",
+        "file": "packages/core/src/native/guestIdentity.ts"
+      },
+      {
+        "name": "clearLocalGuestIdentity",
+        "file": "packages/core/src/native/guestIdentity.ts"
+      },
+      {
+        "name": "migrateGuestDataToAuthenticatedUser",
+        "file": "packages/core/src/native/guestIdentity.ts"
+      },
+      {
+        "name": "getGuestLeaseStatus",
+        "file": "packages/core/src/native/guestLease.ts"
+      },
+      {
+        "name": "getOrCreateGuestLease",
+        "file": "packages/core/src/native/guestLease.ts"
+      },
+      {
+        "name": "dismissGuestLeaseReminder",
+        "file": "packages/core/src/native/guestLease.ts"
+      },
+      {
+        "name": "clearGuestLease",
+        "file": "packages/core/src/native/guestLease.ts"
+      },
+      {
+        "name": "registerGuestLeaseDataKey",
+        "file": "packages/core/src/native/guestLease.ts"
+      },
+      {
+        "name": "clearGuestLeaseData",
+        "file": "packages/core/src/native/guestLease.ts"
+      },
+      {
+        "name": "setGuestScope",
+        "file": "packages/core/src/native/guestScope.ts"
+      },
+      {
+        "name": "getGuestScopeRevision",
+        "file": "packages/core/src/native/guestScope.ts"
+      },
+      {
+        "name": "getGuestScope",
+        "file": "packages/core/src/native/guestScope.ts"
+      },
+      {
+        "name": "isGuestUserId",
+        "file": "packages/core/src/native/guestScope.ts"
+      },
+      {
+        "name": "discardLocalGuestSession",
+        "file": "packages/core/src/native/guestSessionCleanup.ts"
+      },
+      {
+        "name": "activateLocalGuestSession",
+        "file": "packages/core/src/native/localGuestActivation.ts"
+      },
+      {
+        "name": "createLocalGuestInitialBond",
+        "file": "packages/core/src/native/localGuestOnboarding.ts"
+      },
+      {
+        "name": "completeLocalGuestOnboarding",
+        "file": "packages/core/src/native/localGuestOnboarding.ts"
+      },
+      {
+        "name": "discardLocalGuestOnboarding",
+        "file": "packages/core/src/native/localGuestOnboarding.ts"
+      },
+      {
+        "name": "isLocalGuestSessionId",
+        "file": "packages/core/src/native/localGuestSession.ts"
+      },
+      {
+        "name": "readLocalGuestSession",
+        "file": "packages/core/src/native/localGuestSession.ts"
+      },
+      {
+        "name": "restoreLocalGuestSession",
+        "file": "packages/core/src/native/localGuestSession.ts"
+      },
+      {
+        "name": "getOrCreateLocalGuestSession",
+        "file": "packages/core/src/native/localGuestSession.ts"
+      },
+      {
+        "name": "clearLocalGuestSession",
+        "file": "packages/core/src/native/localGuestSession.ts"
+      },
+      {
+        "name": "createGuestDataSyncActor",
+        "file": "packages/ui/src/machines/guestDataSyncMachine.ts"
+      },
+      {
+        "name": "executeFetchGuestDataSummaryEffect",
+        "file": "packages/ui/src/machines/guestDataSyncMachine.ts"
+      },
+      {
+        "name": "executeGuestDataSyncEffect",
+        "file": "packages/ui/src/machines/guestDataSyncMachine.ts"
+      },
+      {
+        "name": "isAnonymousAuthDisabledError",
+        "file": "packages/ui/src/screens/welcomeFlow.ts"
+      },
+      {
+        "name": "getGuestEntryErrorMessage",
+        "file": "packages/ui/src/screens/welcomeFlow.ts"
+      }
+    ],
+    "storageWrappers": [
+      {
+        "name": "createSupabaseStorageAdapter",
+        "file": "packages/core/src/adapters/storage/supabase.adapter.ts"
+      },
+      {
+        "name": "scopeStorageKey",
+        "file": "packages/core/src/lib/accountScope.ts"
+      },
+      {
+        "name": "authProfileStorage",
+        "file": "packages/core/src/lib/authProfileStorage.ts"
+      },
+      {
+        "name": "supabaseAuthStorage",
+        "file": "packages/core/src/lib/authStorage.ts"
+      },
+      {
+        "name": "createKeyValueStorageAdapter",
+        "file": "packages/core/src/lib/keyValueStorageAdapter.ts"
+      },
+      {
+        "name": "createScopedStateStorage",
+        "file": "packages/core/src/lib/scopedStateStorage.ts"
+      },
+      {
+        "name": "supabaseAuthStorage",
+        "file": "packages/core/src/lib/supabaseAuthStorage.ts"
+      },
+      {
+        "name": "createPerspectiveStorageScope",
+        "file": "packages/core/src/lib/tenantStorage.ts"
+      },
+      {
+        "name": "createTenantStorageScope",
+        "file": "packages/core/src/lib/tenantStorage.ts"
+      },
+      {
+        "name": "getJourneySnapshotStorageKey",
+        "file": "packages/core/src/logic/journey/roleJourneyMachine.v6.ts"
+      }
+    ],
+    "buttonComponents": [
+      {
+        "name": "Button",
+        "file": "packages/ui/src/button.tsx"
+      },
+      {
+        "name": "Button",
+        "file": "packages/ui/src/components/native/Button/Button.tsx"
+      },
+      {
+        "name": "ButtonPulse",
+        "file": "packages/ui/src/components/native/Button/ButtonPulse.tsx"
+      },
+      {
+        "name": "SanctuaryButton",
+        "file": "packages/ui/src/components/SanctuaryButton.tsx"
+      },
+      {
+        "name": "SyncStatusRetryButton",
+        "file": "packages/ui/src/components/SyncStatusRetryButton.tsx"
+      },
+      {
+        "name": "ModalCloseButton",
+        "file": "packages/ui/src/components/ui/modal/index.tsx"
+      },
+      {
+        "name": "Button",
+        "file": "packages/ui/src/components/web/Button/Button.tsx"
+      }
+    ],
+    "concepts": [
+      {
+        "concept": "Auth, Accounts & Session",
+        "totalSymbols": 316,
+        "hooksCount": 7,
+        "componentsCount": 5,
+        "storesCount": 0,
+        "logicsCount": 99,
+        "typesCount": 146,
+        "schemasCount": 37
+      },
+      {
+        "concept": "Utility & Primitives",
+        "totalSymbols": 2483,
+        "hooksCount": 109,
+        "componentsCount": 388,
+        "storesCount": 1,
+        "logicsCount": 451,
+        "typesCount": 1176,
+        "schemasCount": 98
+      },
+      {
+        "concept": "Storage, Sync & Persistence",
+        "totalSymbols": 282,
+        "hooksCount": 19,
+        "componentsCount": 9,
+        "storesCount": 0,
+        "logicsCount": 70,
+        "typesCount": 136,
+        "schemasCount": 5
+      },
+      {
+        "concept": "ReBAC, Identity & Permissions",
+        "totalSymbols": 190,
+        "hooksCount": 5,
+        "componentsCount": 5,
+        "storesCount": 0,
+        "logicsCount": 42,
+        "typesCount": 89,
+        "schemasCount": 35
+      },
+      {
+        "concept": "Education & Workspace",
+        "totalSymbols": 444,
+        "hooksCount": 9,
+        "componentsCount": 9,
+        "storesCount": 0,
+        "logicsCount": 63,
+        "typesCount": 220,
+        "schemasCount": 92
+      },
+      {
+        "concept": "UI Primitives & Controls",
+        "totalSymbols": 324,
+        "hooksCount": 28,
+        "componentsCount": 122,
+        "storesCount": 0,
+        "logicsCount": 24,
+        "typesCount": 142,
+        "schemasCount": 4
+      },
+      {
+        "concept": "Feature Flags & Rollout",
+        "totalSymbols": 18,
+        "hooksCount": 1,
+        "componentsCount": 0,
+        "storesCount": 0,
+        "logicsCount": 7,
+        "typesCount": 6,
+        "schemasCount": 2
+      }
+    ]
+  },
+  "foldersSummary": {
+    "totalFolders": 36,
+    "topFolders": [
+      {
+        "folder": "logic",
+        "fileCount": 319,
+        "loc": 36674,
+        "hookCount": 4,
+        "storeCount": 3,
+        "reactFiles": 2,
+        "zustandFiles": 2,
+        "effectFiles": 10,
+        "subFolderCount": 30,
+        "subFolders": [
+          "agents",
+          "auth",
+          "billing",
+          "deeplink",
+          "domains",
+          "entities",
+          "erp",
+          "events",
+          "experience",
+          "forms",
+          "grading",
+          "i18n",
+          "interfaces",
+          "journey",
+          "managers",
+          "mesh",
+          "modes",
+          "omnichannel",
+          "pairing",
+          "permissions",
+          "ports",
+          "reflection",
+          "registry",
+          "schemas",
+          "shield",
+          "store-slices",
+          "utils",
+          "workbench",
+          "workspace",
+          "__tests__"
+        ],
+        "primaryRole": "State Management (Zustand Stores)",
+        "smells": [
+          "Scattered hooks: 4 hooks located outside hooks/ and store/",
+          "Framework leak: React imported inside logic/ (2 files)"
+        ]
+      },
+      {
+        "folder": "adapters",
+        "fileCount": 111,
+        "loc": 15493,
+        "hookCount": 0,
+        "storeCount": 3,
+        "reactFiles": 3,
+        "zustandFiles": 0,
+        "effectFiles": 1,
+        "subFolderCount": 12,
+        "subFolders": [
+          "cedar",
+          "events",
+          "feature-rollout",
+          "memory",
+          "native",
+          "powersync",
+          "realtime",
+          "storage",
+          "supabase",
+          "web",
+          "zenstack",
+          "__tests__"
+        ],
+        "primaryRole": "Infrastructure Adapters (Hexagonal)",
+        "smells": []
+      },
+      {
+        "folder": "lib",
+        "fileCount": 94,
+        "loc": 9208,
+        "hookCount": 4,
+        "storeCount": 5,
+        "reactFiles": 3,
+        "zustandFiles": 4,
+        "effectFiles": 0,
+        "subFolderCount": 4,
+        "subFolders": [
+          "monitoring",
+          "security",
+          "sync",
+          "__tests__"
+        ],
+        "primaryRole": "State Management (Zustand Stores)",
+        "smells": [
+          "Redundant utility sprawl: lib/ and utils/ and shared/ have overlapping roles",
+          "Scattered hooks: 4 hooks located outside hooks/ and store/",
+          "Framework leak: React imported inside lib/ (3 files)"
+        ]
+      },
+      {
+        "folder": "types",
+        "fileCount": 53,
+        "loc": 4060,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 1,
+        "zustandFiles": 0,
+        "effectFiles": 0,
+        "subFolderCount": 1,
+        "subFolders": [
+          "__tests__"
+        ],
+        "primaryRole": "Type Contracts & Interfaces",
+        "smells": []
+      },
+      {
+        "folder": "hooks",
+        "fileCount": 52,
+        "loc": 5947,
+        "hookCount": 51,
+        "storeCount": 0,
+        "reactFiles": 36,
+        "zustandFiles": 0,
+        "effectFiles": 1,
+        "subFolderCount": 1,
+        "subFolders": [
+          "__tests__"
+        ],
+        "primaryRole": "React Hooks & Orchestration",
+        "smells": []
+      },
+      {
+        "folder": "native",
+        "fileCount": 35,
+        "loc": 3864,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 1,
+        "subFolderCount": 1,
+        "subFolders": [
+          "__tests__"
+        ],
+        "primaryRole": "Platform/Native Bindings",
+        "smells": [
+          "Contains platform-agnostic session shims (guestScope.ts) with 0 native deps"
+        ]
+      },
+      {
+        "folder": "store",
+        "fileCount": 30,
+        "loc": 4025,
+        "hookCount": 18,
+        "storeCount": 15,
+        "reactFiles": 0,
+        "zustandFiles": 17,
+        "effectFiles": 0,
+        "subFolderCount": 3,
+        "subFolders": [
+          "slices",
+          "types",
+          "__tests__"
+        ],
+        "primaryRole": "State Management (Zustand Stores)",
+        "smells": []
+      },
+      {
+        "folder": "flows",
+        "fileCount": 29,
+        "loc": 4099,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 0,
+        "subFolderCount": 9,
+        "subFolders": [
+          "account",
+          "admin",
+          "ai",
+          "classroom",
+          "entry",
+          "founder",
+          "pjc",
+          "qr",
+          "self"
+        ],
+        "primaryRole": "End-to-End User Journey Flows",
+        "smells": []
+      },
+      {
+        "folder": "__tests__",
+        "fileCount": 24,
+        "loc": 2331,
+        "hookCount": 1,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 0,
+        "subFolderCount": 3,
+        "subFolders": [
+          "invariants",
+          "scenarios",
+          "workspace"
+        ],
+        "primaryRole": "Domain Logic",
+        "smells": [
+          "Scattered hooks: 1 hooks located outside hooks/ and store/"
+        ]
+      },
+      {
+        "folder": "verger",
+        "fileCount": 21,
+        "loc": 4404,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 0,
+        "subFolderCount": 0,
+        "subFolders": [],
+        "primaryRole": "Domain Logic",
+        "smells": []
+      },
+      {
+        "folder": "spatial",
+        "fileCount": 8,
+        "loc": 2052,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 0,
+        "subFolderCount": 1,
+        "subFolders": [
+          "__tests__"
+        ],
+        "primaryRole": "Domain Logic",
+        "smells": []
+      },
+      {
+        "folder": "monitoring",
+        "fileCount": 7,
+        "loc": 385,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 0,
+        "subFolderCount": 0,
+        "subFolders": [],
+        "primaryRole": "Domain Logic",
+        "smells": []
+      },
+      {
+        "folder": "accounts",
+        "fileCount": 6,
+        "loc": 1729,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 1,
+        "subFolderCount": 1,
+        "subFolders": [
+          "__tests__"
+        ],
+        "primaryRole": "Domain Logic",
+        "smells": []
+      },
+      {
+        "folder": "effect",
+        "fileCount": 6,
+        "loc": 865,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 6,
+        "subFolderCount": 1,
+        "subFolders": [
+          "__tests__"
+        ],
+        "primaryRole": "Domain Logic",
+        "smells": []
+      },
+      {
+        "folder": "utils",
+        "fileCount": 6,
+        "loc": 235,
+        "hookCount": 0,
+        "storeCount": 0,
+        "reactFiles": 0,
+        "zustandFiles": 0,
+        "effectFiles": 2,
+        "subFolderCount": 1,
+        "subFolders": [
+          "__tests__"
+        ],
+        "primaryRole": "Domain Logic",
+        "smells": []
+      }
+    ]
+  },
+  "chronologySummary": {
+    "eras": [
+      {
+        "name": "Era 1: Legacy Bootstrap",
+        "window": "Feb – June 2026",
+        "focus": "Basic Supabase session wrappers, PowerSync SQLite tables, 43-line identityState.ts."
+      },
+      {
+        "name": "Era 2: CASL Accretion",
+        "window": "July – August 2026",
+        "focus": "CASL rules, usePermissions hooks, Gluestack UI components, dynamic ability checks."
+      },
+      {
+        "name": "Era 3: Agentic Race Accretion",
+        "window": "September 2026",
+        "focus": "High churn (30-50 commits/file), auth race counters, suggestDisplayName, ad-hoc isLocalOnly."
+      },
+      {
+        "name": "Era 4: Canonical ReBAC",
+        "window": "October – November 2026",
+        "focus": "Immutable UUIDv8 account cutover, pure Bond Citizenship, synchronous O(1) evaluators, Code-ERD."
+      }
+    ],
+    "bedrockFiles": [
+      {
+        "path": "packages/core/src/lib/storage.ts",
+        "loc": 40,
+        "churn": 25,
+        "born": "2026-02-05",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/ui/src/primitives.ts",
+        "loc": 71,
+        "churn": 14,
+        "born": "2026-04-25",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/types/authorization.ts",
+        "loc": 93,
+        "churn": 13,
+        "born": "2026-03-30",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/adapters/powersync/schema.ts",
+        "loc": 700,
+        "churn": 12,
+        "born": "2026-05-06",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/constants/SriLankanSchools.ts",
+        "loc": 874,
+        "churn": 10,
+        "born": "2026-02-04",
+        "verdict": "Massive Static Constant (874 LOC)"
+      },
+      {
+        "path": "packages/core/src/types/Identity.ts",
+        "loc": 78,
+        "churn": 9,
+        "born": "2026-05-06",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/types/runtime.ts",
+        "loc": 173,
+        "churn": 9,
+        "born": "2026-04-25",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/types/Errors.ts",
+        "loc": 191,
+        "churn": 9,
+        "born": "2026-05-08",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/ui/src/utils/haptics.ts",
+        "loc": 145,
+        "churn": 7,
+        "born": "2026-02-03",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/logic/auth/identityState.ts",
+        "loc": 156,
+        "churn": 6,
+        "born": "2026-06-26",
+        "verdict": "Orphaned Subsystem Node (0 in-degree callers)"
+      },
+      {
+        "path": "packages/ui/src/icons.ts",
+        "loc": 2,
+        "churn": 6,
+        "born": "2026-04-27",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/lib/sync/eventBus.ts",
+        "loc": 169,
+        "churn": 6,
+        "born": "2026-05-06",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/adapters/powersync/powersync-shim.ts",
+        "loc": 81,
+        "churn": 6,
+        "born": "2026-05-06",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/logic/schemas/capacity.schema.ts",
+        "loc": 24,
+        "churn": 5,
+        "born": "2026-03-25",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/monitoring/index.ts",
+        "loc": 12,
+        "churn": 5,
+        "born": "2026-08-29",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/logic/permissions/signature.ts",
+        "loc": 123,
+        "churn": 4,
+        "born": "2026-05-20",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/lib/accountScope.ts",
+        "loc": 27,
+        "churn": 4,
+        "born": "2026-04-17",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/logic/ports/entitlement.port.ts",
+        "loc": 99,
+        "churn": 3,
+        "born": "2026-06-13",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/store/types/featureFlags.ts",
+        "loc": 34,
+        "churn": 3,
+        "born": "2026-07-24",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/logic/registry/citizenship.ts",
+        "loc": 54,
+        "churn": 3,
+        "born": "2026-07-24",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/native/guestScope.ts",
+        "loc": 38,
+        "churn": 3,
+        "born": "2026-07-28",
+        "verdict": "Legacy Session Shim"
+      },
+      {
+        "path": "packages/core/src/logic/permissions/bondScope.ts",
+        "loc": 36,
+        "churn": 2,
+        "born": "2026-07-28",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/logic/utils/edloveUuidV8.ts",
+        "loc": 199,
+        "churn": 2,
+        "born": "2026-10-23",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
+        "loc": 125,
+        "churn": 2,
+        "born": "2026-08-13",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/ui/src/utils/classNames.ts",
+        "loc": 10,
+        "churn": 2,
+        "born": "2026-08-29",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/logic/ports/authz.port.ts",
+        "loc": 42,
+        "churn": 2,
+        "born": "2026-06-13",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/types/Social.ts",
+        "loc": 23,
+        "churn": 2,
+        "born": "2026-02-28",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/logic/interfaces/network.port.ts",
+        "loc": 25,
+        "churn": 2,
+        "born": "2026-04-26",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/monitoring/breadcrumbs.ts",
+        "loc": 62,
+        "churn": 1,
+        "born": "2026-08-29",
+        "verdict": "Bedrock Invariant"
+      },
+      {
+        "path": "packages/core/src/lib/security/transportSecurity.ts",
+        "loc": 71,
+        "churn": 0,
+        "born": "Uncommitted",
+        "verdict": "Bedrock Invariant"
+      }
+    ]
+  }
+}

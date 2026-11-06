@@ -111,6 +111,9 @@ export function CapacityPerspectiveSwitcher({
               >
                 <div className={styles.optionTitleRow}>
                   <span className={styles.optionTitle}>{item.roleTitle}</span>
+                  <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--ink-muted)', fontWeight: 600 }}>
+                    {item.defaultSector}
+                  </span>
                   {isSelected ? (
                     <span aria-hidden="true" className={styles.optionCheck}>
                       ✓

@@ -1,0 +1,9 @@
+{
+  "reason": "Previously authorized hard retirement of legacy first-party API surfaces; native contract inventory replaces this obsolete generator.",
+  "path": "apps/sanctuary-api/scripts/generate-openapi-spec.ts",
+  "sha256": "9ad8e61123645670c5d91edc849a7a107282261b490c76e9dcda9bff2142a273",
+  "staleCompiledArtifact": {
+    "path": "apps/sanctuary-api/scripts/generate-openapi-spec.js",
+    "sha256": "1ba22865637c003ebed876043e7aa0c533917e35664a77bd4105bb01b88b62d7"
+  }
+}

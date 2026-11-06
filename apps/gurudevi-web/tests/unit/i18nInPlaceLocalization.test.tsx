@@ -3,7 +3,7 @@ import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { LocaleProvider, useTranslation, getTranslation } from '../../lib/i18n';
-import { LanguageToggle } from '../../app/(sanctuary)/components/LanguageToggle';
+import { LanguagePicker } from '@repo/ui/components/web';
 
 function TestConsumer() {
   const { t, locale, setLocale } = useTranslation();
@@ -93,18 +93,29 @@ describe('In-Place Multilingual Localization Engine', () => {
     expect(taText).toContain('24');
   });
 
-  it('unblocks LanguageToggle and switches language reactively', async () => {
+  function LanguagePickerWrapper() {
+    const { locale, setLocale } = useTranslation();
+    return (
+      <LanguagePicker
+        value={locale as 'en' | 'si' | 'ta'}
+        onChange={(l) => setLocale(l)}
+        variant="dropdown"
+      />
+    );
+  }
+
+  it('unblocks LanguagePicker and switches language reactively', async () => {
     const user = userEvent.setup();
 
     render(
       <LocaleProvider initialLocale="en">
-        <LanguageToggle />
+        <LanguagePickerWrapper />
         <TestConsumer />
       </LocaleProvider>,
     );
 
     // Click toggle button to open dropdown
-    const toggleBtn = screen.getByRole('button', { name: /select language/i });
+    const toggleBtn = screen.getByRole('button', { name: /language selector/i });
     await user.click(toggleBtn);
 
     // Click Sinhala option

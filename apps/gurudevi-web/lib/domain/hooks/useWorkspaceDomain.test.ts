@@ -9,8 +9,8 @@ const mocks = vi.hoisted(() => ({
   getClassrooms: vi.fn(),
 }));
 
-vi.mock('../adapters/workspace/workspaceHexagonalService', () => ({
-  workspaceHexagonalService: {
+vi.mock('../adapters/workspace/workspace.adapter', () => ({
+  workspaceAdapter: {
     getAttendanceRoster: mocks.getAttendanceRoster,
     getClassrooms: mocks.getClassrooms,
   },

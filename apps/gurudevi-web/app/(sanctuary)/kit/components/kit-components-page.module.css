@@ -1,0 +1,287 @@
+/* ==========================================================================
+   Kit Components Directory Page & Dev TOC Layout
+   ========================================================================== */
+
+.pageLayout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--paper, #0d0f18);
+  color: var(--ink, #f3f4f6);
+}
+
+.sidebarArea {
+  flex-shrink: 0;
+  width: 290px;
+  border-right: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.mainCanvas {
+  flex: 1;
+  min-width: 0;
+  padding: 2.5rem 3.5rem;
+  max-width: 1200px;
+}
+
+.pageHeader {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.6));
+  margin-bottom: 0.75rem;
+}
+
+.breadLink {
+  color: var(--ink-soft, rgba(255, 255, 255, 0.75));
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.breadLink:hover {
+  color: var(--w-lamp, #e2c37a);
+}
+
+.breadDivider {
+  color: var(--ink-soft, rgba(255, 255, 255, 0.3));
+}
+
+.breadCurrent {
+  color: var(--w-lamp, #e2c37a);
+  font-weight: 500;
+}
+
+.pageTitle {
+  font: 700 2.2rem Georgia, "Times New Roman", serif;
+  color: var(--ink, #fff);
+  letter-spacing: -0.015em;
+  margin: 0 0 0.5rem 0;
+}
+
+.pageSubtitle {
+  font: 400 1rem system-ui, -apple-system, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.7));
+  line-height: 1.55;
+  max-width: 780px;
+  margin: 0;
+}
+
+.featureSection {
+  margin-bottom: 3.5rem;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--paper-light, #171825) 90%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.sectionHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sectionBadge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  margin-bottom: 0.5rem;
+}
+
+.sectionTitle {
+  font: 700 1.5rem Georgia, serif;
+  color: var(--ink, #fff);
+  margin: 0 0 0.5rem 0;
+}
+
+.sectionDesc {
+  font: 400 0.92rem system-ui, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.7));
+  line-height: 1.5;
+  max-width: 720px;
+  margin: 0;
+}
+
+.detailLinkBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 35%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  font: 600 0.85rem system-ui, sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.detailLinkBtn:hover {
+  background: var(--w-lamp, #e2c37a);
+  color: #111;
+}
+
+.orbitDemoWrapper {
+  margin-top: 1rem;
+}
+
+.spotEchoNotice {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 10%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  font-size: 0.85rem;
+}
+
+/* Tiers Grid */
+.tiersGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.tierCard {
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper, #11121d) 90%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.tierTitle {
+  font: 700 1.05rem Georgia, serif;
+  color: var(--ink, #fff);
+  margin: 0 0 0.25rem 0;
+}
+
+.tierDescription {
+  font: 400 0.82rem system-ui, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.65));
+  margin: 0 0 1rem 0;
+}
+
+.tierPreview {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-light, #171825) 90%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.05));
+  display: flex;
+  justify-content: center;
+}
+
+/* Categories Grid */
+.categoriesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.categoryCard {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper, #11121d) 90%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.catCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.06));
+}
+
+.catIcon {
+  font-size: 1.2rem;
+}
+
+.catTitle {
+  font: 700 1rem Georgia, serif;
+  color: var(--ink, #fff);
+  margin: 0;
+}
+
+.catList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.catListItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.catItemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.catItemLink {
+  color: var(--ink, #f3f4f6);
+  font: 600 0.85rem system-ui, sans-serif;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.catItemLink:hover {
+  color: var(--w-lamp, #e2c37a);
+}
+
+.catBadge {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  font-weight: 600;
+}
+
+.catItemDesc {
+  font-size: 0.75rem;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.55));
+  margin: 0;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .pageLayout {
+    flex-direction: column;
+  }
+  .sidebarArea {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  }
+  .mainCanvas {
+    padding: 1.5rem;
+  }
+}

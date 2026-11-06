@@ -14,7 +14,8 @@ describe('Gurudevi hostname policy', () => {
     expect(classifyGurudeviHost('GURUDEVI.APP.')).toBe('public');
     expect(classifyGurudeviHost(SANCTUARY_GURUDEVI_HOST)).toBe('sanctuary');
     expect(classifyGurudeviHost(EXPLORE_GURUDEVI_HOST)).toBe('explore');
-    expect(classifyGurudeviHost('localhost')).toBe('other');
+    expect(classifyGurudeviHost('localhost')).toBe('public');
+    expect(classifyGurudeviHost('custom-proxy.internal')).toBe('other');
   });
 
   it('recognizes local preview hosts without changing production host classification', () => {
@@ -22,7 +23,8 @@ describe('Gurudevi hostname policy', () => {
     expect(isLocalPreviewHost('127.0.0.1:3000')).toBe(true);
     expect(isLocalPreviewHost('[::1]:3000')).toBe(true);
     expect(isLocalPreviewHost('explore.gurudevi.app')).toBe(false);
-    expect(classifyGurudeviHost('localhost')).toBe('other');
+    expect(classifyGurudeviHost('localhost')).toBe('public');
+    expect(classifyGurudeviHost('custom-proxy.internal')).toBe('other');
     expect(classifyGurudeviHost('sanctuary.localhost:3000')).toBe('sanctuary');
     expect(classifyGurudeviHost('explore.localhost:3000')).toBe('explore');
   });
@@ -31,6 +33,9 @@ describe('Gurudevi hostname policy', () => {
     expect(isSanctuaryPath('/auth/complete')).toBe(true);
     expect(isSanctuaryPath('/self/journal')).toBe(true);
     expect(isSanctuaryPath('/api/community/groups')).toBe(true);
+    expect(isSanctuaryPath('/kit')).toBe(true);
+    expect(isSanctuaryPath('/icon-lab')).toBe(true);
+    expect(isSanctuaryPath('/verger-lab')).toBe(true);
     expect(resolveHostRouting(PUBLIC_GURUDEVI_HOST, '/sign-in', 'GET')).toEqual({
       kind: 'redirect',
       host: SANCTUARY_GURUDEVI_HOST,
@@ -61,39 +66,78 @@ describe('Gurudevi hostname policy', () => {
     });
   });
 
-  it('maps Explore-only GET requests to canonical routes and denies privileged paths', () => {
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/', 'GET')).toEqual({
-      kind: 'rewrite',
-      pathname: '/welcome',
+  describe('Explore host — allowlist routing (R3 security hardening)', () => {
+    it('rewrites root to /welcome', () => {
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/', 'GET')).toEqual({
+        kind: 'rewrite',
+        pathname: '/welcome',
+      });
     });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'GET')).toEqual({
-      kind: 'allow',
+
+    it('allows explicitly listed demo paths', () => {
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/welcome', 'GET')).toEqual({ kind: 'allow' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'GET')).toEqual({ kind: 'allow' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self/journal', 'GET')).toEqual({ kind: 'allow' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/badge.svg', 'GET')).toEqual({ kind: 'allow' });
     });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/welcome', 'GET')).toEqual({
-      kind: 'allow',
+
+    it('blocks sanctuary-authenticated routes that were previously allowed (allowlist fix)', () => {
+      // These were allowed under the old blocklist model — they must now be blocked.
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/workspace', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/profile', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/settings', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/notifications', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/community', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/library', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/admin', 'GET')).toEqual({ kind: 'not-found' });
     });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/workspace', 'GET')).toEqual({
-      kind: 'allow',
+
+    it('blocks API and auth paths', () => {
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/api/identity', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/onboarding', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/recovery', 'GET')).toEqual({ kind: 'not-found' });
     });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/api/identity', 'GET')).toEqual({
-      kind: 'not-found',
+
+    it('redirects auth flows to sanctuary (not served on explore)', () => {
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/sign-in', 'GET')).toEqual({
+        kind: 'redirect',
+        host: SANCTUARY_GURUDEVI_HOST,
+        pathname: '/sign-in',
+      });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/sign-up', 'GET')).toEqual({
+        kind: 'redirect',
+        host: SANCTUARY_GURUDEVI_HOST,
+        pathname: '/sign-up',
+      });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/auth/complete', 'GET')).toEqual({
+        kind: 'redirect',
+        host: SANCTUARY_GURUDEVI_HOST,
+        pathname: '/auth/complete',
+      });
     });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/sign-in', 'GET')).toEqual({
-      kind: 'redirect',
-      host: SANCTUARY_GURUDEVI_HOST,
-      pathname: '/sign-in',
+
+    it('blocks all non-GET/HEAD methods on explore host', () => {
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'POST')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/welcome', 'PUT')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/', 'DELETE')).toEqual({ kind: 'not-found' });
     });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/profile', 'GET')).toEqual({
-      kind: 'allow',
+
+    it('allows developer labs on local preview hosts while blocking them on production explore', () => {
+      // In local preview, engineers can test UI kit and labs across surfaces
+      expect(resolveHostRouting('explore.localhost:3000', '/kit', 'GET')).toEqual({ kind: 'allow' });
+      expect(resolveHostRouting('sanctuary.localhost:3000', '/kit', 'GET')).toEqual({ kind: 'allow' });
+      expect(resolveHostRouting('sanctuary.localhost:3000', '/icon-lab', 'GET')).toEqual({ kind: 'allow' });
+
+      // In production explore, UI kit and labs remain strictly not-found
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/kit', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/icon-lab', 'GET')).toEqual({ kind: 'not-found' });
     });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/settings', 'GET')).toEqual({
-      kind: 'allow',
-    });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/notifications', 'GET')).toEqual({
-      kind: 'allow',
-    });
-    expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/self', 'POST')).toEqual({
-      kind: 'not-found',
+
+    it('blocks any future routes not in the allowlist by default', () => {
+      // These do not exist — simulating a developer adding a new sanctuary route
+      // without thinking about explore. They must be blocked without any explicit action.
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/gradebook', 'GET')).toEqual({ kind: 'not-found' });
+      expect(resolveHostRouting(EXPLORE_GURUDEVI_HOST, '/unknown-future-surface', 'GET')).toEqual({ kind: 'not-found' });
     });
   });
 
@@ -106,7 +150,8 @@ describe('Gurudevi hostname policy', () => {
   });
 
   it('does not alter preview or local development host behavior', () => {
-    expect(resolveHostRouting('localhost', '/self', 'GET')).toEqual({ kind: 'allow' });
+    expect(resolveHostRouting('localhost', '/self', 'GET')).toEqual({ kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST });
+    expect(resolveHostRouting('localhost', '/privacy', 'GET')).toEqual({ kind: 'allow' });
     expect(resolveHostRouting('branch-preview.example.com', '/privacy', 'GET')).toEqual({
       kind: 'allow',
     });
@@ -133,38 +178,51 @@ describe('Gurudevi hostname policy', () => {
     ).toEqual({ kind: 'allow' });
   });
 
-  it('recognizes and routes school vanity subdomains to dynamic school profiles', () => {
-    expect(classifyGurudeviHost('ananda.gurudevi.app')).toBe('school');
-    expect(classifyGurudeviHost('royal-college.gurudevi.app')).toBe('school');
-    expect(classifyGurudeviHost('sanctuary.gurudevi.app')).toBe('sanctuary');
+  describe('School subdomain routing + anti-squatting (R5 hardening)', () => {
+    it('recognizes and routes school vanity subdomains to dynamic school profiles', () => {
+      expect(classifyGurudeviHost('ananda.gurudevi.app')).toBe('school');
+      expect(classifyGurudeviHost('royal-college.gurudevi.app')).toBe('school');
+      expect(classifyGurudeviHost('sanctuary.gurudevi.app')).toBe('sanctuary');
 
-    // Root rewrites to sovereign school profile
-    expect(resolveHostRouting('ananda.gurudevi.app', '/', 'GET')).toEqual({
-      kind: 'rewrite',
-      pathname: '/school/ananda',
+      expect(resolveHostRouting('ananda.gurudevi.app', '/', 'GET')).toEqual({
+        kind: 'rewrite',
+        pathname: '/school/ananda',
+      });
+
+      expect(resolveHostRouting('ananda.gurudevi.app', '/workspace/school', 'GET')).toEqual({
+        kind: 'redirect',
+        host: SANCTUARY_GURUDEVI_HOST,
+        pathname: '/workspace/school',
+      });
+
+      expect(resolveHostRouting('ananda.gurudevi.app', '/articles/sports-2026', 'GET')).toEqual({
+        kind: 'rewrite',
+        pathname: '/school/ananda/articles/sports-2026',
+      });
+
+      expect(resolveHostRouting('ananda.gurudevi.app', '/school/ananda', 'GET')).toEqual({
+        kind: 'allow',
+      });
+
+      expect(resolveHostRouting('ananda.gurudevi.app', '/', 'POST')).toEqual({
+        kind: 'not-found',
+      });
     });
 
-    // Privileged operational desk redirected to canonical Sanctuary host
-    expect(resolveHostRouting('ananda.gurudevi.app', '/workspace/school', 'GET')).toEqual({
-      kind: 'redirect',
-      host: SANCTUARY_GURUDEVI_HOST,
-      pathname: '/workspace/school',
-    });
-
-    // Subpaths rewrite to preserve subdomain context
-    expect(resolveHostRouting('ananda.gurudevi.app', '/articles/sports-2026', 'GET')).toEqual({
-      kind: 'rewrite',
-      pathname: '/school/ananda/articles/sports-2026',
-    });
-
-    // Direct allowed subpaths
-    expect(resolveHostRouting('ananda.gurudevi.app', '/school/ananda', 'GET')).toEqual({
-      kind: 'allow',
-    });
-
-    // Unsafe methods rejected on public school vanity domain
-    expect(resolveHostRouting('ananda.gurudevi.app', '/', 'POST')).toEqual({
-      kind: 'not-found',
+    it('blocks school subdomain squatting with reserved names (R5)', () => {
+      // These look like system subdomains and must not be registerable as schools.
+      expect(classifyGurudeviHost('login.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('account.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('my.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('app.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('cdn.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('static.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('help.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('docs.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('security.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('dev.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('staging.gurudevi.app')).toBe('other');
+      expect(classifyGurudeviHost('beta.gurudevi.app')).toBe('other');
     });
   });
 });

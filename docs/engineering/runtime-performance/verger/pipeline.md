@@ -18,6 +18,14 @@ compare). Update this page whenever a stage changes. Doctrine:
 
 ## Build plan and progress
 
+**2026-10-29 sources and one clock:** Every signal source (RN DevTools CDP, in-app performance APIs, Expo Observe, `@expo/devtools`, Android) mapped against what Verger captures, with one monotonic join key: RN 0.88's `performance.now()` is `steady_clock`, the clock of `System.nanoTime()` and CDP traces. Build order and open choices: [sources and one timeline](2026-10-29-sources-and-one-timeline.md). Steps 1 to 3 built the same day (one clock, in-app timings, decisions as DevTools marks and Perfetto counters); the clock equality still needs a phone check.
+
+**2026-10-29 consolidation:** Verger code from every branch, backup ref and WSL copy was compared by function, not by date. Restored: the mobile JS device signals that merge `d85db3aae` had truncated, and the Hermes heap compaction on memory pressure, now driven by `snapshot.memory`. Brought in: the Android binding rewritten on Expo Modules API 2.0 (Verger itself is not versioned 2). Routed through verger: the web world scene (`WorldGroundSurface`) and the embers (`FloorAtmosphere`). `verger:check` is now required in `pr-guard`. Full map, evidence and what still needs a decision: [consolidation map](2026-10-29-consolidation-map.md).
+
+**2026-10-27 Android binding candidate:** Expo Modules 2.0 binding implemented in an isolated worktree; main keeps the DSL binding. Real native compilation/AAR packaging and 48 JVM cases establish boundary/compiler parity; live client/device acceptance remains open. [Evidence and remaining gates](2026-10-27-android-modules-v2-implementation.md). No control policy or sensor cadence changed. (Brought into the main checkout 2026-10-29.)
+
+**2026-10-27 device follow-up:** Complete isolated debug client built and installed alongside the original app. A52/API 34 Hermes smoke checks cover nine methods, eleven subscription names, ten observed event channels, stop/restart, sensor disablement, background/foreground, removal and two deliberate reloads. Actual client JVM graph: 48/48; final Verger gate: ALL_PASS=1. Full qualification remains open (API 36 CPU headroom, positive CPU hints, lower-memory comparison, release shrinking and retention analysis). [Detailed evidence](2026-10-27-android-modules-v2-implementation.md).
+
 **Current intent and refinement order:** See [intent, evidence and refinement roadmap](2026-10-28-intent-to-evidence-and-refinement-roadmap.md) for the P0 journey, source fidelity, explainable decisions, graduated sensing and controlled experiments. It reconciles later work with historical gap tables below.
 
 **2026-10-28 journal integrity:** Backfill retains valid records from a damaged JSONL journal,
@@ -97,7 +105,9 @@ G1 / Vitest: local telemetry 15/15, including the rung-4 refusal; serialized Ver
 ALL_PASS=1. These checks do not prove the device received the new launch event or that the
 native sensors are working. Do not reset the ladder or attribute its relapses without evidence.
 
-**2026-10-28 isolated lab:** For a disposable development-only shadow session, start Metro with
+**2026-10-28 isolated lab** (replaced 2026-10-29 by the exhaustive level: development builds are
+exhaustive and keep their own recovery ladder; the env flag below no longer exists. See
+`resolveVergerLevel` in `@repo/core/verger`.) For a disposable development-only shadow session, start Metro with
 `EXPO_PUBLIC_GURUDEVI_VERGER_ISOLATED=true` and `EXPO_PUBLIC_GURUDEVI_RUNTIME=shadow`.
 This uses no recovery store and does not erase the normal ladder; an off switch still wins.
 The A52 recorded a shadow/rung-0/no-store launch and JS-side inputs including long tasks,

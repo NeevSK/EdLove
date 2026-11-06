@@ -1,6 +1,9 @@
+﻿import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { classifyGurudeviHost } from '../../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../../lib/sanctuary/authorizedEntry';
+import { resolveSanctuaryDevSession } from '../../../../lib/sanctuary/devSession';
 import { createServerSupabaseClient } from '../../../../lib/supabase/server';
 import { signInPath } from '../../auth/routeSafety';
 import { SanctuaryShell } from '../../components/SanctuaryShell';
@@ -8,15 +11,65 @@ import { SchoolForestFloor } from './SchoolForestFloor';
 
 export const metadata = { title: 'School Forest | Gurudevi Sanctuary' };
 
-export default async function SchoolForestPage() {
+interface SchoolForestPageProps {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function SchoolForestPage({ searchParams }: SchoolForestPageProps = {}) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const requestHeaders = await headers();
+  const cookieStore = await cookies();
+  const host = requestHeaders.get('host') ?? '';
+  const isExplore =
+    classifyGurudeviHost(host) === 'explore' ||
+    resolvedSearchParams?.mode === 'explore' ||
+    resolvedSearchParams?.surface === 'explore';
+
+  if (isExplore) {
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <SchoolForestFloor displayName="Guest Explorer" />
+      </SanctuaryShell>
+    );
+  }
+
+  const devSession = resolveSanctuaryDevSession({
+    searchParams: resolvedSearchParams as any,
+    host,
+    cookieStore,
+  });
+
+  if (devSession.isDevSession) {
+    return (
+      <SanctuaryShell
+        displayName={devSession.displayName}
+        isDevPreview
+        previewCapacity={devSession.capacity}
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={false}
+      >
+        <SchoolForestFloor displayName={devSession.displayName} />
+      </SanctuaryShell>
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
     return (
-      <ForestState
-        displayName="Explorer"
-        title="School forest is unavailable"
-        detail="Browser sign-in is not configured in this environment."
-      />
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <SchoolForestFloor displayName="Guest Explorer" />
+      </SanctuaryShell>
     );
   }
 
@@ -58,7 +111,7 @@ export default async function SchoolForestPage() {
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <SchoolForestFloor displayName={entry.displayName} capacity={entry.activeCapacity} />
+      <SchoolForestFloor displayName={entry.displayName} />
     </SanctuaryShell>
   );
 }

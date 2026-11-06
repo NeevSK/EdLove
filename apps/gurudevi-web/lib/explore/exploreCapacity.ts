@@ -1,11 +1,15 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import type { SectorKind } from '@repo/core/types/Perspective';
+import type { CivicRoleId } from '@repo/core/types/CivicRole';
 
 export type ExploreCapacity = 'teacher' | 'principal' | 'student' | 'guardian' | 'founder' | 'researcher';
 
 export const DEFAULT_EXPLORE_CAPACITY: ExploreCapacity = 'teacher';
+export const DEFAULT_EXPLORE_SECTOR: SectorKind = 'institutional';
 export const EXPLORE_CAPACITY_STORAGE_KEY = 'gurudevi_explore_capacity';
+export const EXPLORE_SECTOR_STORAGE_KEY = 'gurudevi_explore_sector';
 export const EXPLORE_CAPACITY_EVENT = 'gurudevi-explore-capacity-change';
 
 export interface ExploreCapacityMeta {
@@ -13,6 +17,10 @@ export interface ExploreCapacityMeta {
   readonly label: string;
   readonly roleTitle: string;
   readonly description: string;
+  /** Sector this role belongs to canonically */
+  readonly defaultSector: SectorKind;
+  /** Civic role representation */
+  readonly civicRole?: CivicRoleId;
   readonly domainOverview: Readonly<{
     workspace: string;
     self: string;
@@ -26,6 +34,8 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
     id: 'teacher',
     label: 'Teacher',
     roleTitle: 'Teacher & Educator',
+    defaultSector: 'institutional',
+    civicRole: 'teacher',
     description:
       'Classroom Sanctuary: daily attendance, class rosters, lesson prep, and safe practice.',
     domainOverview: {
@@ -39,6 +49,7 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
     id: 'principal',
     label: 'School Leader',
     roleTitle: 'School Leader & Principal',
+    defaultSector: 'institutional',
     description:
       'School Coordination: institutional climate sensing, school-wide presence, and educator support.',
     domainOverview: {
@@ -52,6 +63,8 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
     id: 'student',
     label: 'Student',
     roleTitle: 'Young Learner & Student',
+    defaultSector: 'institutional',
+    civicRole: 'student',
     description:
       'Learning Studio: quiet self-practice, learning reflections, personal portfolio, and calm focus.',
     domainOverview: {
@@ -65,6 +78,8 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
     id: 'guardian',
     label: 'Family & Guardian',
     roleTitle: 'Family & Guardian',
+    defaultSector: 'institutional',
+    civicRole: 'guardian',
     description:
       'Family Bridge: relational care notes, learner growth trajectory, and home-school partnership.',
     domainOverview: {
@@ -78,6 +93,7 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
     id: 'founder',
     label: 'Platform Founder',
     roleTitle: 'Platform Founder & Steward',
+    defaultSector: 'personal',
     description:
       'Sovereign Architecture: regenerative school systems, network-wide sync governance, and foundational charters.',
     domainOverview: {
@@ -91,6 +107,7 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
     id: 'researcher',
     label: 'Cognitive Scientist',
     roleTitle: 'Cognitive Scientist & Researcher',
+    defaultSector: 'community',
     description:
       'Research Atlas: attentional dynamics, contemplative bio-acoustics, and evidence-grounded pedagogy.',
     domainOverview: {

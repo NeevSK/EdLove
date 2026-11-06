@@ -4,13 +4,13 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   loadDurableSubmissions,
   saveDurableSubmissions,
-} from '@/lib/repositories/academicSubmissionsRepository';
+} from '@/lib/sync/academicSubmissions';
 import {
   loadDurableClimate,
   saveDurableClimate,
-} from '@/lib/repositories/climateSensingRepository';
-import { loadDurableChat, saveDurableChat } from '@/lib/repositories/communityChatRepository';
-import { loadDurableFees, saveDurableFees } from '@/lib/repositories/tuitionRepository';
+} from '@/lib/sync/climateSensing';
+import { loadDurableChat, saveDurableChat } from '@/lib/sync/communityChat';
+import { loadDurableFees, saveDurableFees } from '@/lib/sync/tuition';
 
 describe('Offline Resilience & Hexagonal Repositories Integration', () => {
   beforeEach(() => {

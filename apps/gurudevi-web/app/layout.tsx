@@ -1,8 +1,9 @@
 import { tokens } from '@repo/ui/tokens';
-import { WORLD_IDS } from '@repo/ui/theme';
+import { DEFAULT_WORLD, WORLD_IDS } from '@repo/ui/theme';
 import { PHASE_START_HOUR } from '@repo/ui/theme/scene';
 import { WorldStyles } from '@repo/ui/theme/web';
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import type { ReactNode } from 'react';
 import './styles.css';
 
@@ -75,7 +76,17 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const initialLocale: SupportedLocale = isSupportedLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
 
   return (
-    <html lang={initialLocale} data-locale={initialLocale} suppressHydrationWarning>
+    <html
+      lang={initialLocale}
+      data-locale={initialLocale}
+      data-world={DEFAULT_WORLD}
+      data-mode="light"
+      data-phase="morning"
+      data-default-world={DEFAULT_WORLD}
+      data-world-ids={JSON.stringify(WORLD_IDS)}
+      data-phase-starts={PHASE_STARTS_DESC}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -85,29 +96,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         />
         <style>{`:root{${sharedTokenCss}}`}</style>
         <WorldStyles />
-        <script>{`(function(){try{
-var l=localStorage.getItem('gd_locale');
-if(l&&['en','si','ta'].includes(l)){document.documentElement.lang=l;document.documentElement.setAttribute('data-locale',l);}
-var t=localStorage.getItem('gurudevi_theme')||'sanctuary';
-var m=localStorage.getItem('gurudevi_mode')||'system';
-var d=localStorage.getItem('gurudevi_density')||'default';
-var legacy=localStorage.getItem('gurudevi_appearance_preset');
-if(legacy==='night'){m='dark';}else if(legacy==='garden'||legacy==='dawn'){t=legacy;}
-var resolvedMode=m==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;
-var w=localStorage.getItem('gurudevi_world');
-if(w&&${JSON.stringify(WORLD_IDS)}.includes(w)){document.documentElement.setAttribute('data-world',w);if(w!=='sanctuary'){t='sanctuary';}}
-var h=new Date().getHours(),p='night',s=${PHASE_STARTS_DESC};
-for(var i=0;i<s.length;i++){if(h>=s[i][1]){p=s[i][0];break;}}
-document.documentElement.setAttribute('data-phase',p);
-document.documentElement.setAttribute('data-theme',t);
-document.documentElement.setAttribute('data-mode',resolvedMode);
-document.documentElement.setAttribute('data-appearance',resolvedMode==='dark'?'night':t);
-if(d==='simplified'){document.documentElement.setAttribute('data-density','simplified');}
-var c=localStorage.getItem('gurudevi_pdpa_consent');
-if(c){document.documentElement.setAttribute('data-pdpa-consent',c);}
-}catch(e){}})();`}</script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var root=document.documentElement;var l=localStorage.getItem('gd_locale');if(l&&['en','si','ta'].includes(l)){root.lang=l;root.setAttribute('data-locale',l);}var worldIds=JSON.parse(root.dataset.worldIds||'${JSON.stringify(WORLD_IDS)}');var savedWorld=localStorage.getItem('gurudevi_world');if(savedWorld&&worldIds.includes(savedWorld)){root.setAttribute('data-world',savedWorld);}var mode=localStorage.getItem('gurudevi_mode');var legacyPreset=localStorage.getItem('gurudevi_appearance_preset');if(!mode&&legacyPreset==='night'){mode='dark';}mode=mode||'system';var resolvedMode=mode==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):mode;root.setAttribute('data-mode',resolvedMode);var phaseStarts=JSON.parse(root.dataset.phaseStarts||'[]');var hour=new Date().getHours();var phase='night';for(var i=0;i<phaseStarts.length;i++){if(hour>=phaseStarts[i][1]){phase=phaseStarts[i][0];break;}}root.setAttribute('data-phase',phase);var d=localStorage.getItem('gurudevi_density')||'default';if(d==='simplified')root.setAttribute('data-density','simplified');var c=localStorage.getItem('gurudevi_pdpa_consent');if(c)root.setAttribute('data-pdpa-consent',c);}catch(e){}})();`,
+          }}
+        />
       </head>
-      <body className="bg-paper font-serif text-ink antialiased">
+      <body className="font-serif text-ink antialiased">
         <LocaleProvider initialLocale={initialLocale}>
           {children}
           <PDPAConsentBanner />

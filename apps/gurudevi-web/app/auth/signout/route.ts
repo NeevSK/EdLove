@@ -1,4 +1,4 @@
-import { secureApiFetch } from '@repo/core/api/transportSecurity';
+import { secureApiFetch } from '@repo/core/lib/security/transportSecurity';
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { supabaseConfig } from '../../../lib/supabase/config';

@@ -1,6 +1,5 @@
 'use client';
 
-import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -14,12 +13,13 @@ import {
   useState,
 } from 'react';
 import { isLocalPreviewHost } from '../../../lib/host-routing';
-import { setDevPreviewCapacity } from '../../../lib/sanctuary/devPreviewCapacity';
 import {
   type BrowserCapability,
   loadAccountCapabilities,
 } from '../../../lib/sanctuary/capabilityBootstrap';
+import { setDevPreviewCapacity } from '../../../lib/sanctuary/devPreviewCapacity';
 import { useInactivitySentinel } from '../../../lib/sanctuary/useInactivitySentinel';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { WorkbenchScopeProvider } from '../../../lib/workbench/WorkbenchScope';
 import {
@@ -34,14 +34,24 @@ import {
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
 import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatureRegistry';
+import {
+  ActionFab,
+  FabMenu,
+  LivingGround,
+  ScrollArea,
+} from '@repo/ui/components/web';
+import type { FabAction } from '@repo/ui/theme';
+import { Sparkles } from '@repo/ui/icons/web';
+import { CapacityPerspectiveSwitcher } from './CapacityPerspectiveSwitcher';
 import { CommandPalette } from './CommandPalette';
+import { TutiiSidePanel } from './TutiiSidePanel';
 import { DiurnalThemeToggle } from './DiurnalThemeToggle';
 import { ExamLockdownBanner } from './ExamLockdownBanner';
+import { LayeredDeckHeader } from './LayeredDeckHeader';
 import { SanctuaryNavIcon } from './SanctuaryNavIcon';
 import { SyncStatusPill } from './SyncStatusPill';
-import { WorkspaceRouteTabs } from './workbench/WorkspaceRouteTabs';
 import { WorkspaceScopeSwitcher } from './WorkspaceScopeSwitcher';
-import { CapacityPerspectiveSwitcher } from './CapacityPerspectiveSwitcher';
+import { WorkspaceRouteTabs } from './WorkspaceRouteTabs';
 
 type SanctuaryShellProps = Readonly<{
   children: ReactNode;
@@ -69,6 +79,7 @@ export function SanctuaryShell({
   isExploreMode = false,
   isDevPreview = false,
   previewCapacity,
+  activeCapacity,
 }: SanctuaryShellProps) {
   useInactivitySentinel(!isExploreMode);
   const pathname = usePathname();
@@ -82,6 +93,74 @@ export function SanctuaryShell({
   const [navigationLayout, setNavigationLayout] = useState<'horizontal' | 'side'>('horizontal');
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [fabMenuOpen, setFabMenuOpen] = useState(false);
+  const [tutiiSidePanelOpen, setTutiiSidePanelOpen] = useState(false);
+
+  useEffect(() => {
+    const handleGlobalKeys = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === 't' || e.key === 'T')) {
+        e.preventDefault();
+        setTutiiSidePanelOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeys);
+    return () => window.removeEventListener('keydown', handleGlobalKeys);
+  }, []);
+
+  const TutiiFabIcon = useCallback(
+    ({ size, color, ...rest }: { size?: number; color?: string; 'aria-hidden'?: boolean }) => (
+      <Sparkles size={size ?? 24} color={color ?? 'currentColor'} {...rest} />
+    ),
+    [],
+  );
+
+  const fabActions = useMemo<readonly FabAction[]>(() => {
+    const prefix = navigationPrefix ? navigationPrefix.replace(/\/+$/, '') : '';
+    const makeHref = (path: string) => (prefix ? `${prefix}${path}` : path);
+
+    return [
+      {
+        key: 'tutii-companion',
+        label: 'Tutii AI Companion',
+        hint: 'Direct mentor conversation & learning support',
+        tone: 'lamp',
+        group: 'Tutii & Intelligence',
+        onPress: () => router.push(makeHref('/community?pillar=messages&dm=tutii')),
+      },
+      {
+        key: 'ai-workspace',
+        label: 'AI Workspace Floor',
+        hint: 'Agent reasoning, artifacts & interactive proposals',
+        tone: 'plain',
+        group: 'Tutii & Intelligence',
+        onPress: () => router.push(makeHref('/community?pillar=messages')),
+      },
+      {
+        key: 'ai-incognito',
+        label: 'Incognito AI Session',
+        hint: 'Zero-trace, non-persisted inquiry',
+        tone: 'plain',
+        group: 'Tutii & Intelligence',
+        onPress: () => router.push(makeHref('/community?pillar=messages&mode=incognito')),
+      },
+      {
+        key: 'command-palette',
+        label: 'Open Command Palette',
+        hint: 'Search floors, tools, and actions (Ctrl+K)',
+        tone: 'plain',
+        group: 'Quick Navigation',
+        onPress: () => setCommandPaletteOpen(true),
+      },
+      {
+        key: 'somatic-breathing',
+        label: 'Mindful Breathing',
+        hint: 'Grounding somatic pause and focus',
+        tone: 'plain',
+        group: 'Wellbeing',
+        onPress: () => router.push(makeHref('/self?practice=breath')),
+      },
+    ];
+  }, [navigationPrefix, router]);
   const quickAccessOptions = useMemo(
     () => quickAccessDestinations.filter((destination) => !isExploreMode || destination.explore),
     [isExploreMode],
@@ -144,14 +223,9 @@ export function SanctuaryShell({
 
   useEffect(() => {
     const readLayout = () => {
-      if (isExploreMode) {
-        setNavigationLayout('horizontal');
-        return;
-      }
       try {
-        setNavigationLayout(
-          localStorage.getItem(navigationLayoutKey) === 'side' ? 'side' : 'horizontal',
-        );
+        const saved = localStorage.getItem(navigationLayoutKey);
+        setNavigationLayout(saved === 'side' ? 'side' : 'horizontal');
       } catch {
         setNavigationLayout('horizontal');
       }
@@ -159,7 +233,7 @@ export function SanctuaryShell({
     readLayout();
     window.addEventListener('gurudevi:navigation-layout', readLayout);
     return () => window.removeEventListener('gurudevi:navigation-layout', readLayout);
-  }, [isExploreMode]);
+  }, []);
 
   useEffect(() => {
     const storageKey = `gurudevi_quick_access_${isExploreMode ? 'explore' : 'sanctuary'}`;
@@ -365,7 +439,9 @@ export function SanctuaryShell({
   }, [advancedOpen, commandPaletteOpen, toggleSidebar]);
 
   return (
-    <div
+    <LivingGround
+      atmosphere="canopy"
+      dither
       className={styles.shell}
       data-sidebar={menuIsCollapsed ? 'collapsed' : 'expanded'}
       data-navigation-layout={navigationLayout}
@@ -373,161 +449,175 @@ export function SanctuaryShell({
       <a className={styles.skipLink} href="#sanctuary-main">
         Skip to content
       </a>
-      <header className={styles.header}>
-        <div className={styles.wordmarkArea}>
-          <button
-            aria-expanded={!menuIsCollapsed}
-            aria-label={menuIsCollapsed ? 'Open menu' : 'Close menu'}
-            className={styles.menuBrandButton}
-            onClick={toggleSidebar}
-            title={menuIsCollapsed ? 'Open menu' : 'Close menu'}
-            type="button"
-          >
-            <span aria-hidden="true" className={styles.brandLotus}>
-              🪷
-            </span>
-          </button>
-          <SyncStatusPill />
-        </div>
-
-        <div className={styles.headerControls}>
-          {isExploreMode ? (
-            <CapacityPerspectiveSwitcher mode="explore" />
-          ) : isDevPreview ? (
-            <CapacityPerspectiveSwitcher
-              mode="preview"
-              activeCapacity={previewCapacity}
-              onChange={setDevPreviewCapacity}
-            />
-          ) : <WorkspaceScopeSwitcher />}
-          <button
-            aria-label="Search Gurudevi (Ctrl+K)"
-            className={styles.commandPaletteTrigger}
-            onClick={() => setCommandPaletteOpen(true)}
-            title="Search Gurudevi (Ctrl+K)"
-            type="button"
-          >
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={styles.searchGlyph}>
-              <circle cx="10.8" cy="10.8" r="6.1" />
-              <path d="m15.3 15.3 4.2 4.2" />
-            </svg>
-            <span className={styles.commandPaletteKbd}>Ctrl+K</span>
-          </button>
-          <div className={styles.diurnalToggleWrapper}>
-            <DiurnalThemeToggle headerIcon />
-          </div>
-          <Link
-            aria-label="Help, report a problem, or send feedback"
-            className={styles.headerAction}
-            href="/support"
-            title="Help & feedback"
-          >
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              className={styles.headerActionGlyph}
-            >
-              <circle cx="12" cy="12" r="9" />
-              <path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.15 1.05-1.8 1.45-1.8 3" />
-              <path d="M12 17.2h.01" />
-            </svg>
-          </Link>
-          {showAccountNavigation && notifications && profile && settings ? (
-            <nav aria-label="Account navigation" className={styles.accountActions}>
-              <Link
-                aria-label={
-                  unreadNotifications > 0
-                    ? `Notifications, ${unreadNotifications} unread`
-                    : 'Notifications'
-                }
-                aria-current={
-                  isSanctuaryNavActive(pathname, notifications.href) ? 'page' : undefined
-                }
-                className={styles.headerAction}
-                href={notifications.href}
-                title="Notifications"
+      <LayeredDeckHeader
+        scrollTargetId="sanctuary-main"
+        headerSlot={
+          <header className={styles.header}>
+            <div className={styles.wordmarkArea}>
+              <button
+                aria-expanded={!menuIsCollapsed}
+                aria-label={menuIsCollapsed ? 'Open menu' : 'Close menu'}
+                className={styles.menuBrandButton}
+                onClick={toggleSidebar}
+                title={menuIsCollapsed ? 'Open menu' : 'Close menu'}
+                type="button"
               >
-                <HeaderActionGlyph id="notifications" />
-                {unreadNotifications > 0 ? (
-                  <span aria-hidden="true" className={styles.headerBadge}>
-                    {unreadNotifications > 99 ? '99+' : unreadNotifications}
-                  </span>
-                ) : null}
-              </Link>
-              <Link
-                aria-label="Profile"
-                aria-current={isSanctuaryNavActive(pathname, profile.href) ? 'page' : undefined}
-                className={`${styles.headerAction} ${styles.profileAction}`}
-                href={profile.href}
-                title={displayName ? `Profile: ${displayName}` : 'Profile'}
+                <span aria-hidden="true" className={styles.brandLotus}>
+                  🪷
+                </span>
+              </button>
+              <SyncStatusPill />
+            </div>
+
+            <div className={styles.headerControls}>
+              {isExploreMode ? (
+                isDevPreview ? (
+                  <CapacityPerspectiveSwitcher mode="explore" />
+                ) : null
+              ) : isDevPreview ? (
+                <CapacityPerspectiveSwitcher
+                  mode="preview"
+                  activeCapacity={previewCapacity}
+                  onChange={setDevPreviewCapacity}
+                />
+              ) : (
+                <WorkspaceScopeSwitcher />
+              )}
+              <button
+                aria-label="Search Gurudevi (Ctrl+K)"
+                className={styles.commandPaletteTrigger}
+                onClick={() => setCommandPaletteOpen(true)}
+                title="Search Gurudevi (Ctrl+K)"
+                type="button"
               >
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 24 24"
                   fill="none"
-                  className={styles.profileGlyph}
+                  className={styles.searchGlyph}
                 >
-                  <circle cx="12" cy="8" r="3.25" />
-                  <path d="M5.5 20c.55-3.5 2.9-5.25 6.5-5.25s5.95 1.75 6.5 5.25" />
+                  <circle cx="10.8" cy="10.8" r="6.1" />
+                  <path d="m15.3 15.3 4.2 4.2" />
+                </svg>
+                <span className={styles.commandPaletteKbd}>Ctrl+K</span>
+              </button>
+              <div className={styles.diurnalToggleWrapper}>
+                <DiurnalThemeToggle headerIcon={false} />
+              </div>
+              <Link
+                aria-label="Help, report a problem, or send feedback"
+                className={styles.headerAction}
+                href="/support"
+                title="Help & feedback"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className={styles.headerActionGlyph}
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.15 1.05-1.8 1.45-1.8 3" />
+                  <path d="M12 17.2h.01" />
                 </svg>
               </Link>
-              <Link
-                aria-label="Settings"
-                aria-current={isSanctuaryNavActive(pathname, settings.href) ? 'page' : undefined}
-                className={styles.headerAction}
-                href={settings.href}
-                title="Settings"
-              >
-                <HeaderActionGlyph id="settings" />
-              </Link>
-            </nav>
-          ) : null}
-        </div>
-      </header>
-
-      {isExploreMode ? (
-        <aside className={styles.exploreBanner} aria-label="Explore sample space">
-          <span>
-            <strong>Explore</strong> · Sample space; changes stay in this demo.
-          </span>
-          <div className={styles.exploreBannerActions}>
-            <a
-              href={resolveSurfaceUrl('public', '/')}
-              className={styles.exploreReturnLink}
-            >
-              <span aria-hidden="true">←</span> Gurudevi.app
-            </a>
-            <span className={styles.exploreBannerDivider} aria-hidden="true">
-              ·
-            </span>
-            <a
-              href={resolveSurfaceUrl('sanctuary', '/welcome')}
-            >
-              Go to Sanctuary <span aria-hidden="true">→</span>
-            </a>
+              {showAccountNavigation && notifications && profile && settings ? (
+                <nav aria-label="Account navigation" className={styles.accountActions}>
+                  <Link
+                    aria-label={
+                      unreadNotifications > 0
+                        ? `Notifications, ${unreadNotifications} unread`
+                        : 'Notifications'
+                    }
+                    aria-current={
+                      isSanctuaryNavActive(pathname, notifications.href) ? 'page' : undefined
+                    }
+                    className={styles.headerAction}
+                    href={notifications.href}
+                    title="Notifications"
+                  >
+                    <HeaderActionGlyph id="notifications" />
+                    {unreadNotifications > 0 ? (
+                      <span aria-hidden="true" className={styles.headerBadge}>
+                        {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                      </span>
+                    ) : null}
+                  </Link>
+                  <Link
+                    aria-label="Profile"
+                    aria-current={isSanctuaryNavActive(pathname, profile.href) ? 'page' : undefined}
+                    className={`${styles.headerAction} ${styles.profileAction}`}
+                    href={profile.href}
+                    title={displayName ? `Profile: ${displayName}` : 'Profile'}
+                  >
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className={styles.profileGlyph}
+                    >
+                      <circle cx="12" cy="8" r="3.25" />
+                      <path d="M5.5 20c.55-3.5 2.9-5.25 6.5-5.25s5.95 1.75 6.5 5.25" />
+                    </svg>
+                  </Link>
+                  <Link
+                    aria-label="Settings"
+                    aria-current={
+                      isSanctuaryNavActive(pathname, settings.href) ? 'page' : undefined
+                    }
+                    className={styles.headerAction}
+                    href={settings.href}
+                    title="Settings"
+                  >
+                    <HeaderActionGlyph id="settings" />
+                  </Link>
+                </nav>
+              ) : null}
+            </div>
+          </header>
+        }
+        bannerSlot={
+          isExploreMode ? (
+            <aside className={styles.exploreBanner} aria-label="Explore sample space">
+              <span>
+                <strong>Explore</strong> · Sample space; changes stay in this demo.
+              </span>
+              <div className={styles.exploreBannerActions}>
+                <a href={resolveSurfaceUrl('public', '/')} className={styles.exploreReturnLink}>
+                  <span aria-hidden="true">←</span> Gurudevi.app
+                </a>
+                <span className={styles.exploreBannerDivider} aria-hidden="true">
+                  ·
+                </span>
+                <a href={resolveSurfaceUrl('sanctuary', '/welcome')}>
+                  Go to Sanctuary <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </aside>
+          ) : null
+        }
+        navSlot={
+          <nav aria-label="Main navigation" className={styles.horizontalNavigation}>
+            {primaryItems.map((item) => (
+              <NavLink emoji item={item} key={item.id} pathname={pathname} />
+            ))}
+          </nav>
+        }
+        taskStripSlot={
+          <div className={styles.taskStripSlot} id="sanctuary-task-strip-slot">
+            {pathname.startsWith('/workspace/') ? (
+              <WorkspaceRouteTabs
+                pathname={pathname}
+                isExploreMode={isExploreMode}
+                onOpenQuickAccessItem={(item) => {
+                  const feature = WORKSPACE_FEATURES.find((candidate) => candidate.id === item.id);
+                  if (feature) openQuickAccessDestination(feature.href);
+                }}
+              />
+            ) : null}
           </div>
-        </aside>
-      ) : null}
-
-      <nav aria-label="Main navigation" className={styles.horizontalNavigation}>
-        {primaryItems.map((item) => (
-          <NavLink emoji item={item} key={item.id} pathname={pathname} />
-        ))}
-      </nav>
-
-      <div className={styles.taskStripSlot} id="sanctuary-task-strip-slot">
-        {pathname.startsWith('/workspace/') ? (
-          <WorkspaceRouteTabs
-            pathname={pathname}
-            isExploreMode={isExploreMode}
-            onOpenQuickAccessItem={(item) => {
-              const feature = WORKSPACE_FEATURES.find((candidate) => candidate.id === item.id);
-              if (feature) openQuickAccessDestination(feature.href);
-            }}
-          />
-        ) : null}
-      </div>
+        }
+      />
 
       <div className={styles.body}>
         <aside className={styles.rail} aria-label="Menu">
@@ -652,30 +742,64 @@ export function SanctuaryShell({
           ) : null}
         </aside>
 
-        <main className={styles.main} id="sanctuary-main" tabIndex={-1}>
-          <div className={styles.canvasFrame}>
-            {typeof window !== 'undefined' &&
-            (window.location.search.includes('exam=true') ||
-              window.location.search.includes('exam=1') ||
-              window.location.search.includes('lockdown=true')) ? (
-              <ExamLockdownBanner />
-            ) : null}
-            {quickAccessNotice ? (
-              <p className={styles.quickAccessNotice} role="status">
-                {quickAccessNotice}
-              </p>
-            ) : null}
-            <WorkbenchScopeProvider scope={workspaceUsageScope}>{children}</WorkbenchScopeProvider>
-          </div>
+        <main className={styles.main} tabIndex={-1}>
+          <ScrollArea
+            viewportId="sanctuary-main"
+            variant="auto"
+            orientation="vertical"
+            showEdgeGradients={false}
+            dragToScroll={false}
+            scrollbarVisibility="always"
+            label="Sanctuary Canvas"
+            style={{ height: '100%', width: '100%' }}
+          >
+            <div className={styles.canvasFrame}>
+              {typeof window !== 'undefined' &&
+              (window.location.search.includes('exam=true') ||
+                window.location.search.includes('exam=1') ||
+                window.location.search.includes('lockdown=true')) ? (
+                <ExamLockdownBanner />
+              ) : null}
+              {quickAccessNotice ? (
+                <p className={styles.quickAccessNotice} role="status">
+                  {quickAccessNotice}
+                </p>
+              ) : null}
+              <WorkbenchScopeProvider scope={workspaceUsageScope}>{children}</WorkbenchScopeProvider>
+            </div>
+          </ScrollArea>
         </main>
       </div>
+
+      <div className={styles.fabDock}>
+        <ActionFab
+          label="Tutii Companion & Subtasks"
+          icon={TutiiFabIcon}
+          onPress={() => setTutiiSidePanelOpen(true)}
+          hidden={
+            typeof window !== 'undefined' &&
+            (window.location.search.includes('exam=true') ||
+              window.location.search.includes('exam=1') ||
+              window.location.search.includes('lockdown=true'))
+          }
+        />
+      </div>
+
+      <TutiiSidePanel
+        isOpen={tutiiSidePanelOpen}
+        onClose={() => setTutiiSidePanelOpen(false)}
+        pathname={pathname}
+        displayName={displayName}
+        activeCapacity={activeCapacity}
+        navigationPrefix={navigationPrefix}
+      />
 
       <CommandPalette
         isOpen={commandPaletteOpen}
         navigationPrefix={navigationPrefix}
         onClose={() => setCommandPaletteOpen(false)}
       />
-    </div>
+    </LivingGround>
   );
 }
 function HeaderActionGlyph({ id }: Readonly<{ id: 'notifications' | 'settings' }>) {

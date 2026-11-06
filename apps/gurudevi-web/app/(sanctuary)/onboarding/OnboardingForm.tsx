@@ -5,6 +5,13 @@ import {
   createInitialBond,
   createOnboardingCompletionKey,
 } from '@repo/core/api/onboardingClient';
+import {
+  CANONICAL_CIVIC_ROLES,
+  CANONICAL_NAME_PROMPTS,
+  type CivicRoleId,
+  extractCandidateName,
+  extractFirstName,
+} from '@repo/core/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
@@ -12,46 +19,9 @@ import { resolveCanonicalDeviceAccount } from '@/lib/sanctuary/canonicalDeviceAc
 import { maskEmail, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
 import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import { browserAuthRuntime } from '../auth/browserAuth';
+import { PreferredNameEntry } from '../components/PreferredNameEntry';
+import { RoleCardGrid } from '../components/RoleCardGrid';
 import styles from './onboarding.module.css';
-
-const capacities = [
-  {
-    value: 'teacher',
-    label: 'Teacher',
-    symbol: '🧑‍🏫',
-    detail: 'I teach, guide, or care for a classroom.',
-  },
-  {
-    value: 'student',
-    label: 'Student',
-    symbol: '🎒',
-    detail: 'I’m here to learn, explore, and grow.',
-  },
-  {
-    value: 'principal',
-    label: 'School leader',
-    symbol: '🏫',
-    detail: 'I help a school community work well together.',
-  },
-  {
-    value: 'parent',
-    label: 'Parent',
-    symbol: '👨‍👩‍👧',
-    detail: 'I support a learner and stay connected with school.',
-  },
-  {
-    value: 'guardian',
-    label: 'Guardian',
-    symbol: '🤝',
-    detail: 'I care for and encourage a learner.',
-  },
-  {
-    value: 'librarian',
-    label: 'Librarian',
-    symbol: '📖',
-    detail: 'I help people find books, media, and ideas.',
-  },
-] as const;
 
 type FormState = 'ready' | 'submitting' | 'unavailable' | 'error';
 type JourneyStep = 'name' | 'capacity' | 'nudge';
@@ -64,8 +34,11 @@ function readOnboardingDraft(): { displayName: string; capacity: string } | null
     if (typeof value !== 'object' || value === null) return null;
     const displayName = Reflect.get(value, 'displayName');
     const capacity = Reflect.get(value, 'capacity');
-    if (typeof displayName !== 'string' || typeof capacity !== 'string' ||
-      (capacity !== '' && !capacities.some((item) => item.value === capacity)))
+    if (
+      typeof displayName !== 'string' ||
+      typeof capacity !== 'string' ||
+      (capacity !== '' && !CANONICAL_CIVIC_ROLES.some((item) => item.id === capacity))
+    )
       return null;
     return { displayName, capacity };
   } catch {
@@ -105,42 +78,6 @@ function errorStatus(error: unknown): number | null {
   return typeof status === 'number' ? status : null;
 }
 
-function extractCandidateName(user: unknown): string {
-  if (typeof user !== 'object' || user === null) return '';
-  const meta = (Reflect.get(user, 'user_metadata') as Record<string, unknown> | null) || {};
-  if (typeof meta.full_name === 'string' && meta.full_name.trim()) return meta.full_name.trim();
-  if (typeof meta.name === 'string' && meta.name.trim()) return meta.name.trim();
-  if (meta.name && typeof meta.name === 'object') {
-    const first = String(
-      Reflect.get(meta.name, 'firstName') ?? Reflect.get(meta.name, 'first_name') ?? '',
-    ).trim();
-    const last = String(
-      Reflect.get(meta.name, 'lastName') ?? Reflect.get(meta.name, 'last_name') ?? '',
-    ).trim();
-    const combined = `${first} ${last}`.trim();
-    if (combined) return combined;
-  }
-  if (typeof meta.given_name === 'string' && meta.given_name.trim()) {
-    const family = typeof meta.family_name === 'string' ? meta.family_name.trim() : '';
-    return `${meta.given_name} ${family}`.trim();
-  }
-  const email = Reflect.get(user, 'email');
-  if (typeof email === 'string' && email.includes('@')) {
-    const local = email.split('@')[0] ?? '';
-    const cleaned = local
-      .replace(/[._+-]+/g, ' ')
-      .replace(/\d+/g, '')
-      .trim();
-    if (cleaned.length >= 2) {
-      return cleaned
-        .split(/\s+/)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
-    }
-  }
-  return '';
-}
-
 export function OnboardingForm() {
   const [step, setStep] = useState<JourneyStep>('name');
   const [completionKey] = useState(createOnboardingCompletionKey);
@@ -155,8 +92,8 @@ export function OnboardingForm() {
     return browserAuthRuntime() ? 'checking' : 'unavailable';
   });
   const capacityHeading = useRef<HTMLHeadingElement>(null);
-  const firstName = displayName.trim().split(/\s+/)[0] || 'there';
-  const roleLabel = capacities.find((item) => item.value === selectedCapacity)?.label ?? 'member';
+  const firstName = extractFirstName(displayName);
+  const roleLabel = CANONICAL_CIVIC_ROLES.find((item) => item.id === selectedCapacity)?.label ?? 'member';
 
   useEffect(() => {
     let isCurrent = true;
@@ -216,7 +153,7 @@ export function OnboardingForm() {
   async function handleCapacitySubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!displayName.trim() || !capacities.some((item) => item.value === selectedCapacity)) {
+    if (!displayName.trim() || !CANONICAL_CIVIC_ROLES.some((item) => item.id === selectedCapacity)) {
       setState('error');
       setMessage('Please enter your name and select a role.');
       return;
@@ -445,27 +382,14 @@ export function OnboardingForm() {
               </h2>
             </div>
           </div>
-          <fieldset className={styles.roles}>
-            <legend className={styles.fieldLabel}>I’m here as a…</legend>
-            {capacities.map((item) => (
-              <label className={styles.roleOption} key={item.value}>
-                <input
-                  checked={selectedCapacity === item.value}
-                  name="capacity"
-                  onChange={() => setSelectedCapacity(item.value)}
-                  type="radio"
-                  value={item.value}
-                />
-                <span aria-hidden="true" className={styles.roleSymbol}>
-                  {item.symbol}
-                </span>
-                <span className={styles.roleCopy}>
-                  <span className={styles.roleName}>{item.label}</span>
-                  <span className={styles.roleDetail}>{item.detail}</span>
-                </span>
-              </label>
-            ))}
-          </fieldset>
+          <div style={{ margin: '16px 0 24px 0' }}>
+            <RoleCardGrid<CivicRoleId>
+              name="capacity"
+              selectedRoleId={selectedCapacity as CivicRoleId}
+              onSelectRole={(role) => setSelectedCapacity(role)}
+              ariaLabel="Choose your role"
+            />
+          </div>
           <div className={styles.actionRow}>
             <button className={styles.backAction} onClick={() => setStep('name')} type="button">
               Back

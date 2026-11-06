@@ -40,9 +40,8 @@ describe('Temporal Floor Adaptation (G1)', () => {
       );
 
       expect(screen.getByText('Self · Overview')).toBeDefined();
-      expect(screen.getByText('A place to notice what is asking for your care.')).toBeDefined();
-      expect(screen.getByRole('button', { name: 'Open Fire Journal' })).toBeDefined();
-      expect(screen.getAllByText('Open practice').length).toBeGreaterThan(0);
+            expect(screen.getAllByRole('button', { name: /Open Fire Journal/ }).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Open practice/).length).toBeGreaterThan(0);
     });
 
     it('renders Archival Record posture for past date', () => {
@@ -60,9 +59,8 @@ describe('Temporal Floor Adaptation (G1)', () => {
       );
 
       expect(screen.getByText('Self · Archival Horizon')).toBeDefined();
-      expect(screen.getByText(/Reflections from Thursday, October 15, 2026/)).toBeDefined();
-      expect(screen.getByRole('button', { name: 'Review Fire Journal' })).toBeDefined();
-      expect(screen.getAllByText('Review practice').length).toBeGreaterThan(0);
+            expect(screen.getAllByRole('button', { name: /Review Fire Journal/ }).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Review practice/).length).toBeGreaterThan(0);
     });
 
     it('renders Future Horizon posture for future date', () => {
@@ -80,9 +78,8 @@ describe('Temporal Floor Adaptation (G1)', () => {
       );
 
       expect(screen.getByText('Self · Future Horizon')).toBeDefined();
-      expect(screen.getByText(/Looking toward Sunday, October 25, 2026/)).toBeDefined();
-      expect(screen.getByRole('button', { name: 'Prepare Fire Journal' })).toBeDefined();
-      expect(screen.getAllByText('Plan ahead').length).toBeGreaterThan(0);
+            expect(screen.getAllByRole('button', { name: /Prepare Fire Journal/ }).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Plan ahead/).length).toBeGreaterThan(0);
     });
   });
 

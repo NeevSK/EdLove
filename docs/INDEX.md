@@ -91,6 +91,7 @@ These files outline security models, data lifecycle policies, platform topologie
 | Document | Description |
 |---|---|
 | [architecture/safe-exploration-and-reversible-work-model.md](architecture/safe-exploration-and-reversible-work-model.md) | Canonical platform and safety plan: web Explore, mobile Guest, account Safe Try, independent rollout and presentation controls, and selected-record Keep |
+| [architecture/2026-11-04-community-core-architecture-and-triad-expansion.md](architecture/2026-11-04-community-core-architecture-and-triad-expansion.md) | **Community Domain Triad Architecture:** Holistic alignment for Feed, Groups, DMs with Tutii companion, Saved Messages, Incognito privacy mode, and national scale constraints (~10k schools) |
 | [architecture/authentication-and-sovereign-identity.md](architecture/authentication-and-sovereign-identity.md) | **Canonical authentication and identity authority:** credential/account separation, lifecycle, provider linking, web/mobile/API/AI/channel/device contracts, and additive migration gates. |
 | [architecture/edlove-sovereign-uuidv8-specification.md](architecture/edlove-sovereign-uuidv8-specification.md) | **Canonical EdLove identifier profile:** UUIDv8 layout, domain/subtype registry, mint-origin limits, generator rules, and adoption controls for Gurudevi and future EdLove domains. |
 | [architecture/edlove-identity-convergence-program.md](architecture/edlove-identity-convergence-program.md) | **Identity convergence program:** phased movement from provider-coupled authentication to EdLove-owned identity, credential stewardship, shared lifecycle, delegated principals, and release evidence. |
@@ -223,6 +224,7 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [current_progress/2026-08-31-editorial-publishing-implementation-plan.md](current_progress/2026-08-31-editorial-publishing-implementation-plan.md) | Phased implementation plan for EdLove and GuruDevi journal foundations, distribution, translations, rights, and contributors |
 | [current_progress/2026-09-20-future-hardening-roadmap.md](current_progress/2026-09-20-future-hardening-roadmap.md) | Future hardening roadmap, completed milestones (OWASP, deep links, outbox, hexagonal decoupling), and remaining verification goals |
 | [current_progress/2026-09-20-offline-mutation-hardening-and-hexagonal-decoupling.md](current_progress/2026-09-20-offline-mutation-hardening-and-hexagonal-decoupling.md) | Architectural report on the completed zero-legacy Hexagonal Supabase migration, multi-tenant outbox hardening, and Effect-TS v4 facade alignment |
+| [current_progress/2026-11-06-maplibre-react-native-v11-migration.md](current_progress/2026-11-06-maplibre-react-native-v11-migration.md) | MapLibre React Native v11 audit and RN Maps wrapper repair; documents why a MapLibre marker-only branch was incoherent and what a full renderer port would require |
 
 ---
 

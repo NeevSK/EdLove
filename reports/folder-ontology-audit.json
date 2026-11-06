@@ -1,0 +1,618 @@
+[
+  {
+    "folder": "logic",
+    "fileCount": 294,
+    "loc": 35214,
+    "hookCount": 4,
+    "storeCount": 3,
+    "reactFiles": 2,
+    "zustandFiles": 2,
+    "effectFiles": 10,
+    "subFolderCount": 31,
+    "subFolders": [
+      "agents",
+      "auth",
+      "billing",
+      "deeplink",
+      "domains",
+      "entities",
+      "erp",
+      "events",
+      "experience",
+      "forms",
+      "grading",
+      "growth",
+      "i18n",
+      "interfaces",
+      "journey",
+      "managers",
+      "mesh",
+      "modes",
+      "omnichannel",
+      "pairing",
+      "permissions",
+      "ports",
+      "reflection",
+      "registry",
+      "schemas",
+      "shield",
+      "store-slices",
+      "utils",
+      "workbench",
+      "workspace",
+      "__tests__"
+    ],
+    "primaryRole": "State Management (Zustand Stores)",
+    "smells": [
+      "Scattered hooks: 4 hooks located outside hooks/ and store/",
+      "Framework leak: React imported inside logic/ (2 files)"
+    ]
+  },
+  {
+    "folder": "api",
+    "fileCount": 263,
+    "loc": 31571,
+    "hookCount": 1,
+    "storeCount": 25,
+    "reactFiles": 4,
+    "zustandFiles": 0,
+    "effectFiles": 4,
+    "subFolderCount": 6,
+    "subFolders": [
+      "handlers",
+      "hooks",
+      "orchestration",
+      "runtimes",
+      "v1",
+      "__tests__"
+    ],
+    "primaryRole": "React Hooks & Orchestration",
+    "smells": [
+      "Scattered hooks: 1 hooks located outside hooks/ and store/"
+    ]
+  },
+  {
+    "folder": "adapters",
+    "fileCount": 111,
+    "loc": 15511,
+    "hookCount": 0,
+    "storeCount": 3,
+    "reactFiles": 3,
+    "zustandFiles": 0,
+    "effectFiles": 1,
+    "subFolderCount": 12,
+    "subFolders": [
+      "cedar",
+      "events",
+      "feature-rollout",
+      "memory",
+      "native",
+      "powersync",
+      "realtime",
+      "storage",
+      "supabase",
+      "web",
+      "zenstack",
+      "__tests__"
+    ],
+    "primaryRole": "Infrastructure Adapters (Hexagonal)",
+    "smells": []
+  },
+  {
+    "folder": "lib",
+    "fileCount": 94,
+    "loc": 9208,
+    "hookCount": 4,
+    "storeCount": 5,
+    "reactFiles": 3,
+    "zustandFiles": 4,
+    "effectFiles": 0,
+    "subFolderCount": 4,
+    "subFolders": [
+      "monitoring",
+      "security",
+      "sync",
+      "__tests__"
+    ],
+    "primaryRole": "State Management (Zustand Stores)",
+    "smells": [
+      "Redundant utility sprawl: lib/ and utils/ and shared/ have overlapping roles",
+      "Scattered hooks: 4 hooks located outside hooks/ and store/",
+      "Framework leak: React imported inside lib/ (3 files)"
+    ]
+  },
+  {
+    "folder": "types",
+    "fileCount": 53,
+    "loc": 4060,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 1,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "Type Contracts & Interfaces",
+    "smells": []
+  },
+  {
+    "folder": "hooks",
+    "fileCount": 52,
+    "loc": 5951,
+    "hookCount": 51,
+    "storeCount": 0,
+    "reactFiles": 36,
+    "zustandFiles": 0,
+    "effectFiles": 1,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "React Hooks & Orchestration",
+    "smells": []
+  },
+  {
+    "folder": "native",
+    "fileCount": 35,
+    "loc": 4105,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 1,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "Platform/Native Bindings",
+    "smells": [
+      "Contains platform-agnostic session shims (guestScope.ts) with 0 native deps"
+    ]
+  },
+  {
+    "folder": "store",
+    "fileCount": 30,
+    "loc": 4025,
+    "hookCount": 18,
+    "storeCount": 15,
+    "reactFiles": 0,
+    "zustandFiles": 17,
+    "effectFiles": 0,
+    "subFolderCount": 3,
+    "subFolders": [
+      "slices",
+      "types",
+      "__tests__"
+    ],
+    "primaryRole": "State Management (Zustand Stores)",
+    "smells": []
+  },
+  {
+    "folder": "flows",
+    "fileCount": 29,
+    "loc": 4099,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 9,
+    "subFolders": [
+      "account",
+      "admin",
+      "ai",
+      "classroom",
+      "entry",
+      "founder",
+      "pjc",
+      "qr",
+      "self"
+    ],
+    "primaryRole": "End-to-End User Journey Flows",
+    "smells": []
+  },
+  {
+    "folder": "__tests__",
+    "fileCount": 24,
+    "loc": 2331,
+    "hookCount": 1,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 3,
+    "subFolders": [
+      "invariants",
+      "scenarios",
+      "workspace"
+    ],
+    "primaryRole": "Domain Logic",
+    "smells": [
+      "Scattered hooks: 1 hooks located outside hooks/ and store/"
+    ]
+  },
+  {
+    "folder": "verger",
+    "fileCount": 21,
+    "loc": 4404,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "spatial",
+    "fileCount": 8,
+    "loc": 2052,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "monitoring",
+    "fileCount": 7,
+    "loc": 385,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "accounts",
+    "fileCount": 6,
+    "loc": 1729,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 1,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "effect",
+    "fileCount": 6,
+    "loc": 865,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 6,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "utils",
+    "fileCount": 6,
+    "loc": 235,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 2,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "providers",
+    "fileCount": 5,
+    "loc": 196,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 4,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "ai",
+    "fileCount": 4,
+    "loc": 865,
+    "hookCount": 0,
+    "storeCount": 1,
+    "reactFiles": 1,
+    "zustandFiles": 1,
+    "effectFiles": 0,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "State Management (Zustand Stores)",
+    "smells": []
+  },
+  {
+    "folder": "thresholds",
+    "fileCount": 4,
+    "loc": 495,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "efficiency",
+    "fileCount": 3,
+    "loc": 327,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 1,
+    "subFolders": [
+      "__tests__"
+    ],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "constants",
+    "fileCount": 2,
+    "loc": 876,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "educational",
+    "fileCount": 2,
+    "loc": 186,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "offline",
+    "fileCount": 2,
+    "loc": 121,
+    "hookCount": 1,
+    "storeCount": 0,
+    "reactFiles": 1,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "React Hooks & Orchestration",
+    "smells": [
+      "Scattered hooks: 1 hooks located outside hooks/ and store/"
+    ]
+  },
+  {
+    "folder": "test-shims",
+    "fileCount": 2,
+    "loc": 37,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "auth.ts",
+    "fileCount": 1,
+    "loc": 180,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "config",
+    "fileCount": 1,
+    "loc": 35,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "global.d.ts",
+    "fileCount": 1,
+    "loc": 3,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "index.ts",
+    "fileCount": 1,
+    "loc": 413,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "platform",
+    "fileCount": 1,
+    "loc": 52,
+    "hookCount": 1,
+    "storeCount": 0,
+    "reactFiles": 1,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "React Hooks & Orchestration",
+    "smells": [
+      "Scattered hooks: 1 hooks located outside hooks/ and store/"
+    ]
+  },
+  {
+    "folder": "routing",
+    "fileCount": 1,
+    "loc": 47,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "shared",
+    "fileCount": 1,
+    "loc": 3,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "testing",
+    "fileCount": 1,
+    "loc": 90,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "webAuth.test.ts",
+    "fileCount": 1,
+    "loc": 86,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "webAuth.ts",
+    "fileCount": 1,
+    "loc": 85,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "webAuthorizedEntry.test.ts",
+    "fileCount": 1,
+    "loc": 133,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  },
+  {
+    "folder": "webAuthorizedEntry.ts",
+    "fileCount": 1,
+    "loc": 122,
+    "hookCount": 0,
+    "storeCount": 0,
+    "reactFiles": 0,
+    "zustandFiles": 0,
+    "effectFiles": 0,
+    "subFolderCount": 0,
+    "subFolders": [],
+    "primaryRole": "Domain Logic",
+    "smells": []
+  }
+]

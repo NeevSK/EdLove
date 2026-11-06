@@ -2,8 +2,7 @@
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  color: var(--color-charcoal-truth, #26342d);
-  background: var(--color-cream-silence, #f6f5ed);
+  color: var(--w-ink, #26342d);
 }
 
 .header {
@@ -397,8 +396,8 @@
 }
 
 :global([data-appearance='night']) .page {
-  color: #f0ede2;
-  background: #201f1a;
+  color: var(--w-ink, #f0ede2);
+  background: var(--w-ground, #201f1a);
 }
 
 :global([data-appearance='night']) .title,
@@ -498,8 +497,8 @@
 .detectedNameCard {
   margin-top: 18px;
   padding: 16px;
-  background: rgba(212, 132, 58, 0.08);
-  border: 1px solid rgba(212, 132, 58, 0.25);
+  background: rgba(var(--w-glow-rgb, 212, 132, 58), 0.08);
+  border: 1px solid rgba(var(--w-lamp-rgb, 212, 132, 58), 0.25);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -508,8 +507,8 @@
 }
 
 :global([data-appearance='night']) .detectedNameCard {
-  background: rgba(212, 132, 58, 0.12);
-  border-color: rgba(212, 132, 58, 0.35);
+  background: rgba(var(--w-glow-rgb, 212, 132, 58), 0.12);
+  border-color: rgba(var(--w-lamp-rgb, 212, 132, 58), 0.35);
 }
 
 .detectedNameChoiceRow {
@@ -551,7 +550,7 @@
 .detectedNamePrompt {
   margin: 0;
   font-size: 13.5px;
-  color: var(--color-sanctuary-saffron, #a85022);
+  color: var(--w-lamp, #a85022);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -566,9 +565,9 @@
 
 .useDetectedNameBtn {
   align-self: flex-start;
-  background: rgba(212, 132, 58, 0.1);
-  border: 1px solid rgba(212, 132, 58, 0.3);
-  color: var(--color-sanctuary-saffron, #a85022);
+  background: rgba(var(--w-lamp-rgb, 212, 132, 58), 0.1);
+  border: 1px solid rgba(var(--w-lamp-rgb, 212, 132, 58), 0.3);
+  color: var(--w-lamp, #a85022);
   border-radius: 9999px;
   padding: 4px 12px;
   font-size: 12px;
@@ -578,6 +577,6 @@
 }
 
 .useDetectedNameBtn:hover {
-  background: rgba(212, 132, 58, 0.18);
+  background: rgba(var(--w-lamp-rgb, 212, 132, 58), 0.18);
 }
 

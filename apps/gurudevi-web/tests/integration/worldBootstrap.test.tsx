@@ -4,12 +4,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import RootLayout from '@/app/layout';
 
 vi.mock('@/app/components/PDPAConsentBanner', () => ({ PDPAConsentBanner: () => null }));
+vi.mock('next/headers', () => ({
+  cookies: vi.fn().mockResolvedValue({
+    get: vi.fn().mockReturnValue(undefined),
+  }),
+}));
 
-const html = renderToStaticMarkup(
-  <RootLayout>
-    <span>Content</span>
-  </RootLayout>,
-);
+const layout = await RootLayout({ children: <span>Content</span> });
+const html = renderToStaticMarkup(layout);
 const page = new DOMParser().parseFromString(html, 'text/html');
 const bootstrap = Array.from(page.scripts).find((script) =>
   script.textContent?.includes('gurudevi_world'),

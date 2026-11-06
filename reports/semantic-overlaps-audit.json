@@ -1,0 +1,660 @@
+{
+  "totalAnalyzedFiles": 1507,
+  "totalExportedSymbols": 4057,
+  "concepts": [
+    {
+      "concept": "Auth, Accounts & Session",
+      "totalSymbols": 316,
+      "hooksCount": 7,
+      "componentsCount": 5,
+      "storesCount": 0,
+      "logicsCount": 99,
+      "typesCount": 146,
+      "schemasCount": 37
+    },
+    {
+      "concept": "Utility & Primitives",
+      "totalSymbols": 2483,
+      "hooksCount": 109,
+      "componentsCount": 388,
+      "storesCount": 1,
+      "logicsCount": 451,
+      "typesCount": 1176,
+      "schemasCount": 98
+    },
+    {
+      "concept": "Storage, Sync & Persistence",
+      "totalSymbols": 282,
+      "hooksCount": 19,
+      "componentsCount": 9,
+      "storesCount": 0,
+      "logicsCount": 70,
+      "typesCount": 136,
+      "schemasCount": 5
+    },
+    {
+      "concept": "ReBAC, Identity & Permissions",
+      "totalSymbols": 190,
+      "hooksCount": 5,
+      "componentsCount": 5,
+      "storesCount": 0,
+      "logicsCount": 42,
+      "typesCount": 89,
+      "schemasCount": 35
+    },
+    {
+      "concept": "Education & Workspace",
+      "totalSymbols": 444,
+      "hooksCount": 9,
+      "componentsCount": 9,
+      "storesCount": 0,
+      "logicsCount": 63,
+      "typesCount": 220,
+      "schemasCount": 92
+    },
+    {
+      "concept": "UI Primitives & Controls",
+      "totalSymbols": 324,
+      "hooksCount": 28,
+      "componentsCount": 122,
+      "storesCount": 0,
+      "logicsCount": 24,
+      "typesCount": 142,
+      "schemasCount": 4
+    },
+    {
+      "concept": "Feature Flags & Rollout",
+      "totalSymbols": 18,
+      "hooksCount": 1,
+      "componentsCount": 0,
+      "storesCount": 0,
+      "logicsCount": 7,
+      "typesCount": 6,
+      "schemasCount": 2
+    }
+  ],
+  "guestCheckOverlaps": [
+    {
+      "name": "isLocalOnlyTable",
+      "kind": "logic",
+      "file": "packages/core/src/adapters/powersync/schema.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "requestGuestToAccountMigration",
+      "kind": "logic",
+      "file": "packages/core/src/lib/persistenceBoundary.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "isAnonymousSession",
+      "kind": "logic",
+      "file": "packages/core/src/logic/auth/identityState.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "isAnonymousIdentity",
+      "kind": "logic",
+      "file": "packages/core/src/logic/auth/identityState.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "isLocalOnlyIdentity",
+      "kind": "logic",
+      "file": "packages/core/src/logic/auth/identityState.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "isLocalOnlyMutation",
+      "kind": "logic",
+      "file": "packages/core/src/logic/permissions/baselineCapabilities.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "assertAnonymousGuestSource",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestConversionLedger.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "readGuestConversionRecord",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestConversionLedger.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "beginGuestConversion",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestConversionLedger.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "beginLocalGuestConversion",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestConversionLedger.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "bindGuestConversionTarget",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestConversionLedger.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "clearGuestConversionRecord",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestConversionLedger.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "discardGuestConversion",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestConversionLedger.ts",
+      "concept": "UI Primitives & Controls"
+    },
+    {
+      "name": "getGuestDataTransferAvailability",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestDataTransferPolicy.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "getLocalGuestIdentity",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestIdentity.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "getGuestClaimIdentity",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestIdentity.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "updateLocalGuestIdentity",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestIdentity.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "clearLocalGuestIdentity",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestIdentity.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "migrateGuestDataToAuthenticatedUser",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestIdentity.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "getGuestLeaseStatus",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestLease.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "getOrCreateGuestLease",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestLease.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "dismissGuestLeaseReminder",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestLease.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "clearGuestLease",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestLease.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "registerGuestLeaseDataKey",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestLease.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "clearGuestLeaseData",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestLease.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "setGuestScope",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestScope.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "getGuestScopeRevision",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestScope.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "getGuestScope",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestScope.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "isGuestUserId",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestScope.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "discardLocalGuestSession",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestSessionCleanup.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "activateLocalGuestSession",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestActivation.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "createLocalGuestInitialBond",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestOnboarding.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "completeLocalGuestOnboarding",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestOnboarding.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "discardLocalGuestOnboarding",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestOnboarding.ts",
+      "concept": "UI Primitives & Controls"
+    },
+    {
+      "name": "isLocalGuestSessionId",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestSession.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "readLocalGuestSession",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestSession.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "restoreLocalGuestSession",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestSession.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "getOrCreateLocalGuestSession",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestSession.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "clearLocalGuestSession",
+      "kind": "logic",
+      "file": "packages/core/src/native/localGuestSession.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "createGuestDataSyncActor",
+      "kind": "logic",
+      "file": "packages/ui/src/machines/guestDataSyncMachine.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "executeFetchGuestDataSummaryEffect",
+      "kind": "logic",
+      "file": "packages/ui/src/machines/guestDataSyncMachine.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "executeGuestDataSyncEffect",
+      "kind": "logic",
+      "file": "packages/ui/src/machines/guestDataSyncMachine.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "isAnonymousAuthDisabledError",
+      "kind": "logic",
+      "file": "packages/ui/src/screens/welcomeFlow.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "getGuestEntryErrorMessage",
+      "kind": "logic",
+      "file": "packages/ui/src/screens/welcomeFlow.ts",
+      "concept": "Utility & Primitives"
+    }
+  ],
+  "storageOverlaps": [
+    {
+      "name": "createSupabaseStorageAdapter",
+      "kind": "constant",
+      "file": "packages/core/src/adapters/storage/supabase.adapter.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "scopeStorageKey",
+      "kind": "logic",
+      "file": "packages/core/src/lib/accountScope.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "authProfileStorage",
+      "kind": "constant",
+      "file": "packages/core/src/lib/authProfileStorage.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "supabaseAuthStorage",
+      "kind": "constant",
+      "file": "packages/core/src/lib/authStorage.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "createKeyValueStorageAdapter",
+      "kind": "logic",
+      "file": "packages/core/src/lib/keyValueStorageAdapter.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "createScopedStateStorage",
+      "kind": "logic",
+      "file": "packages/core/src/lib/scopedStateStorage.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "supabaseAuthStorage",
+      "kind": "constant",
+      "file": "packages/core/src/lib/supabaseAuthStorage.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "createPerspectiveStorageScope",
+      "kind": "logic",
+      "file": "packages/core/src/lib/tenantStorage.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "createTenantStorageScope",
+      "kind": "logic",
+      "file": "packages/core/src/lib/tenantStorage.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "getJourneySnapshotStorageKey",
+      "kind": "logic",
+      "file": "packages/core/src/logic/journey/roleJourneyMachine.v6.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "storage",
+      "kind": "constant",
+      "file": "packages/core/src/logic/managers/StorageManager.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "buildWorkspaceLayoutIntentStorageKey",
+      "kind": "logic",
+      "file": "packages/core/src/logic/workspace/layoutIntent.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "buildWorkspaceLayoutStorageKey",
+      "kind": "logic",
+      "file": "packages/core/src/logic/workspace/layoutSync.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "buildTabOrderStorageKey",
+      "kind": "logic",
+      "file": "packages/core/src/logic/workspace/tabOrder.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "guestStorageKey",
+      "kind": "logic",
+      "file": "packages/core/src/native/guestScope.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "nativeStorageProvider",
+      "kind": "constant",
+      "file": "packages/core/src/native/runtimeAdapter.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "selectNativeStorageAdapter",
+      "kind": "logic",
+      "file": "packages/core/src/native/storageBackendSelection.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "supabaseAuthStorage",
+      "kind": "constant",
+      "file": "packages/core/src/native/supabaseAuthStorage.ts",
+      "concept": "Auth, Accounts & Session"
+    }
+  ],
+  "buttonOverlaps": [
+    {
+      "name": "Button",
+      "kind": "component",
+      "file": "packages/ui/src/button.tsx",
+      "concept": "UI Primitives & Controls"
+    },
+    {
+      "name": "Button",
+      "kind": "component",
+      "file": "packages/ui/src/components/native/Button/Button.tsx",
+      "concept": "UI Primitives & Controls"
+    },
+    {
+      "name": "ButtonPulse",
+      "kind": "component",
+      "file": "packages/ui/src/components/native/Button/ButtonPulse.tsx",
+      "concept": "UI Primitives & Controls"
+    },
+    {
+      "name": "SanctuaryButton",
+      "kind": "component",
+      "file": "packages/ui/src/components/SanctuaryButton.tsx",
+      "concept": "UI Primitives & Controls"
+    },
+    {
+      "name": "SyncStatusRetryButton",
+      "kind": "component",
+      "file": "packages/ui/src/components/SyncStatusRetryButton.tsx",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "ModalCloseButton",
+      "kind": "component",
+      "file": "packages/ui/src/components/ui/modal/index.tsx",
+      "concept": "UI Primitives & Controls"
+    },
+    {
+      "name": "Button",
+      "kind": "component",
+      "file": "packages/ui/src/components/web/Button/Button.tsx",
+      "concept": "UI Primitives & Controls"
+    }
+  ],
+  "permissionOverlaps": [
+    {
+      "name": "registerPermissionValidator",
+      "kind": "logic",
+      "file": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "findUnregisteredFeatureModules",
+      "kind": "logic",
+      "file": "packages/core/src/flows/pjc/catalogLoader.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "normalizeFeatureRolloutSnapshot",
+      "kind": "logic",
+      "file": "packages/core/src/lib/featureRolloutSnapshot.ts",
+      "concept": "Feature Flags & Rollout"
+    },
+    {
+      "name": "projectFeatureFlags",
+      "kind": "logic",
+      "file": "packages/core/src/lib/featureRolloutSnapshot.ts",
+      "concept": "Feature Flags & Rollout"
+    },
+    {
+      "name": "createFeatureRuntime",
+      "kind": "logic",
+      "file": "packages/core/src/lib/featureRuntime.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "createFeatureRuntime",
+      "kind": "logic",
+      "file": "packages/core/src/lib/featureRuntime.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "createFeatureRuntime",
+      "kind": "logic",
+      "file": "packages/core/src/lib/featureRuntime.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "resolvePersistenceWriteDecision",
+      "kind": "logic",
+      "file": "packages/core/src/lib/persistenceBoundary.ts",
+      "concept": "Storage, Sync & Persistence"
+    },
+    {
+      "name": "resolveAccountPracticeWriteDecision",
+      "kind": "logic",
+      "file": "packages/core/src/lib/practiceBoundary.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "getAuthRouteDecision",
+      "kind": "logic",
+      "file": "packages/core/src/logic/auth/bootstrapRoutes.ts",
+      "concept": "Auth, Accounts & Session"
+    },
+    {
+      "name": "resolveCapabilityDecision",
+      "kind": "logic",
+      "file": "packages/core/src/logic/capabilityDecision.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "isFeatureAccessContextReady",
+      "kind": "logic",
+      "file": "packages/core/src/logic/permissions/accessContext.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "resolveFeaturePresentation",
+      "kind": "logic",
+      "file": "packages/core/src/logic/permissions/featurePresentation.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "checkLocalPermission",
+      "kind": "logic",
+      "file": "packages/core/src/logic/permissions/localEvaluator.native.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "checkLocalPermission",
+      "kind": "logic",
+      "file": "packages/core/src/logic/permissions/localEvaluator.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "checkLocalPermission",
+      "kind": "logic",
+      "file": "packages/core/src/logic/permissions/localEvaluator.web.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "sanctuaryFeature",
+      "kind": "logic",
+      "file": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "defineFeatureLifecycle",
+      "kind": "logic",
+      "file": "packages/core/src/logic/registry/domainEntry.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "validateFeatureFlagManifest",
+      "kind": "logic",
+      "file": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+      "concept": "Feature Flags & Rollout"
+    },
+    {
+      "name": "fallbackForFeatureFlagClass",
+      "kind": "logic",
+      "file": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+      "concept": "Feature Flags & Rollout"
+    },
+    {
+      "name": "resolveFeatureFlagClass",
+      "kind": "logic",
+      "file": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+      "concept": "Feature Flags & Rollout"
+    },
+    {
+      "name": "resolveFeatureFlagValue",
+      "kind": "logic",
+      "file": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+      "concept": "Feature Flags & Rollout"
+    },
+    {
+      "name": "validateFeatureLifecycleAction",
+      "kind": "logic",
+      "file": "packages/core/src/logic/registry/featureLifecyclePolicy.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "getWebPushPermission",
+      "kind": "logic",
+      "file": "packages/core/src/native/webPush.native.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "getWebPushPermission",
+      "kind": "logic",
+      "file": "packages/core/src/native/webPush.web.ts",
+      "concept": "ReBAC, Identity & Permissions"
+    },
+    {
+      "name": "vergerRemoteFromFlags",
+      "kind": "logic",
+      "file": "packages/core/src/verger/launch.ts",
+      "concept": "Utility & Primitives"
+    },
+    {
+      "name": "resolveFeedbackDecision",
+      "kind": "logic",
+      "file": "packages/ui/src/utils/feedbackPolicy.ts",
+      "concept": "Utility & Primitives"
+    }
+  ]
+}

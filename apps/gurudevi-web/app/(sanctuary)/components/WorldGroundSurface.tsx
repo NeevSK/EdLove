@@ -51,10 +51,7 @@ export function WorldGroundSurface({
   style,
 }: Readonly<WorldGroundSurfaceProps>) {
   // Clock state for live diurnal updates
-  const [minute, setMinute] = useState<number>(() => {
-    const d = new Date();
-    return d.getHours() * 60 + d.getMinutes();
-  });
+  const [minute, setMinute] = useState<number>(12 * 60);
 
   useEffect(() => {
     if (groundMode !== 'live') return;

@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+﻿import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../../../lib/host-routing';
@@ -6,7 +6,7 @@ import { resolveAuthorizedEntry } from '../../../../../lib/sanctuary/authorizedE
 import { createServerSupabaseClient } from '../../../../../lib/supabase/server';
 import { signInPath } from '../../../auth/routeSafety';
 import { SanctuaryShell } from '../../../components/SanctuaryShell';
-import { CollectionDetailFloor } from './CollectionDetailFloor';
+import { CollectionShelfDesk } from './CollectionShelfDesk';
 
 export const metadata = { title: 'Collection Details | Gurudevi Sanctuary' };
 
@@ -28,7 +28,7 @@ export default async function CollectionDetailPage({ params }: PageProps) {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <CollectionDetailFloor id={id} displayName="Guest Explorer" />
+        <CollectionShelfDesk id={id} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -42,7 +42,7 @@ export default async function CollectionDetailPage({ params }: PageProps) {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <CollectionDetailFloor id={id} displayName="Guest Explorer" />
+        <CollectionShelfDesk id={id} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -56,7 +56,7 @@ export default async function CollectionDetailPage({ params }: PageProps) {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <CollectionDetailFloor id={id} displayName="Guest Explorer" />
+        <CollectionShelfDesk id={id} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -85,7 +85,7 @@ export default async function CollectionDetailPage({ params }: PageProps) {
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <CollectionDetailFloor id={id} displayName={entry.displayName} capacity={entry.activeCapacity} />
+      <CollectionShelfDesk id={id} displayName={entry.displayName} capacity={entry.activeCapacity} />
     </SanctuaryShell>
   );
 }

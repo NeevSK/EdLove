@@ -1,0 +1,193 @@
+---
+title: "API journey minimal projection"
+status: active
+created: 2026-10-30
+updated: 2026-10-30
+author: Codex
+tags: [pjc, generated]
+---
+
+Generated from packages/core/src/flows/pjc/api.foundation.json; regenerate through the PJC CLI.
+
+# Product and Journey Catalog
+
+- **id:** journey:api.execute
+- **kind:** journey
+- **title:** API admission, execution and recovery
+- **parent:** intent:api.execute
+- **references**
+  - step:api.request
+- **situation:** A user or delegated agent invokes the existing API while identity, authorization relationships or persistence may be unavailable.
+- **outcome:** A validated result or explicit rejection/recovery state.
+- **context:** other
+- **intent**
+  - **id:** intent:api.execute
+  - **kind:** intent
+  - **title:** Execute an authorized operation reliably
+  - **parent:** feature:api.foundation
+  - **references**
+    - (none)
+  - **actor:** authenticated user or delegated agent
+  - **outcome:** Receive a scoped result or safe recovery feedback without repeating an unconfirmed mutation.
+- **steps**
+  -
+    - **id:** step:api.request
+    - **title:** request
+    - **interaction:** Send a validated command with captured account context.
+    - **terminal:** false
+  -
+    - **id:** step:api.result
+    - **title:** result
+    - **interaction:** Consume the scoped result.
+    - **terminal:** true
+  -
+    - **id:** step:api.recovery
+    - **title:** recovery
+    - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+    - **terminal:** true
+- **transitions**
+  -
+    - **id:** transition:api.daily\_content\_read
+    - **from:** step:api.request
+    - **to:** step:api.result
+    - **action:** Validate the date or lookback, evaluate Cedar and execute the existing parameterized read.
+    - **feedback:** Return validated content with normalized driver timestamps, or the existing absent-content result for an empty query.
+  -
+    - **id:** transition:api.daily\_content\_reject
+    - **from:** step:api.request
+    - **to:** step:api.recovery
+    - **action:** Reject malformed date/lookback input before SQL or propagate malformed query results and storage exceptions.
+    - **feedback:** Return BAD\_REQUEST for invalid input or a safe INTERNAL\_SERVER\_ERROR for invalid storage, without private details or fabricated content.
+  -
+    - **id:** transition:api.privacy\_reject
+    - **from:** step:api.request
+    - **to:** step:api.recovery
+    - **action:** Reject invalid envelopes, other-owner or history-mutation authority, malformed stored rows and inserts without a stored result.
+    - **feedback:** Return a safe native error without private storage details or false success.
+  -
+    - **id:** transition:api.privacy\_owner
+    - **from:** step:api.request
+    - **to:** step:api.result
+    - **action:** Validate the native contract, derive the owner from authenticated context, evaluate Cedar and execute the owner-scoped SQL.
+    - **feedback:** Return a schema-validated ledger or stored entry; legitimate absence remains an empty ledger.
+  -
+    - **id:** transition:api.native\_failure
+    - **from:** step:api.request
+    - **to:** step:api.recovery
+    - **action:** Reject failed admission or reward storage without fabricating an empty success.
+    - **feedback:** Return a safe native oRPC error with its standard code; retain private dependency details on neither the wire nor safe logs.
+  -
+    - **id:** transition:api.reward\_commit
+    - **from:** step:api.request
+    - **to:** step:api.result
+    - **action:** Verify the signed reward and atomically record its receipt and balance increment, or acknowledge a committed replay or cap receipt.
+    - **feedback:** Return a successful acknowledgement only after the ORM transaction resolves.
+  -
+    - **id:** transition:api.reward\_unavailable
+    - **from:** step:api.request
+    - **to:** step:api.recovery
+    - **action:** Fail verification-key lookup or persistence without acknowledging a grant.
+    - **feedback:** Return 503 with safe failure details; retry using the same provider transaction ID.
+  -
+    - **id:** transition:api.http
+    - **from:** step:api.request
+    - **to:** step:api.result
+    - **action:** Evaluate http boundary
+    - **feedback:** Return a safe result or explicit recovery information.
+  -
+    - **id:** transition:api.mcp
+    - **from:** step:api.request
+    - **to:** step:api.result
+    - **action:** Evaluate mcp boundary
+    - **feedback:** Return a safe result or explicit recovery information.
+  -
+    - **id:** transition:api.entitlement
+    - **from:** step:api.request
+    - **to:** step:api.recovery
+    - **action:** Evaluate entitlement boundary
+    - **feedback:** Return a safe result or explicit recovery information.
+  -
+    - **id:** transition:api.ai\_cancel
+    - **from:** step:api.request
+    - **to:** step:api.recovery
+    - **action:** Evaluate ai\_cancel boundary
+    - **feedback:** Return a safe result or explicit recovery information.
+  -
+    - **id:** transition:api.retry
+    - **from:** step:api.request
+    - **to:** step:api.recovery
+    - **action:** Evaluate retry boundary
+    - **feedback:** Return a safe result or explicit recovery information.
+- **scenarios**
+  -
+    - **id:** scenario:api.daily\_content\_read
+    - **title:** Native daily content across existing namespaces
+    - **transitions**
+      - transition:api.daily\_content\_read
+    - **expected:** Both namespaces return the canonical DTO, driver dates normalize, nullable authors remain absent, values remain separate from SQL segments and legitimate absence is retained.
+  -
+    - **id:** scenario:api.daily\_content\_reject
+    - **title:** Daily-content invalid input and persistence failure
+    - **transitions**
+      - transition:api.daily\_content\_reject
+    - **expected:** Invalid calendar dates, flattened envelopes and out-of-budget lookbacks reject before SQL. Invalid stored fields, non-array results and storage exceptions reject without leaking private details.
+  -
+    - **id:** scenario:api.privacy\_reject
+    - **title:** Privacy rejection and failure feedback
+    - **transitions**
+      - transition:api.privacy\_reject
+    - **expected:** Malformed envelopes reject before storage; the policy denies other-owner, missing-owner, update and delete access. Invalid stored rows and missing insert results reject without disclosing private values.
+  -
+    - **id:** scenario:api.privacy\_owner
+    - **title:** Native privacy contract and owner-only access
+    - **transitions**
+      - transition:api.privacy\_owner
+    - **expected:** Owner reads and appends use validated fields and server-derived account IDs. Database timestamps normalize to ISO strings, nullable metadata remains an empty object and a legitimately absent ledger remains an empty array.
+  -
+    - **id:** scenario:api.native\_failure
+    - **title:** Native admission and reward dependency errors
+    - **transitions**
+      - transition:api.native\_failure
+    - **expected:** Single and default-batch admission failures produce native ORPCError instances; reward storage failures reject rather than returning null or empty arrays, without leaking private details.
+  -
+    - **id:** scenario:api.reward\_commit
+    - **title:** Verified grant, replay and quota outcomes
+    - **transitions**
+      - transition:api.reward\_commit
+    - **expected:** A grant updates receipt and balance in one transaction; replay does not credit twice and a capped receipt grants zero.
+  -
+    - **id:** scenario:api.reward\_unavailable
+    - **title:** Reward dependency failure remains unavailable
+    - **transitions**
+      - transition:api.reward\_unavailable
+    - **expected:** Key lookup or database failure returns 503 without fabricated success; expired verification keys are not reused.
+  -
+    - **id:** scenario:api.http
+    - **title:** http contract
+    - **transitions**
+      - transition:api.http
+    - **expected:** Preserve http behavior under its success and rejection cases.
+  -
+    - **id:** scenario:api.mcp
+    - **title:** mcp contract
+    - **transitions**
+      - transition:api.mcp
+    - **expected:** Preserve mcp behavior under its success and rejection cases.
+  -
+    - **id:** scenario:api.entitlement
+    - **title:** entitlement contract
+    - **transitions**
+      - transition:api.entitlement
+    - **expected:** Preserve entitlement behavior under its success and rejection cases.
+  -
+    - **id:** scenario:api.ai\_cancel
+    - **title:** ai\_cancel contract
+    - **transitions**
+      - transition:api.ai\_cancel
+    - **expected:** Preserve ai\_cancel behavior under its success and rejection cases.
+  -
+    - **id:** scenario:api.retry
+    - **title:** retry contract
+    - **transitions**
+      - transition:api.retry
+    - **expected:** Preserve retry behavior under its success and rejection cases.

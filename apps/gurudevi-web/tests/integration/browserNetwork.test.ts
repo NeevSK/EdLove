@@ -1,6 +1,6 @@
 import { stopNetworkBusAdapter } from '@repo/core/adapters/NetworkBusAdapter';
 import { WebNetworkAdapter } from '@repo/core/adapters/WebNetworkAdapter';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import type { VergerEvent } from '@repo/core/verger';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { browserNetworkSignals } from '@/lib/runtime/browserNetwork';
@@ -19,7 +19,7 @@ describe('Gurudevi browser network to Verger', () => {
     });
     Object.defineProperty(navigator, 'connection', { configurable: true, value: connection });
     Object.defineProperty(navigator, 'onLine', { configurable: true, value: true });
-    networkManager.registerAdapter(new WebNetworkAdapter());
+    networkMonitor.registerAdapter(new WebNetworkAdapter());
     const events: VergerEvent[] = [];
     const stop = browserNetworkSignals(
       (event) => events.push(event),

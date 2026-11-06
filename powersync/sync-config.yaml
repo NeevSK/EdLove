@@ -23,3 +23,10 @@ streams:
       JOIN classrooms c ON c.id = cs.classroom_id
       WHERE c.teacher_id = auth.parameter('canonical_account_id')
          OR cs.student_id = auth.parameter('canonical_account_id')
+
+  user_todos:
+    auto_subscribe: true
+    queries:
+      - SELECT * FROM lists WHERE user_id = auth.parameter('canonical_account_id')
+      - SELECT * FROM todos WHERE user_id = auth.parameter('canonical_account_id')
+

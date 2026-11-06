@@ -9,13 +9,13 @@ export * from './classroomDomain';
 export * from './guardianDomain';
 export * from './principalDomain';
 
-// Core Substrate Services & Adapters
-export * from './adapters/academic/academicHexagonalService';
-export * from './adapters/editorial/editorialHexagonalService';
-export * from './adapters/erp/erpHexagonalService';
-export * from './adapters/school/schoolHexagonalService';
-export * from './adapters/tuition/tuitionHexagonalService';
-export * from './adapters/workspace/workspaceHexagonalService';
+// Core Substrate Adapters (Tier 3)
+export * from './adapters/academic/academic.adapter';
+export * from './adapters/editorial/editorial.adapter';
+export * from './adapters/erp/erp.adapter';
+export * from './adapters/school/school.adapter';
+export * from './adapters/tuition/tuition.adapter';
+export * from './adapters/workspace/workspace.adapter';
 
 // Driving Hooks
 export * from './hooks/useAcademicDomain';

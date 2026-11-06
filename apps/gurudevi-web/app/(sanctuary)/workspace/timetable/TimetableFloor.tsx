@@ -1,7 +1,8 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { DAYS, schoolDayFor, useTimetable } from './useTimetable';
+import { ScrollArea } from '@repo/ui/components/web';
 import styles from './timetable.module.css';
 
 export { schoolDayFor };
@@ -76,22 +77,32 @@ export function TimetableFloor({ displayName }: TimetableFloorProps) {
       </section>
 
       {/* Day Selector Tabs */}
-      <nav aria-label="Timetable Days" className={styles.dayTabs}>
-        {DAYS.map((day) => {
-          const isSelected = day === selectedDay;
-          return (
-            <button
-              key={day}
-              type="button"
-              role="tab"
-              aria-selected={isSelected}
-              onClick={() => setSelectedDay(day)}
-              className={styles.dayTab}
-            >
-              {day}
-            </button>
-          );
-        })}
+      <nav aria-label="Timetable Days">
+        <ScrollArea
+          orientation="horizontal"
+          variant="auto"
+          label="Timetable Days"
+          showEdgeGradients={false}
+          className={styles.dayTabsScroll}
+        >
+          <div className={styles.dayTabs}>
+            {DAYS.map((day) => {
+              const isSelected = day === selectedDay;
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelected}
+                  onClick={() => setSelectedDay(day)}
+                  className={styles.dayTab}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+        </ScrollArea>
       </nav>
 
       {/* Period Cards Grid */}

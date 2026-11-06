@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import {
-  editorialHexagonalService,
+  editorialAdapter,
   type SchoolEditorialDraft,
-  schoolHexagonalService,
+  schoolAdapter,
 } from '@/lib/domain';
 import { SanctuaryShell } from '../../../../components/SanctuaryShell';
 import styles from './article.module.css';
@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   const cleanSlug = (resolved.slug ?? '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 80);
 
   const [profile, drafts] = await Promise.all([
-    schoolHexagonalService.getSchoolProfile(cleanId).catch(() => null),
-    editorialHexagonalService.listDrafts(cleanId).catch(() => []),
+    schoolAdapter.getSchoolProfile(cleanId).catch(() => null),
+    editorialAdapter.listDrafts(cleanId).catch(() => []),
   ]);
 
   const article = drafts.find(
@@ -52,8 +52,8 @@ export default async function SchoolArticleReaderPage({ params }: ArticlePagePro
   const cleanSlug = (resolved.slug ?? '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 80);
 
   const [profile, drafts] = await Promise.all([
-    schoolHexagonalService.getSchoolProfile(cleanId).catch(() => null),
-    editorialHexagonalService.listDrafts(cleanId).catch(() => []),
+    schoolAdapter.getSchoolProfile(cleanId).catch(() => null),
+    editorialAdapter.listDrafts(cleanId).catch(() => []),
   ]);
 
   if (!profile) {

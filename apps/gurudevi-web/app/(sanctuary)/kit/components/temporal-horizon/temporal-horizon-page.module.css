@@ -1,0 +1,230 @@
+/* ==========================================================================
+   Temporal Horizon Lab Page Styles
+   ========================================================================== */
+
+.pageLayout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--paper, #0d0f18);
+  color: var(--ink, #f3f4f6);
+}
+
+.sidebarArea {
+  flex-shrink: 0;
+  width: 290px;
+  border-right: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.mainCanvas {
+  flex: 1;
+  min-width: 0;
+  padding: 2.5rem 3.5rem;
+  max-width: 1100px;
+}
+
+.pageHeader {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.6));
+  margin-bottom: 0.75rem;
+}
+
+.breadLink {
+  color: var(--ink-soft, rgba(255, 255, 255, 0.75));
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.breadLink:hover {
+  color: var(--w-lamp, #e2c37a);
+}
+
+.breadDivider {
+  color: var(--ink-soft, rgba(255, 255, 255, 0.3));
+}
+
+.breadCurrent {
+  color: var(--w-lamp, #e2c37a);
+  font-weight: 500;
+}
+
+.pageTitle {
+  font: 700 2.2rem Georgia, "Times New Roman", serif;
+  color: var(--ink, #fff);
+  letter-spacing: -0.015em;
+  margin: 0 0 0.5rem 0;
+}
+
+.pageSubtitle {
+  font: 400 1rem system-ui, -apple-system, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.7));
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Critique Banner */
+.critiqueBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, #9a6b18 12%, var(--paper-light, #171825));
+  border: 1px solid color-mix(in srgb, #e2c37a 30%, transparent);
+  margin-bottom: 2.5rem;
+}
+
+.critiqueIcon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.critiqueHeading {
+  font: 700 1.05rem Georgia, serif;
+  color: var(--w-lamp, #e2c37a);
+  margin: 0 0 0.4rem 0;
+}
+
+.critiqueText {
+  font: 400 0.9rem system-ui, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.8));
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Model Section */
+.modelSection {
+  margin-bottom: 3.5rem;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--paper-light, #171825) 90%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.modelTag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  margin-bottom: 0.5rem;
+}
+
+.modelTitle {
+  font: 700 1.5rem Georgia, serif;
+  color: var(--ink, #fff);
+  margin: 0 0 0.5rem 0;
+}
+
+.modelDesc {
+  font: 400 0.92rem system-ui, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.7));
+  line-height: 1.5;
+  max-width: 720px;
+  margin: 0 0 1.5rem 0;
+}
+
+.orbitContainerWrapper {
+  margin-bottom: 1.5rem;
+}
+
+.habitatExpandedCard {
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 8%, var(--paper, #11121d));
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.habitatEchoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.habitatEchoBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--w-lamp, #e2c37a);
+}
+
+.habitatEchoTime {
+  font: 600 0.85rem monospace;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.7));
+}
+
+.habitatEchoName {
+  font: 700 1.25rem Georgia, serif;
+  color: var(--ink, #fff);
+  margin: 0 0 0.5rem 0;
+}
+
+.habitatEchoFocus,
+.habitatEchoEnergy {
+  font: 400 0.88rem system-ui, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.75));
+  margin: 0 0 0.35rem 0;
+}
+
+/* Tiers Stack */
+.tiersStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tierBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper, #11121d) 90%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.tierLabel {
+  font: 600 0.8rem system-ui, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.6));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .pageLayout {
+    flex-direction: column;
+  }
+  .sidebarArea {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  }
+  .mainCanvas {
+    padding: 1.5rem;
+  }
+}

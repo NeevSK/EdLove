@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import {
   CANONICAL_EDITORIAL_DRAFTS,
-} from '../../../../lib/domain/adapters/editorial/editorialHexagonalService';
+} from '../../../../lib/domain/adapters/editorial/editorial.adapter';
 import type { EditorialContentKind, SchoolEditorialDraft } from '../../../../lib/domain/ports/editorial.port';
 import styles from './editorial.module.css';
 

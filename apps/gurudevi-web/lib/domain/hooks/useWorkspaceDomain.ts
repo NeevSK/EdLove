@@ -4,7 +4,7 @@ import { type QueryScope, scopedQueryKey } from '@repo/core/lib/clientStateFound
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import type { WorkspaceClassroom, WorkspaceStudent } from '../../workspace/attendance';
-import { workspaceHexagonalService } from '../adapters/workspace/workspaceHexagonalService';
+import { workspaceAdapter } from '../adapters/workspace/workspace.adapter';
 
 /** Facts supplied by the authorized Workspace entry, not inferred client state. */
 export type WorkspaceAttendanceReadScope = Readonly<{
@@ -103,7 +103,7 @@ export function useWorkspaceDomain({
     queryKey: classroomsKey,
     queryFn: ({ signal }) => {
       if (!scope) throw new Error('The selected classroom scope is unavailable.');
-      return workspaceHexagonalService.getClassrooms(scope.queryScope.principalId, signal);
+      return workspaceAdapter.getClassrooms(scope.queryScope.principalId, signal);
     },
     enabled: admitted,
     retry: shouldRetryWorkspaceRead,
@@ -113,7 +113,7 @@ export function useWorkspaceDomain({
     queryKey: rosterKey,
     queryFn: ({ signal }) => {
       if (!scope || !classroom) throw new Error('The selected classroom scope is unavailable.');
-      return workspaceHexagonalService.getAttendanceRoster(
+      return workspaceAdapter.getAttendanceRoster(
         classroom,
         date,
         scope.queryScope.principalId,

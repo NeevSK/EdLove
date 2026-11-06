@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,18 +8,52 @@ const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.me
 const rootPackageJson = JSON.parse(
   readFileSync(new URL('../../../package.json', import.meta.url), 'utf8'),
 );
+const appRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
+const appRequire = createRequire(path.join(appRoot, 'package.json'));
 const workspaceRoot = path.resolve(fileURLToPath(new URL('../../../', import.meta.url)));
-const pnpm = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
-
+const expoModulesAutolinkingPackage = appRequire.resolve('expo-modules-autolinking/package.json', {
+  paths: [path.join(appRoot, 'node_modules/expo')],
+});
 const output = execFileSync(
-  pnpm,
-  ['exec', 'expo-modules-autolinking', 'resolve', '--platform', 'android', '--json'],
-  { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], shell: process.platform === 'win32' },
+  process.execPath,
+  [
+    path.join(path.dirname(expoModulesAutolinkingPackage), 'bin/expo-modules-autolinking.js'),
+    'resolve',
+    '--platform',
+    'android',
+    '--json',
+  ],
+  { cwd: appRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] },
 );
 const resolved = JSON.parse(output);
 const modules = new Map(resolved.modules.map((module) => [module.packageName, module]));
+const reactNativeConfig = JSON.parse(
+  execFileSync(
+    process.execPath,
+    [path.join(appRoot, 'node_modules/react-native/cli.js'), 'config'],
+    { cwd: appRoot, encoding: 'utf8' },
+  ),
+);
+const androidNativeModules = Object.entries(reactNativeConfig.dependencies).filter(
+  ([, dependency]) => dependency.platforms?.android?.sourceDir,
+);
+const expoDeclaration = packageJson.dependencies?.expo ?? packageJson.devDependencies?.expo;
+const expectedSdkMajor = Number(String(expoDeclaration).match(/\d+/)?.[0]);
+if (!Number.isInteger(expectedSdkMajor)) {
+  throw new Error(`Unable to determine Expo SDK major from app declaration: ${expoDeclaration}`);
+}
 
 const errors = [];
+
+for (const [name] of androidNativeModules) {
+  if (!packageJson.dependencies?.[name]) {
+    errors.push(`${name}: Android native module must be a direct mobile app dependency`);
+  }
+}
+
+if (!reactNativeConfig.dependencies['@maplibre/maplibre-react-native']?.platforms?.android) {
+  errors.push('@maplibre/maplibre-react-native: missing Android autolinking configuration');
+}
 
 const manifestFiles = [];
 const walkForManifests = (directory) => {
@@ -84,19 +119,31 @@ const taskManagerPackage = taskManager?.projects?.[0]?.sourceDir;
 if (!loaderVersion) errors.push('unimodules-app-loader: missing from Android autolinking output');
 if (!taskManagerPackage) errors.push('expo-task-manager: missing Android source project');
 
-if (loaderVersion && !/^57\.0\./.test(loaderVersion)) {
-  errors.push(`unimodules-app-loader: expected Expo 57, resolved ${loaderVersion}`);
+if (loaderVersion && Number(loaderVersion.split('.')[0]) !== expectedSdkMajor) {
+  errors.push(
+    `unimodules-app-loader: expected Expo SDK ${expectedSdkMajor}, resolved ${loaderVersion}`,
+  );
 }
-if (taskManager?.packageVersion && !/^57\.0\./.test(taskManager.packageVersion)) {
-  errors.push(`expo-task-manager: expected Expo 57, resolved ${taskManager.packageVersion}`);
+if (
+  taskManager?.packageVersion &&
+  Number(taskManager.packageVersion.split('.')[0]) !== expectedSdkMajor
+) {
+  errors.push(
+    `expo-task-manager: expected Expo SDK ${expectedSdkMajor}, resolved ${taskManager.packageVersion}`,
+  );
 }
 
 const nativeExpoModules = [...modules.entries()].filter(
   ([name]) => name === 'expo' || name.startsWith('expo-'),
 );
 for (const [name, module] of nativeExpoModules) {
-  if (module.packageVersion && /^56\./.test(module.packageVersion)) {
-    errors.push(`${name}: stale SDK 56 native module ${module.packageVersion}`);
+  if (
+    module.packageVersion &&
+    Number(module.packageVersion.split('.')[0]) !== expectedSdkMajor
+  ) {
+    errors.push(
+      `${name}: expected Expo SDK ${expectedSdkMajor}, resolved ${module.packageVersion}`,
+    );
   }
 }
 
@@ -109,6 +156,10 @@ console.log(
       modulesCore: moduleVersion('expo-modules-core'),
       appLoader: loaderVersion,
       nativeExpoModuleCount: nativeExpoModules.length,
+      androidReactNativeModuleCount: androidNativeModules.length,
+      maplibreAndroidAutolinked: Boolean(
+        reactNativeConfig.dependencies['@maplibre/maplibre-react-native']?.platforms?.android,
+      ),
     },
     null,
     2,
@@ -121,4 +172,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log('PASS: Expo native graph is aligned to one SDK 57 patch line.');
+console.log(`PASS: Expo native graph is aligned to SDK ${expectedSdkMajor}.`);

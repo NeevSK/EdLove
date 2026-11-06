@@ -1,6 +1,8 @@
 'use client';
 
-import type { WorkspaceAppearanceMotion, WorkspaceAppearancePreset } from '@repo/core/types';
+import type { WorkspaceAppearanceMotion } from '@repo/core/types';
+import type { WorldId } from '@repo/ui/theme';
+import { WorldPicker } from '@repo/ui/components/web';
 import Link from 'next/link';
 import type { FidelityPreference } from '@repo/core/verger';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +15,7 @@ import {
   setClientConsentStatus,
 } from '../../../lib/privacy/consent';
 import { useTranslation } from '../../../lib/i18n';
+import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import styles from './settings.module.css';
 
 interface SettingsFloorProps {
@@ -29,7 +32,7 @@ export function SettingsFloor({
   accountId,
 }: Readonly<SettingsFloorProps>) {
   const { t, locale, setLocale } = useTranslation();
-  const [preset, setPreset] = useState<WorkspaceAppearancePreset>('default');
+  const { world, mode, resolvedMode, setWorld, setMode } = useWorldTheme();
   const [motion, setMotion] = useState<WorkspaceAppearanceMotion>('subtle');
   const [language, setLanguage] = useState<'en' | 'si' | 'ta'>(locale);
   const [highContrast, setHighContrast] = useState(false);
@@ -93,14 +96,6 @@ export function SettingsFloor({
     } catch {
       setNavigationLayout('horizontal');
     }
-    // Read appearance from root dataset or localStorage
-    const savedPreset = localStorage.getItem(
-      'gurudevi_appearance_preset',
-    ) as WorkspaceAppearancePreset | null;
-    if (savedPreset) {
-      setPreset(savedPreset);
-      document.documentElement.setAttribute('data-appearance', savedPreset);
-    }
     const savedMotion = localStorage.getItem(
       'gurudevi_motion_preset',
     ) as WorkspaceAppearanceMotion | null;
@@ -149,9 +144,11 @@ export function SettingsFloor({
           const meta = user?.metadata as Record<string, unknown> | null;
           const s = meta?.settings as Record<string, unknown> | null;
           if (s) {
-            if (s.preset && typeof s.preset === 'string') {
-              setPreset(s.preset as WorkspaceAppearancePreset);
-              document.documentElement.setAttribute('data-appearance', s.preset);
+            if (s.world && typeof s.world === 'string') {
+              setWorld(s.world as WorldId);
+            }
+            if (s.mode && typeof s.mode === 'string') {
+              setMode(s.mode as 'light' | 'dark' | 'system');
             }
             if (s.motion && typeof s.motion === 'string') {
               setMotion(s.motion as WorkspaceAppearanceMotion);
@@ -187,12 +184,19 @@ export function SettingsFloor({
     triggerSavedNotice('Navigation layout updated');
   };
 
-  const handlePresetChange = (newPreset: WorkspaceAppearancePreset) => {
-    setPreset(newPreset);
-    localStorage.setItem('gurudevi_appearance_preset', newPreset);
-    document.documentElement.setAttribute('data-appearance', newPreset);
-    void syncPreferenceToCloud({ preset: newPreset });
-    triggerSavedNotice('Appearance updated to ' + newPreset);
+  const handleModeChange = (newMode: 'light' | 'dark' | 'system') => {
+    setMode(newMode);
+    void syncPreferenceToCloud({ mode: newMode });
+    triggerSavedNotice(
+      'Light appearance updated to ' +
+        (newMode === 'system' ? 'Device' : newMode === 'dark' ? 'Night' : 'Day'),
+    );
+  };
+
+  const handleWorldChange = (newWorld: WorldId) => {
+    setWorld(newWorld);
+    void syncPreferenceToCloud({ world: newWorld });
+    triggerSavedNotice('Cultural world updated to ' + newWorld);
   };
 
   const handleMotionChange = (newMotion: WorkspaceAppearanceMotion) => {
@@ -275,13 +279,8 @@ export function SettingsFloor({
   };
 
   return (
-    <SanctuaryFloorCanvas domain="settings" titleId="settings-title">
+    <SanctuaryFloorCanvas domain="settings" titleId="settings-title" breadcrumb="Settings · Preferences">
       <div className={styles.container}>
-        <header className={styles.headerBar}>
-          <h1 id="settings-title">{t('settings.title')}</h1>
-          <p>{t('settings.subtitle')}</p>
-        </header>
-
         {isExplore && (
           <div
             style={{
@@ -356,62 +355,69 @@ export function SettingsFloor({
             </button>
           </div>
         </section>
-        {/* Appearance & Diurnal Palette */}
+        {/* Light & Diurnal Mode */}
         <section className={styles.settingSection}>
           <h2 className={styles.sectionTitle}>
-            <span>🎨</span>
-            <span>{t('settings.atmosphereTitle')}</span>
+            <span>☀️</span>
+            <span>Light & Diurnal Mode</span>
           </h2>
           <p className={styles.sectionDescription}>
-            {t('settings.atmosphereDesc')}
+            Choose whether Gurudevi follows your device daylight or stays in Day or Night luminance.
           </p>
 
           <div className={styles.optionsGrid}>
             <button
               className={styles.optionCard}
-              data-selected={preset === 'default'}
-              onClick={() => handlePresetChange('default')}
+              data-selected={mode === 'light'}
+              onClick={() => handleModeChange('light')}
               type="button"
             >
-              <span className={styles.optionLabel}>Natural Sanctuary</span>
+              <span className={styles.optionLabel}>Day (Light)</span>
               <span className={styles.optionSub}>
-                Soft natural parchment tones matching system diurnal time
+                Crisp high-readability daylight surfaces
               </span>
             </button>
             <button
               className={styles.optionCard}
-              data-selected={preset === 'dawn'}
-              onClick={() => handlePresetChange('dawn')}
+              data-selected={mode === 'dark'}
+              onClick={() => handleModeChange('dark')}
               type="button"
             >
-              <span className={styles.optionLabel}>Dawn (Vellum)</span>
-              <span className={styles.optionSub}>
-                Warm morning gold with high lightness contrast
-              </span>
-            </button>
-            <button
-              className={styles.optionCard}
-              data-selected={preset === 'garden'}
-              onClick={() => handlePresetChange('garden')}
-              type="button"
-            >
-              <span className={styles.optionLabel}>Garden (Sage)</span>
-              <span className={styles.optionSub}>
-                Earthy greens and quiet botanical tones for restful reading
-              </span>
-            </button>
-            <button
-              className={styles.optionCard}
-              data-selected={preset === 'night'}
-              onClick={() => handlePresetChange('night')}
-              type="button"
-            >
-              <span className={styles.optionLabel}>Night (Charcoal)</span>
+              <span className={styles.optionLabel}>Night (Dark)</span>
               <span className={styles.optionSub}>
                 Deep contemplative dark surface with halation protection
               </span>
             </button>
+            <button
+              className={styles.optionCard}
+              data-selected={mode === 'system'}
+              onClick={() => handleModeChange('system')}
+              type="button"
+            >
+              <span className={styles.optionLabel}>Follow Device</span>
+              <span className={styles.optionSub}>
+                Automatically synchronizes with your device operating system theme
+              </span>
+            </button>
           </div>
+        </section>
+
+        {/* Cultural World Section */}
+        <section className={styles.settingSection}>
+          <h2 className={styles.sectionTitle}>
+            <span>🎨</span>
+            <span>Cultural World</span>
+          </h2>
+          <p className={styles.sectionDescription}>
+            Dress the entire application in the aesthetic, typography, corners, and spirit of your chosen Sri Lankan world.
+          </p>
+
+          <WorldPicker
+            value={world}
+            onChange={handleWorldChange}
+            mode={resolvedMode}
+            label="Cultural World"
+          />
         </section>
 
         {/* Motion & Vestibular Safety */}
@@ -742,23 +748,6 @@ export function SettingsFloor({
             {t('settings.securityDesc')}
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <Link
-              href="/profile/security"
-              style={{
-                padding: '0.5rem 1.25rem',
-                borderRadius: '0.5rem',
-                background: 'var(--color-action, #a85022)',
-                color: '#fff',
-                fontSize: '0.85rem',
-                fontWeight: 700,
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              <span>🔑</span> Open Device Security Portal ↗
-            </Link>
             <span style={{ fontSize: '0.8rem', color: 'var(--color-ink-soft, #453c35)' }}>
               Hardware cryptographic sessions protected by Supabase & WebAuthn
             </span>

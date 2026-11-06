@@ -1,25 +1,23 @@
+.navContainer {
+  margin-bottom: 1.5rem;
+  background: var(--surface-translucent, rgba(255, 253, 248, 0.95));
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border, #ded8cf);
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px rgba(41, 37, 31, 0.04);
+  overflow: hidden;
+}
+
 .workspaceNav {
+  width: 100%;
+}
+
+.navItemsList {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.6rem;
-  margin-bottom: 1.5rem;
-  background: var(--w-surface-raised-bg, var(--surface-translucent, rgba(255, 253, 248, 0.95)));
-  backdrop-filter: blur(12px);
-  border: var(--w-line-weight, 1px) solid var(--w-line, var(--border, #ded8cf));
-  border-radius: var(--w-surface-raised-radius, 1rem);
-  overflow-x: auto;
-  scrollbar-width: thin;
-  box-shadow: var(--w-surface-raised-shadow, 0 4px 16px rgba(41, 37, 31, 0.04));
-}
-
-.workspaceNav::-webkit-scrollbar {
-  height: 4px;
-}
-
-.workspaceNav::-webkit-scrollbar-thumb {
-  background: var(--w-line, #ded8cf);
-  border-radius: 4px;
+  width: max-content;
 }
 
 .navItem {
@@ -29,11 +27,11 @@
   padding: 0.45rem 0.85rem;
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--w-ink-soft, var(--ink-ghost, #71695f));
+  color: var(--ink-ghost, #71695f);
   text-decoration: none;
   white-space: nowrap;
   border: 0;
-  border-radius: var(--w-button-radius, 0.65rem);
+  border-radius: 0.65rem;
   background: transparent;
   cursor: pointer;
   font-family: inherit;
@@ -41,14 +39,14 @@
 }
 
 .navItem:hover {
-  color: var(--w-ink, var(--ink, #1f1d1a));
-  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  color: var(--ink, #1f1d1a);
+  background: rgba(122, 28, 32, 0.06);
 }
 
 .navItemActive {
-  color: var(--w-on-lamp, #ffffff) !important;
-  background: var(--w-lamp, var(--sanctuary-saffron, #7a1c20)) !important;
-  box-shadow: 0 2px 8px var(--w-glow, rgba(122, 28, 32, 0.28));
+  color: #ffffff !important;
+  background: var(--sanctuary-saffron, #7a1c20) !important;
+  box-shadow: 0 2px 8px rgba(122, 28, 32, 0.28);
 }
 
 .symbol {

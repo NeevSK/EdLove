@@ -1,6 +1,6 @@
 'use client';
 
-import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import { getSandboxSamples } from '@repo/core/logic/modes/sandboxDataset';
 import { Award, BookOpen, Clock } from 'lucide-react';
 
 interface MyGradesViewProps {

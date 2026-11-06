@@ -21,7 +21,7 @@ describe('ReframeWizard browser adapter', () => {
     fireEvent.change(screen.getByPlaceholderText(/one incomplete stack/i), {
       target: { value: 'I can finish the essential work first.' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /anchor reframe/i }));
+    fireEvent.click(screen.getByRole('button', { name: /complete reframe/i }));
 
     expect(await screen.findByText('Perspective Restored')).toBeTruthy();
     expect(window.localStorage.getItem('gurudevi:web:self:v1:thoughts:account-a')).toContain(

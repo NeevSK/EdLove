@@ -42,13 +42,13 @@ const productDependency = (pkg, packageName, name) => {
   return version;
 };
 
-for (const name of ['nativewind', 'react-native-css', 'react-native-css-interop', 'tailwindcss']) {
+for (const name of ['nativewind', 'react-native-css', 'tailwindcss']) {
   sameDependency(name);
 }
 
 for (const [name, expected] of [
-  ['nativewind', '5.0.0-preview.4'],
-  ['tailwindcss', '4.3.0'],
+  ['nativewind', '5.0.0-rc.1'],
+  ['tailwindcss', '4.3.4'],
 ]) {
   for (const [packageName, pkg] of [
     ['gurudevi-mobile', appPackage],
@@ -62,9 +62,9 @@ for (const [name, expected] of [
   }
 }
 
-if (dependency(appPackage, 'tailwindcss') !== '4.3.0') {
+if (dependency(appPackage, 'tailwindcss') !== '4.3.4') {
   errors.push(
-    'gurudevi-mobile runtime Tailwind CSS must remain pinned to 4.3.0 during bridge hardening',
+    'gurudevi-mobile runtime Tailwind CSS must remain pinned to 4.3.4 for the NativeWind 5 stack',
   );
 }
 
@@ -80,7 +80,6 @@ if (gluestackConfig.engine !== 'nativewind') {
 
 for (const [label, source, required] of [
   ['Metro NativeWind wrapper', metro, 'withNativewind'],
-  ['Metro CSS interop runtime shim', metro, 'react-native-css-interop/jsx-runtime'],
   ['Shared global CSS theme import', globalCss, '@import "tailwindcss/theme.css"'],
   ['Shared NativeWind theme import', globalCss, '@import "nativewind/theme"'],
 ]) {
@@ -169,7 +168,7 @@ console.log(`  app NativeWind: ${dependency(appPackage, 'nativewind')}`);
 console.log(`  ui  NativeWind: ${dependency(uiPackage, 'nativewind')}`);
 console.log(`  app react-native-css: ${dependency(appPackage, 'react-native-css')}`);
 console.log(`  ui  react-native-css: ${dependency(uiPackage, 'react-native-css')}`);
-console.log(`  legacy cssInterop package: ${dependency(appPackage, 'react-native-css-interop')}`);
+console.log('  legacy react-native-css-interop package: not used by the NativeWind 5 stack');
 console.log(`  cssInterop textual references: ${cssInteropCount}`);
 console.log(`  cssInterop registrations: ${cssInteropRegistrationCount}`);
 

@@ -1,0 +1,100 @@
+.roleChoiceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin: 12px 0 24px;
+}
+
+@media (max-width: 640px) {
+  .roleChoiceGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.roleChoiceBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--w-line, rgba(42, 35, 24, 0.14));
+  background: var(--w-raised, rgba(255, 255, 255, 0.85));
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: all 160ms ease;
+  min-height: 64px;
+}
+
+.roleChoiceBtn:hover {
+  border-color: var(--w-lamp, #52735b);
+  background: var(--w-ground, #ffffff);
+  transform: translateY(-1px);
+}
+
+.roleChoiceBtnActive {
+  border-color: var(--w-lamp, #365d49);
+  background: color-mix(in srgb, var(--w-lamp, #365d49) 10%, #ffffff);
+  box-shadow: 0 2px 10px rgba(54, 93, 73, 0.16);
+}
+
+.roleChoiceIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.roleChoiceInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.roleChoiceLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--w-ink, var(--color-charcoal-truth, #131e27));
+}
+
+.roleChoiceVerb {
+  font-size: 12.5px;
+  color: var(--w-ink-soft, #6a746a);
+  line-height: 1.35;
+}
+
+.roleChoiceCheck {
+  margin-left: auto;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--w-lamp, #365d49);
+  flex-shrink: 0;
+}
+
+:global([data-appearance='night']) .roleChoiceBtn {
+  border-color: rgba(245, 237, 214, 0.14);
+  background: rgba(30, 26, 21, 0.7);
+}
+
+:global([data-appearance='night']) .roleChoiceBtn:hover {
+  background: rgba(46, 40, 32, 0.9);
+  border-color: rgba(245, 237, 214, 0.28);
+}
+
+:global([data-appearance='night']) .roleChoiceBtnActive {
+  border-color: #7b9b85;
+  background: rgba(54, 93, 73, 0.25);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+:global([data-appearance='night']) .roleChoiceLabel {
+  color: #f5edd6;
+}
+
+:global([data-appearance='night']) .roleChoiceVerb {
+  color: #bdc5b9;
+}
+
+:global([data-appearance='night']) .roleChoiceCheck {
+  color: #9eccaa;
+}
+

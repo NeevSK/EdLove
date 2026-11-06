@@ -1,6 +1,6 @@
 import { stopNetworkBusAdapter } from '@repo/core/adapters/NetworkBusAdapter';
 import { WebNetworkAdapter } from '@repo/core/adapters/WebNetworkAdapter';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -9,7 +9,7 @@ import { SyncStatusPill } from '@/app/(sanctuary)/components/SyncStatusPill';
 describe('Unit/Integration: SyncStatusPill Ambient Network Telemetry', () => {
   beforeEach(() => {
     stopNetworkBusAdapter();
-    networkManager.registerAdapter(new WebNetworkAdapter());
+    networkMonitor.registerAdapter(new WebNetworkAdapter());
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ type: 'opaque', status: 0 }));
     Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
     Object.defineProperty(navigator, 'onLine', {
@@ -86,7 +86,7 @@ describe('Unit/Integration: SyncStatusPill Ambient Network Telemetry', () => {
       render(<SyncStatusPill />);
     });
     expect(screen.getByText('Site unavailable')).toBeDefined();
-    expect(networkManager.getSnapshot().status).toBe('online');
+    expect(networkMonitor.getSnapshot().status).toBe('online');
     await act(async () => {
       window.dispatchEvent(new Event('focus'));
     });
@@ -96,7 +96,7 @@ describe('Unit/Integration: SyncStatusPill Ambient Network Telemetry', () => {
   it('refreshes page reachability and the slow-link label when shared connection estimates change', async () => {
     const connection = Object.assign(new EventTarget(), { effectiveType: '2g', rtt: 1200 });
     Object.defineProperty(navigator, 'connection', { configurable: true, value: connection });
-    networkManager.registerAdapter(new WebNetworkAdapter());
+    networkMonitor.registerAdapter(new WebNetworkAdapter());
     await act(async () => {
       render(<SyncStatusPill />);
     });
@@ -145,7 +145,7 @@ describe('Unit/Integration: SyncStatusPill Ambient Network Telemetry', () => {
       await vi.advanceTimersByTimeAsync(5000);
     });
     expect(screen.getByText('Site unavailable')).toBeDefined();
-    expect(networkManager.getSnapshot().status).toBe('online');
+    expect(networkMonitor.getSnapshot().status).toBe('online');
     await act(async () => {
       await vi.advanceTimersByTimeAsync(25000);
     });

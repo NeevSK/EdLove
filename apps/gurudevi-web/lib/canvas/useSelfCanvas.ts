@@ -88,14 +88,19 @@ export function isUniversalFeature(feature: SelfFeatureManifestItem): boolean {
   const universalDomains = ['pulse', 'care', 'reflection', 'journey'];
   if (feature.domain && universalDomains.includes(feature.domain)) return true;
 
-  // 2. Core universal capabilities (open to any human irrespective of institutional role)
-  const universalCaps = [
-    'read:InnerPulse',
-    'read:SelfCare',
-    'read:SelfReflection',
-    'read:SelfJourney',
+  // 2. Canonical Cedar resources open to any human irrespective of institutional standing
+  const universalResources: readonly string[] = [
+    'FireJournal',
+    'MoodLog',
+    'Wellbeing',
+    'JoyMoments',
+    'GratitudeEntries',
+    'EnergyForecasts',
+    'LearningReflection',
+    'User',
   ];
-  if (feature.requiredCapabilities?.some((cap) => universalCaps.includes(cap))) return true;
+  const cedarResource = (feature as any).cedar?.resource;
+  if (cedarResource && universalResources.includes(cedarResource)) return true;
 
   // 3. Fallback: if all four major educational capacities (teacher, student, principal, guardian) have weights > 0
   const weights = feature.roleWeights;
@@ -208,7 +213,8 @@ export function useSelfCanvas({
 }: UseSelfCanvasOptions = {}) {
   const pinCap = getMaxPinnedForWorkspace('self');
   const [viewport, setViewport] = useState<ViewportKind>('desktop');
-  const phase = useMemo(() => getCircadianPhase(), []);
+  const [phase, setPhase] = useState<'morning' | 'afternoon' | 'night'>('morning');
+  useEffect(() => setPhase(getCircadianPhase()), []);
   const activeRoles = useMemo(() => {
     if (roles && roles.length > 0) return roles;
     if (role) return [role];

@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+﻿import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../../lib/host-routing';
@@ -6,7 +6,7 @@ import { resolveAuthorizedEntry } from '../../../../lib/sanctuary/authorizedEntr
 import { createServerSupabaseClient } from '../../../../lib/supabase/server';
 import { signInPath } from '../../auth/routeSafety';
 import { SanctuaryShell } from '../../components/SanctuaryShell';
-import { ToolsHubFloor } from './ToolsHubFloor';
+import { ToolsWorkbenchDesk } from './ToolsWorkbenchDesk';
 
 export const metadata = { title: 'Knowledge Tools | Gurudevi Sanctuary' };
 
@@ -23,7 +23,7 @@ export default async function ToolsPage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <ToolsHubFloor displayName="Guest Explorer" />
+        <ToolsWorkbenchDesk displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -37,7 +37,7 @@ export default async function ToolsPage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <ToolsHubFloor displayName="Guest Explorer" />
+        <ToolsWorkbenchDesk displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -126,7 +126,7 @@ export default async function ToolsPage() {
       showAccountNavigation={true}
       isExploreMode={false}
     >
-      <ToolsHubFloor displayName={entry.displayName} />
+      <ToolsWorkbenchDesk displayName={entry.displayName} />
     </SanctuaryShell>
   );
 }

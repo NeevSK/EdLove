@@ -40,19 +40,16 @@ import { LivingCard } from '../components/LivingCard';
 import { MorningSituationalBrief } from '../components/MorningSituationalBrief';
 import { RoleLensSwitcher, type WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import {
-  TaskStrip,
-  TemporalHorizon,
-  timeGreeting,
-  WorkbenchContextHeader,
-} from '../components/workbench';
+import { DateTimeCombo } from '@repo/ui/components/web';
+import { timeGreeting } from '../../../lib/timeGreeting';
+import { TaskStrip } from '../components/TaskStrip';
+import { TeacherWorkspaceFloor } from './TeacherWorkspaceFloor';
 import styles from './workspace.module.css';
 import {
   filterWorkspaceFeatures,
   getWorkspaceOverviewPosture,
   WORKSPACE_FEATURES,
 } from './workspaceFeatureRegistry';
-import { WorkspaceNav } from './WorkspaceNav';
 
 type AuthorizedEntryScope = Readonly<{ bondId: string; entityId: string }>;
 
@@ -772,26 +769,25 @@ export function WorkspaceFloor({
             ? 'attendance-title'
             : 'workspace-task-title'
       }
-      topControls={() => (
-        <WorkbenchContextHeader
-          domain="workspace"
-          homeActive={overview}
-          dateControl={
-            <TemporalHorizon
-              compact
-              dateLabel={coordinates.dateLabel}
-              intent={coordinates.intent}
-              orientation={coordinates.orientationLabel}
-              slots={coordinates.slots}
-              onSelectDate={selectDate}
-              onToday={() => selectDate(today())}
-            />
-          }
-          greeting={timeGreeting(displayName)}
+      greeting={timeGreeting(displayName)}
+      breadcrumb={
+        overview
+          ? 'Workspace · Overview'
+          : activeAttendance
+            ? 'Workspace · Attendance'
+            : `Workspace · ${focused?.title ?? 'Task'}`
+      }
+      timeControl={
+        <DateTimeCombo
+          formFactor="nano"
+          date={coordinates.date}
+          dateLabel={coordinates.dateLabel}
           intent={coordinates.intent}
-          selectedDate={coordinates.date}
+          onSelectDate={selectDate}
+          onToday={() => selectDate(today())}
+          allowDismiss={false}
         />
-      )}
+      }
     >
       <TaskStrip
         shellSlot
@@ -884,15 +880,35 @@ export function WorkspaceFloor({
 
       {overview ? (
         <div className={styles.featureContentIn} key="workspace-home">
-          <header className={styles.heading}>
-            <h1 id="workspace-title">A steady view of the work in your care</h1>
-            <p>
-              {mode === 'explore'
-                ? 'Try attendance with a local sample roster. Changes stay in this browser.'
-                : 'Open a classroom practice from your selected school scope. Keep the roster, day’s marks, and next action together.'}
-            </p>
-          </header>
-          <WorkspaceNav roleFilter={activeRole} />
+          {effectiveRole === 'teacher' ? (
+            <TeacherWorkspaceFloor
+              displayName={displayName}
+              isExplore={mode === 'explore'}
+              classrooms={
+                visibleClassrooms.length > 0
+                  ? visibleClassrooms.map((c, i) => ({
+                      id: c.id,
+                      name: c.name,
+                      subject: c.subject ?? 'Mathematics & Science',
+                      room: 'Hall ' + (i + 1),
+                      studentCount: activeStudents.length > 0 && classroom?.id === c.id ? activeStudents.length : 30,
+                    }))
+                  : undefined
+              }
+              onOpenAttendance={(targetClass) => {
+                if (targetClass) {
+                  const match = visibleClassrooms.find((c) => c.id === targetClass.id);
+                  if (match) {
+                    selectedClassroomRef.current = match;
+                    setClassroom(match);
+                  }
+                }
+                openAttendance();
+              }}
+            />
+          ) : (
+            <>
+
           <LivingCard
             className={styles.overview}
             variant={
@@ -915,7 +931,7 @@ export function WorkspaceFloor({
               <p>{posture.description}</p>
             </div>
 
-            {(effectiveRole === 'teacher' || effectiveRole === 'principal') &&
+            {effectiveRole === 'principal' &&
             coordinates.intent !== 'plan' ? (
               <>
                 {accountReadState === 'loading' && mode === 'account' ? (
@@ -973,15 +989,6 @@ export function WorkspaceFloor({
                     School profile
                   </Link>
                 </>
-              ) : effectiveRole === 'teacher' && coordinates.intent === 'plan' ? (
-                <>
-                  <Link href="/workspace/plan" className={styles.primary}>
-                    {posture.actionText}
-                  </Link>
-                  <Link href="/workspace/timetable" className={styles.secondary}>
-                    Upcoming timetable
-                  </Link>
-                </>
               ) : (
                 <>
                   <button
@@ -1028,7 +1035,7 @@ export function WorkspaceFloor({
             {mode === 'account' &&
             accountReadState === 'ready' &&
             visibleClassrooms.length === 0 &&
-            (effectiveRole === 'teacher' || effectiveRole === 'principal') ? (
+            effectiveRole === 'principal' ? (
               <div className={styles.muted} role="status">
                 <p><strong>Your classroom workspace is ready to begin.</strong></p>
                 <p>
@@ -1146,6 +1153,8 @@ export function WorkspaceFloor({
               </ul>
             </section>
           ) : null}
+            </>
+          )}
         </div>
       ) : (
         <div className={styles.featureContentIn} key={focused?.taskKey ?? 'workspace-feature'}>

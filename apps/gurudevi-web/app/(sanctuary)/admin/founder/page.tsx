@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { isSovereignSteward } from '@repo/core/logic/permissions/sovereignty';
 import { resolveAuthorizedEntry } from '../../../../lib/sanctuary/authorizedEntry';
 import { createServerSupabaseClient } from '../../../../lib/supabase/server';
 import { signInPath } from '../../auth/routeSafety';
@@ -53,17 +54,15 @@ export default async function FounderPage() {
   }
 
   const isFounder =
-    entry.activeCapacity === 'founder' ||
-    entry.activeCapacity === 'developer' ||
-    entry.activeCapacity === 'admin' ||
-    (entry.activeScope?.roles?.includes('founder') ?? false);
+    isSovereignSteward(entry.activeCapacity) ||
+    (entry.activeScope?.roles?.some((r) => isSovereignSteward(r)) ?? false);
 
   if (!isFounder) {
     return (
       <FounderState
         displayName={entry.displayName}
         title="Access restricted"
-        detail="Founder command is restricted to platform founders and system administrators."
+        detail="Founder command is restricted to sovereign platform stewards (Founders, Co-Founders, and Executive Directors)."
       />
     );
   }

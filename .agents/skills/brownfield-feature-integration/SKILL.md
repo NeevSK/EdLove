@@ -1,0 +1,16 @@
+---
+name: brownfield-feature-integration
+description: Investigate and integrate features into an existing product without inventing parallel behavior. Use when designing or implementing a feature, user journey, screen, workflow, or migration in an established codebase; also classify genuinely new or mixed surfaces.
+---
+
+# Brownfield Feature Integration
+
+Use this workflow before designing or implementing a feature in an existing product. A new screen or absent file does not make the domain greenfield. The user's domain corrections and product intent take precedence over an inferred interpretation.
+
+1. **Classify the seam.** Identify whether the feature, the platform surface and the supporting data/authority are greenfield, brownfield or mixed. State what is known and unknown; do not infer that an empty state means an absent institution, role, account or record.
+2. **Trace existing behavior before prescribing UI.** Inspect the relevant product/domain documentation and registries, real entry points, callers, existing screens on each platform, state and lifecycle, authorization and tenancy, data models, API contracts, error/recovery behavior, and relevant tests. Trace actual reads and writes when they matter. A file, label, registry status, mock or route is not proof of an end-to-end capability. Distinguish verified behavior, source evidence, intended design and open questions.
+3. **Model the user's situation.** Identify the actor, their actual authority and institutional context, intent, prior state, ingress, prerequisites, alternatives and outcomes. Do not turn a role, selected scope, demo or onboarding choice into an authorization grant. Consider existing and new data, partially configured organizations, migration, failure, retry, and other platform users when applicable. Preserve the user's mental model; ask only when a material domain decision cannot be established from available sources and continue independent work.
+4. **Choose the integration seam.** Reuse existing domain contracts and mechanisms; identify the smallest additive change, impact set, data/permission boundaries and what must remain working. Distinguish feature setup from everyday use when relevant. Do not substitute a new abstraction or placeholder for an existing capability. Follow repository deletion and approval rules and never revert unrelated user changes.
+5. **Record and verify.** Where the journey pilot applies, record its development mode, existing behavior, source-linked integration points, invariants and open questions. Treat its output as declared metadata, not enforcement or proof. Define success and negative scenarios, inspect the raw diff, and run checks appropriate to the actual seam. Report evidence tier, substitutions, limitations and outstanding gaps. A skill improves decisions but does not guarantee compliance: use executable checks and tests where they can verify real invariants.
+
+For user-facing journeys, also load [user-journey-orchestration](../user-journey-orchestration/SKILL.md). For critical identity, authority or durable-data changes, follow `docs/architecture/production-evidence-governance.md` and verify the applicable real seam. The specific meaning of school, commercial organization, role and bond must come from the user and current domain contracts, not from a generic example.

@@ -1,0 +1,241 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+}
+
+/* ─── Active Period Instrument (Pebble-Anchored Hero) ─── */
+.periodHero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  background: var(--w-raised, #ffffff);
+  border: 1px solid var(--w-line, #e2e8f0);
+  border-radius: var(--w-radius-lg, 16px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.periodAnchorGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+  min-width: 280px;
+}
+
+.periodPebbleSpot {
+  flex: 0 0 auto;
+}
+
+.periodWords {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.periodBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.periodBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--w-lamp-deep, #9a5b2d);
+}
+
+.pulseDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.periodTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--w-ink, #1e293b);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.periodMeta {
+  font-size: 0.88rem;
+  color: var(--w-ink-soft, #64748b);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.periodActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Pedagogical Toolbelt (Pebble Row) ─── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--w-ink, #1e293b);
+  margin: 0;
+}
+
+.pebbleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  overflow-x: auto;
+  padding: 0.35rem 0.15rem;
+  scrollbar-width: none;
+}
+
+.pebbleRow::-webkit-scrollbar {
+  display: none;
+}
+
+.pebbleSlot {
+  width: 130px;
+  flex: 0 0 130px;
+}
+
+/* ─── Classrooms & Teaching Units (Using Kit Cards) ─── */
+.classroomsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.classroomCardItem {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  background: var(--w-raised, #ffffff);
+  border: 1px solid var(--w-line, #e2e8f0);
+  border-radius: var(--w-radius-lg, 16px);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.classroomCardItem:hover {
+  transform: translateY(-2px);
+  border-color: var(--w-lamp-deep, #9a5b2d);
+}
+
+.classHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.className {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--w-ink, #0f172a);
+  margin: 0;
+}
+
+.classSubject {
+  font-size: 0.85rem;
+  color: var(--w-ink-soft, #64748b);
+  margin: 0.2rem 0 0 0;
+}
+
+.roomTag {
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--w-sunken, #f8fafc);
+  color: var(--w-lamp-deep, #9a5b2d);
+}
+
+.classFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--w-line, #e2e8f0);
+  font-size: 0.82rem;
+  color: var(--w-ink-soft, #64748b);
+}
+
+.openLink {
+  font-weight: 600;
+  color: var(--w-lamp-deep, #9a5b2d);
+}
+
+/* ─── Schedule Rhythm Strip ─── */
+.scheduleStrip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.slotCard {
+  padding: 0.85rem;
+  background: var(--w-raised, #ffffff);
+  border: 1px solid var(--w-line, #e2e8f0);
+  border-radius: var(--w-radius-md, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.slotCurrent {
+  border-color: var(--w-lamp-deep, #9a5b2d);
+  background: var(--w-lamp, #fef8ee);
+}
+
+.slotTime {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--w-ink-muted, #94a3b8);
+  margin: 0;
+}
+
+.slotSubject {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--w-ink, #1e293b);
+  margin: 0;
+}
+
+.slotRoom {
+  font-size: 0.75rem;
+  color: var(--w-ink-soft, #64748b);
+  margin: 0;
+}

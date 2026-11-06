@@ -1,28 +1,19 @@
-import React from 'react';
+import { type MapProviderType, useOptionalMap } from '@repo/ui/components/maps/MapProvider';
+import type React from 'react';
+import MapView, {
+  type MapViewProps as NativeMapViewProps,
+  PROVIDER_DEFAULT,
+  PROVIDER_GOOGLE,
+} from 'react-native-maps';
 
-const ReactNativeMaps = require('react-native-maps') as {
-  default: React.ComponentType<any>;
-  PROVIDER_DEFAULT?: string;
-  PROVIDER_GOOGLE?: string;
-};
-const MapViewRN = ReactNativeMaps.default;
-const PROVIDER_DEFAULT = ReactNativeMaps.PROVIDER_DEFAULT ?? 'default';
-const PROVIDER_GOOGLE = ReactNativeMaps.PROVIDER_GOOGLE ?? 'google';
+export type UnifiedMapViewRef = InstanceType<typeof MapView>;
 
-export interface UnifiedMapViewProps {
-  style?: any;
-  region?: {
-    latitude: number;
-    longitude: number;
-    latitudeDelta: number;
-    longitudeDelta: number;
-  };
-  provider?: 'default' | 'google' | 'maplibre';
-  customMapStyle?: any[];
-  rotateEnabled?: boolean;
+export type UnifiedMapViewProps = Omit<NativeMapViewProps, 'initialRegion' | 'provider'> & {
+  initialRegion?: NativeMapViewProps['initialRegion'];
+  provider?: MapProviderType | 'default';
   children?: React.ReactNode;
-  ref?: React.Ref<any>;
-}
+  ref?: React.Ref<UnifiedMapViewRef>;
+};
 
 /**
  * UnifiedMapView - Platform Generic Map Primitive
@@ -30,21 +21,24 @@ export interface UnifiedMapViewProps {
  */
 export function UnifiedMapView({
   ref,
-  region,
+  initialRegion,
   children,
   style,
-  provider = 'default',
+  provider,
   ...props
 }: UnifiedMapViewProps) {
+  const mapContext = useOptionalMap();
+  const selectedProvider = provider ?? mapContext?.provider ?? 'apple';
+
   return (
-    <MapViewRN
+    <MapView
       ref={ref}
-      provider={provider === 'google' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
+      provider={selectedProvider === 'google' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
       style={[{ flex: 1 }, style]}
-      initialRegion={region}
+      initialRegion={initialRegion}
       {...props}
     >
       {children}
-    </MapViewRN>
+    </MapView>
   );
 }

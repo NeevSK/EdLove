@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { CANONICAL_CIVIC_ROLES } from '@repo/core/types';
 import styles from './role-lens-switcher.module.css';
 
 export type WorkspaceRoleFilter =
@@ -21,10 +22,12 @@ export interface RoleDescriptor {
 export const ROLE_DESCRIPTORS: readonly RoleDescriptor[] = [
   { id: 'all', label: 'All', emoji: '✦', description: 'Show all tools and practices' },
   { id: 'common', label: 'Common', emoji: '🌿', description: 'Universal baseline shared by all' },
-  { id: 'teacher', label: 'Teacher', emoji: '👨‍🏫', description: 'Educator & classroom guidance' },
-  { id: 'student', label: 'Student', emoji: '🎓', description: 'Learner presence, schedule & studies' },
-  { id: 'principal', label: 'Principal', emoji: '🏛️', description: 'Campus leadership, kiosk & badges' },
-  { id: 'guardian', label: 'Guardian', emoji: '👨‍👩‍👧', description: 'Family circle & ward attendance' },
+  ...CANONICAL_CIVIC_ROLES.map((r) => ({
+    id: r.id as WorkspaceRoleFilter,
+    label: r.label,
+    emoji: r.emoji,
+    description: r.verb,
+  })),
 ] as const;
 
 export interface RoleLensSwitcherProps {

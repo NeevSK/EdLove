@@ -7,7 +7,8 @@ import type {
   WorkspaceAppearancePreset,
   WorkspaceWallpaper,
 } from '@repo/core/types';
-import { WORLD_IDS, WORLDS } from '@repo/ui/theme';
+import { WORLD_IDS, WORLDS, type WorldId } from '@repo/ui/theme';
+import { WorldPicker } from '@repo/ui/components/web';
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getBackdropsForWorld, PRESET_WALLPAPERS } from '../../../lib/canvas/appearanceConstants';
@@ -16,6 +17,23 @@ import {
   loadCustomWallpapers,
   saveCustomWallpaper,
 } from '../../../lib/storage/wallpaperIndexedDb';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { FloorAtmosphereKind } from './FloorAtmosphere';
 import styles from './floor-studio.module.css';
 
@@ -52,6 +70,106 @@ export interface FloorStudioDrawerProps {
   onReorderFurniture: (newOrder: string[]) => void;
   onTogglePinFurniture: (id: string) => void;
   onResetFloorDefaults: () => void;
+  isArrangeMode?: boolean;
+  onToggleArrange?: () => void;
+}
+
+interface SortableFurnitureItemProps {
+  item: FurnitureDefinition;
+  isPinned: boolean;
+  isFirst: boolean;
+  isLast: boolean;
+  onTogglePin: (id: string) => void;
+  onMove: (id: string, direction: 'up' | 'down') => void;
+}
+
+function SortableFurnitureItem({
+  item,
+  isPinned,
+  isFirst,
+  isLast,
+  onTogglePin,
+  onMove,
+}: SortableFurnitureItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.altKey && e.key === 'ArrowUp' && !isFirst) {
+      e.preventDefault();
+      onMove(item.id, 'up');
+    } else if (e.altKey && e.key === 'ArrowDown' && !isLast) {
+      e.preventDefault();
+      onMove(item.id, 'down');
+    }
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      className={`${styles.furnitureItem} ${isPinned ? styles.furnitureItemPinned : ''}`}
+      data-dnd-id={item.id}
+      data-dnd-lifted={isDragging}
+      title="Hold or long-press to drag and reorder, or use Alt+Arrow keys"
+    >
+      <div className={styles.furnitureInfo}>
+        <span aria-hidden="true">{item.icon ?? '🪑'}</span>
+        <span className={styles.furnitureName}>{item.label}</span>
+      </div>
+
+      <div className={styles.furnitureActions}>
+        <button
+          aria-label={`Pin ${item.label}`}
+          className={`${styles.furnitureBtn} ${isPinned ? styles.furnitureBtnActive : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onTogglePin(item.id);
+          }}
+          title={isPinned ? 'Unpin furniture' : 'Pin to top of floor'}
+          type="button"
+        >
+          📌
+        </button>
+        <button
+          aria-label={`Move ${item.label} up`}
+          className={styles.furnitureBtn}
+          disabled={isFirst}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMove(item.id, 'up');
+          }}
+          title="Move up"
+          type="button"
+        >
+          ↑
+        </button>
+        <button
+          aria-label={`Move ${item.label} down`}
+          className={styles.furnitureBtn}
+          disabled={isLast}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMove(item.id, 'down');
+          }}
+          title="Move down"
+          type="button"
+        >
+          ↓
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export function FloorStudioDrawer({
@@ -77,12 +195,39 @@ export function FloorStudioDrawer({
   onReorderFurniture,
   onTogglePinFurniture,
   onResetFloorDefaults,
+  isArrangeMode = false,
+  onToggleArrange,
 }: Readonly<FloorStudioDrawerProps>) {
+  const dndContextId = React.useId();
   const [activeTab, setActiveTab] = useState<'atmosphere' | 'furniture'>(initialTab);
   const [customWallpapers, setCustomWallpapers] = useState<WorkspaceWallpaper[]>([]);
   const [customHex, setCustomHex] = useState(wallpaperConfig?.customWashColor ?? '#a85022');
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 400,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = groupOrder.indexOf(String(active.id));
+      const newIndex = groupOrder.indexOf(String(over.id));
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const nextOrder = arrayMove(groupOrder, oldIndex, newIndex);
+        onReorderFurniture(nextOrder);
+      }
+    }
+  };
 
   // Load user custom wallpapers from IndexedDB
   useEffect(() => {
@@ -224,25 +369,15 @@ export function FloorStudioDrawer({
                 <div className={styles.sectionHeader}>
                   <span className={styles.sectionTitle}>Cultural World</span>
                   <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
-                    {WORLDS[currentWorld as keyof typeof WORLDS]?.names.en ?? 'Sanctuary'}
+                    {WORLDS[currentWorld as keyof typeof WORLDS]?.names.en ?? 'Kele'}
                   </span>
                 </div>
-                <div className={styles.worldChipsList}>
-                  {WORLD_IDS.map((id) => {
-                    const world = WORLDS[id];
-                    const isSelected = currentWorld === id;
-                    return (
-                      <button
-                        className={`${styles.worldChip} ${isSelected ? styles.worldChipActive : ''}`}
-                        key={id}
-                        onClick={() => onSelectWorld?.(id)}
-                        type="button"
-                      >
-                        {world?.names.en ?? id}
-                      </button>
-                    );
-                  })}
-                </div>
+                <WorldPicker
+                  value={(currentWorld ?? 'kele') as WorldId}
+                  onChange={(id) => onSelectWorld?.(id)}
+                  mode="light"
+                  label="Choose Cultural World"
+                />
               </section>
 
               {/* Scene Ground Mode Section */}
@@ -267,7 +402,6 @@ export function FloorStudioDrawer({
                     }`}
                     onClick={() => {
                       onSelectGroundMode?.('still');
-                      onSelectWallpaper(null);
                     }}
                     type="button"
                   >
@@ -294,7 +428,6 @@ export function FloorStudioDrawer({
                     }`}
                     onClick={() => {
                       onSelectGroundMode?.('quiet');
-                      onSelectWallpaper(null);
                     }}
                     type="button"
                   >
@@ -526,59 +659,51 @@ export function FloorStudioDrawer({
                 </span>
               </div>
 
+              {onToggleArrange ? (
+                <div style={{ margin: '0.5rem 0' }}>
+                  <button
+                    type="button"
+                    className={`${styles.pillButton} ${isArrangeMode ? styles.pillButtonActive : ''}`}
+                    onClick={onToggleArrange}
+                    aria-label={isArrangeMode ? 'Exit floor arranging mode' : 'Arrange floor sections with drag and drop'}
+                    aria-pressed={isArrangeMode}
+                  >
+                    <span>{isArrangeMode ? '✓' : '⇅'}</span>
+                    <span>{isArrangeMode ? 'Done Canvas Arranging' : 'Arrange In-Place on Canvas'}</span>
+                  </button>
+                </div>
+              ) : null}
+
               <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--ink-soft)' }}>
-                Reorder or pin spatial components on this floor. Pinned furniture stays anchored at
-                the top of the room.
+                Reorder or pin spatial components on this floor. Hold down or long-press any card to
+                drag and rearrange it. Pinned furniture stays anchored at the top of the room.
               </p>
 
-              <div className={styles.furnitureList}>
-                {sortedFurniture.map((item, index) => {
-                  const isPinned = pinnedIds.includes(item.id);
-                  return (
-                    <div
-                      className={`${styles.furnitureItem} ${isPinned ? styles.furnitureItemPinned : ''}`}
-                      key={item.id}
-                    >
-                      <div className={styles.furnitureInfo}>
-                        <span aria-hidden="true">{item.icon ?? '🪑'}</span>
-                        <span className={styles.furnitureName}>{item.label}</span>
-                      </div>
-
-                      <div className={styles.furnitureActions}>
-                        <button
-                          aria-label={`Pin ${item.label}`}
-                          className={`${styles.furnitureBtn} ${isPinned ? styles.furnitureBtnActive : ''}`}
-                          onClick={() => onTogglePinFurniture(item.id)}
-                          title={isPinned ? 'Unpin furniture' : 'Pin to top of floor'}
-                          type="button"
-                        >
-                          📌
-                        </button>
-                        <button
-                          aria-label={`Move ${item.label} up`}
-                          className={styles.furnitureBtn}
-                          disabled={index === 0}
-                          onClick={() => moveFurniture(item.id, 'up')}
-                          title="Move up"
-                          type="button"
-                        >
-                          ↑
-                        </button>
-                        <button
-                          aria-label={`Move ${item.label} down`}
-                          className={styles.furnitureBtn}
-                          disabled={index === sortedFurniture.length - 1}
-                          onClick={() => moveFurniture(item.id, 'down')}
-                          title="Move down"
-                          type="button"
-                        >
-                          ↓
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <DndContext
+                id={dndContextId}
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext items={groupOrder} strategy={verticalListSortingStrategy}>
+                  <div className={styles.furnitureList}>
+                    {sortedFurniture.map((item, index) => {
+                      const isPinned = pinnedIds.includes(item.id);
+                      return (
+                        <SortableFurnitureItem
+                          key={item.id}
+                          item={item}
+                          isPinned={isPinned}
+                          isFirst={index === 0}
+                          isLast={index === sortedFurniture.length - 1}
+                          onTogglePin={onTogglePinFurniture}
+                          onMove={moveFurniture}
+                        />
+                      );
+                    })}
+                  </div>
+                </SortableContext>
+              </DndContext>
             </section>
           )}
         </div>

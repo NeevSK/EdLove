@@ -22,12 +22,16 @@ Use this skill when modifying offline data storage, schema definitions, sync rul
 
 ## 1. Monorepo Stack Specifications
 
-Our PowerSync setup utilizes a unified TypeScript client layer wrapping platform-native engines:
-*   **Reactivity Client**: `@powersync/react-native@1.35.3` and `@powersync/react@1.10.0`
-*   **Web Engine**: `@powersync/web@1.38.3` + WebAssembly (WASQLite) + OPFS (Origin Private File System)
-*   **Native Engine**: `@powersync/op-sqlite@0.9.9` (compiled C++ SQLite wrapper) with SQLCipher encryption
-*   **ORM**: Drizzle ORM (`@powersync/drizzle-driver@0.7.3` via `wrapPowerSyncWithDrizzle`)
-*   **Boundary**: Package `@repo/core` (`packages/core/src/adapters/powersync`) exports the database singleton and bootstrap procedures.
+The current PowerSync JavaScript v2 cohort is pinned together in `scripts/lib/dependency-cohorts.mjs`:
+*   **React Native SDK**: `@powersync/react-native@2.4.0`; its OP-SQLite adapter is built into the SDK.
+*   **React hooks**: `@powersync/react@2.2.0` (the context and hooks package).
+*   **Web SDK**: `@powersync/web@2.6.0` with WASQLite and OPFS.
+*   **Native SQLite peer**: direct `@op-engineering/op-sqlite@17.2.0` dependency for React Native autolinking; SDK peer range is `>=17.1.0 <19.0.0`.
+*   **Shared core**: `@powersync/common@2.5.0`; keep React Native, Web, React, and Common on their compatible v2 cohort.
+*   **ORM**: `@powersync/drizzle-driver@0.8.0` via `wrapPowerSyncWithDrizzle`.
+*   **Boundary**: `@repo/core` owns the schema, shared runtime registry, and secure Drizzle boundary. The native app provider constructs the native database and injects it into that boundary.
+
+Do not use the removed `@powersync/op-sqlite` adapter package for SDK v2. The separately installed package is `@op-engineering/op-sqlite`, required as a direct dependency for native autolinking; it is not a PowerSync database factory package.
 
 ---
 
@@ -36,31 +40,29 @@ Our PowerSync setup utilizes a unified TypeScript client layer wrapping platform
 To maintain a single codebase across Native (iOS/Android) and Web (SPA/Expo Web), the database runtime is abstracted inside `packages/core/src/adapters/powersync/database.ts`:
 
 ```typescript
-// 1. SSR Guard
-if (typeof window === 'undefined') {
-  return null; // Client-only execution
-}
+// Native app: the SDK selects its built-in OP-SQLite adapter from the
+// ReactNativeDatabaseOptions shape. Keep account-scoped file/key policy in the app.
+import { PowerSyncDatabase } from '@powersync/react-native';
+import { PowerSyncContext } from '@powersync/react';
 
-// 2. Factory Detection
-function createDatabaseFactory(accountId: string, encryptionKey: string) {
-  if (Platform.OS === 'web') {
-    const { WASQLiteOpenFactory, WASQLiteVFS } = require('@powersync/web');
-    return new WASQLiteOpenFactory({
-      dbFilename: `gurudevi-${accountId}.db`,
-      vfs: WASQLiteVFS.OPFSCoopSyncVFS, // Multi-tab stability
-      flags: {
-        enableMultiTabs: typeof SharedWorker !== 'undefined'
-      }
-    });
-  }
-
-  const { OPSqliteOpenFactory } = require('@powersync/op-sqlite');
-  return new OPSqliteOpenFactory({
+const database = new PowerSyncDatabase({
+  schema: AppSchema,
+  database: {
     dbFilename: `gurudevi-powersync-${accountId}.db`,
-    sqliteOptions: { encryptionKey }
-  });
-}
+    sqliteOptions: { encryptionKey },
+  },
+});
+
+// Native and web databases are injected into the @repo/core runtime boundary;
+// the app provider owns construction and account lifecycle.
+return <PowerSyncContext.Provider value={database}>{children}</PowerSyncContext.Provider>;
 ```
+
+Keep the Expo app's direct `@op-engineering/op-sqlite` dependency and `op-sqlite.sqlcipher` config. SQLCipher is enabled in the native build, while the encryption key is supplied per account in `sqliteOptions`.
+
+PowerSync React Native SDK 2.4.0 adds a default 30-second `connectTimeoutMs` so an unavailable service cannot leave connect, checkpoint, upload/download, or subsequent disconnect work waiting forever. It also allows `connect(authenticator, mutationUploader)` when upload and download responsibilities are separated; existing `PowerSyncBackendConnector` implementations remain compatible. The new `usePowerSyncOrNull()` and `useStatusOrNull()` hooks are for intentionally optional context, such as SSR. Managed tables are alpha and are not the default table path.
+
+For connection or transaction changes, read the dated [SDK 2.4.0 release notes](https://releases.powersync.com/announcements/react-native-client-sdk) and verify the app's retry, upload completion, and account-switch behavior against its existing tests and lifecycle contracts.
 
 ### Key Constraints:
 *   **VFS Fallbacks**: On Web, `OPFSCoopSyncVFS` fallback to `IDBBatchAtomicVFS` is handled automatically. Never use `OPFSWriteAheadVFS` (insufficient testing evidence).

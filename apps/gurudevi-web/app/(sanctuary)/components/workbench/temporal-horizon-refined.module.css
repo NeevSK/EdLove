@@ -1,0 +1,942 @@
+/* ==========================================================================
+   Temporal Horizon Refined: Four-Tier Adaptive DateTime & Phase Architecture
+   ========================================================================== */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-family: inherit;
+  isolation: isolate;
+  width: 100%;
+}
+
+.root[data-compact="true"],
+.root[data-medium="true"],
+.root[data-nano="true"] {
+  width: fit-content;
+  display: inline-flex;
+}
+
+/* Screen Reader Polite Live Region */
+.srOnlyLive {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   FORM FACTOR 0: NANO TILE (When size cannot meaningfully fit chevrons or text)
+   -------------------------------------------------------------------------- */
+.nanoContainer {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.nanoDayBadge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: var(--w-radius-sm, 0.42rem);
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.16));
+  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 92%, var(--ink, #fff) 6%));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.18s ease;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.nanoDayBadge:hover {
+  transform: translateY(-1px);
+  border-color: var(--w-lamp, #e2c37a);
+  box-shadow: 0 2px 8px rgba(226, 195, 122, 0.3);
+}
+
+.nanoDayBadge:focus-visible {
+  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline-offset: 2px;
+}
+
+.nanoDayHeader {
+  width: 100%;
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.05rem 0;
+  color: var(--w-on-lamp, #fff);
+  background: var(--w-lamp, color-mix(in srgb, var(--paper, #141522) 80%, var(--ink, #fff) 20%));
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nanoDayHeader[data-intent="current"] {
+  background: var(--w-lamp, #10b981);
+}
+
+.nanoDayHeader[data-intent="review"] {
+  background: color-mix(in srgb, var(--w-lamp, #f59e0b) 60%, var(--w-ink-soft, #888));
+}
+
+.nanoDayHeader[data-intent="plan"] {
+  background: color-mix(in srgb, var(--w-lamp, #8b5cf6) 85%, var(--w-surface, #222));
+}
+
+.nanoDayNumber {
+  font: 700 0.85rem var(--w-font-mono, monospace, ui-monospace);
+  line-height: 1.1;
+  color: var(--w-ink, #fff);
+}
+
+/* --------------------------------------------------------------------------
+   FORM FACTOR 1: ULTRA-COMPACT MICRO PILL (Zero Slop, Tiny Header Pill)
+   -------------------------------------------------------------------------- */
+.compactBar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.12rem 0.28rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+  background: color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(12px);
+  user-select: none;
+  font-size: 0.72rem;
+}
+
+.compactDateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  min-height: 32px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--ink, currentColor);
+  font: 600 0.74rem system-ui, -apple-system, sans-serif;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.compactDateBtn:hover {
+  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+}
+
+.compactDateBtn:focus-visible {
+  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline-offset: 2px;
+}
+
+.chevronBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  min-width: 32px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--ink, currentColor);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+}
+
+.chevronBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ink, #fff) 10%, transparent);
+}
+
+.chevronBtn:focus-visible {
+  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline-offset: 2px;
+}
+
+.chevronBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Intent Phase Pip */
+.phasePip {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.phasePip[data-intent="current"] {
+  background: #10b981;
+  box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+}
+
+.phasePip[data-intent="review"] {
+  background: #f59e0b;
+  box-shadow: 0 0 5px rgba(245, 158, 11, 0.4);
+}
+
+.phasePip[data-intent="plan"] {
+  background: #8b5cf6;
+  box-shadow: 0 0 5px rgba(139, 92, 246, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   FORM FACTOR 1.5: MEDIUM ADAPTIVE BAR (Between Compact & Full, for Minimized Panes)
+   -------------------------------------------------------------------------- */
+.mediumBar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--w-radius-md, 0.85rem);
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
+  background: var(--w-surface, color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  user-select: none;
+}
+
+.mediumDateTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.45rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink, #fff);
+  font: 700 0.88rem Georgia, serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mediumDateTrigger:hover {
+  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+}
+
+.mediumDayBadge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  padding: 0;
+  border-radius: 0.38rem;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 95%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.mediumDayBadge:hover {
+  transform: translateY(-1px);
+  border-color: var(--w-lamp, #e2c37a);
+  box-shadow: 0 2px 6px rgba(226, 195, 122, 0.25);
+}
+
+.mediumDayBadgeHeader {
+  width: 100%;
+  font-size: 0.48rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.05rem 0;
+  color: var(--w-on-lamp, #fff);
+  background: var(--w-lamp, color-mix(in srgb, var(--paper, #141522) 80%, var(--ink, #fff) 20%));
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mediumDayBadgeHeader[data-intent="current"] {
+  background: var(--w-lamp, #10b981);
+}
+
+.mediumDayBadgeHeader[data-intent="review"] {
+  background: color-mix(in srgb, var(--w-lamp, #f59e0b) 60%, var(--w-ink-soft, #888));
+}
+
+.mediumDayBadgeHeader[data-intent="plan"] {
+  background: color-mix(in srgb, var(--w-lamp, #8b5cf6) 85%, var(--w-surface, #222));
+}
+
+.mediumDayBadgeNumber {
+  font: 700 0.8rem var(--w-font-mono, monospace, ui-monospace);
+  line-height: 1.1;
+  color: var(--w-ink, #fff);
+}
+
+.mediumPhasePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  font: 600 0.72rem system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.mediumCalendarBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  background: color-mix(in srgb, var(--paper-light, #25201a) 70%, transparent);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.mediumCalendarBtn:hover {
+  background: var(--w-lamp, #e2c37a);
+  border-color: var(--w-lamp, #e2c37a);
+}
+
+/* --------------------------------------------------------------------------
+   FORM FACTOR 2 & 3: FULL HORIZON STACK
+   -------------------------------------------------------------------------- */
+.fullBarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.35rem, 1vw, 0.5rem);
+  padding: clamp(0.5rem, 1.5vw, 0.85rem) clamp(0.65rem, 1.8vw, 1.1rem);
+  border-radius: var(--w-radius-lg, clamp(0.85rem, 1.8vw, 1.25rem));
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
+  background: var(--w-surface, color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  width: 100%;
+  max-width: 48rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+/* TOP ROW: Pure Date with Calendar Icon on the RIGHT */
+.anchorTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.4rem, 1.2vw, 0.75rem);
+  padding-bottom: clamp(0.35rem, 1vw, 0.5rem);
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  white-space: nowrap;
+}
+
+.dateDisplayWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  gap: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pure Date Heading */
+.pureDateHeading {
+  font: 700 clamp(0.95rem, 2.5vw, 1.22rem) Georgia, "Times New Roman", serif;
+  color: var(--ink, #fff);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Clickable Calendar Icon Button on the RIGHT of the Date */
+.calendarIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(1.65rem, 3.5vw, 2rem);
+  height: clamp(1.65rem, 3.5vw, 2rem);
+  padding: 0;
+  border-radius: clamp(0.4rem, 1vw, 0.6rem);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.12)));
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 10%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.calendarIconBtn:hover {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent);
+  border-color: var(--w-lamp, #e2c37a);
+  color: var(--w-on-lamp, #1a1608);
+  transform: translateY(-1px);
+}
+
+.calendarSvg {
+  width: clamp(0.85rem, 2vw, 1.05rem);
+  height: clamp(0.85rem, 2vw, 1.05rem);
+  color: currentColor;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+}
+
+.calendarGlyph {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  line-height: 1;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+}
+
+/* Stepper Chevrons on Top Flanks */
+.stepperBtnFlank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(1.7rem, 3.8vw, 2.1rem);
+  height: clamp(1.7rem, 3.8vw, 2.1rem);
+  border-radius: clamp(0.45rem, 1vw, 0.65rem);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
+  color: var(--ink, currentColor);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.stepperBtnFlank:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
+  color: var(--w-lamp, #e2c37a);
+}
+
+.stepperBtnFlank:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* BOTTOM ROW: Intent Modes + Icon-Only Date Picker */
+.intentBottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.35rem, 1.2vw, 0.75rem);
+  white-space: nowrap;
+}
+
+/* 3-Way Intent Slider (Past / Today / Future) */
+.phaseTrack {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 2px;
+  padding: 2px;
+  min-width: clamp(8.5rem, 24vw, 13.5rem);
+  flex: 1;
+  max-width: 22rem;
+  border-radius: clamp(0.55rem, 1vw, 0.75rem);
+  background: color-mix(in srgb, var(--paper, #1a1610) 75%, var(--ink, #fff) 8%);
+  border: 1px solid color-mix(in srgb, var(--line, rgba(255, 255, 255, 0.1)) 60%, transparent);
+  isolation: isolate;
+  white-space: nowrap;
+}
+
+.phaseSliderPaper {
+  position: absolute;
+  z-index: -1;
+  inset-block: 2px;
+  left: 2px;
+  width: calc((100% - 4px) / 3);
+  border-radius: 0.6rem;
+  background: var(--paper-light, #25201a);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.15)));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.phaseTrack[data-phase="review"] .phaseSliderPaper {
+  transform: translateX(0);
+}
+
+.phaseTrack[data-phase="current"] .phaseSliderPaper {
+  transform: translateX(calc(100% + 2px));
+}
+
+.phaseTrack[data-phase="plan"] .phaseSliderPaper {
+  transform: translateX(calc(200% + 4px));
+}
+
+.phaseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.3rem;
+  padding: 0.15rem 0.5rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.6));
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+}
+
+.phaseBtn[aria-pressed="true"] {
+  color: var(--ink, #fff);
+}
+
+.phaseBtnContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  line-height: 1;
+}
+
+.phaseTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.phasePrimaryText {
+  font: 700 clamp(0.66rem, 1.6vw, 0.78rem) system-ui, -apple-system, sans-serif;
+}
+
+.phaseSubText {
+  font-size: clamp(0.52rem, 1.2vw, 0.62rem);
+  font-weight: 500;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.phaseSvg {
+  display: inline-block;
+  color: var(--w-lamp, #e2c37a);
+  opacity: 0.9;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease, color 0.15s ease;
+}
+
+.phaseBtn[aria-pressed="true"] .phaseSvg {
+  color: var(--w-on-lamp, #1a1608);
+  opacity: 1;
+}
+
+.phaseBtn:hover .phaseSvg[data-intent="review"] {
+  transform: translateX(-2px);
+}
+
+.phaseBtn:hover .phaseSvg[data-intent="current"] {
+  transform: rotate(30deg) scale(1.15);
+}
+
+.phaseBtn:hover .phaseSvg[data-intent="plan"] {
+  transform: translateX(2px);
+}
+
+.phaseEmoji {
+  font-size: clamp(0.64rem, 1.5vw, 0.76rem);
+  opacity: 0.9;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+}
+
+.phaseBtn:hover .phaseEmoji[data-intent="review"] {
+  transform: translateX(-2px);
+}
+
+.phaseBtn:hover .phaseEmoji[data-intent="current"] {
+  transform: rotate(30deg) scale(1.15);
+}
+
+.phaseBtn:hover .phaseEmoji[data-intent="plan"] {
+  transform: translateX(2px);
+}
+
+/* Icon-Only Custom Date Picker Button with Hover Reveal Label */
+.pickerZone {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.datePickerIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(1.7rem, 3.8vw, 2.1rem);
+  height: clamp(1.7rem, 3.8vw, 2.1rem);
+  padding: 0;
+  border-radius: clamp(0.45rem, 1vw, 0.6rem);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.12)));
+  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.datePickerIconBtn:hover {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 22%, transparent);
+  border-color: var(--w-lamp, #e2c37a);
+  transform: scale(1.08);
+}
+
+/* Tooltip revealed only on hover */
+.datePickerTooltip {
+  position: absolute;
+  right: 100%;
+  margin-right: 0.5rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.4rem;
+  background: #111;
+  color: var(--w-lamp, #e2c37a);
+  font: 600 0.7rem system-ui, sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.pickerZone:hover .datePickerTooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Direct Typing Date Form */
+.dateDirectInputForm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dateDirectInput {
+  padding: 0.25rem 0.55rem;
+  border-radius: 0.55rem;
+  border: 1px solid var(--w-lamp, #e2c37a);
+  background: var(--paper, #11121d);
+  color: var(--ink, #fff);
+  font: 600 0.85rem monospace;
+  outline: none;
+  width: 7.8rem;
+}
+
+.dateDirectConfirmBtn,
+.dateDirectCancelBtn {
+  padding: 0.22rem 0.45rem;
+  border-radius: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0;
+  transition: opacity 0.15s ease;
+}
+
+.dateDirectConfirmBtn {
+  background: var(--w-lamp, #e2c37a);
+  color: #111;
+}
+
+.dateDirectCancelBtn {
+  background: color-mix(in srgb, var(--ink, #fff) 12%, transparent);
+  color: var(--ink, #fff);
+}
+
+/* --------------------------------------------------------------------------
+   DYNAMIC THIRD ROW: REVEALS ONLY WHEN IN PAST OR FUTURE
+   -------------------------------------------------------------------------- */
+.dynamicLeapsRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 0.45rem;
+  border-top: 1px dashed var(--line, rgba(255, 255, 255, 0.08));
+  animation: leapsSlideIn 180ms ease-out;
+}
+
+@keyframes leapsSlideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.leapsScrollWrapper {
+  width: 100%;
+}
+
+.leapPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  background: color-mix(in srgb, var(--paper-light, #25201a) 70%, transparent);
+  color: var(--ink-soft, rgba(255, 255, 255, 0.7));
+  font: 600 0.72rem system-ui, sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.leapPillBtn:hover {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 35%, transparent);
+  color: var(--w-lamp, #e2c37a);
+}
+
+.leapPillBtn[data-active="true"] {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
+  border-color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp, #e2c37a);
+}
+
+.leapEmoji {
+  font-size: 0.72rem;
+}
+
+/* --------------------------------------------------------------------------
+   FORM FACTOR 4: IN-SITU EXPANDABLE CALENDAR TRAY
+   -------------------------------------------------------------------------- */
+.calendarTray {
+  width: 100%;
+  max-width: 24rem;
+  padding: 0.85rem;
+  border-radius: var(--w-radius-lg, 1rem);
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.15));
+  background: var(--w-surface-elevated, var(--paper-light, #25201a));
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+  animation: traySlideDown 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes traySlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.trayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.trayNavBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--w-radius-sm, 0.5rem);
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.1));
+  background: transparent;
+  color: var(--w-ink, currentColor);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.trayNavBtn:hover {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  border-color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp, #e2c37a);
+}
+
+.monthTitle {
+  font: 700 0.95rem var(--w-font-display, Georgia, "Times New Roman", serif);
+  color: var(--w-ink, #fff);
+}
+
+/* Weekday Labels */
+.weekdaysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+
+.weekdayLabel {
+  font: 600 0.7rem system-ui, sans-serif;
+  color: var(--w-ink-soft, rgba(255, 255, 255, 0.45));
+  text-transform: uppercase;
+}
+
+/* Days Matrix */
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dayCell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: var(--w-radius-sm, 0.5rem);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--w-ink, currentColor);
+  font: 500 0.82rem var(--w-font-mono, monospace, system-ui);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dayCell:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  color: var(--w-lamp, #e2c37a);
+}
+
+.dayCell[data-outside="true"] {
+  opacity: 0.3;
+}
+
+.dayCell[data-today="true"] {
+  font-weight: 700;
+  border-color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp, #e2c37a);
+}
+
+.dayCell[data-selected="true"] {
+  background: var(--w-lamp, #e2c37a);
+  color: var(--w-on-lamp, #111);
+  font-weight: 700;
+  border-color: var(--w-lamp, #e2c37a);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
+}
+
+.dayCell:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.dayPip {
+  position: absolute;
+  bottom: 2px;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--w-lamp, #e2c37a);
+}
+
+.dayCell[data-selected="true"] .dayPip {
+  background: var(--w-on-lamp, #111);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE LAYOUT ENGINE (Mobile, Tablet, Desktop)
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .fullBarContainer {
+    padding: 0.45rem 0.55rem;
+    gap: 0.35rem;
+    border-radius: 0.85rem;
+  }
+
+  .anchorTopRow {
+    gap: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .pureDateHeading {
+    font-size: clamp(0.85rem, 3.8vw, 1.05rem);
+  }
+
+  .calendarIconBtn {
+    width: 1.65rem;
+    height: 1.65rem;
+  }
+
+  .stepperBtnFlank {
+    width: 1.65rem;
+    height: 1.65rem;
+    font-size: 0.95rem;
+  }
+
+  .intentBottomRow {
+    gap: 0.35rem;
+  }
+
+  .phaseTrack {
+    min-width: 0;
+    flex: 1;
+    max-width: none;
+  }
+
+  .phaseBtn {
+    min-height: 1.85rem;
+    padding: 0.1rem 0.25rem;
+  }
+
+  .phasePrimaryText {
+    font-size: 0.7rem;
+  }
+
+  .phaseSubText {
+    display: none; /* Hide secondary uppercase subtitles on mobile to prevent overflow */
+  }
+
+  .datePickerIconBtn {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .fullBarContainer {
+    padding: 0.35rem 0.45rem;
+  }
+
+  .pureDateHeading {
+    font-size: 0.82rem;
+  }
+
+  .stepperBtnFlank {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+
+  .calendarIconBtn {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+
+  .phaseEmoji {
+    display: none; /* Only show text on ultra-compact phones to prevent any pixel overflow */
+  }
+
+  .phasePrimaryText {
+    font-size: 0.65rem;
+  }
+}

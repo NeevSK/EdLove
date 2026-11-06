@@ -614,4 +614,149 @@
   border-color: var(--lotus);
 }
 
+/* Featured Manuscript Hero Banner */
+.heroBanner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+  gap: 1.5rem;
+  padding: clamp(1.5rem, 3.5vw, 2.5rem);
+  border-radius: 1.4rem;
+  border: 1px solid var(--line);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--lotus) 12%, var(--paper)) 0%,
+    color-mix(in srgb, var(--paper-light) 90%, transparent) 100%
+  );
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .heroBanner {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--lotus);
+}
+
+.heroTitle {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  color: var(--ink);
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.heroDescription {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  max-width: 48ch;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.heroPrimaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 9999px;
+  background: var(--ink);
+  color: white !important;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 650;
+  transition: opacity 0.15s ease;
+}
+
+.heroPrimaryBtn:hover {
+  opacity: 0.9;
+}
+
+.heroArtworkArea {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 1px dashed color-mix(in srgb, var(--lotus) 30%, transparent);
+  background: color-mix(in srgb, var(--paper-light) 60%, transparent);
+  text-align: center;
+}
+
+.heroArtworkGlyph {
+  font-size: 3.5rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.heroArtworkLabel {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.resourceItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardActionsInline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+.externalLinkAnchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--lotus);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+.externalLinkAnchor:hover {
+  opacity: 1;
+}
+
+.heroSection {
+  margin-bottom: 1.5rem;
+}
+
+
 

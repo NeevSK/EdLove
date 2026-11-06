@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+﻿import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../../lib/host-routing';
@@ -6,7 +6,7 @@ import { resolveAuthorizedEntry } from '../../../../lib/sanctuary/authorizedEntr
 import { createServerSupabaseClient } from '../../../../lib/supabase/server';
 import { signInPath } from '../../auth/routeSafety';
 import { SanctuaryShell } from '../../components/SanctuaryShell';
-import { ContributeFloor } from './ContributeFloor';
+import { ContributeDesk } from './ContributeDesk';
 
 export const metadata = { title: 'Contribute Material | Gurudevi Sanctuary' };
 
@@ -23,7 +23,7 @@ export default async function ContributePage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <ContributeFloor displayName="Guest Explorer" capacity="guest" />
+        <ContributeDesk displayName="Guest Explorer" capacity="guest" />
       </SanctuaryShell>
     );
   }
@@ -37,7 +37,7 @@ export default async function ContributePage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <ContributeFloor displayName="Guest Explorer" capacity="guest" />
+        <ContributeDesk displayName="Guest Explorer" capacity="guest" />
       </SanctuaryShell>
     );
   }
@@ -126,7 +126,7 @@ export default async function ContributePage() {
       showAccountNavigation={true}
       isExploreMode={false}
     >
-      <ContributeFloor displayName={entry.displayName} capacity={entry.activeCapacity} />
+      <ContributeDesk displayName={entry.displayName} capacity={entry.activeCapacity} />
     </SanctuaryShell>
   );
 }

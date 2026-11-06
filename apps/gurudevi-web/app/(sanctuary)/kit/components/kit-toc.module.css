@@ -1,0 +1,271 @@
+/* ==========================================================================
+   Kit Table of Contents: Reusable, Hierarchical Sidebar & In-Situ Navigator
+   ========================================================================== */
+
+.tocSidebar {
+  width: 17.5rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.1rem;
+  background: var(--w-ground);
+  border-right: 1px solid var(--w-line);
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.tocHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.tocHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tocTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tocIcon {
+  font-size: 0.95rem;
+}
+
+.tocTitle {
+  font: 700 0.92rem system-ui, -apple-system, sans-serif;
+  color: var(--ink, #fff);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.itemCountBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.12rem 0.45rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+}
+
+.searchSection {
+  margin-bottom: 0.25rem;
+}
+
+.sortBar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.05));
+}
+
+.sortLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.4));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 0.15rem;
+}
+
+.sortPill {
+  padding: 0.18rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  background: transparent;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.6));
+  transition: all 0.15s ease;
+}
+
+.sortPill:hover {
+  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+  color: var(--ink, #fff);
+}
+
+.sortPill[data-active="true"] {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 35%, transparent);
+}
+
+.categoryTreeScrollArea {
+  flex: 1 1 0px;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.categoryTreeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-right: 0.35rem;
+  padding-bottom: 2rem;
+}
+
+.categoryGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.categoryHeaderBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.35rem 0.45rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  user-select: none;
+}
+
+.categoryHeaderBtn:hover {
+  background: color-mix(in srgb, var(--ink, #fff) 5%, transparent);
+}
+
+.categoryHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.categoryIcon {
+  font-size: 0.82rem;
+}
+
+.categoryName {
+  font: 700 0.72rem system-ui, -apple-system, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.55));
+}
+
+.categoryHeaderMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.categoryCount {
+  font-size: 0.65rem;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.4));
+  font-variant-numeric: tabular-nums;
+}
+
+.collapseChevron {
+  font-size: 0.75rem;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.4));
+  line-height: 1;
+}
+
+.categoryItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  margin-left: 0.45rem;
+}
+
+.componentLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.32rem 0.55rem;
+  border-radius: 0.4rem;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.75));
+  text-decoration: none;
+  font: 500 0.8rem system-ui, -apple-system, sans-serif;
+  transition: all 0.15s ease;
+}
+
+.componentLink:hover {
+  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+  color: var(--ink, #fff);
+  transform: translateX(2px);
+}
+
+.componentLink[data-active="true"] {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 16%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  font-weight: 600;
+  border-left: 2px solid var(--w-lamp, #e2c37a);
+}
+
+.componentName {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemBadge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.08rem 0.32rem;
+  border-radius: 0.25rem;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 18%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  flex-shrink: 0;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.clearSearchBtn {
+  background: transparent;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.4rem;
+  color: var(--w-lamp, #e2c37a);
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.clearSearchBtn:hover {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+}
+
+@media (max-width: 860px) {
+  .tocSidebar {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    position: relative;
+    border-right: 0;
+    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+  }
+}

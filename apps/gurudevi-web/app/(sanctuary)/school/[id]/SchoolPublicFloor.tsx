@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { resolveSurfaceUrl } from '@/lib/surface-urls';
-import { editorialHexagonalService, type SchoolEditorialDraft } from '@/lib/domain';
+import { editorialAdapter, type SchoolEditorialDraft } from '@/lib/domain';
 import {
   CANONICAL_ANANDA_PROFILE,
-  schoolHexagonalService,
-} from '@/lib/domain/adapters/school/schoolHexagonalService';
+  schoolAdapter,
+} from '@/lib/domain/adapters/school/school.adapter';
 import type { SchoolProfileData } from '@/lib/domain/ports/school.port';
 import styles from './school-public.module.css';
 
@@ -29,8 +29,8 @@ export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>
     async function loadPublicDossier() {
       try {
         const [profile, drafts] = await Promise.all([
-          schoolHexagonalService.getSchoolProfile(schoolId),
-          editorialHexagonalService.listDrafts(schoolId).catch(() => []),
+          schoolAdapter.getSchoolProfile(schoolId),
+          editorialAdapter.listDrafts(schoolId).catch(() => []),
         ]);
         if (mounted) {
           setData(profile);
@@ -690,7 +690,7 @@ export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>
                   <span>📋</span> Copy Invitation Link
                 </button>
                 <a
-                  href={`gurudevi://qr?action=join_school&school_id=${fact.id}`}
+                  href={`/sign-in?next=${encodeURIComponent(`/school/${fact.handle}`)}`}
                   className={styles.heroActionBtnSecondary}
                   style={{ color: '#1f1d1a', background: '#f3ece1', borderColor: '#ded8cf' }}
                 >

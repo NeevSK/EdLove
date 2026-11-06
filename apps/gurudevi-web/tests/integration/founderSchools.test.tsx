@@ -13,7 +13,7 @@ vi.mock('@repo/core/adapters/supabase/educational/schoolRepository', () => ({
 }));
 vi.mock('@repo/core/adapters/supabaseClient', () => ({ supabaseClient: mocks.client }));
 vi.mock('@repo/core/logic/schemas/school.schema', () => ({ SchoolSchema: { parse: mocks.parse } }));
-vi.mock('@repo/core/api/sandboxDataset', () => ({
+vi.mock('@repo/core/logic/modes/sandboxDataset', () => ({
   getSandboxSamples: () => [
     {
       id: 'sample-school',

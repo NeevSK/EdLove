@@ -7,8 +7,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useDebouncedValue, useThrottledInvalidate } from '../../pacer/usePacer';
 import {
   DEFAULT_CANONICAL_BATCHES,
-  tuitionHexagonalService,
-} from '../adapters/tuition/tuitionHexagonalService';
+  tuitionAdapter,
+} from '../adapters/tuition/tuition.adapter';
 import type { FeeReceiptResult, TuitionBatchSummary } from '../ports/tuition.port';
 
 export interface FeeViewModel {
@@ -116,7 +116,7 @@ export function useTuitionDomain() {
   // TanStack Query: Batches catalog caching & revalidation
   const { data: batches = DEFAULT_CANONICAL_BATCHES } = useQuery({
     queryKey: ['tuition', 'batches'],
-    queryFn: () => tuitionHexagonalService.getBatches(),
+    queryFn: () => tuitionAdapter.getBatches(),
     initialData: DEFAULT_CANONICAL_BATCHES,
     staleTime: 60_000,
   });
@@ -124,15 +124,15 @@ export function useTuitionDomain() {
   // TanStack Query: Cached receipts
   const { data: receipts = [] } = useQuery({
     queryKey: ['tuition', 'receipts'],
-    queryFn: () => tuitionHexagonalService.loadCachedReceipts(),
-    initialData: () => tuitionHexagonalService.loadCachedReceipts(),
+    queryFn: () => tuitionAdapter.loadCachedReceipts(),
+    initialData: () => tuitionAdapter.loadCachedReceipts(),
     staleTime: 30_000,
   });
 
   // TanStack Query: Aggregate summary by batch
   const { data: summary = DEFAULT_SUMMARY } = useQuery({
     queryKey: ['tuition', 'summary', selectedBatchId],
-    queryFn: () => tuitionHexagonalService.getBatchSummary(selectedBatchId),
+    queryFn: () => tuitionAdapter.getBatchSummary(selectedBatchId),
     initialData: DEFAULT_SUMMARY,
     staleTime: 30_000,
   });
@@ -155,7 +155,7 @@ export function useTuitionDomain() {
 
       setIsProcessing(true);
       try {
-        const result = await tuitionHexagonalService.issueReceipt({
+        const result = await tuitionAdapter.issueReceipt({
           feeId,
           studentName: targetFee.studentName,
           amount: targetFee.amount,

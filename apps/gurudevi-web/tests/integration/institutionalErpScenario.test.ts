@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { erpHexagonalService } from '@/lib/domain/adapters/erp/erpHexagonalService';
+import { erpAdapter } from '@/lib/domain/adapters/erp/erp.adapter';
 
 describe('Institutional ERP Hexagonal Integration Scenario (G2 jsdom contract)', () => {
   it('retrieves canonical institutional events and inventory items', async () => {
-    const events = await erpHexagonalService.getInstitutionalEvents('school-ananda-colombo');
-    const inventory = await erpHexagonalService.getInventoryItems('school-ananda-colombo');
+    const events = await erpAdapter.getInstitutionalEvents('school-ananda-colombo');
+    const inventory = await erpAdapter.getInventoryItems('school-ananda-colombo');
 
     expect(events.length).toBeGreaterThanOrEqual(3);
     expect(inventory.length).toBeGreaterThanOrEqual(4);
@@ -19,15 +19,15 @@ describe('Institutional ERP Hexagonal Integration Scenario (G2 jsdom contract)',
   });
 
   it('allocates durable PA speakers and dispatches daily nutrition rations without errors', async () => {
-    const events = await erpHexagonalService.getInstitutionalEvents('school-ananda-colombo');
-    const inventory = await erpHexagonalService.getInventoryItems('school-ananda-colombo');
+    const events = await erpAdapter.getInstitutionalEvents('school-ananda-colombo');
+    const inventory = await erpAdapter.getInventoryItems('school-ananda-colombo');
 
     const event = events[0]!;
     const paSpeaker = inventory.find((i) => i.nature === 'durable_equipment')!;
     const rice = inventory.find((i) => i.id === 'inv-pantry-samba-rice')!;
 
     // Allocate resources for the event
-    const allocation = await erpHexagonalService.allocateResources({
+    const allocation = await erpAdapter.allocateResources({
       event,
       durableRequests: [{ item: paSpeaker, quantityRequested: 1 }],
       consumableRequests: [{ item: rice, quantityDispatched: 20, unitCostCents: 24000 }],
@@ -37,7 +37,7 @@ describe('Institutional ERP Hexagonal Integration Scenario (G2 jsdom contract)',
     expect(allocation.bom.totalResourceCostCents).toBe(480000); // 20kg * 240.00 = Rs. 4,800.00
 
     // Dispatch stock directly
-    const dispatch = await erpHexagonalService.dispatchStock(rice, 10, {
+    const dispatch = await erpAdapter.dispatchStock(rice, 10, {
       eventId: event.id,
       performedByUserId: 'usr-pantry-matron',
       unitCostCents: 24000,

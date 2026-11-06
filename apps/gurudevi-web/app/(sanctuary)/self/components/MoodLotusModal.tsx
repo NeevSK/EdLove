@@ -2,14 +2,9 @@
 
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AccountSafeTrySelfPracticeAdapter } from '../../../../lib/sanctuary/selfExplore';
-import {
-  loadMoodHistory,
-  logMood,
-  MOOD_CHOICES,
-  type MoodLog,
-  type MoodValue,
-} from '../../../../lib/sanctuary/selfWellbeing';
+import { MOOD_CHOICES, type MoodLog, type MoodValue } from '../../../../lib/sanctuary/selfWellbeing';
 import styles from '../self-floor.module.css';
+import { ScrollArea } from '@repo/ui/components/web';
 import { BreathGuide } from './BreathGuide';
 import { formatDate } from './formatDate';
 
@@ -35,6 +30,10 @@ export function MoodLotusModal({
   const isCurrent = !isReview && !isPlan;
 
   const [activeTab, setActiveTab] = useState<'mood' | 'breath'>(initialTab);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
   const [history, setHistory] = useState<readonly MoodLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -60,10 +59,7 @@ export function MoodLotusModal({
             ? practiceAdapter.loadMoodHistoryForDate(selectedDate)
             : practiceAdapter.loadMoodHistory();
         setHistory(Array.isArray(raw) ? raw : []);
-      } else {
-        const entries = await loadMoodHistory();
-        setHistory(Array.isArray(entries) ? entries : []);
-      }
+      } else throw new Error('Account mood history is not admitted by the current API foundation.');
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'We could not load your mood history.');
     } finally {
@@ -117,9 +113,7 @@ export function MoodLotusModal({
       let entry: MoodLog;
       if (isPracticing && practiceAdapter) {
         entry = practiceAdapter.logMood({ mood: selectedMood, note });
-      } else {
-        entry = await logMood({ mood: selectedMood, note });
-      }
+      } else throw new Error('Account mood check-ins are not admitted by the current API foundation.');
       setHistory((current) => [entry, ...(Array.isArray(current) ? current : [])].slice(0, 8));
       setNote('');
       setSelectedMood(null);
@@ -217,6 +211,7 @@ export function MoodLotusModal({
           </button>
         </div>
 
+        <ScrollArea orientation="vertical" variant="auto" style={{ maxHeight: 'calc(100dvh - 18rem)', width: '100%' }} label="Mood and somatic practice">
         {activeTab === 'breath' ? (
           <BreathGuide />
         ) : isPlan ? (
@@ -454,6 +449,7 @@ export function MoodLotusModal({
             ) : null}
           </>
         )}
+        </ScrollArea>
       </section>
     </div>
   );

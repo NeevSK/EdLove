@@ -79,11 +79,11 @@ function contextDescription(domain: 'self' | 'workspace', intent: TemporalIntent
 export function WorkbenchContextHeader({
   greeting,
   intent,
-  domain,
+  domain: _domain,
   dateControl,
-  selectedDate,
+  selectedDate: _selectedDate,
   homeActive = true,
-  renderExtra,
+  renderExtra: _renderExtra,
 }: WorkbenchContextHeaderProps) {
   return (
     <div className={styles.contextHeader} data-intent={intent}>
@@ -91,17 +91,12 @@ export function WorkbenchContextHeader({
         <div className={styles.contextGreeting}>
           <h2>{greeting}</h2>
           <div className={styles.contextDetailRow}>
-            <div className={styles.contextMeaning} aria-live="polite">
-              <p>{contextDescription(domain, intent, selectedDate)}</p>
-            </div>
             <div className={styles.contextDate}>{dateControl}</div>
-            {renderExtra?.()}
           </div>
         </div>
       ) : (
         <div className={styles.taskTemporalControl}>
           {dateControl}
-          {renderExtra?.()}
         </div>
       )}
     </div>

@@ -9,10 +9,11 @@ import { CommentDrawer } from './CommentDrawer';
 import { WebPostComposer } from './WebPostComposer';
 
 interface CirclePostStreamProps {
-  selectedGroup: CommunityGroup;
+  selectedGroup?: CommunityGroup | null;
   initialPosts?: readonly CommunityPost[];
   authorRole?: string | null;
   mode?: 'account' | 'explore';
+  onExploreGroups?: () => void;
 }
 
 function formatTimeAgo(isoString: string): string {
@@ -37,11 +38,12 @@ export function CirclePostStream({
   initialPosts,
   authorRole = 'Seeker',
   mode = 'account',
+  onExploreGroups,
 }: Readonly<CirclePostStreamProps>) {
   const defaultPosts = useMemo(() => {
     if (initialPosts && initialPosts.length > 0) return initialPosts;
-    return getExploreSamplePosts(selectedGroup.id);
-  }, [initialPosts, selectedGroup.id]);
+    return getExploreSamplePosts(selectedGroup?.id);
+  }, [initialPosts, selectedGroup?.id]);
 
   const [posts, setPosts] = useState<readonly CommunityPost[]>(defaultPosts);
   const [activeDiscussionPost, setActiveDiscussionPost] = useState<CommunityPost | null>(null);
@@ -64,35 +66,53 @@ export function CirclePostStream({
     );
   };
 
+  const isGlobalFeed = !selectedGroup;
+  const feedTitle = selectedGroup ? selectedGroup.name : 'Community Feed';
+  const feedDescription = selectedGroup
+    ? (selectedGroup.description || 'A collaborative sanctuary circle for shared learning and mutual presence.')
+    : 'Living stream of reflections, educational questions, and shared sparks across all sanctuary circles.';
+
   return (
     <div className={styles.postStreamContainer}>
       {/* Circle Meta Banner & Realtime Chat Deeplink */}
       <div className={styles.circleStreamBanner}>
         <div className={styles.circleStreamMeta}>
-          <h2 className={styles.circleStreamTitle}>{selectedGroup.name}</h2>
-          <p className={styles.circleStreamDescription}>
-            {selectedGroup.description || 'A collaborative sanctuary circle for shared learning and mutual presence.'}
-          </p>
+          <h2 className={styles.circleStreamTitle}>{feedTitle}</h2>
+          <p className={styles.circleStreamDescription}>{feedDescription}</p>
           <div className={styles.circleStreamStats}>
-            <span className={styles.statPill}>👥 {selectedGroup.memberCount} members · Shared circle</span>
+            {selectedGroup ? (
+              <span className={styles.statPill}>👥 {selectedGroup.memberCount} members · Shared circle</span>
+            ) : (
+              <span className={styles.statPill}>🌐 All Circles · Open Commons</span>
+            )}
             <span className={styles.statPill}>📜 {posts.length} reflections</span>
           </div>
         </div>
 
         <div className={styles.circleStreamActions}>
-          <Link
-            href={`/community/chat/${selectedGroup.id}`}
-            className={styles.openChatButton}
-          >
-            💬 Open Circle Chat ↗
-          </Link>
+          {selectedGroup ? (
+            <Link
+              href={`/community/chat/${selectedGroup.id}`}
+              className={styles.openChatButton}
+            >
+              💬 Open Circle Chat ↗
+            </Link>
+          ) : onExploreGroups ? (
+            <button
+              type="button"
+              onClick={onExploreGroups}
+              className={styles.openChatButton}
+            >
+              👥 Browse Circles →
+            </button>
+          ) : null}
         </div>
       </div>
 
       {/* Composer */}
       <WebPostComposer
-        groupId={selectedGroup.id}
-        groupName={selectedGroup.name}
+        groupId={selectedGroup?.id ?? 'general'}
+        groupName={selectedGroup?.name ?? 'Sanctuary Commons'}
         authorRole={authorRole}
         onPostCreated={handlePostCreated}
       />
@@ -102,8 +122,12 @@ export function CirclePostStream({
         {posts.length === 0 ? (
           <div className={styles.emptyPostState}>
             <span className={styles.emptyIcon}>🪷</span>
-            <h3>Silence in this circle</h3>
-            <p>Be the first seeker to share an inquiry or reflection in {selectedGroup.name}.</p>
+            <h3>Silence in this feed</h3>
+            <p>
+              {selectedGroup
+                ? `Be the first seeker to share an inquiry or reflection in ${selectedGroup.name}.`
+                : 'Be the first seeker to share an inquiry or reflection with the community.'}
+            </p>
           </div>
         ) : (
           posts.map((post) => (

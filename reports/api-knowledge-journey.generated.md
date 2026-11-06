@@ -1,0 +1,340 @@
+# Product and Journey Catalog
+
+- **feature**
+  - **id:** feature:api.foundation
+  - **title:** Authorized API and agent execution
+- **intent**
+  - **id:** intent:api.understand
+  - **title:** Understand API and agent foundations before making implementation choices
+  - **actor:** product owner or implementing agent
+  - **outcome:** Distinguish concepts, sources, adopted rules, proposed dependencies and unresolved product choices without holding the whole system in memory.
+- **sharedWith**
+  - (none)
+- **journey**
+  - **id:** journey:api.ground\_architecture
+  - **title:** Read what, apply how, and preserve unresolved decisions
+  - **situation:** The owner is learning API fundamentals while the reset API has no business procedures and implementation is paused for grounding.
+  - **outcome:** A modular reading and source-trace path informs a bounded engineering task; unsupported choices remain explicit rather than becoming implementation claims.
+  - **planning**
+    - **maturity:** development
+    - **implementation:** implemented
+    - **verification:** partial
+    - **priority:** P0
+  - **context:** setup
+  - **preconditions**
+    - Read the current canonical domain/channel policy and identify the topic or capability under discussion.
+  - **entry:** step:api.learn\_what
+  - **development**
+    - **mode:** brownfield
+    - **existingBehavior**
+      - The repository has a canonical API policy, an empty v1 foundation, existing PJC and AI declarations, and historical migration records.
+    - **invariants**
+      - Research is not permission to install dependencies or resume implementation.
+      - A protocol, framework, channel, skill and domain authority are separate responsibilities.
+      - Documented public vendor APIs do not reveal private vendor implementation stacks.
+      - A source observation, user rule, proposal and verified scenario must remain distinguishable.
+    - **openQuestions**
+      - The exact Anthropic announcement and intended Hermes project recalled by the owner remain unconfirmed.
+      - Meta webhook detail pages were access/rate limited; revalidate exact selected-version behavior before implementation.
+      - Launch channel scope, external interoperability, privacy and consequential action policies remain product decisions.
+    - **integrationPoints**
+      - apps/sanctuary-api/docs/INDEX.md
+      - apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md
+      - packages/core/src/flows/pjc/api.foundation.json
+  - **steps**
+    -
+      - **id:** step:api.learn\_what
+      - **title:** Read the relevant concepts
+      - **interaction:** Enter through What and load only the relevant vocabulary, channel or evidence module.
+      - **terminal:** false
+      - **links**
+        - binding:api.knowledge\_what
+    -
+      - **id:** step:api.learn\_how
+      - **title:** Map concepts to actual responsibilities
+      - **interaction:** Use How with the canonical model and actual source contracts; identify implemented versus proposed behavior.
+      - **terminal:** false
+      - **links**
+        - binding:api.knowledge\_how
+    -
+      - **id:** step:api.learn\_decisions
+      - **title:** Prepare the next bounded decision or task
+      - **interaction:** Record user rules, evidence limits and open questions without granting authority or installing a framework.
+      - **terminal:** true
+      - **links**
+        - binding:api.knowledge\_rules
+  - **transitions**
+    -
+      - **id:** transition:api.learn\_apply
+      - **from:** step:api.learn\_what
+      - **to:** step:api.learn\_how
+      - **action:** Follow the focused module and source links to distinguish the layer and its responsibilities.
+      - **feedback:** The reader can separate a capability contract, transport, agent harness and domain rule.
+      - **links**
+        - binding:api.knowledge\_glossary
+        - binding:api.knowledge\_channels
+    -
+      - **id:** transition:api.learn\_record
+      - **from:** step:api.learn\_how
+      - **to:** step:api.learn\_decisions
+      - **action:** Trace the relevant domain rule and evidence; prepare a bounded task or defer the affected product choice.
+      - **feedback:** The task retains its necessary context and unresolved decisions; research claims do not become runtime assurance.
+      - **links**
+        - binding:api.knowledge\_rules
+        - binding:api.knowledge\_evidence
+  - **requirements**
+    -
+      - **id:** requirement:api.knowledge\_modularity
+      - **title:** Learning and engineering documentation stays granular
+      - **statement:** Provide two stable What/How entry documents with focused modules, source links and PJC discoverability so the owner and agents need not retain the whole system at once.
+      - **classification:** quality
+      - **origin:** user
+      - **links**
+        - binding:api.knowledge\_what
+        - binding:api.knowledge\_how
+    -
+      - **id:** requirement:api.knowledge\_truthfulness
+      - **title:** Research does not imply adoption or working behavior
+      - **statement:** Use dated primary sources, qualify surveys/benchmarks and ambiguous announcements, and distinguish documented vendor interfaces from private stacks. Preserve business decisions and implementation gaps; do not install or build during this grounding phase.
+      - **classification:** constraint
+      - **origin:** user
+      - **links**
+        - binding:api.knowledge\_evidence
+        - binding:api.knowledge\_rules
+  - **bindings**
+    -
+      - **id:** binding:api.knowledge\_what
+      - **category:** documentation
+      - **reference:** apps/sanctuary-api/docs/architecture/api-landscape.md
+      - **status:** implemented
+      - **note:** Stable educational entry point; document presence is not API feature coverage.
+    -
+      - **id:** binding:api.knowledge\_how
+      - **category:** architecture
+      - **reference:** apps/sanctuary-api/docs/architecture/api-engineering-playbook.md
+      - **status:** implemented
+      - **note:** Implementation sequence and evidence requirements; future responsibilities are not represented as completed.
+    -
+      - **id:** binding:api.knowledge\_glossary
+      - **category:** documentation
+      - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/vocabulary-and-history.md
+      - **status:** implemented
+      - **note:** Definitions, historical choices, interaction types and RSS; primary-source learning material.
+    -
+      - **id:** binding:api.knowledge\_channels
+      - **category:** documentation
+      - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/channels-and-agents.md
+      - **status:** implemented
+      - **note:** Channels, harnesses, MCP/WebMCP/AG-UI and Anthropic research; not admitted integrations.
+    -
+      - **id:** binding:api.knowledge\_evidence
+      - **category:** documentation
+      - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/dependencies-and-evidence.md
+      - **status:** implemented
+      - **note:** Dated dependencies, LMS/ERP/public AI examples, interoperability standards and qualified statistics/benchmarks.
+    -
+      - **id:** binding:api.knowledge\_rules
+      - **category:** architecture
+      - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/domain-rules-and-decisions.md
+      - **status:** implemented
+      - **note:** Rule authoring and decision method linking existing covenant/PJC/canonical policy, not a replacement authorization engine.
+  - **impacts**
+    -
+      - **id:** impact:api.knowledge\_context
+      - **title:** Bounded context packages replace full-system memorization
+      - **statement:** Stable entry points, focused modules and PJC references let maintainers load a relevant topic, journey and source authorities; runtime files and dependency manifests are outside this documentation change.
+      - **origin:** proposal
+      - **links**
+        - binding:api.knowledge\_what
+        - binding:api.knowledge\_how
+  - **observations**
+    -
+      - **id:** observation:api.knowledge\_scope
+      - **title:** Research and adopted implementation are different states
+      - **statement:** The reference bundle explains APIs, agent/channel protocols and dated primary-source examples. It does not implement bot execution, user MCP, WebMCP, AG-UI, domain operations or new framework integration in the empty foundation.
+      - **origin:** source
+      - **links**
+        - binding:api.knowledge\_what
+        - binding:api.knowledge\_how
+        - binding:api.knowledge\_channels
+  - **platformDifferences**
+    -
+      - **id:** platform:api.knowledge\_channels
+      - **title:** Different entry protocols share capability authority
+      - **statement:** Web/mobile RPC, provider webhooks, user remote MCP, browser WebMCP and developer platform MCP have distinct protocol/trust boundaries; a reference to one is not implementation of another.
+      - **origin:** proposal
+      - **links**
+        - binding:api.knowledge\_channels
+        - binding:api.knowledge\_how
+      - **platform:** shared
+  - **scenarios**
+    -
+      - **id:** scenario:api.knowledge\_read
+      - **title:** Discover a modular learning and engineering path
+      - **transitions**
+        - transition:api.learn\_apply
+        - transition:api.learn\_record
+      - **expected:** What and How resolve their focused modules and source authorities, a PJC query finds those bindings, and unresolved choices remain visible with no claim of feature implementation.
+      - **links**
+        - requirement:api.knowledge\_modularity
+        - requirement:api.knowledge\_truthfulness
+        - binding:api.knowledge\_what
+        - binding:api.knowledge\_how
+  - **evidence**
+    -
+      - **id:** evidence:api.knowledge\_docs\_g0\_20261030
+      - **title:** Documentation metadata, local references and PJC discoverability
+      - **scenario:** scenario:api.knowledge\_read
+      - **revision:** bf03fdea11624dd34433da910f6f562442d761f3+working-tree:api-knowledge-docs-20261030
+      - **environment:** Windows host, Python/PyYAML static documentation checks and Node/tsx PJC CLI
+      - **tier:** G0
+      - **result:** passed
+      - **substitutions**
+        - Static document/source inspection; no application runtime, provider or human learning assessment
+      - **limitations:** Six document frontmatters and 31 local file/heading references resolve; PJC structural validation reports zero errors and trace/query commands discover the new references. Primary-source research and independent review do not establish exhaustive external correctness, future latest versions, application behavior, reader comprehension or adoption of researched frameworks. Mutable worktree evidence; no assurance-tier promotion claimed.
+      - **reference:** reports/api-knowledge-docs-validation-20261030.json
+      - **links**
+        - binding:api.knowledge\_what
+        - binding:api.knowledge\_how
+        - binding:api.knowledge\_evidence
+  - **sharedRequirements**
+    - (none)
+  - **sharedBindings**
+    - (none)
+- **scenarioPaths**
+  -
+    - **id:** scenario:api.knowledge\_read
+    - **title:** Discover a modular learning and engineering path
+    - **expected:** What and How resolve their focused modules and source authorities, a PJC query finds those bindings, and unresolved choices remain visible with no claim of feature implementation.
+    - **start:** step:api.learn\_what
+    - **preconditions**
+      - (none)
+    - **completion:** outcome
+    - **checkpointReason:** undefined
+    - **requirements**
+      -
+        - **id:** requirement:api.knowledge\_modularity
+        - **title:** Learning and engineering documentation stays granular
+        - **statement:** Provide two stable What/How entry documents with focused modules, source links and PJC discoverability so the owner and agents need not retain the whole system at once.
+        - **classification:** quality
+        - **origin:** user
+        - **links**
+          - binding:api.knowledge\_what
+          - binding:api.knowledge\_how
+      -
+        - **id:** requirement:api.knowledge\_truthfulness
+        - **title:** Research does not imply adoption or working behavior
+        - **statement:** Use dated primary sources, qualify surveys/benchmarks and ambiguous announcements, and distinguish documented vendor interfaces from private stacks. Preserve business decisions and implementation gaps; do not install or build during this grounding phase.
+        - **classification:** constraint
+        - **origin:** user
+        - **links**
+          - binding:api.knowledge\_evidence
+          - binding:api.knowledge\_rules
+    - **bindings**
+      -
+        - **id:** binding:api.knowledge\_what
+        - **category:** documentation
+        - **reference:** apps/sanctuary-api/docs/architecture/api-landscape.md
+        - **status:** implemented
+        - **note:** Stable educational entry point; document presence is not API feature coverage.
+      -
+        - **id:** binding:api.knowledge\_how
+        - **category:** architecture
+        - **reference:** apps/sanctuary-api/docs/architecture/api-engineering-playbook.md
+        - **status:** implemented
+        - **note:** Implementation sequence and evidence requirements; future responsibilities are not represented as completed.
+      -
+        - **id:** binding:api.knowledge\_glossary
+        - **category:** documentation
+        - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/vocabulary-and-history.md
+        - **status:** implemented
+        - **note:** Definitions, historical choices, interaction types and RSS; primary-source learning material.
+      -
+        - **id:** binding:api.knowledge\_channels
+        - **category:** documentation
+        - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/channels-and-agents.md
+        - **status:** implemented
+        - **note:** Channels, harnesses, MCP/WebMCP/AG-UI and Anthropic research; not admitted integrations.
+      -
+        - **id:** binding:api.knowledge\_evidence
+        - **category:** documentation
+        - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/dependencies-and-evidence.md
+        - **status:** implemented
+        - **note:** Dated dependencies, LMS/ERP/public AI examples, interoperability standards and qualified statistics/benchmarks.
+      -
+        - **id:** binding:api.knowledge\_rules
+        - **category:** architecture
+        - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/domain-rules-and-decisions.md
+        - **status:** implemented
+        - **note:** Rule authoring and decision method linking existing covenant/PJC/canonical policy, not a replacement authorization engine.
+    - **evidence**
+      -
+        - **id:** evidence:api.knowledge\_docs\_g0\_20261030
+        - **title:** Documentation metadata, local references and PJC discoverability
+        - **scenario:** scenario:api.knowledge\_read
+        - **revision:** bf03fdea11624dd34433da910f6f562442d761f3+working-tree:api-knowledge-docs-20261030
+        - **environment:** Windows host, Python/PyYAML static documentation checks and Node/tsx PJC CLI
+        - **tier:** G0
+        - **result:** passed
+        - **substitutions**
+          - Static document/source inspection; no application runtime, provider or human learning assessment
+        - **limitations:** Six document frontmatters and 31 local file/heading references resolve; PJC structural validation reports zero errors and trace/query commands discover the new references. Primary-source research and independent review do not establish exhaustive external correctness, future latest versions, application behavior, reader comprehension or adoption of researched frameworks. Mutable worktree evidence; no assurance-tier promotion claimed.
+        - **reference:** reports/api-knowledge-docs-validation-20261030.json
+        - **links**
+          - binding:api.knowledge\_what
+          - binding:api.knowledge\_how
+          - binding:api.knowledge\_evidence
+    - **steps**
+      -
+        - **transition**
+          - **id:** transition:api.learn\_apply
+          - **from:** step:api.learn\_what
+          - **to:** step:api.learn\_how
+          - **action:** Follow the focused module and source links to distinguish the layer and its responsibilities.
+          - **feedback:** The reader can separate a capability contract, transport, agent harness and domain rule.
+          - **links**
+            - binding:api.knowledge\_glossary
+            - binding:api.knowledge\_channels
+        - **from**
+          - **id:** step:api.learn\_what
+          - **title:** Read the relevant concepts
+          - **interaction:** Enter through What and load only the relevant vocabulary, channel or evidence module.
+          - **terminal:** false
+          - **links**
+            - binding:api.knowledge\_what
+        - **to**
+          - **id:** step:api.learn\_how
+          - **title:** Map concepts to actual responsibilities
+          - **interaction:** Use How with the canonical model and actual source contracts; identify implemented versus proposed behavior.
+          - **terminal:** false
+          - **links**
+            - binding:api.knowledge\_how
+      -
+        - **transition**
+          - **id:** transition:api.learn\_record
+          - **from:** step:api.learn\_how
+          - **to:** step:api.learn\_decisions
+          - **action:** Trace the relevant domain rule and evidence; prepare a bounded task or defer the affected product choice.
+          - **feedback:** The task retains its necessary context and unresolved decisions; research claims do not become runtime assurance.
+          - **links**
+            - binding:api.knowledge\_rules
+            - binding:api.knowledge\_evidence
+        - **from**
+          - **id:** step:api.learn\_how
+          - **title:** Map concepts to actual responsibilities
+          - **interaction:** Use How with the canonical model and actual source contracts; identify implemented versus proposed behavior.
+          - **terminal:** false
+          - **links**
+            - binding:api.knowledge\_how
+        - **to**
+          - **id:** step:api.learn\_decisions
+          - **title:** Prepare the next bounded decision or task
+          - **interaction:** Record user rules, evidence limits and open questions without granting authority or installing a framework.
+          - **terminal:** true
+          - **links**
+            - binding:api.knowledge\_rules
+    - **disclaimer:** Declared scenario path; not evidence of execution.
+- **sharedRequirements**
+  - (none)
+- **sharedBindings**
+  - (none)

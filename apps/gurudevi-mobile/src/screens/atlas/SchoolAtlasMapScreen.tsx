@@ -15,7 +15,7 @@ import {
   type SchoolMapPoint,
   SRI_LANKA_DISTRICTS,
 } from '@repo/core/spatial';
-import { UnifiedMapView } from '@repo/ui/components/maps/UnifiedMapView';
+import { UnifiedMapView, type UnifiedMapViewRef } from '@repo/ui/components/maps/UnifiedMapView';
 import { UnifiedMarker } from '@repo/ui/components/maps/UnifiedMarker';
 import {
   CircleCheck,
@@ -63,7 +63,7 @@ const DEFAULT_CENTER: UserLocation = {
 };
 
 export const SchoolAtlasMapScreen: React.FC = () => {
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<UnifiedMapViewRef | null>(null);
 
   // Navigation State
   const [scaleLens, setScaleLens] = useState<SpatialScaleLens>('national');
@@ -154,6 +154,19 @@ export const SchoolAtlasMapScreen: React.FC = () => {
   useEffect(() => {
     void requestLocation();
   }, [requestLocation]);
+
+  useEffect(() => {
+    if (scaleLens !== 'global') {
+      mapRef.current?.animateToRegion(
+        {
+          ...DEFAULT_CENTER,
+          latitudeDelta: scaleLens === 'national' ? 2.5 : 0.25,
+          longitudeDelta: scaleLens === 'national' ? 2.5 : 0.25,
+        },
+        700,
+      );
+    }
+  }, [scaleLens]);
 
   // Center on user location
   const handleCenterOnUser = () => {
@@ -627,7 +640,7 @@ export const SchoolAtlasMapScreen: React.FC = () => {
             <UnifiedMapView
               ref={mapRef}
               style={{ flex: 1 }}
-              region={{
+              initialRegion={{
                 latitude: DEFAULT_CENTER.latitude,
                 longitude: DEFAULT_CENTER.longitude,
                 latitudeDelta: scaleLens === 'national' ? 2.5 : 0.25,

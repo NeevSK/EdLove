@@ -1,68 +1,4 @@
-/* Floor Studio Trigger & Drawer Styles */
-
-.floorHeaderBar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.4rem;
-  margin-bottom: 0.4rem;
-  z-index: 5;
-  width: 100%;
-  padding: 0.15rem 0;
-}
-
-.topControlsGroup {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-.studioTrigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  min-height: 2.2rem;
-  padding: 0 0.55rem;
-  border: 0;
-  border-radius: 0.35rem;
-  background: transparent;
-  color: var(--ink, #1a1918);
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 10;
-  margin-left: auto;
-}
-
-@media (max-width: 48rem) {
-  .floorHeaderBar {
-    margin-bottom: 0.3rem;
-  }
-  .studioTrigger {
-    padding: 0.35rem 0.65rem;
-    font-size: 0.75rem;
-  }
-}
-
-.studioTrigger:hover {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
-  border-color: transparent;
-  color: var(--color-sanctuary-saffron, #a85022);
-  transform: translateY(-1px);
-  box-shadow: none;
-}
-
-.studioTriggerActive {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
-  border-color: transparent;
-  color: var(--color-sanctuary-saffron, #a85022);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 18%, transparent);
-}
+/* Floor Studio Drawer Styles */
 
 /* Slide-Over Drawer Overlay */
 .drawerOverlay {
@@ -408,6 +344,7 @@
 }
 
 .furnitureItem {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -416,7 +353,55 @@
   border-radius: 0.6rem;
   background: var(--paper-light, #fff);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+}
+
+.furnitureItem[data-dnd-lifted="true"] {
+  cursor: grabbing;
+  transform: scale(1.02);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18), 0 0 0 2px var(--color-sanctuary-saffron, #a85022);
+  border-color: var(--color-sanctuary-saffron, #a85022);
+  z-index: 10;
+  opacity: 0.96;
+}
+
+.furnitureItem[data-dnd-over="before"]::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-sanctuary-saffron, #a85022);
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(168, 80, 34, 0.45);
+  pointer-events: none;
+}
+
+.furnitureItem[data-dnd-over="after"]::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-sanctuary-saffron, #a85022);
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(168, 80, 34, 0.45);
+  pointer-events: none;
+}
+
+.reorderLiveRegion {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 .furnitureItemPinned {

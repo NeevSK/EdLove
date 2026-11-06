@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import {
   filterWorkspaceFeatures,
   getCoreCapabilityForFeature,
@@ -23,7 +23,7 @@ describe('workspaceFeatureRegistry (G1)', () => {
   });
 
   it('contains workspace features including submissions, climate, and tuition', () => {
-    expect(WORKSPACE_FEATURES.length).toBe(17);
+    expect(WORKSPACE_FEATURES.length).toBe(18);
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'submissions')).toBeDefined();
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'climate')).toBeDefined();
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'tuition')).toBeDefined();

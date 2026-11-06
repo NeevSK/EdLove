@@ -1,5 +1,5 @@
 import type { NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { onlineManager } from '@tanstack/react-query';
 import { describe, expect, it } from 'vitest';
 import {
@@ -16,7 +16,7 @@ describe('getQueryClient', () => {
       connection: null,
     };
     const listeners = new Set<() => void>();
-    networkManager.registerAdapter({
+    networkMonitor.registerAdapter({
       getSnapshot: () => snapshot,
       subscribe: (listener) => {
         listeners.add(listener);

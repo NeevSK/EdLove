@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+﻿import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../../lib/host-routing';
@@ -6,7 +6,7 @@ import { resolveAuthorizedEntry } from '../../../../lib/sanctuary/authorizedEntr
 import { createServerSupabaseClient } from '../../../../lib/supabase/server';
 import { signInPath } from '../../auth/routeSafety';
 import { SanctuaryShell } from '../../components/SanctuaryShell';
-import { CuratorReviewFloor } from './CuratorReviewFloor';
+import { CuratorReviewDesk } from './CuratorReviewDesk';
 
 export const metadata = { title: 'Curator Studio | Gurudevi Sanctuary' };
 
@@ -23,7 +23,7 @@ export default async function CuratorPage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <CuratorReviewFloor displayName="Guest Explorer" capacity="guest" />
+        <CuratorReviewDesk displayName="Guest Explorer" capacity="guest" />
       </SanctuaryShell>
     );
   }
@@ -37,7 +37,7 @@ export default async function CuratorPage() {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <CuratorReviewFloor displayName="Guest Explorer" capacity="guest" />
+        <CuratorReviewDesk displayName="Guest Explorer" capacity="guest" />
       </SanctuaryShell>
     );
   }
@@ -77,7 +77,7 @@ export default async function CuratorPage() {
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <CuratorReviewFloor displayName={entry.displayName} capacity={entry.activeCapacity} />
+      <CuratorReviewDesk displayName={entry.displayName} capacity={entry.activeCapacity} />
     </SanctuaryShell>
   );
 }

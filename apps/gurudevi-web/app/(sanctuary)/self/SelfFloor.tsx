@@ -31,12 +31,9 @@ import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPre
 import type { FloorAtmosphereKind } from '../components/FloorAtmosphere';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import {
-  TaskStrip,
-  TemporalHorizon,
-  timeGreeting,
-  WorkbenchContextHeader,
-} from '../components/workbench';
+import { DateTimeCombo } from '@repo/ui/components/web';
+import { timeGreeting } from '../../../lib/timeGreeting';
+import { TaskStrip } from '../components/TaskStrip';
 import { BROWSER_SELF_FEATURES } from './browserFeatureRegistry';
 import { DailyContentCard } from './components/DailyContentCard';
 import { DailyRhythm } from './components/DailyRhythm';
@@ -48,6 +45,7 @@ import { FireJournal, initialScreen, type ScreenState } from './components/FireJ
 import { GratitudeGlimmers } from './components/GratitudeGlimmers';
 import { JoyJar } from './components/JoyJar';
 import { MoodLotusModal } from './components/MoodLotusModal';
+import { Dialog } from '@repo/ui/components/web';
 import { MyGradesView } from './components/MyGradesView';
 import { ProgressTree } from './components/ProgressTree';
 import { PulseDashboard } from './components/PulseDashboard';
@@ -65,7 +63,6 @@ import { VoiceJournaling } from './components/VoiceJournaling';
 import { WarmMirrorCard } from './components/WarmMirrorCard';
 import { WindDownRitual } from './components/WindDownRitual';
 import { WisdomSeeds } from './components/WisdomSeeds';
-import { SelfCatalogRail } from './components/SelfCatalogRail';
 import styles from './self-floor.module.css';
 
 const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
@@ -111,14 +108,29 @@ function todayHorizon(): DomainTemporalHorizon {
 
 const SELF_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
   {
-    id: 'workbench',
-    label: 'Task Workbench & Timeline',
-    icon: '🧭',
+    id: 'hero',
+    label: 'Primary Hero Practice',
+    icon: '🪷',
   },
   {
-    id: 'content',
-    label: 'Practices & Living Canvas',
-    icon: '🪷',
+    id: 'somatic',
+    label: 'Somatic Health & Breathing',
+    icon: '🫁',
+  },
+  {
+    id: 'circadian',
+    label: 'Circadian Rhythm Practices',
+    icon: '🌅',
+  },
+  {
+    id: 'shelf',
+    label: 'Personal Shelf & History',
+    icon: '📌',
+  },
+  {
+    id: 'catalog',
+    label: 'Complete Practice Catalog',
+    icon: '📚',
   },
 ];
 
@@ -148,6 +160,7 @@ export function SelfFloor({
   const workbench = useDomainWorkbench('self', { usageScope: quickAccessScope });
   const [showOverview, setShowOverview] = useState(true);
   const [showSadhanaModal, setShowSadhanaModal] = useState(false);
+  const [activeModalFeature, setActiveModalFeature] = useState<SelfFeatureManifestItem | null>(null);
   const [audioMuted, setAudioMuted] = useState(false);
 
   useEffect(() => {
@@ -258,6 +271,14 @@ export function SelfFloor({
       return 'washi-grain';
     }
   });
+
+  const [selfFurnitureOrder, setSelfFurnitureOrder] = useState<string[]>([
+    'hero',
+    'somatic',
+    'circadian',
+    'shelf',
+    'catalog',
+  ]);
 
   const selectAtmosphere = useCallback((kind: FloorAtmosphereKind) => {
     setAtmosphere(kind);
@@ -385,6 +406,19 @@ export function SelfFloor({
 
   function openFeature(feature: SelfFeatureManifestItem) {
     quickAccess.trackUse(feature.id);
+    const isModalKind =
+      feature.id === 'mood_lotus' ||
+      feature.id === 'breath_guide' ||
+      feature.id === 'daily_pulse' ||
+      feature.id === 'gratitude_glimmers' ||
+      feature.id === 'joy_jar' ||
+      feature.id === 'wisdom_seeds';
+
+    if (isModalKind) {
+      setActiveModalFeature(feature);
+      return;
+    }
+
     const result = workbench.open({
       ...fireJournalTask,
       featureId: feature.id,
@@ -530,161 +564,161 @@ export function SelfFloor({
       }
       domain="self"
       furnitureItems={SELF_FURNITURE_ITEMS}
-      groupOrder={[
-        ...(canvas.groupOrder.length > 0 ? canvas.groupOrder : ['workbench', 'content']),
-      ]}
-      onReorderFurniture={(order) => canvas.setGroupOrder(order as unknown as SelfCategory[])}
+      groupOrder={selfFurnitureOrder}
+      onReorderFurniture={setSelfFurnitureOrder}
       onResetFloorDefaults={canvas.resetAppearance}
       showPageActions={showOverview}
       onTogglePinFurniture={canvas.togglePin}
       pinnedIds={canvas.pinnedIds}
       setAppearance={canvas.setAppearance}
       titleId="self-floor-title"
-      topControls={() => (
-        <WorkbenchContextHeader
-          domain="self"
-          homeActive={showOverview}
-          dateControl={
-            <TemporalHorizon
-              compact
-              dateLabel={coordinates.dateLabel}
-              intent={coordinates.intent}
-              orientation={coordinates.orientationLabel}
-              slots={coordinates.slots}
-              activityDensity={activityDensity}
-              onSelectDate={(date) => {
-                workbench.setTemporalHorizon({
-                  anchor: { kind: 'date', date },
-                  scale: 'day',
-                  intent: resolveTemporalIntent(date, toIsoDate(new Date())),
-                });
-              }}
-              onToday={() => workbench.setTemporalHorizon(todayHorizon())}
-            />
-          }
-          greeting={timeGreeting(displayName)}
+      greeting={timeGreeting(displayName)}
+      breadcrumb={
+        showOverview
+          ? coordinates.intent === 'review'
+            ? 'Self · Archival Horizon'
+            : coordinates.intent === 'plan'
+              ? 'Self · Future Horizon'
+              : 'Self · Overview'
+          : `Self · ${focusedTask?.title ?? 'Task'}`
+      }
+      timeControl={
+        <DateTimeCombo
+          formFactor="nano"
+          date={coordinates.date}
+          dateLabel={coordinates.dateLabel}
           intent={coordinates.intent}
-          selectedDate={coordinates.date}
-          renderExtra={() => (
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap' }}
-            >
-              <button
-                type="button"
-                className={styles.centerNowBtn}
-                onClick={() => setShowSadhanaModal(true)}
-              >
-                <span>🌿 Center Now</span>
-              </button>
-              {todaySadhana?.intention ? (
-                <span
-                  className={styles.livingAnchorBadge}
-                  title={`Today's Energy: ${todaySadhana.energyLevel}/5`}
-                >
-                  ✦ {todaySadhana.intention}
-                </span>
-              ) : null}
-              <button
-                type="button"
-                className={styles.audioToggleBtn}
-                onClick={handleToggleAudio}
-                aria-label={
-                  audioMuted
-                    ? 'Sanctuary chimes muted. Click to enable sound.'
-                    : 'Sanctuary chimes active. Click to mute.'
-                }
-                title={
-                  audioMuted
-                    ? 'Sanctuary chimes muted (Click to unmute)'
-                    : 'Sanctuary chimes active (Click to mute)'
-                }
-              >
-                {audioMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-              </button>
-              <DynamicCareIsland
+          activityDensity={activityDensity}
+          onSelectDate={(date) => {
+            workbench.setTemporalHorizon({
+              anchor: { kind: 'date', date },
+              scale: 'day',
+              intent: resolveTemporalIntent(date, toIsoDate(new Date())),
+            });
+          }}
+          onToday={() => workbench.setTemporalHorizon(todayHorizon())}
+          allowDismiss={false}
+        />
+      }
+    >
+      {({ isArrangeMode }) => (
+        <>
+          <TaskStrip
+            shellSlot
+            focusedTaskKey={workbench.state.focusedTaskKey}
+            onCloseTask={closeTask}
+            onFocusTask={focusTask}
+            onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
+            onOpenOverview={() => {
+              setShowOverview(true);
+              requestAnimationFrame(() =>
+                document.getElementById('self-catalog-title')?.scrollIntoView?.({
+                  behavior: 'smooth',
+                  block: 'start',
+                }),
+              );
+            }}
+            quickAccessItems={SELF_FEATURE_MANIFEST.all.map((feature) => ({
+              id: feature.id,
+              label: feature.label,
+              emoji: feature.emoji,
+            }))}
+            quickAccessPinnedIds={quickAccess.pinnedIds}
+            quickAccessUsage={quickAccess.usage}
+            quickAccessPinLimit={quickAccess.pinLimit}
+            onOpenQuickAccessItem={(item) => {
+              const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === item.id);
+              if (feature) openQuickAccessFeature(feature);
+            }}
+            onToggleQuickAccessPin={quickAccess.togglePin}
+            overviewActive={showOverview}
+            tasks={workbench.state.tasks}
+          />
+
+          {showOverview ? (
+            <div className={styles.featureContentIn} key="self-home">
+              <SelfOverview
+                isArrangeMode={isArrangeMode}
+                displayName={displayName}
+                phase={canvas.phase}
+                groupOrder={canvas.groupOrder}
+                floorSectionOrder={selfFurnitureOrder}
+                manifestAll={canvas.sortedManifestAll}
+                onOpenFeature={openFeature}
+                onOpenFireJournal={openFireJournal}
+                pinnedFeatures={canvas.pinnedFeatures}
+                pinnedIds={quickAccess.pinnedIds}
+                usage={quickAccess.usage}
+                onTogglePin={quickAccess.togglePin}
+                fireJournalId={fireJournalFeature.id}
+                temporalIntent={coordinates.intent}
+                selectedDate={coordinates.date}
+                primaryRole={primaryRole}
+                otherRoles={capacities}
                 userId={accountId}
-                onOpenReminders={() => openFeature(requiredFeature('reminders'))}
+                isExplore={isExplore}
               />
-              <ShadowAgentDrawer userId={accountId} />
+            </div>
+          ) : (
+            <div
+              className={styles.featureContentIn}
+              data-layout-mode={canvas.layoutMode}
+              key={focusedTask?.taskKey ?? 'self-feature'}
+            >
+              <div className={styles.activePracticeStage}>{practiceContent}</div>
             </div>
           )}
-        />
-      )}
-    >
-      <TaskStrip
-        shellSlot
-        focusedTaskKey={workbench.state.focusedTaskKey}
-        onCloseTask={closeTask}
-        onFocusTask={focusTask}
-        onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
-        onOpenOverview={() => {
-          setShowOverview(true);
-          requestAnimationFrame(() =>
-            document.getElementById('self-catalog-title')?.scrollIntoView?.({
-              behavior: 'smooth',
-              block: 'start',
-            }),
-          );
-        }}
-        quickAccessItems={SELF_FEATURE_MANIFEST.all.map((feature) => ({
-          id: feature.id,
-          label: feature.label,
-          emoji: feature.emoji,
-        }))}
-        quickAccessPinnedIds={quickAccess.pinnedIds}
-        quickAccessUsage={quickAccess.usage}
-        quickAccessPinLimit={quickAccess.pinLimit}
-        onOpenQuickAccessItem={(item) => {
-          const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === item.id);
-          if (feature) openQuickAccessFeature(feature);
-        }}
-        onToggleQuickAccessPin={quickAccess.togglePin}
-        overviewActive={showOverview}
-        tasks={workbench.state.tasks}
-      />
 
-      {showOverview ? (
-        <div className={styles.featureContentIn} key="self-home">
-          <SelfOverview
-            displayName={displayName}
-            groupOrder={canvas.groupOrder}
-            manifestAll={canvas.sortedManifestAll}
-            onOpenFeature={openFeature}
-            onOpenFireJournal={openFireJournal}
-            pinnedFeatures={canvas.pinnedFeatures}
-            pinnedIds={quickAccess.pinnedIds}
-            usage={quickAccess.usage}
-            onTogglePin={quickAccess.togglePin}
-            fireJournalId={fireJournalFeature.id}
-            temporalIntent={coordinates.intent}
-            selectedDate={coordinates.date}
-            primaryRole={primaryRole}
-            otherRoles={capacities}
+          <DailySadhanaModal
+            isOpen={showSadhanaModal}
+            onClose={() => setShowSadhanaModal(false)}
             userId={accountId}
-            isExplore={isExplore}
           />
-        </div>
-      ) : (
-        <div
-          className={styles.featureContentIn}
-          data-layout-mode={canvas.layoutMode}
-          key={focusedTask?.taskKey ?? 'self-feature'}
-        >
-          <SelfCatalogRail
-            canvas={canvas}
-            focusedTask={focusedTask}
-            onOpenFeature={openFeature}
-            visible={!showOverview}
-          />
-          <div className={styles.activePracticeStage}>{practiceContent}</div>
-        </div>
-      )}
 
-      <DailySadhanaModal
-        isOpen={showSadhanaModal}
-        onClose={() => setShowSadhanaModal(false)}
-        userId={accountId}
-      />
+          {activeModalFeature && (
+            <Dialog
+              open={!!activeModalFeature}
+              onClose={() => setActiveModalFeature(null)}
+              title={activeModalFeature.label}
+              description={
+                activeModalFeature.id === 'breath_guide'
+                  ? 'Follow the gentle rhythm to settle your autonomic nervous system.'
+                  : activeModalFeature.id === 'daily_pulse'
+                    ? 'Your living morning threshold: commitments, energy anchors, and mindful pacing.'
+                    : activeModalFeature.id === 'gratitude_glimmers'
+                      ? 'Capture moments of student growth, colleague support, or quiet personal wins.'
+                      : activeModalFeature.id === 'joy_jar'
+                        ? 'Preserve classroom breakthrough moments and joyful connections.'
+                        : activeModalFeature.id === 'wisdom_seeds'
+                          ? 'Plant spontaneous pedagogical insights and grounding reminders.'
+                          : undefined
+              }
+            >
+              <div style={{ marginTop: '0.5rem', width: '100%' }}>
+                {activeModalFeature.id === 'mood_lotus' || activeModalFeature.id === 'breath_guide' ? (
+                  <MoodLotusModal
+                    embedded
+                    initialTab={activeModalFeature.id === 'breath_guide' ? 'breath' : 'mood'}
+                    onClose={() => setActiveModalFeature(null)}
+                    temporalIntent={coordinates.intent}
+                    selectedDate={coordinates.date}
+                    isPracticing={isPracticing}
+                    practiceAdapter={practiceAdapter}
+                  />
+                ) : activeModalFeature.id === 'daily_pulse' ? (
+                  <PulseDashboard userId={accountId ?? 'guest-explorer'} onClose={() => setActiveModalFeature(null)} />
+                ) : activeModalFeature.id === 'gratitude_glimmers' ? (
+                  <GratitudeGlimmers userId={accountId ?? 'guest-explorer'} />
+                ) : activeModalFeature.id === 'joy_jar' ? (
+                  <JoyJar userId={accountId ?? 'guest-explorer'} />
+                ) : activeModalFeature.id === 'wisdom_seeds' ? (
+                  <WisdomSeeds userId={accountId ?? 'guest-explorer'} />
+                ) : null}
+              </div>
+            </Dialog>
+          )}
+        </>
+      )}
     </SanctuaryFloorCanvas>
   );
 }

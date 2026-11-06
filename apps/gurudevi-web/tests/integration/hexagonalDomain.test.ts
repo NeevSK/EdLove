@@ -1,8 +1,8 @@
 import { storage } from '@repo/core/lib/storage';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { academicHexagonalService } from '../../lib/domain/adapters/academic/academicHexagonalService';
-import { tuitionHexagonalService } from '../../lib/domain/adapters/tuition/tuitionHexagonalService';
+import { academicAdapter } from '../../lib/domain/adapters/academic/academic.adapter';
+import { tuitionAdapter } from '../../lib/domain/adapters/tuition/tuition.adapter';
 
 describe('Hexagonal Domain Integration: Tuition & Accounting', () => {
   beforeEach(() => {
@@ -11,7 +11,7 @@ describe('Hexagonal Domain Integration: Tuition & Accounting', () => {
   });
 
   it('loads canonical commercial tuition batches matching mobile CommercialPerspective', async () => {
-    const batches = await tuitionHexagonalService.getBatches();
+    const batches = await tuitionAdapter.getBatches();
     expect(batches.length).toBeGreaterThanOrEqual(2);
 
     const mathBatch = batches.find((b) => b.id === 'batch-10a-math');
@@ -33,7 +33,7 @@ describe('Hexagonal Domain Integration: Tuition & Accounting', () => {
       feeType: 'Term 1 Tuition',
     };
 
-    const receipt = await tuitionHexagonalService.issueReceipt(input);
+    const receipt = await tuitionAdapter.issueReceipt(input);
     expect(receipt.receiptNo).toMatch(/^REC-2026-\d{4}$/);
     expect(receipt.status).toBe('queued_offline');
 
@@ -52,7 +52,7 @@ describe('Hexagonal Domain Integration: Tuition & Accounting', () => {
     expect(creditEntry?.accountId).toBe('revenue:tuition_fees');
 
     // Verify durable storage persistence
-    const cachedReceipts = tuitionHexagonalService.loadCachedReceipts();
+    const cachedReceipts = tuitionAdapter.loadCachedReceipts();
     expect(cachedReceipts.some((r) => r.receiptNo === receipt.receiptNo)).toBe(true);
 
     // Verify mutation outbox queue
@@ -63,7 +63,7 @@ describe('Hexagonal Domain Integration: Tuition & Accounting', () => {
   });
 
   it('computes batch metrics summary with total collected and attendance percentage', async () => {
-    const summary = await tuitionHexagonalService.getBatchSummary('batch-10a-math');
+    const summary = await tuitionAdapter.getBatchSummary('batch-10a-math');
     expect(summary.enrolledStudents).toBe(248);
     expect(summary.todayAttendancePercent).toBe(92);
     expect(summary.monthlyFeesPaidPercent).toBe(88);
@@ -77,7 +77,7 @@ describe('Hexagonal Domain Integration: Academic & Classroom', () => {
   });
 
   it('loads canonical classroom assignments adhering to @repo/core schema', async () => {
-    const assignments = await academicHexagonalService.getAssignments();
+    const assignments = await academicAdapter.getAssignments();
     expect(assignments.length).toBeGreaterThanOrEqual(3);
 
     const wetland = assignments.find((a) => a.id === 'asg-wetland-study');
@@ -95,14 +95,14 @@ describe('Hexagonal Domain Integration: Academic & Classroom', () => {
       content: 'Field sampling observations at Muthurajawela marsh.',
     };
 
-    const { submission, status } = await academicHexagonalService.submitAssignment(input);
+    const { submission, status } = await academicAdapter.submitAssignment(input);
     expect(submission.id).toMatch(/^sub-\d+/);
     expect(submission.assignment_id).toBe('asg-wetland-study');
     expect(submission.student_id).toBe('stu-hiruni');
     expect(status).toBe('queued_offline');
 
     // Verify local storage update
-    const submissions = academicHexagonalService.loadCachedSubmissions();
+    const submissions = academicAdapter.loadCachedSubmissions();
     const found = submissions.find((s) => s.id === submission.id);
     expect(found).toBeDefined();
     expect(found?.status).toBe('pending_review');
@@ -117,7 +117,7 @@ describe('Hexagonal Domain Integration: Academic & Classroom', () => {
   });
 
   it('grades submission with GPA and feedback, updating submission state and queuing to classroom outbox', async () => {
-    const { submission } = await academicHexagonalService.submitAssignment({
+    const { submission } = await academicAdapter.submitAssignment({
       assignmentId: 'asg-thermo-problems',
       studentId: 'stu-sahan',
       content: 'Thermodynamics derivations.',
@@ -134,7 +134,7 @@ describe('Hexagonal Domain Integration: Academic & Classroom', () => {
       gradedBy: 'teacher-kamal',
     };
 
-    const { grade, status } = await academicHexagonalService.gradeSubmission(gradeInput);
+    const { grade, status } = await academicAdapter.gradeSubmission(gradeInput);
     expect(grade.marks).toBe(88);
     expect(grade.grade).toBe('A');
     expect(grade.gpa).toBe(4.0);
@@ -142,7 +142,7 @@ describe('Hexagonal Domain Integration: Academic & Classroom', () => {
     expect(status).toBe('queued_offline');
 
     // Verify updated submission view
-    const submissions = academicHexagonalService.loadCachedSubmissions();
+    const submissions = academicAdapter.loadCachedSubmissions();
     const updated = submissions.find((s) => s.id === submission.id);
     expect(updated?.status).toBe('graded');
     expect(updated?.grade).toBe('A');

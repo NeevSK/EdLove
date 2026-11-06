@@ -15,7 +15,7 @@ import {
   readScheduleConflict,
   schoolLocalToIso,
   validateNoticeDraft,
-} from '@repo/core/logic/modes/noticeComposer';
+} from '@repo/core/logic/modes';
 import { DEFAULT_SCHOOL_TIMEZONE } from '@repo/core/logic/modes/schedule';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './plan.module.css';

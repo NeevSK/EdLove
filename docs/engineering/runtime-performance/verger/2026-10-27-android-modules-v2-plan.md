@@ -1,6 +1,6 @@
 ---
 title: "Verger Android modernization: capability gates and execution plan"
-status: draft
+status: active
 created: 2026-10-27
 updated: 2026-10-27
 author: Naveen
@@ -9,6 +9,8 @@ tags: [verger, android, expo-modules-v2, migration, plan]
 ---
 
 # Recommendation
+
+Implementation status: [isolated v2 candidate and acceptance evidence](2026-10-27-android-modules-v2-implementation.md). Main retains the legacy binding while device and full-client verification remain open.
 
 Proceed with a bounded migration of the Expo binding after establishing an exact-source native baseline. Android Modules 2.0 is available; parity for Verger has not yet been demonstrated. The first deliverable is a verified compatibility result, not a rewritten sensor system.
 

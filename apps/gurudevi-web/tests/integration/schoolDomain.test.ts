@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   CANONICAL_ANANDA_PROFILE,
-  schoolHexagonalService,
-} from '../../lib/domain/adapters/school/schoolHexagonalService';
+  schoolAdapter,
+} from '../../lib/domain/adapters/school/school.adapter';
 
 describe('Hexagonal Domain Integration: School Profile & National Census Fact', () => {
   it('retrieves canonical Ananda College profile with verified census and Roll of Honor', async () => {
-    const profile = await schoolHexagonalService.getSchoolProfile('school-ananda-colombo');
+    const profile = await schoolAdapter.getSchoolProfile('school-ananda-colombo');
 
     expect(profile.fact.id).toBe('school-ananda-colombo');
     expect(profile.fact.name).toBe('Ananda College');
@@ -28,7 +28,7 @@ describe('Hexagonal Domain Integration: School Profile & National Census Fact', 
   });
 
   it('generates a consistent dynamic profile for any recognized school ID or census number', async () => {
-    const profile = await schoolHexagonalService.getSchoolProfile('0611016');
+    const profile = await schoolAdapter.getSchoolProfile('0611016');
 
     expect(profile.fact.id).toBe('0611016');
     expect(profile.census.censusNo).toBe('0611016');
@@ -38,9 +38,9 @@ describe('Hexagonal Domain Integration: School Profile & National Census Fact', 
 
   it('updates school profile facts with optimistic cache persistence', async () => {
     const testSchoolId = 'test-school-colombo-north';
-    const initial = await schoolHexagonalService.getSchoolProfile(testSchoolId);
+    const initial = await schoolAdapter.getSchoolProfile(testSchoolId);
 
-    const updated = await schoolHexagonalService.updateSchoolProfile(testSchoolId, {
+    const updated = await schoolAdapter.updateSchoolProfile(testSchoolId, {
       name: 'Colombo North Model Sanctuary',
       motto: 'Wisdom Through Compassion',
       contactEmail: 'sanctuary@colombonorth.edu.lk',
@@ -51,26 +51,26 @@ describe('Hexagonal Domain Integration: School Profile & National Census Fact', 
     expect(updated.fact.contactEmail).toBe('sanctuary@colombonorth.edu.lk');
 
     // Retrieve again to ensure persistent storage retrieval
-    const refetched = await schoolHexagonalService.getSchoolProfile(testSchoolId);
+    const refetched = await schoolAdapter.getSchoolProfile(testSchoolId);
     expect(refetched.fact.name).toBe('Colombo North Model Sanctuary');
   });
 
   it('searches pre-seeded national schools across names, census numbers, and districts', async () => {
-    const results = await schoolHexagonalService.searchNationalSchools('ananda');
+    const results = await schoolAdapter.searchNationalSchools('ananda');
     expect(results.length).toBeGreaterThanOrEqual(1);
     expect(results[0]?.censusNo).toBe('0101001');
 
-    const galleResults = await schoolHexagonalService.searchNationalSchools('galle');
+    const galleResults = await schoolAdapter.searchNationalSchools('galle');
     expect(galleResults.length).toBeGreaterThanOrEqual(2);
     expect(galleResults.some((s) => s.censusNo === '0611016')).toBe(true);
   });
 
   it('resolves vanity handles ananda and ananda-college to canonical profile', async () => {
-    const fromHandle = await schoolHexagonalService.getSchoolProfile('ananda');
+    const fromHandle = await schoolAdapter.getSchoolProfile('ananda');
     expect(fromHandle.fact.id).toBe('school-ananda-colombo');
     expect(fromHandle.fact.name).toBe('Ananda College');
 
-    const fromCollege = await schoolHexagonalService.getSchoolProfile('ananda-college');
+    const fromCollege = await schoolAdapter.getSchoolProfile('ananda-college');
     expect(fromCollege.fact.id).toBe('school-ananda-colombo');
   });
 });

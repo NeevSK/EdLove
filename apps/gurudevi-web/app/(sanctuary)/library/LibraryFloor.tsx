@@ -3,20 +3,45 @@
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import {
+  Button,
+  Card,
+  Chip,
+  Chips,
+  Grid,
+  Inline,
+  Notice,
+  SegmentedControl,
+  Stack,
+  SearchField,
+} from '@repo/ui/components/web';
 import { useQuery } from '@tanstack/react-query';
+import {
+  Bookmark,
+  BookOpen,
+  Compass,
+  ExternalLink,
+  FileSpreadsheet,
+  FolderHeart,
+  Heart,
+  Pin,
+  PinOff,
+  Share2,
+  Sparkles,
+  Video,
+} from 'lucide-react';
 import Link from 'next/link';
-import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
-import { LivingCard } from '../components/LivingCard';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { TaskStrip } from '../components/workbench';
+import { timeGreeting } from '../../../lib/timeGreeting';
+import { TaskStrip } from '../components/TaskStrip';
 import styles from './library.module.css';
 
 const LIBRARY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
-  { id: 'arrival', label: 'Library Welcome & Posture', icon: '📖' },
   { id: 'taskstrip', label: 'Reading Tasks Strip', icon: '🧭' },
   { id: 'shelf', label: 'Catalog Shelf & Search', icon: '📚' },
   { id: 'invitations', label: 'Curated Study Invitations', icon: '📜' },
@@ -25,8 +50,11 @@ const LIBRARY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
 import {
   type BrowserLibraryResource,
   classifyLibraryFailure,
+  filterBrowserResources,
+  getGuestBookmarks,
   type LibraryLoadState,
   parseBrowserLibraryResources,
+  persistGuestBookmarks,
   safeResourceUrl,
 } from './libraryState';
 
@@ -47,8 +75,15 @@ export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] = getS
   description: r.description,
   type: r.type,
   verified: Boolean(r.verified),
-  subjects: r.subject ? [r.subject] : ['Sanctuary'],
+  subjects:
+    Array.isArray(r.subjects) && r.subjects.length > 0
+      ? r.subjects
+      : r.subject
+        ? [r.subject]
+        : ['Sanctuary'],
   url: r.url ?? 'https://gurudevi.app',
+  format: r.format ?? null,
+  is_official: Boolean(r.is_official),
 }));
 
 export const EXPLORE_COLLECTIONS = getSandboxSamples<any[]>(
@@ -86,10 +121,11 @@ export function LibraryFloor({
   displayName: string;
   mode?: LibraryFloorMode;
 }>) {
+  const isGuestMode =
+    mode === 'explore' || accountId === 'explore-guest' || accountId === 'guest';
   const canvas = useLibraryCanvas({
     accountId,
-    enableRemoteSync:
-      mode === 'account' && Boolean(accountId) && accountId !== 'explore' && accountId !== 'guest',
+    enableRemoteSync: mode === 'account' && Boolean(accountId) && !isGuestMode,
   });
   const workbench = useDomainWorkbench('library');
   const searchSeqRef = useRef(0);
@@ -100,8 +136,11 @@ export function LibraryFloor({
   );
   const [cardLayout, setCardLayout] = useState<'grid' | 'list'>('grid');
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(() => {
+    if (isGuestMode) {
+      return getGuestBookmarks();
+    }
     try {
-      const stored = localStorage.getItem('gurudevi_library_bookmarks');
+      const stored = localStorage.getItem(`gurudevi_library_bookmarks_${accountId}`);
       return stored ? new Set(JSON.parse(stored)) : new Set(['mangroves']);
     } catch {
       return new Set(['mangroves']);
@@ -125,8 +164,18 @@ export function LibraryFloor({
     if (isAdding) next.add(id);
     else next.delete(id);
     setBookmarkedIds(next);
+
+    // Guest bookmarks are strictly isolated locally — zero synchronization to real accounts
+    if (isGuestMode) {
+      persistGuestBookmarks(next);
+      return;
+    }
+
     try {
-      localStorage.setItem('gurudevi_library_bookmarks', JSON.stringify(Array.from(next)));
+      localStorage.setItem(
+        `gurudevi_library_bookmarks_${accountId}`,
+        JSON.stringify(Array.from(next)),
+      );
     } catch {}
 
     void orpcClient.library
@@ -143,6 +192,8 @@ export function LibraryFloor({
     if (isAdding) next.add(id);
     else next.delete(id);
     setEndorsedIds(next);
+
+    if (isGuestMode) return;
 
     void orpcClient.library
       .engage({
@@ -166,7 +217,7 @@ export function LibraryFloor({
       if (cat === 'saved') {
         try {
           const client = orpcClient.library as any;
-          if (typeof client.getBookmarkedResources === 'function') {
+          if (typeof client.getBookmarkedResources === 'function' && !isGuestMode) {
             const saved = await client.getBookmarkedResources({ query: {} });
             if (seq !== searchSeqRef.current) return;
             setResources(parseBrowserLibraryResources(saved));
@@ -180,20 +231,8 @@ export function LibraryFloor({
         return;
       }
 
-      if (mode === 'explore') {
-        const q = search.trim().toLowerCase();
-        let list = EXPLORE_LIBRARY_RESOURCES;
-        if (cat !== 'All') {
-          list = list.filter((r) => r.type?.toLowerCase() === cat.toLowerCase());
-        }
-        if (q) {
-          list = list.filter(
-            (r) =>
-              (r.title ?? '').toLowerCase().includes(q) ||
-              (r.description && r.description.toLowerCase().includes(q)) ||
-              (r.subjects ?? []).some((s) => s.toLowerCase().includes(q)),
-          );
-        }
+      if (isGuestMode) {
+        const list = filterBrowserResources(EXPLORE_LIBRARY_RESOURCES, search, cat, sort);
         if (seq !== searchSeqRef.current) return;
         setResources(list);
         setStatus('ready');
@@ -202,26 +241,19 @@ export function LibraryFloor({
 
       const supabase = createBrowserSupabaseClient();
       if (!supabase) {
+        // Fallback to public commons rather than failing with an error screen
+        const list = filterBrowserResources(EXPLORE_LIBRARY_RESOURCES, search, cat, sort);
         if (seq !== searchSeqRef.current) return;
-        setStatus('error');
-        setNotice('Library sign-in is not configured in this browser.');
+        setResources(list);
+        setStatus('ready');
+        setNotice('Viewing Public Educational Commons.');
         return;
       }
 
-      registerTokenResolver(async () => {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        return data.session?.access_token ?? null;
-      });
-
       try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (!data.session?.access_token) {
-          if (seq !== searchSeqRef.current) return;
-          setStatus('denied');
-          setNotice('Your secure session has ended. Sign in again to browse your Library.');
-          return;
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.access_token) {
+          registerTokenResolver(async () => data.session?.access_token ?? null);
         }
 
         const next = await orpcClient.library.getResources({
@@ -231,28 +263,31 @@ export function LibraryFloor({
             search: search.trim() || undefined,
             type: cat === 'All' ? undefined : (cat as any),
             sort_by: sort,
+            visibility: data.session?.access_token ? undefined : 'public',
           },
         });
         if (seq !== searchSeqRef.current) return;
         setResources(parseBrowserLibraryResources(next));
         setStatus('ready');
-      } catch (error) {
+        if (!data.session?.access_token) {
+          setNotice('Viewing Public Educational Commons • Sign in to access your school\'s private archive');
+        }
+      } catch {
         if (seq !== searchSeqRef.current) return;
-        setStatus(classifyLibraryFailure(error));
-        setNotice(
-          classifyLibraryFailure(error) === 'denied'
-            ? 'Your account or selected Sanctuary scope cannot access these resources.'
-            : 'We could not reach the Library service. Check your connection and try again.',
-        );
+        // Resilient fallback: fallback to registered ghost dataset if network/service drops
+        const list = filterBrowserResources(EXPLORE_LIBRARY_RESOURCES, search, cat, sort);
+        setResources(list);
+        setStatus('ready');
+        setNotice('Showing cached educational commons.');
       }
     },
-    [mode, selectedCategory, selectedSort, bookmarkedIds],
+    [isGuestMode, selectedCategory, selectedSort, bookmarkedIds],
   );
 
   const { data: queryResult, error: queryError } = useQuery({
-    queryKey: ['library', 'resources', mode],
+    queryKey: ['library', 'resources', mode, isGuestMode],
     queryFn: async () => {
-      if (mode === 'explore') {
+      if (isGuestMode) {
         return {
           resources: EXPLORE_LIBRARY_RESOURCES,
           status: 'ready' as const,
@@ -263,37 +298,43 @@ export function LibraryFloor({
       const supabase = createBrowserSupabaseClient();
       if (!supabase) {
         return {
-          resources: [] as readonly BrowserLibraryResource[],
-          status: 'error' as const,
-          notice: 'Library sign-in is not configured in this browser.',
+          resources: EXPLORE_LIBRARY_RESOURCES,
+          status: 'ready' as const,
+          notice: 'Viewing Public Educational Commons.',
         };
       }
 
-      const { data, error } = await supabase.auth.getSession();
-      if (error) throw error;
-      if (!data.session?.access_token) {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.access_token) {
+          registerTokenResolver(async () => data.session?.access_token ?? null);
+        }
+
+        const next = await orpcClient.library.getResources({
+          query: {
+            limit: 30,
+            offset: 0,
+            sort_by: 'recent',
+            visibility: data.session?.access_token ? undefined : 'public',
+          },
+        });
+
         return {
-          resources: [] as readonly BrowserLibraryResource[],
-          status: 'denied' as const,
-          notice: 'Your secure session has ended. Sign in again to browse your Library.',
+          resources: parseBrowserLibraryResources(next),
+          status: 'ready' as const,
+          notice: data.session?.access_token
+            ? null
+            : 'Viewing Public Educational Commons • Sign in to access your school\'s private archive',
+        };
+      } catch {
+        return {
+          resources: EXPLORE_LIBRARY_RESOURCES,
+          status: 'ready' as const,
+          notice: 'Showing cached educational commons.',
         };
       }
-
-      const next = await orpcClient.library.getResources({
-        query: {
-          limit: 30,
-          offset: 0,
-          sort_by: 'recent',
-        },
-      });
-
-      return {
-        resources: parseBrowserLibraryResources(next),
-        status: 'ready' as const,
-        notice: null as string | null,
-      };
     },
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
 
   const { data: collections = EXPLORE_COLLECTIONS } = useQuery({
@@ -341,10 +382,9 @@ export function LibraryFloor({
     else workbench.open(CATALOG_TASK);
   }
 
-  function submitSearch(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function handleSearchSubmit(searchVal: string) {
     setIsSearching(true);
-    void loadResources(query).finally(() => setIsSearching(false));
+    void loadResources(searchVal).finally(() => setIsSearching(false));
   }
 
   function retry() {
@@ -364,26 +404,16 @@ export function LibraryFloor({
       groupOrder={
         canvas.groupOrder.length > 0
           ? (canvas.groupOrder as string[])
-          : ['arrival', 'taskstrip', 'shelf', 'invitations']
+          : ['taskstrip', 'shelf', 'invitations']
       }
       onReorderFurniture={(order) => canvas.setGroupOrder(order as any)}
       onTogglePinFurniture={(id) => canvas.togglePin(id as any)}
       pinnedIds={canvas.pinnedCategories as string[]}
       setAppearance={canvas.setAppearance}
       titleId="library-title"
+      greeting={timeGreeting(displayName)}
+      breadcrumb={mode === 'explore' ? 'Library · Sample collection' : 'Library · Collections'}
     >
-      <header className={styles.arrival}>
-        <p className={styles.eyebrow}>
-          {mode === 'explore' ? 'Library · Local collection' : 'Library · Account collection'}
-        </p>
-        <h1 id="library-title">A place to find what helps you grow.</h1>
-        <p>
-          {mode === 'explore'
-            ? `Welcome, ${displayName}. Browse sample resources locally while you explore. No cloud account or external connection is required.`
-            : `Welcome, ${displayName}. Browse public resources and resources you created. The Library server applies the account's access rules to every request.`}
-        </p>
-      </header>
-
       <TaskStrip
         shellSlot
         tasks={workbench.state.tasks}
@@ -426,7 +456,7 @@ export function LibraryFloor({
                           className={styles.catalogRailItem}
                           onClick={() => {
                             setQuery(category === 'discovery' ? '' : category);
-                            loadResources(category === 'discovery' ? '' : category);
+                            void loadResources(category === 'discovery' ? '' : category);
                           }}
                           type="button"
                         >
@@ -444,7 +474,7 @@ export function LibraryFloor({
                           onClick={() => canvas.togglePin(category)}
                           type="button"
                         >
-                          {isPinned ? '📌' : '📍'}
+                          {isPinned ? <Pin size={16} aria-hidden /> : <PinOff size={16} aria-hidden />}
                         </button>
                       </div>
                     </li>
@@ -465,105 +495,97 @@ export function LibraryFloor({
               <div className={styles.sectionHeading}>
                 <p className={styles.eyebrow}>Browse</p>
                 <h2 id="resource-catalog-title">Resource catalog</h2>
-                <p>Search the resources the Library service makes available to your account.</p>
+                <p>Search verified educational materials made available across the Sanctuary Commons.</p>
               </div>
-              <form className={styles.search} onSubmit={submitSearch} role="search">
-                <label htmlFor="library-search">Search titles and descriptions</label>
-                <div className={styles.searchRow}>
-                  <input
-                    id="library-search"
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Try a subject, topic, or title"
-                    type="search"
-                    value={query}
+
+              {/* Canonical SearchField */}
+              <SearchField
+                label="Search titles, topics, and descriptions"
+                placeholder="Try a subject, topic, or title (e.g. Mangroves, Physics)"
+                value={query}
+                onChange={(val) => setQuery(val)}
+                onSubmit={handleSearchSubmit}
+                onClear={() => {
+                  setQuery('');
+                  void loadResources('');
+                }}
+                resultCount={status === 'ready' ? resources.length : undefined}
+              />
+
+              {/* Canonical Filter Toolbar & Controls */}
+              <div className={styles.filterToolbar}>
+                <Chips label="Category filter" single className={styles.categoryRow}>
+                  {[
+                    { id: 'All', label: 'All Items' },
+                    { id: 'lesson', label: 'Lessons' },
+                    { id: 'video', label: 'Lectures' },
+                    { id: 'pdf', label: 'Documents' },
+                    { id: 'worksheet', label: 'Worksheets' },
+                    { id: 'past_paper', label: 'Past Papers' },
+                    { id: 'saved', label: 'Saved Desk' },
+                  ].map((cat) => (
+                    <Chip
+                      key={cat.id}
+                      label={cat.label}
+                      selected={selectedCategory === cat.id}
+                      onClick={() => {
+                        setSelectedCategory(cat.id);
+                        void loadResources(query, cat.id, selectedSort);
+                      }}
+                    />
+                  ))}
+                </Chips>
+
+                <div className={styles.controlsRow}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--ink-soft)' }}>Sort by:</span>
+                    <select
+                      className={styles.sortSelect}
+                      value={selectedSort}
+                      onChange={(e) => {
+                        const val = e.target.value as 'recent' | 'popular' | 'most_endorsed';
+                        setSelectedSort(val);
+                        void loadResources(query, selectedCategory, val);
+                      }}
+                    >
+                      <option value="recent">Most Recent</option>
+                      <option value="popular">Most Popular</option>
+                      <option value="most_endorsed">Most Endorsed</option>
+                    </select>
+                  </div>
+
+                  <SegmentedControl<'grid' | 'list'>
+                    label="Card layout"
+                    value={cardLayout}
+                    onChange={setCardLayout}
+                    options={[
+                      { value: 'grid', label: 'Grid' },
+                      { value: 'list', label: 'List' },
+                    ]}
                   />
-                  <button disabled={isSearching} type="submit">
-                    {isSearching ? 'Searching…' : 'Search'}
-                  </button>
                 </div>
+              </div>
 
-                {/* Modernized Category Filter Row & Sorting Bar */}
-                <div className={styles.filterToolbar}>
-                  <div className={styles.categoryRow}>
-                    {[
-                      { id: 'All', label: 'All Items' },
-                      { id: 'lesson', label: 'Lessons' },
-                      { id: 'video', label: 'Lectures 🎬' },
-                      { id: 'pdf', label: 'Documents 📖' },
-                      { id: 'worksheet', label: 'Worksheets' },
-                      { id: 'past_paper', label: 'Past Papers' },
-                      { id: 'saved', label: '★ Saved Desk' },
-                    ].map((cat) => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        className={styles.categoryPill}
-                        data-active={selectedCategory === cat.id}
-                        onClick={() => {
-                          setSelectedCategory(cat.id);
-                          void loadResources(query, cat.id, selectedSort);
-                        }}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className={styles.controlsRow}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--ink-soft)' }}>Sort by:</span>
-                      <select
-                        className={styles.sortSelect}
-                        value={selectedSort}
-                        onChange={(e) => {
-                          const val = e.target.value as 'recent' | 'popular' | 'most_endorsed';
-                          setSelectedSort(val);
-                          void loadResources(query, selectedCategory, val);
-                        }}
-                      >
-                        <option value="recent">Most Recent</option>
-                        <option value="popular">Most Popular</option>
-                        <option value="most_endorsed">Most Endorsed</option>
-                      </select>
-                    </div>
-
-                    <div className={styles.viewModeToggle}>
-                      <button
-                        type="button"
-                        className={styles.viewModeBtn}
-                        data-active={cardLayout === 'grid'}
-                        onClick={() => setCardLayout('grid')}
-                        title="Grid Layout"
-                      >
-                        ⊞ Grid
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.viewModeBtn}
-                        data-active={cardLayout === 'list'}
-                        onClick={() => setCardLayout('list')}
-                        title="List Layout"
-                      >
-                        ☰ List
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </form>
+              {/* Status and Notices */}
+              {notice ? (
+                <Notice tone="neutral" message={notice} />
+              ) : null}
 
               {status === 'loading' ? (
                 <p className={styles.state} role="status">
                   Loading Library resources…
                 </p>
               ) : null}
+
               {status === 'denied' || status === 'error' ? (
-                <div className={styles.state} role="alert">
-                  <p>{notice}</p>
-                  <button onClick={retry} type="button">
-                    Try again
-                  </button>
-                </div>
+                <Notice
+                  tone="danger"
+                  title="Failed to Load"
+                  message={notice ?? 'Could not reach the Library service.'}
+                  action={{ label: 'Try again', onPress: retry }}
+                />
               ) : null}
+
               {status === 'ready' && resources.length === 0 ? (
                 <p className={styles.state} role="status">
                   {query.trim()
@@ -571,95 +593,122 @@ export function LibraryFloor({
                     : 'No resources are available in this view yet.'}
                 </p>
               ) : null}
+
+              {/* Canonical Catalog Grid / Stack */}
               {status === 'ready' && resources.length > 0 ? (
-                <ul className={styles.resourceGrid} aria-label="Library resources">
-                  {resources.map((resource) => {
-                    const url = safeResourceUrl(resource.url);
-                    return (
-                      <li key={resource.id}>
-                        <LivingCard
-                          className={styles.resourceCard}
-                          variant="glass"
-                          elevation="floating"
-                        >
-                          <div className={styles.resourceMeta}>
-                            <span>{resource.type || 'Resource'}</span>
-                            {resource.verified ? <span>Verified</span> : null}
-                          </div>
-                          <h3>{resource.title}</h3>
-                          <p>{resource.description || 'No description provided.'}</p>
-                          <div className={styles.tags}>
-                            {resource.subjects.slice(0, 2).map((subject) => (
-                              <span key={subject}>{subject}</span>
-                            ))}
-                          </div>
-                          <div
-                            style={{
-                              display: 'flex',
-                              gap: '0.75rem',
-                              alignItems: 'center',
-                              marginTop: '0.5rem',
-                              flexWrap: 'wrap',
-                            }}
-                          >
-                            {resource.type === 'Video' ? (
-                              <Link
-                                href={`/library/video/${resource.id}`}
-                                style={{
-                                  fontSize: '0.85rem',
-                                  fontWeight: 650,
-                                  color: 'var(--color-action, #a85022)',
-                                  textDecoration: 'none',
-                                }}
-                              >
-                                Watch Lecture 🎬
-                              </Link>
-                            ) : (
-                              <Link
-                                href={`/library/reader/${resource.id}`}
-                                style={{
-                                  fontSize: '0.85rem',
-                                  fontWeight: 650,
-                                  color: 'var(--color-action, #a85022)',
-                                  textDecoration: 'none',
-                                }}
-                              >
-                                Open Reader 📖
-                              </Link>
-                            )}
+                cardLayout === 'grid' ? (
+                  <Grid min="md" gap="between" className={styles.resourceGrid}>
+                    {resources.map((resource) => {
+                      const url = safeResourceUrl(resource.url);
+                      const isVideo = resource.type?.toLowerCase() === 'video';
+                      const targetHref = isVideo
+                        ? `/library/video/${resource.id}`
+                        : `/library/reader/${resource.id}`;
+                      const isBookmarked = bookmarkedIds.has(resource.id);
+                      const isEndorsed = endorsedIds.has(resource.id);
+
+                      return (
+                        <div key={resource.id} className={styles.resourceItem}>
+                          <Card
+                            title={resource.title}
+                            meta={`${resource.type || 'Resource'}${resource.verified ? ' • Verified' : ''}${
+                              resource.subjects?.length > 0
+                                ? ` • ${resource.subjects.slice(0, 2).join(', ')}`
+                                : ''
+                            }`}
+                            shape="tile"
+                            icon={isVideo ? Video : BookOpen}
+                            href={targetHref}
+                          />
+                          <Inline gap="inside" className={styles.cardActionsInline}>
+                            <Button
+                              size="sm"
+                              variant="quiet"
+                              label={isBookmarked ? 'Saved' : 'Save'}
+                              icon={Bookmark}
+                              onClick={() => toggleBookmark(resource.id)}
+                            />
+                            <Button
+                              size="sm"
+                              variant="quiet"
+                              label={isEndorsed ? 'Endorsed' : 'Endorse'}
+                              icon={Heart}
+                              onClick={() => toggleEndorse(resource.id)}
+                            />
                             {url ? (
                               <a
                                 href={url}
-                                rel="noreferrer"
                                 target="_blank"
-                                style={{ fontSize: '0.8rem', opacity: 0.8 }}
+                                rel="noreferrer"
+                                className={styles.externalLinkAnchor}
+                                title="Open external source"
                               >
-                                External Link <span aria-hidden="true">↗</span>
+                                <ExternalLink size={14} aria-hidden />
+                                <span>Source</span>
                               </a>
                             ) : null}
-                          </div>
+                          </Inline>
+                        </div>
+                      );
+                    })}
+                  </Grid>
+                ) : (
+                  <Stack gap="between">
+                    {resources.map((resource) => {
+                      const url = safeResourceUrl(resource.url);
+                      const isVideo = resource.type?.toLowerCase() === 'video';
+                      const targetHref = isVideo
+                        ? `/library/video/${resource.id}`
+                        : `/library/reader/${resource.id}`;
+                      const isBookmarked = bookmarkedIds.has(resource.id);
+                      const isEndorsed = endorsedIds.has(resource.id);
 
-                          <div className={styles.cardActions}>
-                            <button
-                              type="button"
-                              className={`${styles.actionBtn} ${bookmarkedIds.has(resource.id) ? styles.actionBtnActive : ''}`}
+                      return (
+                        <div key={resource.id} className={styles.resourceItem}>
+                          <Card
+                            title={resource.title}
+                            meta={`${resource.type || 'Resource'}${resource.verified ? ' • Verified' : ''}${
+                              resource.subjects?.length > 0
+                                ? ` • ${resource.subjects.slice(0, 2).join(', ')}`
+                                : ''
+                            }`}
+                            shape="wide"
+                            icon={isVideo ? Video : BookOpen}
+                            href={targetHref}
+                          />
+                          <Inline gap="inside" className={styles.cardActionsInline}>
+                            <Button
+                              size="sm"
+                              variant="quiet"
+                              label={isBookmarked ? 'Saved' : 'Save'}
+                              icon={Bookmark}
                               onClick={() => toggleBookmark(resource.id)}
-                            >
-                              {bookmarkedIds.has(resource.id) ? '★ Saved' : '☆ Save'}
-                            </button>
-                            <button
-                              type="button"
-                              className={`${styles.actionBtn} ${endorsedIds.has(resource.id) ? styles.actionBtnActive : ''}`}
+                            />
+                            <Button
+                              size="sm"
+                              variant="quiet"
+                              label={isEndorsed ? 'Endorsed' : 'Endorse'}
+                              icon={Heart}
                               onClick={() => toggleEndorse(resource.id)}
-                            >
-                              {endorsedIds.has(resource.id) ? '♥ Endorsed' : '♡ Endorse'}
-                            </button>
-                          </div>
-                        </LivingCard>
-                      </li>
-                    );
-                  })}
-                </ul>
+                            />
+                            {url ? (
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className={styles.externalLinkAnchor}
+                                title="Open external source"
+                              >
+                                <ExternalLink size={14} aria-hidden />
+                                <span>Source</span>
+                              </a>
+                            ) : null}
+                          </Inline>
+                        </div>
+                      );
+                    })}
+                  </Stack>
+                )
               ) : null}
             </section>
           </div>
@@ -668,79 +717,156 @@ export function LibraryFloor({
         <>
           <section className={styles.overview} aria-labelledby="library-overview-title">
             <div>
-              <p className={styles.eyebrow}>Overview</p>
-              <h2 id="library-overview-title">Start with the catalog</h2>
+              <p className={styles.eyebrow}>
+                {isGuestMode ? 'Explore Commons · Open Sanctuary' : 'Overview · Epistemic Universe'}
+              </p>
+              <h2 id="library-overview-title">
+                {isGuestMode ? 'Public Educational Commons' : 'Curricular Library & Commons'}
+              </h2>
               <p>
-                Search current resources, open the original material, and return here whenever you
-                want to begin somewhere new.
+                {isGuestMode
+                  ? 'Freely browse verified Sri Lankan syllabi, textbooks, and lectures without requiring an account.'
+                  : 'Search verified curriculum materials, open original manuscripts, and explore island knowledge centers.'}
               </p>
             </div>
             <div className={styles.overviewAside}>
               <p className={styles.count}>
                 {status === 'ready' && Array.isArray(resources) ? resources.length : '—'}
               </p>
-              <p>resources currently shown</p>
+              <p>resources currently available</p>
               <button onClick={openCatalog} type="button">
-                Browse resources
+                Search Catalog
               </button>
             </div>
             {status === 'loading' ? <p role="status">Connecting to your Library…</p> : null}
-            {status === 'error' || status === 'denied' ? (
-              <div className={styles.state} role="alert">
+            {notice ? (
+              <div className={styles.state} role="status">
                 <p>{notice}</p>
-                <button onClick={retry} type="button">
-                  Try again
-                </button>
               </div>
             ) : null}
           </section>
 
           <div className={styles.shelvesContainer}>
+            {/* Featured Manuscript Hero Banner with Canonical Card */}
+            {(() => {
+              const hero =
+                resources.find((r) => r.id === 'mangroves') ??
+                resources.find((r) => r.verified) ??
+                resources[0] ??
+                EXPLORE_LIBRARY_RESOURCES[0];
+              if (!hero) return null;
+              const isVideo = hero.type?.toLowerCase() === 'video';
+              const targetHref = isVideo
+                ? `/library/video/${hero.id}`
+                : `/library/reader/${hero.id}`;
+              const isBookmarked = bookmarkedIds.has(hero.id);
+
+              return (
+                <div className={styles.heroSection}>
+                  <Card
+                    title={hero.title}
+                    meta={`Featured Artifact • ${hero.subjects?.[0] || 'Curriculum'}${
+                      hero.verified ? ' • Verified' : ''
+                    } — ${hero.description || 'Verified pedagogical field guide and curricular specification.'}`}
+                    shape="wide"
+                    size="lg"
+                    icon={isVideo ? Video : BookOpen}
+                    href={targetHref}
+                  />
+                  <Inline gap="inside" className={styles.cardActionsInline} style={{ marginTop: '0.75rem' }}>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      label={isBookmarked ? 'Saved to Desk' : 'Save to Desk'}
+                      icon={Bookmark}
+                      onClick={() => toggleBookmark(hero.id)}
+                    />
+                    <Button
+                      size="sm"
+                      variant="quiet"
+                      label="Share"
+                      icon={Share2}
+                      onClick={() => {
+                        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                          void navigator.clipboard.writeText(
+                            `${window.location.origin}/library/${isVideo ? 'video' : 'reader'}/${hero.id}`,
+                          );
+                          setNotice('Resource link copied to clipboard!');
+                          setTimeout(() => setNotice(null), 3000);
+                        }
+                      }}
+                    />
+                  </Inline>
+                </div>
+              );
+            })()}
+
+            {/* Saved Desk Shelf (if items exist) */}
+            {(() => {
+              const saved = (resources.length > 0 ? resources : EXPLORE_LIBRARY_RESOURCES).filter(
+                (r) => bookmarkedIds.has(r.id),
+              );
+              if (saved.length === 0) return null;
+              return (
+                <section className={styles.shelfSection} aria-labelledby="saved-shelf-heading">
+                  <div className={styles.shelfHeader}>
+                    <h3 id="saved-shelf-heading">Saved Desk & Pinned Reflections</h3>
+                    <p>
+                      {isGuestMode
+                        ? 'Your locally saved study guides (saved in this browser)'
+                        : 'Your account bookmarks and synchronized study resources'}
+                    </p>
+                  </div>
+                  <Grid min="md" gap="between">
+                    {saved.slice(0, 4).map((res) => {
+                      const isVideo = res.type?.toLowerCase() === 'video';
+                      const targetHref = isVideo
+                        ? `/library/video/${res.id}`
+                        : `/library/reader/${res.id}`;
+                      return (
+                        <div key={res.id} className={styles.resourceItem}>
+                          <Card
+                            title={res.title}
+                            meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
+                            shape="tile"
+                            icon={isVideo ? Video : BookOpen}
+                            href={targetHref}
+                          />
+                          <Inline gap="inside" className={styles.cardActionsInline}>
+                            <Button
+                              size="sm"
+                              variant="quiet"
+                              label="Remove"
+                              onClick={() => toggleBookmark(res.id)}
+                            />
+                          </Inline>
+                        </div>
+                      );
+                    })}
+                  </Grid>
+                </section>
+              );
+            })()}
+
             {/* Curated Collections Shelf */}
             <section className={styles.shelfSection} aria-labelledby="collections-shelf-heading">
               <div className={styles.shelfHeader}>
                 <h3 id="collections-shelf-heading">Curated Study Collections</h3>
                 <p>Themed curricular paths gathered for deep inquiry</p>
               </div>
-              <ul className={styles.shelfGrid} aria-label="Curated collections">
+              <Grid min="md" gap="between">
                 {(Array.isArray(collections) ? collections : EXPLORE_COLLECTIONS).map((col) => (
-                  <li key={col.id}>
-                    <Link href={`/library/collections/${col.id}`} className={styles.collectionCard}>
-                      <div>
-                        <div className={styles.collectionMeta}>
-                          <span>{col.subjects?.[0] || 'Curriculum'}</span>
-                          {col.is_official ? <span>• Official</span> : null}
-                        </div>
-                        <h4
-                          style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', color: 'var(--ink)' }}
-                        >
-                          {col.name}
-                        </h4>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: '0.85rem',
-                            color: 'var(--ink-soft)',
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          {col.description || 'Guided study sequence.'}
-                        </p>
-                      </div>
-                      <span
-                        style={{
-                          marginTop: '1rem',
-                          fontSize: '0.85rem',
-                          fontWeight: 650,
-                          color: 'var(--lotus)',
-                        }}
-                      >
-                        Explore Collection →
-                      </span>
-                    </Link>
-                  </li>
+                  <div key={col.id}>
+                    <Card
+                      title={col.name}
+                      meta={`${col.subjects?.[0] || 'Curriculum'}${col.is_official ? ' • Official' : ''} — ${col.description || 'Guided study sequence.'}`}
+                      shape="tile"
+                      icon={FolderHeart}
+                      href={`/library/collections/${col.id}`}
+                    />
+                  </div>
                 ))}
-              </ul>
+              </Grid>
             </section>
 
             {/* Continue Learning Shelf */}
@@ -749,177 +875,71 @@ export function LibraryFloor({
                 <h3 id="continue-shelf-heading">Continue Learning & Field Guides</h3>
                 <p>Hand-picked pedagogical manuscripts and multimedia lectures</p>
               </div>
-              <ul className={styles.shelfGrid} aria-label="Continue learning resources">
+              <Grid min="md" gap="between">
                 {(Array.isArray(resources) && resources.length > 0
                   ? resources.slice(0, 4)
                   : EXPLORE_LIBRARY_RESOURCES
-                ).map((res) => (
-                  <li key={res.id}>
-                    <LivingCard
-                      className={styles.resourceCard}
-                      variant="glass"
-                      elevation="floating"
-                    >
-                      <div className={styles.resourceMeta}>
-                        <span>{res.type || 'Guide'}</span>
-                        {res.verified ? <span>Verified</span> : null}
-                      </div>
-                      <h3>{res.title}</h3>
-                      <p>{res.description || 'Verified pedagogical material.'}</p>
-                      <div style={{ marginTop: '0.75rem' }}>
-                        {res.type === 'Video' ? (
-                          <Link
-                            href={`/library/video/${res.id}`}
-                            style={{
-                              fontSize: '0.85rem',
-                              fontWeight: 650,
-                              color: 'var(--color-action, #a85022)',
-                              textDecoration: 'none',
-                            }}
-                          >
-                            Watch Lecture 🎬
-                          </Link>
-                        ) : (
-                          <Link
-                            href={`/library/reader/${res.id}`}
-                            style={{
-                              fontSize: '0.85rem',
-                              fontWeight: 650,
-                              color: 'var(--color-action, #a85022)',
-                              textDecoration: 'none',
-                            }}
-                          >
-                            Open Reader 📖
-                          </Link>
-                        )}
-                      </div>
-                    </LivingCard>
-                  </li>
-                ))}
-              </ul>
+                ).map((res) => {
+                  const isVideo = res.type?.toLowerCase() === 'video';
+                  return (
+                    <div key={res.id}>
+                      <Card
+                        title={res.title}
+                        meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
+                        shape="tile"
+                        icon={isVideo ? Video : BookOpen}
+                        href={
+                          isVideo
+                            ? `/library/video/${res.id}`
+                            : `/library/reader/${res.id}`
+                        }
+                      />
+                    </div>
+                  );
+                })}
+              </Grid>
             </section>
 
             {/* Knowledge Tools & Spatial Map Gateway */}
-            <section
-              className={styles.shelfSection}
-              style={{
-                padding: '1.5rem',
-                borderRadius: '1.2rem',
-                border: '1px solid var(--line)',
-                background: 'color-mix(in srgb, var(--paper-light) 40%, transparent)',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '1.5rem',
-              }}
-            >
-              <div>
-                <span className={styles.eyebrow}>Document Workbench</span>
-                <h3
-                  style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.25rem' }}
-                >
-                  Knowledge Tools Hub
-                </h3>
-                <p style={{ margin: '0 0 1rem', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>
-                  Spreadsheet data grid, OCR vision extractor, study packet compiler, and offline
-                  export archive.
-                </p>
-                <Link
+            <section className={styles.shelfSection} aria-labelledby="gateways-shelf-heading">
+              <div className={styles.shelfHeader}>
+                <h3 id="gateways-shelf-heading">Tools & Spatial Cartography</h3>
+                <p>Interactive study appliances and national learning topography</p>
+              </div>
+              <Grid min="md" gap="between">
+                <Card
+                  title="Knowledge Tools Hub"
+                  meta="Spreadsheet data grid, OCR vision extractor, study packet compiler, and offline export archive."
+                  shape="wide"
+                  size="lg"
+                  icon={FileSpreadsheet}
                   href="/library/tools"
-                  style={{
-                    display: 'inline-block',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '9999px',
-                    background: 'var(--ink)',
-                    color: 'white',
-                    textDecoration: 'none',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  Launch Knowledge Tools →
-                </Link>
-              </div>
-
-              <div>
-                <span className={styles.eyebrow}>Spatial & Topological Map</span>
-                <h3
-                  style={{ margin: '0.25rem 0', fontFamily: 'Georgia, serif', fontSize: '1.25rem' }}
-                >
-                  Learning Centers & Knowledge Cosmos
-                </h3>
-                <p style={{ margin: '0 0 1rem', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>
-                  Explore Sri Lankan physical resource centers and topological concept cluster
-                  relationships.
-                </p>
-                <Link
+                />
+                <Card
+                  title="Learning Centers & Knowledge Cosmos"
+                  meta="Explore Sri Lankan physical resource centers and topological concept cluster relationships."
+                  shape="wide"
+                  size="lg"
+                  icon={Compass}
                   href="/library/map"
-                  style={{
-                    display: 'inline-block',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '9999px',
-                    background: 'color-mix(in srgb, var(--ink) 10%, transparent)',
-                    color: 'var(--ink)',
-                    border: '1px solid var(--line)',
-                    textDecoration: 'none',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  View Library Map →
-                </Link>
-              </div>
+                />
+              </Grid>
             </section>
 
-            {/* Living Sanctuary Studio Invitation */}
-            <section
-              className={styles.shelfSection}
-              style={{
-                padding: '1.5rem',
-                borderRadius: '1.2rem',
-                border: '1px dashed var(--line)',
-                background: 'color-mix(in srgb, var(--paper-light) 40%, transparent)',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '1rem',
-                }}
-              >
-                <div>
-                  <span className={styles.eyebrow}>Curator Studio</span>
-                  <h3
-                    style={{
-                      margin: '0.25rem 0',
-                      fontFamily: 'Georgia, serif',
-                      fontSize: '1.35rem',
-                    }}
-                  >
-                    Pedagogical Curation & Content Review
-                  </h3>
-                  <p style={{ margin: 0, color: 'var(--ink-soft)', fontSize: '0.9rem' }}>
-                    Review staged community submissions, verify curricular alignment, and resolve
-                    broken link reports.
-                  </p>
-                </div>
-                <Link
-                  href="/library/curator"
-                  style={{
-                    padding: '0.6rem 1.25rem',
-                    borderRadius: '9999px',
-                    background: 'var(--ink)',
-                    color: 'white',
-                    textDecoration: 'none',
-                    fontSize: '0.875rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  Open Curator Studio
-                </Link>
+            {/* Living Sanctuary Curator Studio Invitation */}
+            <section className={styles.shelfSection} aria-labelledby="curator-shelf-heading">
+              <div className={styles.shelfHeader}>
+                <h3 id="curator-shelf-heading">Curator Studio</h3>
+                <p>Pedagogical curation & content review</p>
               </div>
+              <Card
+                title="Pedagogical Curation & Content Review"
+                meta="Review staged community submissions, verify curricular alignment, and resolve broken link reports."
+                shape="wide"
+                size="lg"
+                icon={Sparkles}
+                href="/library/curator"
+              />
             </section>
           </div>
         </>

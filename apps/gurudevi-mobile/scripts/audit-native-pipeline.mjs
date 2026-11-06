@@ -153,6 +153,13 @@ const CRITICAL_SINGLETONS = [
 ];
 
 for (const singleton of CRITICAL_SINGLETONS) {
+  const isDeclared = [
+    mobilePkg.dependencies,
+    mobilePkg.devDependencies,
+    mobilePkg.peerDependencies,
+  ].some((dependencies) => Object.hasOwn(dependencies ?? {}, singleton));
+  if (!isDeclared) continue;
+
   check(`Metro SINGLETON_OVERRIDES enforces single copy of: ${singleton}`, () => {
     return (
       metroContent.includes(`${singleton}:`) ||
@@ -229,11 +236,12 @@ for (const builtin of NODE_BUILTINS) {
 // ============================================================================
 logHeader('BOUNDARY 4: Android Toolchain, NDK 27, and Ephemeral State');
 
-check('android/local.properties specifies valid sdk.dir', () => {
+check('Android SDK path is configured for Gradle', () => {
   const localPropsPath = path.join(appRoot, 'android/local.properties');
-  if (!fs.existsSync(localPropsPath)) return false;
-  const content = fs.readFileSync(localPropsPath, 'utf8');
-  return content.includes('sdk.dir=');
+  const content = fs.existsSync(localPropsPath) ? fs.readFileSync(localPropsPath, 'utf8') : '';
+  const sdkDir = content.match(/^sdk\.dir=(.+)$/m)?.[1]?.replace(/\\:/g, ':');
+  const configuredSdk = sdkDir || process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
+  return Boolean(configuredSdk && fs.existsSync(configuredSdk));
 });
 
 check('WSL 2 NDK toolchain matches pinned version 27.1.12297006', () => {

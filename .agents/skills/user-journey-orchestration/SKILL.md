@@ -70,6 +70,12 @@ Before authoring or editing any screen component, evaluate the 4 topological dim
 
 ## 4. Operational Workflow for Creating or Modifying Screens
 
+### Step 0: Ground the existing product
+
+Before defining a journey, designing a screen, or writing code, load [brownfield-feature-integration](../brownfield-feature-integration/SKILL.md). Classify the domain, surface and supporting systems separately; trace the user's existing intent, roles, authority, lifecycle, flows and implementations. A new web page can still be a brownfield migration of an existing mobile feature. Record confirmed behavior, integration points, invariants and unresolved questions in the journey contract where supported. Do not infer that a personal account or selected personal scope grants a personal institutional role.
+
+When the Product and Journey Catalog is requested or contains the relevant feature, load [product-journey-catalog](../product-journey-catalog/SKILL.md) to inspect its intent, implementation links and evidence. A PJC record does not replace the flow contract or server authorization.
+
 ### Step 1: Declare or Update the Flow Contract
 Before touching JSX or routing code:
 1. Locate or create `packages/core/src/flows/<domain>/<feature>.flow.ts`.
@@ -88,6 +94,8 @@ Ensure:
 - 0 route mismatches.
 - 0 broken fallback edges.
 - At least one terminal success node exists.
+
+Inspect the audit implementation and report before making those claims: the current script inventories routes and flow files and does not establish route matching, fallback integrity, cycles or reachability. Validate the particular contract and behavior with applicable tests; do not interpret an empty findings array as proof. Preserve any existing user-modified audit report when running the script.
 
 ### Step 3: Implement the Screen UI
 - In the screen component, connect to the declared flow step.

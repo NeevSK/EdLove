@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { editorialHexagonalService, type SchoolEditorialDraft } from '@/lib/domain';
+import { editorialAdapter, type SchoolEditorialDraft } from '@/lib/domain';
 import {
   CANONICAL_ANANDA_PROFILE,
-  schoolHexagonalService,
-} from '@/lib/domain/adapters/school/schoolHexagonalService';
+  schoolAdapter,
+} from '@/lib/domain/adapters/school/school.adapter';
 import type { SchoolProfileData, SchoolProfileFact } from '@/lib/domain/ports/school.port';
 import styles from './school.module.css';
 
@@ -36,8 +36,8 @@ export function SchoolFloor({
     async function loadSchool() {
       try {
         const [profile, drafts] = await Promise.all([
-          schoolHexagonalService.getSchoolProfile(schoolId),
-          editorialHexagonalService.listDrafts(schoolId).catch(() => []),
+          schoolAdapter.getSchoolProfile(schoolId),
+          editorialAdapter.listDrafts(schoolId).catch(() => []),
         ]);
         if (mounted) {
           setData(profile);
@@ -61,7 +61,7 @@ export function SchoolFloor({
       return;
     }
     try {
-      const updated = await schoolHexagonalService.updateSchoolProfile(schoolId, formData);
+      const updated = await schoolAdapter.updateSchoolProfile(schoolId, formData);
       setData(updated);
       setIsEditing(false);
       setNotice('School institutional profile successfully saved.');

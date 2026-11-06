@@ -8,7 +8,7 @@ import type {
   RegulatoryNotice,
 } from '@repo/core/types/EducationalEconomics';
 import { describe, expect, it } from 'vitest';
-import { tuitionHexagonalService } from '@/lib/domain/adapters/tuition/tuitionHexagonalService';
+import { tuitionAdapter } from '@/lib/domain/adapters/tuition/tuition.adapter';
 
 /**
  * G2 Scenario Contract: Aswesuma Welfare Exemptions, Household Sibling Cascading & Circular Governance
@@ -226,7 +226,7 @@ describe('Scenario: Aswesuma Welfare Exemptions, Household Sibling Cascading & C
     expect(credit?.amount).toBe(3200);
 
     // Verify integration through TuitionHexagonalService
-    const receipt = await tuitionHexagonalService.issueReceipt({
+    const receipt = await tuitionAdapter.issueReceipt({
       feeId: 'fee-exempt-sds',
       studentName: 'Dilan Gunasekara',
       amount: calc.netPayable, // 0

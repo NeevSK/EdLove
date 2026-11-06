@@ -1,0 +1,405 @@
+.rail {
+  position: sticky;
+  top: 1rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0;
+}
+
+.rail[data-orientation="horizontal"] {
+  position: relative;
+  flex-direction: row;
+  gap: 0.35rem;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.25rem 0.5rem;
+  scrollbar-width: none;
+}
+
+.rail[data-orientation="horizontal"]::-webkit-scrollbar { display: none; }
+
+.editorButton,
+.shortcut {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.85rem;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.12rem;
+}
+
+.editorButton:hover,
+.shortcut:hover,
+.active {
+  border-color: color-mix(in srgb, var(--lotus) 22%, var(--line));
+  background: color-mix(in srgb, var(--lotus) 11%, var(--paper));
+  color: var(--ink);
+}
+
+.editorButton:focus-visible,
+.shortcut:focus-visible,
+.editor button:focus-visible {
+  outline: 2px solid var(--gd-border-focus);
+  outline-offset: 2px;
+}
+
+.editorWrap { position: relative; }
+.editorButton { border-style: dashed; border-color: var(--line); }
+
+.editor {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 0.55rem);
+  display: grid;
+  width: min(17rem, 78vw);
+  max-height: min(23rem, 65vh);
+  gap: 0.2rem;
+  overflow: auto;
+  padding: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--paper-light);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--ink) 16%, transparent);
+}
+
+.rail[data-orientation="horizontal"][data-editor-placement="bottom"] .editor {
+  top: auto;
+  bottom: calc(100% + 0.55rem);
+  left: 0;
+}
+
+.rail[data-orientation="horizontal"][data-editor-placement="top"] .editor {
+  top: calc(100% + 0.55rem);
+  left: 0;
+}
+
+.rail[data-editor-placement="left"] .editor {
+  right: calc(100% + 0.55rem);
+  left: auto;
+}
+
+.editor header {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.35rem;
+  font-size: 0.8rem;
+}
+
+.editor header button {
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.15rem;
+}
+
+.editorHint {
+  margin: 0.2rem 0.3rem 0.45rem;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.shortcutLabel { display: none; }
+
+.rail[data-orientation="horizontal"] .shortcut {
+  display: inline-flex;
+  width: auto;
+  height: 2.45rem;
+  gap: 0.45rem;
+  padding: 0 0.7rem;
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.rail[data-orientation="horizontal"] .shortcutLabel { display: inline; }
+
+.option {
+  display: flex;
+  min-height: 2.45rem;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.45rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.option:hover { background: color-mix(in srgb, var(--lotus) 8%, var(--paper)); }
+.option:disabled { cursor: not-allowed; opacity: 0.5; }
+.option span:nth-child(2) { flex: 1; }
+
+.sheet {
+  position: fixed;
+  inset: auto 0 var(--bottom-tabs-block-size, 4.75rem) 0;
+  width: min(100%, 42rem);
+  max-width: none;
+  max-height: min(76dvh, 42rem);
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 1.25rem 1.25rem 0 0;
+  background: var(--paper-light);
+  color: var(--ink);
+  box-shadow: 0 -16px 52px color-mix(in srgb, var(--ink) 16%, transparent);
+}
+
+.sheet::backdrop {
+  background: color-mix(in srgb, var(--ink) 24%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.sheet[open] {
+  animation: sheetEnter 220ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.sheetContent {
+  max-height: inherit;
+  overflow-y: auto;
+  padding: 0.45rem 1rem max(1rem, env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+}
+
+.sheetHandle {
+  width: 2.6rem;
+  height: 0.24rem;
+  margin: 0.15rem auto 0.75rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-soft) 38%, var(--line));
+}
+
+.sheetHeader,
+.sheetSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sheetHeader h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.18rem;
+  font-weight: 500;
+}
+
+.sheetHeader p {
+  margin: 0.2rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+
+.sheetClose {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.sheetSection { margin-top: 1.1rem; }
+
+.sheetSearch {
+  display: block;
+  margin-top: 1rem;
+}
+
+.sheetSearch input {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.86rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.sheetSection h3 {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sheetSectionHeader > span {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+}
+
+.sheetPinnedList,
+.sheetOptions {
+  display: grid;
+  margin-top: 0.45rem;
+}
+
+.sheetPinnedItem,
+.sheetOption {
+  display: flex;
+  min-height: 3.1rem;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.4rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+
+.sheetPinnedItem {
+  width: 100%;
+  cursor: pointer;
+}
+
+.sheetPinnedItem[aria-current="page"] {
+  color: var(--lotus);
+}
+
+.sheetPinnedItem > span:nth-child(2),
+.sheetOption > span:nth-child(2) { flex: 1; }
+
+.sheetPinnedItem > span:first-child,
+.sheetOption > span:first-child {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--lotus) 10%, var(--paper));
+}
+
+.openMark { color: var(--ink-soft); }
+
+.sheetOpenItem {
+  display: flex;
+  min-width: 0;
+  min-height: 2.7rem;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.25rem 0.35rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.sheetOpenItem > span:nth-child(2) { flex: 1; }
+
+.sheetItemEmoji {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--lotus) 10%, var(--paper));
+}
+
+.sheetOpenItem:hover { color: var(--lotus); }
+
+.sheetOption > button:last-child {
+  display: grid;
+  width: 2.35rem;
+  min-height: 2.15rem;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.sheetOption > button:last-child[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--lotus) 35%, var(--line));
+  background: color-mix(in srgb, var(--lotus) 9%, var(--paper));
+}
+
+.sheetOption > button:last-child:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.emptyPins {
+  margin: 1rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.sheet button:focus-visible {
+  outline: 2px solid var(--gd-border-focus);
+  outline-offset: 2px;
+}
+
+@keyframes sheetEnter {
+  from { opacity: 0; transform: translateY(1.25rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open] { animation-duration: 0.01ms; }
+}
+
+@media (orientation: landscape) and (max-height: 34rem) {
+  .sheet { inset-block-end: env(safe-area-inset-bottom); }
+}
+
+@media (max-width: 767px) {
+  .rail[data-orientation="vertical"] { display: none; }
+}
+
+@media (min-width: 768px) {
+  .sheet {
+    inset: auto 1.25rem 1.25rem auto;
+    width: min(28rem, calc(100vw - 2.5rem));
+    border-bottom: 1px solid var(--line);
+    border-radius: 1.1rem;
+  }
+}

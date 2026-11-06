@@ -1,0 +1,1611 @@
+# Product and Journey Catalog
+
+- **record**
+  - **id:** journey:api.compose
+  - **title:** Inspect, compile and validate API contracts
+  - **situation:** A maintainer inspects the mixed source tree and historical compiler while enforcing the native-only hard-cutover target.
+  - **outcome:** An honest inventory and explicit admission findings; legacy compiler characterization is retained as historical evidence, not target conformance.
+  - **links**
+    - (none)
+  - **planning**
+    - **maturity:** development
+    - **implementation:** partial
+    - **verification:** partial
+    - **priority:** P0
+  - **context:** setup
+  - **preconditions**
+    - Installed pinned oRPC/Zod versions and source route declarations are available.
+  - **entry:** step:api.compose\_source
+  - **development**
+    - **mode:** brownfield
+    - **existingBehavior**
+      - The previous application proxy rebuilt procedures on property access and deferred some invalid declarations until access.
+    - **invariants**
+      - No declaration becomes proof of runtime authority.
+      - Preserve schema identity, error metadata and declared validation behavior.
+      - Invalid unused routes must fail before a compiled router is returned.
+    - **openQuestions**
+      - Legacy handler-facing type erasure remains until domain migration.
+      - Multiple-success variants do not dynamically select distinct HTTP statuses.
+      - This compiler does not establish deployed behavior or database authorization.
+    - **integrationPoints**
+      - apps/sanctuary-api/src/core/orpc.ts
+      - apps/sanctuary-api/src/core/router.ts
+  - **steps**
+    -
+      - **id:** step:api.compose\_source
+      - **title:** Assemble declarations
+      - **interaction:** Supply the existing source declarations and native contracts.
+      - **terminal:** false
+      - **links**
+        - (none)
+    -
+      - **id:** step:api.compose\_ready
+      - **title:** Inspect historical compiler output
+      - **interaction:** Inspect existing compiled objects as retirement characterization, without treating them as canonical native-source admission.
+      - **terminal:** true
+      - **links**
+        - (none)
+    -
+      - **id:** step:api.inventory\_review
+      - **title:** Review declarations and coverage gaps
+      - **interaction:** Query the JSON inventory while retaining its source, transport and evidence limitations.
+      - **terminal:** true
+      - **links**
+        - binding:api.contract\_inventory
+    -
+      - **id:** step:api.compose\_rejected
+      - **title:** Correct an invalid declaration
+      - **interaction:** Inspect the composition error, correct its source and recompile.
+      - **terminal:** true
+      - **links**
+        - (none)
+  - **transitions**
+    -
+      - **id:** transition:api.architecture\_reject
+      - **title:** Reject mixed API composition
+      - **from:** step:api.compose\_source
+      - **to:** step:api.compose\_rejected
+      - **action:** Run the required composition gate against the source substrate instead of accepting legacy conversion or a renamed OpenAPI transport as canonical native RPC.
+      - **feedback:** Exit nonzero with explicit source findings; fixture success does not make the application architecture conformant.
+      - **links**
+        - binding:api.composition\_gate
+        - binding:api.composition\_gate\_test
+    -
+      - **id:** transition:api.compose\_valid
+      - **title:** Characterize existing declaration compilation
+      - **from:** step:api.compose\_source
+      - **to:** step:api.compose\_ready
+      - **action:** Characterize the existing compiler's validated outputs during retirement; use the separate architecture gate for canonical admission.
+      - **feedback:** Return historical compiler observations without admitting legacy conversion as target architecture.
+      - **links**
+        - binding:api.contract\_conversion
+    -
+      - **id:** transition:api.inventory\_inspect
+      - **title:** Inspect registered contract declarations
+      - **from:** step:api.compose\_source
+      - **to:** step:api.inventory\_review
+      - **action:** Inspect native and legacy declarations through the existing audit CLI using read-only JSON or guarded explicit output.
+      - **feedback:** Return deterministic declaration metadata, lexical observations, warnings and known coverage gaps; preserve edited reports.
+      - **links**
+        - binding:api.contract\_inventory
+        - binding:api.contract\_inspector
+    -
+      - **id:** transition:api.compose\_invalid
+      - **title:** Reject an invalid declaration
+      - **from:** step:api.compose\_source
+      - **to:** step:api.compose\_rejected
+      - **action:** Reject invalid routes before returning a compiled router, even if no caller accesses that route.
+      - **feedback:** Throw an explicit composition error instead of constructing a schema-less procedure.
+      - **links**
+        - binding:api.contract\_conversion
+  - **requirements**
+    -
+      - **id:** requirement:api.canonical\_horizontal
+      - **title:** Native-only architecture is enforced before feature migrations
+      - **statement:** Use native oRPC v2 first-party commands/queries at /api/v1 only. Navigation, business ownership and channel adapters remain distinct. Required checks reject mismatched legacy architecture without waivers; current delivery is horizontal foundation, with product-policy conflicts held for the owner.
+      - **classification:** constraint
+      - **origin:** user
+      - **links**
+        - binding:api.canonical\_model
+        - binding:api.composition\_gate
+    -
+      - **id:** requirement:api.inventory\_truthfulness
+      - **title:** Declared coverage cannot become runtime assurance
+      - **statement:** Inspect native and legacy contracts while keeping namespace candidates distinct from OpenAPI paths. Preserve edited reports and report manual-registry gaps, metadata and lexical observations without claiming runtime, authorization, persistence or client typing proof.
+      - **classification:** constraint
+      - **origin:** source
+      - **links**
+        - binding:api.contract\_inventory
+        - binding:api.contract\_inspector
+  - **bindings**
+    -
+      - **id:** binding:api.canonical\_model
+      - **category:** architecture
+      - **reference:** apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md
+      - **status:** implemented
+      - **note:** Governing horizontal policy and deferred decision ledger, not proof of native cutover or channel execution.
+    -
+      - **id:** binding:api.composition\_gate
+      - **category:** tool
+      - **reference:** scripts/audit-api-composition.mjs
+      - **status:** implemented
+      - **note:** Required G0 AST source admission check. A nonzero actual-tree result means the application remains nonconformant; runtime transport, authorization and ownership semantics need separate evidence.
+    -
+      - **id:** binding:api.composition\_gate\_test
+      - **category:** test
+      - **reference:** scripts/tests/audit-api-composition.test.mjs
+      - **status:** implemented
+      - **note:** Isolated synthetic source fixtures test the guard. They do not execute application procedures, real storage, channels or provider delivery.
+  - **impacts**
+    -
+      - **id:** impact:api.eager\_composition
+      - **title:** Malformed unused declarations now prevent composition
+      - **statement:** Missing/invalid schemas, unsupported methods/channels, obsolete error-map fields and unsupported add\_on entitlement scope now throw during composition. Existing source edits do not hot-rewrite already compiled procedures. OpenAPI uses the first declared numeric success status.
+      - **origin:** source
+      - **links**
+        - binding:api.contract\_conversion
+        - binding:api.guide
+  - **observations**
+    -
+      - **id:** observation:api.canonical\_horizontal
+      - **title:** Owner-authorized hard cutover starts with horizontal enforcement
+      - **statement:** The owner confirmed no deployed compatibility obligation, accepted the hybrid navigation/business ownership/channel model, and limited the current phase to horizontal foundation before feature migrations. Legacy declarations and aliases remain source debt, not accepted target behavior. Bot execution, browser WebMCP and broad user MCP exposure must not be inferred from ingress or router presence.
+      - **origin:** user
+      - **links**
+        - binding:api.canonical\_model
+        - binding:api.composition\_gate
+    -
+      - **id:** observation:api.eager\_composition
+      - **title:** Application proxy conversion has been replaced by native contract compilation
+      - **statement:** The compiler returns SDK contract objects with stable identities. Route fields are validated before SDK implement is invoked; source replacement requires explicit recomposition. Native contracts remain directly supported.
+      - **origin:** source
+      - **links**
+        - binding:api.contract\_conversion
+        - binding:api.contract\_test
+  - **platformDifferences**
+    -
+      - **id:** platform:api.eager\_composition
+      - **title:** Server composition and client authority
+      - **statement:** This is a server startup/composition boundary. Browser and mobile continue through their existing transports; client typing for unmigrated domains remains incomplete.
+      - **origin:** source
+      - **links**
+        - binding:api.contract\_conversion
+      - **platform:** shared
+  - **scenarios**
+    -
+      - **id:** scenario:api.architecture\_reject
+      - **title:** Mixed architecture is denied admission
+      - **transitions**
+        - transition:api.architecture\_reject
+      - **expected:** Wrong RPC bases, alternate first-party OpenAPI, reachable legacy declarations/conversion, unsafe boundary type escapes and duplicate router aliases produce explicit findings and a nonzero exit. This is static admission evidence, not runtime routing or authorization proof.
+      - **links**
+        - requirement:api.canonical\_horizontal
+        - binding:api.composition\_gate
+        - binding:api.composition\_gate\_test
+    -
+      - **id:** scenario:api.compose\_valid
+      - **title:** Historical compiler behavior remains inspectable
+      - **transitions**
+        - transition:api.compose\_valid
+      - **expected:** Characterize existing schema identity/refinements/errors, native leaf support, stable compiled instances and primary OpenAPI success status. This historical behavior does not satisfy the native-only architecture requirement.
+      - **links**
+        - binding:api.contract\_test
+    -
+      - **id:** scenario:api.inventory\_inspect
+      - **title:** Native declaration inventory without false runtime claims
+      - **transitions**
+        - transition:api.inventory\_inspect
+      - **expected:** Native contracts are retained as leaves; stacked schemas, encoded paths, shared router references and cycles are handled. Repeated CLI JSON is deterministic, edited/ignored reports survive, invalid output options fail, and application behavior remains unverified.
+      - **links**
+        - binding:api.contract\_inventory\_test
+        - binding:api.contract\_inspector\_test
+    -
+      - **id:** scenario:api.compose\_invalid
+      - **title:** Invalid declaration stops composition
+      - **transitions**
+        - transition:api.compose\_invalid
+      - **expected:** Malformed nested members, missing/invalid request or response schemas, unsupported method/channel/scope and obsolete error fields throw without deferred property access.
+      - **links**
+        - binding:api.contract\_test
+  - **evidence**
+    -
+      - **id:** evidence:api.architecture\_reject\_g1\_20261030
+      - **title:** Horizontal composition guard rejects mixed source fixtures
+      - **scenario:** scenario:api.architecture\_reject
+      - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:horizontal-foundation-20261030
+      - **environment:** Windows Node 24.22.2, node:test, installed TypeScript 7.1.0-beta public sync and AST APIs
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Synthetic source maps instead of a running application, database or provider
+      - **limitations:** Eight fixture cases exercise malformed source, wrong bases, alternate transports, legacy declaration/converter shapes, boundary type escapes, aliases, disconnected RPC handlers, required mounts and CLI errors. Actual-tree G0 composition exits 1 with 142 findings; full API source quality also fails error taxonomy and authorization parity. Does not prove runtime transport, domain ownership, authorization, native-only cutover, real channel operation or deployed behavior. Mutable working-tree evidence; no tier promotion claimed.
+      - **reference:** reports/run-api\_composition\_foundation\_20261030.log
+      - **links**
+        - requirement:api.canonical\_horizontal
+        - binding:api.composition\_gate
+        - binding:api.composition\_gate\_test
+    -
+      - **id:** evidence:api.compose\_valid\_g1\_20261030
+      - **title:** Native contract compilation and transport success metadata
+      - **scenario:** scenario:api.compose\_valid
+      - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030
+      - **environment:** Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Synthetic route declarations and procedure handlers
+        - In-process SDK HTTP transport
+      - **limitations:** 46 converter assertions within the 1162-assertion full API run; six existing skips. Covers schema identity/refinements, errors, native contracts, stable instances, source replacement, router own properties and real SDK 201/202/204 responses. Does not prove deployed feature behavior, database authorization or exact legacy handler inference. Mutable working-tree evidence; no scenario tier promotion claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-eager\_contracts\_20261030.log
+      - **links**
+        - binding:api.contract\_test
+        - binding:api.contract\_conversion
+    -
+      - **id:** evidence:api.inventory\_inspect\_g1\_20261030
+      - **title:** Inventory subprocesses and report preservation
+      - **scenario:** scenario:api.inventory\_inspect
+      - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:contract-inventory-20261030
+      - **environment:** Windows Node, node:test, installed oRPC 2.0.0-beta.46 and Zod 4.6.7
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Isolated output fixtures; application procedures are not executed
+      - **limitations:** Three CLI scenarios inspect the actual local manually registered sources and test deterministic JSON, modified/ignored report preservation and invalid flags. Inspector fixtures separately record five assertions within a 14-assertion core report. Does not prove exhaustive runtime inventory, live authorization/persistence, or sandboxed output confinement. Uncommitted working-tree evidence; no scenario tier promotion claimed.
+      - **reference:** reports/run-api\_contract\_inventory\_cli\_20261030.log
+      - **links**
+        - binding:api.contract\_inventory\_test
+        - binding:api.contract\_inspector\_test
+    -
+      - **id:** evidence:api.compose\_invalid\_g1\_20261030
+      - **title:** Eager invalid-declaration rejection
+      - **scenario:** scenario:api.compose\_invalid
+      - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030
+      - **environment:** Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Synthetic malformed route declarations
+      - **limitations:** Included in 46 converter assertions: malformed roots/members, missing/invalid schemas, invalid response keys/method/path/channel, obsolete error status fields and unsupported add\_on scope reject during composition. Does not prove rejection of every possible malformed graph, native authority metadata or production deployment. Mutable working-tree evidence; no scenario tier promotion claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-eager\_contracts\_20261030.log
+      - **links**
+        - binding:api.contract\_test
+        - binding:api.contract\_conversion
+  - **sharedRequirements**
+    - requirement:api.contract\_composition
+  - **sharedBindings**
+    - binding:api.contract\_conversion
+    - binding:api.contract\_test
+    - binding:api.contract\_inventory
+    - binding:api.contract\_inspector
+    - binding:api.contract\_inventory\_test
+    - binding:api.contract\_inspector\_test
+    - binding:api.guide
+- **parent:** intent:api.compose
+- **outgoing**
+  - binding:api.contract\_conversion
+  - binding:api.contract\_inspector
+  - binding:api.contract\_inspector\_test
+  - binding:api.contract\_inventory
+  - binding:api.contract\_inventory\_test
+  - binding:api.contract\_test
+  - binding:api.guide
+  - requirement:api.contract\_composition
+  - step:api.compose\_source
+- **incoming**
+  - binding:api.canonical\_model
+  - binding:api.composition\_gate
+  - binding:api.composition\_gate\_test
+  - evidence:api.architecture\_reject\_g1\_20261030
+  - evidence:api.compose\_invalid\_g1\_20261030
+  - evidence:api.compose\_valid\_g1\_20261030
+  - evidence:api.inventory\_inspect\_g1\_20261030
+  - impact:api.eager\_composition
+  - observation:api.canonical\_horizontal
+  - observation:api.eager\_composition
+  - platform:api.eager\_composition
+  - requirement:api.canonical\_horizontal
+  - requirement:api.inventory\_truthfulness
+  - scenario:api.architecture\_reject
+  - scenario:api.compose\_invalid
+  - scenario:api.compose\_valid
+  - scenario:api.inventory\_inspect
+  - step:api.compose\_ready
+  - step:api.compose\_rejected
+  - step:api.compose\_source
+  - step:api.inventory\_review
+  - transition:api.architecture\_reject
+  - transition:api.compose\_invalid
+  - transition:api.compose\_valid
+  - transition:api.inventory\_inspect
+- **related**
+  - binding:api.ai\_cancel
+  - binding:api.authority\_failure
+  - binding:api.canonical\_model
+  - binding:api.composition\_gate
+  - binding:api.composition\_gate\_test
+  - binding:api.contract\_conversion
+  - binding:api.contract\_inspector
+  - binding:api.contract\_inspector\_test
+  - binding:api.contract\_inventory
+  - binding:api.contract\_inventory\_test
+  - binding:api.contract\_test
+  - binding:api.daily\_content\_contract
+  - binding:api.daily\_content\_contract\_test
+  - binding:api.daily\_content\_handler
+  - binding:api.daily\_content\_test
+  - binding:api.database\_proof
+  - binding:api.entitlement
+  - binding:api.guide
+  - binding:api.http
+  - binding:api.mcp
+  - binding:api.mcp\_door
+  - binding:api.native\_admission
+  - binding:api.native\_client
+  - binding:api.onboarding\_client
+  - binding:api.onboarding\_client\_test
+  - binding:api.onboarding\_contract
+  - binding:api.onboarding\_handler
+  - binding:api.onboarding\_test
+  - binding:api.privacy\_api\_test
+  - binding:api.privacy\_contract
+  - binding:api.privacy\_contract\_test
+  - binding:api.privacy\_handler
+  - binding:api.privacy\_policy
+  - binding:api.privacy\_policy\_test
+  - binding:api.readiness
+  - binding:api.regular\_rewards\_test
+  - binding:api.retry
+  - binding:api.rewards
+  - binding:api.rewards\_pg
+  - binding:api.rewards\_storage
+  - binding:api.rewards\_test
+  - evidence:api.architecture\_reject\_g1\_20261030
+  - evidence:api.compose\_invalid\_g1\_20261030
+  - evidence:api.compose\_valid\_g1\_20261030
+  - evidence:api.daily\_content\_read\_g1\_20261030
+  - evidence:api.daily\_content\_reject\_g1\_20261030
+  - evidence:api.inventory\_inspect\_g1\_20261030
+  - evidence:api.mcp\_g1\_20261030
+  - evidence:api.native\_failure\_g1\_20261030
+  - evidence:api.onboarding\_reject\_g1\_20261030
+  - evidence:api.privacy\_api\_g1\_20261030
+  - evidence:api.privacy\_policy\_g1\_20261030
+  - evidence:api.reward\_unavailable\_g1
+  - evidence:api.reward\_unavailable\_g2
+  - feature:api.foundation
+  - impact:api.daily\_content\_validation
+  - impact:api.eager\_composition
+  - impact:api.reward\_acknowledgement
+  - intent:api.compose
+  - intent:api.execute
+  - journey:api.execute
+  - observation:api.canonical\_horizontal
+  - observation:api.contract\_erasure
+  - observation:api.daily\_content\_native
+  - observation:api.eager\_composition
+  - observation:api.native\_error\_testing
+  - observation:api.onboarding\_native
+  - observation:api.privacy\_native
+  - platform:api.eager\_composition
+  - platform:api.reward\_server
+  - requirement:api.canonical\_horizontal
+  - requirement:api.contract\_composition
+  - requirement:api.daily\_content\_contract
+  - requirement:api.explicit\_failure
+  - requirement:api.inventory\_truthfulness
+  - requirement:api.mcp\_schema\_cache
+  - requirement:api.privacy\_owner
+  - scenario:api.ai\_cancel
+  - scenario:api.architecture\_reject
+  - scenario:api.compose\_invalid
+  - scenario:api.compose\_valid
+  - scenario:api.daily\_content\_read
+  - scenario:api.daily\_content\_reject
+  - scenario:api.entitlement
+  - scenario:api.http
+  - scenario:api.inventory\_inspect
+  - scenario:api.mcp
+  - scenario:api.native\_failure
+  - scenario:api.onboarding\_bootstrap
+  - scenario:api.onboarding\_reject
+  - scenario:api.privacy\_owner
+  - scenario:api.privacy\_reject
+  - scenario:api.retry
+  - scenario:api.reward\_commit
+  - scenario:api.reward\_unavailable
+  - step:api.compose\_ready
+  - step:api.compose\_rejected
+  - step:api.compose\_source
+  - step:api.inventory\_review
+  - step:api.recovery
+  - step:api.request
+  - step:api.result
+  - transition:api.ai\_cancel
+  - transition:api.architecture\_reject
+  - transition:api.compose\_invalid
+  - transition:api.compose\_valid
+  - transition:api.daily\_content\_read
+  - transition:api.daily\_content\_reject
+  - transition:api.entitlement
+  - transition:api.http
+  - transition:api.inventory\_inspect
+  - transition:api.mcp
+  - transition:api.native\_failure
+  - transition:api.onboarding\_bootstrap
+  - transition:api.onboarding\_reject
+  - transition:api.privacy\_owner
+  - transition:api.privacy\_reject
+  - transition:api.retry
+  - transition:api.reward\_commit
+  - transition:api.reward\_unavailable
+- **connectionPaths**
+  -
+    - **id:** binding:api.ai\_cancel
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.ai\_cancel
+  -
+    - **id:** binding:api.authority\_failure
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.authority\_failure
+  -
+    - **id:** binding:api.canonical\_model
+    - **path**
+      - journey:api.compose
+      - binding:api.canonical\_model
+  -
+    - **id:** binding:api.composition\_gate
+    - **path**
+      - journey:api.compose
+      - binding:api.composition\_gate
+  -
+    - **id:** binding:api.composition\_gate\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.composition\_gate\_test
+  -
+    - **id:** binding:api.contract\_conversion
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+  -
+    - **id:** binding:api.contract\_inspector
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_inspector
+  -
+    - **id:** binding:api.contract\_inspector\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_inspector\_test
+  -
+    - **id:** binding:api.contract\_inventory
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_inventory
+  -
+    - **id:** binding:api.contract\_inventory\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_inventory\_test
+  -
+    - **id:** binding:api.contract\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_test
+  -
+    - **id:** binding:api.daily\_content\_contract
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.daily\_content\_contract
+  -
+    - **id:** binding:api.daily\_content\_contract\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.daily\_content\_contract\_test
+  -
+    - **id:** binding:api.daily\_content\_handler
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.daily\_content\_handler
+  -
+    - **id:** binding:api.daily\_content\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.daily\_content\_test
+  -
+    - **id:** binding:api.database\_proof
+    - **path**
+      - journey:api.compose
+      - binding:api.guide
+      - binding:api.database\_proof
+  -
+    - **id:** binding:api.entitlement
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.entitlement
+  -
+    - **id:** binding:api.guide
+    - **path**
+      - journey:api.compose
+      - binding:api.guide
+  -
+    - **id:** binding:api.http
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.http
+  -
+    - **id:** binding:api.mcp
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.mcp
+  -
+    - **id:** binding:api.mcp\_door
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.mcp\_door
+  -
+    - **id:** binding:api.native\_admission
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.native\_admission
+  -
+    - **id:** binding:api.native\_client
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.native\_client
+  -
+    - **id:** binding:api.onboarding\_client
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.onboarding\_client
+  -
+    - **id:** binding:api.onboarding\_client\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.guide
+      - binding:api.onboarding\_client\_test
+  -
+    - **id:** binding:api.onboarding\_contract
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.onboarding\_contract
+  -
+    - **id:** binding:api.onboarding\_handler
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.onboarding\_handler
+  -
+    - **id:** binding:api.onboarding\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.guide
+      - binding:api.onboarding\_test
+  -
+    - **id:** binding:api.privacy\_api\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.privacy\_api\_test
+  -
+    - **id:** binding:api.privacy\_contract
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.privacy\_contract
+  -
+    - **id:** binding:api.privacy\_contract\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.privacy\_contract\_test
+  -
+    - **id:** binding:api.privacy\_handler
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.privacy\_handler
+  -
+    - **id:** binding:api.privacy\_policy
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.privacy\_policy
+  -
+    - **id:** binding:api.privacy\_policy\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.privacy\_policy\_test
+  -
+    - **id:** binding:api.readiness
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.readiness
+  -
+    - **id:** binding:api.regular\_rewards\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.regular\_rewards\_test
+  -
+    - **id:** binding:api.retry
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.retry
+  -
+    - **id:** binding:api.rewards
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.rewards
+  -
+    - **id:** binding:api.rewards\_pg
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - binding:api.rewards\_pg
+  -
+    - **id:** binding:api.rewards\_storage
+    - **path**
+      - journey:api.compose
+      - binding:api.guide
+      - binding:api.rewards\_storage
+  -
+    - **id:** binding:api.rewards\_test
+    - **path**
+      - journey:api.compose
+      - binding:api.guide
+      - binding:api.rewards\_test
+  -
+    - **id:** evidence:api.architecture\_reject\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - evidence:api.architecture\_reject\_g1\_20261030
+  -
+    - **id:** evidence:api.compose\_invalid\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - evidence:api.compose\_invalid\_g1\_20261030
+  -
+    - **id:** evidence:api.compose\_valid\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - evidence:api.compose\_valid\_g1\_20261030
+  -
+    - **id:** evidence:api.daily\_content\_read\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.daily\_content\_read\_g1\_20261030
+  -
+    - **id:** evidence:api.daily\_content\_reject\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.daily\_content\_reject\_g1\_20261030
+  -
+    - **id:** evidence:api.inventory\_inspect\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - evidence:api.inventory\_inspect\_g1\_20261030
+  -
+    - **id:** evidence:api.mcp\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.mcp\_g1\_20261030
+  -
+    - **id:** evidence:api.native\_failure\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.native\_failure\_g1\_20261030
+  -
+    - **id:** evidence:api.onboarding\_reject\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.onboarding\_reject\_g1\_20261030
+  -
+    - **id:** evidence:api.privacy\_api\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.privacy\_api\_g1\_20261030
+  -
+    - **id:** evidence:api.privacy\_policy\_g1\_20261030
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.privacy\_policy\_g1\_20261030
+  -
+    - **id:** evidence:api.reward\_unavailable\_g1
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.reward\_unavailable\_g1
+  -
+    - **id:** evidence:api.reward\_unavailable\_g2
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - evidence:api.reward\_unavailable\_g2
+  -
+    - **id:** feature:api.foundation
+    - **path**
+      - journey:api.compose
+      - intent:api.compose
+      - feature:api.foundation
+  -
+    - **id:** impact:api.daily\_content\_validation
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - impact:api.daily\_content\_validation
+  -
+    - **id:** impact:api.eager\_composition
+    - **path**
+      - journey:api.compose
+      - impact:api.eager\_composition
+  -
+    - **id:** impact:api.reward\_acknowledgement
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - impact:api.reward\_acknowledgement
+  -
+    - **id:** intent:api.compose
+    - **path**
+      - journey:api.compose
+      - intent:api.compose
+  -
+    - **id:** intent:api.execute
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - intent:api.execute
+  -
+    - **id:** journey:api.execute
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+  -
+    - **id:** observation:api.canonical\_horizontal
+    - **path**
+      - journey:api.compose
+      - observation:api.canonical\_horizontal
+  -
+    - **id:** observation:api.contract\_erasure
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - observation:api.contract\_erasure
+  -
+    - **id:** observation:api.daily\_content\_native
+    - **path**
+      - journey:api.compose
+      - binding:api.guide
+      - observation:api.daily\_content\_native
+  -
+    - **id:** observation:api.eager\_composition
+    - **path**
+      - journey:api.compose
+      - observation:api.eager\_composition
+  -
+    - **id:** observation:api.native\_error\_testing
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - observation:api.native\_error\_testing
+  -
+    - **id:** observation:api.onboarding\_native
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - observation:api.onboarding\_native
+  -
+    - **id:** observation:api.privacy\_native
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - observation:api.privacy\_native
+  -
+    - **id:** platform:api.eager\_composition
+    - **path**
+      - journey:api.compose
+      - platform:api.eager\_composition
+  -
+    - **id:** platform:api.reward\_server
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - platform:api.reward\_server
+  -
+    - **id:** requirement:api.canonical\_horizontal
+    - **path**
+      - journey:api.compose
+      - requirement:api.canonical\_horizontal
+  -
+    - **id:** requirement:api.contract\_composition
+    - **path**
+      - journey:api.compose
+      - requirement:api.contract\_composition
+  -
+    - **id:** requirement:api.daily\_content\_contract
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - requirement:api.daily\_content\_contract
+  -
+    - **id:** requirement:api.explicit\_failure
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - requirement:api.explicit\_failure
+  -
+    - **id:** requirement:api.inventory\_truthfulness
+    - **path**
+      - journey:api.compose
+      - requirement:api.inventory\_truthfulness
+  -
+    - **id:** requirement:api.mcp\_schema\_cache
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - requirement:api.mcp\_schema\_cache
+  -
+    - **id:** requirement:api.privacy\_owner
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - requirement:api.privacy\_owner
+  -
+    - **id:** scenario:api.ai\_cancel
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.ai\_cancel
+  -
+    - **id:** scenario:api.architecture\_reject
+    - **path**
+      - journey:api.compose
+      - scenario:api.architecture\_reject
+  -
+    - **id:** scenario:api.compose\_invalid
+    - **path**
+      - journey:api.compose
+      - scenario:api.compose\_invalid
+  -
+    - **id:** scenario:api.compose\_valid
+    - **path**
+      - journey:api.compose
+      - scenario:api.compose\_valid
+  -
+    - **id:** scenario:api.daily\_content\_read
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.daily\_content\_read
+  -
+    - **id:** scenario:api.daily\_content\_reject
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.daily\_content\_reject
+  -
+    - **id:** scenario:api.entitlement
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.entitlement
+  -
+    - **id:** scenario:api.http
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.http
+  -
+    - **id:** scenario:api.inventory\_inspect
+    - **path**
+      - journey:api.compose
+      - scenario:api.inventory\_inspect
+  -
+    - **id:** scenario:api.mcp
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.mcp
+  -
+    - **id:** scenario:api.native\_failure
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.native\_failure
+  -
+    - **id:** scenario:api.onboarding\_bootstrap
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.onboarding\_bootstrap
+  -
+    - **id:** scenario:api.onboarding\_reject
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.onboarding\_reject
+  -
+    - **id:** scenario:api.privacy\_owner
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.privacy\_owner
+  -
+    - **id:** scenario:api.privacy\_reject
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.privacy\_reject
+  -
+    - **id:** scenario:api.retry
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.retry
+  -
+    - **id:** scenario:api.reward\_commit
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.reward\_commit
+  -
+    - **id:** scenario:api.reward\_unavailable
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - scenario:api.reward\_unavailable
+  -
+    - **id:** step:api.compose\_ready
+    - **path**
+      - journey:api.compose
+      - step:api.compose\_ready
+  -
+    - **id:** step:api.compose\_rejected
+    - **path**
+      - journey:api.compose
+      - step:api.compose\_rejected
+  -
+    - **id:** step:api.compose\_source
+    - **path**
+      - journey:api.compose
+      - step:api.compose\_source
+  -
+    - **id:** step:api.inventory\_review
+    - **path**
+      - journey:api.compose
+      - step:api.inventory\_review
+  -
+    - **id:** step:api.recovery
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - step:api.recovery
+  -
+    - **id:** step:api.request
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - step:api.request
+  -
+    - **id:** step:api.result
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - step:api.result
+  -
+    - **id:** transition:api.ai\_cancel
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.ai\_cancel
+  -
+    - **id:** transition:api.architecture\_reject
+    - **path**
+      - journey:api.compose
+      - transition:api.architecture\_reject
+  -
+    - **id:** transition:api.compose\_invalid
+    - **path**
+      - journey:api.compose
+      - transition:api.compose\_invalid
+  -
+    - **id:** transition:api.compose\_valid
+    - **path**
+      - journey:api.compose
+      - transition:api.compose\_valid
+  -
+    - **id:** transition:api.daily\_content\_read
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.daily\_content\_read
+  -
+    - **id:** transition:api.daily\_content\_reject
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.daily\_content\_reject
+  -
+    - **id:** transition:api.entitlement
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.entitlement
+  -
+    - **id:** transition:api.http
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.http
+  -
+    - **id:** transition:api.inventory\_inspect
+    - **path**
+      - journey:api.compose
+      - transition:api.inventory\_inspect
+  -
+    - **id:** transition:api.mcp
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.mcp
+  -
+    - **id:** transition:api.native\_failure
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.native\_failure
+  -
+    - **id:** transition:api.onboarding\_bootstrap
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.onboarding\_bootstrap
+  -
+    - **id:** transition:api.onboarding\_reject
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.onboarding\_reject
+  -
+    - **id:** transition:api.privacy\_owner
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.privacy\_owner
+  -
+    - **id:** transition:api.privacy\_reject
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.privacy\_reject
+  -
+    - **id:** transition:api.retry
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.retry
+  -
+    - **id:** transition:api.reward\_commit
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.reward\_commit
+  -
+    - **id:** transition:api.reward\_unavailable
+    - **path**
+      - journey:api.compose
+      - binding:api.contract\_conversion
+      - journey:api.execute
+      - transition:api.reward\_unavailable
+- **journeyContext**
+  - **feature**
+    - **id:** feature:api.foundation
+    - **title:** Authorized API and agent execution
+  - **intent**
+    - **id:** intent:api.compose
+    - **title:** Reject invalid API composition before serving operations
+    - **actor:** API maintainer or deployment agent
+    - **outcome:** Admit canonical native contracts and reject mixed or legacy architecture; declaration inventory and historical compiler evidence do not establish admission.
+  - **sharedWith**
+    - (none)
+  - **scenarioPaths**
+    -
+      - **id:** scenario:api.architecture\_reject
+      - **title:** Mixed architecture is denied admission
+      - **expected:** Wrong RPC bases, alternate first-party OpenAPI, reachable legacy declarations/conversion, unsafe boundary type escapes and duplicate router aliases produce explicit findings and a nonzero exit. This is static admission evidence, not runtime routing or authorization proof.
+      - **start:** step:api.compose\_source
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        -
+          - **id:** requirement:api.canonical\_horizontal
+          - **title:** Native-only architecture is enforced before feature migrations
+          - **statement:** Use native oRPC v2 first-party commands/queries at /api/v1 only. Navigation, business ownership and channel adapters remain distinct. Required checks reject mismatched legacy architecture without waivers; current delivery is horizontal foundation, with product-policy conflicts held for the owner.
+          - **classification:** constraint
+          - **origin:** user
+          - **links**
+            - binding:api.canonical\_model
+            - binding:api.composition\_gate
+      - **bindings**
+        -
+          - **id:** binding:api.canonical\_model
+          - **category:** architecture
+          - **reference:** apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md
+          - **status:** implemented
+          - **note:** Governing horizontal policy and deferred decision ledger, not proof of native cutover or channel execution.
+        -
+          - **id:** binding:api.composition\_gate
+          - **category:** tool
+          - **reference:** scripts/audit-api-composition.mjs
+          - **status:** implemented
+          - **note:** Required G0 AST source admission check. A nonzero actual-tree result means the application remains nonconformant; runtime transport, authorization and ownership semantics need separate evidence.
+        -
+          - **id:** binding:api.composition\_gate\_test
+          - **category:** test
+          - **reference:** scripts/tests/audit-api-composition.test.mjs
+          - **status:** implemented
+          - **note:** Isolated synthetic source fixtures test the guard. They do not execute application procedures, real storage, channels or provider delivery.
+      - **evidence**
+        -
+          - **id:** evidence:api.architecture\_reject\_g1\_20261030
+          - **title:** Horizontal composition guard rejects mixed source fixtures
+          - **scenario:** scenario:api.architecture\_reject
+          - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:horizontal-foundation-20261030
+          - **environment:** Windows Node 24.22.2, node:test, installed TypeScript 7.1.0-beta public sync and AST APIs
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Synthetic source maps instead of a running application, database or provider
+          - **limitations:** Eight fixture cases exercise malformed source, wrong bases, alternate transports, legacy declaration/converter shapes, boundary type escapes, aliases, disconnected RPC handlers, required mounts and CLI errors. Actual-tree G0 composition exits 1 with 142 findings; full API source quality also fails error taxonomy and authorization parity. Does not prove runtime transport, domain ownership, authorization, native-only cutover, real channel operation or deployed behavior. Mutable working-tree evidence; no tier promotion claimed.
+          - **reference:** reports/run-api\_composition\_foundation\_20261030.log
+          - **links**
+            - requirement:api.canonical\_horizontal
+            - binding:api.composition\_gate
+            - binding:api.composition\_gate\_test
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.architecture\_reject
+            - **title:** Reject mixed API composition
+            - **from:** step:api.compose\_source
+            - **to:** step:api.compose\_rejected
+            - **action:** Run the required composition gate against the source substrate instead of accepting legacy conversion or a renamed OpenAPI transport as canonical native RPC.
+            - **feedback:** Exit nonzero with explicit source findings; fixture success does not make the application architecture conformant.
+            - **links**
+              - binding:api.composition\_gate
+              - binding:api.composition\_gate\_test
+          - **from**
+            - **id:** step:api.compose\_source
+            - **title:** Assemble declarations
+            - **interaction:** Supply the existing source declarations and native contracts.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.compose\_rejected
+            - **title:** Correct an invalid declaration
+            - **interaction:** Inspect the composition error, correct its source and recompile.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.compose\_valid
+      - **title:** Historical compiler behavior remains inspectable
+      - **expected:** Characterize existing schema identity/refinements/errors, native leaf support, stable compiled instances and primary OpenAPI success status. This historical behavior does not satisfy the native-only architecture requirement.
+      - **start:** step:api.compose\_source
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.contract\_conversion
+          - **title:** Server contract composition boundary
+          - **category:** api
+          - **reference:** apps/sanctuary-api/src/core/orpc.ts
+          - **status:** implemented
+          - **note:** Eagerly compiles validated legacy declarations into native SDK contracts with stable procedure instances. No application conversion proxy or conversion casts remain; the handler-facing implement wrapper still returns any.
+          - **links**
+            - requirement:api.contract\_composition
+        -
+          - **id:** binding:api.contract\_test
+          - **title:** Contract conversion and transport assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/contract-conversion.characterization.test.ts
+          - **status:** implemented
+          - **note:** Real SDK conversion, RPC and OpenAPI handlers with synthetic procedures. Does not prove actual domain handlers or database authority.
+          - **links**
+            - requirement:api.contract\_composition
+      - **evidence**
+        -
+          - **id:** evidence:api.compose\_valid\_g1\_20261030
+          - **title:** Native contract compilation and transport success metadata
+          - **scenario:** scenario:api.compose\_valid
+          - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030
+          - **environment:** Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Synthetic route declarations and procedure handlers
+            - In-process SDK HTTP transport
+          - **limitations:** 46 converter assertions within the 1162-assertion full API run; six existing skips. Covers schema identity/refinements, errors, native contracts, stable instances, source replacement, router own properties and real SDK 201/202/204 responses. Does not prove deployed feature behavior, database authorization or exact legacy handler inference. Mutable working-tree evidence; no scenario tier promotion claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-eager\_contracts\_20261030.log
+          - **links**
+            - binding:api.contract\_test
+            - binding:api.contract\_conversion
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.compose\_valid
+            - **title:** Characterize existing declaration compilation
+            - **from:** step:api.compose\_source
+            - **to:** step:api.compose\_ready
+            - **action:** Characterize the existing compiler's validated outputs during retirement; use the separate architecture gate for canonical admission.
+            - **feedback:** Return historical compiler observations without admitting legacy conversion as target architecture.
+            - **links**
+              - binding:api.contract\_conversion
+          - **from**
+            - **id:** step:api.compose\_source
+            - **title:** Assemble declarations
+            - **interaction:** Supply the existing source declarations and native contracts.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.compose\_ready
+            - **title:** Inspect historical compiler output
+            - **interaction:** Inspect existing compiled objects as retirement characterization, without treating them as canonical native-source admission.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.inventory\_inspect
+      - **title:** Native declaration inventory without false runtime claims
+      - **expected:** Native contracts are retained as leaves; stacked schemas, encoded paths, shared router references and cycles are handled. Repeated CLI JSON is deterministic, edited/ignored reports survive, invalid output options fail, and application behavior remains unverified.
+      - **start:** step:api.compose\_source
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.contract\_inventory
+          - **title:** Declaration inventory CLI with native contract inspection
+          - **category:** tool
+          - **reference:** scripts/audit-api-contracts.ts
+          - **status:** implemented
+          - **note:** Manually registered declarations, metadata and lexical client observations only. Read-only JSON and guarded report output; no runtime, authorization, persistence or exact client typing proof.
+          - **links**
+            - binding:api.contract\_inspector
+            - binding:api.contract\_inventory\_test
+        -
+          - **id:** binding:api.contract\_inspector
+          - **title:** Native and legacy contract inspection
+          - **category:** tool
+          - **reference:** packages/core/src/api/contractInspection.ts
+          - **status:** implemented
+          - **note:** Native SDK metadata, stacked schemas, encoded default paths, shared references and cycle rejection. Native/legacy schema counts have different meanings; dotted labels can be ambiguous for unusual keys.
+          - **links**
+            - binding:api.contract\_inspector\_test
+        -
+          - **id:** binding:api.contract\_inventory\_test
+          - **title:** Inventory CLI and report preservation scenarios
+          - **category:** test
+          - **reference:** scripts/tests/audit-api-contracts.test.mjs
+          - **status:** implemented
+          - **note:** Actual CLI subprocesses over the local source registry with isolated output fixtures. Proves named report behavior, not application procedure execution.
+          - **links**
+            - binding:api.guide
+        -
+          - **id:** binding:api.contract\_inspector\_test
+          - **title:** Isolated mixed-contract fixtures
+          - **category:** test
+          - **reference:** packages/core/src/api/\_\_tests\_\_/contractInspection.test.ts
+          - **status:** implemented
+          - **note:** Real installed SDK over synthetic declarations; verifies inspection only, not deployed handler routes.
+          - **links**
+            - binding:api.guide
+      - **evidence**
+        -
+          - **id:** evidence:api.inventory\_inspect\_g1\_20261030
+          - **title:** Inventory subprocesses and report preservation
+          - **scenario:** scenario:api.inventory\_inspect
+          - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:contract-inventory-20261030
+          - **environment:** Windows Node, node:test, installed oRPC 2.0.0-beta.46 and Zod 4.6.7
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Isolated output fixtures; application procedures are not executed
+          - **limitations:** Three CLI scenarios inspect the actual local manually registered sources and test deterministic JSON, modified/ignored report preservation and invalid flags. Inspector fixtures separately record five assertions within a 14-assertion core report. Does not prove exhaustive runtime inventory, live authorization/persistence, or sandboxed output confinement. Uncommitted working-tree evidence; no scenario tier promotion claimed.
+          - **reference:** reports/run-api\_contract\_inventory\_cli\_20261030.log
+          - **links**
+            - binding:api.contract\_inventory\_test
+            - binding:api.contract\_inspector\_test
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.inventory\_inspect
+            - **title:** Inspect registered contract declarations
+            - **from:** step:api.compose\_source
+            - **to:** step:api.inventory\_review
+            - **action:** Inspect native and legacy declarations through the existing audit CLI using read-only JSON or guarded explicit output.
+            - **feedback:** Return deterministic declaration metadata, lexical observations, warnings and known coverage gaps; preserve edited reports.
+            - **links**
+              - binding:api.contract\_inventory
+              - binding:api.contract\_inspector
+          - **from**
+            - **id:** step:api.compose\_source
+            - **title:** Assemble declarations
+            - **interaction:** Supply the existing source declarations and native contracts.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.inventory\_review
+            - **title:** Review declarations and coverage gaps
+            - **interaction:** Query the JSON inventory while retaining its source, transport and evidence limitations.
+            - **terminal:** true
+            - **links**
+              - binding:api.contract\_inventory
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.compose\_invalid
+      - **title:** Invalid declaration stops composition
+      - **expected:** Malformed nested members, missing/invalid request or response schemas, unsupported method/channel/scope and obsolete error fields throw without deferred property access.
+      - **start:** step:api.compose\_source
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.contract\_conversion
+          - **title:** Server contract composition boundary
+          - **category:** api
+          - **reference:** apps/sanctuary-api/src/core/orpc.ts
+          - **status:** implemented
+          - **note:** Eagerly compiles validated legacy declarations into native SDK contracts with stable procedure instances. No application conversion proxy or conversion casts remain; the handler-facing implement wrapper still returns any.
+          - **links**
+            - requirement:api.contract\_composition
+        -
+          - **id:** binding:api.contract\_test
+          - **title:** Contract conversion and transport assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/contract-conversion.characterization.test.ts
+          - **status:** implemented
+          - **note:** Real SDK conversion, RPC and OpenAPI handlers with synthetic procedures. Does not prove actual domain handlers or database authority.
+          - **links**
+            - requirement:api.contract\_composition
+      - **evidence**
+        -
+          - **id:** evidence:api.compose\_invalid\_g1\_20261030
+          - **title:** Eager invalid-declaration rejection
+          - **scenario:** scenario:api.compose\_invalid
+          - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030
+          - **environment:** Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Synthetic malformed route declarations
+          - **limitations:** Included in 46 converter assertions: malformed roots/members, missing/invalid schemas, invalid response keys/method/path/channel, obsolete error status fields and unsupported add\_on scope reject during composition. Does not prove rejection of every possible malformed graph, native authority metadata or production deployment. Mutable working-tree evidence; no scenario tier promotion claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-eager\_contracts\_20261030.log
+          - **links**
+            - binding:api.contract\_test
+            - binding:api.contract\_conversion
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.compose\_invalid
+            - **title:** Reject an invalid declaration
+            - **from:** step:api.compose\_source
+            - **to:** step:api.compose\_rejected
+            - **action:** Reject invalid routes before returning a compiled router, even if no caller accesses that route.
+            - **feedback:** Throw an explicit composition error instead of constructing a schema-less procedure.
+            - **links**
+              - binding:api.contract\_conversion
+          - **from**
+            - **id:** step:api.compose\_source
+            - **title:** Assemble declarations
+            - **interaction:** Supply the existing source declarations and native contracts.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.compose\_rejected
+            - **title:** Correct an invalid declaration
+            - **interaction:** Inspect the composition error, correct its source and recompile.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+  - **sharedRequirements**
+    -
+      - **id:** requirement:api.contract\_composition
+      - **title:** Canonical admission rejects legacy compilation
+      - **statement:** The legacy compiler and its rejection tests are historical characterization, not permission to admit converted declarations. The hard-cutover target rejects legacy declaration conversion and uses native SDK contracts. Retain canonical schema identity, refinements and required validation behavior while retiring compatibility machinery.
+      - **classification:** constraint
+      - **origin:** user
+      - **links**
+        - binding:api.contract\_conversion
+        - binding:api.contract\_test
+  - **sharedBindings**
+    -
+      - **id:** binding:api.contract\_inventory
+      - **title:** Declaration inventory CLI with native contract inspection
+      - **category:** tool
+      - **reference:** scripts/audit-api-contracts.ts
+      - **status:** implemented
+      - **note:** Manually registered declarations, metadata and lexical client observations only. Read-only JSON and guarded report output; no runtime, authorization, persistence or exact client typing proof.
+      - **links**
+        - binding:api.contract\_inspector
+        - binding:api.contract\_inventory\_test
+    -
+      - **id:** binding:api.contract\_inspector
+      - **title:** Native and legacy contract inspection
+      - **category:** tool
+      - **reference:** packages/core/src/api/contractInspection.ts
+      - **status:** implemented
+      - **note:** Native SDK metadata, stacked schemas, encoded default paths, shared references and cycle rejection. Native/legacy schema counts have different meanings; dotted labels can be ambiguous for unusual keys.
+      - **links**
+        - binding:api.contract\_inspector\_test
+    -
+      - **id:** binding:api.contract\_inventory\_test
+      - **title:** Inventory CLI and report preservation scenarios
+      - **category:** test
+      - **reference:** scripts/tests/audit-api-contracts.test.mjs
+      - **status:** implemented
+      - **note:** Actual CLI subprocesses over the local source registry with isolated output fixtures. Proves named report behavior, not application procedure execution.
+      - **links**
+        - binding:api.guide
+    -
+      - **id:** binding:api.contract\_inspector\_test
+      - **title:** Isolated mixed-contract fixtures
+      - **category:** test
+      - **reference:** packages/core/src/api/\_\_tests\_\_/contractInspection.test.ts
+      - **status:** implemented
+      - **note:** Real installed SDK over synthetic declarations; verifies inspection only, not deployed handler routes.
+      - **links**
+        - binding:api.guide
+    -
+      - **id:** binding:api.contract\_conversion
+      - **title:** Server contract composition boundary
+      - **category:** api
+      - **reference:** apps/sanctuary-api/src/core/orpc.ts
+      - **status:** implemented
+      - **note:** Eagerly compiles validated legacy declarations into native SDK contracts with stable procedure instances. No application conversion proxy or conversion casts remain; the handler-facing implement wrapper still returns any.
+      - **links**
+        - requirement:api.contract\_composition
+    -
+      - **id:** binding:api.contract\_test
+      - **title:** Contract conversion and transport assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/contract-conversion.characterization.test.ts
+      - **status:** implemented
+      - **note:** Real SDK conversion, RPC and OpenAPI handlers with synthetic procedures. Does not prove actual domain handlers or database authority.
+      - **links**
+        - requirement:api.contract\_composition
+    -
+      - **id:** binding:api.guide
+      - **title:** API architecture and release limitations
+      - **category:** documentation
+      - **reference:** apps/sanctuary-api/docs/architecture/api-middleware.md
+      - **status:** implemented
+      - **note:** Operating guidance and unresolved release evidence.
+      - **links**
+        - (none)

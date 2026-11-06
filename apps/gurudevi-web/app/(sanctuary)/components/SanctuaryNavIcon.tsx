@@ -8,6 +8,7 @@ const NAV_EMOJI: Readonly<Record<string, string>> = {
   submissions: '📥', climate: '🌤️', tuition: '💳', kiosk: '🚪', badges: '🪪',
   claim: '🎓', school: '🏫', editorial: '✍️', plan: '🗓️', notices: '📣',
   events: '🎉', timetable: '📅', gradebook: '📊',
+  'tutii-dm': '✦', 'ai-workspace': '⚡',
 };
 
 export function SanctuaryNavIcon({

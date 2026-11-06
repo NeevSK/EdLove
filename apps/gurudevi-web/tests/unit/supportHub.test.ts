@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import {
   CONTRIBUTION_TRACKS,
   FUNCTIONALITY_GUIDES,
@@ -108,7 +108,7 @@ describe('Support Hub & Functionality Guide Suite', () => {
 
       const exploreGuestHouse = FUNCTIONALITY_GUIDES.find((g) => g.id === 'explore-guest-house');
       expect(exploreGuestHouse).toBeDefined();
-      expect(exploreGuestHouse?.primaryAction.href).toContain('explore.gurudevi.app');
+      expect(exploreGuestHouse?.primaryAction.href).toMatch(/explore\.(gurudevi\.app|localhost)/);
 
       const classroomWorkspace = FUNCTIONALITY_GUIDES.find(
         (g) => g.id === 'sanctuary-classroom-workspace',

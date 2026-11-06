@@ -51,6 +51,8 @@ export const workspaceNavigation = [
 export const advancedTools = ['Agent Lab', 'Editorial', 'UI Showcase', 'Icon Lab'] as const;
 
 export const quickAccessDestinations = [
+  { id: 'tutii-dm', href: '/community?pillar=messages&dm=tutii', label: 'Tutii Companion', symbol: '✦', explore: true },
+  { id: 'ai-workspace', href: '/community?pillar=messages', label: 'AI Workspace', symbol: '⚡', explore: true },
   { id: 'my-attendance', href: '/self/attendance', label: 'My attendance', symbol: '🗓️', explore: true },
   { id: 'qr-scanner', href: '/qr', label: 'QR Scanner', symbol: '📷', explore: true },
   { id: 'breathing', href: '/self?practice=breath', label: 'Mindful breathing', symbol: '🌬️', explore: true },

@@ -98,7 +98,7 @@ config.resolver.assetExts.push('wasm');
 //    can hang on this workspace, leaving Metro's dependency graph incomplete
 //    and causing every device bundle request to fail with HTTP 500.
 config.useWatchman = false;
-// Expo SDK 57 resolves external workspace files on demand. Pre-crawling the
+// Expo SDK 58 resolves external workspace files on demand. Pre-crawling the
 // entire packages directory exceeds Metro's watcher startup window on Windows.
 // Shared-package edits require a Metro restart until a reliable narrow-watch
 // policy is established, but bundle resolution remains available.

@@ -1,0 +1,267 @@
+/* Tutii Companion Side Panel Styles */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(440px, 100vw);
+  background: color-mix(in srgb, var(--w-ground) 96%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid var(--w-line);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.18);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .panel {
+    animation: none;
+  }
+}
+
+.header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-surface) 90%, transparent);
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.lampGlyph {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--w-radius-full, 9999px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
+  flex-shrink: 0;
+}
+
+.titleMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.title {
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--w-ink);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.contextTag {
+  font-size: 0.75rem;
+  color: var(--w-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.navTabs {
+  flex-shrink: 0;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-ground) 98%, transparent);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Chat Tab */
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.messagesScroll {
+  flex: 1;
+  min-height: 0;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem 1.25rem;
+  border-top: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-surface) 60%, transparent);
+}
+
+.composerDock {
+  flex-shrink: 0;
+  padding: 0.75rem 1.25rem max(env(safe-area-inset-bottom), 0.75rem);
+  border-top: 1px solid var(--w-line);
+  background: var(--w-surface);
+}
+
+/* Subtasks Tab */
+.subtasksScroll {
+  flex: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.subtaskSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--w-ink-soft);
+  margin: 0;
+}
+
+.subtaskCard {
+  appearance: none;
+  border: 1px solid var(--w-line);
+  background: var(--w-surface);
+  border-radius: var(--w-radius-md, 8px);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform var(--w-settle),
+    background-color var(--w-light-ms),
+    border-color var(--w-light-ms);
+}
+
+.subtaskCard:hover {
+  background: color-mix(in srgb, var(--w-surface) 80%, var(--w-lamp) 20%);
+  border-color: var(--w-lamp);
+}
+
+.subtaskCard:active {
+  transform: scale(var(--w-press));
+}
+
+.subtaskIcon {
+  margin-top: 0.15rem;
+  color: var(--w-lamp);
+  flex-shrink: 0;
+}
+
+.subtaskMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.subtaskLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--w-ink);
+}
+
+.subtaskDesc {
+  font-size: 0.78rem;
+  color: var(--w-ink-soft);
+  line-height: 1.35;
+}
+
+/* Info Tab */
+.infoScroll {
+  flex: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoBlock {
+  border: 1px solid var(--w-line);
+  border-radius: var(--w-radius-md, 8px);
+  padding: 1rem;
+  background: var(--w-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.infoLabel {
+  color: var(--w-ink-soft);
+}
+
+.infoValue {
+  font-weight: 600;
+  color: var(--w-ink);
+}

@@ -30,11 +30,16 @@
   margin: 0.25rem 0 0;
 }
 
+.dayTabsScroll {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
 .dayTabs {
   display: flex;
   gap: 0.5rem;
-  overflow-x: auto;
   padding-bottom: 0.5rem;
+  width: max-content;
 }
 
 .dayTab {

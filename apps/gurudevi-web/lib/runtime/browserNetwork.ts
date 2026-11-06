@@ -1,5 +1,5 @@
 import { subscribeToNetwork } from '@repo/core/adapters/subscribeToNetwork';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import type { NetworkTransport } from '@repo/core/verger';
 import type { BrowserNetworkSignals } from '@repo/verger-web';
 
@@ -13,7 +13,7 @@ const TRANSPORTS: Readonly<Record<string, NetworkTransport>> = {
 /** Browser online is a hint; it must never become validated internet access in Verger. */
 export const browserNetworkSignals: BrowserNetworkSignals = (send, now) => {
   const update = () => {
-    const { status, connection } = networkManager.getSnapshot();
+    const { status, connection } = networkMonitor.getSnapshot();
     const type = connection?.type;
     send({
       type: 'network',

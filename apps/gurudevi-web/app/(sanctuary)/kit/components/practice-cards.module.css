@@ -1,0 +1,1353 @@
+/* Container Setup */
+.candidateContainer {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Candidate 1: The Sanctuary Pod (Minimal & Spacious)
+   ───────────────────────────────────────────────────────────── */
+.podCard {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1.25rem;
+  border-radius: var(--w-surface-raised-radius, 1rem);
+  background: var(--w-surface-raised-bg);
+  box-shadow: var(--w-surface-raised-shadow);
+  border: 1px solid var(--w-line);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.18s ease;
+  position: relative;
+}
+
+.podCard:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--w-lamp) 35%, var(--w-line));
+  box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--w-ink) 8%, transparent);
+}
+
+.podCard:focus-visible {
+  outline: 2px solid var(--w-focus);
+  outline-offset: 2px;
+}
+
+.podTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.emojiPod {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  background: var(--w-ground);
+  border: 1px solid var(--w-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.menuTriggerBtn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--w-ink-soft);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.menuTriggerBtn:hover {
+  background: var(--w-ground);
+  border-color: var(--w-line);
+  color: var(--w-ink);
+  transform: scale(1.08);
+}
+
+.podBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
+
+.podTitle {
+  margin: 0;
+  font-family: var(--w-font-display, Georgia, serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--w-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.podMeta {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--w-ink-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Candidate 1 Container Gears */
+@container (max-width: 320px) {
+  .podCard {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+  .emojiPod {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.15rem;
+    border-radius: 0.5rem;
+  }
+  .podBottom {
+    margin-top: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .podTitle {
+    font-size: 1rem;
+  }
+}
+
+@container (max-width: 220px) {
+  .podCard {
+    padding: 0.5rem 0.65rem;
+    gap: 0.5rem;
+  }
+  .podMeta {
+    display: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Candidate 2: The Horizontal Streamline (Action-Forward)
+   ───────────────────────────────────────────────────────────── */
+.streamlineCard {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.85rem 1.15rem;
+  border-radius: var(--w-surface-raised-radius, 1rem);
+  background: var(--w-surface-raised-bg);
+  box-shadow: var(--w-surface-raised-shadow);
+  border: 1px solid var(--w-line);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  gap: 0.85rem;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.streamlineCard:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--w-lamp) 40%, var(--w-line));
+  box-shadow: 0 6px 20px -3px color-mix(in srgb, var(--w-ink) 8%, transparent);
+}
+
+.streamlineLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.streamlineEmojiSeal {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.activeLampDot {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--w-lamp);
+  border: 1.5px solid var(--w-ground);
+}
+
+.streamlineWords {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.streamlineEyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--w-lamp);
+}
+
+.streamlineTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--w-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.streamlineRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.telemetryPill {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  background: var(--w-ground);
+  color: var(--w-ink-soft);
+  border: 1px solid var(--w-line);
+}
+
+/* Candidate 2 Container Gears */
+@container (max-width: 320px) {
+  .telemetryPill,
+  .streamlineEyebrow {
+    display: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Candidate 3: The Luminous Horizon (Atmospheric Aura)
+   ───────────────────────────────────────────────────────────── */
+.luminousCard {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1.25rem;
+  border-radius: var(--w-surface-raised-radius, 1rem);
+  background: var(--w-surface-raised-bg);
+  box-shadow: var(--w-surface-raised-shadow);
+  border: 1px solid var(--w-line);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luminousCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--w-lamp) 0%, transparent 80%);
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+.luminousCard:hover::before {
+  opacity: 1;
+}
+
+.luminousCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px -4px color-mix(in srgb, var(--w-lamp) 15%, transparent);
+}
+
+.luminousHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.luminousEmoji {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+.luminousActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.actionPipBtn {
+  background: transparent;
+  border: none;
+  color: var(--w-ink-soft);
+  padding: 0.35rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.actionPipBtn:hover {
+  background: var(--w-ground);
+  color: var(--w-ink);
+}
+
+.actionPipActive {
+  color: var(--w-lamp);
+}
+
+.orientationPeek {
+  margin-top: 0.65rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--w-lamp) 8%, var(--w-ground));
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 20%, var(--w-line));
+  font-size: 0.78rem;
+  color: var(--w-ink-soft);
+  line-height: 1.4;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Candidate 4 Evolution: Balanced Architectural Units (Tiles & Boxes)
+   (Moving away from long flat "strips" to height/width balanced shapes)
+   ───────────────────────────────────────────────────────────── */
+
+/* Tactile Long-Press Visual Charging Feedback */
+.balancedTile[data-charging="true"],
+.splitBox[data-charging="true"],
+.pebbleTile[data-charging="true"],
+.ingotCard[data-charging="true"] {
+  transform: scale(0.95);
+  border-color: var(--w-lamp) !important;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--w-lamp) 40%, transparent) !important;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* Free-floating Emoji with Ambient Lamp Glow (NO Cradle Box!) */
+.freeGlowEmoji {
+  font-size: 2.2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+  user-select: none;
+}
+
+.balancedTile:hover .freeGlowEmoji,
+.splitBox:hover .freeGlowEmoji,
+.pebbleTile:hover .freeGlowEmoji,
+.ingotCard:hover .freeGlowEmoji {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--w-lamp) 55%, transparent));
+}
+
+/* ─── 1. The 4C Balanced Tile (4:3 Squircle Module) ─── */
+.balancedTile {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  aspect-ratio: 1.25 / 1;
+  min-height: 8.5rem;
+  padding: 1.25rem;
+  border-radius: var(--w-surface-raised-radius, 1.25rem);
+  background: var(--w-surface-raised-bg);
+  box-shadow: var(--w-surface-raised-shadow);
+  border: 1px solid var(--w-line);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.balancedTile:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--w-lamp) 50%, var(--w-line));
+  box-shadow: 0 10px 28px -4px color-mix(in srgb, var(--w-ink) 12%, transparent);
+}
+
+.balancedTile:focus-visible {
+  outline: 2px solid var(--w-focus);
+  outline-offset: 2px;
+}
+
+.tileTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tileBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.tileTitle {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--w-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tileRhythm {
+  font-size: 0.75rem;
+  color: var(--w-ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tilePulseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--w-lamp);
+}
+
+/* ─── 2. The 4C Balanced Split-Box (3:2 Architectural Module) ─── */
+.splitBox {
+  appearance: none;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  aspect-ratio: 1.55 / 1;
+  min-height: 6.85rem;
+  border-radius: var(--w-surface-raised-radius, 1.15rem);
+  background: var(--w-surface-raised-bg);
+  box-shadow: var(--w-surface-raised-shadow);
+  border: 1px solid var(--w-line);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.splitBox:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--w-lamp) 45%, var(--w-line));
+  box-shadow: 0 10px 28px -4px color-mix(in srgb, var(--w-ink) 12%, transparent);
+}
+
+.splitBox:focus-visible {
+  outline: 2px solid var(--w-focus);
+  outline-offset: 2px;
+}
+
+.splitGutter {
+  width: 4.85rem;
+  background: var(--w-ground);
+  border-right: 1px solid var(--w-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  padding: 0.75rem;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease;
+}
+
+.splitBox:hover .splitGutter {
+  background: color-mix(in srgb, var(--w-lamp) 6%, var(--w-ground));
+}
+
+.splitGutterLamp {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -1px;
+  width: 2.5px;
+  background: var(--w-lamp);
+  opacity: 0.8;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.splitBox:hover .splitGutterLamp {
+  opacity: 1;
+  box-shadow: 0 0 10px var(--w-lamp);
+}
+
+.splitBody {
+  flex: 1;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.splitTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--w-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.splitBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* ─── 3. The 1:1 Sanctuary Pebble (Square Icon Module) ─── */
+.pebbleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(136px, 164px));
+  gap: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pebbleTile {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 168px;
+  min-width: 124px;
+  aspect-ratio: 1 / 1.02;
+  border-radius: var(--w-surface-raised-radius, 1.25rem);
+  background: var(--w-surface-raised-bg);
+  box-shadow: var(--w-surface-raised-shadow);
+  border: 1px solid var(--w-line);
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-touch-callout: none;
+  padding: 1.15rem 0.85rem 1.25rem 0.85rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pebbleTile:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--w-lamp) 50%, var(--w-line));
+  box-shadow: 0 10px 28px -4px color-mix(in srgb, var(--w-ink) 12%, transparent);
+}
+
+.pebbleTile:focus-visible {
+  outline: 2px solid var(--w-focus);
+  outline-offset: 2px;
+}
+
+.pebbleTile[data-charging="true"] {
+  transform: scale(0.95);
+  border-color: var(--w-lamp) !important;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--w-lamp) 40%, transparent) !important;
+  transition: transform 0.12s ease;
+}
+
+.pebbleTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+}
+
+.pebbleEmoji {
+  font-size: 2.35rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+  user-select: none;
+}
+
+.pebbleTile:hover .pebbleEmoji {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--w-lamp) 55%, transparent));
+}
+
+.pebbleBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  width: 100%;
+}
+
+.pebbleTitle {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--w-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.25;
+}
+
+.pebbleRhythm {
+  font-size: 0.72rem;
+  color: var(--w-ink-ghost, #888);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ─── Top-Right Quarter-Circle Sticker (Smooth Continuous Radial Arc) ─── */
+.pebbleCornerSticker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-top-right-radius: var(--w-surface-raised-radius, 1.25rem);
+  border-bottom-left-radius: 100%;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: color-mix(in srgb, var(--w-ground) 94%, transparent);
+  border: 1px solid var(--w-line);
+  border-top: none;
+  border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0.25rem 0.25rem;
+  cursor: pointer;
+  z-index: 3;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* On tile hover, reveal subtly so users can pin */
+.pebbleTile:hover .pebbleCornerSticker {
+  opacity: 0.65;
+  pointer-events: auto;
+}
+
+.pebbleCornerSticker:hover {
+  background: color-mix(in srgb, var(--w-lamp) 20%, var(--w-ground));
+  border-color: color-mix(in srgb, var(--w-lamp) 45%, var(--w-line));
+  transform: scale(1.05);
+  opacity: 1 !important;
+}
+
+/* When pinned: ALWAYS permanently visible with warm lamp glow! */
+.pebbleCornerSticker[data-pinned="true"] {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  background: color-mix(in srgb, var(--w-lamp) 22%, var(--w-ground));
+  border-color: color-mix(in srgb, var(--w-lamp) 55%, var(--w-line));
+  box-shadow: -2px 2px 10px -2px color-mix(in srgb, var(--w-lamp) 35%, transparent);
+}
+
+.emojiPin {
+  font-size: 0.92rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(2px, -2px);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease, filter 0.18s ease;
+  opacity: 0.5;
+}
+
+.pebbleCornerSticker:hover .emojiPin {
+  opacity: 1;
+  transform: translate(2px, -2px) scale(1.15);
+}
+
+.pebbleCornerSticker[data-pinned="true"] .emojiPin {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px var(--w-lamp));
+  transform: translate(2px, -2px) scale(1.05);
+}
+
+/* ─── Autonomous Pebble Corner Sticker Container & Polymorphic Slots ─── */
+.pebbleCornerHitBox {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  cursor: pointer;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  padding: 0;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pebbleCornerStickerFace {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-top-right-radius: var(--w-surface-raised-radius, 1.25rem);
+  border-bottom-left-radius: 100%;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: color-mix(in srgb, var(--w-ground) 94%, transparent);
+  border: 1px solid var(--w-line);
+  border-top: none;
+  border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0.25rem 0.25rem;
+  box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              opacity 0.2s ease;
+  user-select: none;
+  opacity: 0.45;
+}
+
+/* On tile hover or container hover, illuminate smoothly */
+.pebbleTile:hover .pebbleCornerStickerFace,
+.pebbleCornerHitBox:hover .pebbleCornerStickerFace,
+.pebbleCornerHitBox:focus-visible .pebbleCornerStickerFace {
+  opacity: 1;
+  background: color-mix(in srgb, var(--w-lamp) 18%, var(--w-ground));
+  border-color: color-mix(in srgb, var(--w-lamp) 45%, var(--w-line));
+}
+
+/* Micro-spring tactile compression on tap */
+.pebbleCornerHitBox[data-pressing="true"] .pebbleCornerStickerFace {
+  transform: scale(0.86);
+  background: color-mix(in srgb, var(--w-lamp) 32%, var(--w-ground)) !important;
+  border-color: var(--w-lamp) !important;
+}
+
+/* Permanently visible active state (pinned, open dropdown, active counter) */
+.pebbleCornerStickerFace[data-active="true"] {
+  opacity: 1 !important;
+  background: color-mix(in srgb, var(--w-lamp) 22%, var(--w-ground));
+  border-color: color-mix(in srgb, var(--w-lamp) 55%, var(--w-line));
+  box-shadow: -2px 2px 10px -2px color-mix(in srgb, var(--w-lamp) 35%, transparent);
+}
+
+.stickerGlyph {
+  font-size: 0.92rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(2px, -2px);
+  color: var(--w-ink-soft);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+}
+
+.pebbleCornerHitBox:hover .stickerGlyph {
+  transform: translate(2px, -2px) scale(1.12);
+  color: var(--w-ink);
+}
+
+.pebbleCornerStickerFace[data-active="true"] .stickerGlyph {
+  color: var(--w-lamp);
+}
+
+/* Counter Badge Number */
+.stickerCounter {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transform: translate(2px, -2px);
+  color: var(--w-lamp);
+}
+
+/* Live Status Dot */
+.stickerStatusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translate(2px, -2px);
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.stickerStatusDot[data-state="busy"] {
+  background: var(--w-lamp);
+  box-shadow: 0 0 6px var(--w-lamp);
+}
+
+.stickerStatusDot[data-state="syncing"] {
+  background: #3b82f6;
+  box-shadow: 0 0 6px #3b82f6;
+}
+
+/* Mini Action Dropdown (3-Dot Menu) */
+.stickerDropdownMenu {
+  position: absolute;
+  top: calc(100% - 0.2rem);
+  right: 0;
+  min-width: 155px;
+  background: var(--w-ground);
+  border: 1px solid var(--w-line);
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.22);
+  border-radius: 0.85rem;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 40;
+  animation: stickerPop 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes stickerPop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.stickerDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--w-ink);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.stickerDropdownItem:hover {
+  background: color-mix(in srgb, var(--w-lamp) 16%, var(--w-ground));
+  color: var(--w-lamp);
+}
+
+/* Micro Tooltip */
+.stickerTooltip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 0;
+  background: var(--w-ink);
+  color: var(--w-ground);
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.45rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 50;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  animation: stickerPop 0.12s ease;
+}
+
+.pebbleRhythmRow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  font-size: 0.72rem;
+  color: var(--w-ink-ghost, #888);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pebblePulseDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--w-lamp);
+  opacity: 0.85;
+}
+
+/* ─── Compact / Mobile Pebble (Zero 3rd-Line · Pure 1:1 Squircle Face) ─── */
+.compactPebbleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.compactPebbleTile {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--w-surface-raised-radius, 1.15rem);
+  background: var(--w-surface-raised-bg);
+  box-shadow: var(--w-surface-raised-shadow);
+  border: 1px solid var(--w-line);
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-touch-callout: none;
+  padding: 1rem 0.55rem 0.85rem 0.55rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.compactPebbleTile:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--w-lamp) 50%, var(--w-line));
+  box-shadow: 0 8px 22px -4px color-mix(in srgb, var(--w-ink) 12%, transparent);
+}
+
+.compactPebbleTile:focus-visible {
+  outline: 2px solid var(--w-focus);
+  outline-offset: 2px;
+}
+
+.compactPebbleTile[data-charging="true"] {
+  transform: scale(0.94);
+  border-color: var(--w-lamp) !important;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--w-lamp) 40%, transparent) !important;
+  transition: transform 0.12s ease;
+}
+
+.compactPebbleTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+}
+
+.compactPebbleEmoji {
+  font-size: 1.85rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+  user-select: none;
+}
+
+.compactPebbleTile:hover .compactPebbleEmoji {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--w-lamp) 50%, transparent));
+}
+
+.compactPebbleBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 0.1rem;
+}
+
+.compactPebbleTitle {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--w-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.2;
+}
+
+/* Scaled Down Corner Sticker for Compact Pebble */
+.compactCornerStickerFace {
+  width: 1.85rem;
+  height: 1.85rem;
+  border-top-right-radius: var(--w-surface-raised-radius, 1.15rem);
+  border-bottom-left-radius: 100%;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: color-mix(in srgb, var(--w-ground) 94%, transparent);
+  border: 1px solid var(--w-line);
+  border-top: none;
+  border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0.2rem 0.2rem;
+  box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              opacity 0.2s ease;
+  user-select: none;
+  opacity: 0.45;
+}
+
+.compactPebbleTile:hover .compactCornerStickerFace,
+.pebbleCornerHitBox:hover .compactCornerStickerFace,
+.pebbleCornerHitBox:focus-visible .compactCornerStickerFace {
+  opacity: 1;
+  background: color-mix(in srgb, var(--w-lamp) 18%, var(--w-ground));
+  border-color: color-mix(in srgb, var(--w-lamp) 45%, var(--w-line));
+}
+
+.pebbleCornerHitBox[data-pressing="true"] .compactCornerStickerFace {
+  transform: scale(0.86);
+  background: color-mix(in srgb, var(--w-lamp) 32%, var(--w-ground)) !important;
+  border-color: var(--w-lamp) !important;
+}
+
+.compactCornerStickerFace[data-active="true"] {
+  opacity: 1 !important;
+  background: color-mix(in srgb, var(--w-lamp) 22%, var(--w-ground));
+  border-color: color-mix(in srgb, var(--w-lamp) 55%, var(--w-line));
+  box-shadow: -2px 2px 8px -2px color-mix(in srgb, var(--w-lamp) 35%, transparent);
+}
+
+.compactCornerStickerFace .stickerGlyph {
+  font-size: 0.8rem;
+  transform: translate(1px, -1px);
+}
+
+.compactCornerStickerFace .stickerCounter {
+  font-size: 0.65rem;
+  transform: translate(1px, -1px);
+}
+
+.compactCornerStickerFace .stickerStatusDot {
+  width: 6px;
+  height: 6px;
+  transform: translate(1px, -1px);
+}
+
+/* Container Queries for Fluid, Balanced Pebble Resizing */
+@container (max-width: 360px) {
+  .pebbleGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+  .pebbleTile {
+    max-width: none;
+    min-width: 0;
+    padding: 1rem 0.65rem 1.15rem 0.65rem;
+    aspect-ratio: 1 / 1.02;
+  }
+  .pebbleEmoji {
+    font-size: 2.1rem;
+  }
+  .pebbleTitle {
+    font-size: 0.95rem;
+  }
+}
+
+@container (max-width: 280px) {
+  .pebbleTile {
+    padding: 0.85rem 0.5rem 1rem 0.5rem;
+  }
+  .pebbleEmoji {
+    font-size: 1.85rem;
+  }
+  .pebbleTitle {
+    font-size: 0.88rem;
+  }
+  .pebbleRhythm {
+    font-size: 0.68rem;
+  }
+}
+
+/* ─── 4. The 4C Calibrated Ingot (Refined 1.8:1 Proportion) ─── */
+.ingotCard {
+  appearance: none;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  aspect-ratio: 1.8 / 1;
+  min-height: 5.5rem;
+  border-radius: var(--w-surface-raised-radius, 1rem);
+  background: var(--w-surface-raised-bg);
+  box-shadow: var(--w-surface-raised-shadow);
+  border: 1px solid var(--w-line);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ingotCard:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--w-lamp) 45%, var(--w-line));
+  box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--w-ink) 10%, transparent);
+}
+
+.ingotGutter {
+  width: 4.25rem;
+  background: var(--w-ground);
+  border-right: 1px solid var(--w-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  padding: 0.65rem;
+  box-sizing: border-box;
+}
+
+.ingotBody {
+  flex: 1;
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.ingotTitle {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--w-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trailingActionBtn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--w-ink-soft);
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.trailingActionBtn:hover {
+  background: var(--w-ground);
+  border-color: var(--w-line);
+  color: var(--w-ink);
+  transform: scale(1.06);
+}
+
+.trailingActionBtn[data-active="true"] {
+  color: var(--w-lamp);
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
+}
+
+/* Container Queries for Balanced Modules */
+@container (max-width: 320px) {
+  .balancedTile {
+    aspect-ratio: 1.15 / 1;
+    padding: 1rem;
+  }
+  .freeGlowEmoji {
+    font-size: 1.85rem;
+  }
+  .splitGutter {
+    width: 3.85rem;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Interactive Popover Menu Sheet for Orientation
+   ───────────────────────────────────────────────────────────── */
+.popoverBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.15s ease-out;
+}
+
+.orientationPopover {
+  position: absolute;
+  top: 3rem;
+  right: 1rem;
+  z-index: 1001;
+  width: 19rem;
+  max-width: 90vw;
+  padding: 1.15rem;
+  border-radius: 1rem;
+  background: var(--w-surface-raised-bg);
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--w-line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: popIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.popoverHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.popoverHeading h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--w-ink);
+}
+
+.popoverDescription {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--w-ink-soft);
+}
+
+.popoverActionRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.popoverBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--w-line);
+  background: var(--w-ground);
+  color: var(--w-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.popoverBtn:hover {
+  background: var(--w-surface-raised-bg);
+  border-color: var(--w-lamp);
+}
+
+/* Mobile Bottom Sheet Drawer adaptation */
+.sheetDragHandle {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .sheetDragHandle {
+    display: block;
+    width: 2.75rem;
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--w-line);
+    margin: 0 auto 0.75rem auto;
+  }
+
+  .orientationPopover {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 1.5rem 1.5rem 0 0;
+    padding: 1.25rem 1.25rem 2.25rem 1.25rem;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.28);
+    animation: slideUpSheet 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes slideUpSheet {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}

@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useDebouncedValue, useThrottledInvalidate } from '../../pacer/usePacer';
 import {
-  academicHexagonalService,
+  academicAdapter,
   DEFAULT_CANONICAL_ASSIGNMENTS,
-} from '../adapters/academic/academicHexagonalService';
+} from '../adapters/academic/academic.adapter';
 import type { AcademicSubmissionView, AssignmentQuest } from '../ports/academic.port';
 
 export function useAcademicDomain() {
@@ -21,7 +21,7 @@ export function useAcademicDomain() {
   // TanStack Query: Assignments catalog
   const { data: assignments = DEFAULT_CANONICAL_ASSIGNMENTS } = useQuery({
     queryKey: ['academic', 'assignments'],
-    queryFn: () => academicHexagonalService.getAssignments(),
+    queryFn: () => academicAdapter.getAssignments(),
     initialData: DEFAULT_CANONICAL_ASSIGNMENTS,
     staleTime: 60_000,
   });
@@ -29,7 +29,7 @@ export function useAcademicDomain() {
   // TanStack Query: Student submissions
   const { data: submissions = [] } = useQuery({
     queryKey: ['academic', 'submissions'],
-    queryFn: () => academicHexagonalService.getSubmissions(),
+    queryFn: () => academicAdapter.getSubmissions(),
     initialData: [],
     staleTime: 30_000,
   });
@@ -37,7 +37,7 @@ export function useAcademicDomain() {
   // TanStack Query: Gradebook roster
   const { data: roster = [] } = useQuery({
     queryKey: ['academic', 'roster'],
-    queryFn: () => academicHexagonalService.getGradebookRoster(),
+    queryFn: () => academicAdapter.getGradebookRoster(),
     initialData: [],
     staleTime: 60_000,
   });
@@ -58,7 +58,7 @@ export function useAcademicDomain() {
     async (assignmentId: string, content: string, photoUrl?: string) => {
       setIsSubmitting(true);
       try {
-        const result = await academicHexagonalService.submitAssignment({
+        const result = await academicAdapter.submitAssignment({
           assignmentId,
           studentId: 'student-current-user',
           content,
@@ -82,7 +82,7 @@ export function useAcademicDomain() {
       const targetSub = submissions.find((s) => s.id === submissionId);
       if (!targetSub) return null;
 
-      const result = await academicHexagonalService.gradeSubmission({
+      const result = await academicAdapter.gradeSubmission({
         submissionId,
         studentId: targetSub.student_id,
         classroomId: targetSub.classroom || 'class-default',

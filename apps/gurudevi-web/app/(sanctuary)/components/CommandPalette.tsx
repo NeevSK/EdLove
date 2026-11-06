@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { ScrollArea } from '@repo/ui/components/web';
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   useCallback,
@@ -68,6 +69,30 @@ const defaultCommands: readonly CommandItem[] = [
     symbol: '📅',
     section: 'Academic',
     href: '/workspace/timetable',
+  },
+  {
+    id: 'ai-tutii-dm',
+    title: 'Tutii AI Companion',
+    description: 'Direct mentor conversation with persistent memory and guidance',
+    symbol: '✨',
+    section: 'Tools',
+    href: '/community?pillar=messages&dm=tutii',
+  },
+  {
+    id: 'ai-workspace',
+    title: 'AI Workspace Floor',
+    description: 'Multi-turn agent reasoning, tool proposals, and human-in-the-loop plans',
+    symbol: '⚡',
+    section: 'Tools',
+    href: '/community?pillar=messages',
+  },
+  {
+    id: 'ai-incognito',
+    title: 'Incognito AI Session',
+    description: 'Zero-trace, non-persisted inquiry with instant ephemeral scratchpad',
+    symbol: '🕶️',
+    section: 'Tools',
+    href: '/community?pillar=messages&mode=incognito',
   },
   {
     id: 'tools-agent-lab',
@@ -218,13 +243,14 @@ export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: Comma
         </div>
 
         {/* Results List */}
-        <ul
-          id={listId}
-          ref={listRef}
-          role="listbox"
-          aria-label="Available commands"
-          className="overflow-y-auto p-2 m-0 list-none space-y-1"
-        >
+        <ScrollArea orientation="vertical" style={{ height: '340px', maxHeight: '50vh' }} label="Available commands">
+          <ul
+            id={listId}
+            ref={listRef}
+            role="listbox"
+            aria-label="Available commands"
+            className="p-2 m-0 list-none space-y-1"
+          >
           {filteredCommands.length === 0 ? (
             <li className="py-8 text-center text-xs text-ink-soft font-sans">
               No matching commands or floors found for &ldquo;{query}&rdquo;
@@ -281,6 +307,7 @@ export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: Comma
             })
           )}
         </ul>
+        </ScrollArea>
 
         {/* Footer shortcuts */}
         <div

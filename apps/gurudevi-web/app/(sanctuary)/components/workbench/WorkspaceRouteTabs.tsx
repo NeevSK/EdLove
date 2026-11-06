@@ -10,7 +10,7 @@ import { WORKSPACE_FEATURES } from '../../workspace/workspaceFeatureRegistry';
 import { useQuickAccessPreferences } from '../../../../lib/workbench/quickAccessPreferences';
 import type { QuickAccessItem } from './QuickAccessRail';
 import { TaskStrip } from './TaskStrip';
-import { TemporalHorizon } from './TemporalHorizon';
+import { DateTimeCombo } from './DateTimeCombo';
 import styles from './workbench.module.css';
 
 export function WorkspaceRouteTabs({
@@ -109,12 +109,14 @@ export function WorkspaceRouteTabs({
         overviewActive={pathname === '/workspace'}
         tasks={workbench.state.tasks}
       />
-      <TemporalHorizon
-        compact
+      <DateTimeCombo
+        formFactor="auto"
+        date={selectedDate}
         dateLabel={coordinates.dateLabel}
         intent={coordinates.intent}
         onSelectDate={selectDate}
         onToday={() => selectDate(toIsoDate(new Date()))}
+        allowDismiss={false}
       />
     </div>
   );

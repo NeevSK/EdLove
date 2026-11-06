@@ -4,6 +4,7 @@ import { resolveSurfaceUrl } from '../../lib/surface-urls';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { LanguagePicker } from '@repo/ui/components/web';
 import { useTranslation, LANGUAGES } from '../../lib/i18n';
 
 export function MarketingHeader() {
@@ -60,24 +61,14 @@ export function MarketingHeader() {
         </nav>
 
         <div className="header-actions">
-          <div aria-label={t('nav.chooseLanguage')} className="hidden items-center gap-1.5 font-sans text-xs sm:flex">
-            {LANGUAGES.map((lang) => (
-              <button
-                key={lang.code}
-                type="button"
-                onClick={() => setLocale(lang.code)}
-                className={`rounded px-1.5 py-0.5 text-xs font-semibold transition-colors cursor-pointer ${
-                  locale === lang.code
-                    ? 'bg-charcoal-truth text-sacred-white dark:bg-sacred-white dark:text-charcoal-truth'
-                    : 'text-ink-soft hover:text-ink'
-                }`}
-                aria-label={lang.label}
-                aria-pressed={locale === lang.code}
-              >
-                {lang.shortLabel}
-              </button>
-            ))}
-          </div>
+          <LanguagePicker
+            value={locale as 'en' | 'si' | 'ta'}
+            onChange={(l) => setLocale(l)}
+            variant="auto"
+            threshold={420}
+            label={t('nav.chooseLanguage')}
+            className="hidden sm:inline-flex"
+          />
           <a className="header-platform" href={resolveSurfaceUrl('explore', '/self')}>
             {t('nav.openPlatform')} <span aria-hidden="true">↗</span>
           </a>

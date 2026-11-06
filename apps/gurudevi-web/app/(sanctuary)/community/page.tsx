@@ -44,6 +44,17 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   const rawInviteCode = resolvedSearchParams?.inviteCode;
   const inviteCode = typeof rawInviteCode === 'string' ? rawInviteCode : undefined;
 
+  const rawPillar = resolvedSearchParams?.pillar;
+  const initialPillar =
+    rawPillar === 'feed' || rawPillar === 'groups' || rawPillar === 'messages'
+      ? rawPillar
+      : undefined;
+  const rawDm = resolvedSearchParams?.dm;
+  const initialConversationId = typeof rawDm === 'string' ? rawDm : undefined;
+  const initialIncognito =
+    resolvedSearchParams?.incognito === 'true' ||
+    resolvedSearchParams?.mode === 'incognito';
+
   const requestHeaders = await headers();
   const cookieStore = await cookies();
   const host = requestHeaders.get('host') ?? '';
@@ -65,6 +76,9 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
           mode="explore"
           result={{ kind: 'ready', groups: [...EXPLORE_COMMUNITY_GROUPS], hasMore: false }}
           inviteCode={inviteCode}
+          initialPillar={initialPillar}
+          initialConversationId={initialConversationId}
+          initialIncognito={initialIncognito}
         />
       </SanctuaryShell>
     );
@@ -92,6 +106,9 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
           mode="account"
           result={{ kind: 'ready', groups: [...EXPLORE_COMMUNITY_GROUPS], hasMore: false }}
           inviteCode={inviteCode}
+          initialPillar={initialPillar}
+          initialConversationId={initialConversationId}
+          initialIncognito={initialIncognito}
         />
       </SanctuaryShell>
     );
@@ -99,12 +116,46 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
 
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
-    redirect('/welcome?returnTo=/community');
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <CommunityFeedFloor
+          accountId="guest"
+          mode="explore"
+          result={{ kind: 'ready', groups: [...EXPLORE_COMMUNITY_GROUPS], hasMore: false }}
+          inviteCode={inviteCode}
+          initialPillar={initialPillar}
+          initialConversationId={initialConversationId}
+          initialIncognito={initialIncognito}
+        />
+      </SanctuaryShell>
+    );
   }
 
   const entry = await resolveAuthorizedEntry(supabase);
   if (entry.kind === 'signed-out') {
-    redirect('/welcome?returnTo=/community');
+    return (
+      <SanctuaryShell
+        displayName="Guest Explorer"
+        navigationPrefix=""
+        showAccountNavigation={true}
+        isExploreMode={true}
+      >
+        <CommunityFeedFloor
+          accountId="guest"
+          mode="explore"
+          result={{ kind: 'ready', groups: [...EXPLORE_COMMUNITY_GROUPS], hasMore: false }}
+          inviteCode={inviteCode}
+          initialPillar={initialPillar}
+          initialConversationId={initialConversationId}
+          initialIncognito={initialIncognito}
+        />
+      </SanctuaryShell>
+    );
   }
   if (entry.kind === 'onboarding-required')
     return (
@@ -155,6 +206,9 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
         primaryCapacity={entry.primaryCapacity}
         result={result}
         inviteCode={inviteCode}
+        initialPillar={initialPillar}
+        initialConversationId={initialConversationId}
+        initialIncognito={initialIncognito}
       />
     </SanctuaryShell>
   );

@@ -27,15 +27,13 @@ The React hooks API (`useQuery`, `useStatus`, `usePowerSync`, `useSuspenseQuery`
 npm install @powersync/react-native@latest
 ```
 
-Then install a native SQLite adapter (required peer dependency):
+The React Native SDK v2 has the OP-SQLite adapter built in. Install OP-SQLite itself as a direct dependency: React Native autolinking only discovers direct dependencies.
 
 ```bash
-# OP-SQLite — recommended: built-in encryption, React Native New Architecture support
-npm install @powersync/op-sqlite@latest
-
-# OR: React Native Quick SQLite — original adapter
-npm install @journeyapps/react-native-quick-sqlite@latest
+npm install @op-engineering/op-sqlite@latest
 ```
+
+Do not install `@powersync/op-sqlite` or `@journeyapps/react-native-quick-sqlite` for the v2 React Native SDK. OP-SQLite is the sole native implementation in v2; the old separate PowerSync adapter arrangement is obsolete. The SDK declares `@op-engineering/op-sqlite` as a peer dependency.
 
 After installing native dependencies, rebuild your native app:
 
@@ -50,7 +48,7 @@ npx react-native run-ios / run-android
 The provider pattern is identical to React web. Import from `@powersync/react-native`:
 
 ```tsx
-import { PowerSyncContext } from '@powersync/react-native';
+import { PowerSyncContext } from '@powersync/react';
 
 export function App() {
   return (
@@ -75,7 +73,7 @@ export const db = new PowerSyncDatabase({
 });
 ```
 
-By default, `@powersync/react-native` uses OP-SQLite if installed, falling back to React Native Quick SQLite. No additional configuration is needed to select the adapter — the SDK detects which peer is present.
+In v2, `@powersync/react-native` uses its built-in OP-SQLite adapter. Pass the database filename and SQLite options through the public `database` option; no `OPSqliteOpenFactory` import or separate `@powersync/op-sqlite` package is needed. Keep `@op-engineering/op-sqlite` installed directly for autolinking.
 
 ## Expo
 
@@ -84,7 +82,7 @@ By default, `@powersync/react-native` uses OP-SQLite if installed, falling back 
 PowerSync works with Expo managed workflow. Native adapters (recommended) require a development build because they use native modules. If you need to run in Expo Go, use the JavaScript-only adapter instead. See the Expo Go section below.
 
 ```bash
-npx expo install @powersync/react-native @powersync/op-sqlite
+npx expo install @powersync/react-native @op-engineering/op-sqlite
 npx expo prebuild
 npx expo run:ios   # or run:android
 ```
@@ -148,10 +146,7 @@ export const powerSync = new PowerSyncDatabase({
 
 ### Moving Beyond Expo Go
 
-When moving to development builds or production, switch to a native adapter:
-
-- OP-SQLite (`@powersync/op-sqlite`) — recommended; encryption support, New Architecture compatible
-- React Native Quick SQLite (`@journeyapps/react-native-quick-sqlite`) — original adapter
+When moving to development builds or production, use the built-in v2 OP-SQLite adapter with the direct `@op-engineering/op-sqlite` peer dependency.
 
 These require native compilation and cannot run inside Expo Go's prebuilt container.
 
@@ -159,8 +154,17 @@ These require native compilation and cannot run inside Expo Go's prebuilt contai
 
 ### Forgetting to rebuild after installing native deps
 
-Any change to native dependencies requires a rebuild. Running `npx expo start` without rebuilding will use the old native bundle and the new package won't be linked.
+Any change to native dependencies requires a new development or production build. Running `npx expo start` without rebuilding uses the old native bundle and the new package won't be linked. Follow the app's CNG and native-build workflow; do not edit generated `android/` or `ios/` files directly.
 
 ### Using Expo Go without the sql-js adapter
 
-Expo Go does not support native modules. Attempting to use `@powersync/react-native` with the default OP-SQLite adapter in Expo Go will throw a native module not found error. Use `@powersync/adapter-sql-js` for Expo Go.
+Expo Go does not include OP-SQLite's native module. Use `@powersync/adapter-sql-js` only for an Expo Go sandbox; use the built-in OP-SQLite adapter in a development build or production app.
+
+## SDK v2.4.0 notes
+
+- `connect()` can take an `Authenticator` and `MutationUploader` separately, including download-only and upload-only forms. Existing `PowerSyncBackendConnector` implementations remain supported.
+- `connectTimeoutMs` defaults to 30 seconds, so a service that never responds no longer leaves connection, checkpoint, upload, download, or later disconnect work hanging indefinitely.
+- Initialization failures can be followed by disconnect/reconnect, and failed commits now surface their error and roll back correctly.
+- `usePowerSyncOrNull()` and `useStatusOrNull()` support places where a database may be absent, such as SSR. Managed tables are still alpha; do not adopt them as a routine migration.
+
+See the dated [v2.4.0 release notes](https://releases.powersync.com/announcements/react-native-client-sdk) before changing connection, retry, or transaction behavior.

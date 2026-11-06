@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+﻿import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../../../lib/host-routing';
@@ -6,7 +6,7 @@ import { resolveAuthorizedEntry } from '../../../../../lib/sanctuary/authorizedE
 import { createServerSupabaseClient } from '../../../../../lib/supabase/server';
 import { signInPath } from '../../../auth/routeSafety';
 import { SanctuaryShell } from '../../../components/SanctuaryShell';
-import { VideoPlayerFloor } from './VideoPlayerFloor';
+import { VideoPlayerDesk } from './VideoPlayerDesk';
 
 export const metadata = { title: 'Video Lecture | Gurudevi Sanctuary' };
 
@@ -28,7 +28,7 @@ export default async function VideoPlayerPage({ params }: VideoPlayerPageProps) 
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <VideoPlayerFloor videoId={videoId} displayName="Guest Explorer" />
+        <VideoPlayerDesk videoId={videoId} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -42,7 +42,7 @@ export default async function VideoPlayerPage({ params }: VideoPlayerPageProps) 
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <VideoPlayerFloor videoId={videoId} displayName="Guest Explorer" />
+        <VideoPlayerDesk videoId={videoId} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -56,7 +56,7 @@ export default async function VideoPlayerPage({ params }: VideoPlayerPageProps) 
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <VideoPlayerFloor videoId={videoId} displayName="Guest Explorer" />
+        <VideoPlayerDesk videoId={videoId} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -87,7 +87,7 @@ export default async function VideoPlayerPage({ params }: VideoPlayerPageProps) 
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <VideoPlayerFloor
+      <VideoPlayerDesk
         videoId={videoId}
         displayName={entry.displayName}
         capacity={entry.activeCapacity}

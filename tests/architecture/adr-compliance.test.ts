@@ -45,10 +45,10 @@ const ALL_CONTRACTS: Array<{ name: string; contract: Record<string, any> }> = [
 describe('ADR Compliance: Middleware Enforcement', () => {
   for (const { name, router } of ALL_ROUTERS) {
     describe(`${name} router`, () => {
-      it('every procedure uses doubleGateMiddleware', () => {
+      it('every procedure uses cedarAuthorizationMiddleware', () => {
         for (const [procName, proc] of Object.entries((router as any)._def?.procedures || {})) {
           const middlewares = (proc as any)._def?.middlewares || [];
-          const hasDoubleGate = middlewares.some((m: any) => m.name === 'doubleGateMiddleware');
+          const hasDoubleGate = middlewares.some((m: any) => m.name === 'cedarAuthorizationMiddleware');
           expect(hasDoubleGate).toBe(true);
         }
       });

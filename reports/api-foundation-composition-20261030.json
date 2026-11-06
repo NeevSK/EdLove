@@ -1,0 +1,715 @@
+{
+  "scope": "G0 static source inspection; no runtime, authorization, deployment or reachability proof",
+  "issues": [
+    {
+      "code": "alternate-api-mount",
+      "file": "apps/sanctuary-api/src/core/app.ts",
+      "detail": "Unclassified API route /api/openapi/*"
+    },
+    {
+      "code": "alternate-openapi",
+      "file": "apps/sanctuary-api/src/core/app.ts",
+      "detail": "OpenAPIHandler is composed at the first-party app boundary; remove or classify an explicitly external adapter"
+    },
+    {
+      "code": "type-escape",
+      "file": "apps/sanctuary-api/src/core/app.ts",
+      "detail": "Handler router is cast to any"
+    },
+    {
+      "code": "unresolved-mount",
+      "file": "apps/sanctuary-api/src/core/app.ts",
+      "detail": "An /api subrouter requires explicit protocol classification"
+    },
+    {
+      "code": "unresolved-rpc-composition",
+      "file": "apps/sanctuary-api/src/core/app.ts",
+      "detail": "Exactly one RPCHandler must be passed to the imported v1 registrar"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/admin.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/agent.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/announcements.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/attendance.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/attendanceV1.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/channel.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/community.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/decisionJournal.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/echo.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/editorial.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/educational.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/erp.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/forms.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/grading.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/guardianAssessment.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/history.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/identity.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/inventory.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/journalEntries.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/learningReflections.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/library.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/longitudinal.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/mapping.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/media.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/messaging.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/permissionSnapshot.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/planBridge.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/presence.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/principalNotes.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/profile.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/rewards.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/sacredMissions.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/schoolForest.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/self.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/social.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/studentPotential.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/sync.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/thuthimal.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/tracking.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/warmMirror.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/handlers/workspaceProvisioning.ts",
+      "detail": "Handler imports the local legacy implement adapter"
+    },
+    {
+      "code": "legacy-converter",
+      "file": "apps/sanctuary-api/src/core/orpc.ts",
+      "detail": "Legacy converter is used by composed handlers"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "educationalRouter is mounted more than once in one composition"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "adminRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "agentRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "announcementsRouter is also mounted inside apps/sanctuary-api/src/domains/community/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "attendanceRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "channelRouter is also mounted inside apps/sanctuary-api/src/domains/community/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "dailyContentRouter is also mounted inside apps/sanctuary-api/src/domains/library/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "decisionJournalRouter is also mounted inside apps/sanctuary-api/src/domains/self/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "echoRouter is also mounted inside apps/sanctuary-api/src/domains/self/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "editorialRouter is also mounted inside apps/sanctuary-api/src/domains/library/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "educationalRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "erpRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "eventsRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "formsRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "gradingRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "guardianAssessmentRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "historyRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "inventoryRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "journalEntriesRouter is also mounted inside apps/sanctuary-api/src/domains/self/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "learningReflectionsRouter is also mounted inside apps/sanctuary-api/src/domains/self/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "longitudinalRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "mappingRouter is also mounted inside apps/sanctuary-api/src/domains/library/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "mediaRouter is also mounted inside apps/sanctuary-api/src/domains/library/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "messagingRouter is also mounted inside apps/sanctuary-api/src/domains/community/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "onboardingRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "permissionSnapshotRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "planBridgeRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "presenceRouter is also mounted inside apps/sanctuary-api/src/domains/community/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "principalNotesRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "privacyRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "profileRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "rewardsRouter is also mounted inside apps/sanctuary-api/src/domains/community/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "sacredMissionsRouter is also mounted inside apps/sanctuary-api/src/domains/self/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "schoolForestRouter is also mounted inside apps/sanctuary-api/src/domains/library/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "socialRouter is also mounted inside apps/sanctuary-api/src/domains/community/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "studentPotentialRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "syncRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "thuthimalRouter is also mounted inside apps/sanctuary-api/src/domains/community/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "todosRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "trackingRouter is also mounted inside apps/sanctuary-api/src/domains/identity/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "warmMirrorRouter is also mounted inside apps/sanctuary-api/src/domains/self/index.ts"
+    },
+    {
+      "code": "root-alias",
+      "file": "apps/sanctuary-api/src/core/router.ts",
+      "detail": "workspaceProvisioningRouter is also mounted inside apps/sanctuary-api/src/domains/workspace/index.ts"
+    },
+    {
+      "code": "legacy-rpc-mount",
+      "file": "apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "Non-v1 RPC mount /api/*"
+    },
+    {
+      "code": "rpc-server-base",
+      "file": "apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "Native RPC mount and handler prefix must both be /api/v1"
+    },
+    {
+      "code": "type-escape",
+      "file": "apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "Unsafe type escape at line 12"
+    },
+    {
+      "code": "type-escape",
+      "file": "apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "Unsafe type escape at line 35"
+    },
+    {
+      "code": "type-escape",
+      "file": "apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "Unsafe type escape at line 5"
+    },
+    {
+      "code": "type-escape",
+      "file": "apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "Unsafe type escape at line 9"
+    },
+    {
+      "code": "unresolved-rpc-composition",
+      "file": "apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "Cannot trace the v1 mount callback to the registered handler and prefix"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/domains/community/index.ts",
+      "detail": "channelRouter is mounted more than once in one composition"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/domains/community/index.ts",
+      "detail": "communityRouter is mounted more than once in one composition"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/domains/identity/index.ts",
+      "detail": "identityRouter is mounted more than once in one composition"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/domains/identity/index.ts",
+      "detail": "permissionSnapshotRouter is mounted more than once in one composition"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/domains/library/index.ts",
+      "detail": "libraryRouter is mounted more than once in one composition"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/domains/self/index.ts",
+      "detail": "selfRouter is mounted more than once in one composition"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/domains/workspace/index.ts",
+      "detail": "educationalRouter is mounted more than once in one composition"
+    },
+    {
+      "code": "duplicate-router",
+      "file": "apps/sanctuary-api/src/domains/workspace/index.ts",
+      "detail": "todosRouter also appears in apps/sanctuary-api/src/domains/self/index.ts"
+    },
+    {
+      "code": "unresolved-mount",
+      "file": "C:/x/apps/sanctuary-api/src/core/routes/canonicalV1.ts",
+      "detail": "App-called imported module registers an API path; classify the mount"
+    },
+    {
+      "code": "unresolved-mount",
+      "file": "C:/x/apps/sanctuary-api/src/core/routes/canonicalV1.ts",
+      "detail": "App-passed registrar registerCanonicalV1Routes needs explicit inspection"
+    },
+    {
+      "code": "unresolved-mount",
+      "file": "C:/x/apps/sanctuary-api/src/core/routes/durableAgents.ts",
+      "detail": "App-called imported module registers an API path; classify the mount"
+    },
+    {
+      "code": "unresolved-mount",
+      "file": "C:/x/apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "App-called imported module registers an API path; classify the mount"
+    },
+    {
+      "code": "unresolved-mount",
+      "file": "C:/x/apps/sanctuary-api/src/core/routes/orpc.ts",
+      "detail": "App-passed registrar registerNativeORPCRoutes needs explicit inspection"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/admin.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/agent.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/announcements.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-client-inference",
+      "file": "packages/core/src/api/appContract.ts",
+      "detail": "Legacy declaration client inference remains"
+    },
+    {
+      "code": "type-escape",
+      "file": "packages/core/src/api/appContract.ts",
+      "detail": "Unsafe type escape at line 120"
+    },
+    {
+      "code": "type-escape",
+      "file": "packages/core/src/api/appContract.ts",
+      "detail": "Unsafe type escape at line 137"
+    },
+    {
+      "code": "type-escape",
+      "file": "packages/core/src/api/appContract.ts",
+      "detail": "Unsafe type escape at line 172"
+    },
+    {
+      "code": "type-escape",
+      "file": "packages/core/src/api/appContract.ts",
+      "detail": "Unsafe type escape at line 181"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/attendance.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/channel.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/community.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/dailyContent.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/educational.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/grading.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/guardian-assessment.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/identity.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/inventory.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/library.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/mapping.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/messaging.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/onboarding.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "rpc-client-base",
+      "file": "packages/core/src/api/orpcClient.ts",
+      "detail": "RPCLink must use the literal /api/v1 base"
+    },
+    {
+      "code": "type-escape",
+      "file": "packages/core/src/api/orpcClient.ts",
+      "detail": "Unsafe type escape at line 141"
+    },
+    {
+      "code": "type-escape",
+      "file": "packages/core/src/api/orpcClient.ts",
+      "detail": "Unsafe type escape at line 149"
+    },
+    {
+      "code": "type-escape",
+      "file": "packages/core/src/api/orpcClient.ts",
+      "detail": "Unsafe type escape at line 151"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/planBridge.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/principalNotes.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/privacy.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/profile.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/rewards.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/social.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/sync.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    },
+    {
+      "code": "legacy-contract",
+      "file": "packages/core/src/api/workspace-provisioning.orpc.contract.ts",
+      "detail": "Reachable method/path declaration is not a native procedure contract"
+    }
+  ]
+}

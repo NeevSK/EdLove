@@ -1,0 +1,109 @@
+{
+  "errors": [],
+  "gaps": [
+    "binding:api.knowledge_channels: binding implemented",
+    "binding:api.knowledge_evidence: binding implemented",
+    "binding:api.knowledge_glossary: binding implemented",
+    "binding:api.knowledge_how: binding implemented",
+    "binding:api.knowledge_rules: binding implemented",
+    "binding:api.knowledge_what: binding implemented",
+    "journey:api.ground_architecture: no implementation bindings",
+    "journey:api.ground_architecture: open question: Launch channel scope, external interoperability, privacy and consequential action policies remain product decisions.",
+    "journey:api.ground_architecture: open question: Meta webhook detail pages were access/rate limited; revalidate exact selected-version behavior before implementation.",
+    "journey:api.ground_architecture: open question: The exact Anthropic announcement and intended Hermes project recalled by the owner remain unconfirmed.",
+    "scenario:api.knowledge_read: G0 evidence unverifiable",
+    "scenario:api.knowledge_read: no linked implementation binding"
+  ],
+  "bindings": [
+    {
+      "id": "binding:api.knowledge_what",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.knowledge_how",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.knowledge_glossary",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.knowledge_channels",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.knowledge_evidence",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.knowledge_rules",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    }
+  ],
+  "evidence": [
+    {
+      "scenario": "scenario:api.knowledge_read",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.knowledge_docs_g0_20261030",
+              "revision": "bf03fdea11624dd34433da910f6f562442d761f3+working-tree:api-knowledge-docs-20261030",
+              "environment": "Windows host, Python/PyYAML static documentation checks and Node/tsx PJC CLI",
+              "result": "passed",
+              "substitutions": [
+                "Static document/source inspection; no application runtime, provider or human learning assessment"
+              ],
+              "limitations": "Six document frontmatters and 31 local file/heading references resolve; PJC structural validation reports zero errors and trace/query commands discover the new references. Primary-source research and independent review do not establish exhaustive external correctness, future latest versions, application behavior, reader comprehension or adoption of researched frameworks. Mutable worktree evidence; no assurance-tier promotion claimed.",
+              "reference": "reports/api-knowledge-docs-validation-20261030.json"
+            }
+          ]
+        },
+        {
+          "tier": "G1",
+          "status": "missing"
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    }
+  ],
+  "disclaimer": "Presence does not establish correct behavior or verified evidence.",
+  "scope": {
+    "journey": "journey:api.ground_architecture"
+  }
+}

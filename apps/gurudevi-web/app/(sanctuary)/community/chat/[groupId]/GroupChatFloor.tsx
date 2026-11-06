@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import { getExploreCapacityMeta, isExploreCapacity } from '@/lib/explore/exploreCapacity';
-import { type ChatMessage, useCommunityChat } from '@/lib/repositories/communityChatRepository';
+import { type ChatMessage, useCommunityChat } from '@/lib/hooks/useCommunityChat';
 import styles from './chat.module.css';
 
 interface GroupChatFloorProps {

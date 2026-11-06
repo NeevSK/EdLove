@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { headers } from 'next/headers';
+import { LivingGround } from '@repo/ui/components/web';
 import { classifyGurudeviHost } from '@/lib/host-routing';
 import {
   generateOrganizationJsonLd,
@@ -24,12 +25,12 @@ export default async function MarketingLayout({ children }: Readonly<{ children:
   const websiteJsonLd = generateWebSiteJsonLd();
 
   return (
-    <div className="landing-shell">
+    <LivingGround atmosphere="canopy" dither className="landing-shell">
       <JsonLdScript data={orgJsonLd} />
       <JsonLdScript data={websiteJsonLd} />
       <MarketingHeader />
       {children}
       <MarketingFooter />
-    </div>
+    </LivingGround>
   );
 }

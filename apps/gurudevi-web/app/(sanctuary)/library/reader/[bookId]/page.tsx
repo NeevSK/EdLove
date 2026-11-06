@@ -6,7 +6,7 @@ import { resolveAuthorizedEntry } from '../../../../../lib/sanctuary/authorizedE
 import { createServerSupabaseClient } from '../../../../../lib/supabase/server';
 import { signInPath } from '../../../auth/routeSafety';
 import { SanctuaryShell } from '../../../components/SanctuaryShell';
-import { PDFReaderFloor } from './PDFReaderFloor';
+import { DocumentReaderDesk } from './DocumentReaderDesk';
 
 export const metadata = { title: 'Document Reader | Gurudevi Sanctuary' };
 
@@ -28,7 +28,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <PDFReaderFloor bookId={bookId} displayName="Guest Explorer" />
+        <DocumentReaderDesk bookId={bookId} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -42,7 +42,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <PDFReaderFloor bookId={bookId} displayName="Guest Explorer" />
+        <DocumentReaderDesk bookId={bookId} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -56,7 +56,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
         showAccountNavigation={true}
         isExploreMode={true}
       >
-        <PDFReaderFloor bookId={bookId} displayName="Guest Explorer" />
+        <DocumentReaderDesk bookId={bookId} displayName="Guest Explorer" />
       </SanctuaryShell>
     );
   }
@@ -87,7 +87,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <PDFReaderFloor
+      <DocumentReaderDesk
         bookId={bookId}
         displayName={entry.displayName}
         capacity={entry.activeCapacity}

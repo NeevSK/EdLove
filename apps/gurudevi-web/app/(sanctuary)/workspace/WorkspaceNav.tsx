@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { ScrollArea } from '@repo/ui/components/web';
 import { useTranslation } from '@/lib/i18n';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useWorkbenchScope } from '../../../lib/workbench/WorkbenchScope';
@@ -43,26 +44,36 @@ export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<Workspac
   }
 
   return (
-    <nav className={styles.workspaceNav} aria-label={t('workspace.toolsNav') || 'Workspace tools navigation'}>
-      {visibleItems.map((item) => {
-        const isActive = activeId ? activeId === item.id : pathname === item.href;
-        const localizedLabel = t(`workspace.features.${item.id}`);
-        const displayLabel = localizedLabel !== `workspace.features.${item.id}` ? localizedLabel : item.label;
-        return (
-          <button
-            key={item.id}
-            className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-            aria-current={isActive ? 'page' : undefined}
-            onClick={() => openFeature(item)}
-            type="button"
-          >
-            <span className={styles.symbol} aria-hidden="true">
-              {item.symbol}
-            </span>
-            <span>{displayLabel}</span>
-          </button>
-        );
-      })}
+    <nav className={styles.navContainer} aria-label={t('workspace.toolsNav') || 'Workspace tools navigation'}>
+      <ScrollArea
+        orientation="horizontal"
+        variant="auto"
+        label={t('workspace.toolsNav') || 'Workspace tools navigation'}
+        className={styles.workspaceNav}
+        showEdgeGradients={false}
+      >
+        <div className={styles.navItemsList}>
+          {visibleItems.map((item) => {
+            const isActive = activeId ? activeId === item.id : pathname === item.href;
+            const localizedLabel = t(`workspace.features.${item.id}`);
+            const displayLabel = localizedLabel !== `workspace.features.${item.id}` ? localizedLabel : item.label;
+            return (
+              <button
+                key={item.id}
+                className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+                aria-current={isActive ? 'page' : undefined}
+                onClick={() => openFeature(item)}
+                type="button"
+              >
+                <span className={styles.symbol} aria-hidden="true">
+                  {item.symbol}
+                </span>
+                <span>{displayLabel}</span>
+              </button>
+            );
+          })}
+        </div>
+      </ScrollArea>
       {capacityMessage ? <span role="status">{capacityMessage}</span> : null}
     </nav>
   );

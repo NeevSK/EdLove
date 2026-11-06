@@ -1,5 +1,5 @@
 import { subscribeToNetwork } from '@repo/core/adapters/subscribeToNetwork';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import {
   defaultShouldDehydrateQuery,
   isServer,
@@ -10,7 +10,7 @@ import {
 if (!isServer) {
   onlineManager.setEventListener((setOnline) => {
     // This schedules reads; unknown must not strand startup or authorize a write.
-    const update = () => setOnline(networkManager.getSnapshot().status !== 'offline');
+    const update = () => setOnline(networkMonitor.getSnapshot().status !== 'offline');
     const unsubscribe = subscribeToNetwork(update);
     update();
     return unsubscribe;

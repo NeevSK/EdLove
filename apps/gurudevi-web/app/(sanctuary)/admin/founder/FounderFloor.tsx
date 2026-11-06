@@ -2,19 +2,41 @@
 
 import { createSchoolRepository } from '@repo/core/adapters/supabase/educational/schoolRepository';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
-import type { MockFounderSchool as SchoolItem } from '@repo/core/api/founder';
+import { getSandboxSamples } from '@repo/core/logic/modes/sandboxDataset';
 import { SchoolSchema } from '@repo/core/logic/schemas/school.schema';
+import {
+  Button,
+  Card,
+  Section,
+  Surface,
+  Tabs,
+  Text,
+} from '@repo/ui/components/web';
 import { TodoView } from '../../components/TodoView';
+import type { FurnitureDefinition } from '../../components/FloorStudioDrawer';
+import { SanctuaryFloorCanvas } from '../../components/SanctuaryFloorCanvas';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import styles from './founder.module.css';
 
 interface FounderFloorProps {
   displayName: string;
   capacity?: string;
   userId?: string;
 }
+
+type SchoolItem = Readonly<{
+  id: string;
+  name: string;
+  censusId: string;
+  students: number;
+  teachers: number;
+  status: 'active' | 'onboarding';
+}>;
+
+const FOUNDER_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
+  { id: 'header', label: 'Ecosystem Command Cockpit Header', icon: '🏛️' },
+  { id: 'telemetry', label: 'Multi-Tenant Telemetry & Priorities', icon: '⚡' },
+];
 
 export function FounderFloor({ displayName, capacity, userId }: Readonly<FounderFloorProps>) {
   const [tab, setTab] = useState<'pulse' | 'directives' | 'schools' | 'sentinel'>('pulse');
@@ -26,7 +48,6 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
 
   React.useEffect(() => {
     let isMounted = true;
-    // Reuse schoolAPI's repository and validation without loading unrelated server factories.
     createSchoolRepository(supabaseClient)
       .searchSchools('')
       .then((rows) => rows.map((school) => SchoolSchema.parse(school)))
@@ -59,265 +80,235 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
   };
 
   return (
-    <div className={styles.container}>
-      <header className={styles.headerBar}>
-        <div className={styles.titleArea}>
-          <div style={{ marginBottom: '0.25rem' }}>
-            <Link
-              href="/workspace"
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: 650,
-                color: 'var(--color-action, #a85022)',
-                textDecoration: 'none',
-              }}
-            >
-              ← Back to Sanctuary
-            </Link>
-          </div>
-          <h1>Founder Ecosystem Command Cockpit</h1>
-          <p>
-            Multi-tenant sanctuary oversight, infrastructure telemetry, and national announcements.
-          </p>
-        </div>
-
-        <div className={styles.tabBar}>
-          <button
-            type="button"
-            className={styles.tabBtn}
-            data-active={tab === 'pulse'}
-            onClick={() => setTab('pulse')}
-          >
-            📊 Ecosystem Pulse
-          </button>
-          <button
-            type="button"
-            className={styles.tabBtn}
-            data-active={tab === 'directives'}
-            onClick={() => setTab('directives')}
-          >
-            🎯 Directives & Priorities
-          </button>
-          <button
-            type="button"
-            className={styles.tabBtn}
-            data-active={tab === 'schools'}
-            onClick={() => setTab('schools')}
-          >
-            🏫 Schools Directory
-          </button>
-          <button
-            type="button"
-            className={styles.tabBtn}
-            data-active={tab === 'sentinel'}
-            onClick={() => setTab('sentinel')}
-          >
-            🛡️ Sentinel Broadcast
-          </button>
-        </div>
-      </header>
-
-      {notice && (
-        <div aria-live="polite" style={{ color: '#2e5d32', fontWeight: 700, fontSize: '0.85rem' }}>
-          ✓ {notice}
-        </div>
-      )}
-
-      {tab === 'pulse' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div className={styles.statsGrid}>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Active Schools</span>
-              <span className={styles.statValue}>18</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Enrolled Students</span>
-              <span className={styles.statValue}>14,250</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Sanctuary Educators</span>
-              <span className={styles.statValue}>740</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>API Health / Uptime</span>
-              <span className={styles.statValue} style={{ color: '#2e5d32' }}>
-                99.98%
-              </span>
-            </div>
-          </div>
-
-          <TodoView
-            listName="Founder Priorities"
-            displayTitle="Strategic Founder Priorities"
-            userId={userId}
-          />
-
-          <div className={styles.sectionCard}>
-            <h2
-              style={{
-                fontSize: '1.1rem',
-                fontWeight: 700,
-                margin: 0,
-                color: 'var(--color-ink, #131e27)',
-              }}
-            >
-              Substrate Health & Edge Sync
-            </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-ink-soft, #453c35)', margin: 0 }}>
-              SSR cookies active across all tenant clusters. Offline practice boundaries logged 0
-              sync conflicts in the past 24 hours.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {tab === 'directives' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <TodoView
-            listName="Founder Priorities"
-            displayTitle="Founder Command Deck Directives"
-            userId={userId}
-          />
-        </div>
-      )}
-
-      {tab === 'schools' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span
-              style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-ink, #131e27)' }}
-            >
-              Governed Sanctuary Institutions ({schools.length})
-            </span>
-            <Link
-              href="/workspace/school"
-              className={styles.actionButton}
-              style={{
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                fontSize: '0.8rem',
-                padding: '0.4rem 0.85rem',
-              }}
-            >
-              <span>+</span> Establish New School
-            </Link>
-          </div>
-
-          <div className={styles.institutionsGrid}>
-            {schools.map((sch) => (
-              <div key={sch.id} className={styles.instCard}>
-                <span
-                  style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-ink, #131e27)' }}
-                >
-                  {sch.name}
-                </span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--color-ink-soft, #453c35)' }}>
-                  Census ID: {sch.censusId}
-                </span>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    fontSize: '0.8rem',
-                    marginTop: '0.25rem',
-                  }}
-                >
-                  <span>Students: {sch.students.toLocaleString()}</span>
-                  <span>Teachers: {sch.teachers}</span>
+    <SanctuaryFloorCanvas domain="workspace" furnitureItems={FOUNDER_FURNITURE_ITEMS}>
+      {({ isModuleVisible }) => (
+        <div style={{ padding: '2rem 1.5rem', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {isModuleVisible('header') && (
+            <Surface tone="raised" style={{ padding: '1.5rem 2rem', borderRadius: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <Link
+                      href="/workspace"
+                      style={{
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: 'var(--w-ink-lamp, #a85022)',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      ← Back to Sanctuary
+                    </Link>
+                  </div>
+                  <Text kind="display">Founder Ecosystem Command Cockpit</Text>
+                  <Text kind="body" tone="soft" style={{ marginTop: '0.25rem' }}>
+                    Multi-tenant sanctuary oversight, infrastructure telemetry, and national announcements.
+                  </Text>
                 </div>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '0.5rem',
-                    marginTop: '0.75rem',
-                    paddingTop: '0.75rem',
-                    borderTop: '1px solid var(--color-line, rgba(104, 94, 85, 0.12))',
-                  }}
-                >
-                  <Link
-                    href={`/school/${sch.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      flex: 1,
-                      textAlign: 'center',
-                      padding: '0.35rem 0.5rem',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.75rem',
-                      fontWeight: 650,
-                      color: 'var(--color-action, #a85022)',
-                      background: 'var(--color-paper-light, #fffdf8)',
-                      border: '1px solid var(--color-line, rgba(104, 94, 85, 0.2))',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Explore Portal ↗
-                  </Link>
-                  <Link
-                    href={`/workspace/school?schoolId=${sch.id}`}
-                    style={{
-                      flex: 1,
-                      textAlign: 'center',
-                      padding: '0.35rem 0.5rem',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.75rem',
-                      fontWeight: 650,
-                      color: '#ffffff',
-                      background: 'var(--color-action, #a85022)',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Workspace ➔
-                  </Link>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <Button
+                    label="Ecosystem Pulse"
+                    variant={tab === 'pulse' ? 'primary' : 'secondary'}
+                    size="sm"
+                    onClick={() => setTab('pulse')}
+                  />
+                  <Button
+                    label="Directives & Priorities"
+                    variant={tab === 'directives' ? 'primary' : 'secondary'}
+                    size="sm"
+                    onClick={() => setTab('directives')}
+                  />
+                  <Button
+                    label="Schools Directory"
+                    variant={tab === 'schools' ? 'primary' : 'secondary'}
+                    size="sm"
+                    onClick={() => setTab('schools')}
+                  />
+                  <Button
+                    label="Sentinel Broadcast"
+                    variant={tab === 'sentinel' ? 'primary' : 'secondary'}
+                    size="sm"
+                    onClick={() => setTab('sentinel')}
+                  />
                 </div>
               </div>
-            ))}
-          </div>
+            </Surface>
+          )}
+
+          {notice && (
+            <Surface tone="inset" style={{ padding: '0.75rem 1.25rem', borderRadius: '0.75rem' }}>
+              <Text kind="label" tone="ink">✓ {notice}</Text>
+            </Surface>
+          )}
+
+          {isModuleVisible('telemetry') && (
+            <>
+              {tab === 'pulse' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+                    <Surface tone="raised" style={{ padding: '1.25rem', borderRadius: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      <Text kind="caption" tone="soft">Active Schools</Text>
+                      <Text kind="display">18</Text>
+                    </Surface>
+                    <Surface tone="raised" style={{ padding: '1.25rem', borderRadius: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      <Text kind="caption" tone="soft">Enrolled Students</Text>
+                      <Text kind="display">14,250</Text>
+                    </Surface>
+                    <Surface tone="raised" style={{ padding: '1.25rem', borderRadius: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      <Text kind="caption" tone="soft">Sanctuary Educators</Text>
+                      <Text kind="display">740</Text>
+                    </Surface>
+                    <Surface tone="raised" style={{ padding: '1.25rem', borderRadius: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      <Text kind="caption" tone="soft">API Health / Uptime</Text>
+                      <Text kind="display" tone="lamp">99.98%</Text>
+                    </Surface>
+                  </div>
+
+                  <TodoView
+                    listName="Founder Priorities"
+                    displayTitle="Strategic Founder Priorities"
+                    userId={userId}
+                  />
+
+                  <Surface tone="raised" style={{ padding: '1.5rem', borderRadius: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <Text kind="title">Substrate Health & Edge Sync</Text>
+                    <Text kind="body" tone="soft">
+                      SSR cookies active across all tenant clusters. Offline practice boundaries logged 0
+                      sync conflicts in the past 24 hours.
+                    </Text>
+                  </Surface>
+                </div>
+              )}
+
+              {tab === 'directives' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <TodoView
+                    listName="Founder Priorities"
+                    displayTitle="Founder Command Deck Directives"
+                    userId={userId}
+                  />
+                </div>
+              )}
+
+              {tab === 'schools' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text kind="title">Governed Sanctuary Institutions ({schools.length})</Text>
+                    <Link
+                      href="/workspace/school"
+                      style={{
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        padding: '0.5rem 1rem',
+                        borderRadius: '0.5rem',
+                        backgroundColor: 'var(--w-ink-lamp, #a85022)',
+                        color: '#ffffff',
+                      }}
+                    >
+                      + Establish New School
+                    </Link>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+                    {schools.map((sch) => (
+                      <Surface key={sch.id} tone="raised" style={{ padding: '1.25rem', borderRadius: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <Text kind="title">{sch.name}</Text>
+                        <Text kind="caption" tone="soft">Census ID: {sch.censusId}</Text>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem' }}>
+                          <Text kind="body">Students: {sch.students.toLocaleString()}</Text>
+                          <Text kind="body">Teachers: {sch.teachers}</Text>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--w-edge, rgba(104, 94, 85, 0.12))' }}>
+                          <Link
+                            href={`/school/${sch.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              flex: 1,
+                              textAlign: 'center',
+                              padding: '0.4rem 0.5rem',
+                              borderRadius: '0.375rem',
+                              fontSize: '0.8rem',
+                              fontWeight: 600,
+                              color: 'var(--w-ink-lamp, #a85022)',
+                              background: 'transparent',
+                              border: '1px solid var(--w-edge, rgba(104, 94, 85, 0.2))',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            Explore Portal ↗
+                          </Link>
+                          <Link
+                            href={`/workspace/school?schoolId=${sch.id}`}
+                            style={{
+                              flex: 1,
+                              textAlign: 'center',
+                              padding: '0.4rem 0.5rem',
+                              borderRadius: '0.375rem',
+                              fontSize: '0.8rem',
+                              fontWeight: 600,
+                              color: '#ffffff',
+                              background: 'var(--w-ink-lamp, #a85022)',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            Workspace ➔
+                          </Link>
+                        </div>
+                      </Surface>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {tab === 'sentinel' && (
+                <Surface tone="raised" style={{ padding: '1.5rem', borderRadius: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div>
+                    <Text kind="title">National Educational Broadcast</Text>
+                    <Text kind="body" tone="soft" style={{ marginTop: '0.25rem' }}>
+                      Dispatch instant high-priority notices to all student and educator dashboards.
+                    </Text>
+                  </div>
+
+                  <form
+                    onSubmit={handleBroadcast}
+                    style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+                  >
+                    <textarea
+                      value={broadcastMsg}
+                      onChange={(e) => setBroadcastMsg(e.target.value)}
+                      placeholder="Compose national curricular circular or weather alert..."
+                      rows={3}
+                      style={{
+                        padding: '0.75rem',
+                        borderRadius: '0.5rem',
+                        border: '1px solid var(--w-edge, rgba(104, 94, 85, 0.25))',
+                        fontFamily: 'inherit',
+                        fontSize: '0.9rem',
+                        backgroundColor: 'transparent',
+                        color: 'inherit',
+                      }}
+                    />
+                    <div>
+                      <Button
+                        label="Broadcast Notice"
+                        variant="primary"
+                        onClick={() => {}}
+                      />
+                    </div>
+                  </form>
+                </Surface>
+              )}
+            </>
+          )}
         </div>
       )}
-
-      {tab === 'sentinel' && (
-        <div className={styles.sectionCard}>
-          <h2
-            style={{
-              fontSize: '1.1rem',
-              fontWeight: 700,
-              margin: 0,
-              color: 'var(--color-ink, #131e27)',
-            }}
-          >
-            National Educational Broadcast
-          </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--color-ink-soft, #453c35)', margin: 0 }}>
-            Dispatch instant high-priority notices to all student and educator dashboards.
-          </p>
-
-          <form
-            onSubmit={handleBroadcast}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-          >
-            <textarea
-              value={broadcastMsg}
-              onChange={(e) => setBroadcastMsg(e.target.value)}
-              placeholder="Compose national curricular circular or weather alert..."
-              rows={3}
-              style={{
-                padding: '0.75rem',
-                borderRadius: '0.5rem',
-                border: '1px solid var(--color-line, rgba(104, 94, 85, 0.25))',
-                fontFamily: 'inherit',
-                fontSize: '0.85rem',
-              }}
-            />
-            <button type="submit" className={styles.actionButton}>
-              Broadcast Notice
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
+    </SanctuaryFloorCanvas>
   );
 }

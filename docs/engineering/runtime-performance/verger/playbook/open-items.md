@@ -38,6 +38,19 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
 - In touched use most steps publish batched by the gesture hold and are not measured; whether
   real sessions give enough samples for P7 is unknown until phase F.
 
+## Found in the 2026-10-29 consolidation (need Naveen's decision)
+
+- `apps/gurudevi-mobile/modules/runtime-pressure` (the old governor's native module) is still
+  autolinked: its `OnCreate` registers memory-trim and thermal listeners on every launch, but no
+  JavaScript reads it. `verger-android` senses both. Removing it needs sign-off (Deletion Veto).
+- `apps/gurudevi-mobile/src/boot/runtimePressureRecovery.ts` and `runtimeGovernorTelemetry.ts`
+  are imported only by their own tests; candidates for retirement with the module above.
+- The Android binding rewritten on Expo Modules API 2.0 is now in this checkout, but its Gradle compile and 48 JVM cases were
+  run in the isolated worktree only; re-run `pnpm verger:android-jvm` here before release.
+- Uncommitted startup/splash edits in the `verger-android-v2` worktree (EntryShell,
+  EntryStartupBoundary, SessionRouteGate, EntryLoadingSurface) are not verger work and were not
+  brought in.
+
 ## Unexplained
 
 - **2026-10-28 baseline:** `pnpm verger:check` ended `ALL_PASS=0`: the Vitest
