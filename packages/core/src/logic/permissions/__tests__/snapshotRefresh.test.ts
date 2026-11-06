@@ -10,6 +10,13 @@ import type { Bond } from '@repo/core/types/Identity';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { startPermissionSnapshotRefresh } from '../snapshotRefresh';
 
+const writes = vi.hoisted(() => ({ run: vi.fn(async (_statement: unknown) => undefined) }));
+vi.mock('@repo/core/adapters/powersync/database', () => ({
+  getDrizzleDB: () => ({
+    transaction: async (work: (tx: { run: typeof writes.run }) => Promise<void>) => work(writes),
+  }),
+}));
+
 const bond: Bond = {
   id: '123e4567-e89b-4123-8123-426614174002',
   user_id: 'account-1',
@@ -25,16 +32,22 @@ const scope = (activeBond: Bond | null = bond): ScopeSessionSnapshot =>
     activeBond,
   }) as ScopeSessionSnapshot;
 
-function client(
-  result: () => Promise<{ generatedAt: string; expiresAt: string; policyVersion: string }>,
-) {
+function client(result: () => Promise<ReturnType<typeof issued>>) {
   const refreshSnapshot = vi.fn(async (_input: { bondId: string }) => result());
   return { refreshSnapshot, client: { authority: { refreshSnapshot } } };
 }
 const issued = (hoursLeft: number) => ({
   generatedAt: new Date().toISOString(),
   expiresAt: new Date(Date.now() + hoursLeft * 3_600_000).toISOString(),
+  userId: 'account-1',
+  activeBondId: bond.id,
+  activeEntityId: 'personal-1',
+  activeEntityType: 'PERSONAL',
+  schoolId: null,
   policyVersion: 'sha256:abc',
+  permissions: { Self: { read: true } },
+  temporalHints: {},
+  signature: 'ed25519:fixture',
 });
 const commit = (snapshot: ScopeSessionSnapshot) => {
   useScopeSessionStore.setState({ snapshot });
@@ -75,6 +88,7 @@ describe('permission snapshot refresh', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
+    writes.run.mockClear();
     loadDecisions = vi.fn(async () => undefined);
     useCedarDecisionStore.setState({ loadDecisions });
     useScopeSessionStore.setState({ snapshot: null });
@@ -84,16 +98,25 @@ describe('permission snapshot refresh', () => {
     vi.useRealTimers();
   });
 
-  it('refreshes on commit and reloads decisions once sync delivers', async () => {
+  it('stores the signed row on commit and reloads decisions, with no sync involved', async () => {
     const { refreshSnapshot, client: v1 } = client(async () => issued(24));
     stop = startPermissionSnapshotRefresh(v1);
     const committed = scope();
     commit(committed);
     await vi.waitFor(() => expect(refreshSnapshot).toHaveBeenCalledWith({ bondId: bond.id }));
     await vi.advanceTimersByTimeAsync(0);
-    expect(loadDecisions).not.toHaveBeenCalled();
-    sovereignBus.emit('sync:completed', { processedCount: 1, failedCount: 0 });
+    expect(writes.run).toHaveBeenCalledTimes(4);
     expect(loadDecisions).toHaveBeenCalledWith('account-1', PERSONAL_SCOPE_PERSPECTIVE.id);
+  });
+
+  it('reloads decisions again when sync later delivers a newer row', async () => {
+    const { client: v1 } = client(async () => issued(24));
+    stop = startPermissionSnapshotRefresh(v1);
+    commit(scope());
+    await vi.waitFor(() => expect(loadDecisions).toHaveBeenCalledTimes(1));
+    await vi.advanceTimersByTimeAsync(0);
+    sovereignBus.emit('sync:completed', { processedCount: 1, failedCount: 0 });
+    expect(loadDecisions).toHaveBeenCalledTimes(2);
   });
 
   it('refreshes a scope already committed when it starts', async () => {
@@ -123,6 +146,7 @@ describe('permission snapshot refresh', () => {
     finish(issued(24));
     await vi.advanceTimersByTimeAsync(0);
     sovereignBus.emit('sync:completed', { processedCount: 1, failedCount: 0 });
+    expect(writes.run).not.toHaveBeenCalled();
     expect(loadDecisions).not.toHaveBeenCalled();
   });
 

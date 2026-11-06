@@ -78,11 +78,7 @@ export interface SecurityOptions {
 }
 
 /** What the client learns from a refresh; the signed snapshot itself arrives through sync. */
-export interface IssuedSnapshot {
-  generatedAt: string;
-  expiresAt: string;
-  policyVersion: string;
-}
+export type IssuedSnapshot = ReturnType<typeof generateSnapshot>;
 
 const uuid = z.uuid();
 const citizenshipTier = z.enum(['FIRST_CLASS', 'SECOND_CLASS', 'THIRD_CLASS']);
@@ -544,11 +540,7 @@ export function createSecurity(options: SecurityOptions) {
           snapshot.signature,
         ],
       );
-      return {
-        generatedAt: snapshot.generatedAt,
-        expiresAt: snapshot.expiresAt,
-        policyVersion: snapshot.policyVersion,
-      };
+      return snapshot;
     });
   }
 

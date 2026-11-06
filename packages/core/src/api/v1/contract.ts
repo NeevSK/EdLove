@@ -50,13 +50,24 @@ export const appContract = {
     createInitialBond: foundation.input(InitialBondInput).output(scope),
   },
   authority: {
-    // Issues the signed offline permission snapshot for one bond. The snapshot itself
-    // reaches the device through sync; this returns only when it was made.
+    // Issues the signed offline permission snapshot for one bond. The device stores it and
+    // checks the signature before use, so this works without sync.
     refreshSnapshot: foundation.input(z.strictObject({ bondId: z.uuid() })).output(
       z.strictObject({
         generatedAt: z.iso.datetime(),
         expiresAt: z.iso.datetime(),
+        userId: z.string(),
+        activeBondId: z.uuid(),
+        activeEntityId: z.string(),
+        activeEntityType: z.string(),
+        schoolId: z.string().nullable(),
         policyVersion: z.string().min(1),
+        permissions: z.record(z.string(), z.record(z.string(), z.boolean())),
+        temporalHints: z.record(
+          z.string(),
+          z.strictObject({ deadline: z.string().optional(), availableFrom: z.string().optional() }),
+        ),
+        signature: z.string().min(1),
       }),
     ),
   },
