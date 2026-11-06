@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Surface } from '@repo/ui/components/native';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { colors } from '@repo/ui/theme/Theme';
 import { formatGPA, getGradeColor } from '@/utils/analyticsHelpers';

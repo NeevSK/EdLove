@@ -1,18 +1,17 @@
+import { View, Text, Pressable } from 'react-native';
 import { isLocalOnlyIdentity } from '@repo/core/logic';
 import {
   dismissGuestLeaseReminder,
   type GuestLeaseStatus,
   getOrCreateGuestLease,
 } from '@repo/core/native';
-import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { usePathname, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 /**
- * Makes the guest retention boundary visible without blocking exploration.
- * Personal writes remain local; the account route is required for durable sync.
+ * Nudges a guest to sign in on the lease's reminder days, and on every launch after the
+ * last one. It never blocks and nothing is deleted: guest work stays on this device.
  */
 export function GuestPersistenceNotice() {
   const router = useRouter();
@@ -23,7 +22,7 @@ export function GuestPersistenceNotice() {
 
   useEffect(() => {
     setIsDismissed(false);
-    if (!user || !isLocalOnlyIdentity(user) || isLocalGuestSessionId(user.id)) {
+    if (!user || !isLocalOnlyIdentity(user)) {
       setStatus(null);
       return;
     }
@@ -43,47 +42,32 @@ export function GuestPersistenceNotice() {
     pathname === '/auth' ||
     pathname === '/onboarding' ||
     pathname === '/account-recovery';
-  const isDurableLocalGuest = Boolean(user && isLocalGuestSessionId(user.id));
-
-  if (
-    !user ||
-    !isLocalOnlyIdentity(user) ||
-    isEntryRoute ||
-    isDismissed ||
-    (!isDurableLocalGuest && (!status?.reminderDay || status.isExpired))
-  )
+  if (!user || !isLocalOnlyIdentity(user) || isEntryRoute || isDismissed || !status?.reminderDay)
     return null;
 
-  const remainingDays = status ? Math.max(0, 15 - status.day) : null;
+  const reminderDay = status.reminderDay;
   const dismiss = () => {
-    if (isDurableLocalGuest) {
-      setIsDismissed(true);
-      return;
-    }
-    const reminderDay = status?.reminderDay;
-    if (!reminderDay) return;
-    void dismissGuestLeaseReminder(user.id, reminderDay).then(() => setStatus(null));
+    setIsDismissed(true);
+    void dismissGuestLeaseReminder(user.id, reminderDay);
   };
 
   return (
-    <Box className="absolute bottom-24 left-4 right-4 z-40 flex-row items-center gap-3 rounded-2xl border border-phase-border bg-phase-surface px-4 py-3 shadow-lg">
-      <Box className="flex-1">
+    <View className="absolute bottom-24 left-4 right-4 z-40 flex-row items-center gap-3 rounded-2xl border border-phase-border bg-phase-surface px-4 py-3 shadow-lg">
+      <View className="flex-1">
         <Text className="text-sm font-semibold text-phase-text-primary">
-          {isDurableLocalGuest
-            ? 'Guest mode · saved on this device'
-            : `Guest mode · ${remainingDays} day${remainingDays === 1 ? '' : 's'} left`}
+          Guest mode · saved on this device
         </Text>
         <Text className="mt-0.5 text-xs leading-4 text-phase-text-secondary">
-          Your work is saved only on this device until you create an account.
+          Create an account to keep your work safe and use it on your other devices.
         </Text>
-      </Box>
+      </View>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Create an account to save across devices"
         className="rounded-full bg-phase-interactive px-3 py-2"
         onPress={() => router.push('/auth')}
       >
-        <Text className="text-xs font-bold text-white">Keep work</Text>
+        <Text className="text-xs font-bold text-white">Create account</Text>
       </Pressable>
       <Pressable
         accessibilityRole="button"
@@ -92,6 +76,6 @@ export function GuestPersistenceNotice() {
       >
         <Text className="text-base text-phase-text-secondary">×</Text>
       </Pressable>
-    </Box>
+    </View>
   );
 }

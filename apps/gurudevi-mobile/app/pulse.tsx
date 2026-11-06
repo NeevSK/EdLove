@@ -1,10 +1,9 @@
 import { useUIStore } from '@repo/core/store';
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Center, Pressable, Text } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -46,7 +45,7 @@ export default function PulseRoute() {
   return (
     <ErrorBoundary name="PulseRoute">
       <View style={styles.container}>
-        <Center className="flex-1 px-6">
+        <View className="items-center justify-center flex-1 px-6">
           <BrandPulse accessibilityLabel="Sanctuary Pulse Breathing Space Active" />
           <Text className="mt-6 text-center text-lg font-semibold text-phase-text-primary">
             Sanctuary Pulse Active
@@ -62,7 +61,7 @@ export default function PulseRoute() {
           >
             <Text className="font-semibold text-white">Return to App</Text>
           </Pressable>
-        </Center>
+        </View>
       </View>
     </ErrorBoundary>
   );

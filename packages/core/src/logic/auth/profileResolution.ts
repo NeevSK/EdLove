@@ -1,4 +1,4 @@
-import type { ActiveCitizen } from '@repo/core/api/identity';
+import type { Identity as ActiveCitizen } from '@repo/core/types/Identity';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';

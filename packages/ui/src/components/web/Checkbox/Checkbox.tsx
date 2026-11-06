@@ -1,3 +1,5 @@
+'use client';
+
 import { type InputHTMLAttributes, useEffect, useId, useRef } from 'react';
 import type { CheckboxContract } from '../../../theme/contracts';
 import { cx } from '../cx';

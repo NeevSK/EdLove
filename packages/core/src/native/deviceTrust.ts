@@ -1,5 +1,6 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { type ActiveCitizen, identityAPI } from '@repo/core/api/identity';
+import { supabaseIdentityAdapter as identity } from '@repo/core/adapters/supabaseIdentity.adapter';
+import type { Identity as ActiveCitizen } from '@repo/core/types/Identity';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { APIError } from '@repo/core/types/API';
 import { v7 as uuidv7 } from 'uuid';
@@ -91,8 +92,8 @@ async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
 }
 
 async function requireAccountId(accountId?: string) {
-  const identity = await identityAPI.identifyActiveCitizen();
-  const resolved = accountId ?? (identity as ActiveCitizen | null)?.id;
+  const activeIdentity = await identity.identifyActiveCitizen();
+  const resolved = accountId ?? activeIdentity?.id;
   if (!resolved) {
     throw new APIError('No authenticated account is available for device trust operations.');
   }

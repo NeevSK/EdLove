@@ -1,3 +1,5 @@
+'use client';
+
 import { type CSSProperties, useState } from 'react';
 import type { AvatarContract, BadgeContract, ProgressContract } from '../../../theme/contracts';
 import { cx } from '../cx';

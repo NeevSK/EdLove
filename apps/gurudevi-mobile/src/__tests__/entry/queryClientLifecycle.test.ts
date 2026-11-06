@@ -26,8 +26,8 @@ vi.mock('react-native', () => ({
     },
   },
 }));
-vi.mock('@repo/core/logic/managers/NetworkManager', () => ({
-  networkManager: {
+vi.mock('@repo/core/platform/drivers/networkMonitor', () => ({
+  networkMonitor: {
     getSnapshot: () => ({ status: fixture.status }),
     subscribe: (callback: () => void) => {
       fixture.networkChange = callback;

@@ -10,9 +10,6 @@
  * and open PDFs via the device's native viewer.
  */
 
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Bookmark, ExternalLink, RefreshCw } from '@repo/ui/icons';
 import { Box, HStack, useTheme } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
@@ -38,31 +35,30 @@ export default function PDFViewerScreen() {
   };
 
   return (
-    <ScreenWrapper scroll={false} style={{ backgroundColor: theme.glass.surface.bg, flex: 1 }}>
-      <GlobalHeader
-        title={title}
-        subtitle="Document Viewer"
-        showBack
-        onBack={() => safeBack('/library')}
-        rightAction={
-          <Box
-            className="rounded-full overflow-hidden"
-            style={{
-              backgroundColor: isBookmarked ? `${theme.accent.action}22` : 'transparent',
-            }}
-          >
-            <SanctuaryButton
-              variant="ghost"
-              size="sm"
-              leftIcon={Bookmark}
-              onPress={() => setIsBookmarked((b) => !b)}
-              accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Bookmark document'}
-            >
-              {''}
-            </SanctuaryButton>
-          </Box>
-        }
-      />
+    <div className="flex-1 min-h-screen flex flex-col">
+      <header style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <div>
+          <button type="button" onClick={() => safeBack('/library')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: 12 }}>←</button>
+          <span style={{ fontWeight: 600, fontSize: 16 }}>{title || 'Document Viewer'}</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsBookmarked((b) => !b)}
+          aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark document'}
+          style={{
+            background: isBookmarked ? `${theme.accent.action}22` : 'transparent',
+            border: 'none',
+            borderRadius: '9999px',
+            padding: '8px',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Bookmark size={18} color={isBookmarked ? theme.accent.action : theme.text.secondary} />
+        </button>
+      </header>
 
       {/* Inline iframe viewer */}
       <Box className="flex-1 overflow-hidden">
@@ -84,24 +80,49 @@ export default function PDFViewerScreen() {
 
       {/* Action bar below the iframe */}
       <HStack className="p-md gap-sm justify-center border-t border-phase-border bg-phase-surface">
-        <SanctuaryButton
-          variant="outline"
-          size="sm"
-          leftIcon={RefreshCw}
-          onPress={() => setIframeKey((k) => k + 1)}
-          accessibilityLabel="Reload document"
+        <button
+          type="button"
+          onClick={() => setIframeKey((k) => k + 1)}
+          aria-label="Reload document"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '12px',
+            border: `1px solid ${theme.border?.subtle || '#ccc'}`,
+            background: 'transparent',
+            color: theme.text?.primary || '#000',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 600,
+          }}
         >
-          Reload
-        </SanctuaryButton>
-        <SanctuaryButton
-          size="sm"
-          leftIcon={ExternalLink}
-          onPress={openInNewTab}
-          accessibilityLabel="Open PDF in new tab"
+          <RefreshCw size={16} />
+          <span>Reload</span>
+        </button>
+        <button
+          type="button"
+          onClick={openInNewTab}
+          aria-label="Open PDF in new tab"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '12px',
+            border: 'none',
+            background: theme.accent?.action || '#007aff',
+            color: '#fff',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 600,
+          }}
         >
-          Open in New Tab
-        </SanctuaryButton>
+          <ExternalLink size={16} />
+          <span>Open in New Tab</span>
+        </button>
       </HStack>
-    </ScreenWrapper>
+    </div>
   );
 }

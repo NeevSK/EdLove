@@ -1,3 +1,7 @@
+import {
+  AUTHORIZATION_ACTIONS,
+  AUTHORIZATION_RESOURCES,
+} from '@repo/policies/authorizationRegistry';
 import crypto from 'isomorphic-webcrypto';
 
 function decodeBase64(value: string): Uint8Array {
@@ -56,11 +60,60 @@ export async function verifySnapshotSignature(snapshot: {
       ['verify'],
     );
 
-    return await crypto.subtle.verify(
+    const valid = await crypto.subtle.verify(
       { name: 'Ed25519' },
       importedKey,
       signatureBytes as unknown as BufferSource,
       messageData,
+    );
+    if (valid) return true;
+
+    // The legacy generator emits the registry order and empty temporal hints.
+    // Restore that order after JSONB storage without discarding any signed data.
+    if (
+      !payload.permissions ||
+      typeof payload.permissions !== 'object' ||
+      Array.isArray(payload.permissions) ||
+      !payload.temporalHints ||
+      typeof payload.temporalHints !== 'object' ||
+      Array.isArray(payload.temporalHints) ||
+      Object.keys(payload.temporalHints).length !== 0
+    )
+      return false;
+    const resourceNames = Object.keys(payload.permissions);
+    if (
+      resourceNames.some((name) => !(AUTHORIZATION_RESOURCES as readonly string[]).includes(name))
+    )
+      return false;
+    const permissions: Record<string, Record<string, boolean>> = {};
+    for (const resource of AUTHORIZATION_RESOURCES) {
+      if (!Object.hasOwn(payload.permissions, resource)) continue;
+      const actions = payload.permissions[resource];
+      if (!actions || typeof actions !== 'object' || Array.isArray(actions)) return false;
+      if (
+        Object.keys(actions).some(
+          (name) =>
+            !(AUTHORIZATION_ACTIONS as readonly string[]).includes(name) ||
+            typeof actions[name] !== 'boolean',
+        )
+      )
+        return false;
+      permissions[resource] = {};
+      for (const action of AUTHORIZATION_ACTIONS) {
+        if (Object.hasOwn(actions, action)) permissions[resource][action] = actions[action];
+      }
+    }
+    const recovered = {
+      ...payload,
+      generatedAt: new Date(payload.generatedAt).toISOString(),
+      expiresAt: new Date(payload.expiresAt).toISOString(),
+      permissions,
+    };
+    return await crypto.subtle.verify(
+      { name: 'Ed25519' },
+      importedKey,
+      signatureBytes as unknown as BufferSource,
+      enc.encode(JSON.stringify(recovered)),
     );
   } catch (err) {
     console.error('[Signature] Signature verification system error:', err);

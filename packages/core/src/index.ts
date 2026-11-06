@@ -10,9 +10,8 @@ export {
   getDeviceAccountsConfig,
   setDeviceAccountsConfig,
 } from '@repo/core/accounts/deviceAccounts';
-export { isDemo } from '@repo/core/api/demo';
+export { isDemo } from '@repo/core/logic/modes/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
-export { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
 export { marksToGPA } from '@repo/core/lib/grading';
 export {
@@ -79,8 +78,6 @@ export * from '@repo/core/logic/capabilityDecision';
 export {
   classifyRouteIntent,
   classifyRouteIntentEffect,
-  formatClassroomDeepLink,
-  formatClassroomShareUrl,
   type RouteIntent,
 } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
 export {
@@ -89,11 +86,6 @@ export {
   pendingIntentStore,
   usePendingIntentStore,
 } from '@repo/core/logic/deeplink/pendingIntentStore';
-export {
-  createDomainServices,
-  type DomainRepositories,
-  type DomainServices,
-} from '@repo/core/logic/domains/factory';
 export type {
   PlatformEvents,
   SchoolAttendanceRecordedPayload,
@@ -239,13 +231,6 @@ export { GrowthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rol
 export { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
 export { SupabaseFormsAdapter } from '@repo/core/adapters/supabase/forms.adapter';
 export { PowerSyncFormsAdapter } from '@repo/core/adapters/powersync/forms.adapter';
-export * from '@repo/core/api/client';
-export {
-  type POAMetadata,
-  POAMetadataSchema,
-  type SovereignContract,
-  type SovereignRoute,
-} from '@repo/core/api/contracts';
 export * from '@repo/core/constants/SriLankanSchools';
 export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
 export {
@@ -260,16 +245,8 @@ export { useClassroomCreation } from '@repo/core/hooks/useClassroomCreation';
 export { useDeviceAccounts } from '@repo/core/hooks/useDeviceAccounts';
 export { useDeviceSecurity } from '@repo/core/hooks/useDeviceSecurity';
 export { useDomainRollout } from '@repo/core/hooks/useDomainRollout';
-export {
-  useClassroomNotes,
-  useDomainServices,
-  useEducational,
-  useTeacherInsights,
-} from '@repo/core/hooks/useDomainServices';
-export { useEntity } from '@repo/core/hooks/useEntity';
 export { useForm } from '@repo/core/hooks/useForm';
 export { useGroupCreation } from '@repo/core/hooks/useGroupCreation';
-export { useIdentity } from '@repo/core/hooks/useIdentity';
 export { useIsGuest } from '@repo/core/hooks/useIsGuest';
 export { useJourneyHistory } from '@repo/core/hooks/useJourneyHistory';
 export {
@@ -282,7 +259,6 @@ export { type DownloadState, useMediaDownloader } from '@repo/core/hooks/useMedi
 export { useNaturePaths } from '@repo/core/hooks/useNaturePaths';
 export { usePendingActions } from '@repo/core/hooks/usePendingActions';
 export { usePendingGateAction } from '@repo/core/hooks/usePendingGateAction';
-export { useRewards } from '@repo/core/hooks/useRewards';
 export { useSafeMutation } from '@repo/core/hooks/useSafeMutation';
 export { useSchoolCreation } from '@repo/core/hooks/useSchoolCreation';
 export {
@@ -292,11 +268,8 @@ export {
   useScopedDeviceSecurity,
 } from '@repo/core/hooks/useScopedDeviceSecurity';
 export { useStudentGoals } from '@repo/core/hooks/useStudentGoals';
-export { useTaskActions } from '@repo/core/hooks/useTaskActions';
-export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { useTenantContext } from '@repo/core/hooks/useTenantContext';
-export { useTracking } from '@repo/core/hooks/useTracking';
 export {
   type DeltaMetrics,
   DeltaResonance,
@@ -304,8 +277,8 @@ export {
 } from '@repo/core/lib/sync/delta';
 export { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 export { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
-export type { SyncManagerTraceEvent } from '@repo/core/lib/sync/sync/SyncManager';
-export { default as SyncManager } from '@repo/core/lib/sync/sync/SyncManager';
+export type { SyncOrchestratorTraceEvent } from '@repo/core/lib/sync/sync/SyncOrchestrator';
+export { default as SyncOrchestrator } from '@repo/core/lib/sync/sync/SyncOrchestrator';
 export type {
   MutationOutcome,
   QueuedMutation,
@@ -324,7 +297,7 @@ export type {
   IAuthorizationPort,
   IEntitlementPort,
 } from '@repo/core/logic';
-export { cryptoManager } from '@repo/core/logic';
+export { cryptoVault } from '@repo/core/logic';
 export * from '@repo/core/logic/agents';
 export type {
   EntityDefinition,
@@ -422,4 +395,9 @@ export { UserSchema } from '@repo/core/logic/schemas/user.schema';
 export { validateForm, validators } from '@repo/core/logic/utils/validators';
 export * from '@repo/core/logic/workspace/canvas';
 export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
+export * from '@repo/core/ai/contextRegistry';
+export * from '@repo/core/ai/platformManifest';
+export { useWebTodos, type WebTodo, type UseWebTodosReturn } from './adapters/supabase/todosHook';
 export { z };
+
+export * from '@repo/core/platform/drivers';

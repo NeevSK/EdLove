@@ -1,4 +1,4 @@
-import { useSandboxMode } from '@repo/core/api/sandboxMode';
+import { useSandboxMode } from '@repo/core/logic/modes/sandboxMode';
 import { X, Zap } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';

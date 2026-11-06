@@ -6,7 +6,6 @@
 
 import { useTemporalStore } from '@repo/core/logic';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Activity, ChevronRight, CircleCheck, Clock, Wind } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -253,7 +252,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                 >
                   <HStack className="items-center gap-2">
                     {saving ? (
-                      <BrandPulse size={18} tintColor="#FFFFFF" accessibilityLabel="Saving mood" />
+                      <span className="inline-block animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" aria-label="Saving mood" />
                     ) : saved ? (
                       <Icon as={CircleCheck} size={18} className="text-white" />
                     ) : null}

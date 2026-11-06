@@ -1,5 +1,5 @@
-import { uiExperience } from '@repo/core/logic/managers/factory';
-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
+import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -16,7 +16,7 @@ export interface HeatmapData {
  * Aggregates temporal activity into a grid format for yearly visualization.
  */
 export function useTemporalHeatmap(year: number) {
-  const { context } = usePermissions();
+  const { context } = useSanctuaryFeature();
   const userId = context.userId;
 
   const { data: rawData = [], isLoading } = useQuery({

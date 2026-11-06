@@ -1,4 +1,5 @@
-﻿import type { FieldDefinition, FieldType } from '@intuitui-labs/form-builder-engine/schema';
+﻿import { View, Text, Pressable, ScrollView } from 'react-native';
+import type { FieldDefinition, FieldType } from '@intuitui-labs/form-builder-engine/schema';
 import {
   Award,
   Camera,
@@ -11,7 +12,6 @@ import {
   Star,
   X,
 } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import React from 'react';
 import { studioColors } from '../theme';
@@ -126,31 +126,31 @@ export function FieldPaletteSheet({ isOpen, onClose, onSelectOption }: FieldPale
   if (!isOpen) return null;
 
   return (
-    <Box
+    <View
       className="absolute bottom-0 left-0 right-0 max-h-[85%] bg-white rounded-t-3xl border-t border-slate-200 shadow-2xl z-50 p-5"
-      sx={{
+      style={{
         backgroundColor: colors.surface ?? '#FFFFFF',
         borderColor: colors.border ?? '#E2E8F0',
       }}
     >
       {/* Header */}
-      <HStack className="items-center justify-between pb-3 border-b border-slate-100">
-        <VStack>
+      <View className="flex-row items-center items-center justify-between pb-3 border-b border-slate-100">
+        <View>
           <Text className="text-lg font-black text-slate-900">Add Question</Text>
           <Text className="text-xs text-slate-500">Choose a question type to insert</Text>
-        </VStack>
+        </View>
         <Pressable
           onPress={onClose}
           accessibilityLabel="Close palette"
           className="p-2 rounded-full bg-slate-100"
         >
-          <Icon as={X} size={18} color={colors.textSecondary ?? '#64748B'} />
+          <X size={18} color={colors.textSecondary ?? '#64748B'} />
         </Pressable>
-      </HStack>
+      </View>
 
       {/* Categories & Options List */}
       <ScrollView className="mt-3 max-h-[460px] pb-6" showsVerticalScrollIndicator={false}>
-        <VStack className="gap-2">
+        <View className="gap-2">
           {PALETTE_OPTIONS.map((item, idx) => {
             const isQuiz = item.category === 'quiz';
             return (
@@ -161,35 +161,31 @@ export function FieldPaletteSheet({ isOpen, onClose, onSelectOption }: FieldPale
                   isQuiz ? 'bg-amber-50/70 border-amber-200' : 'bg-slate-50/80 border-slate-200'
                 }`}
               >
-                <Box
+                <View
                   className={`p-2.5 rounded-xl ${
                     isQuiz ? 'bg-amber-100 text-amber-900' : 'bg-white shadow-xs'
                   }`}
                 >
-                  <Icon
-                    as={item.icon}
-                    size={20}
-                    color={isQuiz ? '#D97706' : (colors.textPrimary ?? '#0F172A')}
-                  />
-                </Box>
-                <VStack className="flex-1">
-                  <HStack className="items-center gap-2">
+                  <item.icon size={20} color={isQuiz ? '#D97706' : (colors.textPrimary ?? '#0F172A')} />
+                </View>
+                <View className="flex-1">
+                  <View className="flex-row items-center items-center gap-2">
                     <Text className="text-sm font-bold text-slate-900">{item.label}</Text>
                     {isQuiz && (
-                      <Box className="px-1.5 py-0.5 rounded bg-amber-200/80">
+                      <View className="px-1.5 py-0.5 rounded bg-amber-200/80">
                         <Text className="text-[9px] font-extrabold text-amber-900 uppercase">
                           GRADED
                         </Text>
-                      </Box>
+                      </View>
                     )}
-                  </HStack>
+                  </View>
                   <Text className="text-xs text-slate-500 mt-0.5">{item.description}</Text>
-                </VStack>
+                </View>
               </Pressable>
             );
           })}
-        </VStack>
+        </View>
       </ScrollView>
-    </Box>
+    </View>
   );
 }

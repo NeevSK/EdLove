@@ -1,6 +1,10 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import type { SessionContinuity } from '@repo/core/api/clientRuntime';
 import { APIError } from '@repo/core/types/API';
+
+export interface SessionContinuity {
+  accessToken: string;
+  subject: string;
+}
 
 export async function readSupabaseSession() {
   const { data, error } = await supabaseClient.auth.getSession();

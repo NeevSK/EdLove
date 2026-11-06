@@ -22,8 +22,17 @@ import { PowerSyncDatabase as MockPowerSyncDatabase } from '@repo/core/adapters/
 import { AppSchema } from '@repo/core/adapters/powersync/schema';
 import { createSecureDrizzleProxy } from '@repo/core/adapters/powersync/secureDrizzleProxy';
 import type { PowerSyncRuntimeOwnership } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
-import { assertPowerSyncBootstrapReady } from '@repo/core/api/highways';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
+
+export function assertPowerSyncBootstrapReady() {
+  // Hermes exposes `window` on React Native, but only browser runtimes provide
+  // `document`. Keep this guard scoped to actual web bootstrap.
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  throw new Error(
+    'PowerSync bootstrap guard: browser code touched PowerSync before the app was ready. Use the direct API highway for bootstrap and identity, and only enter PowerSync after the runtime is intentionally registered.',
+  );
+}
 
 export {
   registerOperationContext,

@@ -1,3 +1,5 @@
+'use client';
+
 import type { CSSProperties, HTMLAttributes } from 'react';
 import { useId } from 'react';
 import type { RailContract } from '../../../theme/contracts';

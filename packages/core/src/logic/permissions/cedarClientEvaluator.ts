@@ -10,21 +10,12 @@
  *   → evaluated with real resource ID + instance attributes.
  */
 
-type EvaluateFn = (args: {
-  policies: string;
-  schema: string;
-  request: {
-    principal: { type: string; id: string };
-    action: { type: string; id: string };
-    resource: { type: string; id: string };
-    context: Record<string, unknown>;
-  };
-  entities: Array<{
-    uid: { type: string; id: string };
-    attrs: Record<string, unknown>;
-    parents: string[];
-  }>;
-}) => Promise<{ decision: string }>;
+import type { AuthorizationAnswer, AuthorizationCall } from '@cedar-policy/cedar-wasm/web';
+import { cedarActionFor } from '@repo/policies/authorizationRegistry';
+import { z } from 'zod';
+
+type EvaluateFn = (args: AuthorizationCall) => AuthorizationAnswer;
+const entityAttributes = z.record(z.string(), z.json());
 
 let _wasmPromise: Promise<EvaluateFn> | null = null;
 let _wasmLoaded = false;
@@ -33,13 +24,16 @@ function getWasmEvaluator(): Promise<EvaluateFn> {
   if (_wasmPromise) return _wasmPromise;
   _wasmPromise = (async () => {
     try {
-      // @ts-expect-error - Dynamic import for cross-platform WASM compat
       const mod = await import('@cedar-policy/cedar-wasm/web');
+      await mod.default();
       _wasmLoaded = true;
-      return mod.evaluate as EvaluateFn;
-    } catch {
+      return mod.isAuthorized;
+    } catch (error) {
       _wasmLoaded = false;
-      throw new Error('CedarClientEvaluator: failed to load @cedar-policy/cedar-wasm/web');
+      _wasmPromise = null;
+      throw new Error('CedarClientEvaluator: failed to load @cedar-policy/cedar-wasm/web', {
+        cause: error,
+      });
     }
   })();
   return _wasmPromise;
@@ -51,8 +45,8 @@ export function isCedarWasmLoaded(): boolean {
 
 /**
  * warmCedarWasm — eagerly loads the WASM module at boot per D4 Section 1.
- * Safe to call multiple times; the module-level promise cache ensures
- * the WASM is loaded at most once.
+ * Safe to call multiple times; successful initialization is cached and failed
+ * initialization can be retried.
  */
 export function warmCedarWasm(): Promise<void> {
   return getWasmEvaluator().then(
@@ -92,24 +86,24 @@ export interface Shape2Request extends Shape1Request {
  */
 export async function evaluateShape1(policyString: string, req: Shape1Request): Promise<boolean> {
   const evaluate = await getWasmEvaluator();
-  const decision = await evaluate({
-    policies: policyString,
-    schema: '',
-    request: {
-      principal: { type: 'User', id: req.user.id },
-      action: { type: 'Action', id: req.action },
-      resource: { type: req.resourceType, id: SHAPE1_PLACEHOLDER_ID },
-      context: {},
-    },
+  const decision = evaluate({
+    policies: { staticPolicies: policyString },
+    principal: { type: 'User', id: req.user.id },
+    action: { type: 'Action', id: cedarActionFor(req.action, req.resourceType) },
+    resource: { type: req.resourceType, id: SHAPE1_PLACEHOLDER_ID },
+    context: {},
     entities: [
       {
         uid: { type: 'User', id: req.user.id },
-        attrs: req.user.attrs as unknown as Record<string, unknown>,
+        attrs: entityAttributes.parse({ ...req.user.attrs, id: req.user.id }),
         parents: [],
       },
     ],
   });
-  return decision.decision === 'Allow';
+  if (decision.type === 'failure' || decision.response.diagnostics.errors.length > 0) {
+    throw new Error('CedarClientEvaluator: authorization evaluation failed');
+  }
+  return decision.response.decision === 'allow';
 }
 
 /**
@@ -119,29 +113,36 @@ export async function evaluateShape1(policyString: string, req: Shape1Request): 
  */
 export async function evaluateShape2(policyString: string, req: Shape2Request): Promise<boolean> {
   const evaluate = await getWasmEvaluator();
-  const decision = await evaluate({
-    policies: policyString,
-    schema: '',
-    request: {
-      principal: { type: 'User', id: req.user.id },
-      action: { type: 'Action', id: req.action },
-      resource: { type: req.resourceType, id: req.resourceId },
-      context: {},
-    },
+  const principalAttrs = entityAttributes.parse({ ...req.user.attrs, id: req.user.id });
+  const resourceAttrs = entityAttributes.parse({ ...req.resourceAttrs, id: req.resourceId });
+  const sameEntity = req.resourceType === 'User' && req.resourceId === req.user.id;
+  const decision = evaluate({
+    policies: { staticPolicies: policyString },
+    principal: { type: 'User', id: req.user.id },
+    action: { type: 'Action', id: cedarActionFor(req.action, req.resourceType) },
+    resource: { type: req.resourceType, id: req.resourceId },
+    context: {},
     entities: [
       {
         uid: { type: 'User', id: req.user.id },
-        attrs: req.user.attrs as unknown as Record<string, unknown>,
+        attrs: principalAttrs,
         parents: [],
       },
-      {
-        uid: { type: req.resourceType, id: req.resourceId },
-        attrs: req.resourceAttrs,
-        parents: [],
-      },
+      ...(!sameEntity
+        ? [
+            {
+              uid: { type: req.resourceType, id: req.resourceId },
+              attrs: resourceAttrs,
+              parents: [],
+            },
+          ]
+        : []),
     ],
   });
-  return decision.decision === 'Allow';
+  if (decision.type === 'failure' || decision.response.diagnostics.errors.length > 0) {
+    throw new Error('CedarClientEvaluator: authorization evaluation failed');
+  }
+  return decision.response.decision === 'allow';
 }
 
 /**

@@ -6,10 +6,10 @@ const entryShellPath = resolve(import.meta.dirname, '../../entry/EntryShell.tsx'
 const entryShell = readFileSync(entryShellPath, 'utf8');
 
 describe('entry shell service recovery', () => {
-  it('mounts exactly one deep-link listener and authenticated runtime host beneath GlobalProvider', () => {
-    expect(entryShell.match(/<GlobalProvider>/g)).toHaveLength(1);
+  it('mounts one deep-link listener without mounting retired API mutation replay', () => {
+    expect(entryShell.match(/<GlobalProvider\b/g)).toHaveLength(1);
     expect(entryShell.match(/<DeepLinkProvider>/g)).toHaveLength(1);
-    expect(entryShell.match(/<AuthenticatedSyncService\s*\/>/g)).toHaveLength(1);
+    expect(entryShell).not.toContain('AuthenticatedSyncService');
     expect(entryShell.indexOf('<GlobalProvider>')).toBeLessThan(
       entryShell.indexOf('<DeepLinkProvider>'),
     );

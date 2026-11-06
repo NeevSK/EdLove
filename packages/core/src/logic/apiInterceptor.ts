@@ -1,3 +1,4 @@
+import { getAPIErrorStatus } from '@repo/core/logic/utils/errorPolicy';
 import { showToast } from '@repo/core/lib/feedback';
 import { captureException } from '@repo/core/monitoring';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
@@ -61,7 +62,7 @@ export function handleAPIError(error: any, silent = false) {
   const apiError: SanctuaryAPIError = {
     message: mapErrorToMessage(error),
     code: error?.code,
-    status: error?.status,
+    status: getAPIErrorStatus(error),
   };
 
   if (__DEV__) {

@@ -1,4 +1,4 @@
-import { Box, Heading, Text } from '@repo/ui/primitives';
+import { View, Text } from 'react-native';
 import { memo } from 'react';
 
 export type PulseCardProps = Readonly<{
@@ -8,10 +8,10 @@ export type PulseCardProps = Readonly<{
 
 export const PulseCard = memo(({ label, value }: PulseCardProps) => {
   return (
-    <Box className="flex-1 min-w-[92px] px-3 py-4 rounded-2xl bg-white/30 border border-white/20">
+    <View className="flex-1 min-w-[92px] px-3 py-4 rounded-2xl bg-white/30 border border-white/20">
       <Text className="text-[9px] text-ink/40 font-bold uppercase tracking-wider">{label}</Text>
-      <Heading className="mt-1 text-2xl font-bold text-ink">{value}</Heading>
-    </Box>
+      <Text className="mt-1 text-2xl font-bold text-ink">{value}</Text>
+    </View>
   );
 });
 
@@ -25,13 +25,13 @@ export type SectionCardProps = Readonly<{
 
 export const SectionCard = memo(({ title, description, children }: SectionCardProps) => {
   return (
-    <Box className="rounded-3xl border border-border bg-phase-surface/30 overflow-hidden mb-4">
-      <Box className="gap-1 p-5">
-        <Heading className="text-md text-ink font-bold">{title}</Heading>
+    <View className="rounded-3xl border border-border bg-phase-surface/30 overflow-hidden mb-4">
+      <View className="gap-1 p-5">
+        <Text className="text-md text-ink font-bold">{title}</Text>
         <Text className="text-ink/60 text-xs leading-snug">{description}</Text>
-      </Box>
+      </View>
       {children}
-    </Box>
+    </View>
   );
 });
 

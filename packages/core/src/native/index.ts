@@ -2,11 +2,9 @@ export {
   supabaseClient,
   supabaseClient as supabase,
 } from '@repo/core/adapters/supabaseClient';
-export { authAPI } from '@repo/core/api/auth';
-export { identityAPI } from '@repo/core/api/identity';
+export { authAPI } from '@repo/core/auth';
 export { bootstrapPlatform } from '@repo/core/native/bootstrap';
 export { deviceTrustAPI } from '@repo/core/native/deviceTrust';
-export { FlowResolver } from '@repo/core/native/flows/FlowResolver';
 export type {
   AnonymousAuthSubject,
   AuthenticatedAuthSubject,
@@ -22,7 +20,7 @@ export {
   discardGuestConversion,
   readGuestConversionRecord,
 } from '@repo/core/native/guestConversionLedger';
-export { GuestDataManager } from '@repo/core/native/guestDataManager';
+export { GuestStorage, guestStorage } from '@repo/core/native/guestStorage';
 export { GuestDataSync } from '@repo/core/native/guestDataSync';
 export {
   clearLocalGuestIdentity,
@@ -76,4 +74,3 @@ export {
 } from '@repo/core/native/runtimeAdapter';
 export { StorageKeys, storage } from '@repo/core/native/storage';
 export { supabaseAuthStorage } from '@repo/core/native/supabaseAuthStorage';
-export { useWorkspaceLayoutSync } from '@repo/core/native/useWorkspaceLayoutSync';

@@ -5,7 +5,7 @@ import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
   fetchEnergyForecastsForView,
   saveEnergyForecastForDate,
-} from '@repo/self/api/selfInsightsRepository';
+} from '@repo/self/data/selfInsights.data';
 import type { EnergyForecast } from '@repo/self/types';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -19,7 +19,8 @@ const ENERGY_CACHE_KEY = 'gurudevi-energy-cache';
  */
 export function useEnergyForecast(userId?: string) {
   const { isOnline } = useOfflineStatus();
-  const { viewDate, isPastView } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   const [forecasts, setForecasts] = useState<EnergyForecast[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

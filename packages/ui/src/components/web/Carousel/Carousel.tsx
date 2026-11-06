@@ -1,3 +1,5 @@
+'use client';
+
 import { type HTMLAttributes, useId, useRef, useState } from 'react';
 import type { CarouselContract } from '../../../theme/contracts';
 import { Button } from '../Button/Button';

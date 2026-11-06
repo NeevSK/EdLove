@@ -1,10 +1,9 @@
+import { View, Text } from 'react-native';
 import type { EntityDefinition } from '@repo/core/logic';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import EntityModal from '@repo/ui/components/EntityModal';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Button, Dialog } from '@repo/ui/components/native';
 import { CircleCheck } from '@repo/ui/icons';
-import { Box, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -13,82 +12,100 @@ import { useTranslation } from 'react-i18next';
 interface CreateGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreated?: (groupId: string) => void;
   onSuccess?: (group: any) => void;
-  mode?: 'create' | 'edit';
-  initialData?: any;
 }
 
-export default function CreateGroupModal({
+export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   isOpen,
   onClose,
-  onCreated,
   onSuccess,
-  mode = 'create',
-  initialData,
-}: CreateGroupModalProps) {
-  useTranslation();
-  const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
+}) => {
+  const { t } = useTranslation();
+  const [createdGroup, setCreatedGroup] = useState<any>(null);
 
-  const groupDefinition: EntityDefinition = {
-    type: 'group',
-    id: initialData?.id,
+  const groupSchema: EntityDefinition = {
+    name: 'CommunityGroup',
+    label: t('community.createGroup') || 'Create Learning Circle',
+    fields: [
+      {
+        name: 'name',
+        label: t('community.groupName') || 'Circle Name',
+        type: 'text',
+        required: true,
+        placeholder: 'e.g. Grade 10 Science Circle',
+      },
+      {
+        name: 'description',
+        label: t('community.groupDescription') || 'Description & Intention',
+        type: 'textarea',
+        required: false,
+        placeholder: 'What is the purpose of this learning space?',
+      },
+      {
+        name: 'category',
+        label: t('community.category') || 'Domain',
+        type: 'select',
+        required: true,
+        options: [
+          { label: 'Academic Study', value: 'academic' },
+          { label: 'Wellbeing & Practice', value: 'wellbeing' },
+          { label: 'Arts & Creation', value: 'arts' },
+          { label: 'Community Service', value: 'service' },
+        ],
+        defaultValue: 'academic',
+      },
+    ],
   };
 
-  const handleSuccess = React.useCallback(
-    (group: any) => {
-      hapticSuccess();
-      setCreatedGroupId(group.id);
-      onCreated?.(group.id);
-      onSuccess?.(group);
-    },
-    [onCreated, onSuccess],
-  );
+  const handleGroupCreated = async (data: any) => {
+    hapticSuccess();
+    setCreatedGroup(data);
+    onSuccess?.(data);
+  };
 
-  const handleEnterCircle = React.useCallback(() => {
-    if (createdGroupId) {
-      onClose();
-      router.push({
-        pathname: '/community/groups/[groupId]',
-        params: { groupId: createdGroupId },
-      });
+  const handleEnterCircle = () => {
+    onClose();
+    if (createdGroup?.id) {
+      router.push(`/community/chat/${createdGroup.id}` as any);
     }
-  }, [createdGroupId, onClose]);
+  };
 
-  if (!isOpen) return null;
+  if (createdGroup) {
+    const groupQRValue = QRBuilder.communityGroup({
+      id: createdGroup.id || 'new-group',
+      name: createdGroup.name || 'New Learning Circle',
+    });
 
-  if (createdGroupId) {
-    const groupQRValue = QRBuilder.group(createdGroupId);
     return (
-      <SanctuaryModal isOpen={isOpen} onClose={onClose} title="Circle Founded">
-        <VStack className="gap-8 items-center py-8">
-          <Box className="w-24 h-24 rounded-full bg-phase-interactive/10 items-center justify-center border border-phase-interactive/20">
-            <Icon as={CircleCheck} className="text-phase-interactive" size="xl" />
-          </Box>
+      <Dialog open={isOpen} onClose={onClose} title="Circle Formed">
+        <View className="items-center py-6 gap-6">
+          <View className="w-16 h-16 rounded-full bg-emerald-500/10 items-center justify-center border border-emerald-500/20">
+            <CircleCheck size={36} className="text-emerald-500" />
+          </View>
 
-          <VStack className="gap-2 items-center px-4">
-            <Heading className="text-center text-ink text-2xl font-black">
-              Resonance Established
-            </Heading>
-            <Text className="text-center text-ink/60 text-sm leading-relaxed px-5">
-              Your new circle is ready to welcome its members. Share this portal to begin the
+          <View className="items-center gap-2">
+            <Text className="text-xl font-bold text-ink text-center">
+              {createdGroup.name}
+            </Text>
+            <Text className="text-sm text-ink/60 text-center px-4">
+              Your learning circle is established. Share this invitation node for peers to join the
               resonance.
             </Text>
-          </VStack>
+          </View>
 
-          <Box className="p-6 bg-white rounded-3xl shadow-lg border border-border">
+          <View className="p-6 bg-white rounded-3xl shadow-lg border border-border">
             <QRCodeGenerator value={groupQRValue} size={180} color="#000" />
-          </Box>
+          </View>
 
-          <SanctuaryButton
-            action="primary"
-            className="w-full h-14 rounded-2xl"
+          <Button
+            label="Enter Circle Space"
+            variant="primary"
+            size="lg"
+            fullWidth
             onPress={handleEnterCircle}
-          >
-            <Text className="text-white font-bold text-lg">Enter Circle Space</Text>
-          </SanctuaryButton>
-        </VStack>
-      </SanctuaryModal>
+          />
+        </View>
+      </Dialog>
     );
   }
 
@@ -96,10 +113,9 @@ export default function CreateGroupModal({
     <EntityModal
       isOpen={isOpen}
       onClose={onClose}
-      definition={groupDefinition}
-      mode={mode as any}
-      instance={initialData}
-      onSuccess={handleSuccess}
+      schema={groupSchema}
+      onSubmit={handleGroupCreated}
+      title={t('community.createGroup') || 'Create Learning Circle'}
     />
   );
-}
+};

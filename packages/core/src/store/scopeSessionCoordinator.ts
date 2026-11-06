@@ -99,7 +99,8 @@ function isRestorableWorkspacePerspective(value: unknown): value is SanctuaryPer
   return false;
 }
 
-function permissionScopeId(snapshot: ScopeSessionSnapshot): string {
+/** The scope id the local decision store is keyed by for this snapshot. */
+export function permissionScopeId(snapshot: ScopeSessionSnapshot): string {
   return snapshot.activePerspective.kind === 'institutional'
     ? snapshot.activePerspective.schoolId
     : snapshot.activePerspective.id;
@@ -237,8 +238,7 @@ export async function commitIdentityScopeSession(input: {
   ];
   const selectedScopeBond =
     activePerspective.kind === 'institutional' ||
-    selectedBond?.entity_type === 'PERSONAL' ||
-    selectedBond?.entity_type === 'PERSONAL_CLASSROOM'
+    selectedBond?.entity_type === 'PERSONAL'
       ? selectedBond
       : null;
   return transitionScopeSession({

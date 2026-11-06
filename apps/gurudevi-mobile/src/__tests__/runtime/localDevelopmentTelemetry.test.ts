@@ -464,6 +464,7 @@ describe('local development telemetry / substituted filesystem', () => {
       prior: {},
       grant: 0,
       gains: {},
+      cause: null,
     });
     await capture.flushDevelopmentTelemetry();
     expect(database.sources).toContainEqual(
@@ -473,11 +474,61 @@ describe('local development telemetry / substituted filesystem', () => {
         details: expect.stringContaining('rung-4-off'),
       }),
     );
+    expect(database.sources).toContainEqual(
+      expect.objectContaining({
+        source: 'verger-inputs',
+        details: expect.stringContaining('Rung cause not recorded'),
+      }),
+    );
     expect(database.records).toContainEqual(
       expect.objectContaining({
         source: 'runtime',
         name: 'verger-launch-plan',
         attributes: expect.objectContaining({ runtime: 'off', rung: 4, reason: 'rung-4-off' }),
+      }),
+    );
+  });
+
+  it('names the step that put the ladder on its rung', async () => {
+    const capture = await import('@/telemetry/localDevelopmentTelemetry');
+    const cause = {
+      kind: 'boot-failure' as const,
+      atWall: Date.UTC(2026, 9, 28, 3, 0, 0),
+      from: 0 as const,
+      to: 4 as const,
+      cause: 'native-crash' as const,
+      exitAtWall: Date.UTC(2026, 9, 28, 2, 59, 59),
+      session: null,
+      failuresInWindow: 1,
+      key: 'verger-p5:gurudevi:1.0.0',
+      previousKey: null,
+    };
+    capture.recordDevelopmentVergerLaunch({
+      runtime: 'off',
+      rung: 4,
+      reason: 'rung-4-off',
+      exercise: false,
+      hardware: false,
+      prior: {},
+      grant: 0,
+      gains: {},
+      cause,
+    });
+    await capture.flushDevelopmentTelemetry();
+    expect(database.sources).toContainEqual(
+      expect.objectContaining({
+        source: 'verger-inputs',
+        details: expect.stringContaining(
+          'Rung set by boot-failure (native-crash) at 2026-10-28T03:00:00.000Z.',
+        ),
+      }),
+    );
+    expect(database.records).toContainEqual(
+      expect.objectContaining({
+        name: 'verger-launch-plan',
+        attributes: expect.objectContaining({
+          cause: expect.objectContaining({ kind: 'boot-failure', cause: 'native-crash' }),
+        }),
       }),
     );
   });
@@ -525,5 +576,19 @@ describe('local development telemetry / substituted filesystem', () => {
     await capture.flushDevelopmentTelemetry();
     expect(disk.files.size).toBe(0);
     expect(globalThis.__GURUDEVI_DEV_TELEMETRY__).toBeUndefined();
+  });
+
+  it('a release phone switched to the exhaustive level captures from that moment', async () => {
+    vi.stubGlobal('__DEV__', false);
+    const capture = await import('@/telemetry/localDevelopmentTelemetry');
+    capture.saveDevelopmentTelemetry({ source: 'runtime', name: 'before-switch', attributes: {} });
+    expect(capture.isExhaustiveCapture()).toBe(false);
+    capture.enableExhaustiveCapture();
+    expect(capture.isExhaustiveCapture()).toBe(true);
+    expect(globalThis.__GURUDEVI_DEV_TELEMETRY__).toBeDefined();
+    capture.saveDevelopmentTelemetry({ source: 'runtime', name: 'after-switch', attributes: {} });
+    await capture.flushDevelopmentTelemetry();
+    expect(database.records).toContainEqual(expect.objectContaining({ name: 'after-switch' }));
+    expect(database.records).not.toContainEqual(expect.objectContaining({ name: 'before-switch' }));
   });
 });

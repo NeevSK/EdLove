@@ -18,6 +18,9 @@ export const GURUDEVI_EXPLORE_URL =
 
 export const GURUDEVI_QR_URL = `${GURUDEVI_PLATFORM_URL}/qr`;
 
+/** Public contact destination for optional school connection requests. */
+export const GURUDEVI_SCHOOL_WHATSAPP = '94716158187';
+
 export const GURUDEVI_SUPPORT_EMAIL =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_SUPPORT_EMAIL) ||
   'support@gurudevi.lk';

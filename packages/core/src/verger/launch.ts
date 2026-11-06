@@ -17,6 +17,11 @@ import {
   VERGER_POLICY_P5,
   type VergerPolicy,
 } from '@repo/verger-core';
+import {
+  activationPatchForScenario,
+  type GurudeviScenario,
+  isGurudeviScenario,
+} from './gurudeviScenarios';
 
 /** Where the dev lab keeps its saved activation patch (`localPatch`), in each app's own store. */
 export const VERGER_LAB_PATCH_KEY = 'gurudevi:verger:lab-patch';
@@ -29,6 +34,77 @@ export const VERGER_LAB_CONFIG_KEY = 'gurudevi:verger:lab-config';
 
 /** Events a development build records per session for the lab's export (D1). */
 export const VERGER_LAB_RECORD_EVENTS = 4000;
+
+/**
+ * How much verger senses and keeps (Naveen, 2026-10-29). One verger at two levels:
+ *
+ * - `exhaustive`: every sensor on, every decision observed (`observe: 'exhaustive'`), each
+ *   session recorded, and the phone's local capture on (journeys, traces, DevTools data). It
+ *   replaces the development "isolated shadow" lab: on a development build its recovery ladder is
+ *   kept apart (`VERGER_EXHAUSTIVE_STORE_PREFIX`), so experiments never move the normal ladder.
+ * - `normal`: what release phones run: the host's sensors, summary observation, bounded field
+ *   telemetry, no local capture.
+ *
+ * Neither level changes what verger may do: the mode, the recovery ladder and the kill switch
+ * decide that, at both levels.
+ */
+export type VergerLevel = 'normal' | 'exhaustive';
+
+/** Where a phone keeps its own level switch (the lab, or diagnosis of one phone in the field). */
+export const VERGER_LEVEL_KEY = 'gurudevi:verger:level';
+
+/** The store prefix of an exhaustive development run's own recovery ladder. */
+export const VERGER_EXHAUSTIVE_STORE_PREFIX = 'gurudevi:verger:exhaustive:';
+
+export interface VergerLevelInputs {
+  /** A development build: exhaustive unless switched down. */
+  readonly dev: boolean;
+  /** The phone's own switch (`VERGER_LEVEL_KEY`), untrusted. */
+  readonly device: unknown;
+  /** Remote config (`__GURUDEVI_VERGER_LEVEL__`), untrusted; wins over the phone's switch. */
+  readonly remote: unknown;
+}
+
+export interface VergerLevelLaunch {
+  readonly level: VergerLevel;
+  readonly source: 'build' | 'device' | 'remote';
+  /** A value that is not a level, refused (the layer below decides). */
+  readonly rejected: string | null;
+}
+
+const isVergerLevel = (value: unknown): value is VergerLevel =>
+  value === 'normal' || value === 'exhaustive';
+
+/** The level of this launch: the build's, then the phone's switch, then remote config. */
+export function resolveVergerLevel(inputs: VergerLevelInputs): VergerLevelLaunch {
+  let level: VergerLevel = inputs.dev ? 'exhaustive' : 'normal';
+  let source: VergerLevelLaunch['source'] = 'build';
+  const rejections: string[] = [];
+  const consider = (value: unknown, from: 'device' | 'remote') => {
+    if (value === undefined || value === null || value === '') return;
+    if (isVergerLevel(value)) {
+      level = value;
+      source = from;
+    } else rejections.push(`${from}: unknown level ${JSON.stringify(value)}`);
+  };
+  consider(inputs.device, 'device');
+  consider(inputs.remote, 'remote');
+  return { level, source, rejected: rejections.length > 0 ? rejections.join('; ') : null };
+}
+
+/**
+ * An activation at a level. Exhaustive senses with every sensor and observes in full; normal is
+ * the activation as given. What verger may apply (decide, reduce, grow, hardware, levers,
+ * admission) is never changed by the level.
+ */
+export function activationAtLevel(
+  activation: VergerActivation,
+  level: VergerLevel,
+): VergerActivation {
+  return level === 'exhaustive'
+    ? { ...activation, sense: ACTIVATION_PRESETS.lab.sense, observe: 'exhaustive' }
+    : activation;
+}
 
 /** `off` runs only the floors; `shadow` senses and decides but applies nothing new; `active` applies. */
 export type RuntimeMode = 'off' | RunMode;
@@ -52,6 +128,8 @@ export interface VergerLaunchInputs {
    * development build: a release never runs what a lab left behind.
    */
   readonly localPatch?: unknown;
+  /** High-level operational scenario (e.g. 'exam', 'power-cut', 'low-data', 'auto'). */
+  readonly scenario?: unknown;
   /** A development build. */
   readonly dev: boolean;
   readonly levers: readonly LeverSpec[];
@@ -67,6 +145,8 @@ export interface VergerLaunch {
   readonly rejected: string | null;
   /** A lab patch that was rejected, and why (the lab shows it, never swallows it). */
   readonly rejectedLocal: string | null;
+  /** The operational scenario resolved for this launch. */
+  readonly scenario: GurudeviScenario;
 }
 
 function parsePatch(
@@ -92,9 +172,18 @@ export function resolveVergerLaunch(inputs: VergerLaunchInputs): VergerLaunch {
   const local = inputs.dev ? parsePatch(inputs.localPatch, inputs.levers) : { patch: null, rejected: null };
   const rejected = remote.rejected;
   const rejectedLocal = local.rejected;
+  const scenario: GurudeviScenario = isGurudeviScenario(inputs.scenario) ? inputs.scenario : 'auto';
+  const scenarioPatch = activationPatchForScenario(scenario);
 
   if (inputs.override === 'off')
-    return { mode: 'off', activation: null, source: 'override off', rejected, rejectedLocal };
+    return {
+      mode: 'off',
+      activation: null,
+      source: 'override off',
+      rejected,
+      rejectedLocal,
+      scenario,
+    };
   const preset: ActivationPresetName | null =
     inputs.override === 'active' || inputs.override === 'shadow'
       ? inputs.override
@@ -114,17 +203,29 @@ export function resolveVergerLaunch(inputs: VergerLaunchInputs): VergerLaunch {
       source: inputs.dev ? 'build off' : 'release default',
       rejected,
       rejectedLocal,
+      scenario,
     };
-  // The lab's patch sits under the remote one: remote config can still overrule a lab setting.
-  const activation = resolveActivation(ACTIVATION_PRESETS[preset], local.patch, remote.patch);
+  // The scenario and lab patch sit under the remote one: remote config can still overrule them.
+  const activation = resolveActivation(
+    ACTIVATION_PRESETS[preset],
+    scenarioPatch,
+    local.patch,
+    remote.patch,
+  );
   return {
     mode: modeForActivation(activation),
     activation,
-    source: [preset, local.patch && 'lab patch', remote.patch && 'remote patch']
+    source: [
+      preset,
+      scenario !== 'auto' && `scenario:${scenario}`,
+      local.patch && 'lab patch',
+      remote.patch && 'remote patch',
+    ]
       .filter(Boolean)
       .join(' + '),
     rejected,
     rejectedLocal,
+    scenario,
   };
 }
 
@@ -232,12 +333,13 @@ export interface VergerPolicyLaunch {
 }
 
 /**
- * Which policy decides this launch. Weakest first: p4 by default, the build, the split, the lab
- * (development only), then remote config. An unknown name is refused and reported; the layer
- * below it decides. Choosing p5 by default is a decision for evidence from phones (`compare`).
+ * Which policy decides this launch. Weakest first: p5 by default (Naveen, 2026-10-29), the
+ * build, the split, the lab (development only), then remote config. An unknown name is refused
+ * and reported; the layer below it decides. The split still names both arms (p5 against p4), so
+ * a controlled comparison stays possible.
  */
 export function resolveVergerPolicy(inputs: VergerPolicyInputs): VergerPolicyLaunch {
-  let name: VergerPolicyName = 'p4';
+  let name: VergerPolicyName = 'p5';
   let source: VergerPolicyLaunch['source'] = 'default';
   const rejections: string[] = [];
   const consider = (value: unknown, from: VergerPolicyLaunch['source']) => {
@@ -275,6 +377,7 @@ export const VERGER_REMOTE_FLAG_KEYS = {
   activation: 'gurudevi.verger.activation',
   config: 'gurudevi.verger.config',
   policy: 'gurudevi.verger.policy',
+  level: 'gurudevi.verger.level',
 } as const;
 
 export interface VergerRemoteInputs {
@@ -282,6 +385,7 @@ export interface VergerRemoteInputs {
   readonly remotePatch: unknown;
   readonly remoteConfig: unknown;
   readonly remotePolicy: unknown;
+  readonly remoteLevel: unknown;
 }
 
 /**
@@ -305,9 +409,11 @@ export function vergerRemoteFromFlags(
   };
   const mode = flags[VERGER_REMOTE_FLAG_KEYS.mode];
   const policy = flags[VERGER_REMOTE_FLAG_KEYS.policy];
+  const level = flags[VERGER_REMOTE_FLAG_KEYS.level];
   return {
     override: typeof mode === 'string' && mode !== '' ? mode : undefined,
     remotePolicy: typeof policy === 'string' && policy !== '' ? policy : undefined,
+    remoteLevel: typeof level === 'string' && level !== '' ? level : undefined,
     remotePatch: json(VERGER_REMOTE_FLAG_KEYS.activation),
     remoteConfig: json(VERGER_REMOTE_FLAG_KEYS.config),
   };

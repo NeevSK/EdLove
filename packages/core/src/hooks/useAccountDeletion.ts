@@ -1,4 +1,4 @@
-import { authAPI } from '@repo/core/api/auth';
+import { authAPI } from '@repo/core/auth';
 import { useAccountLifecycle } from '@repo/core/hooks/useAccountLifecycle';
 import {
   type AccountLifecycleCommand,

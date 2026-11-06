@@ -40,6 +40,15 @@ describe("Gurudevi's experience view", () => {
     ).toMatchObject({ allowShimmer: false, listDrawDistance: 60 });
   });
 
+  it('transitions lever maps level 0 to full, 1 to short-fade, and 2 or safeMode to instant', () => {
+    const view = (levels: Record<string, number>, safeMode = false) =>
+      experienceOf({ levels, capacityClass: 'high' }, { fidelity: 'auto', safeMode });
+    expect(view({ transitions: 0 }).transitionMode).toBe('full');
+    expect(view({ transitions: 1 }).transitionMode).toBe('short-fade');
+    expect(view({ transitions: 2 }).transitionMode).toBe('instant');
+    expect(view({ transitions: 0 }, true).transitionMode).toBe('instant');
+  });
+
   it('the web governs only what its pages apply, and app-wide reduced motion', () => {
     expect(GURUDEVI_WEB_HOST.levers.map((lever) => lever.id).sort()).toEqual(
       ['global-motion', ...WEB_VIEW_LEVER_IDS].sort(),

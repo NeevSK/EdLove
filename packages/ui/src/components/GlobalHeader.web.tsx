@@ -3,7 +3,6 @@ import { useScopedNotifications } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
-import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { Bell, ChevronLeft, Menu, Search, X } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
@@ -30,7 +29,6 @@ export interface GlobalHeaderProps {
     placeholder?: string;
   };
   isSelfView?: boolean;
-  avatarUrl?: string;
 }
 
 interface HeaderState {
@@ -71,7 +69,6 @@ export default function GlobalHeader({
   userName,
   searchProps,
   isSelfView = false,
-  avatarUrl,
 }: GlobalHeaderProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
@@ -140,10 +137,6 @@ export default function GlobalHeader({
     router.back();
   }, [onBack]);
 
-  const handleNavigateProfile = useCallback(() => {
-    router.push('/profile');
-  }, []);
-
   const headerHeight = insets.top + 80 + (state.isSearchActive ? 64 : 0);
 
   return (
@@ -185,19 +178,6 @@ export default function GlobalHeader({
               )
             )}
 
-            {isSelfView && (
-              <Pressable accessibilityRole="button" onPress={handleNavigateProfile}>
-                <Box className="mr-2">
-                  <UserAvatar
-                    avatarUrl={avatarUrl || user?.avatar_url}
-                    fullName={userFullName}
-                    fallbackEmoji={roleContext.emoji}
-                    size={32}
-                    borderRadius={12}
-                  />
-                </Box>
-              </Pressable>
-            )}
 
             <VStack className="gap-0.5 flex-1">
               {(subtitle || (!title && greetingDetails.text)) && (

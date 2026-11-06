@@ -3,28 +3,62 @@ import {
   type RuntimeMode,
   resolveVergerConfig,
   resolveVergerLaunch,
+  resolveVergerLevel,
   resolveVergerPolicy,
   type VergerConfig,
   type VergerConfigLaunch,
   type VergerLaunch,
+  type VergerLevel,
+  type VergerLevelLaunch,
   type VergerPolicyLaunch,
 } from '@repo/core/verger';
 import { getAndroidId } from 'expo-application';
+import { File, Paths } from 'expo-file-system';
 
 export type { RuntimeMode } from '@repo/core/verger';
 
-/** An isolated development run never reads or changes the persisted recovery ladder. */
-export function isolatedVergerMode(
-  value: string | undefined,
-  dev: boolean,
-): 'shadow' | 'active' | null {
-  if (!dev) return null;
-  if (value === 'true') return 'shadow';
-  if (value === 'active') return 'active';
-  return null;
+/**
+ * The phone's own level switch: one word in a small file, read synchronously, so the level is
+ * known before verger launches (AsyncStorage could only be read after). Unreadable is no switch.
+ */
+const LEVEL_FILE = 'verger-level.txt';
+
+export function readDeviceLevelSwitch(): string | undefined {
+  try {
+    const file = new File(Paths.document, LEVEL_FILE);
+    return file.exists ? file.textSync().trim() : undefined;
+  } catch (error) {
+    console.warn('[verger] level switch unreadable; using the build level', error);
+    return undefined;
+  }
+}
+
+/** Sets the phone's level for the next launch; null removes the switch (the build decides). */
+export function writeDeviceLevelSwitch(level: VergerLevel | null): void {
+  const file = new File(Paths.document, LEVEL_FILE);
+  if (level === null) {
+    if (file.exists) file.delete();
+    return;
+  }
+  if (!file.exists) file.create();
+  file.writeSync(level);
+}
+
+/**
+ * This launch's level: exhaustive in a development build, normal in a release, then the phone's
+ * own switch, then remote config (`__GURUDEVI_VERGER_LEVEL__`).
+ */
+export function readVergerLevel(): VergerLevelLaunch {
+  return resolveVergerLevel({
+    dev: __DEV__,
+    device: readDeviceLevelSwitch(),
+    remote: globalThis.__GURUDEVI_VERGER_LEVEL__,
+  });
 }
 
 declare global {
+  // Remote config may set the level ('normal' or 'exhaustive') for chosen phones.
+  var __GURUDEVI_VERGER_LEVEL__: unknown;
   // Remote config or the diagnostics screen may set this; `off` is the kill switch.
   var __GURUDEVI_RUNTIME_MODE__: RuntimeMode | undefined;
   // Remote config may set an activation patch (untrusted JSON); malformed, it is ignored whole.

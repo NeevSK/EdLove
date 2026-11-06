@@ -1,5 +1,4 @@
-import { Card } from '@repo/ui/components/SanctuaryCard';
-import { HStack } from '@repo/ui/primitives';
+import { Surface } from '@repo/ui/components/native';
 import { Theme } from '@repo/ui/theme/Theme';
 
 import { useEffect, useRef, useState } from 'react';
@@ -115,7 +114,7 @@ export function InteractiveChat({
 
     return (
       <View key={message.id} style={styles.messageContainer}>
-        <HStack style={styles.messageHeader}>
+        <View className="flex-row items-center" style={styles.messageHeader}>
           <Text style={styles.senderText}>
             {message.sender === 'user'
               ? 'You'
@@ -126,7 +125,7 @@ export function InteractiveChat({
           {showTimestamps && (
             <Text style={styles.timestampText}>{formatTimestamp(message.timestamp)}</Text>
           )}
-        </HStack>
+        </View>
 
         <View style={styles.messageContent}>
           {isEditing && allowEditing ? (
@@ -144,7 +143,7 @@ export function InteractiveChat({
         </View>
 
         {allowEditing && message.sender !== 'system' && (
-          <HStack style={styles.messageActions}>
+          <View className="flex-row items-center" style={styles.messageActions}>
             {message.sender === 'user' && (
               <>
                 <Text
@@ -158,25 +157,25 @@ export function InteractiveChat({
                 </Text>
               </>
             )}
-          </HStack>
+          </View>
         )}
 
         {isEditing && (
-          <HStack style={styles.editActions}>
+          <View className="flex-row items-center" style={styles.editActions}>
             <Text style={[styles.actionButton, styles.saveButton]} onPress={handleSaveEdit}>
               Save
             </Text>
             <Text style={[styles.actionButton, styles.cancelButton]} onPress={handleCancelEdit}>
               Cancel
             </Text>
-          </HStack>
+          </View>
         )}
       </View>
     );
   };
 
   return (
-    <Card style={[styles.container, { height }]}>
+    <Surface tone="raised" style={[styles.container, { height }]}>
       <Text style={styles.title}>{title}</Text>
       <ScrollView
         ref={scrollViewRef}
@@ -205,7 +204,7 @@ export function InteractiveChat({
           Send
         </Text>
       </View>
-    </Card>
+    </Surface>
   );
 }
 

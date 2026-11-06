@@ -8,7 +8,6 @@
 
 import { MLKitProvider } from '@repo/scanner-kit/ocr/providers/MLKitProvider';
 import type { OCRProvider, OCRRawResult, OCRRecognizeOptions } from '@repo/scanner-kit/ocr/types';
-import { SanctuaryVisionProvider } from './providers/SanctuaryVisionProvider';
 
 export class OCRPipeline {
   private registry = new Map<string, OCRProvider>();
@@ -23,10 +22,9 @@ export class OCRPipeline {
   }
 
   async recognize(imageUri: string, options: OCRRecognizeOptions = {}): Promise<OCRRawResult> {
-    const { provider: providerName = 'sanctuary_vision' } = options;
+    const { provider: providerName = 'mlkit' } = options;
     const provider =
       this.registry.get(providerName) ??
-      this.registry.get('sanctuary_vision') ??
       this.registry.get('mlkit');
 
     if (!provider) {
@@ -36,7 +34,7 @@ export class OCRPipeline {
     try {
       return await provider.recognize(imageUri, options);
     } catch (err) {
-      // If sanctuary_vision fails and mlkit is available, attempt local fallback
+      // Prefer the on-device provider as the offline fallback.
       if (providerName !== 'mlkit' && this.registry.has('mlkit')) {
         console.warn(`OCRPipeline: "${providerName}" failed, falling back to mlkit.`, err);
         return this.recognize(imageUri, { ...options, provider: 'mlkit' });
@@ -48,9 +46,6 @@ export class OCRPipeline {
 
 /**
  * App-wide default pipeline.
- * Registers the generic Sanctuary Vision Provider by default,
- * with MLKit registered as an offline secondary.
+ * Registers the on-device MLKit provider for offline recognition.
  */
-export const defaultOCRPipeline = new OCRPipeline()
-  .register(new SanctuaryVisionProvider())
-  .register(new MLKitProvider());
+export const defaultOCRPipeline = new OCRPipeline().register(new MLKitProvider());

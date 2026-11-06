@@ -1,11 +1,13 @@
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { Theme } from '@repo/ui/theme/Theme';
-import { flexRender, type Table } from '@tanstack/react-table';
+import { flexRender } from '@tanstack/react-table';
+import type { RowData } from '@tanstack/react-table';
+import type { LegacyTable as Table } from '@tanstack/react-table/legacy';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export interface SanctuaryTableProps<TData> {
+export interface SanctuaryTableProps<TData extends RowData> {
   table: Table<TData>;
 }
 
@@ -13,7 +15,7 @@ export interface SanctuaryTableProps<TData> {
  * SanctuaryTable - Decoupled React Native Table renderer.
  * Consumes a TanStack Table instance and renders items using SanctuaryFlashList.
  */
-export function SanctuaryTable<TData>({
+export function SanctuaryTable<TData extends RowData>({
   table,
 }: SanctuaryTableProps<TData>) {
   const colors = useThemedColors();

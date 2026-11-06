@@ -1,3 +1,5 @@
+'use client';
+
 import { type KeyboardEvent, useRef } from 'react';
 import type { WorldPickerContract } from '../../../theme/contracts';
 import type { WorldId, WorldLanguage, WorldMode } from '../../../theme/types';

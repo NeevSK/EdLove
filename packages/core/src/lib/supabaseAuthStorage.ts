@@ -1,5 +1,5 @@
 import { getActiveAccountId, scopeStorageKey } from '@repo/core/lib/accountScope';
-import { cryptoManager } from '@repo/core/logic/managers/CryptoManager';
+import { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
@@ -17,15 +17,15 @@ function getProjectRef() {
 const AUTH_TOKEN_STORAGE_KEY = `sb-${getProjectRef()}-auth-token`;
 
 async function readStorage(key: string): Promise<string | null> {
-  return cryptoManager.getItemAsync(key);
+  return cryptoVault.getItemAsync(key);
 }
 
 async function writeStorage(key: string, value: string): Promise<void> {
-  await cryptoManager.setItemAsync(key, value);
+  await cryptoVault.setItemAsync(key, value);
 }
 
 async function deleteStorage(key: string): Promise<void> {
-  await cryptoManager.deleteItemAsync(key);
+  await cryptoVault.deleteItemAsync(key);
 }
 
 function getScopedAuthStorageKey(accountId: string | null, key: string) {

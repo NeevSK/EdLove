@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 import type { ListContract } from '../../../theme/contracts';
 import { cx } from '../cx';

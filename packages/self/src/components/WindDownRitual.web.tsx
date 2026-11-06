@@ -5,7 +5,7 @@
  * Metro resolves this over WindDownRitual.tsx on the web platform.
  */
 
-import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
+import { saveWindDownRitual } from '@repo/self/data/selfFeature.data';
 import { CircleCheck } from '@repo/ui/icons';
 import { useState } from 'react';
 

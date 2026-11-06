@@ -1,7 +1,7 @@
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { type LiveMetrics, multiTenantAnalyticsAPI, type TenantMetrics } from '@repo/analytics';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, Heading, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { AppHeader } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
@@ -160,7 +160,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       onPress={() => onMetricDrillDown(key, { value, title })}
       className="bg-phase-surface p-4 rounded-3xl border border-phase-border w-[47%] mb-3 active:scale-95"
     >
-      <VStack className="items-center gap-2">
+      <View className="items-center gap-2">
         <Text className="text-2xl">{icon}</Text>
         <Text className="text-[10px] font-black uppercase tracking-wider text-phaseText-muted text-center">
           {title}
@@ -171,7 +171,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
         <Text className="text-[10px] font-bold text-phaseText-muted/50">
           {getChangeIndicator(key)}
         </Text>
-      </VStack>
+      </View>
     </Pressable>
   );
 
@@ -181,7 +181,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     subtitle: string,
     colorClass: string,
   ) => (
-    <Box
+    <View
       key={title}
       className="bg-phase-surface p-4 rounded-3xl border border-phase-border flex-1 min-w-[140px] mb-3 items-center"
     >
@@ -190,44 +190,44 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       </Text>
       <Text className={`text-xl font-black ${colorClass}`}>{value}</Text>
       <Text className="text-[10px] font-bold text-phaseText-muted/50 mt-1">{subtitle}</Text>
-    </Box>
+    </View>
   );
 
   if (isLoading) {
     return (
-      <ScreenWrapper>
-        <Box className="flex-1 items-center justify-center p-10 bg-phase-canvas">
+      <SafeAreaView className="flex-1 bg-phase-canvas">
+        <View className="flex-1 items-center justify-center p-10 bg-phase-canvas">
           <Text className="text-phaseText-muted font-bold italic">
             Loading analytics dashboard...
           </Text>
-        </Box>
-      </ScreenWrapper>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScreenWrapper noTopInset={true}>
-      <GlobalHeader title="Analytics" subtitle={tenantName} />
+    <SafeAreaView className="flex-1 bg-phase-canvas">
+      <AppHeader title="Analytics" eyebrow={tenantName} />
 
       <ScrollView
         className="flex-1 bg-phase-canvas"
         contentContainerStyle={{ padding: 24, paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
       >
-        <VStack className="gap-8">
-          <VStack className="gap-4">
-            <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
+        <View className="gap-8">
+          <View className="gap-4">
+            <Text className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
               Key Performance Metrics
-            </Heading>
+            </Text>
             {metricsError ? (
-              <Box
+              <View
                 accessibilityRole="alert"
                 className="rounded-2xl border border-phase-warning/30 bg-phase-warning/10 p-4"
               >
                 <Text className="text-sm font-bold text-phaseText-primary">{metricsError}</Text>
-              </Box>
+              </View>
             ) : null}
-            <HStack className="flex-wrap justify-between">
+            <View className="flex-row items-center flex-wrap justify-between">
               {metrics &&
                 Object.entries(metrics.metrics).map(([key, value]) => {
                   const metricTitles: Record<string, string> = {
@@ -263,15 +263,15 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                     metricIcons[key] || '📊',
                   );
                 })}
-            </HStack>
-          </VStack>
+            </View>
+          </View>
 
           {liveMetrics && (
-            <VStack className="gap-4">
-              <HStack className="items-center justify-between gap-3">
-                <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
+            <View className="gap-4">
+              <View className="flex-row items-center items-center justify-between gap-3">
+                <Text className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
                   Live System Health
-                </Heading>
+                </Text>
                 {liveMetricsError ? (
                   <Text
                     accessibilityRole="alert"
@@ -280,8 +280,8 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                     Last update may be stale
                   </Text>
                 ) : null}
-              </HStack>
-              <HStack className="flex-wrap gap-4">
+              </View>
+              <View className="flex-row items-center flex-wrap gap-4">
                 {renderLiveMetricCard(
                   'Active Users',
                   liveMetrics.active_users,
@@ -306,21 +306,21 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
                   `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`,
                   getSystemHealthColor(liveMetrics.system_health),
                 )}
-              </HStack>
-            </VStack>
+              </View>
+            </View>
           )}
 
           {liveMetricsError && !liveMetrics ? (
-            <Box
+            <View
               accessibilityRole="alert"
               className="rounded-2xl border border-phase-warning/30 bg-phase-warning/10 p-4"
             >
               <Text className="text-sm font-bold text-phaseText-primary">{liveMetricsError}</Text>
-            </Box>
+            </View>
           ) : null}
-        </VStack>
+        </View>
       </ScrollView>
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 };
 

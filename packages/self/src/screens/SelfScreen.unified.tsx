@@ -1,5 +1,5 @@
 import { useAuthStore } from '@repo/core/store';
-import { useScaffoldDismissal, useTracking } from '@repo/core/hooks';
+import { useScaffoldDismissal } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { usePublishAIContext } from '@repo/core';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
@@ -20,11 +20,12 @@ import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
 import { useSanctuaryHealth } from '@repo/self/hooks/useSanctuaryHealth';
 import { useUIStore } from '@repo/core/store';
 import { FireflyMascot, sensoryFeedback } from '@repo/ui';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+
+import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
+
+import { AppHeader } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
 import { WorkspaceSettingsSurface } from '@repo/ui/components/workspace/WorkspaceSettingsSurface';
 import { Box, Button, ButtonText, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
@@ -42,7 +43,6 @@ type PermissionResolution = {
 };
 
 export default function SelfScreenUnified() {
-  const { discoverFeature } = useTracking();
   const { can, context } = usePermissions();
   const [permissionRetryNonce, setPermissionRetryNonce] = useState(0);
   const storeUserId = useAuthStore(s => s.user?.id);
@@ -53,11 +53,7 @@ export default function SelfScreenUnified() {
   const { isDismissed: isDay0ScaffoldDismissed, completeScaffold: dismissDay0Scaffold } =
     useScaffoldDismissal('self_day0_reflection_scaffold', 1);
 
-  useEffect(() => {
-    void discoverFeature('section_self');
-  }, [discoverFeature]);
-
-  const store = useSelfCanvasStore();
+  const store = useSelfCanvasStore((s) => s);
   useEffect(() => {
     void store.hydrate(userId);
   }, [userId, store.hydrate]);
@@ -222,50 +218,36 @@ export default function SelfScreenUnified() {
 
   if (!store.isHydrated) {
     return (
-      <ScreenWrapper>
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
         <Box className="py-12 items-center gap-3">
-          <BrandPulse size={28} />
+          <WaitingSign size={48} />
           <Text className="text-xs font-semibold text-ink/50">Gathering your spaces…</Text>
         </Box>
-      </ScreenWrapper>
+      </ScrollView></SafeAreaView>
     );
   }
 
   if (permissionResolution.error) {
     return (
-      <ScreenWrapper>
-        <BrandedErrorState
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
+        <ErrorState
           title="Your sanctuary permissions could not settle"
           message={permissionResolution.error}
-        >
-          <Pressable
-            onPress={() => setPermissionRetryNonce((value) => value + 1)}
-            accessibilityRole="button"
-            accessibilityLabel="Try resolving sanctuary permissions again"
-          >
-            <Text className="text-phase-interactive font-bold">Try again</Text>
-          </Pressable>
-        </BrandedErrorState>
-      </ScreenWrapper>
+          retry={{ label: 'Try again', onPress: () => setPermissionRetryNonce((value) => value + 1) }}
+        />
+      </ScrollView></SafeAreaView>
     );
   }
 
   if (accessible.length === 0) {
     return (
-      <ScreenWrapper>
-        <BrandedEmptyState
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
+        <EmptyState
           title="Your sanctuary is waiting for its first space"
           message="There are no spaces available to this account yet. If this seems unexpected, check again or ask your school administrator to review your access."
-        >
-          <Pressable
-            onPress={() => setPermissionRetryNonce((value) => value + 1)}
-            accessibilityRole="button"
-            accessibilityLabel="Check sanctuary access again"
-          >
-            <Text className="text-phase-interactive font-bold">Check again</Text>
-          </Pressable>
-        </BrandedEmptyState>
-      </ScreenWrapper>
+          action={{ label: 'Check again', onPress: () => setPermissionRetryNonce((value) => value + 1) }}
+        />
+      </ScrollView></SafeAreaView>
     );
   }
 
@@ -273,8 +255,8 @@ export default function SelfScreenUnified() {
   const persistenceFeedback = describeSelfCanvasPersistence(store.persistenceState);
 
   return (
-    <ScreenWrapper scroll>
-      <GlobalHeader title="Sadhana" subtitle={getSubtitle(roles)} />
+    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
+      <AppHeader title="Sadhana" eyebrow={getSubtitle(roles)} />
       <Box className="px-4 pt-2 pb-6 gap-4">
         <Box className="rounded-2xl bg-phase-surface border border-border p-3">
           <Text className="text-xs font-bold text-ink/60">
@@ -416,6 +398,6 @@ export default function SelfScreenUnified() {
           pinnedIds={pinnedIds}
         />
       </Box>
-    </ScreenWrapper>
+    </ScrollView></SafeAreaView>
   );
 }

@@ -1,4 +1,3 @@
-import { useWorkspaceLayoutSync as usePersistentLayoutSync } from '@repo/core/native';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
@@ -79,42 +78,14 @@ export function useSelfCanvas() {
     [registry.items],
   );
 
-  const surfaceDefinitions = useMemo(
-    () =>
-      features.map((feature, index) => ({
-        surfaceId: feature.id,
-        workspaceId: 'self',
-        capabilityKey: feature.id,
-        ownerPackage: 'core' as const,
-        defaultZone: 'work' as const,
-        defaultOrder: index,
-      })),
-    [features],
-  );
-
-  // Syncs layout with Supabase workspace_layouts using domain 'self' under the hood
-  const canvasSync = usePersistentLayoutSync({
-    workspaceId: 'self',
-    userId: user?.id,
-    surfaces: surfaceDefinitions,
-    initialPinnedSurfaceIds: localPinnedIds,
-  });
-
-  const preset: SelfAtmospherePreset =
-    (canvasSync.layout?.appearance?.preset as SelfAtmospherePreset) ?? 'default';
-
-  const effectivePinnedIds =
-    canvasSync.layout && !canvasSync.isInitialLayout ? canvasSync.layout.pinned : localPinnedIds;
+  const preset: SelfAtmospherePreset = 'default';
+  const effectivePinnedIds = localPinnedIds;
 
   const togglePin = useCallback(
     (featureId: string) => {
-      if (!canvasSync.layout) {
-        toggleLocalPin('self', featureId);
-        return;
-      }
-      canvasSync.toggleSurfacePinned(featureId);
+      toggleLocalPin('self', featureId);
     },
-    [canvasSync, toggleLocalPin],
+    [toggleLocalPin],
   );
 
   const pinnedFeatures = useMemo(
@@ -139,9 +110,8 @@ export function useSelfCanvas() {
     const defaults = rawCategories
       .map((c) => c.id)
       .filter((id): id is Exclude<SelfCategory, 'all'> => id !== 'all');
-    const stored = canvasSync.layout?.groupOrder ?? [];
-    return resolveCategoryOrder(stored, defaults);
-  }, [canvasSync.layout?.groupOrder, rawCategories]);
+    return resolveCategoryOrder([], defaults);
+  }, [rawCategories]);
 
   const categories = useMemo(
     () => [

@@ -1,3 +1,4 @@
+import { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
 import { useAuthStore } from '@repo/core/store';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { type CoordinationGap, TimetableScheduler } from '@repo/ai/api/agents';
@@ -6,7 +7,7 @@ import { authAPI, identityAPI, moonPhaseAPI, SOVEREIGN_API_URL } from '@repo/cor
 import {
   type AgePedagogyBand,
   type CompanionMemoryItem,
-  cryptoManager,
+  
   resolveAgePedagogyProfile,
   runAttendanceAudit,
   sanitizeCompanionMemories,
@@ -249,15 +250,15 @@ export function useAIAgent() {
   useEffect(() => {
     async function loadConfig() {
       try {
-        const storedMode = await cryptoManager.getItemAsync('ai_billing_mode');
+        const storedMode = await cryptoVault.getItemAsync('ai_billing_mode');
         if (storedMode === 'baseline' || storedMode === 'byok' || storedMode === 'purchased') {
           setBillingModeState(storedMode);
         }
-        const storedKey = await cryptoManager.getItemAsync('ai_byok_key');
+        const storedKey = await cryptoVault.getItemAsync('ai_byok_key');
         if (storedKey) {
           setByokKeyState(storedKey);
         }
-        const storedPrivacy = await cryptoManager.getItemAsync('ai_privacy_mode');
+        const storedPrivacy = await cryptoVault.getItemAsync('ai_privacy_mode');
         if (
           storedPrivacy === 'saved' ||
           storedPrivacy === 'temporary' ||
@@ -265,15 +266,15 @@ export function useAIAgent() {
         ) {
           setPrivacyModeState(storedPrivacy);
         }
-        const storedSdk = await cryptoManager.getItemAsync('ai_sdk');
+        const storedSdk = await cryptoVault.getItemAsync('ai_sdk');
         if (storedSdk === 'tanstack' || storedSdk === 'vercel') {
           setAiSdkState(storedSdk);
         }
-        const storedBaseUrl = await cryptoManager.getItemAsync('ai_custom_base_url');
+        const storedBaseUrl = await cryptoVault.getItemAsync('ai_custom_base_url');
         if (storedBaseUrl) {
           setCustomBaseUrlState(storedBaseUrl);
         }
-        const storedAgeBand = await cryptoManager.getItemAsync('ai_age_pedagogy_band');
+        const storedAgeBand = await cryptoVault.getItemAsync('ai_age_pedagogy_band');
         if (
           storedAgeBand === 'early_years_6_9' ||
           storedAgeBand === 'middle_years_10_13' ||
@@ -284,11 +285,11 @@ export function useAIAgent() {
         ) {
           setAgeBandState(storedAgeBand);
         }
-        const storedWorldSearch = await cryptoManager.getItemAsync('ai_enable_world_search');
+        const storedWorldSearch = await cryptoVault.getItemAsync('ai_enable_world_search');
         if (storedWorldSearch === 'true') {
           setEnableWorldSearchState(true);
         }
-        const storedMemories = await cryptoManager.getItemAsync('ai_companion_memories');
+        const storedMemories = await cryptoVault.getItemAsync('ai_companion_memories');
         if (storedMemories) {
           const parsed = JSON.parse(storedMemories) as CompanionMemoryItem[];
           setCompanionMemoriesState(sanitizeCompanionMemories(parsed));
@@ -304,7 +305,7 @@ export function useAIAgent() {
   const setAgeBand = useCallback(async (band: AgePedagogyBand | undefined) => {
     setAgeBandState(band);
     try {
-      await cryptoManager.setItemAsync('ai_age_pedagogy_band', band ?? '');
+      await cryptoVault.setItemAsync('ai_age_pedagogy_band', band ?? '');
     } catch (err) {
       console.warn('Failed to persist age pedagogy band:', err);
     }
@@ -313,7 +314,7 @@ export function useAIAgent() {
   const setEnableWorldSearch = useCallback(async (enabled: boolean) => {
     setEnableWorldSearchState(enabled);
     try {
-      await cryptoManager.setItemAsync('ai_enable_world_search', enabled ? 'true' : 'false');
+      await cryptoVault.setItemAsync('ai_enable_world_search', enabled ? 'true' : 'false');
     } catch (err) {
       console.warn('Failed to persist world search toggle:', err);
     }
@@ -332,7 +333,7 @@ export function useAIAgent() {
       ]);
       setCompanionMemoriesState(next);
       try {
-        await cryptoManager.setItemAsync('ai_companion_memories', JSON.stringify(next));
+        await cryptoVault.setItemAsync('ai_companion_memories', JSON.stringify(next));
       } catch (err) {
         console.warn('Failed to persist companion memories:', err);
       }
@@ -345,7 +346,7 @@ export function useAIAgent() {
       const next = companionMemories.filter((m) => m.id !== memoryId);
       setCompanionMemoriesState(next);
       try {
-        await cryptoManager.setItemAsync('ai_companion_memories', JSON.stringify(next));
+        await cryptoVault.setItemAsync('ai_companion_memories', JSON.stringify(next));
       } catch (err) {
         console.warn('Failed to persist companion memories:', err);
       }
@@ -357,7 +358,7 @@ export function useAIAgent() {
     const trimmed = url.trim();
     setCustomBaseUrlState(trimmed);
     try {
-      await cryptoManager.setItemAsync('ai_custom_base_url', trimmed);
+      await cryptoVault.setItemAsync('ai_custom_base_url', trimmed);
     } catch (err) {
       console.warn('Failed to persist custom base url:', err);
     }
@@ -366,7 +367,7 @@ export function useAIAgent() {
   const setAiSdk = useCallback(async (sdk: 'tanstack' | 'vercel') => {
     setAiSdkState(sdk);
     try {
-      await cryptoManager.setItemAsync('ai_sdk', sdk);
+      await cryptoVault.setItemAsync('ai_sdk', sdk);
     } catch (err) {
       console.warn('Failed to persist AI SDK preference:', err);
     }
@@ -375,7 +376,7 @@ export function useAIAgent() {
   const setBillingMode = useCallback(async (mode: 'baseline' | 'byok' | 'purchased') => {
     setBillingModeState(mode);
     try {
-      await cryptoManager.setItemAsync('ai_billing_mode', mode);
+      await cryptoVault.setItemAsync('ai_billing_mode', mode);
     } catch (err) {
       console.warn('Failed to persist billing mode:', err);
     }
@@ -384,7 +385,7 @@ export function useAIAgent() {
   const setByokKey = useCallback(async (key: string) => {
     setByokKeyState(key);
     try {
-      await cryptoManager.setItemAsync('ai_byok_key', key);
+      await cryptoVault.setItemAsync('ai_byok_key', key);
     } catch (err) {
       console.warn('Failed to persist byok key:', err);
     }
@@ -393,7 +394,7 @@ export function useAIAgent() {
   const setPrivacyMode = useCallback(async (mode: 'saved' | 'temporary' | 'incognito') => {
     setPrivacyModeState(mode);
     try {
-      await cryptoManager.setItemAsync('ai_privacy_mode', mode);
+      await cryptoVault.setItemAsync('ai_privacy_mode', mode);
     } catch (err) {
       console.warn('Failed to persist privacy mode:', err);
     }

@@ -1,4 +1,4 @@
-import type { Identity } from '@repo/core/api/identity.generated';
+import type { Identity } from '@repo/core/types/Identity';
 import type { ProfileCompletionDetails } from '@repo/core/logic/schemas/profileUpdate.schema';
 import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';

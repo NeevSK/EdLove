@@ -1,0 +1,413 @@
+{
+  "id": "feature:admin.school_connection",
+  "title": "Connect to a school",
+  "description": "A principal connects to an authorized institutional or commercial workspace while retaining access to personal Self, which does not confer principal authority.",
+  "lifecycle": {
+    "maturity": "proposed",
+    "owner": "unassigned"
+  },
+  "links": ["intent:admin.school_connection.legacy"],
+  "intents": [
+    {
+      "id": "intent:school.principal_accept",
+      "title": "Accept a school invitation",
+      "actor": "principal",
+      "outcome": "Confirm the right school and enter its authorized workspace.",
+      "links": ["journey:school.accept_invitation"],
+      "journeys": [
+        {
+          "id": "journey:school.accept_invitation",
+          "title": "Accept an invitation",
+          "situation": "A principal has received a link, QR code or invitation code and needs to confirm which institution and capacity it is for before requesting access.",
+          "outcome": "Confirm the right school and enter its authorized workspace.",
+          "context": "setup",
+          "preconditions": [],
+          "entry": "step:school.receive",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "Native school invitation input and QR payloads exist; their security and principal end-to-end behavior are not verified."
+            ],
+            "invariants": [
+              "A code, link, QR payload, or selected role alone never grants access.",
+              "Keep the invitation intent across sign-in and onboarding without leaking its secret.",
+              "Do not present a fabricated school or capacity as verified."
+            ],
+            "integrationPoints": [
+              "packages/ui/src/components/SchoolInviteCodeModal.tsx",
+              "packages/core/src/logic/utils/QRBuilder.ts",
+              "packages/core/src/adapters/supabase/schoolInviteRepository.ts"
+            ],
+            "openQuestions": [
+              "How are invitation secrets protected from authenticated enumeration and bound to intended recipients?",
+              "Where is claim_invite_code defined and deployed?",
+              "How is a confirmed school scope selected after acceptance on each platform?"
+            ]
+          },
+          "links": ["requirement:school.authority"],
+          "steps": [
+            {
+              "id": "step:school.receive",
+              "title": "Receive invitation",
+              "interaction": "Open a trusted link, scan a QR code, or enter a code.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:school.signin",
+              "title": "Sign in",
+              "interaction": "Authenticate or create an account and resume the invitation.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:school.confirm",
+              "title": "Review school invitation",
+              "interaction": "Review server-confirmed school and role before accepting.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:school.connected",
+              "title": "Open school workspace",
+              "interaction": "Select the server-confirmed school bond.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:school.invite_failed",
+              "title": "Invitation unavailable",
+              "interaction": "Explain the failure and offer retry or contact.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:school.authenticate",
+              "title": "Authenticate",
+              "from": "step:school.receive",
+              "to": "step:school.signin",
+              "action": "Open the invitation while signed out.",
+              "feedback": "Preserve the invitation and ask the user to sign in.",
+              "links": []
+            },
+            {
+              "id": "transition:school.lookup",
+              "title": "Check invitation",
+              "from": "step:school.signin",
+              "to": "step:school.confirm",
+              "action": "The signed-in user requests invitation details.",
+              "feedback": "Show only details verified by the server.",
+              "links": []
+            },
+            {
+              "id": "transition:school.accept",
+              "title": "Accept invitation",
+              "from": "step:school.confirm",
+              "to": "step:school.connected",
+              "action": "Accept a valid invitation.",
+              "feedback": "Open the confirmed school workspace.",
+              "links": []
+            },
+            {
+              "id": "transition:school.invalid",
+              "title": "Invitation rejected",
+              "from": "step:school.signin",
+              "to": "step:school.invite_failed",
+              "action": "The invitation is expired, revoked, invalid, or unavailable.",
+              "feedback": "Explain that access was not granted and offer recovery.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:school.accept",
+              "title": "Principal accepts an invitation after sign-in",
+              "transitions": [
+                "transition:school.authenticate",
+                "transition:school.lookup",
+                "transition:school.accept"
+              ],
+              "expected": "A server-confirmed principal bond selects the intended school.",
+              "links": []
+            },
+            {
+              "id": "scenario:school.invalid",
+              "title": "Invitation cannot be confirmed",
+              "transitions": ["transition:school.authenticate", "transition:school.invalid"],
+              "expected": "No school access is granted and the user can recover.",
+              "links": []
+            }
+          ],
+          "requirements": [],
+          "bindings": [],
+          "evidence": [],
+          "sharedRequirements": ["requirement:school.authority"],
+          "sharedBindings": []
+        }
+      ],
+      "sharedJourneys": []
+    },
+    {
+      "id": "intent:admin.school_connection.legacy",
+      "title": "Connect to a school",
+      "actor": "principal",
+      "outcome": "Connect to the correct school without losing access to Self.",
+      "links": ["journey:admin.school_connection.legacy"],
+      "journeys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "situation": "A principal opens Workspace without a confirmed institution and needs a way to connect to the correct school or commercial organization.",
+          "outcome": "Connect to the correct school without losing access to Self.",
+          "context": "setup",
+          "preconditions": [],
+          "entry": "step:admin.school_connection.resolve",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "Personal Self and the existing account-scoped workspace selector already exist.",
+              "The principal capability registry models institutional leadership and existing native principal surfaces."
+            ],
+            "invariants": [
+              "Principal authority is institutional or commercial, never a personal principal workspace.",
+              "Contacting the founder is optional and never grants school authority.",
+              "Opening WhatsApp does not establish that a message was sent.",
+              "Personal Self and a teacher personal workspace are separate from principal authority.",
+              "Preserve existing school, capacity, authorization, data and navigation behavior during integration."
+            ],
+            "openQuestions": [
+              "How do commercial tuition institutes map to principal capacity, bonds and Cedar authorization?",
+              "Which existing creation, claim and invitation journeys support each institutional type end to end?",
+              "How should onboarding transition into an institution without treating a personal scope as principal authority?",
+              "Can the existing school creation and invitation paths safely support principal bootstrap on both platforms and recover after partial failure?"
+            ],
+            "integrationPoints": [
+              "packages/admin/src/principal/workspace.ts",
+              "apps/gurudevi-web/lib/sanctuary/workspaceScopes.ts",
+              "packages/schema/schema.zmodel",
+              "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+              "packages/admin/src/machines/principalSetupMachine.ts",
+              "packages/admin/src/screens/SchoolCreationScreen.tsx",
+              "packages/core/src/adapters/supabase/schoolInviteRepository.ts"
+            ]
+          },
+          "links": [],
+          "steps": [
+            {
+              "id": "step:admin.school_connection.resolve",
+              "title": "Resolve school access",
+              "interaction": "Check authoritative school scope and preserve access to Self.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:admin.school_connection.choose",
+              "title": "Connect your school",
+              "interaction": "Choose an available school, invitation, or supported request path.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:admin.school_connection.pending",
+              "title": "Request status",
+              "interaction": "Explain that a submitted request is awaiting review.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:admin.school_connection.contact",
+              "title": "Contact the founder",
+              "interaction": "Optionally prepare a WhatsApp message with school and contact details; send it in WhatsApp.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:admin.school_connection.workspace",
+              "title": "School workspace",
+              "interaction": "Open the verified school scope.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:admin.school_connection.unavailable",
+              "title": "Access unavailable",
+              "interaction": "Explain the failure and offer retry or Self.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:admin.school_connection.self",
+              "title": "Personal Self",
+              "interaction": "Return to personal space.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:admin.school_connection.no_school",
+              "title": "No eligible school is confirmed",
+              "from": "step:admin.school_connection.resolve",
+              "to": "step:admin.school_connection.choose",
+              "action": "No eligible school is confirmed",
+              "feedback": "Offer school connection choices.",
+              "links": []
+            },
+            {
+              "id": "transition:admin.school_connection.existing_school",
+              "title": "A permitted school scope is selected",
+              "from": "step:admin.school_connection.resolve",
+              "to": "step:admin.school_connection.workspace",
+              "action": "A permitted school scope is selected",
+              "feedback": "Show the selected school.",
+              "links": []
+            },
+            {
+              "id": "transition:admin.school_connection.lookup_failed",
+              "title": "Authority lookup fails",
+              "from": "step:admin.school_connection.resolve",
+              "to": "step:admin.school_connection.unavailable",
+              "action": "Authority lookup fails",
+              "feedback": "Explain that access could not be checked.",
+              "links": []
+            },
+            {
+              "id": "transition:admin.school_connection.submit_pending",
+              "title": "Server confirms a request is pending",
+              "from": "step:admin.school_connection.choose",
+              "to": "step:admin.school_connection.pending",
+              "action": "Server confirms a request is pending",
+              "feedback": "Request sent; awaiting review.",
+              "links": []
+            },
+            {
+              "id": "transition:admin.school_connection.contact_founder",
+              "title": "Open WhatsApp to contact the founder",
+              "from": "step:admin.school_connection.choose",
+              "to": "step:admin.school_connection.contact",
+              "action": "Open WhatsApp to contact the founder",
+              "feedback": "Explain that the message must be sent in WhatsApp.",
+              "links": []
+            },
+            {
+              "id": "transition:admin.school_connection.return_self",
+              "title": "Return to Self",
+              "from": "step:admin.school_connection.choose",
+              "to": "step:admin.school_connection.self",
+              "action": "Return to Self",
+              "feedback": "Keep personal space available.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:admin.school_connection.first_visit",
+              "title": "No school bond on first visit",
+              "completion": "checkpoint",
+              "checkpointReason": "The principal is choosing how to connect; the journey has not yet reached an outcome.",
+              "transitions": ["transition:admin.school_connection.no_school"],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:admin.school_connection.existing_scope",
+              "title": "Existing permitted school",
+              "transitions": ["transition:admin.school_connection.existing_school"],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:admin.school_connection.authority_failure",
+              "title": "Authority lookup fails",
+              "transitions": ["transition:admin.school_connection.lookup_failed"],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:admin.school_connection.pending_request",
+              "title": "Request remains pending",
+              "transitions": [
+                "transition:admin.school_connection.no_school",
+                "transition:admin.school_connection.submit_pending"
+              ],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:admin.school_connection.optional_contact",
+              "title": "Optionally contact the founder",
+              "transitions": [
+                "transition:admin.school_connection.no_school",
+                "transition:admin.school_connection.contact_founder"
+              ],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:admin.school_connection.return_to_self",
+              "title": "Return to personal space",
+              "transitions": [
+                "transition:admin.school_connection.no_school",
+                "transition:admin.school_connection.return_self"
+              ],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            }
+          ],
+          "requirements": [],
+          "bindings": [
+            {
+              "id": "binding:admin.school_connection.web-0",
+              "title": "web binding",
+              "category": "web",
+              "status": "planned",
+              "note": "Principal connection choices are not yet implemented.",
+              "links": ["journey:admin.school_connection.legacy"]
+            },
+            {
+              "id": "binding:admin.school_connection.mobile-1",
+              "title": "mobile binding",
+              "category": "mobile",
+              "status": "unknown",
+              "reference": "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+              "note": "End-to-end connection behavior needs verification.",
+              "links": ["journey:admin.school_connection.legacy"]
+            },
+            {
+              "id": "binding:admin.school_connection.api-2",
+              "title": "api binding",
+              "category": "api",
+              "status": "unknown",
+              "note": "Trace the school request and invitation contracts.",
+              "links": ["journey:admin.school_connection.legacy"]
+            },
+            {
+              "id": "binding:admin.school_connection.data-3",
+              "title": "data binding",
+              "category": "data",
+              "status": "implemented",
+              "reference": "packages/schema/schema.zmodel",
+              "note": "School and bond models exist; deployed schema is unverified.",
+              "links": ["journey:admin.school_connection.legacy"]
+            },
+            {
+              "id": "binding:admin.school_connection.authorization-4",
+              "title": "authorization binding",
+              "category": "authorization",
+              "status": "unknown",
+              "reference": "packages/policies/src/policies/school/principal.cedar",
+              "note": "Verify authority for each connection operation and school scope.",
+              "links": ["journey:admin.school_connection.legacy"]
+            }
+          ],
+          "evidence": [],
+          "sharedRequirements": [],
+          "sharedBindings": []
+        }
+      ],
+      "sharedJourneys": []
+    }
+  ]
+}

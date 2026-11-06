@@ -1,12 +1,6 @@
-export { default as CommentSheet } from '@repo/community/components/CommentSheet';
 export { default as CommunityHearth } from '@repo/community/components/CommunityHearth';
 export { default as CommunityPresence } from '@repo/community/components/CommunityPresence';
 export { default as CreateGroupModal } from '@repo/community/components/CreateGroupModal';
-export { default as CreatePostModal } from '@repo/community/components/CreatePostModal';
 export { default as GroupCard } from '@repo/community/components/GroupCard';
-export { default as GroupMemberManagement } from '@repo/community/components/GroupMemberManagement';
-export { default as HeaderMoreMenu } from '@repo/community/components/HeaderMoreMenu';
 export { default as ManifestoCard } from '@repo/community/components/ManifestoCard';
 export { default as PinnedResourcesShelf } from '@repo/community/components/PinnedResourcesShelf';
-export { default as PostCard } from '@repo/community/components/PostCard';
-export { default as SocialShieldModal } from '@repo/community/components/SocialShieldModal';

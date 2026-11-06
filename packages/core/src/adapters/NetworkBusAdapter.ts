@@ -1,5 +1,5 @@
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import type { NetworkStatus } from '@repo/core/logic/interfaces/network.port';
 
 let unsubscribe: (() => void) | null = null;
@@ -9,9 +9,9 @@ let previousStatus: NetworkStatus = 'unknown';
 export function startNetworkBusAdapter(): void {
   if (unsubscribe) return;
 
-  previousStatus = networkManager.getSnapshot().status;
-  unsubscribe = networkManager.subscribe(() => {
-    const status = networkManager.getSnapshot().status;
+  previousStatus = networkMonitor.getSnapshot().status;
+  unsubscribe = networkMonitor.subscribe(() => {
+    const status = networkMonitor.getSnapshot().status;
     if (status === previousStatus) return;
     previousStatus = status;
 

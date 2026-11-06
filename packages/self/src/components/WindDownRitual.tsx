@@ -1,11 +1,11 @@
-import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
+import { saveWindDownRitual } from '@repo/self/data/selfFeature.data';
 import { useMachineActor } from '@repo/core/hooks/useMachineActor';
 import {
   createWindDownRitualActor,
   executeSaveWindDownRitualEffect,
   type WindDownStep,
 } from '@repo/self/machines/windDownRitualMachine';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { EmptyState } from '@repo/ui/components/native';
 import { CircleCheck, Moon } from '@repo/ui/icons';
 import {
   Box,
@@ -195,7 +195,11 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   if (!userId) {
     return (
       <Box className="flex-1 p-lg">
-        <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
+        <EmptyState
+        title="Sign in to use this"
+        message="Everything else in Self keeps working on this device."
+        action={{ label: 'Sign in', onPress: () => router.push('/auth') }}
+      />
       </Box>
     );
   }

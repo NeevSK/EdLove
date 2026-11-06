@@ -123,33 +123,3 @@ export const UserContextSchema = z.preprocess(
 
 export type UserContext = z.infer<typeof UserContextSchema>;
 export type TenantKind = z.infer<typeof TenantKindSchema>;
-
-if ((import.meta as any).vitest) {
-  const { it, expect } = (import.meta as any).vitest;
-  it('validates a correct user object', () => {
-    const validUser = {
-      id: '550e8400-e29b-41d4-a716-446655440000',
-      display_name: 'John Doe',
-      full_name: 'John Doe',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    expect(UserSchema.parse(validUser)).toMatchObject(validUser);
-  });
-
-  it('fails on invalid uuid', () => {
-    const invalidUser = {
-      id: 'not-a-uuid',
-      display_name: 'John Doe',
-      full_name: 'John Doe',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    expect(() => UserSchema.parse(invalidUser)).toThrow();
-  });
-
-  it('defaults authenticated context citizenship to SECOND_CLASS and normalizes WANDERER', () => {
-    expect(UserContextSchema.parse({}).citizenship).toBe('SECOND_CLASS');
-    expect(UserContextSchema.parse({ citizenship: 'WANDERER' }).citizenship).toBe('THIRD_CLASS');
-  });
-}

@@ -31,7 +31,6 @@ export type { ComposerProps, Tag as ComposerTag } from '@repo/ui/components/Cont
 export { ContentComposer } from '@repo/ui/components/ContentComposer';
 export type { CommentAuthor, CommentItem } from '@repo/ui/components/ConversationSheet';
 export { ConversationSheet } from '@repo/ui/components/ConversationSheet';
-export * from '@repo/ui/components/DailyResonanceCard';
 export { default as DeleteAccountModal } from '@repo/ui/components/DeleteAccountModal';
 export type {
   DerivedHistoryEntry,
@@ -40,7 +39,7 @@ export type {
   DerivedHistoryViewProps,
 } from '@repo/ui/components/DerivedHistoryView';
 export { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
-export { default as DeviceAccountManager } from '@repo/ui/components/DeviceAccountManager';
+export { DeviceAccountModal } from '@repo/ui/components/DeviceAccountModal';
 export { default as EmptyState } from '@repo/ui/components/EmptyState';
 export type { EntityModalProps } from '@repo/ui/components/EntityModal';
 export { default as EntityModal } from '@repo/ui/components/EntityModal';
@@ -67,7 +66,6 @@ export { FounderGlow } from '@repo/ui/components/FounderGlow';
 export { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
 export { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
 export { GatewayScreenShell } from '@repo/ui/components/GatewayScreenShell.web';
-export * from '@repo/ui/components/GlassCard';
 export { default as GlobalHeader } from '@repo/ui/components/GlobalHeader';
 export { default as GuestDataSyncModal } from '@repo/ui/components/GuestDataSyncModal';
 export type { HeroBannerProps } from '@repo/ui/components/HeroBanner';
@@ -80,12 +78,6 @@ export type { InternalBrowserProps } from '@repo/ui/components/InternalBrowser';
 export { InternalBrowser } from '@repo/ui/components/InternalBrowser';
 export type { JourneyEvent } from '@repo/ui/components/JourneyHistoryCard';
 export { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
-export {
-  DEFAULT_SANCTUARY_LANGUAGES,
-  default as LanguageSwitcher,
-  type LanguageOption,
-  type LanguageSwitcherProps,
-} from '@repo/ui/components/LanguageSwitcher';
 export * from '@repo/ui/components/LifecycleMonitor';
 export type { LinkWardModalProps } from '@repo/ui/components/LinkWardModal';
 export { LinkWardModal } from '@repo/ui/components/LinkWardModal';

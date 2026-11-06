@@ -4,7 +4,7 @@
  * Simple, focused, and intimate interface.
  */
 
-import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
+import { saveVoiceJournalRecord } from '@repo/self/data/selfFeature.data';
 import { Check, Mic, Play, Square, Volume2, X } from '@repo/ui/icons';
 import {
   AnimatedView,

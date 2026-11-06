@@ -7,7 +7,7 @@
  * Metro resolves this over ProgressTree.tsx on the web platform.
  */
 import { useTemporalStore } from '@repo/core/logic';
-import { fetchInteractionCountForView } from '@repo/self/api/selfInsightsRepository';
+import { fetchInteractionCountForView } from '@repo/self/data/selfInsights.data';
 import { useEffect, useState } from 'react';
 
 interface ProgressTreeProps {

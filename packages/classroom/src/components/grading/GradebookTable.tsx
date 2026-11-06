@@ -4,14 +4,14 @@
  * Displays a table of student grades for a classroom.
  */
 
+import { View, Text } from 'react-native';
 import {
   type ClassroomGradingSettings,
   calculateRanks,
   marksToGPA,
   type StudentGrade,
 } from '@repo/analytics/stats';
-import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
-import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import { FlashList } from '@shopify/flash-list';
 
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -62,27 +62,27 @@ export default function GradebookTable({
 
       if (grading_mode === 'gpa') {
         return (
-          <VStack className="gap-0.5">
+          <View className="gap-0.5">
             <Text className="text-phaseText-primary font-black text-xl">{letterGrade}</Text>
             <Text className="text-phaseText-secondary font-black uppercase text-[9px] tracking-widest opacity-50">
               {gpa.toFixed(1)} {t('grades.gpa') || 'GPA'}
             </Text>
-          </VStack>
+          </View>
         );
       }
 
       // both mode
       return (
-        <VStack className="gap-0.5">
-          <HStack className="gap-2 items-center">
+        <View className="gap-0.5">
+          <View className="flex-row items-center gap-2 items-center">
             <Text className="text-phaseText-primary font-black text-lg">{grade.marks}</Text>
-            <Box className="w-1.5 h-1.5 rounded-full bg-templeGold" />
+            <View className="w-1.5 h-1.5 rounded-full bg-templeGold" />
             <Text className="text-templeGold font-black text-lg">{letterGrade}</Text>
-          </HStack>
+          </View>
           <Text className="text-phaseText-secondary font-black uppercase text-[9px] tracking-widest opacity-50">
             {gpa.toFixed(1)} {t('grades.gpa') || 'GPA'}
           </Text>
-        </VStack>
+        </View>
       );
     },
     [grading_mode, t],
@@ -111,26 +111,26 @@ export default function GradebookTable({
   // Empty component
   const EmptyComponent = useCallback(
     () => (
-      <Box className="p-16 items-center justify-center">
+      <View className="p-16 items-center justify-center">
         <Text className="text-phaseText-secondary font-black uppercase text-[10px] tracking-[0.2em] text-center">
           {t('grades.noGrades') || 'No grades recorded yet'}
         </Text>
-      </Box>
+      </View>
     ),
     [t],
   );
 
   return (
-    <Box className="bg-phase-surface rounded-generous border border-phase-canvas shadow-sm overflow-hidden">
-      <VStack>
+    <View className="bg-phase-surface rounded-generous border border-phase-canvas shadow-sm overflow-hidden">
+      <View>
         {/* Table Header */}
-        <HStack className="gap-4 px-6 py-5 bg-phase-canvas/50 border-b border-phase-canvas items-center">
-          <Box className="flex-[2.5]">
+        <View className="flex-row items-center gap-4 px-6 py-5 bg-phase-canvas/50 border-b border-phase-canvas items-center">
+          <View className="flex-[2.5]">
             <Text className="text-[10px] font-black text-phaseText-secondary uppercase tracking-[0.2em]">
               {t('grades.student') || 'Student'}
             </Text>
-          </Box>
-          <Box className="flex-[2]">
+          </View>
+          <View className="flex-[2]">
             <Text className="text-[10px] font-black text-phaseText-secondary uppercase tracking-[0.2em]">
               {grading_mode === 'marks'
                 ? t('grades.marks') || 'Marks'
@@ -138,26 +138,26 @@ export default function GradebookTable({
                   ? t('grades.grade') || 'Grade'
                   : t('grades.marksGrade') || 'Marks / Grade'}
             </Text>
-          </Box>
+          </View>
           {show_ranks && (
-            <Box className="flex-1 items-center">
+            <View className="flex-1 items-center">
               <Text className="text-[10px] font-black text-phaseText-secondary uppercase tracking-[0.2em]">
                 {t('grades.rank') || 'Rank'}
               </Text>
-            </Box>
+            </View>
           )}
-        </HStack>
+        </View>
 
         {/* Table Body with SanctuaryFlashList */}
-        <SanctuaryFlashList
+        <FlashList
           data={sortedGrades}
           renderItem={renderGradeRow}
           keyExtractor={keyExtractor}
           ListEmptyComponent={EmptyComponent}
           showsVerticalScrollIndicator={false}
         />
-      </VStack>
-    </Box>
+      </View>
+    </View>
   );
 }
 
@@ -173,21 +173,21 @@ interface GradeRowProps {
 
 const GradeRow = React.memo(
   ({ grade, index, totalItems, studentName, showRanks, renderGradeDisplay }: GradeRowProps) => (
-    <HStack
-      className={`gap-4 px-6 py-5 items-center ${index < totalItems - 1 ? 'border-b border-phase-canvas' : ''} ${index % 2 === 0 ? '' : 'bg-phase-canvas/20'}`}
+    <View
+      className={`flex-row items-center gap-4 px-6 py-5 ${index < totalItems - 1 ? 'border-b border-phase-canvas' : ''} ${index % 2 === 0 ? '' : 'bg-phase-canvas/20'}`}
     >
-      <Box className="flex-[2.5]">
+      <View className="flex-[2.5]">
         <Text className="text-phaseText-primary font-black text-base">{studentName}</Text>
-      </Box>
-      <Box className="flex-[2]">{renderGradeDisplay(grade)}</Box>
+      </View>
+      <View className="flex-[2]">{renderGradeDisplay(grade)}</View>
       {showRanks && (
-        <Box className="flex-1 items-center">
-          <Box className="px-3 py-1.5 bg-templeGold shadow-sm rounded-full">
+        <View className="flex-1 items-center">
+          <View className="px-3 py-1.5 bg-templeGold shadow-sm rounded-full">
             <Text className="text-xs font-black text-black">#{grade.rank}</Text>
-          </Box>
-        </Box>
+          </View>
+        </View>
       )}
-    </HStack>
+    </View>
   ),
   (prevProps, nextProps) => {
     return (

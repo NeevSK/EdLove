@@ -2,7 +2,7 @@ import { useQuerySnapshotHydration } from '@repo/core/hooks/useQuerySnapshotHydr
 import { getAccountScopeRevision, getActiveAccountId } from '@repo/core/lib/accountScope';
 import { storage } from '@repo/core/lib/storage';
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
-import { growth } from '@repo/core/logic/managers/growth.factory';
+import { supabaseGrowthAdapter } from '@repo/core/adapters/supabase/growth.adapter';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
@@ -57,7 +57,7 @@ export function useGrowthQuery() {
       const revision = getAccountScopeRevision();
       if (!principalId || getActiveAccountId() !== principalId)
         throw new Error('Growth account is not ready.');
-      const result = await growth.getGrowthState(principalId);
+      const result = await supabaseGrowthAdapter.getGrowthState(principalId);
       if (
         signal.aborted ||
         revision !== getAccountScopeRevision() ||

@@ -294,4 +294,71 @@ describe('startup stage telemetry', () => {
       'Development Event Timing entry cap reached.',
     );
   });
+  it('keeps a resource URL to origin and path, ids masked and the query dropped', async () => {
+    const { safeResourceName } = await import('@/boot/startupTelemetry');
+    expect(safeResourceName('https://api.gurudevi.app/v1/classes/4f1c2b7e-9a3d-4c11-8f00-1234567890ab/attendance?token=secret')).toBe(
+      'https://api.gurudevi.app/v1/classes/:id/attendance',
+    );
+    expect(safeResourceName('https://cdn.example.com/img/12345.webp?w=400')).toBe('https://cdn.example.com/img/:id');
+    expect(safeResourceName('not a url')).toBe('unparsed');
+  });
+
+  it('records resource, mark and measure entries and the startup timing on one clock', async () => {
+    vi.stubGlobal('__DEV__', true);
+    const delivers: PerformanceObserverCallback[] = [];
+    const observed: string[] = [];
+    class Observer {
+      static supportedEntryTypes = ['resource', 'mark', 'measure', 'event'];
+      constructor(callback: PerformanceObserverCallback) {
+        delivers.push(callback);
+      }
+      observe(options: { type: string }) {
+        observed.push(options.type);
+      }
+      disconnect() {}
+    }
+    vi.stubGlobal('PerformanceObserver', Observer);
+    vi.stubGlobal('performance', {
+      now: () => 1,
+      rnStartupTiming: { startTime: 100, initializeRuntimeStart: 120, executeJavaScriptBundleEntryPointStart: 300, endTime: null },
+    });
+    vi.resetModules();
+    const { observeDevelopmentTimings } = await import('@/boot/startupTelemetry');
+    const stop = observeDevelopmentTimings();
+    expect(observed).toEqual(['resource', 'mark', 'measure']);
+    expect(catcherMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'rn-startup-timing',
+        attributes: expect.objectContaining({
+          startup_start_ms: 100,
+          runtime_init_ms: 120,
+          bundle_start_ms: 300,
+        }),
+      }),
+      { print: false },
+    );
+    const resource = {
+      entryType: 'resource',
+      name: 'https://api.gurudevi.app/v1/me?session=abc',
+      startTime: 2_000,
+      duration: 40,
+      responseStart: 2_030,
+      responseEnd: 2_040,
+      responseStatus: 200,
+    };
+    delivers[0]?.({ getEntries: () => [resource] } as unknown as PerformanceObserverEntryList, {} as PerformanceObserver);
+    expect(catcherMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'resource',
+        attributes: expect.objectContaining({
+          url: 'https://api.gurudevi.app/v1/me',
+          at_ms: 2_000,
+          duration_ms: 40,
+          status: 200,
+        }),
+      }),
+      { print: false },
+    );
+    stop();
+  });
 });

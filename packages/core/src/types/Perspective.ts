@@ -1,12 +1,26 @@
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import type { CivicRoleId } from './CivicRole';
 
-export type PerspectiveKind =
+/**
+ * Sovereign Sector: The legal covenant / ReBAC bond boundary.
+ * - 'personal': Autonomous, self-governed studio or personal sanctuary (SECOND_CLASS).
+ * - 'institutional': Formal school / classroom bond under institutional ReBAC & Cedar (FIRST_CLASS).
+ * - 'commercial': Tuition institute / private tutoring batch contract.
+ * - 'community': Peer or civic social circles.
+ */
+export type SectorKind =
   | 'personal'
   | 'commercial'
   | 'institutional'
-  | 'guardian'
   | 'community';
+
+/**
+ * PerspectiveKind is canonically aliased to SectorKind.
+ * Note: 'guardian' is a Civic Role (human capacity caring for a ward) inside an
+ * institutional or family covenant, retained as an optional backward-compatible alias.
+ */
+export type PerspectiveKind = SectorKind | 'guardian';
 
 export type MediumOfInstruction = 'sinhala' | 'english' | 'tamil';
 
@@ -16,6 +30,8 @@ export interface BasePerspective {
   id: string; // 'personal' or unique bond ID
   kind: PerspectiveKind;
   displayName: string;
+  /** Explicit civic role if specified on the perspective */
+  civicRole?: CivicRoleId;
 }
 
 export interface PersonalPerspective extends BasePerspective {
@@ -23,6 +39,7 @@ export interface PersonalPerspective extends BasePerspective {
   id: 'personal';
   displayName: string;
   studioType?: 'general' | 'educator' | 'learner';
+  civicRole?: CivicRoleId;
   personalClassrooms?: Array<{
     id: string;
     name: string;
@@ -45,6 +62,7 @@ export interface CommercialPerspective extends BasePerspective {
   batchId: string;
   batchName: string;
   role: 'founder' | 'lead_tutor' | 'assistant_tutor' | 'paper_marker';
+  civicRole?: 'teacher';
   customAlias?: string | null;
   displayTitle: string; // Computed alias or formatted title
   academicCycleId?: string | null;
@@ -56,8 +74,9 @@ export interface InstitutionalBondPerspective extends BasePerspective {
   schoolId: string;
   schoolName: string;
   schoolType?: SchoolType | string | null;
-  capacity: Capacity; // Primary active capacity
+  capacity: Capacity; // Primary active capacity (e.g. 'teacher', 'principal', 'student', 'guardian')
   roles: Capacity[]; // Plural roles/capacities in this institution
+  civicRole?: CivicRoleId;
   academicCycleId?: string | null;
 }
 
@@ -67,6 +86,7 @@ export interface GuardianBondPerspective extends BasePerspective {
   wardUserId: string;
   wardName: string;
   schoolId?: string | null;
+  civicRole?: 'guardian';
 }
 
 export type SanctuaryPerspective =
@@ -80,3 +100,4 @@ export interface PerspectiveState {
   availablePerspectives: SanctuaryPerspective[];
   isTransitioning: boolean;
 }
+

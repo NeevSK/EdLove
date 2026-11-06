@@ -1,7 +1,4 @@
 import { useAuthStore } from '@repo/core/store';
-import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
-import { assignmentsAPI } from '@repo/core/api/client';
-
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -17,7 +14,6 @@ export interface GradeRow {
 }
 
 export function useStudentGrades(studentId?: string) {
-  const { isOnline } = useOfflineStatus();
   const [grades, setGrades] = useState<GradeRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,28 +39,13 @@ export function useStudentGrades(studentId?: string) {
     loadCache();
   }, [studentId]);
 
-  // Fetch / Sync function
+  // The retired assignment API is not admitted by the current foundation.
   const refreshData = useCallback(async () => {
-    if (!studentId || !isOnline) return;
+    if (!studentId) return;
+    const cached = await SafeZustandStorage.getItem(`${GRADES_CACHE_KEY}-${studentId}`);
+    if (cached) setGrades(JSON.parse(cached) as GradeRow[]);
     setError(null);
-    try {
-      const data = await assignmentsAPI.getRecentGradesOverviewForStudent(studentId, 20);
-      if (data) {
-        const parsedData = ((data as any[]) ?? []).filter(
-          (r): r is GradeRow => r !== null && typeof r.grade === 'number',
-        );
-        setGrades(parsedData);
-        // Persist to local cache
-        await SafeZustandStorage.setItem(
-          `${GRADES_CACHE_KEY}-${studentId}`,
-          JSON.stringify(parsedData),
-        );
-      }
-    } catch (e) {
-      console.error('Failed to sync student grades', e);
-      setError('Grades could not be loaded. Please try again.');
-    }
-  }, [studentId, isOnline]);
+  }, [studentId]);
 
   useEffect(() => {
     refreshData();

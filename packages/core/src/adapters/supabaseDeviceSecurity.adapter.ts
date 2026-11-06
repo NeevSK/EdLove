@@ -1,39 +1,33 @@
-import {
-  type AuthEvent,
-  type DeviceSecurityEvent,
-  type DeviceSecurityMutationResult,
-  type DeviceSecuritySession,
-  type DeviceTrustSummary,
-  deviceTrustAPI,
-} from '@repo/core/api/deviceTrust';
 import type {
+  DeviceSecurityMutationResult,
   DeviceSecuritySummary,
   IDeviceSecurityPort,
 } from '@repo/core/logic/ports/deviceSecurity.port';
+import { APIError } from '@repo/core/types/API';
 
-/**
- * SupabaseDeviceSecurityAdapter
- *
- * Maps the Device Security Port to the Supabase-backed API.
- */
+const unsupported = (): never => {
+  throw new APIError(
+    'Device security operations are not admitted by the v1 foundation.',
+    'UNSUPPORTED',
+  );
+};
+
 export class SupabaseDeviceSecurityAdapter implements IDeviceSecurityPort {
-  async getSecuritySummary(): Promise<DeviceSecuritySummary> {
-    return deviceTrustAPI.getSecuritySummary();
+  getSecuritySummary(): Promise<DeviceSecuritySummary> {
+    return Promise.reject(unsupported());
   }
-
-  async revokeSession(sessionId: string): Promise<DeviceSecurityMutationResult<unknown>> {
-    return deviceTrustAPI.revokeSession(sessionId);
+  revokeSession(_sessionId: string): Promise<DeviceSecurityMutationResult<unknown>> {
+    return Promise.reject(unsupported());
   }
-
-  async unlinkDevice(deviceId: string): Promise<DeviceSecurityMutationResult<unknown>> {
-    return deviceTrustAPI.unlinkDevice(deviceId);
+  unlinkDevice(_deviceId: string): Promise<DeviceSecurityMutationResult<unknown>> {
+    return Promise.reject(unsupported());
   }
-
-  async revokeAllSessions(): Promise<DeviceSecurityMutationResult<unknown>> {
-    return deviceTrustAPI.revokeAllSessions();
+  revokeAllSessions(): Promise<DeviceSecurityMutationResult<unknown>> {
+    return Promise.reject(unsupported());
   }
-
-  async trustDevice(deviceId: string): Promise<DeviceSecurityMutationResult<unknown>> {
-    return deviceTrustAPI.trustDevice(deviceId);
+  trustDevice(_deviceId: string): Promise<DeviceSecurityMutationResult<unknown>> {
+    return Promise.reject(unsupported());
   }
 }
+
+export const supabaseDeviceSecurityAdapter = new SupabaseDeviceSecurityAdapter();

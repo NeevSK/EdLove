@@ -7,9 +7,11 @@ import {
 } from '../cedarClientEvaluator';
 
 const mockEvaluate = vi.fn();
+const mockInitialize = vi.fn(async () => {});
 
 vi.mock('@cedar-policy/cedar-wasm/web', () => ({
-  evaluate: (...args: unknown[]) => mockEvaluate(...args),
+  default: () => mockInitialize(),
+  isAuthorized: (...args: unknown[]) => mockEvaluate(...args),
 }));
 
 describe('cedarClientEvaluator', () => {
@@ -35,7 +37,10 @@ describe('cedarClientEvaluator', () => {
 
   describe('evaluateShape1', () => {
     it('returns true when WASM returns Allow', async () => {
-      mockEvaluate.mockResolvedValue({ decision: 'Allow' });
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
 
       const result = await evaluateShape1(basePolicy, {
         user: baseUser,
@@ -47,7 +52,10 @@ describe('cedarClientEvaluator', () => {
     });
 
     it('returns false when WASM returns Deny', async () => {
-      mockEvaluate.mockResolvedValue({ decision: 'Deny' });
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'deny', diagnostics: { errors: [] } },
+      });
 
       const result = await evaluateShape1(basePolicy, {
         user: baseUser,
@@ -59,7 +67,10 @@ describe('cedarClientEvaluator', () => {
     });
 
     it('passes correct request shape to WASM evaluator', async () => {
-      mockEvaluate.mockResolvedValue({ decision: 'Allow' });
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
 
       await evaluateShape1(basePolicy, {
         user: baseUser,
@@ -69,18 +80,19 @@ describe('cedarClientEvaluator', () => {
 
       expect(mockEvaluate).toHaveBeenCalledWith(
         expect.objectContaining({
-          policies: basePolicy,
-          request: expect.objectContaining({
-            principal: { type: 'User', id: 'user-1' },
-            action: { type: 'Action', id: 'update' },
-            resource: { type: 'School', id: '__cedar_shape1_check__' },
-          }),
+          policies: { staticPolicies: basePolicy },
+          principal: { type: 'User', id: 'user-1' },
+          action: { type: 'Action', id: 'update' },
+          resource: { type: 'School', id: '__cedar_shape1_check__' },
         }),
       );
     });
 
     it('passes user attributes as entity', async () => {
-      mockEvaluate.mockResolvedValue({ decision: 'Allow' });
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
 
       await evaluateShape1(basePolicy, {
         user: baseUser,
@@ -94,6 +106,7 @@ describe('cedarClientEvaluator', () => {
             expect.objectContaining({
               uid: { type: 'User', id: 'user-1' },
               attrs: {
+                id: 'user-1',
                 school_id: 'school-1',
                 capacity: 'teacher',
                 classroom_ids: ['classroom-1'],
@@ -106,8 +119,40 @@ describe('cedarClientEvaluator', () => {
   });
 
   describe('evaluateShape2', () => {
+    it.each([
+      ['resolve', 'User', 'read'],
+      ['submit', 'Assignment', 'create'],
+      ['grade', 'Assignment', 'create'],
+      ['grade', 'GradeMark', 'grade'],
+      ['publish', 'GradeMark', 'publish'],
+      ['publish', 'Assignment', 'update'],
+      ['verify', 'User', 'update'],
+      ['manage', 'User', 'update'],
+      ['override', 'User', 'update'],
+      ['read', 'User', 'read'],
+    ])('maps %s for %s to %s', async (action, resourceType, expected) => {
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
+      await evaluateShape2(basePolicy, {
+        user: baseUser,
+        action,
+        resourceType,
+        resourceId: 'resource-1',
+        resourceAttrs: {},
+      });
+      expect(mockEvaluate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: { type: 'Action', id: expected },
+        }),
+      );
+    });
     it('returns true when WASM returns Allow for instance-level check', async () => {
-      mockEvaluate.mockResolvedValue({ decision: 'Allow' });
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
 
       const result = await evaluateShape2(basePolicy, {
         user: baseUser,
@@ -121,7 +166,10 @@ describe('cedarClientEvaluator', () => {
     });
 
     it('passes resource id and attributes correctly', async () => {
-      mockEvaluate.mockResolvedValue({ decision: 'Allow' });
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
 
       await evaluateShape2(basePolicy, {
         user: baseUser,
@@ -133,13 +181,11 @@ describe('cedarClientEvaluator', () => {
 
       expect(mockEvaluate).toHaveBeenCalledWith(
         expect.objectContaining({
-          request: expect.objectContaining({
-            resource: { type: 'Classroom', id: 'classroom-42' },
-          }),
+          resource: { type: 'Classroom', id: 'classroom-42' },
           entities: expect.arrayContaining([
             expect.objectContaining({
               uid: { type: 'Classroom', id: 'classroom-42' },
-              attrs: { teacher_id: 'user-1', school_id: 'school-1' },
+              attrs: { id: 'classroom-42', teacher_id: 'user-1', school_id: 'school-1' },
             }),
           ]),
         }),
@@ -153,12 +199,28 @@ describe('cedarClientEvaluator', () => {
     });
 
     it('returns true after successful evaluation', async () => {
-      mockEvaluate.mockResolvedValue({ decision: 'Allow' });
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
       await evaluateShape1(basePolicy, {
         user: baseUser,
         action: 'read',
         resourceType: 'Classroom',
       });
+      expect(isCedarWasmLoaded()).toBe(true);
+    });
+
+    it('retries initialization after a transient failure', async () => {
+      mockInitialize.mockRejectedValueOnce(new Error('unavailable'));
+      mockEvaluate.mockReturnValue({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
+      const request = { user: baseUser, action: 'read', resourceType: 'Classroom' };
+      await expect(evaluateShape1(basePolicy, request)).rejects.toThrow('failed to load');
+      expect(isCedarWasmLoaded()).toBe(false);
+      await expect(evaluateShape1(basePolicy, request)).resolves.toBe(true);
       expect(isCedarWasmLoaded()).toBe(true);
     });
   });

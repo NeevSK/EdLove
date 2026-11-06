@@ -1,4 +1,9 @@
-import { defineHost, VERGER_BUILTIN_LEVERS, VERGER_GLOBAL_MOTION } from '@repo/verger-core';
+import {
+  defineHost,
+  VERGER_BUILTIN_LEVERS,
+  VERGER_GLOBAL_MOTION,
+  VERGER_POLICY_P5,
+} from '@repo/verger-core';
 import { EXPERIENCE_LEVER_IDS } from './experience';
 import { GURUDEVI_APP_LEVERS, GURUDEVI_LEVERS } from './gurudeviLevers';
 import { GURUDEVI_WORKLOADS, workloadsFor } from './gurudeviWorkloads';
@@ -14,11 +19,18 @@ const FIELD_TELEMETRY = {
   telemetrySummaryEveryMs: 15 * 60_000,
 } as const;
 
+/**
+ * Gurudevi decides by verger-p5 (the envelope: home, ceiling, in-session expansion), chosen by
+ * Naveen on 2026-10-29. A build, the dev lab or remote config can still pick p4.
+ */
+const POLICY = VERGER_POLICY_P5;
+
 /** Gurudevi's full manifest: every lever it can govern, on verger's default thresholds. */
 export const GURUDEVI_HOST = defineHost({
   name: 'gurudevi',
   levers: GURUDEVI_LEVERS,
   workloads: GURUDEVI_WORKLOADS,
+  policy: POLICY,
 });
 
 /**
@@ -37,14 +49,17 @@ export const GURUDEVI_MOBILE_HOST = defineHost({
   levers: MOBILE_LEVERS,
   workloads: workloadsFor(MOBILE_LEVERS),
   config: FIELD_TELEMETRY,
+  policy: POLICY,
 });
 
 /**
  * The levers the web app's pages apply today: the wallpaper's blur (`wallpaperOf` reads
- * `allowBlur`). A view lever joins here only when a web page reads its field; governing one
- * nothing applies would let the closed loop "relieve" strain with a move that changes nothing.
+ * `allowBlur`), the world scene (`WorldGroundSurface` reads motion, effects and celebration) and
+ * the embers (`FloorAtmosphere` reads `allowAmbientEffects`). A view lever joins here only when a
+ * web page reads its field; governing one nothing applies would let the closed loop "relieve"
+ * strain with a move that changes nothing.
  */
-export const WEB_VIEW_LEVER_IDS = ['blur'] as const;
+export const WEB_VIEW_LEVER_IDS = ['ambient-motion', 'blur', 'particles'] as const;
 
 /**
  * What the web app governs: the levers its pages apply through the same view, and app-wide
@@ -61,4 +76,5 @@ export const GURUDEVI_WEB_HOST = defineHost({
   levers: WEB_LEVERS,
   workloads: workloadsFor(WEB_LEVERS),
   config: FIELD_TELEMETRY,
+  policy: POLICY,
 });

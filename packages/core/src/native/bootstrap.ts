@@ -7,12 +7,12 @@ import { SimulatorDeviceIdentityAdapter } from '@repo/core/adapters/native/Simul
 import { WebCryptoAdapter } from '@repo/core/adapters/WebCryptoAdapter';
 import { WebNetworkAdapter } from '@repo/core/adapters/WebNetworkAdapter';
 import { BrowserStorageAdapter } from '@repo/core/adapters/web/BrowserStorageAdapter';
-import { cryptoManager } from '@repo/core/logic/managers/CryptoManager';
-import { deviceIdentity } from '@repo/core/logic/managers/DeviceIdentityManager';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
+import { deviceIdentityDriver } from '@repo/core/platform/drivers/deviceIdentityDriver';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 // Managers
-import { storage } from '@repo/core/logic/managers/StorageManager';
-import { telemetry } from '@repo/core/logic/managers/TelemetryManager';
+import { storage } from '@repo/core/lib/storage';
+import { telemetrySink } from '@repo/core/platform/drivers/telemetrySink';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { Runtime } from '@repo/core/native/runtime';
 import { nativeRuntimeEnvironment, webRuntimeEnvironment } from '@repo/core/native/runtimeAdapter';
@@ -38,15 +38,15 @@ async function initializePlatform(): Promise<void> {
 
   // 1. Initialize Crypto & Telemetry (Unified)
   if (!isWeb) {
-    cryptoManager.registerAdapter(new NativeCryptoAdapter());
-    telemetry.registerAdapter(new SentryTelemetryAdapter());
-    networkManager.registerAdapter(new NativeNetworkAdapter());
-    deviceIdentity.registerAdapter(new SimulatorDeviceIdentityAdapter());
+    cryptoVault.registerAdapter(new NativeCryptoAdapter());
+    telemetrySink.registerAdapter(new SentryTelemetryAdapter());
+    networkMonitor.registerAdapter(new NativeNetworkAdapter());
+    deviceIdentityDriver.registerAdapter(new SimulatorDeviceIdentityAdapter());
   } else {
-    cryptoManager.registerAdapter(new WebCryptoAdapter());
+    cryptoVault.registerAdapter(new WebCryptoAdapter());
     const { BrowserSentryTelemetryAdapter } = await import('@repo/core/native/webSentryAdapter');
-    telemetry.registerAdapter(new BrowserSentryTelemetryAdapter());
-    networkManager.registerAdapter(new WebNetworkAdapter());
+    telemetrySink.registerAdapter(new BrowserSentryTelemetryAdapter());
+    networkMonitor.registerAdapter(new WebNetworkAdapter());
   }
 
   // 1b. Start the shared observation → SovereignBus bridge after adapter setup.

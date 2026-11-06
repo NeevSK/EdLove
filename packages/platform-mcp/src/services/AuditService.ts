@@ -101,6 +101,14 @@ function collectDeprecationIssues(
 export class AuditService {
   constructor(private document: DocumentService) {}
 
+  handleCedarAudit(scenarios: boolean) {
+    const result = runCommand(process.execPath, [
+      'packages/policies/scripts/audit-cedar.mjs',
+      ...(scenarios ? ['--scenarios'] : []),
+    ], { timeoutMs: 120_000, maxBuffer: 4 * 1024 * 1024 });
+    return toText(result.combined || result.error || 'Cedar audit returned no output.', !result.ok);
+  }
+
   handleAuditHygiene() {
     console.error('Running Hygiene Audit...');
     runPowerShellScript('scripts/check-hygiene.ps1');

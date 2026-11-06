@@ -1,10 +1,8 @@
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import type { SensoryPreferenceKey, SensoryPreferences } from '@repo/ui/context/SensoryProvider';
 import type { TFunction } from 'i18next';
-import { authAPI } from '@repo/core/api/auth';
-import { getPendingReplaySummary, replayDemoLogs, useSandboxMode } from '@repo/core/api/client';
-import { useExperienceState } from '@repo/core/lib/experienceState';
-import { accountPin, coreRuntime, cryptoManager, storage } from '@repo/core/logic';
+import { authAPI } from '@repo/core/auth';
+import { accountPin, coreRuntime, cryptoVault, storage } from '@repo/core/logic';
 import { useAuthStore, useUIStore } from '@repo/core/store';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import AccountPinModal from '@repo/ui/components/AccountPinModal';
@@ -162,87 +160,6 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
   const { emit: emitFeedback } = useFeedbackOptional();
   const { showToast } = useSanctuaryToast();
   const user = useAuthStore((state) => state.user);
-
-  // Sandbox & Simulation Developer State
-  const sandboxMode = useSandboxMode();
-  const isDemoMode = useExperienceState((state) => state.isDemoMode);
-  const setDemoMode = useExperienceState((state) => state.setDemoMode);
-  const isExplorerMode = useExperienceState((state) => state.isExplorerMode);
-  const setExplorerMode = useExperienceState((state) => state.setExplorerMode);
-  const isBridging = useExperienceState((state) => state.isBridging);
-  const demoLogs = useExperienceState((state) => state.demoLogs);
-  const clearDemoLogs = useExperienceState((state) => state.clearDemoLogs);
-  const [isReplayingSandbox, setIsReplayingSandbox] = useState(false);
-
-  const sandboxSummary = useMemo(() => {
-    return getPendingReplaySummary();
-  }, [demoLogs]);
-
-  const handleSelectSandboxMode = useCallback(
-    (mode: 'live' | 'ghost' | 'demo') => {
-      hapticLight();
-      if (mode === 'demo') {
-        setDemoMode(true);
-        setExplorerMode(false);
-        showToast({
-          message: 'Full Demo: running with complete synthetic datasets and mutation capture.',
-          type: 'info',
-        });
-      } else if (mode === 'ghost') {
-        setDemoMode(false);
-        setExplorerMode(true);
-        showToast({
-          message: 'Ghost Mode: local-first queries with sample seeding when empty.',
-          type: 'info',
-        });
-      } else {
-        setDemoMode(false);
-        setExplorerMode(false);
-        showToast({
-          message: 'Live Mode: direct production queries without sample fallbacks.',
-          type: 'success',
-        });
-      }
-    },
-    [setDemoMode, setExplorerMode, showToast],
-  );
-
-  const handleReplaySandbox = useCallback(async () => {
-    if (demoLogs.length === 0) {
-      showToast({
-        message: 'There are no pending sandbox mutations to graduate.',
-        type: 'info',
-      });
-      return;
-    }
-    setIsReplayingSandbox(true);
-    try {
-      const result = await replayDemoLogs({ clearOnComplete: true });
-      hapticSuccess();
-      const failedCount = result.failed.length;
-      showToast({
-        message: `Sandbox graduation complete: ${result.replayed} action(s) replayed (${failedCount} failed).`,
-        type: failedCount > 0 ? 'warning' : 'success',
-      });
-    } catch (e: any) {
-      showToast({
-        message: e?.message || 'Error executing sandbox replay bridge.',
-        type: 'error',
-      });
-    } finally {
-      setIsReplayingSandbox(false);
-    }
-  }, [demoLogs.length, showToast]);
-
-  const handleResetSandbox = useCallback(() => {
-    hapticLight();
-    useUIStore.setState({ dismissedSampleIds: [] });
-    clearDemoLogs();
-    showToast({
-      message: 'Sandbox reset: restored dismissed sample cards and cleared mutation logs.',
-      type: 'info',
-    });
-  }, [clearDemoLogs, showToast]);
 
   const navPreferences = useActiveSubTabsStore((s) => s.preferences);
   const updateNavPreferences = useActiveSubTabsStore((s) => s.updatePreferences);
@@ -421,11 +338,11 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
   useEffect(() => {
     const loadAiSettings = async () => {
       try {
-        const savedMode = await cryptoManager.getItemAsync('ai_billing_mode');
+        const savedMode = await cryptoVault.getItemAsync('ai_billing_mode');
         if (savedMode === 'baseline' || savedMode === 'byok' || savedMode === 'purchased') {
           setAiBillingMode(savedMode);
         }
-        const savedKey = await cryptoManager.getItemAsync('ai_byok_key');
+        const savedKey = await cryptoVault.getItemAsync('ai_byok_key');
         if (savedKey) {
           setAiByokKey(savedKey);
         }
@@ -440,7 +357,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
     async (mode: 'baseline' | 'byok' | 'purchased') => {
       setAiBillingMode(mode);
       try {
-        await cryptoManager.setItemAsync('ai_billing_mode', mode);
+        await cryptoVault.setItemAsync('ai_billing_mode', mode);
         hapticSuccess();
         showToast({
           message: t('settings.ai.billing_mode_updated', 'AI billing mode updated'),
@@ -460,7 +377,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
     async (key: string) => {
       setAiByokKey(key);
       try {
-        await cryptoManager.setItemAsync('ai_byok_key', key);
+        await cryptoVault.setItemAsync('ai_byok_key', key);
         hapticSuccess();
         showToast({
           message: t('settings.ai.key_updated', 'API Key saved securely'),
@@ -1108,72 +1025,15 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
           accessibilityHint={t('settings.support.contact_hint', 'Open the support email composer')}
         />
         {__DEV__ ? (
-          <>
-            <Section title="Developer Sandbox & Simulation">
-              <Row
-                label="Active Operating Mode"
-                note={
-                  sandboxMode === 'demo'
-                    ? 'Full Demo: synthetic sample data with write capture.'
-                    : sandboxMode === 'ghost'
-                      ? 'Ghost Mode: real backend with ghost seeding on empty data.'
-                      : 'Live Mode: pure production with zero sample injection.'
-                }
-              />
-              <Chips single label="Sandbox Mode" style={{ paddingBottom: 10 }}>
-                <ChoiceChipRow
-                  choices={[
-                    { id: 'live', label: 'Live' },
-                    { id: 'ghost', label: 'Ghost (Samples)' },
-                    { id: 'demo', label: 'Full Demo' },
-                  ] as const}
-                  selectedId={sandboxMode === 'bridging' ? 'demo' : sandboxMode}
-                  onSelect={(id) => handleSelectSandboxMode(id as 'live' | 'ghost' | 'demo')}
-                />
-              </Chips>
-
-              <Row
-                label="Pending Write Mutations"
-                note={
-                  demoLogs.length === 0
-                    ? 'No pending write intents queued.'
-                    : `${demoLogs.length} action(s) queued (${sandboxSummary.replayable} replayable).`
-                }
-              />
-
-              <View style={{ flexDirection: 'row', gap: 8, paddingVertical: 8 }}>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  label={
-                    isReplayingSandbox || isBridging
-                      ? 'Graduating…'
-                      : `Graduate Bridge (${demoLogs.length})`
-                  }
-                  disabled={demoLogs.length === 0 || isReplayingSandbox || isBridging}
-                  onPress={() => void handleReplaySandbox()}
-                  accessibilityHint="Replay recorded demo actions to the live database"
-                />
-                <Button
-                  variant="quiet"
-                  size="sm"
-                  label="Reset Samples & Logs"
-                  onPress={handleResetSandbox}
-                  accessibilityHint="Restore dismissed sample cards and purge demo logs"
-                />
-              </View>
-            </Section>
-
-            <View style={{ paddingVertical: 12 }}>
-              <Button
-                variant="danger"
-                size="sm"
-                label="Developer: reset all local data"
-                accessibilityHint="Wipe all local storage and reset to a fresh install."
-                onPress={() => void handleDevClearAllCache()}
-              />
-            </View>
-          </>
+          <View style={{ paddingVertical: 12 }}>
+            <Button
+              variant="danger"
+              size="sm"
+              label="Developer: reset all local data"
+              accessibilityHint="Wipe all local storage and reset to a fresh install."
+              onPress={() => void handleDevClearAllCache()}
+            />
+          </View>
         ) : null}
       </Section>
 

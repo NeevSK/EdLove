@@ -1,5 +1,6 @@
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
 import { CircleCheck, Clock } from '@repo/ui/icons';
-import { Box, Button, ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 
 interface Assignment {
   id: string;
@@ -26,40 +27,48 @@ export const StudentUpcomingAssignments = ({
   if (assignments.length === 0) return null;
 
   return (
-    <VStack className="mt-10 gap-5">
-      <HStack className="items-center justify-between px-1">
-        <HStack className="items-center gap-2.5">
-          <Box className="w-8 h-8 bg-sanctuarySaffron/10 rounded-xl items-center justify-center border border-sanctuarySaffron/20">
-            <Icon as={Clock} size="xs" className="text-sanctuarySaffron" />
-          </Box>
+    <View className="mt-10 gap-5">
+      <View className="flex-row items-center justify-between px-1">
+        <View className="flex-row items-center gap-2.5">
+          <View className="w-8 h-8 bg-sanctuarySaffron/10 rounded-xl items-center justify-center border border-sanctuarySaffron/20">
+            <Clock size={16} className="text-sanctuarySaffron" />
+          </View>
           <Text className="text-sm font-black text-sanctuary-text uppercase tracking-widest">
             {isPastView ? 'Completed Work' : 'Upcoming Work'}
           </Text>
-        </HStack>
+        </View>
         {pendingAssignments.length > 0 && (
-          <Box className="px-3 py-1.5 bg-sanctuary-error/10 border border-sanctuary-error/20 rounded-full">
+          <View className="px-3 py-1.5 bg-sanctuary-error/10 border border-sanctuary-error/20 rounded-full">
             <Text className="text-[10px] text-sanctuary-error font-black uppercase tracking-widest">
               {pendingAssignments.length} pending
             </Text>
-          </Box>
+          </View>
         )}
-      </HStack>
+      </View>
 
-      <VStack className="gap-3">
+      <View className="gap-3">
         {assignments.map((a) => (
-          <HStack
+          <View
             key={a.id}
-            className={`items-center gap-4 p-5 rounded-[24px] border ${a.submitted ? 'bg-sanctuary-surface-secondary border-sanctuary-success/20' : 'bg-sanctuary-surface border-sanctuary-border'}`}
+            className={`flex-row items-center gap-4 p-5 rounded-[24px] border ${
+              a.submitted
+                ? 'bg-sanctuary-surface-secondary border-sanctuary-success/20'
+                : 'bg-sanctuary-surface border-sanctuary-border'
+            }`}
           >
-            <Box
-              className={`w-3 h-3 rounded-full border-2 ${a.submitted ? 'bg-sanctuary-success border-sanctuary-success/30' : 'bg-sanctuary-error border-sanctuary-error/30'}`}
+            <View
+              className={`w-3 h-3 rounded-full border-2 ${
+                a.submitted
+                  ? 'bg-sanctuary-success border-sanctuary-success/30'
+                  : 'bg-sanctuary-error border-sanctuary-error/30'
+              }`}
             />
 
-            <VStack className="flex-1 gap-1">
+            <View className="flex-1 gap-1">
               <Text className="text-sm font-black text-sanctuary-text tracking-tight">
                 {a.title}
               </Text>
-              <HStack className="items-center gap-2">
+              <View className="flex-row items-center gap-2">
                 <Text className="text-[11px] font-bold text-sanctuary-text-tertiary">
                   {a.classroom ?? a.classrooms?.name ?? 'Classroom'}
                 </Text>
@@ -73,33 +82,33 @@ export const StudentUpcomingAssignments = ({
                         month: 'short',
                       })}
                 </Text>
-              </HStack>
-            </VStack>
+              </View>
+            </View>
 
             {!a.submitted && !isPastView && (
-              <Button
-                size="sm"
-                variant="outline"
+              <Pressable
                 onPress={() => onOpenSubmission(a)}
-                className="h-10 rounded-xl border-sanctuarySaffron/40 bg-sanctuarySaffron/5"
+                accessibilityRole="button"
+                accessibilityLabel="Submit assignment"
+                className="h-10 px-4 rounded-xl border border-sanctuarySaffron/40 bg-sanctuarySaffron/5 items-center justify-center"
               >
-                <ButtonText className="text-xs font-bold text-sanctuarySaffron px-2">
+                <Text className="text-xs font-bold text-sanctuarySaffron">
                   Submit
-                </ButtonText>
-              </Button>
+                </Text>
+              </Pressable>
             )}
 
             {a.submitted && (
-              <HStack className="items-center gap-2 bg-sanctuary-success/10 px-3 py-1.5 rounded-full">
-                <Icon as={CircleCheck} size="xs" className="text-sanctuary-success" />
+              <View className="flex-row items-center gap-2 bg-sanctuary-success/10 px-3 py-1.5 rounded-full">
+                <CircleCheck size={14} className="text-sanctuary-success" />
                 <Text className="text-[10px] font-black text-sanctuary-success uppercase tracking-widest">
                   Done
                 </Text>
-              </HStack>
+              </View>
             )}
-          </HStack>
+          </View>
         ))}
-      </VStack>
-    </VStack>
+      </View>
+    </View>
   );
 };

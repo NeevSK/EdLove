@@ -3,7 +3,7 @@ export const MapView = ({ children }) => (
 );
 export const Camera = () => null;
 export const UserLocation = () => null;
-export const PointAnnotation = () => null;
+export const ViewAnnotation = () => null;
 export const ShapeSource = () => null;
 export const VectorSource = () => null;
 export const RasterSource = () => null;
@@ -20,7 +20,7 @@ const MapLibre = {
   MapView,
   Camera,
   UserLocation,
-  PointAnnotation,
+  ViewAnnotation,
   ShapeSource,
   VectorSource,
   RasterSource,

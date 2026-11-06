@@ -7,7 +7,7 @@ import {
   deleteTomorrowPrepItem,
   fetchTomorrowPrepItems,
   updateTomorrowPrepItem,
-} from '@repo/self/api/selfFeatureRepository';
+} from '@repo/self/data/selfFeature.data';
 import type { DailyPrepItem } from '@repo/self/types';
 import { useCallback, useEffect, useState } from 'react';
 

@@ -1,11 +1,7 @@
 import { captureAuthenticatedDeviceAccount } from '@repo/core/accounts/authenticatedAccountCapture';
 import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 import { disconnectPowerSync } from '@repo/core/adapters/powersync/database';
-import { authAPI } from '@repo/core/api/auth';
-import { assertHighway } from '@repo/core/api/highways';
-import { identityAPI } from '@repo/core/api/identity';
-import { schoolAPI } from '@repo/core/api/school';
-import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
+import { authAPI } from '@repo/core/auth';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { useExperienceState } from '@repo/core/lib/experienceState';
 import { openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
@@ -16,7 +12,8 @@ import {
   isCurrentIdentityResolutionGeneration,
 } from '@repo/core/logic/auth/identityState';
 import { resolveAuthProfile } from '@repo/core/logic/auth/profileResolution';
-import { realtime } from '@repo/core/logic/managers/factory';
+import { supabaseIdentityAdapter as identity } from '@repo/core/adapters/supabaseIdentity.adapter';
+import { supabaseRealtimeAdapter as realtime } from '@repo/core/adapters/realtime/supabase.adapter';
 import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
 import { clearAuthSubject, identifyAuthSubject, initSentry } from '@repo/core/monitoring';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
@@ -139,18 +136,10 @@ export function useAuthLifecycle(readLocalGuestId?: () => Promise<string | null>
       try {
         const resolution = await resolveAuthProfile(sessionToCapture ?? null, {
           identifyActiveCitizen: async () => {
-            assertHighway('identity_bootstrap', 'direct-api');
-            return identityAPI.identifyActiveCitizen();
+            return identity.identifyActiveCitizen();
           },
           getAccountLifecycleStatus: () => authAPI.getAccountLifecycleStatus(),
-          getSchoolType: async (schoolId) => {
-            try {
-              const schoolData = await schoolAPI.getSchool(schoolId);
-              return (schoolData?.type as SchoolType | undefined) ?? null;
-            } catch {
-              return null;
-            }
-          },
+          getSchoolType: async () => null,
         });
 
         if (!isCurrentResolution()) return;
@@ -168,7 +157,11 @@ export function useAuthLifecycle(readLocalGuestId?: () => Promise<string | null>
           resolvedAuthSubjectIdRef.current = authSubjectId;
           setResolvedAuthSubjectId(authSubjectId);
           setAccountLifecycleStatus(null);
-          setUser(identity);
+          setUser({
+            ...identity,
+            email: identity.email ?? null,
+            display_name: identity.display_name ?? 'Gurudevi User',
+          });
           await captureAuthenticatedDeviceAccount({
             capturedSessionKeys: capturedSessionKeysRef.current,
             capturingSessionKeys: capturingSessionKeysRef.current,
@@ -182,8 +175,8 @@ export function useAuthLifecycle(readLocalGuestId?: () => Promise<string | null>
 
           identifyAuthSubject({
             id: identity.id,
-            email: identity.email,
-            displayName: identity.display_name,
+            email: identity.email ?? null,
+            displayName: identity.display_name ?? 'Gurudevi User',
           });
         } else if (resolution.kind === 'inactive') {
           clearDerivedIdentityState();

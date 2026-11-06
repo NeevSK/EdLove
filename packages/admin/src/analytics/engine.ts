@@ -19,13 +19,6 @@ import type {
   Trend,
 } from '@repo/admin/analytics/types';
 export class MultiTenantAnalyticsEngine {
-  private static instance: MultiTenantAnalyticsEngine;
-  static getInstance(): MultiTenantAnalyticsEngine {
-    if (!MultiTenantAnalyticsEngine.instance) {
-      MultiTenantAnalyticsEngine.instance = new MultiTenantAnalyticsEngine();
-    }
-    return MultiTenantAnalyticsEngine.instance;
-  }
   // Data aggregation methods
   async aggregateTenantMetrics(
     tenantIds: string[],
@@ -613,5 +606,5 @@ export class MultiTenantAnalyticsEngine {
     return {} as Record<MetricDefinition, number>; // Placeholder
   }
 }
-// Export singleton instance
-export const multiTenantAnalyticsEngine = MultiTenantAnalyticsEngine.getInstance();
+// Export module singleton instance
+export const multiTenantAnalyticsEngine = new MultiTenantAnalyticsEngine();

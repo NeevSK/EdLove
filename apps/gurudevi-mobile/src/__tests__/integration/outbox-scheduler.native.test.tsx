@@ -1,5 +1,5 @@
 import { closeReplayAdmission, openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
-import SyncManager from '@repo/core/lib/sync/sync/SyncManager';
+import SyncOrchestrator from '@repo/core/lib/sync/sync/SyncOrchestrator';
 import type { QueuedMutation } from '@repo/core/lib/sync/types';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
@@ -84,7 +84,7 @@ describe('mounted outbox scheduler with transport/auth/storage substitutes', () 
     useMutationQueue.setState({
       queue: [command({ commandState: 'retry_scheduled', backoffUntil: deadline })],
     });
-    const view = render(createElement(SyncManager));
+    const view = render(createElement(SyncOrchestrator));
     expect(fixture.execute).not.toHaveBeenCalled();
     expect(useMutationQueue.getState().isSyncing).toBe(false);
     await act(async () => {
@@ -102,7 +102,7 @@ describe('mounted outbox scheduler with transport/auth/storage substitutes', () 
   it('pauses a credential mismatch rather than repeatedly draining it', async () => {
     fixture.authCheck.mockResolvedValue(false);
     useMutationQueue.setState({ queue: [command()] });
-    const view = render(createElement(SyncManager));
+    const view = render(createElement(SyncOrchestrator));
     await act(async () => {
       await Promise.resolve();
     });
@@ -117,7 +117,7 @@ describe('mounted outbox scheduler with transport/auth/storage substitutes', () 
   it('wakes when the matching principal gate explicitly reopens', async () => {
     await closeReplayAdmission(fixture.account);
     useMutationQueue.setState({ queue: [command()] });
-    const view = render(createElement(SyncManager));
+    const view = render(createElement(SyncOrchestrator));
     expect(fixture.execute).not.toHaveBeenCalled();
     await act(async () => {
       openReplayAdmission(fixture.account);

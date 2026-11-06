@@ -1,12 +1,11 @@
 import { useProfileNavigation } from '@repo/profile/navigation';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { WaitingSign } from '@repo/ui/components/native';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { Camera } from '@repo/ui/icons';
-import { Box, Pressable } from '@repo/ui/primitives';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View, Pressable } from 'react-native';
 
 let Paths: typeof import('expo-file-system').Paths | null = null;
 let File: typeof import('expo-file-system').File | null = null;
@@ -149,9 +148,9 @@ export function AvatarDisplay({
       );
     }
     return (
-      <Box className="rounded-full overflow-hidden" style={[containerStyle, style]}>
+      <View className="rounded-full overflow-hidden" style={[containerStyle, style]}>
         {content}
-      </Box>
+      </View>
     );
   }
 
@@ -179,15 +178,15 @@ export function AvatarDisplay({
       )}
       {content}
       {uploading ? (
-        <Box className="absolute inset-0 bg-black/40 items-center justify-center">
-          <BrandPulse size={24} tintColor="#FFFFFF" accessibilityLabel="Uploading profile image" />
-        </Box>
+        <View className="absolute inset-0 bg-black/40 items-center justify-center">
+          <WaitingSign size={20} />
+        </View>
       ) : (
-        <Box className="absolute inset-0 bg-black/20 items-center justify-center">
-          <Box className="bg-black/30 p-2 rounded-full">
+        <View className="absolute inset-0 bg-black/20 items-center justify-center">
+          <View className="bg-black/30 p-2 rounded-full">
             <Camera size={size * 0.25} color="white" />
-          </Box>
-        </Box>
+          </View>
+        </View>
       )}
     </Pressable>
   );

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @repo/ui/components/web — the same generic components for the web, as plain DOM.
  *
  *   import { Button, Row, Section, Text } from '@repo/ui/components/web';
@@ -25,7 +25,7 @@ export {
   ToolCallCard,
 } from './Agent/AgentCards';
 export { Composer, type ComposerProps } from './Agent/Composer';
-export { ActionFab, type ActionFabProps, FabMenu, type FabMenuProps } from './Agent/Fab';
+export { ActionFab, type ActionFabProps, type FabAction, FabMenu, type FabMenuProps } from './Agent/Fab';
 export {
   MessageBubble,
   type MessageBubbleProps,
@@ -76,6 +76,8 @@ export { Media, type MediaProps } from './Media/Media';
 export { RichTextEditor, type RichTextEditorProps } from './Media/RichTextEditor';
 export { Menu, type MenuProps } from './Menu/Menu';
 export { Perch, type PerchProps } from './Perch/Perch';
+export { Pebble, type PebbleProps } from './Pebble/Pebble';
+export { PebbleCornerSlot, type PebbleCornerSlotProps } from './Pebble/PebbleCornerSlot';
 export { Popover, type PopoverProps } from './Popover/Popover';
 export {
   ChoiceQuestion,
@@ -121,6 +123,7 @@ export {
   type ProgressProps,
 } from './Status/Status';
 export { Surface, type SurfaceProps } from './Surface/Surface';
+export { LivingGround, type LivingGroundProps } from './LivingGround/LivingGround';
 export { SwipeRow, type SwipeRowProps } from './SwipeRow/SwipeRow';
 export { Switch, type SwitchProps } from './Switch/Switch';
 export { Table, type TableProps } from './Table/Table';
@@ -128,6 +131,10 @@ export { Tabs, type TabsProps } from './Tabs/Tabs';
 export { Text, type TextProps } from './Text/Text';
 export { TextField, type TextFieldProps } from './TextField/TextField';
 export { MonthGrid, type MonthGridProps } from './Time/MonthGrid';
+export { Date, type DateProps } from './Time/Date';
+export { DateTimeCombo, type DateTimeComboProps } from './Time/DateTimeCombo';
+export { Time, type TimeProps } from './Time/Clock';
+export { CircadianClockDial, type CircadianClockDialProps } from './Time/CircadianClockDial';
 export {
   DateField,
   type DateFieldProps,
@@ -150,3 +157,18 @@ export {
 } from './Waiting/Waiting';
 export { WaitingSign, type WaitingSignProps } from './WaitingSign/WaitingSign';
 export { WorldPicker, type WorldPickerProps } from './WorldPicker/WorldPicker';
+export {
+  LanguagePicker,
+  type LanguagePickerProps,
+} from './LanguagePicker/LanguagePicker';
+export {
+  ThemeSwitcher,
+  type ThemeSwitcherProps,
+} from './ThemeSwitcher/ThemeSwitcher';
+
+
+export {
+  ScrollArea,
+  type ScrollAreaProps,
+} from './ScrollArea/ScrollArea';
+

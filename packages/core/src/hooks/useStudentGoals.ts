@@ -1,4 +1,4 @@
-import { uiExperience } from '@repo/core/logic/managers/factory';
+import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
 import { useEffect, useMemo, useState } from 'react';
 
 export interface StudentGoal {

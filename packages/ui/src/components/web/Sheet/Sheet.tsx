@@ -1,7 +1,10 @@
+'use client';
+
 import { useId } from 'react';
 import type { SheetContract } from '../../../theme/contracts';
 import { cx } from '../cx';
 import { dismissHandlers, useModalDialog } from '../Dialog/Dialog';
+import { ScrollArea } from '../ScrollArea/ScrollArea';
 
 export interface SheetProps extends SheetContract {
   className?: string;
@@ -28,7 +31,9 @@ export function Sheet({ open, onClose, title, children, dismissable = true, clas
           <h2 id={`${id}-title`} className="gd-text" data-kind="title">
             {title}
           </h2>
-          {children}
+          <ScrollArea orientation="vertical" variant="auto" style={{ maxHeight: '70vh', width: '100%' }}>
+            {children}
+          </ScrollArea>
         </div>
       ) : null}
     </dialog>

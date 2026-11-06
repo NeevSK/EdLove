@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import type { LauncherContract } from '../../../theme/contracts';
 import { iconSize } from '../../../tokens/sizes';

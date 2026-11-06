@@ -1,5 +1,5 @@
 import { SRI_LANKAN_DISTRICTS, SRI_LANKAN_PROVINCES } from '@repo/core/constants';
-import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { TextField } from '@repo/ui/components/native';
 import { ChevronDown, Flag, MapPin } from '@repo/ui/icons';
 import {
   FormControl,
@@ -119,20 +119,20 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
         </Select>
       </FormControl>
 
-      <SanctuaryInput
+      <TextField
         label={t('schoolSetup.city')}
         placeholder={t('schoolSetup.cityPlaceholder')}
         value={data.city}
         onChangeText={(text) => onUpdate({ city: text })}
-        leftIcon={Flag}
+        
       />
 
-      <SanctuaryInput
+      <TextField
         label={t('schoolSetup.postalAddress')}
         placeholder={t('schoolSetup.postalAddressPlaceholder')}
         value={data.address}
         onChangeText={(text) => onUpdate({ address: text })}
-        leftIcon={MapPin}
+        
         multiline
         numberOfLines={3}
       />

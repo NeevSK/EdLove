@@ -1,5 +1,4 @@
-import { Card } from '@repo/ui/components/SanctuaryCard';
-import { VStack } from '@repo/ui/primitives';
+import { Surface } from '@repo/ui/components/native';
 import { Theme } from '@repo/ui/theme/Theme';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -89,14 +88,14 @@ export function TimelineChart({
   };
 
   return (
-    <Card style={styles.container}>
+    <Surface tone="raised" style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
 
       <ScrollView
         style={[styles.timelineContainer, { maxHeight }]}
         showsVerticalScrollIndicator={false}
       >
-        <VStack space="md">
+        <View space="md">
           {events.map((event, index) => (
             <View key={event.id} style={styles.eventContainer}>
               {/* Timeline line */}
@@ -128,9 +127,9 @@ export function TimelineChart({
               </View>
             </View>
           ))}
-        </VStack>
+        </View>
       </ScrollView>
-    </Card>
+    </Surface>
   );
 }
 

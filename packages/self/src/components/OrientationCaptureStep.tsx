@@ -4,6 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import type { OrientationSeeds as ProfileOrientationSeeds } from '@repo/profile';
 import {
   BookOpen,
@@ -21,16 +22,6 @@ import {
   Wrench,
   Zap,
 } from '@repo/ui/icons';
-import {
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import { useCallback, useState } from 'react';
@@ -219,11 +210,11 @@ export const OrientationCaptureStep = ({
   const selected = selectedPerQuestion[questionIndex] ?? -1;
 
   return (
-    <VStack className="flex-1 bg-shroud">
+    <View className="flex-1 bg-shroud">
       {/* Step Indicator */}
-      <HStack className="justify-center gap-2 pt-6">
+      <View className="flex-row items-center justify-center gap-2 pt-6">
         {Array.from({ length: totalSteps }).map((_, i) => (
-          <Box
+          <View
             key={i}
             className={`h-1.5 rounded-full transition-all duration-300 ${
               i === currentStep
@@ -234,7 +225,7 @@ export const OrientationCaptureStep = ({
             }`}
           />
         ))}
-      </HStack>
+      </View>
 
       <ScrollView
         className="flex-1"
@@ -243,21 +234,21 @@ export const OrientationCaptureStep = ({
       >
         {/* Header */}
         <Animated.View layout={LinearTransition} entering={FadeIn.duration(600)}>
-          <VStack className="gap-2 mb-10">
+          <View className="gap-2 mb-10">
             <Text className="text-sanctuarySaffron text-[10px] font-black uppercase tracking-[0.3em]">
               Sequence {questionIndex + 1} of {QUESTIONS.length}
             </Text>
-            <Heading size="lg" className="text-sacredWhite font-black leading-tight tracking-tight">
+            <Text className="text-sacredWhite font-black leading-tight tracking-tight">
               {question.situation}
-            </Heading>
+            </Text>
             <Text className="text-mistGray/50 text-sm font-medium italic mt-1">
               {question.prompt}
             </Text>
-          </VStack>
+          </View>
         </Animated.View>
 
         {/* Options Grid-ish */}
-        <VStack className="gap-4">
+        <View className="gap-4">
           {question.options.map((opt, i) => {
             const isSelected = selected === i;
             return (
@@ -271,17 +262,13 @@ export const OrientationCaptureStep = ({
                       : 'bg-white/5 border-white/5'
                   }`}
                 >
-                  <HStack className="items-center gap-5">
-                    <Box
+                  <View className="flex-row items-center items-center gap-5">
+                    <View
                       className={`w-12 h-12 rounded-2xl items-center justify-center ${isSelected ? 'bg-sanctuarySaffron' : 'bg-white/5'}`}
                     >
-                      <Icon
-                        as={opt.icon}
-                        size={24}
-                        className={isSelected ? 'text-obsidian' : 'text-mistGray/40'}
-                      />
-                    </Box>
-                    <VStack className="flex-1 gap-1">
+                      <opt.icon size={24} className={isSelected ? 'text-obsidian' : 'text-mistGray/40'} />
+                    </View>
+                    <View className="flex-1 gap-1">
                       <Text
                         className={`text-sm font-bold ${isSelected ? 'text-sacredWhite' : 'text-mistGray/80'}`}
                       >
@@ -290,32 +277,32 @@ export const OrientationCaptureStep = ({
                       <Text className="text-xs text-mistGray/40 font-medium leading-relaxed">
                         {opt.description}
                       </Text>
-                    </VStack>
-                  </HStack>
+                    </View>
+                  </View>
                 </Pressable>
               </Animated.View>
             );
           })}
-        </VStack>
+        </View>
 
         {/* Privacy note */}
-        <HStack className="mt-12 gap-2 bg-white/3 p-4 rounded-2xl border border-white/5">
-          <Icon as={ShieldCheck} size={14} className="text-emeraldGreen shrink-0 mt-0.5" />
+        <View className="flex-row items-center mt-12 gap-2 bg-white/3 p-4 rounded-2xl border border-white/5">
+          <ShieldCheck size={14} className="text-emeraldGreen shrink-0 mt-0.5" />
           <Text className="text-[10px] text-mistGray/40 font-medium leading-relaxed">
             Your choices remain private to your local sanctuary. We use these insights to resonate
             more deeply with your natural rhythm — never for categorization.
           </Text>
-        </HStack>
+        </View>
       </ScrollView>
 
       {/* Footer actions */}
-      <HStack className="p-6 pb-12 gap-4 items-center">
+      <View className="flex-row items-center p-6 pb-12 gap-4 items-center">
         <Pressable
           onPress={handleBack}
           accessibilityRole="button"
           className="flex-1 h-14 rounded-2xl border border-white/10 items-center justify-center flex-row gap-2 active:bg-white/5"
         >
-          <Icon as={ChevronLeft} className="text-mistGray/60" size={16} />
+          <ChevronLeft size={16} className="text-mistGray/60" />
           <Text className="text-mistGray/60 text-sm font-black uppercase tracking-widest">
             Back
           </Text>
@@ -329,8 +316,8 @@ export const OrientationCaptureStep = ({
             Skip for now
           </Text>
         </Pressable>
-      </HStack>
-    </VStack>
+      </View>
+    </View>
   );
 };
 

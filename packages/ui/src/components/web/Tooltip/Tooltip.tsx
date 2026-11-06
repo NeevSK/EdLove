@@ -1,3 +1,5 @@
+'use client';
+
 import { cloneElement, type KeyboardEvent, type ReactElement, useId, useState } from 'react';
 import type { TooltipContract } from '../../../theme/contracts';
 

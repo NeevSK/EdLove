@@ -1,8 +1,9 @@
+import { getAPIErrorStatus } from '@repo/core/logic/utils/errorPolicy';
 /** Shared retry policy for transient workspace synchronization failures. */
 export function isRetryableWorkspaceSyncError(error: unknown): boolean {
   if (!error || typeof error !== 'object') return false;
 
-  const status = 'status' in error ? error.status : undefined;
+  const status = getAPIErrorStatus(error);
   if (typeof status !== 'number') {
     const code = 'code' in error ? error.code : undefined;
     return (

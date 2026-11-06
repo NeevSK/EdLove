@@ -1,9 +1,9 @@
-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 import { useTenantStore } from '@repo/core/store/useTenantStore';
 import type { TenantContext } from '@repo/core/types';
 
 export function useTenantContext(): TenantContext {
-  const { context } = usePermissions();
+  const { context } = useSanctuaryFeature();
   const academicCycleId = useTenantStore((state) => state.academicCycleId);
   const { schoolId, sectionId, gradeId, classroomId, tenantKind } = context;
   const resolvedSchoolId = schoolId || null;

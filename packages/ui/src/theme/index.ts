@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @repo/ui/theme — the world engine (platform-neutral).
  *
  * Data and pure functions only: worlds, tokens, recipes, CSS variables.
@@ -10,7 +10,7 @@
 
 export { buildRecipes } from './build';
 export * from './color';
-export type * from './contracts';
+export * from './contracts';
 export {
   boxShadowCss,
   paintCss,
@@ -45,4 +45,4 @@ export {
 export { phaseTokens, resolveWorld, STANDARD_ACCESS } from './resolve';
 export { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
 export type * from './types';
-export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS } from './worlds';
+export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS, worldName } from './worlds';

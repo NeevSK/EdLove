@@ -133,8 +133,7 @@ export function createScopeSessionSnapshot(input: {
   if (
     selectedBond &&
     input.activePerspective.kind === 'personal' &&
-    selectedBond.entity_type !== 'PERSONAL' &&
-    selectedBond.entity_type !== 'PERSONAL_CLASSROOM'
+    selectedBond.entity_type !== 'PERSONAL'
   ) {
     throw new Error('Personal Sanctuary cannot activate a non-personal bond.');
   }

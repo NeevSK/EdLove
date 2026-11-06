@@ -1,8 +1,10 @@
-import { flexRender, type Table } from '@tanstack/react-table';
+import { flexRender } from '@tanstack/react-table';
+import type { RowData } from '@tanstack/react-table';
+import type { LegacyTable as Table } from '@tanstack/react-table/legacy';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useRef } from 'react';
 
-export interface SanctuaryVirtualTableWebProps<TData> {
+export interface SanctuaryVirtualTableWebProps<TData extends RowData> {
   table: Table<TData>;
   /** The height of the scrolling viewport container */
   height?: number | string;
@@ -14,7 +16,7 @@ export interface SanctuaryVirtualTableWebProps<TData> {
  * SanctuaryVirtualTable.web - A high-performance, virtualized HTML/Tailwind table for Web dashboards.
  * Couples TanStack Table state with TanStack Virtual scroll windowing.
  */
-export function SanctuaryVirtualTable<TData>({
+export function SanctuaryVirtualTable<TData extends RowData>({
   table,
   height = 400,
   estimateRowHeight = 45,

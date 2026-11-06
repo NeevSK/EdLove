@@ -1,14 +1,6 @@
 import LottieView from 'lottie-react-native';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable } from '@repo/ui/primitives';
-import {
-  AccessibilityInfo,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { AccessibilityInfo, Image, StyleSheet, Text, View, useWindowDimensions, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ComponentRef } from 'react';
 

@@ -83,6 +83,7 @@ export class OCRAPI {
   private initialized = false;
   private initPromise: Promise<void> | null = null;
   private options: OCRWorkerOptions = {};
+  private languages: string[] = ['eng'];
 
   /**
    * Initialize OCR worker
@@ -124,8 +125,8 @@ export class OCRAPI {
   async loadLanguage(lang: string | string[]): Promise<void> {
     await this.ensureInitialized();
     const langs = Array.isArray(lang) ? lang : [lang];
-    await this.worker.loadLanguage(...langs);
-    await this.worker.initialize(...langs);
+    await this.worker.reinitialize(langs);
+    this.languages = langs;
   }
 
   /**
@@ -134,7 +135,8 @@ export class OCRAPI {
   async setLanguage(lang: string | string[]): Promise<void> {
     await this.ensureInitialized();
     const langs = Array.isArray(lang) ? lang : [lang];
-    await this.worker.initialize(...langs);
+    await this.worker.reinitialize(langs);
+    this.languages = langs;
   }
 
   /**
@@ -209,7 +211,7 @@ export class OCRAPI {
    */
   async getAvailableLanguages(): Promise<string[]> {
     await this.ensureInitialized();
-    return this.worker.getAvailableLanguages();
+    return this.languages;
   }
 
   /**

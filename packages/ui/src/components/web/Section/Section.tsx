@@ -1,3 +1,5 @@
+'use client';
+
 import { type HTMLAttributes, useId } from 'react';
 import type { SectionContract } from '../../../theme/contracts';
 import { cx } from '../cx';

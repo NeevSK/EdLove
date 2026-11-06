@@ -159,6 +159,45 @@ export const FlowNodeStepSchema = z.object({
   fallbacks: z.array(FlowFallbackEdgeSchema).default([]),
 });
 
+// Product contract and traceability metadata; these declarations do not grant authority.
+export const JourneyPilotSchema = z.object({
+  status: z.enum(['proposed', 'implemented']),
+  intent: z.string().min(1),
+  developmentContext: z.object({
+    mode: z.enum(['greenfield', 'brownfield', 'mixed']),
+    existingBehavior: z.array(z.string().min(1)),
+    integrationPoints: z.array(z.object({ reference: z.string().min(1), role: z.string().min(1) })),
+    invariants: z.array(z.string().min(1)).min(1),
+    openQuestions: z.array(z.string().min(1)),
+  }).optional(),
+  entryStep: z.string().min(1),
+  steps: z.array(z.object({
+    id: z.string().min(1),
+    title: z.string().min(1),
+    interaction: z.string().min(1),
+    terminal: z.boolean(),
+  })).min(1),
+  transitions: z.array(z.object({
+    id: z.string().min(1),
+    from: z.string().min(1),
+    to: z.string().min(1),
+    action: z.string().min(1),
+    feedback: z.string().min(1),
+  })).min(1),
+  scenarios: z.array(z.object({
+    id: z.string().min(1),
+    title: z.string().min(1),
+    transitions: z.array(z.string().min(1)).min(1),
+    evidence: z.array(z.object({ reference: z.string().min(1), tier: z.string().min(1) })),
+  })).min(1),
+  bindings: z.array(z.object({
+    kind: z.enum(['web', 'mobile', 'api', 'data', 'authorization']),
+    status: z.enum(['unknown', 'planned', 'implemented', 'verified']),
+    reference: z.string().min(1).optional(),
+    note: z.string().min(1),
+  })).min(1),
+});
+
 export const FeatureJTBDGraphSchema = z.object({
   featureId: z.string().min(1),
   jobTitle: z.string().min(1),
@@ -172,6 +211,24 @@ export const FeatureJTBDGraphSchema = z.object({
     nextCircadianRoute: z.string().min(1),
     scaffoldDismissalKey: z.string().optional(),
   }),
+  journeyPilot: JourneyPilotSchema.optional(),
+});
+
+export const ChannelAffordanceSchema = z.object({
+  web: z.boolean().default(true),
+  mobile: z.boolean().default(true),
+  whatsapp: z
+    .object({
+      intent: z.string(),
+      requiresApproval: z.boolean().default(true),
+    })
+    .optional(),
+  agent_mcp: z
+    .object({
+      toolName: z.string(),
+      readOnly: z.boolean().default(false),
+    })
+    .optional(),
 });
 
 export const DomainEntrySchema = z.object({
@@ -184,6 +241,7 @@ export const DomainEntrySchema = z.object({
   // ── Platform support ──────────────────────────────────────────────
   mobileSupport: z.boolean(),
   webSupport: z.boolean(),
+  channelAffordance: ChannelAffordanceSchema.optional(),
 
   // ── Deployment state ──────────────────────────────────────────────
   // What IFeatureRolloutPort / GrowthBook reads.
@@ -230,6 +288,7 @@ export const DomainEntrySchema = z.object({
 });
 
 export type DomainEntry = z.infer<typeof DomainEntrySchema>;
+export type ChannelAffordance = z.infer<typeof ChannelAffordanceSchema>;
 export type FeatureState = z.infer<typeof FeatureStateSchema>;
 export type FeatureFlagClass = z.infer<typeof FeatureFlagClassSchema>;
 export type FeatureLifecycle = z.infer<typeof FeatureLifecycleSchema>;

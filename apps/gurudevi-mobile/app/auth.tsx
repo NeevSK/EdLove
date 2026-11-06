@@ -1,6 +1,6 @@
+import { View } from 'react-native';
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Center } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
@@ -10,9 +10,9 @@ export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
   return (
-    <Center className="flex-1 bg-obsidian">
+    <View className="items-center justify-center flex-1 bg-obsidian">
       <BrandPulse accessibilityLabel="Loading sign in" />
-    </Center>
+    </View>
   );
 }
 

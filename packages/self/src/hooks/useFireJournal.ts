@@ -6,7 +6,7 @@ import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
   burnFireJournalEntry,
   fetchFireJournalHistoryForView,
-} from '@repo/self/api/wellbeingRepository';
+} from '@repo/self/data/wellbeing.data';
 import type { FireJournalEntry } from '@repo/self/types';
 import { useCallback, useEffect, useState } from 'react';
 

@@ -1,7 +1,7 @@
+import { View, Text } from 'react-native';
 import { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
 import LotusLoader from '@repo/ui/components/LotusLoader';
 import { useThemedColors } from '@repo/ui/hooks';
-import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -72,8 +72,8 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
 
   if (loading) {
     return (
-      <VStack
-        sx={{
+      <View
+        style={{
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
@@ -81,17 +81,17 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
         }}
       >
         <LotusLoader />
-        <Text sx={{ marginTop: 16, color: colors.textSecondary }}>
+        <Text style={{ marginTop: 16, color: colors.textSecondary }}>
           Preparing your dignified experience...
         </Text>
-      </VStack>
+      </View>
     );
   }
 
   if (error || !template) {
     return (
-      <VStack
-        sx={{
+      <View
+        style={{
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
@@ -99,11 +99,11 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
           padding: 40,
         }}
       >
-        <Heading size="lg" sx={{ color: Theme.colors.emberRed }}>
+        <Text style={{ color: Theme.colors.emberRed }}>
           Access Denied
-        </Heading>
+        </Text>
         <Text
-          sx={{
+          style={{
             textAlign: 'center',
             marginTop: 12,
             color: colors.textSecondary,
@@ -111,14 +111,14 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
         >
           {error}
         </Text>
-      </VStack>
+      </View>
     );
   }
 
   if (submitted) {
     return (
-      <VStack
-        sx={{
+      <View
+        style={{
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
@@ -126,11 +126,11 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
           padding: 40,
         }}
       >
-        <Heading size="xl" sx={{ color: Theme.colors.sageGreen }}>
+        <Text style={{ color: Theme.colors.sageGreen }}>
           Thank You
-        </Heading>
+        </Text>
         <Text
-          sx={{
+          style={{
             textAlign: 'center',
             marginTop: 12,
             color: colors.textSecondary,
@@ -138,7 +138,7 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
         >
           Your response has been securely recorded in the Gurudevi ecosystem.
         </Text>
-      </VStack>
+      </View>
     );
   }
 
@@ -169,8 +169,8 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
   });
 
   return (
-    <VStack
-      sx={{
+    <View
+      style={{
         flex: 1,
         backgroundColor: colors.backgroundDark,
         padding: 20,
@@ -178,8 +178,8 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
         justifyContent: 'center',
       }}
     >
-      <Box
-        sx={{
+      <View
+        style={{
           backgroundColor: 'white',
           borderRadius: 32,
           padding: 40,
@@ -190,13 +190,13 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
           width: '100%',
         }}
       >
-        <VStack sx={{ marginBottom: 32, alignItems: 'center' }}>
-          <Heading size="xl" sx={{ textAlign: 'center' }}>
+        <View style={{ marginBottom: 32, alignItems: 'center' }}>
+          <Text style={{ textAlign: 'center' }}>
             {template.title}
-          </Heading>
+          </Text>
           {template.description && (
             <Text
-              sx={{
+              style={{
                 textAlign: 'center',
                 marginTop: 8,
                 color: colors.textSecondary,
@@ -205,9 +205,9 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
               {template.description}
             </Text>
           )}
-        </VStack>
+        </View>
         <NativeForm manager={manager} submitLabel="Submit Response" />
-      </Box>
-    </VStack>
+      </View>
+    </View>
   );
 }

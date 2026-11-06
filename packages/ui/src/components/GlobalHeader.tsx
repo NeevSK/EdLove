@@ -4,7 +4,7 @@ import { useMutationQueue, usePermissions } from '@repo/core/logic';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
 import { AppHeader, type AppHeaderProps } from '@repo/ui/components/native';
-import { Bell, ChevronLeft, Menu, QrCode, Search, X } from '@repo/ui/icons';
+import { Bell, ChevronLeft, Menu, Search, X } from '@repo/ui/icons';
 import { useWorld } from '@repo/ui/theme/native';
 import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
@@ -22,8 +22,6 @@ export interface GlobalHeaderProps {
   onBack?: () => void;
   showMenu?: boolean;
   showSearch?: boolean;
-  showQRScan?: boolean;
-  onQRScan?: () => void;
   rightAction?: React.ReactNode;
   /** More header actions, after search and QR and before the bell (settings, editorial). */
   extraActions?: NonNullable<AppHeaderProps['actions']>;
@@ -36,7 +34,6 @@ export interface GlobalHeaderProps {
     placeholder?: string;
   };
   isSelfView?: boolean;
-  avatarUrl?: string;
   perspectivePill?: {
     label: string;
     badge?: string;
@@ -82,15 +79,12 @@ export default function GlobalHeader({
   onBack,
   showMenu = false,
   showSearch = false,
-  showQRScan = false,
-  onQRScan,
   rightAction,
   extraActions,
   onNotificationsPress,
   userName,
   searchProps,
   isSelfView = false,
-  avatarUrl,
   perspectivePill,
 }: GlobalHeaderProps) {
   const { t } = useTranslation();
@@ -150,14 +144,6 @@ export default function GlobalHeader({
       onPress: () => dispatch({ type: 'TOGGLE_SEARCH' }),
     });
   }
-  if (showQRScan) {
-    actions.push({
-      key: 'qr',
-      label: t('common.scanQr', 'Scan QR code'),
-      icon: QrCode,
-      onPress: () => (onQRScan ? onQRScan() : router.push('/qr')),
-    });
-  }
   if (extraActions) actions.push(...extraActions);
   if (!rightAction) {
     actions.push({
@@ -212,16 +198,6 @@ export default function GlobalHeader({
               : undefined
         }
         icons={{ back: ChevronLeft, menu: Menu }}
-        avatar={
-          isSelfView
-            ? {
-                name: userFullName || roleContext.label,
-                src: avatarUrl || user?.avatar_url || undefined,
-                label: t('profile.open', 'Open profile'),
-                onPress: () => router.push('/profile'),
-              }
-            : undefined
-        }
         perspective={
           perspectivePill
             ? {

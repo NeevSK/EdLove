@@ -1,6 +1,4 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { mediaAPI } from '@repo/core/api/media';
-import { orpcClient } from '@repo/core/api/orpcClient';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -335,16 +333,9 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       .slice(0, limit);
   },
   async updateUserProfile(userId, updates) {
-    const data = await orpcClient.profile.updateProfile(
-      { params: { id: userId }, body: UserProfilePatchSchema.parse(updates) },
-      { context: { expectedAccountId: userId, retry: 0 } },
-    );
-    if (data.id !== userId)
-      throw new APIError(
-        'The profile response belongs to another account.',
-        'AUTH_ACCOUNT_MISMATCH',
-      );
-    return normalizeUser({ ...data, id: userId });
+    void userId;
+    void updates;
+    throw new APIError('Profile updates are not admitted by the v1 foundation.', 'UNSUPPORTED');
   },
   async getAnonymousFlag(userId) {
     const { data, error } = await supabaseClient
@@ -356,12 +347,8 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return data?.is_anonymous ?? false;
   },
   async uploadAvatarAsset(localUri) {
-    try {
-      return await mediaAPI.upload(localUri, { resourceType: 'image' });
-    } catch (error: unknown) {
-      const err = error as { code?: string; message?: string };
-      throw new APIError('Failed to upload avatar', err?.code || 'UPLOAD_ERROR', error);
-    }
+    void localUri;
+    throw new APIError('Avatar uploads are not admitted by the v1 foundation.', 'UNSUPPORTED');
   },
 
   async getSocialLinks(userId) {
@@ -534,3 +521,5 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     } as PulseMetrics;
   },
 });
+
+export const supabaseProfileRepository = createSupabaseProfileRepository();

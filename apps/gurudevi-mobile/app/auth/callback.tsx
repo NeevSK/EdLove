@@ -1,4 +1,4 @@
-import { deepLink } from '@repo/core/logic';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
 import { BrandPulse } from '@repo/ui';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Button, ButtonText, Center, Text, VStack } from '@repo/ui/primitives';
@@ -22,8 +22,7 @@ export default function AuthCallbackRoute() {
       Platform.OS === 'web' ? window.location.href : createNativeAuthCallbackUrl(params);
 
     let active = true;
-    void deepLink
-      .handleURL(callbackUrl)
+    void handleDeepLink(callbackUrl)
       .then((result) => {
         if (active && !result.isHandled) {
           setFailureMessage(result.message ?? 'Unable to complete sign-in.');

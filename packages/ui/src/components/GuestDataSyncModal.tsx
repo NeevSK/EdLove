@@ -53,7 +53,16 @@ export default function GuestDataSyncModal({
   const transferAvailability = GuestDataSync.getTransferAvailability();
 
   const fetchSyncSummary = useCallback(async () => {
-    await executeFetchGuestDataSummaryEffect(actor, () => GuestDataSync.getGuestDataSummary());
+    await executeFetchGuestDataSummaryEffect(actor, async () => {
+      const summary = await GuestDataSync.getGuestDataSummary();
+      return {
+        timetablePeriods: summary.timetablePeriods,
+        moodLogs: summary.moodLogs,
+        journalEntries: summary.journalEntries,
+        students: summary.students,
+        total: summary.total,
+      };
+    });
   }, [actor]);
 
   useEffect(() => {

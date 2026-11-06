@@ -6,7 +6,7 @@ import {
   isOfflineLikeError,
   queueDeviceSecurityIntent,
 } from '@repo/core/lib/sync/deviceSecurityIntents';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { APIError } from '@repo/core/types/API';
 import { v7 as uuidv7 } from 'uuid';
@@ -247,7 +247,7 @@ async function runQueuedDeviceSecurityMutation<T>(
   online: () => Promise<T>,
   queuedFallback: () => T,
 ): Promise<DeviceSecurityMutationResult<T>> {
-  const isConnected = await networkManager.isConnected();
+  const isConnected = await networkMonitor.isConnected();
   if (!isConnected) {
     await queueDeviceSecurityIntent(DEVICE_SECURITY_MUTATIONS[mutationName], variables);
     return {
@@ -635,7 +635,7 @@ export const deviceTrustAPI = {
       deviceId,
     };
 
-    const isConnected = await networkManager.isConnected();
+    const isConnected = await networkMonitor.isConnected();
     if (!isConnected) {
       await queueDeviceSecurityIntent(DEVICE_SECURITY_MUTATIONS.auditEvent, variables);
       return null;

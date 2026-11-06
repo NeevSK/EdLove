@@ -1,6 +1,5 @@
-import { deepLink, useAuth } from '@repo/core/logic';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
 import { storage } from '@repo/core/native';
-import { dispatchQRDeepLink } from '@repo/scanner-kit';
 import * as Notifications from 'expo-notifications';
 import { type Href, router } from 'expo-router';
 import { useCallback, useEffect } from 'react';
@@ -8,7 +7,7 @@ import { Platform } from 'react-native';
 
 import { dispatchDeepLink } from '@/lib/deepLinks/dispatchDeepLink';
 import { trackDeepLink } from '@/lib/deepLinks/trackDeepLink';
-import { isQRDeepLink, normalizeAcceptedInternalRoute } from '@/lib/deepLinks/urlPolicy';
+import { normalizeAcceptedInternalRoute } from '@/lib/deepLinks/urlPolicy';
 
 /**
  * PushNotificationProvider
@@ -31,8 +30,6 @@ if (Platform.OS !== 'web') {
 }
 
 export function PushNotificationProvider({ children }: { children: React.ReactNode }) {
-  const { session } = useAuth();
-
   const handleNotificationReceived = useCallback((notification: Notifications.Notification) => {
     // Handle foreground notification
     console.log('[PushNotification] Received:', notification);
@@ -54,29 +51,16 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
           return;
         }
 
-        if (isQRDeepLink(target)) {
-          await dispatchQRDeepLink(
-            target,
-            session
-              ? (payload) =>
-                  router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } })
-              : undefined,
-          );
-          return;
-        }
 
         await dispatchDeepLink(target, {
-          handleURL: deepLink.handleURL.bind(deepLink),
-          navigateToClassroomInvite: (inviteCode) => {
-            router.push({ pathname: '/community', params: { inviteCode } });
-          },
+          handleURL: handleDeepLink,
           track: trackDeepLink,
         });
       })().catch((error: unknown) => {
         console.warn('[PushNotification] Failed to dispatch notification target', error);
       });
     },
-    [session],
+    [],
   );
 
   const registerForPushNotifications = useCallback(async () => {
@@ -101,19 +85,9 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
         projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID,
       });
 
-      // Store token locally and send to backend
+      // Backend registration requires a new admitted notification capability.
       const tokenString = token.data;
       storage.set('expo_push_token', tokenString);
-
-      // Send to backend (if we have a session)
-      try {
-        const { api } = await import('@repo/core/api/client');
-        await api.notifications.registerToken(tokenString);
-      } catch (e) {
-        console.warn('[PushNotification] Failed to register token with backend:', e);
-      }
-
-      console.log('[PushNotification] Registered token:', tokenString);
     } catch (e) {
       console.error('[PushNotification] Registration error:', e);
     }

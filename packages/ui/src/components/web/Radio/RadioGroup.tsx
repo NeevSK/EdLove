@@ -1,3 +1,5 @@
+'use client';
+
 import { useId } from 'react';
 import type { RadioGroupContract } from '../../../theme/contracts';
 import { cx } from '../cx';

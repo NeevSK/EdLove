@@ -1,3 +1,5 @@
+'use client';
+
 import { useId } from 'react';
 import type { SwitchRowContract } from '../../../theme/contracts';
 

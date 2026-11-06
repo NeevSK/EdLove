@@ -1,5 +1,4 @@
 import { AvatarDisplay, ContactLinktree, EditableItem, useSchoolProfile } from '@repo/profile';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import {
   ArrowLeft,
   BookOpen,
@@ -25,7 +24,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
   if (isLoading)
     return (
       <Box className="p-10">
-        <SkeletonCard />
+        <div className="animate-pulse bg-black/10 dark:bg-white/10 rounded-2xl h-[150px] w-full" />
       </Box>
     );
   if (!school)

@@ -1,12 +1,12 @@
 import { getSessionIdentityMode, useAuth } from '@repo/core/logic';
 import { GuestDataSync } from '@repo/core/native';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
 import {
   bindGuestConversionTarget,
   clearGuestConversionRecord,
   discardGuestConversion,
   readGuestConversionRecord,
 } from '@repo/core/native/guestConversionLedger';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import GuestDataSyncModal from '@repo/ui/components/GuestDataSyncModal';
 import { useEffect, useState } from 'react';
 

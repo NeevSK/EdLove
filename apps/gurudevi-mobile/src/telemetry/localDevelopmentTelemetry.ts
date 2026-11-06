@@ -32,6 +32,21 @@ type LocalTelemetryEvent = {
 
 const MAX_SESSION_BYTES = 32 * 1024 * 1024;
 const MAX_PENDING_RECORDS = 4096;
+
+/**
+ * Exhaustive capture, verger's exhaustive level (2026-10-29): on from the start in a development
+ * build; a release build turns it on for one phone with `enableExhaustiveCapture` (its level
+ * switch or remote config), from that moment on. Everything stays on the phone.
+ */
+let exhaustive: boolean = __DEV__;
+
+export const isExhaustiveCapture = (): boolean => exhaustive;
+
+export function enableExhaustiveCapture(): void {
+  if (exhaustive) return;
+  exhaustive = true;
+  exposeCaptureConsole();
+}
 const session = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 const pending: string[] = [];
 const status = {
@@ -109,6 +124,8 @@ function isSafeObject(value: SafeValue | undefined): value is SafeObject {
 export function recordDevelopmentVergerEvent(event: VergerEvent): void {
   const attributes: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(event)) attributes[key] = value;
+  // Sensed and received on one clock (CLOCK_MONOTONIC on Android): their gap is the bridge's delay.
+  if (event.sensedAt !== undefined) attributes.bridge_delay_ms = event.at - event.sensedAt;
   saveDevelopmentTelemetry({
     source: 'verger',
     name: event.type,
@@ -177,16 +194,21 @@ export function recordDevelopmentVergerTransition(
 
 /** Records the recovery ladder's actual result, rather than the requested build mode. */
 export function recordDevelopmentVergerLaunch(plan: LaunchPlan): void {
-  if (!__DEV__) return;
+  if (!exhaustive) return;
   saveDevelopmentTelemetry({
     source: 'runtime',
     name: 'verger-launch-plan',
-    attributes: { runtime: plan.runtime, rung: plan.rung, reason: plan.reason },
+    attributes: { runtime: plan.runtime, rung: plan.rung, reason: plan.reason, cause: plan.cause },
   });
+  const why = plan.cause
+    ? ` Rung set by ${plan.cause.kind}${plan.cause.cause ? ` (${plan.cause.cause})` : ''} at ${new Date(plan.cause.atWall).toISOString()}.`
+    : plan.rung > 0
+      ? ' Rung cause not recorded (record predates kept causes).'
+      : '';
   setDevelopmentTelemetrySource(
     'verger-inputs',
     plan.runtime === 'off' ? 'disabled' : 'recording',
-    `Resolved runtime: ${plan.runtime}; rung: ${plan.rung}; reason: ${plan.reason}.`,
+    `Resolved runtime: ${plan.runtime}; rung: ${plan.rung}; reason: ${plan.reason}.${why}`,
   );
 }
 
@@ -217,8 +239,8 @@ export async function backfillDevelopmentTelemetryJournals(): Promise<{
   readonly events: number;
   readonly skipped: number;
 }> {
-  if (!__DEV__)
-    throw new Error('Development telemetry backfill is available only in development builds.');
+  if (!exhaustive)
+    throw new Error('Development telemetry backfill is available only at the Verger exhaustive level.');
   await flushDevelopmentTelemetry();
   const { Directory, File, Paths } = await import('expo-file-system');
   const directory = new Directory(Paths.document, 'dev-telemetry');
@@ -324,8 +346,8 @@ async function importDevelopmentTrace(
   parse: typeof parseReactNativeDevToolsTrace,
   source: DevelopmentTraceSource,
 ): Promise<{ readonly session: string; readonly eventCount: number }> {
-  if (!__DEV__)
-    throw new Error('Development trace import is available only in development builds.');
+  if (!exhaustive)
+    throw new Error('Development trace import is available only at the Verger exhaustive level.');
   const importedAtMs = Date.now();
   const traceSession = `trace-${importedAtMs.toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   const records = parse(content, traceSession, importedAtMs);
@@ -341,8 +363,8 @@ async function importDevelopmentTrace(
 
 /** Removes a stopped development session and its optional local JSONL sidecars. */
 export async function deleteDevelopmentTelemetrySession(requestedSession: string): Promise<void> {
-  if (!__DEV__)
-    throw new Error('Development telemetry deletion is available only in development builds.');
+  if (!exhaustive)
+    throw new Error('Development telemetry deletion is available only at the Verger exhaustive level.');
   if (!/^[A-Za-z0-9_-]{1,100}$/.test(requestedSession)) {
     throw new Error('The selected diagnostics session has an invalid identifier.');
   }
@@ -383,7 +405,7 @@ async function openFiles() {
 
 /** Resolves after queued records reach the app's document directory; status discloses IO failure. */
 export function flushDevelopmentTelemetry(): Promise<void> {
-  if (!__DEV__) return Promise.resolve();
+  if (!exhaustive) return Promise.resolve();
   if (timer !== null) clearTimeout(timer);
   timer = null;
   if (writing) return writing.then(flushDevelopmentTelemetry);
@@ -452,7 +474,7 @@ function scheduleFlush() {
 }
 
 export function saveDevelopmentTelemetry(event: LocalTelemetryEvent): void {
-  if (!__DEV__) return;
+  if (!exhaustive) return;
   if (pending.length >= MAX_PENDING_RECORDS) {
     status.dropped += 1;
     if (status.state !== 'error') {
@@ -498,7 +520,7 @@ export function setDevelopmentTelemetrySource(
   state: DevelopmentTelemetrySourceStatus['state'],
   details = '',
 ): void {
-  if (!__DEV__) return;
+  if (!exhaustive) return;
   void writeDevelopmentTelemetrySource(session, {
     source,
     state,
@@ -511,7 +533,7 @@ export function setDevelopmentTelemetrySource(
 }
 
 export async function getDevelopmentTelemetrySessions(): Promise<DevelopmentTelemetrySession[]> {
-  if (!__DEV__) return [];
+  if (!exhaustive) return [];
   return listDevelopmentTelemetrySessions();
 }
 
@@ -519,21 +541,21 @@ export async function queryDevelopmentTelemetrySession(
   requestedSession: string,
   query: DevelopmentTelemetryQuery = {},
 ): Promise<DevelopmentTelemetryRow[]> {
-  if (!__DEV__) return [];
+  if (!exhaustive) return [];
   return queryDevelopmentTelemetry(requestedSession, query);
 }
 
 export async function getDevelopmentTelemetrySources(
   requestedSession: string,
 ): Promise<DevelopmentTelemetrySourceStatus[]> {
-  if (!__DEV__) return [];
+  if (!exhaustive) return [];
   return listDevelopmentTelemetrySources(requestedSession);
 }
 
 export async function getDevelopmentTelemetryEventCounts(
   requestedSession: string,
 ): Promise<DevelopmentTelemetryEventCount[]> {
-  if (!__DEV__) return [];
+  if (!exhaustive) return [];
   return listDevelopmentTelemetryEventCounts(requestedSession);
 }
 
@@ -575,7 +597,8 @@ declare global {
     | undefined;
 }
 
-if (__DEV__) {
+/** The capture console for Argent, the DevTools console and the lab; installed at the exhaustive level. */
+function exposeCaptureConsole(): void {
   globalThis.__GURUDEVI_DEV_TELEMETRY__ = {
     status: getDevelopmentTelemetryStatus,
     flush: flushDevelopmentTelemetry,
@@ -592,3 +615,5 @@ if (__DEV__) {
     backfill: backfillDevelopmentTelemetryJournals,
   };
 }
+
+if (exhaustive) exposeCaptureConsole();

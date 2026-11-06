@@ -1,11 +1,17 @@
 import type { CreateTuitionBatchInput } from '@repo/core/adapters/supabase/tuitionBatchRepository';
-import type { GuardianLinkProvisionInput } from '@repo/core/api/workspaceProvisioning';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import type { GuardianIdentity } from '@repo/core/logic/schemas/guardian.schema';
 import { uuidv7 } from '@repo/core/logic/utils/uuid';
 import type { CommercialPerspective, GuardianBondPerspective } from '@repo/core/types/Perspective';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
+export interface GuardianLinkProvisionInput {
+  readonly wardUserId: string;
+  readonly relationship: GuardianIdentity['relationship_type'];
+  readonly schoolId?: string;
+  readonly wardName: string;
+}
 
 export type ProvisionalWorkspaceCommand =
   | {

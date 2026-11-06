@@ -1,3 +1,5 @@
+'use client';
+
 import { useId } from 'react';
 import type { ComposerContract } from '../../../theme/contracts';
 import { AGENT_ENGLISH, remainingNote } from '../../shared/agent';

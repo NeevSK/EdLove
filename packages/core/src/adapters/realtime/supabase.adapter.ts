@@ -1,5 +1,6 @@
 import type { IRealtimePort } from '@repo/core/logic/ports/realtime.port';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 /**
  * SupabaseRealtimeAdapter
@@ -77,3 +78,5 @@ export const createSupabaseRealtimeAdapter = (supabase: SupabaseClient): IRealti
     };
   },
 });
+
+export const supabaseRealtimeAdapter: IRealtimePort = createSupabaseRealtimeAdapter(supabaseClient);

@@ -2,14 +2,15 @@ import { useAuthStore } from '@repo/core/store';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { fetchInteractionCountForView } from '@repo/self/api/selfInsightsRepository';
+import { fetchInteractionCountForView } from '@repo/self/data/selfInsights.data';
 import { useCallback, useEffect, useState } from 'react';
 
 const PROGRESS_TREE_CACHE_KEY = 'gurudevi-progtree-cache';
 
 export function useProgressTree(userId?: string) {
   const { isOnline } = useOfflineStatus();
-  const { viewDate, isPastView } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   const [interactionCount, setInteractionCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

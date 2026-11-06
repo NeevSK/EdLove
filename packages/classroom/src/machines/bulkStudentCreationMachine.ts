@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/logic/managers/StorageManager';
+import { storage } from '@repo/core/lib/storage';
 import { StorageKeys, buildPartitionedKey, type PartitionKeyOptions } from '@repo/core/lib/storage';
 import type { BulkStudent } from '@repo/core/types';
 import { Cause, Effect, Exit } from 'effect';

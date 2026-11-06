@@ -1,4 +1,5 @@
 import { generateKeyPairSync, sign as nodeSign } from 'node:crypto';
+import { generateSnapshot } from '@repo/policies';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { checkLocalPermission } from '../localEvaluator.native';
 import { verifySnapshotSignature } from '../signature';
@@ -68,6 +69,82 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
   });
 
   describe('verifySnapshotSignature', () => {
+    it('verifies an actual generated snapshot after database-style key reordering', {
+      timeout: 15000,
+    }, async () => {
+      const privateKey = snapshotPrivateKey.export({ format: 'pem', type: 'pkcs8' }).toString();
+      const snapshot = generateSnapshot(
+        {
+          id: 'user-123',
+          capacity: 'member',
+          school_id: 'school-123',
+          active_bond_id: 'bond-123',
+          active_entity_id: 'entity-123',
+          active_entity_type: 'SCHOOL',
+          policy_version: 'policy-v1',
+        },
+        privateKey,
+      );
+      const permissions = Object.fromEntries(
+        Object.entries(snapshot.permissions)
+          .reverse()
+          .map(([resource, actions]) => [
+            resource,
+            Object.fromEntries(Object.entries(actions).reverse()),
+          ]),
+      );
+      expect(
+        await verifySnapshotSignature({
+          ...snapshot,
+          generatedAt: snapshot.generatedAt.replace('Z', '+00:00'),
+          permissions: JSON.stringify(permissions),
+          temporalHints: JSON.stringify(snapshot.temporalHints),
+        }),
+      ).toBe(true);
+    });
+
+    it('verifies legacy signatures after storage reorders permission keys or reformats timestamps', async () => {
+      const payload = {
+        userId: 'user-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
+        schoolId: 'school-123',
+        policyVersion: 'policy-v1',
+        generatedAt: '2026-05-10T12:00:00.000Z',
+        expiresAt: '2026-05-11T12:00:00.000Z',
+        permissions: { Classroom: { read: true, create: true } },
+        temporalHints: {},
+      };
+      const signature = await generateTestSignature(payload);
+      const record = {
+        ...payload,
+        permissions: JSON.stringify(payload.permissions),
+        temporalHints: JSON.stringify(payload.temporalHints),
+        signature,
+      };
+      expect(await verifySnapshotSignature(record)).toBe(true);
+      expect(
+        await verifySnapshotSignature({
+          ...record,
+          permissions: JSON.stringify({ Classroom: { create: true, read: true } }),
+        }),
+      ).toBe(true);
+      expect(
+        await verifySnapshotSignature({
+          ...record,
+          generatedAt: '2026-05-10T12:00:00+00:00',
+        }),
+      ).toBe(true);
+      expect(
+        await verifySnapshotSignature({
+          ...record,
+          generatedAt: '2026-05-10T12:00:00+00:00',
+          permissions: JSON.stringify({ Classroom: { create: true, read: false } }),
+        }),
+      ).toBe(false);
+    });
+
     it('returns true for a valid cryptographically signed snapshot', async () => {
       const permissionsObj = { Classroom: { read: true, create: true } };
       const basePayload = {

@@ -9,8 +9,8 @@ const fixture = vi.hoisted(() => ({
   listeners: new Set<() => void>(),
   records: new Map<string, string>(),
 }));
-vi.mock('@repo/core/logic/managers/NetworkManager', () => ({
-  networkManager: {
+vi.mock('@repo/core/platform/drivers/networkMonitor', () => ({
+  networkMonitor: {
     getSnapshot: () => ({ status: fixture.status }),
     subscribe: (listener: () => void) => {
       fixture.listeners.add(listener);

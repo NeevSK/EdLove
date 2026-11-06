@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef } from 'react';
 import type { SegmentedContract } from '../../../theme/contracts';
 import { cx } from '../cx';

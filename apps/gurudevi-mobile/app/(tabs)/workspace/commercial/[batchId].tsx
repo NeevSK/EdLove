@@ -1,3 +1,4 @@
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { usePerspectiveSwitch } from '@repo/core/logic';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
@@ -12,7 +13,6 @@ import {
   TrendingUp,
   Users,
 } from '@repo/ui/icons';
-import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useLocalSearchParams } from 'expo-router';
@@ -44,7 +44,7 @@ export default function CommercialBatchScreen() {
 
   if (!commercialBatch) {
     return (
-      <Box
+      <View
         style={{
           flex: 1,
           backgroundColor: tokens.colors.background,
@@ -71,7 +71,7 @@ export default function CommercialBatchScreen() {
         >
           Please select an active commercial tuition batch from the perspective switcher.
         </Text>
-      </Box>
+      </View>
     );
   }
 
@@ -79,9 +79,9 @@ export default function CommercialBatchScreen() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: tokens.colors.background }}>
-      <VStack style={{ padding: tokens.spacing.md, gap: tokens.spacing.md }}>
+      <View style={{ padding: tokens.spacing.md, gap: tokens.spacing.md }}>
         {/* 1. Batch Hero Banner */}
-        <Box
+        <View
           style={{
             padding: tokens.spacing.lg,
             borderRadius: tokens.radii.lg,
@@ -95,16 +95,16 @@ export default function CommercialBatchScreen() {
             elevation: 3,
           }}
         >
-          <HStack
+          <View className="flex-row items-center"
             style={{
               alignItems: 'flex-start',
               justifyContent: 'space-between',
               gap: tokens.spacing.sm,
             }}
           >
-            <VStack style={{ flex: 1, gap: 4 }}>
-              <HStack style={{ alignItems: 'center', gap: 6 }}>
-                <Box
+            <View style={{ flex: 1, gap: 4 }}>
+              <View className="flex-row items-center" style={{ alignItems: 'center', gap: 6 }}>
+                <View
                   style={{
                     paddingHorizontal: 8,
                     paddingVertical: 2,
@@ -117,13 +117,13 @@ export default function CommercialBatchScreen() {
                   <Text style={{ fontSize: 10, fontWeight: '800', color: tokens.colors.info }}>
                     {roleTitle}
                   </Text>
-                </Box>
+                </View>
                 <Text
                   style={{ fontSize: 11, fontWeight: '700', color: tokens.semantic.text.secondary }}
                 >
                   {commercialBatch.instituteName}
                 </Text>
-              </HStack>
+              </View>
 
               <Text
                 style={{
@@ -145,9 +145,9 @@ export default function CommercialBatchScreen() {
                 {commercialBatch.batchName} · {commercialBatch.grade} (
                 {commercialBatch.medium?.toUpperCase()})
               </Text>
-            </VStack>
+            </View>
 
-            <Box
+            <View
               style={{
                 width: 44,
                 height: 44,
@@ -158,12 +158,12 @@ export default function CommercialBatchScreen() {
               }}
             >
               <Briefcase size={22} color={tokens.colors.info} />
-            </Box>
-          </HStack>
-        </Box>
+            </View>
+          </View>
+        </View>
 
         {/* 2. Quick Action Toolbar (Sri Lankan Tuition Workflow) */}
-        <VStack style={{ gap: tokens.spacing.xs }}>
+        <View style={{ gap: tokens.spacing.xs }}>
           <Text
             style={{
               fontSize: 11,
@@ -176,7 +176,7 @@ export default function CommercialBatchScreen() {
             ⚡ Operational Actions
           </Text>
 
-          <HStack style={{ gap: tokens.spacing.sm }}>
+          <View className="flex-row items-center" style={{ gap: tokens.spacing.sm }}>
             {/* Quick QR Scanner */}
             <Pressable
               accessibilityRole="button"
@@ -193,7 +193,7 @@ export default function CommercialBatchScreen() {
                 gap: 6,
               }}
             >
-              <Box
+              <View
                 style={{
                   width: 36,
                   height: 36,
@@ -204,7 +204,7 @@ export default function CommercialBatchScreen() {
                 }}
               >
                 <QrCode size={18} color={tokens.colors.primary} />
-              </Box>
+              </View>
               <Text
                 style={{
                   fontSize: tokens.typography.sizes.xs,
@@ -235,7 +235,7 @@ export default function CommercialBatchScreen() {
                 gap: 6,
               }}
             >
-              <Box
+              <View
                 style={{
                   width: 36,
                   height: 36,
@@ -246,7 +246,7 @@ export default function CommercialBatchScreen() {
                 }}
               >
                 <FileText size={18} color={tokens.colors.success} />
-              </Box>
+              </View>
               <Text
                 style={{
                   fontSize: tokens.typography.sizes.xs,
@@ -277,7 +277,7 @@ export default function CommercialBatchScreen() {
                 gap: 6,
               }}
             >
-              <Box
+              <View
                 style={{
                   width: 36,
                   height: 36,
@@ -288,7 +288,7 @@ export default function CommercialBatchScreen() {
                 }}
               >
                 <Send size={18} color={tokens.colors.info} />
-              </Box>
+              </View>
               <Text
                 style={{
                   fontSize: tokens.typography.sizes.xs,
@@ -302,11 +302,11 @@ export default function CommercialBatchScreen() {
                 Parent Notices
               </Text>
             </Pressable>
-          </HStack>
-        </VStack>
+          </View>
+        </View>
 
         {/* 3. Live Batch Metrics */}
-        <VStack style={{ gap: tokens.spacing.xs }}>
+        <View style={{ gap: tokens.spacing.xs }}>
           <Text
             style={{
               fontSize: 11,
@@ -319,8 +319,8 @@ export default function CommercialBatchScreen() {
             📊 Batch Summary
           </Text>
 
-          <HStack style={{ gap: tokens.spacing.sm }}>
-            <Box
+          <View className="flex-row items-center" style={{ gap: tokens.spacing.sm }}>
+            <View
               style={{
                 flex: 1,
                 padding: tokens.spacing.md,
@@ -330,14 +330,14 @@ export default function CommercialBatchScreen() {
                 borderColor: tokens.semantic.border.base,
               }}
             >
-              <HStack style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <View className="flex-row items-center" style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <Users size={14} color={tokens.semantic.text.secondary} />
                 <Text
                   style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}
                 >
                   Enrolled Students
                 </Text>
-              </HStack>
+              </View>
               <Text
                 style={{
                   fontSize: tokens.typography.sizes.xl,
@@ -347,9 +347,9 @@ export default function CommercialBatchScreen() {
               >
                 248
               </Text>
-            </Box>
+            </View>
 
-            <Box
+            <View
               style={{
                 flex: 1,
                 padding: tokens.spacing.md,
@@ -359,14 +359,14 @@ export default function CommercialBatchScreen() {
                 borderColor: tokens.semantic.border.base,
               }}
             >
-              <HStack style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <View className="flex-row items-center" style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <CircleCheck size={14} color={tokens.colors.success} />
                 <Text
                   style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}
                 >
                   Today's Attendance
                 </Text>
-              </HStack>
+              </View>
               <Text
                 style={{
                   fontSize: tokens.typography.sizes.xl,
@@ -376,9 +376,9 @@ export default function CommercialBatchScreen() {
               >
                 92%
               </Text>
-            </Box>
+            </View>
 
-            <Box
+            <View
               style={{
                 flex: 1,
                 padding: tokens.spacing.md,
@@ -388,14 +388,14 @@ export default function CommercialBatchScreen() {
                 borderColor: tokens.semantic.border.base,
               }}
             >
-              <HStack style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <View className="flex-row items-center" style={{ alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <TrendingUp size={14} color={tokens.colors.primary} />
                 <Text
                   style={{ fontSize: 10, fontWeight: '700', color: tokens.semantic.text.secondary }}
                 >
                   Monthly Fees Paid
                 </Text>
-              </HStack>
+              </View>
               <Text
                 style={{
                   fontSize: tokens.typography.sizes.xl,
@@ -405,10 +405,10 @@ export default function CommercialBatchScreen() {
               >
                 88%
               </Text>
-            </Box>
-          </HStack>
-        </VStack>
-      </VStack>
+            </View>
+          </View>
+        </View>
+      </View>
     </ScrollView>
   );
 }

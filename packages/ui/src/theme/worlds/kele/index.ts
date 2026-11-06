@@ -104,5 +104,13 @@ export const kele: WorldDefinition = {
     lineWeight: 1,
     boundary: { dense: 'margin', calm: 'thread' },
     ornament: 'branch',
+    material: {
+      light: 'within',
+      grain: 0.08,
+      temperature: 0.35,
+      shadow: 'chromatic',
+      detail: 'focused',
+      response: 'vivid',
+    },
   },
 };

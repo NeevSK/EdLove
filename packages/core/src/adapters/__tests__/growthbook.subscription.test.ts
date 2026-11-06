@@ -6,8 +6,8 @@ import { GrowthBookFeatureRolloutAdapter } from '../feature-rollout/growthBookFe
 vi.mock('@repo/core/lib/storage', () => ({
   storage: { getStringAsync: vi.fn(), setAsync: vi.fn() },
 }));
-vi.mock('@repo/core/logic/managers/NetworkManager', () => ({
-  networkManager: { getSnapshot: () => ({ status: 'online' }), subscribe: () => () => undefined },
+vi.mock('@repo/core/platform/drivers/networkMonitor', () => ({
+  networkMonitor: { getSnapshot: () => ({ status: 'online' }), subscribe: () => () => undefined },
 }));
 vi.mock('@repo/core/monitoring', () => ({ trackProductEvent: vi.fn() }));
 

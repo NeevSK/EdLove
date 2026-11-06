@@ -1,0 +1,108 @@
+{
+  "id": "feature:school.founder_invitation",
+  "title": "Founder school invitation",
+  "description": "A founder reviews school access and issues an invitation for the correct institution.",
+  "lifecycle": {
+    "maturity": "proposed",
+    "owner": "unassigned"
+  },
+  "links": ["intent:school.founder_invitation"],
+  "intents": [
+    {
+      "id": "intent:school.founder_invitation",
+      "title": "Invite a principal or teacher",
+      "actor": "platform founder or authorized school founder",
+      "outcome": "Connect a verified person to the correct institution.",
+      "links": ["journey:school.founder_invitation"],
+      "journeys": [
+        {
+          "id": "journey:school.founder_invitation",
+          "title": "Review and invite",
+          "situation": "A founder receives a request to connect a principal or teacher and must review the institution and their authority before issuing an invitation.",
+          "outcome": "Connect a verified person to the correct institution.",
+          "context": "setup",
+          "preconditions": [],
+          "entry": "step:school.review",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "An invitation repository and native invitation interface exist; issuance and redemption require end-to-end verification."
+            ],
+            "invariants": [
+              "A message or claimed role never grants access.",
+              "A founder may only invite within their verified authority."
+            ],
+            "integrationPoints": [
+              "packages/core/src/adapters/supabase/schoolInviteRepository.ts",
+              "packages/admin/src/invites.ts"
+            ],
+            "openQuestions": [
+              "Verify the database invitation redemption function, founder issuance, revocation and recipient binding."
+            ]
+          },
+          "links": ["requirement:school.authority"],
+          "steps": [
+            {
+              "id": "step:school.review",
+              "title": "Review school access",
+              "interaction": "Review the contact and identify the correct school and recipient.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:school.invited",
+              "title": "Invitation issued",
+              "interaction": "Share an invitation scoped to the school and intended capacity.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:school.issue",
+              "title": "Issue an invitation",
+              "from": "step:school.review",
+              "to": "step:school.invited",
+              "action": "An authorized founder issues an invitation.",
+              "feedback": "Show its school, capacity and expiry.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:school.invite",
+              "title": "Founder invites a principal",
+              "transitions": ["transition:school.issue"],
+              "expected": "An authorized invitation is issued for the correct school; acceptance remains subject to server verification.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:school.authority",
+              "title": "Server-verified authority",
+              "statement": "Only authorized founders issue invitations; only server-verified acceptance creates school authority.",
+              "origin": "user",
+              "links": ["binding:school.invite_repository"]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:school.invite_repository",
+              "title": "School invite repository",
+              "category": "api",
+              "status": "unknown",
+              "reference": "packages/core/src/adapters/supabase/schoolInviteRepository.ts",
+              "note": "Client implementation exists; the database function and full security properties remain unverified.",
+              "links": ["journey:school.founder_invitation"]
+            }
+          ],
+          "evidence": [],
+          "sharedRequirements": [],
+          "sharedBindings": []
+        }
+      ],
+      "sharedJourneys": []
+    }
+  ]
+}

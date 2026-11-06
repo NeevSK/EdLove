@@ -1,3 +1,5 @@
+'use client';
+
 import { LegendList } from '@legendapp/list/react';
 import { useEffect, useRef, useState } from 'react';
 import type { MessageBubbleContract, MessageListContract } from '../../../theme/contracts';

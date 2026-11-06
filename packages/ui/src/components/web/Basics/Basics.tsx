@@ -1,4 +1,6 @@
-import { type ReactNode, useId, useState } from 'react';
+'use client';
+
+import { type ReactNode, useId, useState, useRef } from 'react';
 import type {
   DisclosureContract,
   NoticeContract,
@@ -91,6 +93,8 @@ export function Notice({
 
 export interface SearchFieldProps extends SearchFieldContract {
   className?: string;
+  onClear?: () => void;
+  autoFocus?: boolean;
 }
 
 /** A search landmark: a round well, a clear control, and the result count said politely. */
@@ -101,17 +105,39 @@ export function SearchField({
   placeholder,
   icon: Glyph,
   onSubmit,
+  onClear,
+  autoFocus = false,
   resultCount,
   labels,
   className,
 }: SearchFieldProps) {
   const l = { ...BASICS_ENGLISH, ...labels };
   const id = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleClear = () => {
+    onChange('');
+    onClear?.();
+    inputRef.current?.focus();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape' && value) {
+      e.preventDefault();
+      handleClear();
+    } else if (e.key === 'Enter') {
+      onSubmit?.(value);
+    }
+  };
+
   return (
     <div className={cx('gd-search', className)}>
       <form
         role="search"
         className="gd-search-well"
+        data-focused={isFocused}
+        data-has-value={Boolean(value)}
         onSubmit={(e) => {
           e.preventDefault();
           onSubmit?.(value);
@@ -119,6 +145,7 @@ export function SearchField({
       >
         {Glyph ? <Glyph size={iconSize.sm} color="currentColor" aria-hidden /> : null}
         <input
+          ref={inputRef}
           id={id}
           type="search"
           className="gd-search-input"
@@ -126,17 +153,24 @@ export function SearchField({
           aria-describedby={resultCount !== undefined ? `${id}-count` : undefined}
           value={value}
           placeholder={placeholder}
+          autoFocus={autoFocus}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          onKeyDown={handleKeyDown}
           onChange={(e) => onChange(e.target.value)}
         />
         {value ? (
-          <button
-            type="button"
-            className="gd-search-clear"
-            aria-label={l.clear}
-            onClick={() => onChange('')}
-          >
-            <span aria-hidden>×</span>
-          </button>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span className="gd-search-kbd" aria-hidden="true">ESC</span>
+            <button
+              type="button"
+              className="gd-search-clear"
+              aria-label={l.clear}
+              onClick={handleClear}
+            >
+              <span aria-hidden>×</span>
+            </button>
+          </div>
         ) : null}
       </form>
       {resultCount !== undefined ? (

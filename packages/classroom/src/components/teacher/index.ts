@@ -1,5 +1,3 @@
-export * from '@repo/classroom/components/teacher/StudentAnalysisModal';
-export * from '@repo/classroom/components/teacher/TactilePulseGesture';
 export * from '@repo/classroom/components/teacher/TeacherAdminActions';
 export * from '@repo/classroom/components/teacher/TeacherAssignmentsSidebar';
 export * from '@repo/classroom/components/teacher/TeacherClassroomList';

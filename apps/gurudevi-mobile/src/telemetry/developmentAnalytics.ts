@@ -31,8 +31,13 @@ function readEarlyBootstrapMark(): { readonly atMs: number; readonly wallTimeMs:
 function scheduleDevelopmentSessionManifest(): void {
   const startedAtMs = performance.now();
   const persistManifest = () => {
-    void Promise.all([import('expo-constants'), import('expo-device'), import('expo-application')])
-      .then(([constantsModule, device, application]) =>
+    void Promise.all([
+      import('expo-constants'),
+      import('expo-device'),
+      import('expo-application'),
+      import('expo-observe'),
+    ])
+      .then(([constantsModule, device, application, observe]) =>
         writeDevelopmentTelemetrySessionManifest(getDevelopmentTelemetryStatus().session, {
           captureMode: 'development-local-detail',
           startedAtMs,
@@ -43,6 +48,7 @@ function scheduleDevelopmentSessionManifest(): void {
           deviceModel: device.modelName,
           osVersion: device.osVersion,
           vergerMode: process.env.EXPO_PUBLIC_GURUDEVI_RUNTIME ?? 'unset',
+          easClientId: observe.Observe.clientId,
         }),
       )
       .then(() =>

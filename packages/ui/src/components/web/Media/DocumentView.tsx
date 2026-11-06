@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import type { DocumentContract, DocumentKind } from '../../../theme/contracts';
 import { fileKindOf } from '../../shared/files';

@@ -10,8 +10,6 @@
  */
 
 import { handleAPIError } from '@repo/core/logic';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { useLotusToast } from '@repo/ui/hooks';
 import { CircleCheck, Send, X } from '@repo/ui/icons';
 import {
@@ -123,7 +121,9 @@ export default function SubmissionModal({
             </Text>
           </VStack>
         </VStack>
-      </SanctuaryModal>
+            </div>
+    </div>
+  ) : null
     );
   }
 
@@ -255,6 +255,8 @@ export default function SubmissionModal({
           )}
         </VStack>
       </VStack>
-    </SanctuaryModal>
+          </div>
+    </div>
+  ) : null
   );
 }

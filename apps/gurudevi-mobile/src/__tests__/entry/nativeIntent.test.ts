@@ -24,46 +24,33 @@ describe('Expo Router +native-intent Middleware', () => {
     expect(result).toBe('/auth/callback?code=pkce-verifier-123');
   });
 
-  it('stashes unauthenticated classroom invites in pendingIntentStore and returns target community route', async () => {
+  it('rejects retired classroom invite routes without creating pending work', async () => {
     const result = await redirectSystemPath({
       path: 'gurudevi://invite/classroom/TEACHER2026',
       initial: true,
     });
-    expect(result).toBe('/community?inviteCode=TEACHER2026');
+    expect(result).toBe('/');
 
     const pending = pendingIntentStore.getState().getPendingIntent();
-    expect(pending).not.toBeNull();
-    expect(pending?.intentKind).toBe('classroomInvite');
-    expect(pending?.params.inviteCode).toBe('TEACHER2026');
-    expect(pending?.targetPath).toBe('/community?inviteCode=TEACHER2026');
+    expect(pending).toBeNull();
   });
 
-  it('handles first-party vanity path /c/:code seamlessly', async () => {
+  it('does not route first-party classroom vanity paths to retired surfaces', async () => {
     const result = await redirectSystemPath({
       path: 'https://gurudevi.app/c/CHEMISTRY-ADV',
       initial: true,
     });
-    expect(result).toBe('/community?inviteCode=CHEMISTRY-ADV');
-
-    const pending = pendingIntentStore.getState().getPendingIntent();
-    expect(pending?.params.inviteCode).toBe('CHEMISTRY-ADV');
+    expect(result).toBe('/');
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 
-  it('rewrites typed QR links to /qr route with serialized payload', async () => {
+  it('rejects QR links without creating pending scanner work', async () => {
     const result = await redirectSystemPath({
       path: 'gurudevi://qr?v=1&action=join_class&classroom_id=c123',
       initial: true,
     });
-    expect(result).toContain('/qr?payload=');
-    expect(decodeURIComponent(result)).toContain('join_class');
-    expect(decodeURIComponent(result)).toContain('c123');
-
-    const pending = pendingIntentStore.getState().getPendingIntent();
-    expect(pending).toMatchObject({
-      intentKind: 'qr',
-      targetPath: result,
-      params: { payload: JSON.stringify({ v: 1, action: 'join_class', classroom_id: 'c123' }) },
-    });
+    expect(result).toBe('/');
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 
   it('does not persist a QR action whose payload fails validation', async () => {

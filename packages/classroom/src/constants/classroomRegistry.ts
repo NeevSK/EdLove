@@ -106,13 +106,6 @@ export const CLASSROOM_REGISTRY: Record<string, DomainFeature> = {
           title: 'Student Learning Sanctuary',
           purpose: 'primary_action',
         },
-        {
-          step: 2,
-          screenId: 'learning_reflection',
-          route: '/workspace/classroom/reflect',
-          title: 'Daily Somatic Reflection',
-          purpose: 'feedback_completion',
-        },
       ],
       feedback: {
         tutiiMode: 'celebrating',

@@ -15,19 +15,18 @@ import {
 } from '@repo/self/constants/selfRegistry';
 import { useDynamicSelfFeatures } from '@repo/self/hooks/useDynamicSelfFeatures';
 import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { EmptyState } from '@repo/ui/components/native';
 import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { AppHeader } from '@repo/ui/components/native';
+
+import { FlashList } from '@shopify/flash-list';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
-import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { tokens } from '@repo/ui/tokens';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, View, Text, Pressable, ScrollView } from 'react-native';
 
 const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
 
@@ -182,7 +181,7 @@ export function BaseSelfView({
           className="items-center"
           style={{ width: isTablet ? 104 : 72 }}
         >
-          <Box
+          <View
             className="w-16 h-16 rounded-full p-[3px] justify-center items-center mb-1 border-2"
             style={{
               borderColor: feature.domainColor,
@@ -190,7 +189,7 @@ export function BaseSelfView({
               opacity: isActive ? 1 : 0.4,
             }}
           >
-            <Box
+            <View
               className="w-full h-full rounded-[30px] bg-white justify-center items-center shadow-sm"
               style={
                 isActive
@@ -203,16 +202,16 @@ export function BaseSelfView({
             >
               <Text className="text-2xl">{getEmoji(feature)}</Text>
               {isPinned && (
-                <Box
+                <View
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full justify-center items-center border-2 border-white shadow-sm"
                   style={{ backgroundColor: feature.domainColor }}
                 >
-                  <Box accessible={false} className="w-1.5 h-1.5 rounded-full bg-white" />
-                </Box>
+                  <View accessible={false} className="w-1.5 h-1.5 rounded-full bg-white" />
+                </View>
               )}
-            </Box>
-          </Box>
-          <Box
+            </View>
+          </View>
+          <View
             className={`w-1 h-1 rounded-full mb-1 ${isActive ? '' : 'bg-transparent'}`}
             style={isActive ? { backgroundColor: feature.domainColor } : {}}
           />
@@ -256,10 +255,9 @@ export function BaseSelfView({
         ) : null}
         <FeatureErrorBoundary featureName={feature.label}>
           {content ?? (
-            <BrandedEmptyState
+            <EmptyState
               title="This space is taking shape"
               message="There is no update for this space yet."
-              subtle
             />
           )}
         </FeatureErrorBoundary>
@@ -268,7 +266,7 @@ export function BaseSelfView({
   };
 
   return (
-    <VStack
+    <View
       className="flex-1 transition-all duration-700"
       style={{
         ...backgroundStyle,
@@ -277,7 +275,7 @@ export function BaseSelfView({
         width: '100%',
       }}
     >
-      <GlobalHeader isSelfView={true} subtitle={perspective.toUpperCase()} title="Sadhana" />
+      <AppHeader eyebrow={perspective.toUpperCase()} title="Sadhana" />
 
       <TemporalNavigator />
 
@@ -292,11 +290,11 @@ export function BaseSelfView({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
-        {voiceJournal && <Box className="px-lg pt-sm">{voiceJournal}</Box>}
-        {morningRitual && <Box className="px-lg pt-sm">{morningRitual}</Box>}
+        {voiceJournal && <View className="px-lg pt-sm">{voiceJournal}</View>}
+        {morningRitual && <View className="px-lg pt-sm">{morningRitual}</View>}
 
         {networkStatus === 'offline' && (
-          <Box
+          <View
             className="mx-md mt-sm rounded-xl border px-md py-sm"
             style={{
               borderColor: tokens.colors.surfaceSubtle,
@@ -306,10 +304,10 @@ export function BaseSelfView({
             <Text className="text-xs" style={{ color: tokens.colors.inkSubtle }}>
               Offline · saved entries remain available. New entries will sync later.
             </Text>
-          </Box>
+          </View>
         )}
         {isHistoryMode && (
-          <Box
+          <View
             className="mx-md mt-sm rounded-xl border px-md py-sm"
             style={{
               borderColor: tokens.colors.surfaceSubtle,
@@ -319,17 +317,17 @@ export function BaseSelfView({
             <Text className="text-xs" style={{ color: tokens.colors.inkSubtle }}>
               {getHistoryNotice(viewScale)}
             </Text>
-          </Box>
+          </View>
         )}
 
-        <Box
+        <View
           style={{
             flexDirection: isLandscape ? 'row' : 'column',
             flex: isLandscape ? 1 : undefined,
             width: '100%',
           }}
         >
-          <Box
+          <View
             className="py-md bg-transparent"
             style={{
               width: isLandscape ? 136 : '100%',
@@ -337,7 +335,7 @@ export function BaseSelfView({
               paddingHorizontal: isLandscape ? tokens.spacing.xs : isTablet ? tokens.spacing.sm : 0,
             }}
           >
-            <SanctuaryFlashList
+            <FlashList
               data={sortedFeatures}
               renderItem={renderFeatureItem}
               horizontal={!isLandscape}
@@ -351,9 +349,9 @@ export function BaseSelfView({
               keyExtractor={(item) => item.id}
               getItemType={(item) => (item.id === 'mirrors' ? 'insight' : 'regular')}
             />
-          </Box>
+          </View>
 
-          <Box
+          <View
             className="px-md pt-md min-h-[400px]"
             style={{
               flex: isLandscape ? 1 : undefined,
@@ -364,9 +362,9 @@ export function BaseSelfView({
             }}
           >
             {activeFeature && (
-              <VStack className="mb-4">
-                <HStack className="justify-between items-center mb-3">
-                  <HStack className="items-center flex-1 gap-1">
+              <View className="mb-4">
+                <View className="flex-row items-center justify-between items-center mb-3">
+                  <View className="flex-row items-center items-center flex-1 gap-1">
                     <Text className="text-lg font-semibold" style={{ color: tokens.colors.ink }}>
                       {activeFeature.label}
                     </Text>
@@ -379,39 +377,36 @@ export function BaseSelfView({
                       }
                       color={activeFeature.domainColor}
                     />
-                  </HStack>
+                  </View>
                   <Text className="text-xs" style={{ color: tokens.colors.textMuted }}>
                     {isHistoryMode ? viewScale : 'Now'}
                   </Text>
-                </HStack>
+                </View>
                 {renderFeatureContent(activeFeature)}
-              </VStack>
+              </View>
             )}
             {!activeFeature && (
-              <BrandedEmptyState
+              <EmptyState
                 title="A quiet space is ready"
                 message="Your Self spaces will appear here when they have something to share."
-                subtle
               />
             )}
-          </Box>
-        </Box>
+          </View>
+        </View>
 
-        {nightRitual && <Box className="px-lg pt-sm">{nightRitual}</Box>}
+        {nightRitual && <View className="px-lg pt-sm">{nightRitual}</View>}
 
         {isAnonymous && (
-          <Box className="mt-8 border-t border-black/5 pt-8">
-            <PositiveInvitation
-              type="anonymous"
-              context="self"
-              onAction={() => {
-                router.push('/auth');
-              }}
+          <View className="mt-8 border-t border-black/5 pt-8">
+            <EmptyState
+              title="Create an account when you are ready"
+              message="Your space stays on this device until then."
+              action={{ label: 'Sign in', onPress: () => router.push('/auth') }}
             />
-          </Box>
+          </View>
         )}
       </ScrollView>
-    </VStack>
+    </View>
   );
 }
 
@@ -427,8 +422,8 @@ function TemporalShellControls({
   onScaleChange: (scale: 'day' | 'week' | 'month' | 'year') => void;
 }) {
   return (
-    <Box className="px-lg pt-sm pb-sm gap-2">
-      <HStack className="gap-2 items-center">
+    <View className="px-lg pt-sm pb-sm gap-2">
+      <View className="flex-row items-center gap-2 items-center">
         <Pressable
           onPress={() => onModeChange('spotlight')}
           accessibilityRole="button"
@@ -465,7 +460,7 @@ function TemporalShellControls({
             History
           </Text>
         </Pressable>
-      </HStack>
+      </View>
       {isHistoryMode && (
         <ScrollView
           horizontal
@@ -497,7 +492,7 @@ function TemporalShellControls({
           ))}
         </ScrollView>
       )}
-    </Box>
+    </View>
   );
 }
 
@@ -509,7 +504,7 @@ function HistoryScaffold({
   viewScale: string;
 }) {
   return (
-    <Box
+    <View
       className="border rounded-[20px] px-[18px] py-5"
       style={{
         borderColor: feature.domainColor || tokens.colors.accentDepth,
@@ -522,6 +517,6 @@ function HistoryScaffold({
       <Text className="text-[13px] leading-5" style={{ color: tokens.colors.inkSubtle }}>
         {`The shell is ready to show ${viewScale}-range history here once this feature exposes its temporal view.`}
       </Text>
-    </Box>
+    </View>
   );
 }

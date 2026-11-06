@@ -7,7 +7,7 @@
  */
 
 import { usePermissions } from '@repo/core/logic';
-import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
+import { saveVoiceJournalRecord } from '@repo/self/data/selfFeature.data';
 import { Check, CircleAlert, Mic, Play, Square, Trash2 } from '@repo/ui/icons';
 import {
   AnimatedView,

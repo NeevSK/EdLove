@@ -13,8 +13,6 @@ import { Layer } from 'effect';
 
 export {
   GrowthLayer,
-  GrowthManagerLive,
-  GrowthManagerTag,
   GrowthPort,
   GrowthPortLive,
 } from '@repo/core/logic/ports/growth.tags';

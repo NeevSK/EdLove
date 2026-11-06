@@ -6,7 +6,7 @@
 import { Activity, Pause, Play, RotateCcw, ShieldCheck, Wind } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useRef, useState } from 'react';
-import { logReminderFeedback } from '../api/selfFeatureRepository';
+import { logReminderFeedback } from '@repo/self/data/selfFeature.data';
 
 interface BreathGuideProps {
   onComplete?: () => void;

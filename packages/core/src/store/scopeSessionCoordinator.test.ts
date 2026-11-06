@@ -378,12 +378,12 @@ describe('scope session coordinator', () => {
     });
   });
 
-  it('keeps an unsupported selected bond as a personal perspective without guessing its type', async () => {
+  it('keeps a selected personal bond as the personal perspective', async () => {
     const personalBond = {
       ...institutionalBond,
       id: 'bond:personal-a',
       entity_id: 'personal-a',
-      entity_type: 'PERSONAL_CLASSROOM' as const,
+      entity_type: 'PERSONAL' as const,
     };
     await commitIdentityScopeSession({
       principalId: 'principal-a',

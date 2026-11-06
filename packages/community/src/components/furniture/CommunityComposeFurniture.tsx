@@ -1,62 +1,54 @@
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
+import { View, Text } from 'react-native';
+import { Button } from '@repo/ui/components/native';
 import { memo } from 'react';
 
-export type CommunityComposeFurnitureProps = Readonly<{
-  hasJoinedGroups: boolean;
-  onNewPost: () => void;
-  onNewGroup: () => void;
-  onOpenCircle: () => void;
-}>;
+export interface CommunityComposeFurnitureProps {
+  onNewPost?: () => void;
+  onNewGroup?: () => void;
+  onOpenCircle?: () => void;
+  hasJoinedGroups?: boolean;
+}
 
 export const CommunityComposeFurniture = memo(
   ({
-    hasJoinedGroups,
     onNewPost,
     onNewGroup,
     onOpenCircle,
+    hasJoinedGroups = false,
   }: CommunityComposeFurnitureProps) => {
     return (
-      <Box className="mx-4 mt-4 px-5 py-5 rounded-3xl border border-border bg-phase-surface">
-        <VStack className="gap-4">
-          <VStack className="gap-1">
-            <Heading className="text-md text-ink font-bold">Compose into the circle</Heading>
+      <View className="mx-4 mt-4 px-5 py-5 rounded-3xl border border-border bg-phase-surface">
+        <View className="gap-4">
+          <View className="gap-1">
+            <Text className="text-md text-ink font-bold">Compose into the circle</Text>
             <Text className="text-ink/60 text-sm leading-snug">
               Posting feels like contribution, not just a button.
             </Text>
-          </VStack>
-          <HStack className="gap-3 flex-wrap">
-            <SanctuaryButton
-              action="primary"
+          </View>
+          <View className="flex-row items-center gap-3 flex-wrap">
+            <Button
+              label="New Post"
+              variant="primary"
               size="sm"
               onPress={onNewPost}
-              className="bg-phase-interactive rounded-xl"
-            >
-              <Text className="text-white font-bold">New Post</Text>
-            </SanctuaryButton>
-            <SanctuaryButton
-              action="secondary"
+            />
+            <Button
+              label="New Group"
+              variant="secondary"
               size="sm"
               onPress={onNewGroup}
-              className="bg-phase-surface border-border rounded-xl"
-            >
-              <Text className="text-ink font-bold">New Group</Text>
-            </SanctuaryButton>
+            />
             {hasJoinedGroups ? (
-              <SanctuaryButton
-                action="secondary"
+              <Button
+                label="Open Circle"
+                variant="secondary"
                 size="sm"
                 onPress={onOpenCircle}
-                className="bg-phase-surface border-border rounded-xl"
-              >
-                <Text className="text-ink font-bold">Open Circle</Text>
-              </SanctuaryButton>
+              />
             ) : null}
-          </HStack>
-        </VStack>
-      </Box>
+          </View>
+        </View>
+      </View>
     );
   },
 );
-
-CommunityComposeFurniture.displayName = 'CommunityComposeFurniture';

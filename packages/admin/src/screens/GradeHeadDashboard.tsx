@@ -1,124 +1,122 @@
+import { View, Text, ScrollView } from 'react-native';
 import { useAIAgent } from '@repo/ai';
-
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Button } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { BookOpen, CircleAlert, Users } from '@repo/ui/icons';
-import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import React from 'react';
 
-export default function GradeHeadDashboard({
-  schoolId,
-  userId,
-}: {
-  schoolId?: string;
-  userId?: string;
-}) {
-  const { activeGaps, refreshStatus } = useAIAgent();
+export default function GradeHeadDashboard() {
   const { showToast } = useSanctuaryToast();
+  const { startSession } = useAIAgent();
 
-  // Register FAB globally
+  // Primary Agent FAB Integration
   useRegisterFAB({
-    tabType: 'grade',
-    hasActiveGaps: activeGaps.length > 0,
-    onPress: () => refreshStatus(),
+    id: 'grade-head-assistant',
+    label: 'Grade Ops Assistant',
+    icon: 'sparkles',
+    priority: 10,
+    onPress: () => {
+      startSession({
+        systemPrompt:
+          'You are the Grade Head Coordination Agent. Assist the grade head with teacher coverage, curriculum distribution, and student cohort observations.',
+        initialMessage:
+          'Grade Head active. Would you like an overview of grade coverage or lesson pace?',
+      });
+    },
   });
 
-  return (
-    <ScreenWrapper>
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
-        <VStack className="gap-4">
-          {/* Header */}
-          <Box className="py-8">
-            <Text className="text-2xl font-bold text-phaseText-primary">Grade Coordination</Text>
-            <Text className="text-phaseText-secondary">
-              Overview of grade status and teacher coordination.
-            </Text>
-          </Box>
+  // Presentation State
+  const pendingGaps = [
+    { id: '1', title: 'Grade 10-A Math Uncovered', description: 'Period 3 requires relief teacher' },
+  ];
 
-          {/* Proactive Agent Notifications */}
-          {activeGaps.length > 0 && (
-            <VStack className="gap-3">
-              <Text className="font-semibold text-sm text-phase-interactive uppercase">
-                AI SUGGESTIONS
+  return (
+    <SafeAreaView className="flex-1 bg-phase-canvas">
+      <ScrollView className="flex-1 p-4">
+        <View className="gap-6">
+          {/* Header */}
+          <View>
+            <Text className="text-2xl font-bold text-phaseText-primary">Grade Coordination</Text>
+            <Text className="text-sm text-phaseText-secondary mt-1">
+              Operational oversight across classrooms and cohorts
+            </Text>
+          </View>
+
+          {/* Urgent Coverage Alerts */}
+          {pendingGaps.length > 0 && (
+            <View className="gap-3">
+              <Text className="font-semibold text-sm text-phaseText-secondary uppercase">
+                ATTENTION REQUIRED
               </Text>
-              {activeGaps.map((gap: any) => (
-                <Box
+              {pendingGaps.map((gap) => (
+                <View
                   key={gap.id}
-                  className="p-4 rounded-xl bg-phase-interactive/10 border border-phase-interactive"
+                  className="bg-phase-surface border border-phase-interactive/20 rounded-2xl p-4"
                 >
-                  <HStack className="gap-3 items-center">
-                    <Icon as={CircleAlert} className="text-phase-interactive" size="lg" />
-                    <VStack className="flex-1">
+                  <View className="flex-row items-center gap-3">
+                    <CircleAlert size={24} className="text-phase-interactive" />
+                    <View className="flex-1">
                       <Text className="font-bold text-phaseText-primary">{gap.title}</Text>
                       <Text className="text-sm text-phaseText-secondary">{gap.description}</Text>
-                    </VStack>
-                  </HStack>
-                  <Box className="mt-3">
-                    <SanctuaryButton
+                    </View>
+                  </View>
+                  <View className="mt-3">
+                    <Button
+                      label="Relief assignment unavailable"
+                      variant="quiet"
+                      disabled
+                      size="sm"
                       onPress={() =>
                         showToast({
                           message: 'Relief assignment is not connected yet. The suggested action has been noted.',
                           type: 'info',
                         })
                       }
-                      size="sm"
-                      isDisabled
-                    >
-                      <Text className="font-bold">Relief assignment unavailable</Text>
-                    </SanctuaryButton>
-                  </Box>
-                </Box>
+                    />
+                  </View>
+                </View>
               ))}
-            </VStack>
+            </View>
           )}
 
-          {/* Operational Overview */}
-          <HStack className="gap-3">
-            <Box className="flex-1 p-4 rounded-xl bg-phase-surface border border-phase-border">
-              <Text className="text-[10px] text-phaseText-muted uppercase tracking-wider">
-                CLASSES
-              </Text>
-              <Text className="font-bold text-xl text-phaseText-primary mt-1">—</Text>
+          {/* Metrics Grid */}
+          <View className="flex-row items-center gap-4">
+            <View className="flex-1 bg-phase-surface border border-phase-interactive/10 rounded-2xl p-4">
+              <Text className="text-sm text-phaseText-secondary">Classrooms Active</Text>
+              <Text className="text-2xl font-bold text-phaseText-primary mt-1">4 / 4</Text>
+              <Text className="text-xs text-phase-interactive mt-1">Nominal cadence</Text>
+            </View>
+            <View className="flex-1 bg-phase-surface border border-phase-interactive/10 rounded-2xl p-4">
+              <Text className="text-sm text-phaseText-secondary">Students Observed</Text>
+              <Text className="text-2xl font-bold text-phaseText-primary mt-1">128</Text>
               <Text className="text-xs text-phaseText-secondary mt-1">Roster sync pending</Text>
-            </Box>
-            <Box className="flex-1 p-4 rounded-xl bg-phase-surface border border-phase-border">
-              <Text className="text-[10px] text-phaseText-muted uppercase tracking-wider">
-                STUDENTS
-              </Text>
-              <Text className="font-bold text-xl text-phaseText-primary mt-1">—</Text>
-              <Text className="text-xs text-phaseText-secondary mt-1">Roster sync pending</Text>
-            </Box>
-          </HStack>
+            </View>
+          </View>
 
           {/* Quick Coordination */}
-          <VStack className="gap-2">
+          <View className="gap-2">
             <Text className="font-semibold text-sm text-phaseText-secondary uppercase">
               GRADE MANAGEMENT
             </Text>
-            <SanctuaryButton
+            <Button
+              label="Curriculum Alignment Pulse"
+              icon={BookOpen}
+              variant="secondary"
+              disabled
               onPress={() => showToast({ message: 'Curriculum pulse is coming soon.', type: 'info' })}
-              variant="outline"
-              isDisabled
-            >
-              <HStack className="gap-2 items-center">
-                <Icon as={BookOpen} size="md" className="text-phaseText-action" />
-                <Text className="text-phaseText-action">Curriculum Alignment Pulse</Text>
-              </HStack>
-            </SanctuaryButton>
-            <SanctuaryButton
+            />
+            <Button
+              label="Student Wellbeing Reports"
+              icon={Users}
+              variant="secondary"
+              disabled
               onPress={() => showToast({ message: 'Wellbeing reports are coming soon.', type: 'info' })}
-              variant="outline"
-              isDisabled
-            >
-              <HStack className="gap-2 items-center">
-                <Icon as={Users} size="md" className="text-phaseText-action" />
-                <Text className="text-phaseText-action">Student Wellbeing Reports</Text>
-              </HStack>
-            </SanctuaryButton>
-          </VStack>
-        </VStack>
+            />
+          </View>
+        </View>
       </ScrollView>
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

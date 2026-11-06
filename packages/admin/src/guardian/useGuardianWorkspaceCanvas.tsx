@@ -1,3 +1,4 @@
+import { View, Text, Pressable } from 'react-native';
 import { WORKSPACE_CANVAS_ZONES } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 import type {
@@ -15,7 +16,6 @@ import {
   MessageCircleHeart,
   ShieldCheck,
 } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';
@@ -126,10 +126,10 @@ function createGuardianSurface(
 
 function StatPill({ label, value }: { label: string; value: string }) {
   return (
-    <Box className="min-w-[31%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk px-4 py-3">
+    <View className="min-w-[31%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk px-4 py-3">
       <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">{label}</Text>
       <Text className="mt-1 text-[22px] font-bold text-phaseText-primary">{value}</Text>
-    </Box>
+    </View>
   );
 }
 
@@ -141,7 +141,7 @@ function WorkspaceSwitcherSurface({
   onSelectTarget: (target: WorkspaceSwitcherTarget) => void;
 }) {
   return (
-    <VStack className="gap-2">
+    <View className="gap-2">
       {targets.map((target) => (
         <Pressable
           key={target.id}
@@ -153,26 +153,26 @@ function WorkspaceSwitcherSurface({
           accessibilityState={{ disabled: !target.enabled }}
           className="active:opacity-80"
         >
-          <Box
+          <View
             className={`rounded-2xl border p-4 ${target.enabled ? 'border-starlightGray/20 bg-silk' : 'border-starlightGray/10 bg-phase-primary/5'}`}
           >
-            <HStack className="items-center gap-3">
-              <Box className="rounded-full bg-phase-warning/10 px-3 py-1">
+            <View className="flex-row items-center items-center gap-3">
+              <View className="rounded-full bg-phase-warning/10 px-3 py-1">
                 <Text className="text-[10px] font-bold uppercase text-phaseText-primary">
                   {target.status.replace('_', ' ')}
                 </Text>
-              </Box>
-              <VStack className="flex-1 gap-0.5">
+              </View>
+              <View className="flex-1 gap-0.5">
                 <Text className="text-[13px] font-bold text-phaseText-primary">{target.title}</Text>
                 <Text className="text-[11px] text-phaseText-secondary">
                   {target.enabled ? target.description : target.reason || target.description}
                 </Text>
-              </VStack>
-            </HStack>
-          </Box>
+              </View>
+            </View>
+          </View>
         </Pressable>
       ))}
-    </VStack>
+    </View>
   );
 }
 
@@ -193,21 +193,21 @@ function StudentTile({
       accessibilityHint="Shows linked progress, grades, and school rhythm"
       className="active:opacity-80"
     >
-      <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite p-4">
-        <VStack className="gap-3">
-          <VStack className="gap-1">
+      <View className="rounded-3xl border border-starlightGray/20 bg-sacredWhite p-4">
+        <View className="gap-3">
+          <View className="gap-1">
             <Text className="text-[16px] font-bold text-phaseText-primary">{student.name}</Text>
             <Text className="text-[12px] text-phaseText-secondary">
               Grade {student.grade} - {student.classroom}
             </Text>
-          </VStack>
+          </View>
 
-          <HStack className="gap-3 flex-wrap">
+          <View className="flex-row items-center gap-3 flex-wrap">
             <StatPill label="Attendance" value={`${student.attendance.percentage.toFixed(0)}%`} />
             <StatPill label="Average" value={`${Math.round(student.grades.average || 0)}%`} />
-          </HStack>
+          </View>
 
-          <Box className="rounded-2xl bg-silk px-4 py-3">
+          <View className="rounded-2xl bg-silk px-4 py-3">
             <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
               Next step
             </Text>
@@ -219,9 +219,9 @@ function StudentTile({
                 ? `${nextAssignment.subject} - due ${formatDateLabel(nextAssignment.dueDate)}`
                 : 'See linked progress, grades, and school rhythm from one place.'}
             </Text>
-          </Box>
-        </VStack>
-      </Box>
+          </View>
+        </View>
+      </View>
     </Pressable>
   );
 }
@@ -241,17 +241,17 @@ function NotificationTile({
       accessibilityHint="Opens the school notification"
       className="active:opacity-80"
     >
-      <Box
+      <View
         className={`rounded-2xl border px-4 py-3 ${notification.isRead ? 'border-starlightGray/15 bg-silk' : 'border-phase-primary/20 bg-phase-primary/5'}`}
       >
-        <VStack className="gap-1">
+        <View className="gap-1">
           <Text className="text-[13px] font-bold text-phaseText-primary">{notification.title}</Text>
           <Text className="text-[12px] text-phaseText-secondary">{notification.message}</Text>
           <Text className="text-[11px] text-phaseText-secondary">
             {formatDateTimeLabel(notification.createdAt)}
           </Text>
-        </VStack>
-      </Box>
+        </View>
+      </View>
     </Pressable>
   );
 }
@@ -271,27 +271,27 @@ function EventTile({
       accessibilityHint="Opens event details"
       className="active:opacity-80"
     >
-      <Box className="rounded-2xl border border-starlightGray/20 bg-sacredWhite px-4 py-3">
-        <HStack className="items-center gap-3">
-          <Box className="w-14 rounded-2xl bg-phase-warning/10 px-3 py-2">
+      <View className="rounded-2xl border border-starlightGray/20 bg-sacredWhite px-4 py-3">
+        <View className="flex-row items-center items-center gap-3">
+          <View className="w-14 rounded-2xl bg-phase-warning/10 px-3 py-2">
             <Text className="text-center text-[11px] font-bold uppercase text-phaseText-secondary">
               {formatDateLabel(event.date)}
             </Text>
-          </Box>
-          <VStack className="flex-1 gap-0.5">
+          </View>
+          <View className="flex-1 gap-0.5">
             <Text className="text-[13px] font-bold text-phaseText-primary">{event.title}</Text>
             <Text className="text-[12px] text-phaseText-secondary">
               {event.time}
               {event.location ? ` - ${event.location}` : ''}
             </Text>
-          </VStack>
+          </View>
           {event.requiresRsvp ? (
-            <Box className="rounded-full bg-phase-primary px-3 py-1">
+            <View className="rounded-full bg-phase-primary px-3 py-1">
               <Text className="text-[10px] font-bold uppercase text-white">RSVP</Text>
-            </Box>
+            </View>
           ) : null}
-        </HStack>
-      </Box>
+        </View>
+      </View>
     </Pressable>
   );
 }
@@ -317,33 +317,33 @@ function ActionTile({
       accessibilityHint={`Opens ${title}`}
       className="active:opacity-80"
     >
-      <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite p-4">
-        <HStack className="items-start gap-3">
-          <Box className="rounded-2xl bg-phase-warning/10 p-3">
+      <View className="rounded-3xl border border-starlightGray/20 bg-sacredWhite p-4">
+        <View className="flex-row items-center items-start gap-3">
+          <View className="rounded-2xl bg-phase-warning/10 p-3">
             <IconComponent size={18} color="#2A2318" />
-          </Box>
-          <VStack className="flex-1 gap-1">
+          </View>
+          <View className="flex-1 gap-1">
             <Text className="text-[14px] font-bold text-phaseText-primary">{title}</Text>
             <Text className="text-[12px] text-phaseText-secondary">{copy}</Text>
-            <HStack className="mt-2 items-center gap-1">
+            <View className="flex-row items-center mt-2 items-center gap-1">
               <Text className="text-[12px] font-bold text-phaseText-primary">{cta}</Text>
-              <Icon as={ChevronRight} size={14} color="#2A2318" />
-            </HStack>
-          </VStack>
-        </HStack>
-      </Box>
+              <ChevronRight size={14} color="#2A2318" />
+            </View>
+          </View>
+        </View>
+      </View>
     </Pressable>
   );
 }
 
 function EmptySurfaceCopy({ title, body }: { title: string; body: string }) {
   return (
-    <Box className="rounded-3xl border border-dashed border-starlightGray/30 bg-silk px-4 py-5">
-      <VStack className="gap-1">
+    <View className="rounded-3xl border border-dashed border-starlightGray/30 bg-silk px-4 py-5">
+      <View className="gap-1">
         <Text className="text-[13px] font-bold text-phaseText-primary">{title}</Text>
         <Text className="text-[12px] text-phaseText-secondary">{body}</Text>
-      </VStack>
-    </Box>
+      </View>
+    </View>
   );
 }
 
@@ -389,16 +389,16 @@ export function useGuardianWorkspaceCanvasSurfaces({
         temporalTone: 'present',
         metadata: [schoolName || 'School, bridge', `${dashboard.students.length} linked, learners`],
         content: (
-          <VStack className="gap-4">
-            <HStack className="gap-3 flex-wrap">
+          <View className="gap-4">
+            <View className="flex-row items-center gap-3 flex-wrap">
               <StatPill label="Children" value={`${dashboard.students.length}`} />
               <StatPill
                 label="Unread"
                 value={`${dashboard.notifications.filter((item) => !item.isRead).length}`}
               />
               <StatPill label="Events" value={`${dashboard.upcomingEvents.length}`} />
-            </HStack>
-            <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">
+            </View>
+            <View className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">
               <Text className="text-[12px] font-bold uppercase text-phaseText-secondary">
                 Family, intent
               </Text>
@@ -410,8 +410,8 @@ export function useGuardianWorkspaceCanvasSurfaces({
                 This, workspace stays, centered on, linked learners, and family-facing, school
                 rhythm.
               </Text>
-            </Box>
-          </VStack>
+            </View>
+          </View>
         ),
       }),
       createGuardianSurface('children', {
@@ -426,7 +426,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
         metadata: ['Work', `${dashboard.students.length} learners`],
         content:
           dashboard.students.length > 0 ? (
-            <VStack className="gap-3">
+            <View className="gap-3">
               {dashboard.students.map((student) => (
                 <StudentTile
                   key={student.studentId}
@@ -434,7 +434,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
                   onOpenStudent={onOpenStudent}
                 />
               ))}
-            </VStack>
+            </View>
           ) : (
             <EmptySurfaceCopy
               title="No, linked learners, yet"
@@ -453,19 +453,19 @@ export function useGuardianWorkspaceCanvasSurfaces({
         temporalTone: 'present',
         metadata: ['Today', 'Presence'],
         content: (
-          <VStack className="gap-3">
+          <View className="gap-3">
             {dashboard.students.map((student) => (
-              <Box
+              <View
                 key={student.studentId}
                 className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4"
               >
-                <HStack className="items-start gap-3">
-                  <Box className="rounded-2xl bg-phase-primary/5 px-3 py-2">
+                <View className="flex-row items-center items-start gap-3">
+                  <View className="rounded-2xl bg-phase-primary/5 px-3 py-2">
                     <Text className="text-[12px] font-bold text-phaseText-primary">
                       {student.attendance.percentage.toFixed(0)}%
                     </Text>
-                  </Box>
-                  <VStack className="flex-1 gap-1">
+                  </View>
+                  <View className="flex-1 gap-1">
                     <Text className="text-[13px] font-bold text-phaseText-primary">
                       {student.name}
                     </Text>
@@ -473,11 +473,11 @@ export function useGuardianWorkspaceCanvasSurfaces({
                       {student.attendance.present} present - {student.attendance.absent} absent -{' '}
                       {student.attendance.late} late
                     </Text>
-                  </VStack>
-                </HStack>
-              </Box>
+                  </View>
+                </View>
+              </View>
             ))}
-          </VStack>
+          </View>
         ),
       }),
       createGuardianSurface('learning_pulse', {
@@ -491,28 +491,28 @@ export function useGuardianWorkspaceCanvasSurfaces({
         temporalTone: 'future',
         metadata: ['Work', 'Learning, bridge'],
         content: (
-          <VStack className="gap-3">
+          <View className="gap-3">
             {dashboard.students.map((student) => (
-              <Box
+              <View
                 key={student.studentId}
                 className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4"
               >
-                <VStack className="gap-3">
-                  <VStack className="gap-1">
+                <View className="gap-3">
+                  <View className="gap-1">
                     <Text className="text-[13px] font-bold text-phaseText-primary">
                       {student.name}
                     </Text>
                     <Text className="text-[12px] text-phaseText-secondary">
                       Average {Math.round(student.grades.average || 0)}%
                     </Text>
-                  </VStack>
+                  </View>
 
-                  <VStack className="gap-2">
+                  <View className="gap-2">
                     {(student.grades.latest.length > 0
                       ? student.grades.latest.slice(0, 2)
                       : []
                     ).map((grade) => (
-                      <HStack
+                      <View className="flex-row items-center"
                         key={`${student.studentId}-${grade.subject}-${grade.date}`}
                         className="items-center justify-between"
                       >
@@ -523,16 +523,16 @@ export function useGuardianWorkspaceCanvasSurfaces({
                           {grade.grade}
                           {grade.percentage ? ` - ${Math.round(grade.percentage)}%` : ''}
                         </Text>
-                      </HStack>
+                      </View>
                     ))}
                     {student.grades.latest.length === 0 ? (
                       <Text className="text-[12px] text-phaseText-secondary">
                         No, published, grade, signal, is, visible, yet for this, learner.
                       </Text>
                     ) : null}
-                  </VStack>
+                  </View>
 
-                  <Box className="rounded-2xl bg-silk px-4 py-3">
+                  <View className="rounded-2xl bg-silk px-4 py-3">
                     <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
                       Upcoming, assignment
                     </Text>
@@ -546,11 +546,11 @@ export function useGuardianWorkspaceCanvasSurfaces({
                         {formatDateLabel(student.upcomingAssignments[0]?.dueDate)}
                       </Text>
                     ) : null}
-                  </Box>
-                </VStack>
-              </Box>
+                  </View>
+                </View>
+              </View>
             ))}
-          </VStack>
+          </View>
         ),
       }),
       createGuardianSurface('school_feed', {
@@ -565,7 +565,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
         metadata: ['Today', 'School, signal'],
         content:
           dashboard.notifications.length > 0 ? (
-            <VStack className="gap-3">
+            <View className="gap-3">
               {dashboard.notifications.slice(0, 5).map((notification) => (
                 <NotificationTile
                   key={notification.id}
@@ -573,7 +573,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
                   onOpenNotification={onOpenNotification}
                 />
               ))}
-            </VStack>
+            </View>
           ) : (
             <EmptySurfaceCopy
               title="The, school feed, is quiet"
@@ -593,11 +593,11 @@ export function useGuardianWorkspaceCanvasSurfaces({
         metadata: ['Outlook', 'Calendar, bridge'],
         content:
           dashboard.upcomingEvents.length > 0 ? (
-            <VStack className="gap-3">
+            <View className="gap-3">
               {dashboard.upcomingEvents.map((event) => (
                 <EventTile key={event.id} event={event} onOpenEvent={onOpenEvent} />
               ))}
-            </VStack>
+            </View>
           ) : (
             <EmptySurfaceCopy
               title="No, upcoming events, yet"
@@ -616,7 +616,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
         temporalTone: 'neutral',
         metadata: ['Institution', 'Family-school, bridge'],
         content: (
-          <VStack className="gap-3">
+          <View className="gap-3">
             <ActionTile
               icon={MessageCircleHeart}
               title="Community, commons"
@@ -638,7 +638,7 @@ export function useGuardianWorkspaceCanvasSurfaces({
               cta="Open, library"
               onPress={onOpenLibrary}
             />
-          </VStack>
+          </View>
         ),
       }),
       createGuardianSurface('visibility_boundaries', {
@@ -653,13 +653,13 @@ export function useGuardianWorkspaceCanvasSurfaces({
         temporalTone: 'neutral',
         metadata: ['Private', 'Hidden, by default'],
         content: (
-          <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">
-            <VStack className="gap-3">
-              <HStack className="items-center gap-3">
-                <Box className="rounded-2xl bg-phase-warning/10 p-3">
-                  <Icon as={ShieldCheck} size={18} color="#2A2318" />
-                </Box>
-                <VStack className="flex-1 gap-1">
+          <View className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">
+            <View className="gap-3">
+              <View className="flex-row items-center items-center gap-3">
+                <View className="rounded-2xl bg-phase-warning/10 p-3">
+                  <ShieldCheck size={18} color="#2A2318" />
+                </View>
+                <View className="flex-1 gap-1">
                   <Text className="text-[14px] font-bold text-phaseText-primary">
                     Family-safe Visibility
                   </Text>
@@ -667,9 +667,9 @@ export function useGuardianWorkspaceCanvasSurfaces({
                     This, workspace is, centered on, linked children, family-facing, notices, and,
                     school rhythm.
                   </Text>
-                </VStack>
-              </HStack>
-              <VStack className="gap-2">
+                </View>
+              </View>
+              <View className="gap-2">
                 <Text className="text-[12px] text-phaseText-secondary">
                   Guardians, can see, learner signals, that help, care and, coordination, but, not
                   the, full internal, school operating, layer.
@@ -678,9 +678,9 @@ export function useGuardianWorkspaceCanvasSurfaces({
                   That, boundary protects, children, teachers, and, institutional trust while still,
                   keeping families, genuinely connected.
                 </Text>
-              </VStack>
-            </VStack>
-          </Box>
+              </View>
+            </View>
+          </View>
         ),
       }),
     ],
@@ -766,7 +766,7 @@ export function GuardianWorkspaceCanvas({
       subtitle={`A, family-school, bridge for ${schoolName || 'your, school'}, arranged as a, shared canvas, with calm, defaults and, safe visibility.`}
       emptyMessage="No, guardian surfaces, are available, yet for this workspace."
       renderSurfaceContent={(surface) => (
-        <Box className="flex-1">{(surface as GuardianResolvedSurface).content}</Box>
+        <View className="flex-1">{(surface as GuardianResolvedSurface).content}</View>
       )}
       getSurfaceTitle={(surface) => (surface as GuardianResolvedSurface).title}
       getSurfaceSubtitle={(surface) => (surface as GuardianResolvedSurface).subtitle}
@@ -788,7 +788,7 @@ export function GuardianWorkspaceCanvas({
         ].includes(typedSurface.surfaceId);
 
         return (
-          <HStack className="gap-3 flex-wrap">
+          <View className="flex-row items-center gap-3 flex-wrap">
             <Pressable
               onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
               accessibilityRole="button"
@@ -796,11 +796,11 @@ export function GuardianWorkspaceCanvas({
               accessibilityState={{ selected: typedSurface.pinned }}
               className="active:opacity-80"
             >
-              <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
+              <View className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
                 <Text className="text-[12px] font-bold text-phaseText-primary">
                   {typedSurface.pinned ? 'Unpin' : 'Pin'}
                 </Text>
-              </Box>
+              </View>
             </Pressable>
             <Pressable
               onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
@@ -808,11 +808,11 @@ export function GuardianWorkspaceCanvas({
               accessibilityLabel={`Move ${typedSurface.title} to ${nextZone}`}
               className="active:opacity-80"
             >
-              <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
+              <View className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
               <Text className="text-[12px] font-bold text-phaseText-primary">
                   Move to {nextZone}
                 </Text>
-              </Box>
+              </View>
             </Pressable>
             {canOpenRoom ? (
               <Pressable
@@ -821,12 +821,12 @@ export function GuardianWorkspaceCanvas({
                 accessibilityLabel={`Open ${typedSurface.title} room`}
                 className="active:opacity-80"
               >
-                <Box className="rounded-full bg-phase-warning px-4 py-2">
+                <View className="rounded-full bg-phase-warning px-4 py-2">
                   <Text className="text-[12px] font-bold text-phaseText-primary">Open room</Text>
-                </Box>
+                </View>
               </Pressable>
             ) : null}
-          </HStack>
+          </View>
         );
       }}
       onToggleHidden={(surface) =>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchTimetablePeriods } from '@repo/self/api/selfFeatureRepository';
+import { fetchTimetablePeriods } from '@repo/self/data/selfFeature.data';
 import {
   type ActivePeriodSlot,
   type PeriodDispatchResult,

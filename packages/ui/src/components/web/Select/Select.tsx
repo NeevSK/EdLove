@@ -1,3 +1,5 @@
+'use client';
+
 import { type SelectHTMLAttributes, useId } from 'react';
 import type { SelectContract } from '../../../theme/contracts';
 import { cx } from '../cx';

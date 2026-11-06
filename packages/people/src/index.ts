@@ -6,7 +6,6 @@ import { staffAPI } from '@repo/people/staff';
 export * from '@repo/people/components';
 export * from '@repo/people/directory';
 export * from '@repo/people/feedback';
-export * from '@repo/people/hooks';
 export * from '@repo/people/memberships';
 export * from '@repo/people/staff';
 

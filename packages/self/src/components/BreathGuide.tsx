@@ -4,14 +4,14 @@
  * 1-minute breathing exercise with visual and haptic rhythm
  */
 
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, Pressable, Platform } from 'react-native';
 import { useFeedbackOptional } from '@repo/ui/context';
+import { Button } from '@repo/ui/components/native';
 import { Wind } from '@repo/ui/icons';
-import { Box, Button, ButtonText, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { Blur, Canvas, Circle } from 'react-native-skia';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
-import { logReminderFeedback } from '../api/selfFeatureRepository';
+import { logReminderFeedback } from '@repo/self/data/selfFeature.data';
 
 interface BreathGuideProps {
   onComplete?: () => void;
@@ -148,8 +148,8 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     ((currentCycle * sequence.length + phaseIndex + 1) / (TOTAL_CYCLES * sequence.length)) * 100;
 
   return (
-    <VStack className="items-center p-lg gap-lg">
-      <Box className="items-center justify-center min-h-[250px]">
+    <View className="items-center p-lg gap-lg">
+      <View className="items-center justify-center min-h-[250px]">
         {Platform.OS !== 'web' ? (
           <Canvas style={{ width: 170, height: 170, position: 'absolute' }}>
             <Circle
@@ -164,7 +164,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
             <Circle cx={85} cy={85} r={60 * scale} color="#8B5CF6" opacity={opacity * 0.15} />
           </Canvas>
         ) : null}
-        <Box
+        <View
           className="w-[150px] h-[150px] rounded-full bg-gurudeviViolet items-center justify-center shadow-xl shadow-gurudeviViolet/60"
           style={{
             transform: [{ scale }, { rotate: `${rotation}deg` }],
@@ -173,11 +173,11 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
           }}
         >
           <Text className="text-5xl">🌸</Text>
-        </Box>
-      </Box>
+        </View>
+      </View>
 
       {isActive && (
-        <VStack className="items-center gap-1">
+        <View className="items-center gap-1">
           <Text className="text-ink text-2xl font-semibold text-center">
             {currentStep?.instruction ?? 'Begin...'}
           </Text>
@@ -187,23 +187,19 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
               total: TOTAL_CYCLES,
             }) || `Cycle ${currentCycle + 1} of ${TOTAL_CYCLES}`}
           </Text>
-        </VStack>
+        </View>
       )}
 
-      <Box className="mt-lg">
+      <View className="mt-lg">
         {!isActive ? (
           <Button
             size="lg"
+            variant="primary"
+            icon={Wind}
+            label={t('self.startBreathing') || 'Start Breathing'}
             onPress={startSession}
-            accessibilityLabel="Start breathing guide"
             accessibilityHint="Begins the guided breathing session"
-            className="rounded-full bg-gurudeviViolet px-xl flex-row items-center justify-center"
-          >
-            <Icon as={Wind} className="text-white mr-2" size={20} />
-            <ButtonText className="text-white">
-              {t('self.startBreathing') || 'Start Breathing'}
-            </ButtonText>
-          </Button>
+          />
         ) : (
           <Pressable
             accessibilityRole="button"
@@ -214,19 +210,19 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
             <Text className="text-mistGray text-sm underline">{t('self.stop') || 'Stop'}</Text>
           </Pressable>
         )}
-      </Box>
+      </View>
 
       {!isActive && (
-        <Box className="mt-md p-md bg-black/5 rounded-comfortable items-center">
+        <View className="mt-md p-md bg-black/5 rounded-comfortable items-center">
           <Text className="text-mistGray text-xs text-center italic">
             {t('self.breathHero') || 'One minute of breathing, an hour of calm.'}
           </Text>
-        </Box>
+        </View>
       )}
 
-      <Box className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-        <Box className="h-full bg-gurudeviViolet rounded-full" style={{ width: `${progress}%` }} />
-      </Box>
-    </VStack>
+      <View className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+        <View className="h-full bg-gurudeviViolet rounded-full" style={{ width: `${progress}%` }} />
+      </View>
+    </View>
   );
 }

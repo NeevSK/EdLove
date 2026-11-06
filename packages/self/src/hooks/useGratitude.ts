@@ -2,7 +2,7 @@ import { useAuthStore } from '@repo/core/store';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { createGratitudeEntry, fetchGratitudeEntries } from '@repo/self/api/selfFeatureRepository';
+import { createGratitudeEntry, fetchGratitudeEntries } from '@repo/self/data/selfFeature.data';
 import type { GratitudeEntry } from '@repo/self/types';
 import { useCallback, useEffect, useState } from 'react';
 

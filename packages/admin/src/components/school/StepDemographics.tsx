@@ -1,5 +1,5 @@
 import { RELIGIOUS_AFFILIATIONS, STUDENT_TYPES } from '@repo/core/constants';
-import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { TextField } from '@repo/ui/components/native';
 import { Users } from '@repo/ui/icons';
 import {
   FormControl,
@@ -67,12 +67,12 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
         </HStack>
       </FormControl>
 
-      <SanctuaryInput
+      <TextField
         label={t('schoolSetup.studentCount')}
         placeholder={t('schoolSetup.studentCountPlaceholder')}
         value={data.studentCount}
         onChangeText={(text) => onUpdate({ studentCount: text })}
-        leftIcon={Users}
+        
         keyboardType="numeric"
       />
 

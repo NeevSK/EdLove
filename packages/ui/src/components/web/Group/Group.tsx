@@ -1,3 +1,5 @@
+'use client';
+
 import { Children, type HTMLAttributes, isValidElement, type Ref, useId } from 'react';
 import type { GroupContract } from '../../../theme/contracts';
 import { cx } from '../cx';

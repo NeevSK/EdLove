@@ -1,5 +1,5 @@
-import { uiExperience } from '@repo/core/logic/managers/factory';
-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
+import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -27,9 +27,12 @@ export interface HolisticView {
  * Supports Daily/Weekly holistic views.
  */
 export function useJourneyHistory(_section?: string, _feature?: string) {
-  const { context } = usePermissions();
+  const { context } = useSanctuaryFeature();
   const { userId, activeBond } = context;
-  const { phase, viewDate, viewScale, timelineFocus } = useTemporalStore();
+  const phase = useTemporalStore((s) => s.phase);
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const viewScale = useTemporalStore((s) => s.viewScale);
+  const timelineFocus = useTemporalStore((s) => s.timelineFocus);
 
   // Fetch Mood Logs for the current context
   const { data: moodEvents = [], isLoading: moodLoading } = useQuery({

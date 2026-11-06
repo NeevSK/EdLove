@@ -1,6 +1,6 @@
 import { supabaseAuthStorage } from '@repo/core/lib/authStorage';
 import { createClient } from '@supabase/supabase-js';
-import { assertSecureApiUrl, secureApiFetch } from '../api/transportSecurity';
+import { assertSecureApiUrl, secureApiFetch } from '../lib/security/transportSecurity';
 
 type PublicRuntimeConfig = {
   supabaseUrl?: string;

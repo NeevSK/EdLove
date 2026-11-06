@@ -22,16 +22,8 @@ export interface TelemetryDevRecord {
 }
 
 class DevTelemetryCatcher {
-  private static instance: DevTelemetryCatcher | null = null;
   private readonly buffer: TelemetryDevRecord[] = [];
   private readonly maxBufferSize = 50;
-
-  static getInstance(): DevTelemetryCatcher {
-    if (!DevTelemetryCatcher.instance) {
-      DevTelemetryCatcher.instance = new DevTelemetryCatcher();
-    }
-    return DevTelemetryCatcher.instance;
-  }
 
   record(event: Omit<TelemetryDevRecord, 'id' | 'timestamp'>, options: { print?: boolean } = {}) {
     const record: TelemetryDevRecord = {
@@ -102,4 +94,4 @@ class DevTelemetryCatcher {
   }
 }
 
-export const devTelemetryCatcher = DevTelemetryCatcher.getInstance();
+export const devTelemetryCatcher = new DevTelemetryCatcher();

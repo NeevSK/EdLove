@@ -1,6 +1,6 @@
 import { getAuthRouteTarget } from '@repo/core/logic/auth/bootstrapRoutes';
 import { DeepLinkStateGuard } from '@repo/core/logic/auth/deepLinkStateGuard';
-import { DeepLinkManager, DeepLinkType } from '@repo/core/logic/managers/DeepLinkManager';
+import { DeepLinkType, handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
 import { describe, expect, it, vi } from 'vitest';
 import { dispatchDeepLink } from '@/lib/deepLinks/dispatchDeepLink';
 import {
@@ -33,19 +33,20 @@ describe('G1: Adversarial Transport & Auth Boundaries', () => {
   });
 
   it('rejects expired or corrupt magic-link tokens gracefully without unhandled exceptions', async () => {
-    const authManager = {
-      exchangeCodeForSession: vi
-        .fn()
-        .mockRejectedValue(new Error('AuthApiError: Invalid or expired OTP token')),
-      setSession: vi.fn(),
+    const authClient = {
+      auth: {
+        exchangeCodeForSession: vi
+          .fn()
+          .mockRejectedValue(new Error('AuthApiError: Invalid or expired OTP token')),
+      },
     };
-    const manager = new DeepLinkManager(authManager as never);
 
-    const result = await manager.handleURL(
+    const result = await handleDeepLink(
       'gurudevi://auth/callback?code=expired-or-malformed-code',
+      authClient as never,
     );
 
-    expect(authManager.exchangeCodeForSession).toHaveBeenCalledWith('expired-or-malformed-code');
+    expect(authClient.auth.exchangeCodeForSession).toHaveBeenCalledWith('expired-or-malformed-code');
     expect(result).toMatchObject({
       type: DeepLinkType.AUTH_CALLBACK,
       isHandled: false,
@@ -73,14 +74,11 @@ describe('G1: Adversarial Transport & Auth Boundaries', () => {
 
 describe('G2: Scenario Contracts (Access Tiers & Identity Transitions)', () => {
   it('Scenario A: Explorer (Anonymous) receives an auth callback and cleanly transitions to Authenticated', async () => {
-    const authManager = {
-      exchangeCodeForSession: vi.fn().mockResolvedValue({
-        user: { id: 'usr-123', is_anonymous: false },
-        session: { access_token: 'jwt-valid-123', refresh_token: 'ref-123' },
-      }),
-      setSession: vi.fn(),
+    const authClient = {
+      auth: {
+        exchangeCodeForSession: vi.fn().mockResolvedValue({ error: null }),
+      },
     };
-    const manager = new DeepLinkManager(authManager as never);
 
     // Explorer starts on onboarding
     const explorerState = getAuthRouteTarget({
@@ -93,7 +91,7 @@ describe('G2: Scenario Contracts (Access Tiers & Identity Transitions)', () => {
     expect(explorerState.decision).toBe('public');
 
     // Receives auth callback deep link
-    const result = await manager.handleURL('gurudevi://auth/callback?code=valid-upgrade-code');
+    const result = await handleDeepLink('gurudevi://auth/callback?code=valid-upgrade-code', authClient as never);
     expect(result.isHandled).toBe(true);
 
     // After session is established, route engine gates to authenticated app or finishes onboarding
@@ -147,8 +145,7 @@ describe('G3: Runtime Component & Decision Gate Protection', () => {
     // Valid routes pass
     expect(normalizeAcceptedInternalRoute('/self')).toBe('/self');
     expect(normalizeAcceptedInternalRoute('/workspace')).toBe('/workspace');
-    expect(normalizeAcceptedInternalRoute('/community')).toBe('/community');
-    expect(normalizeAcceptedInternalRoute('/library')).toBe('/library');
-    expect(normalizeAcceptedInternalRoute('/profile')).toBe('/profile');
+    expect(normalizeAcceptedInternalRoute('/notifications')).toBe('/notifications');
+    expect(normalizeAcceptedInternalRoute('/settings')).toBe('/settings');
   });
 });

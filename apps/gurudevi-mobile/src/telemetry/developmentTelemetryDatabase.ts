@@ -43,6 +43,8 @@ export interface DevelopmentTelemetrySessionManifest {
   readonly osVersion?: string | null;
   readonly vergerMode?: string;
   readonly vergerPolicy?: string;
+  /** Expo Observe's pseudonymous install id, the key that joins this session to its dashboards. */
+  readonly easClientId?: string | null;
 }
 
 export interface DevelopmentTelemetryArtifact {

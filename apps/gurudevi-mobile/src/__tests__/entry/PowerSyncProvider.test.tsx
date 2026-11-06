@@ -46,8 +46,8 @@ vi.mock('@repo/core/adapters/powersync/SupabasePowerSyncConnector', () => ({
     }
   },
 }));
-vi.mock('@repo/core/logic/managers/NetworkManager', () => ({
-  networkManager: { getSnapshot: () => ({ status: state.network }) },
+vi.mock('@repo/core/platform/drivers/networkMonitor', () => ({
+  networkMonitor: { getSnapshot: () => ({ status: state.network }) },
 }));
 vi.mock('@repo/core/offline/useOfflineStatus', () => ({
   useOfflineStatus: () => ({ isOnline: state.network === 'online' }),

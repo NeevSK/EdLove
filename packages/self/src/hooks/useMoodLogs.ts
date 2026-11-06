@@ -1,15 +1,15 @@
-import { useAuthStore } from '@repo/core/store';
-import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
-import { authAPI } from '@repo/core/api/client';
+import { authAPI } from '@repo/core/auth';
 import { useTemporalStore } from '@repo/core/logic';
-import { GuestDataManager } from '@repo/core/native';
+import { GuestStorage } from '@repo/core/native';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
+import { useAuthStore } from '@repo/core/store';
 import {
   createMoodLog,
   fetchMoodHistoryForView,
   moodToScore,
   scoreToMood,
-} from '@repo/self/api/wellbeingRepository';
+} from '@repo/self/data/wellbeing.data';
 import type { MoodLog } from '@repo/self/types';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -24,7 +24,8 @@ const MOOD_CACHE_KEY = 'gurudevi-mood-cache';
  */
 export const useMoodLogs = (userId?: string) => {
   const { isOnline } = useOfflineStatus();
-  const { viewDate, phase } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const phase = useTemporalStore((s) => s.phase);
   const [moodHistory, setMoodHistory] = useState<MoodLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -39,7 +40,7 @@ export const useMoodLogs = (userId?: string) => {
     const loadInitial = async () => {
       try {
         if (isAnonymous) {
-          const guestLogs = await GuestDataManager.getMoodLogs();
+          const guestLogs = await GuestStorage.getMoodLogs();
           const mappedLogs = guestLogs.map((gl) => ({
             id: gl.localId,
             user_id: 'guest',
@@ -67,7 +68,7 @@ export const useMoodLogs = (userId?: string) => {
   }, [isAnonymous, userId, viewDate]);
   const refreshData = useCallback(async () => {
     if (isAnonymous) {
-      const guestLogs = await GuestDataManager.getMoodLogs();
+      const guestLogs = await GuestStorage.getMoodLogs();
       const mappedLogs = guestLogs.map((gl) => ({
         id: gl.localId,
         user_id: 'guest',
@@ -100,7 +101,7 @@ export const useMoodLogs = (userId?: string) => {
       try {
         const score = moodToScore(mood);
         if (isAnonymous) {
-          const guestLog = await GuestDataManager.addMoodLog(score, note);
+          const guestLog = await GuestStorage.addMoodLog(score, note);
           const newLog: MoodLog = {
             id: guestLog.localId,
             user_id: 'guest',

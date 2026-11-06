@@ -1,5 +1,5 @@
 import { type Capacity, CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
-import { GuestDataManager } from '@repo/core/native/guestDataManager';
+import { GuestStorage } from '@repo/core/native/guestStorage';
 import {
   clearLocalGuestIdentity,
   getLocalGuestIdentity,
@@ -40,9 +40,10 @@ export async function createLocalGuestInitialBond(
   const bond: LocalGuestBond = {
     id: createBondId(),
     user_id: localGuestId,
-    entity_id: `personal-${localGuestId}`,
-    entity_type: 'PERSONAL_CLASSROOM',
+    entity_id: localGuestId,
+    entity_type: 'PERSONAL',
     capacity: orientation,
+    citizenship: 'THIRD_CLASS',
     status: 'active',
   };
   await updateLocalGuestIdentity(localGuestId, {
@@ -70,7 +71,7 @@ export async function completeLocalGuestOnboarding(localGuestId: string): Promis
 export async function discardLocalGuestOnboarding(localGuestId: string): Promise<void> {
   assertLocalGuestSubject(localGuestId);
   setGuestScope(localGuestId);
-  await GuestDataManager.clearAllGuestData();
+  await GuestStorage.clearAllGuestData();
   await clearGuestLeaseData(localGuestId);
   await clearLocalGuestIdentity(localGuestId);
   await clearLocalGuestSession();

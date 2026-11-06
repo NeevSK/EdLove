@@ -1,5 +1,3 @@
-export { deriveReframeOutcome, isFollowUpDue } from '@repo/core/logic/reflection';
-export * from '@repo/self/api';
 export * from '@repo/self/components';
 export * from '@repo/self/constants/selfRegistry';
 export * from '@repo/self/constants/trapCatalog';

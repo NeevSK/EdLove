@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { SimpleBarChart } from '@repo/graphics/charts';
-import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Surface } from '@repo/ui/components/native';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { colors } from '@repo/ui/theme/Theme';

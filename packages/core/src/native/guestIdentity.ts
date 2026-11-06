@@ -7,8 +7,9 @@ export interface LocalGuestBond {
   id: string;
   user_id: string;
   entity_id: string;
-  entity_type: 'PERSONAL_CLASSROOM';
+  entity_type: 'PERSONAL';
   capacity: string;
+  citizenship: 'THIRD_CLASS';
   status: 'active';
 }
 

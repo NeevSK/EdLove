@@ -21,24 +21,30 @@ export interface UnifiedMapViewProps {
   customMapStyle?: any[];
   rotateEnabled?: boolean;
   children?: React.ReactNode;
+  ref?: React.Ref<any>;
 }
 
 /**
  * UnifiedMapView - Platform Generic Map Primitive
  * Abstracted from library package to be consumable by all modules.
  */
-export const UnifiedMapView = React.forwardRef<any, UnifiedMapViewProps>(
-  ({ region, children, style, provider = 'default', ...props }, ref) => {
-    return (
-      <MapViewRN
-        ref={ref}
-        provider={provider === 'google' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-        style={[{ flex: 1 }, style]}
-        initialRegion={region}
-        {...props}
-      >
-        {children}
-      </MapViewRN>
-    );
-  },
-);
+export function UnifiedMapView({
+  ref,
+  region,
+  children,
+  style,
+  provider = 'default',
+  ...props
+}: UnifiedMapViewProps) {
+  return (
+    <MapViewRN
+      ref={ref}
+      provider={provider === 'google' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
+      style={[{ flex: 1 }, style]}
+      initialRegion={region}
+      {...props}
+    >
+      {children}
+    </MapViewRN>
+  );
+}

@@ -1,4 +1,5 @@
 import type { TableContract } from '../../../theme/contracts';
+import { ScrollArea } from '../ScrollArea/ScrollArea';
 import { cx } from '../cx';
 
 export interface TableProps<R> extends TableContract<R> {
@@ -12,7 +13,13 @@ export interface TableProps<R> extends TableContract<R> {
  */
 export function Table<R>({ caption, columns, rows, rowKey, empty, className }: TableProps<R>) {
   return (
-    <div className={cx('gd-table-wrap', className)} role="region" aria-label={caption} tabIndex={0}>
+    <ScrollArea
+      orientation="horizontal"
+      variant="auto"
+      label={caption}
+      className={cx('gd-table-wrap', className)}
+      showEdgeGradients={false}
+    >
       <table className="gd-table">
         <caption>{caption}</caption>
         <thead>
@@ -44,6 +51,6 @@ export function Table<R>({ caption, columns, rows, rowKey, empty, className }: T
           )}
         </tbody>
       </table>
-    </div>
+    </ScrollArea>
   );
 }

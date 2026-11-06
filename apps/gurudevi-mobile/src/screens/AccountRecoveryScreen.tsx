@@ -1,6 +1,7 @@
+import { View, Text, Pressable } from 'react-native';
 import { BrandedErrorState } from '@repo/ui';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Text, View, Pressable } from '@repo/ui/primitives';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
 
 export interface AccountRecoveryScreenProps {
   deactivatedAt: string | null;
@@ -29,7 +30,7 @@ export function AccountRecoveryScreen({
   const scheduledDate = formatDate(scheduledFor);
 
   return (
-    <ScreenWrapper title="Account status" scroll>
+    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
       <View style={{ flex: 1, justifyContent: 'center', paddingVertical: 48, gap: 24 }}>
         <BrandedErrorState
           title="This account is unavailable"
@@ -78,6 +79,6 @@ export function AccountRecoveryScreen({
           </Text>
         </Pressable>
       </View>
-    </ScreenWrapper>
+    </ScrollView></SafeAreaView>
   );
 }

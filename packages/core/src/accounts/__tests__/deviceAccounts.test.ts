@@ -50,7 +50,7 @@ vi.mock('../../api/identity', () => ({
   },
 }));
 
-vi.mock('@repo/core/api/auth', () => ({
+vi.mock('@repo/core/auth', () => ({
   authAPI: {
     getAuthSession: (...args: unknown[]) => mockGetSession(...args),
     setSession: (...args: unknown[]) => mockSetSession(...args),

@@ -22,8 +22,8 @@ vi.mock('@repo/core/lib/storageWrapper', () => ({
     setItem: mocks.setItem,
   },
 }));
-vi.mock('@repo/core/native/guestDataManager', () => ({
-  GuestDataManager: { clearAllGuestData: mocks.clearAllGuestData },
+vi.mock('@repo/core/native/guestStorage', () => ({
+  GuestStorage: { clearAllGuestData: mocks.clearAllGuestData },
 }));
 
 import {

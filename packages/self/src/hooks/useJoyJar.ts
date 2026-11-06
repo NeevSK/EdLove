@@ -2,7 +2,7 @@ import { useAuthStore } from '@repo/core/store';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { createJoyMoment, fetchJoyMoments } from '@repo/self/api/selfFeatureRepository';
+import { createJoyMoment, fetchJoyMoments } from '@repo/self/data/selfFeature.data';
 import type { JoyMoment } from '@repo/self/types';
 import { useCallback, useEffect, useState } from 'react';
 

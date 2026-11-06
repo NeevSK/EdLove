@@ -9,13 +9,14 @@ import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localRe
 import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 import type { Action, Subject } from '@repo/core/types/authorization';
+import { cedarActionFor } from '@repo/policies/authorizationRegistry';
 import { and, eq } from 'drizzle-orm';
 
 /**
  * checkLocalPermission (.native implementation)
  *
- * Production-grade mobile permission evaluator.
- * From React Native 0.84+, Hermes supports native WebAssembly.
+ * Mobile permission evaluator. Dynamic WASM support depends on the actual
+ * Hermes build and asset loading, and must be verified on the target device.
  * This evaluator:
  *   1. Uses a scoped, signed PermissionSnapshot by default.
  *   2. Optionally evaluates dynamic Cedar WASM only when explicitly enabled
@@ -30,65 +31,6 @@ export async function checkLocalPermission(params: {
   userContext: Partial<UserContext>;
 }): Promise<boolean> {
   const legacyContext = params.userContext as Record<string, unknown>;
-
-  if (process.env.EXPO_PUBLIC_LOCAL_DYNAMIC_CEDAR === 'true') {
-    try {
-      const db = getDrizzleDB();
-      const localPolicies = await db.select().from(cedarPolicies);
-
-      if (localPolicies.length > 0) {
-        const rawPolicyString = localPolicies.map((p) => p.content).join('\n\n');
-        const policySizeBytes = Buffer.byteLength(rawPolicyString, 'utf8');
-
-        // Safe Boundary check to protect lower-end Android memory
-        const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
-        if (policySizeBytes <= MAX_LOCAL_POLICY_SIZE_BYTES) {
-          const resourceAttributes = await getLocalResourceAttributes(
-            params.resourceType as string,
-            params.resourceId,
-          );
-          const classroomId = (params.userContext.classroomId ||
-            legacyContext.classroom_id ||
-            null) as string | null;
-          const classroomIds: string[] = classroomId ? [classroomId] : [];
-
-          const permitted = await evaluateShape2(rawPolicyString, {
-            user: {
-              id: params.userContext.userId || (legacyContext.user_id as string) || '',
-              attrs: {
-                school_id:
-                  params.userContext.schoolId ||
-                  (legacyContext.school_id as string | undefined) ||
-                  '',
-                active_entity_id:
-                  params.userContext.activeEntityId ||
-                  (legacyContext.active_entity_id as string | undefined) ||
-                  '',
-                active_entity_type:
-                  params.userContext.activeEntityType ||
-                  (legacyContext.active_entity_type as string | undefined) ||
-                  '',
-                capacity: params.userContext.capacity || '',
-                classroom_ids: classroomIds,
-              },
-            },
-            action: params.action,
-            resourceType: params.resourceType as string,
-            resourceId: params.resourceId,
-            resourceAttrs: resourceAttributes,
-          });
-
-          console.log('[LocalEvaluator.native] Cedar WASM evaluation via singleton succeeded.');
-          return permitted;
-        }
-      }
-    } catch (wasmError) {
-      console.warn(
-        '[LocalEvaluator.native] WASM evaluation failed/unsupported. Falling back to signed permission snapshot...',
-        wasmError,
-      );
-    }
-  }
 
   try {
     const db = getDrizzleDB();
@@ -166,7 +108,7 @@ export async function checkLocalPermission(params: {
     }
 
     const expiresAt = new Date(snapshotRecord.expiresAt);
-    if (expiresAt < new Date()) {
+    if (!Number.isFinite(expiresAt.getTime()) || expiresAt <= new Date()) {
       console.warn(
         '[LocalEvaluator.native] Mobile permission snapshot has expired. Access denied.',
       );
@@ -177,9 +119,72 @@ export async function checkLocalPermission(params: {
       string,
       Record<string, boolean>
     >;
-    const isAllowed = permissions[params.resourceType as string]?.[params.action as string];
+    const resourcePermissions = permissions[params.resourceType as string];
+    const isAllowed =
+      resourcePermissions && Object.hasOwn(resourcePermissions, params.action)
+        ? resourcePermissions[params.action]
+        : resourcePermissions?.[cedarActionFor(params.action, params.resourceType)];
 
-    if (isAllowed !== undefined) {
+    if (typeof isAllowed === 'boolean') {
+      if (!isAllowed) return false;
+      if (process.env.EXPO_PUBLIC_LOCAL_DYNAMIC_CEDAR === 'true') {
+        try {
+          const db = getDrizzleDB();
+          const localPolicies = await db.select().from(cedarPolicies);
+
+          if (localPolicies.length > 0) {
+            const rawPolicyString = localPolicies.map((p) => p.content).join('\n\n');
+            const policySizeBytes = Buffer.byteLength(rawPolicyString, 'utf8');
+
+            // Safe Boundary check to protect lower-end Android memory
+            const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
+            if (policySizeBytes <= MAX_LOCAL_POLICY_SIZE_BYTES) {
+              const resourceAttributes = await getLocalResourceAttributes(
+                params.resourceType as string,
+                params.resourceId,
+              );
+              const classroomId = (params.userContext.classroomId ||
+                legacyContext.classroom_id ||
+                null) as string | null;
+              const classroomIds: string[] = classroomId ? [classroomId] : [];
+
+              const permitted = await evaluateShape2(rawPolicyString, {
+                user: {
+                  id: params.userContext.userId || (legacyContext.user_id as string) || '',
+                  attrs: {
+                    school_id:
+                      params.userContext.schoolId ||
+                      (legacyContext.school_id as string | undefined) ||
+                      '',
+                    active_entity_id:
+                      params.userContext.activeEntityId ||
+                      (legacyContext.active_entity_id as string | undefined) ||
+                      '',
+                    active_entity_type:
+                      params.userContext.activeEntityType ||
+                      (legacyContext.active_entity_type as string | undefined) ||
+                      '',
+                    capacity: params.userContext.capacity || '',
+                    classroom_ids: classroomIds,
+                  },
+                },
+                action: params.action,
+                resourceType: params.resourceType as string,
+                resourceId: params.resourceId,
+                resourceAttrs: resourceAttributes,
+              });
+
+              console.log('[LocalEvaluator.native] Cedar WASM evaluation via singleton succeeded.');
+              return permitted;
+            }
+          }
+        } catch (wasmError) {
+          console.warn(
+            '[LocalEvaluator.native] WASM evaluation failed/unsupported. Falling back to signed permission snapshot...',
+            wasmError,
+          );
+        }
+      }
       return isAllowed;
     }
 

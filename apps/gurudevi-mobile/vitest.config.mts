@@ -12,6 +12,11 @@ export default defineConfig({
     tsconfigPaths: true,
     alias: [
       {
+        // The package export picks this by platform condition; the general alias would miss it.
+        find: /^@repo\/core\/native\/webPush$/,
+        replacement: `${resolve(import.meta.dirname, '../../packages')}/core/src/native/webPush.native.ts`,
+      },
+      {
         find: /^@repo\/([^/]+)(\/.*)?$/,
         replacement: `${resolve(import.meta.dirname, '../../packages')}/$1/src$2`,
       },
@@ -46,6 +51,7 @@ export default defineConfig({
     include: ['src/__tests__/**/*.{test,spec}.{ts,tsx}'],
     exclude: [
       '**/node_modules/**',
+      '**/*.rn.test.*',
       'src/__tests__/components/**',
       'src/__tests__/architecture/AppPerformance.test.tsx',
       'src/__tests__/architecture/classroom-surface-entrypoints.test.ts',
@@ -59,11 +65,11 @@ export default defineConfig({
     server: {
       forwardConsole: true,
       deps: {
-        inline: [/[\\/]x[\\/]packages[\\/]/, /@repo\//, /expo-modules-core/],
+        // Expo's build output imports its own files without extensions, which only a bundler resolves.
+        inline: [/[\\/]x[\\/]packages[\\/]/, /@repo\//, /expo-modules-core/, /[\\/]expo[\\/]build[\\/]/, /[\\/]expo-image[\\/]/],
         external: [
           '@intuitui-labs/a11y-gate',
           'react-native-mmkv',
-          'expo',
           'expo-constants',
           'expo-device',
           'expo-haptics',

@@ -1,4 +1,4 @@
-import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+import { deviceTrustAPI } from '@repo/core/native/deviceTrust';
 
 export const DeviceTrustEngine = {
   async logAuditEvent(accountId: string, action: string, metadata: Record<string, unknown> = {}) {

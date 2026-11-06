@@ -1,4 +1,5 @@
-﻿import { MultiStepFormManager } from '@intuitui-labs/form-builder-engine';
+import { View, Text, Pressable } from 'react-native';
+import { MultiStepFormManager } from '@intuitui-labs/form-builder-engine';
 import type { FormSchema } from '@intuitui-labs/form-builder-engine/schema';
 import {
   createFormStudioStore,
@@ -6,7 +7,6 @@ import {
   type StudioState,
 } from '@intuitui-labs/form-builder-engine/studio';
 import { Award, Check, Eye, Play, RotateCcw, RotateCw, Save, Settings2 } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import NativeForm from '../NativeForm';
@@ -109,18 +109,18 @@ export function MobileFormStudio({
   };
 
   return (
-    <VStack className="flex-1 w-full bg-slate-100">
+    <View className="flex-1 w-full bg-slate-100">
       {/* Studio Navigation Header */}
-      <Box className="pt-3 pb-3 px-4 bg-white border-b border-slate-200">
-        <HStack className="items-center justify-between">
-          <VStack>
+      <View className="pt-3 pb-3 px-4 bg-white border-b border-slate-200">
+        <View className="flex-row items-center items-center justify-between">
+          <View>
             <Text className="text-base font-black text-slate-900">{title}</Text>
             <Text className="text-[11px] text-slate-400">
               {state.isDirty ? '• Unsaved changes' : 'All changes in memory'}
             </Text>
-          </VStack>
+          </View>
 
-          <HStack className="items-center gap-2">
+          <View className="flex-row items-center items-center gap-2">
             {/* Undo Button */}
             <Pressable
               onPress={() => store.dispatch({ type: 'UNDO' })}
@@ -129,7 +129,7 @@ export function MobileFormStudio({
                 store.canUndo() ? 'bg-slate-50 border-slate-200' : 'opacity-30 border-transparent'
               }`}
             >
-              <Icon as={RotateCcw} size={16} color="#475569" />
+              <RotateCcw size={16} color="#475569" />
             </Pressable>
 
             {/* Redo Button */}
@@ -140,7 +140,7 @@ export function MobileFormStudio({
                 store.canRedo() ? 'bg-slate-50 border-slate-200' : 'opacity-30 border-transparent'
               }`}
             >
-              <Icon as={RotateCw} size={16} color="#475569" />
+              <RotateCw size={16} color="#475569" />
             </Pressable>
 
             {/* Mode Toggle Switch (Edit vs Preview) */}
@@ -157,11 +157,11 @@ export function MobileFormStudio({
                   : 'bg-slate-50 border-slate-200'
               }`}
             >
-              <Icon
-                as={state.mode === 'preview' ? Eye : Play}
-                size={14}
-                color={state.mode === 'preview' ? '#FFFFFF' : '#475569'}
-              />
+              {state.mode === 'preview' ? (
+                <Eye size={14} color="#FFFFFF" />
+              ) : (
+                <Play size={14} color="#475569" />
+              )}
               <Text
                 className={`text-xs font-bold ${
                   state.mode === 'preview' ? 'text-white' : 'text-slate-700'
@@ -176,12 +176,12 @@ export function MobileFormStudio({
               onPress={handleSave}
               className="px-3.5 py-1.5 rounded-xl bg-slate-900 flex-row items-center gap-1.5 shadow-xs"
             >
-              <Icon as={Save} size={14} color="#FFFFFF" />
+              <Save size={14} color="#FFFFFF" />
               <Text className="text-xs font-bold text-white">Save</Text>
             </Pressable>
-          </HStack>
-        </HStack>
-      </Box>
+          </View>
+        </View>
+      </View>
 
       {/* Main Content: Edit Canvas vs Live Preview Runner */}
       {state.mode === 'edit' ? (
@@ -207,17 +207,17 @@ export function MobileFormStudio({
         />
       ) : (
         /* Live Preview Interactive Runner */
-        <Box className="flex-1 p-5 bg-white">
+        <View className="flex-1 p-5 bg-white">
           {previewMultiStepManager ? (
             <NativeForm multiStepManager={previewMultiStepManager} />
           ) : (
-            <Box className="p-8 items-center justify-center">
+            <View className="p-8 items-center justify-center">
               <Text className="text-sm text-slate-400">
                 Unable to preview form. Please check schema fields.
               </Text>
-            </Box>
+            </View>
           )}
-        </Box>
+        </View>
       )}
 
       {/* Sheets */}
@@ -254,7 +254,7 @@ export function MobileFormStudio({
           })
         }
       />
-    </VStack>
+    </View>
   );
 }
 export default MobileFormStudio;

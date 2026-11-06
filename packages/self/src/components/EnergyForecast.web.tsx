@@ -7,7 +7,6 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
 import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Battery, CircleCheck } from '@repo/ui/icons';
 import {
   Box,

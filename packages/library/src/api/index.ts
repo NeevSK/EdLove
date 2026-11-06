@@ -1,7 +1,5 @@
 export * from './database';
-export * from './library';
 export * from './annotations';
-export * from './sync';
 export * from './pdf';
 export * from './spreadsheet';
 export * from './ocr';

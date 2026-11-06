@@ -251,6 +251,100 @@ describe('useCedarDecisionStore', () => {
   });
 
   describe('getDecision', () => {
+    it.each([
+      [{ update: true }, 'allow'],
+      [{ update: true, verify: false }, 'deny'],
+      [{ update: true, verify: null }, 'no_decision'],
+    ])(
+      'uses the signed mapped action while respecting explicit values',
+      async (actions, expected) => {
+        mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValue({
+          ...MOCK_SNAPSHOT,
+          permissions: JSON.stringify({ Classroom: actions }),
+        });
+        await useCedarDecisionStore.getState().loadDecisions('user-123');
+        expect(useCedarDecisionStore.getState().getDecision('Classroom', 'verify')).toBe(expected);
+      },
+    );
+    it('withdraws an expired cached grant and notifies subscribers', async () => {
+      vi.useFakeTimers();
+      try {
+        const expiresAt = new Date(Date.now() + 1000).toISOString();
+        mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValue({
+          ...MOCK_SNAPSHOT,
+          expiresAt,
+        });
+        await useCedarDecisionStore.getState().loadDecisions('user-123');
+        const listener = vi.fn();
+        const unsubscribe = useCedarDecisionStore.subscribe(listener);
+        expect(useCedarDecisionStore.getState().getDecision('Classroom', 'create')).toBe('allow');
+        await vi.advanceTimersByTimeAsync(1000);
+        expect(useCedarDecisionStore.getState().getDecision('Classroom', 'create')).toBe(
+          'no_decision',
+        );
+        expect(useCedarDecisionStore.getState().snapshotLoaded).toBe(false);
+        expect(listener).toHaveBeenCalled();
+        unsubscribe();
+      } finally {
+        useCedarDecisionStore.getState().clearDecisions();
+        vi.useRealTimers();
+      }
+    });
+
+    it('does not turn non-boolean snapshot values into grants', async () => {
+      mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValue({
+        ...MOCK_SNAPSHOT,
+        permissions: JSON.stringify({ Classroom: { create: 'false' } }),
+      });
+      await useCedarDecisionStore.getState().loadDecisions('user-123');
+      expect(useCedarDecisionStore.getState().getDecision('Classroom', 'create')).toBe(
+        'no_decision',
+      );
+    });
+
+    it('denies a cached grant when the clock passes expiry before the timer runs', async () => {
+      vi.useFakeTimers();
+      try {
+        const now = Date.now();
+        mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValue({
+          ...MOCK_SNAPSHOT,
+          expiresAt: new Date(now + 1000).toISOString(),
+        });
+        await useCedarDecisionStore.getState().loadDecisions('user-123');
+        vi.setSystemTime(now + 1000);
+        expect(useCedarDecisionStore.getState().getDecision('Classroom', 'create')).toBe(
+          'no_decision',
+        );
+      } finally {
+        useCedarDecisionStore.getState().clearDecisions();
+        vi.useRealTimers();
+      }
+    });
+
+    it('does not let an older expiry withdraw a newer snapshot', async () => {
+      vi.useFakeTimers();
+      try {
+        const now = Date.now();
+        mockDrizzle.query.permissionSnapshots.findFirst
+          .mockResolvedValueOnce({
+            ...MOCK_SNAPSHOT,
+            expiresAt: new Date(now + 1000).toISOString(),
+          })
+          .mockResolvedValueOnce({
+            ...MOCK_SNAPSHOT,
+            expiresAt: new Date(now + 5000).toISOString(),
+          });
+        await useCedarDecisionStore.getState().loadDecisions('user-123');
+        await useCedarDecisionStore.getState().loadDecisions('user-123');
+        await vi.advanceTimersByTimeAsync(1000);
+        expect(useCedarDecisionStore.getState().getDecision('Classroom', 'create')).toBe('allow');
+        expect(useCedarDecisionStore.getState().snapshotLoaded).toBe(true);
+      } finally {
+        useCedarDecisionStore.getState().clearDecisions();
+        vi.useRealTimers();
+      }
+    });
+
     it('returns allow for permitted action on subject', async () => {
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValue(MOCK_SNAPSHOT);
       await useCedarDecisionStore.getState().loadDecisions('user-123');

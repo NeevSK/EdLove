@@ -1,5 +1,5 @@
+import { View, Text, Pressable } from 'react-native';
 import { ChevronRight, Info, LifeBuoy, MessageCircle, Star, TriangleAlert } from '@repo/ui/icons';
-import { Box, Heading, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { GURUDEVI_SUPPORT_EMAIL, openExternalURL } from '@repo/ui/utils';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useTranslation } from 'react-i18next';
@@ -35,35 +35,35 @@ export default function SupportSection() {
     onPress: () => void;
   }) => (
     <Pressable onPress={onPress} className="active:scale-[0.98] transition-all">
-      <HStack className="items-center justify-between p-5 bg-phase-canvas rounded-3xl border border-phase-surface/60 mb-3 shadow-sm">
-        <HStack space="md" className="items-center flex-1">
-          <Box className="w-11 h-11 bg-phase-interactive/10 rounded-2xl items-center justify-center border border-phase-interactive/10">
+      <View className="flex-row items-center items-center justify-between p-5 bg-phase-canvas rounded-3xl border border-phase-surface/60 mb-3 shadow-sm">
+        <View className="flex-row items-center gap-3 flex-1">
+          <View className="w-11 h-11 bg-phase-interactive/10 rounded-2xl items-center justify-center border border-phase-interactive/10">
             <Icon size={20} color="#4A90E2" strokeWidth={2.5} />
-          </Box>
-          <VStack className="flex-1 ml-1">
+          </View>
+          <View className="flex-1 ml-1">
             <Text className="text-phase-text-primary text-base font-bold tracking-tight">
               {title}
             </Text>
             <Text className="text-phase-text-tertiary text-xs font-medium mt-0.5">{subtitle}</Text>
-          </VStack>
-        </HStack>
-        <Box className="p-1 rounded-full bg-phase-surface/30">
+          </View>
+        </View>
+        <View className="p-1 rounded-full bg-phase-surface/30">
           <ChevronRight size={18} color="#9DA1A3" strokeWidth={3} />
-        </Box>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   );
 
   return (
-    <VStack space="md" className="mt-8 mb-10 px-4">
-      <VStack space="xs" className="mb-2 px-1">
-        <Heading size="sm" className="text-phase-text-primary font-bold tracking-tight">
+    <View className="gap-3 mt-8 mb-10 px-4">
+      <View className="gap-1 mb-2 px-1">
+        <Text className="text-phase-text-primary font-bold tracking-tight">
           {t('support.title', 'Sovereign Assistance')}
-        </Heading>
+        </Text>
         <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
           SUPPORT & FEEDBACK
         </Text>
-      </VStack>
+      </View>
 
       <SupportItem
         icon={MessageCircle}
@@ -95,6 +95,6 @@ export default function SupportSection() {
         subtitle={t('support.rateUsDesc', 'Share your reflection of this experience')}
         onPress={() => showToast({ message: 'App rating will be available soon.', type: 'info' })}
       />
-    </VStack>
+    </View>
   );
 }

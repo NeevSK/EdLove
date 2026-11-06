@@ -1,6 +1,5 @@
 // Logic Hooks & Utilities
 
-export * from '@repo/core/api/history';
 export { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
 export {
   type DeviceAccountRecord,
@@ -66,7 +65,6 @@ export {
   isLocalOnlyIdentity,
   isResolvedAuthSubjectCurrent,
   isSandboxSession,
-  suggestDisplayName,
 } from '@repo/core/logic/auth/identityState';
 export * from '@repo/core/logic/capabilityDecision';
 export {
@@ -74,8 +72,6 @@ export {
   classifyRouteIntentEffect,
   decodeInstallReferrer,
   decodeInstallReferrerEffect,
-  formatClassroomDeepLink,
-  formatClassroomShareUrl,
   type RouteIntent,
   type ValidatedReferrerIntent,
 } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
@@ -95,26 +91,12 @@ export * from '@repo/core/logic/experience/ActivityPulseContext';
 export * from '@repo/core/logic/forms';
 export * from '@repo/core/logic/grading';
 export { default as i18n } from '@repo/core/logic/i18n/config';
-export { cryptoManager } from '@repo/core/logic/managers/CryptoManager';
-export { DeepLinkType } from '@repo/core/logic/managers/DeepLinkManager';
-export {
-  auth,
-  authz,
-  community,
-  deepLink,
-  deviceIdentity,
-  educational,
-  featureFlags,
-  growth,
-  identity,
-  notification,
-  profile,
-  pushNotification,
-} from '@repo/core/logic/managers/factory';
+export { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
+export { DeepLinkType, handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
 export * from '@repo/core/logic/mediaReducer';
-export * from '@repo/core/logic/permissions/hooks/usePermissions';
 export * from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 export * from '@repo/core/logic/permissions/sanctuaryFeature';
+export * from '@repo/core/logic/permissions/sovereignty';
 export type {
   AccountTransitionDisposition,
   AccountTransitionOutcome,
@@ -193,7 +175,6 @@ export type { Bond } from '@repo/core/types';
 export type { APIError } from '@repo/core/types/API';
 export type { LessonMaterial } from '@repo/core/types/LessonMaterial';
 
-export * from './classroomResolver';
 export {
   parseInstitutionalQR,
   type ParsedInstitutionalQR,

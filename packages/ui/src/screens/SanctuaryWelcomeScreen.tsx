@@ -1,6 +1,6 @@
-import { authAPI } from '@repo/core/api/auth';
+import { authAPI } from '@repo/core/auth';
 import { LanguageUtils } from '@repo/core/logic';
-import { LanguageSwitcher } from '@repo/ui/components/LanguageSwitcher';
+import { LanguagePicker, LivingGround } from '@repo/ui/components/native';
 import { SanctuaryDoorwayActions } from '@repo/ui/components/SanctuaryDoorwayActions';
 import {
   type SanctuaryRealmItem,
@@ -111,20 +111,11 @@ export const SanctuaryWelcomeScreen = memo(
     const shouldAnimate = animationsEnabled && blurEnabled && !isReduceMotionEnabled;
 
     return (
-      <ScreenWrapper fullWidth scroll backgroundColor={scene.surface.bg}>
-        <Box className="flex-1 min-h-full w-full bg-phase-surface relative overflow-hidden justify-between items-center px-6 pt-6 pb-12">
-          {/* Full-bleed ambient organic background lighting */}
-          <Box
-            className="absolute -top-24 -left-20 w-[420px] h-[420px] rounded-full pointer-events-none opacity-20"
-            style={{ backgroundColor: accent.action }}
-          />
-          <Box
-            className="absolute top-80 -right-24 w-[360px] h-[360px] rounded-full pointer-events-none opacity-15"
-            style={{ backgroundColor: Theme.colors.gurudeviBlue }}
-          />
-
-          <VStack className="gap-8 w-full max-w-[480px] self-center z-10">
-            {/* Header: Brand pill + Modular accessible LanguageSwitcher */}
+      <ScreenWrapper fullWidth scroll backgroundColor="transparent">
+        <LivingGround atmosphere="canopy" dither style={{ flex: 1, minHeight: '100%', width: '100%' }}>
+          <Box className="flex-1 min-h-full w-full relative overflow-hidden justify-between items-center px-6 pt-6 pb-12">
+            <VStack className="gap-8 w-full max-w-[480px] self-center z-10">
+            {/* Header: Brand pill + Modular accessible LanguagePicker */}
             <HStack className="justify-between items-center w-full pt-2">
               <Box className="px-3.5 py-1.5 rounded-full bg-phase-accent/10 border border-phase-accent/25">
                 <Text className="text-xs font-bold text-phase-accent tracking-[2px] uppercase">
@@ -132,9 +123,10 @@ export const SanctuaryWelcomeScreen = memo(
                 </Text>
               </Box>
 
-              <LanguageSwitcher
-                currentLanguage={i18n.language || 'en'}
-                onSelectLanguage={changeLanguage}
+              <LanguagePicker
+                value={(i18n.language ?? 'en').slice(0, 2) as 'en' | 'si' | 'ta'}
+                onChange={changeLanguage}
+                variant="auto"
               />
             </HStack>
 
@@ -230,7 +222,8 @@ export const SanctuaryWelcomeScreen = memo(
             </VStack>
           </VStack>
         </Box>
-      </ScreenWrapper>
+      </LivingGround>
+    </ScreenWrapper>
     );
   },
 );

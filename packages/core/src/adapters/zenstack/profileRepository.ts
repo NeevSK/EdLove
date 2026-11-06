@@ -1,5 +1,4 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { orpcClient } from '@repo/core/api/orpcClient';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -337,19 +336,9 @@ export const createZenStackProfileRepository = (
         .slice(0, limit);
     },
     async updateUserProfile(userId, updates) {
-      const updated = await orpcClient.profile.updateProfile(
-        { params: { id: userId }, body: UserProfilePatchSchema.parse(updates) },
-        { context: { expectedAccountId: userId, retry: 0 } },
-      );
-      if (updated.id !== userId)
-        throw new APIError(
-          'The profile response belongs to another account.',
-          'AUTH_ACCOUNT_MISMATCH',
-        );
-      const normalized = normalizeUser(updated);
-      if (!normalized)
-        throw new APIError('Failed to normalize updated user profile', 'INTERNAL_ERROR');
-      return normalized;
+      void userId;
+      void updates;
+      throw new APIError('Profile updates are not admitted by the v1 foundation.', 'UNSUPPORTED');
     },
     async getAnonymousFlag(userId) {
       const db = await getDb();

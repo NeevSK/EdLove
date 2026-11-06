@@ -10,7 +10,7 @@
  * Gracefully degrades on any DB error  returns empty arrays rather than throwing.
  */
 
-import { uiExperience } from '@repo/core/logic/managers/factory';
+import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface PendingAttendanceItem {

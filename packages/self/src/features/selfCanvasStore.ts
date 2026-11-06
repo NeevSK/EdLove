@@ -1,4 +1,3 @@
-import { circuitBreakerRegistry } from '@repo/core/lib/circuit-breaker';
 import { generateIdempotencyKey } from '@repo/core/lib/idempotency';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
@@ -34,87 +33,9 @@ type StoreState = SelfCanvasPreferences & {
 const keyFor = (userId?: string | null) => `self:canvas-preferences:${userId ?? 'guest'}`;
 const MIGRATED_KEY = (userId?: string | null) => `self:migrated:v2:${userId ?? 'guest'}`;
 
-const breaker = circuitBreakerRegistry.getOrCreate('self:canvas:server', {
-  failureThreshold: 5,
-  resetTimeout: 30_000,
-  successThreshold: 2,
-});
-
-async function withRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 500): Promise<T> {
-  let lastError: unknown;
-  for (let i = 0; i < retries; i++) {
-    try {
-      return await fn();
-    } catch (e) {
-      lastError = e;
-      if (i < retries - 1) {
-        await new Promise((resolve) => setTimeout(resolve, delayMs * Math.pow(2, i)));
-      }
-    }
-  }
-  throw lastError;
-}
-
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-type PendingPersist = {
-  idempotencyKey: string;
-  state: SelfCanvasPreferences;
-  userId: string | null;
-};
-
-let pendingPersist: PendingPersist | null = null;
-let retryablePersist: PendingPersist | null = null;
-
 function isGuestLocalOnly(userId: string | null | undefined): boolean {
   const user = useAuthStore.getState().user;
   return user?.id === userId && isLocalOnlyIdentity(user);
-}
-
-async function flushPreferencesToServer(pending: PendingPersist): Promise<boolean> {
-  const { userId, state, idempotencyKey } = pending;
-  const attempt = async () => {
-    if (userId && userId !== 'guest') {
-      const { orpcClient } = await import('@repo/core/api/orpcClient');
-      await orpcClient.self.updatePreferences({
-        body: {
-          favorite_features: state.features.selectedIds,
-          hidden_features: state.features.hiddenIds,
-        },
-      });
-    }
-  };
-
-  try {
-    await breaker.execute(() => withRetry(attempt, 3, 500));
-    logBreadcrumb('self:canvas persisted');
-    trackEvent('self_canvas_persisted', {
-      userId: userId ?? 'guest',
-      isDefault: state.layout.isDefault,
-      orderLength: state.layout.order.length,
-    });
-    return true;
-  } catch (e) {
-    captureException(e as Error, { tags: { feature: 'self:canvas' } });
-    logBreadcrumb('self:canvas persist failed, queued locally');
-    return false;
-  }
-}
-
-function applyPersistResult(
-  pending: PendingPersist,
-  didPersist: boolean,
-  set: (partial: Partial<StoreState>) => void,
-) {
-  if (!didPersist) {
-    pendingPersist ??= pending;
-    set({ persistenceState: 'queued' });
-    return;
-  }
-
-  if (retryablePersist?.idempotencyKey === pending.idempotencyKey) {
-    retryablePersist = null;
-  }
-  set({ persistenceState: pendingPersist ? 'queued' : 'synced' });
 }
 
 function markLocalPersistenceFailure(error: unknown, set: (partial: Partial<StoreState>) => void) {
@@ -128,21 +49,6 @@ function markLocalPersistenceFailure(error: unknown, set: (partial: Partial<Stor
   set({ persistenceState: 'localError' });
 }
 
-function schedulePersist(pending: PendingPersist, set: (partial: Partial<StoreState>) => void) {
-  pendingPersist = pending;
-  if (debounceTimer) clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
-    if (pendingPersist) {
-      const toFlush = pendingPersist;
-      pendingPersist = null;
-      set({ persistenceState: 'saving' });
-      void flushPreferencesToServer(toFlush).then((didPersist) => {
-        applyPersistResult(toFlush, didPersist, set);
-      });
-    }
-  }, 800);
-}
-
 function persistLocal(
   userId: string | null | undefined,
   state: SelfCanvasPreferences,
@@ -150,8 +56,7 @@ function persistLocal(
   set: (partial: Partial<StoreState>) => void,
 ) {
   const next = { ...state, lastSyncedAt: Date.now() };
-  const pending = { userId: userId ?? null, state: next, idempotencyKey };
-  retryablePersist = pending;
+  void idempotencyKey;
   const localOnly = isGuestLocalOnly(userId);
   try {
     void Promise.resolve(SafeZustandStorage.setItem(keyFor(userId), JSON.stringify(next))).then(
@@ -162,7 +67,7 @@ function persistLocal(
             set({ persistenceState: 'local' });
             return;
           }
-          schedulePersist(pending, set);
+          set({ persistenceState: 'local' });
         } catch (error) {
           markLocalPersistenceFailure(error, set);
         }
@@ -195,23 +100,6 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
           userId: uid,
           isHydrated: true,
         } as Partial<StoreState>);
-        if (!isGuestLocalOnly(uid)) {
-          const pending: PendingPersist = {
-            idempotencyKey: generateIdempotencyKey(),
-            state: { ...DEFAULT_SELF_PREFERENCES, ...parsed },
-            userId: uid,
-          };
-          schedulePersist(pending, set);
-        }
-        // Flush pending if any (offline queue)
-        if (pendingPersist && pendingPersist.userId === uid) {
-          const pending = pendingPersist;
-          pendingPersist = null;
-          set({ lastIdempotencyKey: pending.idempotencyKey, persistenceState: 'saving' });
-          void flushPreferencesToServer(pending).then((didPersist) => {
-            applyPersistResult(pending, didPersist, set);
-          });
-        }
         return;
       } catch (e) {
         captureException(e as Error, { tags: { feature: 'self:canvas', op: 'hydrate_parse' } });
@@ -245,7 +133,6 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
               lastIdempotencyKey: key,
               persistenceState: 'queued',
             } as Partial<StoreState>);
-            schedulePersist({ userId: uid, state: migrated, idempotencyKey: key }, set);
             trackEvent('self_canvas_migrated', {
               userId: uid ?? 'guest',
               pinnedCount: pinned.length,
@@ -261,18 +148,19 @@ export const useSelfCanvasStore = create<StoreState>((set, get) => ({
     set({ userId: uid, isHydrated: true } as Partial<StoreState>);
   },
   retryPersist: () => {
-    const pending = pendingPersist ?? retryablePersist;
-    if (!pending) return;
-    if (debounceTimer) clearTimeout(debounceTimer);
-    if (get().persistenceState === 'localError') {
-      persistLocal(pending.userId, pending.state, pending.idempotencyKey, set);
-      return;
-    }
-    pendingPersist = null;
-    set({ persistenceState: 'saving' });
-    void flushPreferencesToServer(pending).then((didPersist) => {
-      applyPersistResult(pending, didPersist, set);
-    });
+    const state = get();
+    const key = generateIdempotencyKey();
+    persistLocal(
+      state.userId,
+      {
+        layout: state.layout,
+        features: state.features,
+        viewMode: state.viewMode,
+        lastSyncedAt: state.lastSyncedAt,
+      },
+      key,
+      set,
+    );
   },
   setHidden: (featureId, hidden) =>
     set((s) => {

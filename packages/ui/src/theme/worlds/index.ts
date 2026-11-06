@@ -51,8 +51,14 @@ export function byWorld<T>(pick: (world: WorldDefinition) => T): Readonly<Record
   return Object.fromEntries(WORLD_IDS.map((id) => [id, pick(WORLDS[id])])) as Record<WorldId, T>;
 }
 
-export const DEFAULT_WORLD: WorldId = 'sanctuary';
+export const DEFAULT_WORLD: WorldId = 'kele';
 
 export function isWorldId(value: unknown): value is WorldId {
   return typeof value === 'string' && value in WORLDS;
+}
+
+export function worldName(id: WorldId, lang: 'en' | 'si' | 'ta' = 'en'): string {
+  const world = WORLDS[id];
+  if (!world) return id;
+  return world.names[lang] ?? world.names.en ?? id;
 }

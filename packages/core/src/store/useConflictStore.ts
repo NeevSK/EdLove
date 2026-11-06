@@ -42,7 +42,7 @@ export const useConflictStore = create<ConflictStore>()(
       resolvedConflicts: [],
 
       addConflict: (conflict) => {
-        // Guard: don't add the same conflict twice (SyncManager may retry)
+        // Guard: don't add the same conflict twice (SyncOrchestrator may retry)
         const alreadyExists = get().activeConflicts.some((c) => c.id === conflict.id);
         if (alreadyExists) return;
 

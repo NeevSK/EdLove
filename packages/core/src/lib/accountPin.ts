@@ -1,4 +1,4 @@
-import { cryptoManager } from '@repo/core/logic/managers/CryptoManager';
+import { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
 import { v7 as uuidv7 } from 'uuid';
 
 const PIN_RECORD_VERSION = 1;
@@ -31,17 +31,17 @@ function assertValidPin(pin: string) {
   return normalized;
 }
 
-// Platform-agnostic storage access via CryptoManager (which handles SecureStore/Encrypted mapping)
+// Platform-agnostic storage access via CryptoVault (which handles SecureStore/Encrypted mapping)
 async function readStorage(key: string): Promise<string | null> {
-  return cryptoManager.getItemAsync(key);
+  return cryptoVault.getItemAsync(key);
 }
 
 async function writeStorage(key: string, value: string): Promise<void> {
-  await cryptoManager.setItemAsync(key, value);
+  await cryptoVault.setItemAsync(key, value);
 }
 
 async function deleteStorage(key: string): Promise<void> {
-  await cryptoManager.deleteItemAsync(key);
+  await cryptoVault.deleteItemAsync(key);
 }
 
 async function hashPin(pin: string, salt: string) {
@@ -49,7 +49,7 @@ async function hashPin(pin: string, salt: string) {
 
   for (let round = 0; round < PIN_HASH_ROUNDS; round += 1) {
     // algorithm is SHA-256 (standard)
-    digest = await cryptoManager.digestStringAsync('SHA-256', digest);
+    digest = await cryptoVault.digestStringAsync('SHA-256', digest);
   }
 
   return digest;

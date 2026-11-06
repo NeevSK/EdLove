@@ -1,7 +1,6 @@
 import { useAuthStore } from '@repo/core/store';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useDeviceSecurity } from '@repo/core/logic';
-import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import {
   Activity,
@@ -480,7 +479,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
                 </HStack>
               );
             case 'ACCOUNT_MANAGER':
-              return <DeviceAccountManager key="acc-mgr" compact={compact} />;
+              return null;
             default:
               return null;
           }

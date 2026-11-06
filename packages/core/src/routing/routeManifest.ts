@@ -29,14 +29,12 @@ export const APP_ROUTES = {
 
   // Core Sanctuary destinations (Protected)
   SELF: { path: '/self', label: 'Self Sanctuary', access: 'authenticated' },
+  PROFILE: { path: '/profile', label: 'User Profile', access: 'authenticated' },
   WORKSPACE: { path: '/workspace', label: 'Classroom Workspace', access: 'authenticated' },
   COMMUNITY: { path: '/community', label: 'Community Resonance', access: 'authenticated' },
   LIBRARY: { path: '/library', label: 'Knowledge Sanctuary', access: 'authenticated' },
-  PROFILE: { path: '/profile', label: 'Citizen Profile', access: 'authenticated' },
   NOTIFICATIONS: { path: '/notifications', label: 'Notifications', access: 'authenticated' },
   SETTINGS: { path: '/settings', label: 'Settings', access: 'authenticated' },
-  THUTHIMAL_CLAIM: { path: '/thuthimal-claim', label: 'Thuthimal Claim', access: 'authenticated' },
-  AI_ASSISTANT: { path: '/a-i-assistant', label: 'AI Assistant', access: 'authenticated' },
 } as const satisfies Record<string, RouteDefinition>;
 
 export type AppRouteKey = keyof typeof APP_ROUTES;

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import type { KitIconProps, TimeIntent, TimeLabels } from '../../../theme/contracts';
 import { refreshAfter, TIME_ENGLISH } from '../../shared/time';

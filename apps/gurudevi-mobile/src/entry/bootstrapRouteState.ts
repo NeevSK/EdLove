@@ -7,13 +7,9 @@ import {
   useAuth,
 } from '@repo/core/logic';
 import type { AuthSession } from '@repo/core/logic/ports/auth.port';
-import { getOrCreateGuestLease } from '@repo/core/native/guestLease';
 import { setGuestScope } from '@repo/core/native/guestScope';
 import { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
-import {
-  isLocalGuestSessionId,
-  restoreLocalGuestSession,
-} from '@repo/core/native/localGuestSession';
+import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useEffect, useState } from 'react';
@@ -86,11 +82,7 @@ function useLocalGuestRouteState(
           return { isReady: false, localGuestId: identity.session.id };
         }
         setGuestScope(identity.session.id);
-        if (isLocalGuestSessionId(identity.session.id)) {
-          return { isReady: true, localGuestId: identity.session.id };
-        }
-        const lease = await getOrCreateGuestLease(identity.session.id);
-        return { isReady: !lease.isExpired, localGuestId: identity.session.id };
+        return { isReady: true, localGuestId: identity.session.id };
       })
       .then((next) => {
         if (active) {

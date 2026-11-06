@@ -1,7 +1,9 @@
+import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import type { CapabilityToken } from '@repo/core/logic/ports/authz.port';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { ErrorCategory, SovereignError } from '@repo/core/types/Errors';
+import { getTableName, is, Table } from 'drizzle-orm';
 
 let _permissionValidator: ((params: any) => Promise<boolean>) | null = null;
 let _activeToken: CapabilityToken | null = null;
@@ -89,7 +91,9 @@ export function createSecureDrizzleProxy(db: any): any {
 
       if (prop === 'insert' || prop === 'update' || prop === 'delete') {
         return (tableObj: any) => {
-          const tableName = tableObj?._?.name || tableObj?.name || 'unknown_table';
+          const tableName = is(tableObj, Table)
+            ? getTableName(tableObj)
+            : tableObj?._?.name || tableObj?.name || 'unknown_table';
           const action = prop === 'insert' ? 'create' : prop === 'update' ? 'update' : 'delete';
           const builder = originalValue.apply(target, [tableObj]);
 
@@ -127,10 +131,12 @@ export function createSecureDrizzleProxy(db: any): any {
                   const state = useAuthStore.getState();
                   const activeBond = useScopeSessionStore.getState().snapshot?.activeBond ?? null;
                   const userContext = {
+                    ...resolveBondScope(activeBond),
                     userId: state.user?.id || null,
                     email: state.user?.email || null,
                     schoolId: state.user?.school_id || null,
                     activeBond,
+                    capacity: activeBond?.capacity ?? null,
                     isAnonymous: !state.user || !!state.user?.is_anonymous,
                   };
 

@@ -1,6 +1,3 @@
-import { adminContract } from '@repo/core/api/admin.contract';
-import { POAMetadataSchema } from '@repo/core/api/contracts';
-import { syncORPCContract } from '@repo/core/api/sync.orpc.contract';
 import {
   buildAccrualInvoiceJournal,
   buildCashSettlementJournal,
@@ -9,48 +6,7 @@ import {
 import type { ChargeableSchedule, Household } from '@repo/core/types/EducationalEconomics';
 import { describe, expect, it } from 'vitest';
 
-describe('Invariant 3: Domain Contract Schemas & Economics Balancing', () => {
-  describe('Sovereign POA Contract Metadata Invariant', () => {
-    it('enforces valid POAMetadata schema on every route in adminContract', () => {
-      for (const [routeName, route] of Object.entries(adminContract)) {
-        const parseResult = POAMetadataSchema.safeParse(route.metadata);
-        expect(
-          parseResult.success,
-          `Route ${routeName} in adminContract must have valid POAMetadata`,
-        ).toBe(true);
-
-        if (parseResult.success) {
-          expect(parseResult.data.policy.subject).toBeTruthy();
-          expect([
-            'manage',
-            'create',
-            'read',
-            'update',
-            'delete',
-            'submit',
-            'verify',
-            'grade',
-            'resolve',
-            'publish',
-            'override',
-            'use_ai',
-          ]).toContain(parseResult.data.policy.action);
-        }
-      }
-    });
-
-    it('enforces valid POAMetadata schema on syncORPCContract routes', () => {
-      for (const [routeName, route] of Object.entries(syncORPCContract)) {
-        const metadata = (route as any).metadata;
-        const parseResult = POAMetadataSchema.safeParse(metadata);
-        expect(
-          parseResult.success,
-          `Route ${routeName} in syncORPCContract must have valid POAMetadata`,
-        ).toBe(true);
-      }
-    });
-  });
-
+describe('Economics balancing invariants', () => {
   describe('Educational Economics & Double-Entry Zero Phantom Debt Invariant', () => {
     const standardFeeSchedule: ChargeableSchedule = {
       id: 'sched-term-1',

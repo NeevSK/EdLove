@@ -203,6 +203,8 @@ export interface MockDirectConversation {
   last_message: string;
   last_message_at: string;
   unread_count: number;
+  role?: string;
+  is_special?: boolean;
 }
 
 export interface MockStudentObservation {
@@ -1438,19 +1440,50 @@ export const MOCK_GROUP_MESSAGES: MockGroupMessage[] = [
 
 export const MOCK_DIRECT_CONVERSATIONS: MockDirectConversation[] = [
   {
-    id: 'sample-conv-1',
-    participant_id: 'mock-t',
-    participant_name: 'Teacher Sam',
-    last_message: 'Remember to submit your plant specimen photo by Friday 3 PM.',
-    last_message_at: new Date(Date.now() - 5400000).toISOString(),
+    id: 'tutii',
+    participant_id: 'tutii',
+    participant_name: 'Tutii',
+    role: 'AI Firefly Guide',
+    last_message: 'Ayubowan! What are you exploring today?',
+    last_message_at: new Date().toISOString(),
+    unread_count: 0,
+    is_special: true,
+  },
+  {
+    id: 'saved',
+    participant_id: 'saved',
+    participant_name: 'Saved Messages',
+    role: 'Personal Vault',
+    last_message: 'Your private sanctuary vault for notes, quotes, and drafts.',
+    last_message_at: new Date().toISOString(),
+    unread_count: 0,
+    is_special: true,
+  },
+  {
+    id: 'anoma',
+    participant_id: 'anoma',
+    participant_name: 'Mrs. Anoma Ratnayake',
+    role: 'Science Teacher',
+    last_message: 'Please review field observation notes before 2 PM.',
+    last_message_at: new Date(Date.now() - 3600000).toISOString(),
+    unread_count: 1,
+  },
+  {
+    id: 'amara',
+    participant_id: 'amara',
+    participant_name: 'Amara Perera',
+    role: 'Classmate',
+    last_message: 'Uploaded wetland plant photographs.',
+    last_message_at: new Date(Date.now() - 7200000).toISOString(),
     unread_count: 0,
   },
   {
-    id: 'sample-conv-2',
-    participant_id: 'sample-s2',
-    participant_name: 'Kavindi Bandara',
-    last_message: 'Thanks for sharing the science notes!',
-    last_message_at: new Date(Date.now() - 86400000).toISOString(),
+    id: 'kavi',
+    participant_id: 'kavi',
+    participant_name: 'Kavi Fernando',
+    role: 'Peer Seeker',
+    last_message: 'Working on translation notes now.',
+    last_message_at: new Date(Date.now() - 14400000).toISOString(),
     unread_count: 0,
   },
 ];

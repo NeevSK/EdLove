@@ -1,0 +1,204 @@
+{
+  "id": "feature:admin.school_operations",
+  "title": "School Leadership & Institutional Operations",
+  "description": "Administrative cockpit for school principals and leadership to govern academic cycles, review daily attendance health, manage teacher assignments, and coordinate school-wide announcements.",
+  "lifecycle": {
+    "maturity": "available",
+    "owner": "Naveen"
+  },
+  "links": ["intent:principal.school_pulse", "intent:principal.term_setup"],
+  "intents": [
+    {
+      "id": "intent:principal.school_pulse",
+      "title": "Monitor Daily School Operations Pulse",
+      "actor": "principal",
+      "outcome": "Inspect student attendance completion, teacher vitality, and school grade status.",
+      "links": ["journey:principal.school_pulse"],
+      "journeys": [
+        {
+          "id": "journey:principal.school_pulse",
+          "title": "Audit School Attendance & Operational Health",
+          "situation": "A school principal enters their institutional dashboard to verify that morning attendance has been taken across all classrooms and that faculty staffing is secure.",
+          "outcome": "Real-time school attendance summary and teacher status are verified.",
+          "context": "daily",
+          "preconditions": [
+            "Authenticated account possesses an active principal bond to the school."
+          ],
+          "entry": "step:principal.dashboard_entry",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "PrincipalDashboard provides institutional grade completion and student counts.",
+              "Staff leave and attendance session aggregates exist in database models."
+            ],
+            "invariants": [
+              "Principal authority is strictly scoped to the bound school_id.",
+              "Unpublished grades and private student records remain protected under student privacy policies."
+            ],
+            "openQuestions": [
+              "How are emergency school-wide notices dispatched to offline student and guardian devices?"
+            ],
+            "integrationPoints": [
+              "packages/admin/src/screens/PrincipalDashboard.web.tsx",
+              "packages/core/src/flows/admin/principalConnectSchool.flow.ts",
+              "packages/schema/schema.zmodel"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:principal.dashboard_entry",
+              "title": "Enter Principal Dashboard",
+              "interaction": "Open the administrative institutional view.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:principal.review_attendance",
+              "title": "Review Daily Attendance",
+              "interaction": "Inspect classroom attendance snapshot and grade mark publishing status.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:principal.enter_to_review",
+              "title": "View Attendance Snapshot",
+              "from": "step:principal.dashboard_entry",
+              "to": "step:principal.review_attendance",
+              "action": "Select daily attendance overview tab",
+              "feedback": "Render aggregated classroom completion statistics.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:principal.institutional_isolation",
+              "title": "Strict School Tenancy Isolation",
+              "statement": "Principals must only observe records belonging to their authorized school jurisdiction.",
+              "classification": "constraint",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:principal.web_dashboard",
+              "title": "Principal Web Dashboard",
+              "category": "web",
+              "reference": "packages/admin/src/screens/PrincipalDashboard.web.tsx",
+              "status": "implemented",
+              "note": "Renders school pulse, teacher rosters, and grading completion.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:principal.audit_daily_attendance",
+              "title": "Audit Daily Classroom Attendance",
+              "transitions": ["transition:principal.enter_to_review"],
+              "expected": "Daily attendance completion rate is rendered for all active classrooms.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:principal.term_setup",
+      "title": "Configure Academic Cycles & Term Periods",
+      "actor": "principal",
+      "outcome": "Define term start/end dates, subjects, and timetable period templates.",
+      "links": ["journey:principal.term_setup"],
+      "journeys": [
+        {
+          "id": "journey:principal.term_setup",
+          "title": "Establish Academic Term & Schedule",
+          "situation": "At the start of an academic term, the principal configures the cycle calendar and approves timetable periods.",
+          "outcome": "Academic cycle is published and timetable periods become available to teachers and students.",
+          "context": "setup",
+          "preconditions": [
+            "Authenticated account has active administrative authority over the school."
+          ],
+          "entry": "step:principal.term_entry",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "principalTermSetupFlow defines the JTBD sequence for term creation.",
+              "AcademicCycle, Term, and TimetablePeriod models exist in schema.zmodel."
+            ],
+            "invariants": [
+              "Existing academic cycles cannot be deleted while active grade marks or attendance records refer to them."
+            ],
+            "openQuestions": [
+              "Should multi-track or semester schedules be supported concurrently within a single school?"
+            ],
+            "integrationPoints": [
+              "packages/core/src/flows/admin/principalTermSetup.flow.ts",
+              "packages/schema/schema.zmodel"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:principal.term_entry",
+              "title": "Initiate Term Configuration",
+              "interaction": "Navigate to school settings and select Academic Setup.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:principal.publish_term",
+              "title": "Publish Academic Cycle",
+              "interaction": "Input dates, confirm period schedule, and submit.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:principal.term_setup_to_publish",
+              "title": "Save and Activate Term",
+              "from": "step:principal.term_entry",
+              "to": "step:principal.publish_term",
+              "action": "Confirm term schedule details",
+              "feedback": "Term is activated and published across school rosters.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:principal.atomic_term_activation",
+              "title": "Atomic Cycle Activation",
+              "statement": "Activating a new academic term must transition historical terms to archived without orphan grades.",
+              "classification": "functional",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:principal.term_setup_flow",
+              "title": "Principal Term Setup Flow DAG",
+              "category": "architecture",
+              "reference": "packages/core/src/flows/admin/principalTermSetup.flow.ts",
+              "status": "implemented",
+              "note": "Flow DAG orchestrating term setup and timetable creation.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:principal.activate_term_cycle",
+              "title": "Activate New Academic Term",
+              "transitions": ["transition:principal.term_setup_to_publish"],
+              "expected": "New term is marked active and timetable periods become available.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}

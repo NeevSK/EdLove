@@ -1,14 +1,5 @@
 import { useState } from 'react';
-import { Pressable } from '@repo/ui/primitives';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { ScrollView, StatusBar, StyleSheet, Text, TextInput, useWindowDimensions, View, Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

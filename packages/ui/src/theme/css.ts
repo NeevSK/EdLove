@@ -116,22 +116,25 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   v['--gd-sky-glow'] = t.glow;
 
   // Bridge to the web app's existing variable names, so current screens follow
-  // the world. Sanctuary keeps the web's hand-tuned palette untouched.
-  if (w.id !== DEFAULT_WORLD)
-    Object.assign(v, {
-      '--paper': t.ground,
-      '--paper-light': t.raised,
-      '--line': t.line,
-      '--ink': t.ink,
-      '--ink-soft': t.inkSoft,
-      '--color-background': t.ground,
-      '--color-cream-silence': t.ground,
-      '--color-sacred-white': t.raised,
-      '--color-charcoal-truth': t.ink,
-      '--color-mud-brown': t.inkSoft,
-      '--color-primary': t.lampDeep,
-      '--color-sanctuary-saffron': t.lampDeep,
-    });
+  // the world across all 11 worlds (including sanctuary).
+  Object.assign(v, {
+    '--paper': t.ground,
+    '--paper-light': t.raised,
+    '--paper-sunken': t.sunken,
+    '--line': t.line,
+    '--ink': t.ink,
+    '--ink-soft': t.inkSoft,
+    '--ink-faint': t.inkFaint,
+    '--color-background': t.ground,
+    '--color-cream-silence': t.ground,
+    '--color-sacred-white': t.raised,
+    '--color-charcoal-truth': t.ink,
+    '--color-mud-brown': t.inkSoft,
+    '--color-primary': t.lampDeep,
+    '--color-sanctuary-saffron': t.lampDeep,
+    '--color-action': t.lamp,
+    '--color-focus': t.focus,
+  });
 
   for (const role of TEXT_ROLES) Object.assign(v, typeVars(`--w-text-${role}`, r.text[role]));
 
@@ -282,6 +285,13 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
     v[`--w-light-${moment}-glow-opacity`] = String(l.glowOpacity);
     v[`--w-light-${moment}-lift`] = String(l.lift);
   }
+
+  // Living ground material: daylight paper pulp and nocturnal moon milk silk
+  const isDark = w.mode === 'dark';
+  v['--w-living-texture-opacity'] = isDark ? '0.30' : '0.48';
+  v['--w-living-texture-blend'] = isDark ? 'screen' : 'multiply';
+  v['--w-moon-milk-opacity'] = isDark ? '0.18' : '0';
+  v['--w-vein-opacity'] = isDark ? '0.32' : '0.38';
 
   // Cards, rails and carousels.
   const card = r.card;

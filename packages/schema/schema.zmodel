@@ -89,6 +89,8 @@ model User {
   timetable_periods TimetablePeriod[]
   daily_prep_items DailyPrepItem[]
   personal_reminders PersonalReminder[]
+  todo_lists TodoList[]
+  todos Todo[]
   personal_classrooms PersonalClassroom[]
   notifications Notification[]
   push_tokens PushToken[]
@@ -1328,6 +1330,44 @@ model PersonalReminder {
 
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("personal_reminders")
+}
+
+// ============================================================================
+// GENERIC TODOS & LISTS (Offline-first PowerSync Engine)
+// ============================================================================
+model TodoList {
+  id         String   @id @default(uuid())
+  user_id    String
+  name       String
+  color      String?
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [user_id], references: [id])
+  todos      Todo[]
+
+  @@index([user_id])
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("lists")
+}
+
+model Todo {
+  id           String    @id @default(uuid())
+  list_id      String
+  user_id      String
+  title        String
+  notes        String?
+  is_completed Boolean   @default(false)
+  due_date     String?
+  created_at   DateTime  @default(now())
+  completed_at DateTime?
+
+  list         TodoList  @relation(fields: [list_id], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [user_id], references: [id])
+
+  @@index([list_id, is_completed])
+  @@index([user_id])
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("todos")
 }
 
 //  ============================================================================
@@ -2882,11 +2922,9 @@ model UserEnergyBalance {
 
     user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    // Policies: User can read their balance; modifications must be performed by the system/admin or user themselves for authorized client interactions
+    // Reward credit is server-owned; account ownership permits reads, never self-minting.
     @@allow('read', auth() != null && user_id == auth().id)
     @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-    @@allow('update', auth() != null && user_id == auth().id)
-    @@allow('create', auth() != null && user_id == auth().id)
 
     @@map("user_energy_balances")
 }
@@ -2907,7 +2945,6 @@ model AdRewardTransaction {
 
     @@allow('read', auth() != null && user_id == auth().id)
     @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-    @@allow('create', auth() != null && user_id == auth().id)
 
     @@index([user_id])
     @@map("ad_reward_transactions")

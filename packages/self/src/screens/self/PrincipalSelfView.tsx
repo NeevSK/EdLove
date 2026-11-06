@@ -27,8 +27,8 @@ import {
   MoodSection,
   PrincipalPulse,
 } from '@repo/self/views/sections';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { EmptyState } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Box, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useState } from 'react';
@@ -81,7 +81,7 @@ export default function PrincipalSelfView() {
   };
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="principal"
         description={t('self.principalDescription')}
@@ -187,10 +187,9 @@ export default function PrincipalSelfView() {
                 id: 'monthly_reflection',
                 label: 'Monthly Reflection',
                 content: (
-                  <PositiveInvitation
-                    context="self"
+                  <EmptyState
                     title={t('principal.monthlyComingSoon')}
-                    description={t('principal.monthlyComingSoonDesc')}
+                    message={t('principal.monthlyComingSoonDesc')}
                   />
                 ),
               },
@@ -214,6 +213,6 @@ export default function PrincipalSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

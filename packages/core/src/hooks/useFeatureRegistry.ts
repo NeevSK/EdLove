@@ -3,7 +3,7 @@ import {
   type FeaturePresentation,
   resolveFeaturePresentation,
 } from '@repo/core/logic/permissions/featurePresentation';
-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
@@ -22,7 +22,7 @@ export interface FeatureGatingResult {
 export function useFeatureRegistry(
   registry: Record<string, DomainFeature>,
 ): Record<string, FeatureGatingResult> {
-  const { context } = usePermissions();
+  const { context } = useSanctuaryFeature();
   const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
   const getDecision = useCedarDecisionStore((s) => s.getDecision);
   const entitlement = useEntitlementQuery(

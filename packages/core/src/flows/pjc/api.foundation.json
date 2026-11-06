@@ -1,0 +1,2242 @@
+{
+  "id": "feature:api.foundation",
+  "title": "Authorized API and agent execution",
+  "description": "Target API authority and reliability, current grounding documentation, and historical pre-reset execution/composition evidence. The reset API has an empty v1 contract; historical records and missing retired bindings do not establish current feature, identity, policy or channel execution.",
+  "lifecycle": {
+    "maturity": "development",
+    "priority": "P0",
+    "owner": "@NeevSK"
+  },
+  "links": [],
+  "intents": [
+    {
+      "id": "intent:api.secure_foundation",
+      "title": "Build authorized and durable API operations before product capabilities",
+      "actor": "platform engineer or implementing agent",
+      "outcome": "Use canonical identity and existing data authorities to reject unauthorized work, preserve one mutation across retries and retain recoverable external intent.",
+      "links": [],
+      "journeys": [
+        {
+          "id": "journey:api.secure_operations",
+          "title": "Authenticate, scope, execute and recover a horizontal operation",
+          "situation": "The runtime checkpoint exists with an empty business contract; the owner authorized the remaining horizontal identity/data/reliability foundation.",
+          "outcome": "Real isolated PostgreSQL and synthetic capabilities demonstrate authenticated scoped access, durable replay/outbox control and truthful dependency failure without claiming a deployed business feature.",
+          "context": "other",
+          "planning": {
+            "maturity": "development",
+            "implementation": "implemented",
+            "verification": "partial",
+            "priority": "P0"
+          },
+          "preconditions": [
+            "Use the existing UUIDv8 account/profile and identity ledger; never treat provider subject, role selection or local data as server authority.",
+            "Apply the additive migrations only to a reviewed target; G2 runner creates its own disposable database with explicit caller acknowledgement."
+          ],
+          "entry": "step:api.secure_authenticate",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "Database identity, Bond, receipt and effect tables and Cedar policies survived the authorized API reset.",
+              "Previous parity audit confused SQL-owned resources with missing ORM models."
+            ],
+            "integrationPoints": [
+              "apps/sanctuary-api/src/platform.ts",
+              "apps/sanctuary-api/src/security/security.ts",
+              "apps/sanctuary-api/src/operations/store.ts",
+              "packages/policies/src/authorizationAuthorities.json",
+              "apps/gurudevi-mobile/supabase/migrations/20261030020000_api_operation_foundation.sql"
+            ],
+            "invariants": [
+              "Canonical UUIDv8 account remains distinct from credential/session subjects.",
+              "Missing/failed authority denies or reports unavailable; it never grants access.",
+              "Authorize before replay and lock supporting authority within the mutation transaction.",
+              "Receipt, database mutation and effect intent commit together; external send stays outside that transaction.",
+              "Keep native /api/v1 and empty business router; no compatibility aliases or fabricated ORM models."
+            ],
+            "openQuestions": [
+              "Hosted identity ceremonies/project session settings, production DB login grants, proxy/container deployment and R1 require separate evidence.",
+              "Provider handlers, capability-specific reconciliation, receipt/result retention and feature/domain admission remain explicit later work.",
+              "Mobile Drizzle/PowerSync upload and offline UI paths remain rebuild work; local caches do not grant server access."
+            ]
+          },
+          "observations": [
+            {
+              "id": "observation:api.secure_sql_authority",
+              "title": "SQL authority differs from same-named ORM model",
+              "statement": "Six Cedar resources now have explicit migration-backed SQL classifications; the validator preserves other model, Cedar and snapshot checks and does not certify live deployment privileges.",
+              "origin": "source",
+              "links": [
+                "binding:api.secure_authorities",
+                "binding:api.secure_parity"
+              ]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:api.secure_fingerprint",
+              "title": "Canonical JSON fingerprints preserve prototype-named keys",
+              "statement": "The reused shared sorting function now uses own-property construction so JSON __proto__ fields cannot collide through a prototype setter. Boundary validation preserves the original JSON after validation.",
+              "origin": "source",
+              "links": [
+                "binding:api.secure_fingerprint"
+              ]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:api.secure_mobile",
+              "title": "Server authority is separate from local databases",
+              "platform": "shared",
+              "statement": "Mobile Drizzle/PowerSync and browser data mechanisms are consumers; no client upload, feature UI, native bundle or device behavior is implemented by these server fixtures.",
+              "origin": "source",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            }
+          ],
+          "steps": [
+            {
+              "id": "step:api.secure_authenticate",
+              "title": "Verify the acting account",
+              "interaction": "Verify credential claims then read the current canonical binding, account and session.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:api.secure_scope",
+              "title": "Resolve relationships and resource facts",
+              "interaction": "Load a live supported Bond and server-derived target facts; use Cedar and scoped data enforcement.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:api.secure_execute",
+              "title": "Coordinate the durable operation",
+              "interaction": "Reauthorize within the same transaction, reserve/lock the key and write mutation, receipt and effect intent.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:api.secure_settled",
+              "title": "Observe replay or recoverable effect status",
+              "interaction": "Return committed/replayed result; explicit dispatcher fences claims and distinguishes acknowledged, failed and uncertain work.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:api.secure_rejected",
+              "title": "Receive denial, conflict or unavailable feedback",
+              "interaction": "Expose a safe native error/recovery classification; do not fabricate success or repeat an uncertain side effect.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:api.secure_identity",
+              "from": "step:api.secure_authenticate",
+              "to": "step:api.secure_scope",
+              "action": "Verify canonical identity and load supported scope.",
+              "feedback": "Invalid/revoked identity fails closed; provider subject never becomes the account key.",
+              "links": []
+            },
+            {
+              "id": "transition:api.secure_permission",
+              "from": "step:api.secure_scope",
+              "to": "step:api.secure_execute",
+              "action": "Resolve resource facts and evaluate current permission.",
+              "feedback": "Cross-owner/foreign-school access denies; missing policy runtime is unavailable.",
+              "links": []
+            },
+            {
+              "id": "transition:api.secure_commit",
+              "from": "step:api.secure_execute",
+              "to": "step:api.secure_settled",
+              "action": "Use the transaction/receipt/outbox boundary and recover using the same operation identity.",
+              "feedback": "Matching replay returns one committed outcome; leases and DB fences bound effect attempts without promising exactly-once delivery.",
+              "links": []
+            },
+            {
+              "id": "transition:api.secure_identity_denied",
+              "from": "step:api.secure_authenticate",
+              "to": "step:api.secure_rejected",
+              "action": "Reject invalid, expired or revoked credentials.",
+              "feedback": "Native UNAUTHORIZED or SERVICE_UNAVAILABLE; no identity/secret-bearing error disclosure.",
+              "links": []
+            },
+            {
+              "id": "transition:api.secure_scope_denied",
+              "from": "step:api.secure_scope",
+              "to": "step:api.secure_rejected",
+              "action": "Reject revoked Bond, foreign resource or unsupported scope.",
+              "feedback": "Native FORBIDDEN or authority-unavailable feedback; no stored replay disclosure.",
+              "links": []
+            },
+            {
+              "id": "transition:api.secure_conflict",
+              "from": "step:api.secure_execute",
+              "to": "step:api.secure_rejected",
+              "action": "Detect changed payload/scope, historical incomplete work or uncertain COMMIT.",
+              "feedback": "Preserve operation_key_conflict, operation_recovery_required or operation_outcome_unknown classification.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:api.secure_identity",
+              "title": "Verified canonical account",
+              "statement": "Verify issuer/audience/algorithm/expiry and live account/credential/session bindings; transaction-bound identity/scope checks lock authority rows.",
+              "classification": "constraint",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_scope",
+              "title": "Scoped action and data admission",
+              "statement": "Derive facts server-side, re-evaluate Cedar and enforce account RLS through transaction-local verified claims; deny unsupported scopes including principal PERSONAL.",
+              "classification": "functional",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_durability",
+              "title": "Durable replay and effects",
+              "statement": "Unique payload/scope-bound receipts coordinate one database mutation and outbox; reauthorize replay, fence leased work, bound retries and preserve uncertain outcomes.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_operations",
+              "title": "Truthful operational admission",
+              "statement": "Shared PostgreSQL account budgets, bounded pools and readiness dependency/grant/RLS checks fail closed; no application or deployment completion is inferred from an empty router.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:api.secure_identity",
+              "title": "Canonical authentication and scoped isolation",
+              "transitions": [
+                "transition:api.secure_identity",
+                "transition:api.secure_permission"
+              ],
+              "expected": "Synthetic signed credentials, live isolated DB bindings, Cedar and account RLS agree on actor identity and reject cross-owner/school access.",
+              "links": [
+                "requirement:api.secure_identity",
+                "requirement:api.secure_scope",
+                "requirement:api.secure_durability",
+                "requirement:api.secure_operations"
+              ],
+              "completion": "checkpoint",
+              "checkpointReason": "Credential/scope admission is a checkpoint; durable mutation and effects are verified separately."
+            },
+            {
+              "id": "scenario:api.secure_rejection",
+              "title": "Revoked or foreign scope rejection",
+              "transitions": [
+                "transition:api.secure_identity",
+                "transition:api.secure_scope_denied"
+              ],
+              "expected": "Revocation prevents subsequent operations and stored replay disclosure; safe errors distinguish policy denial and unavailable authority.",
+              "links": [
+                "requirement:api.secure_identity",
+                "requirement:api.secure_scope",
+                "requirement:api.secure_durability",
+                "requirement:api.secure_operations"
+              ]
+            },
+            {
+              "id": "scenario:api.secure_durability",
+              "title": "Durable execution/replay/effect recovery",
+              "transitions": [
+                "transition:api.secure_identity",
+                "transition:api.secure_permission",
+                "transition:api.secure_commit"
+              ],
+              "expected": "Real PostgreSQL transactions exercise concurrent replay, rollback, scope conflict, leases, fenced acknowledgements, bounded retry and monotonic clock-skew behavior.",
+              "links": [
+                "requirement:api.secure_identity",
+                "requirement:api.secure_scope",
+                "requirement:api.secure_durability",
+                "requirement:api.secure_operations"
+              ]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:api.secure_security",
+              "category": "authentication",
+              "reference": "apps/sanctuary-api/src/security/security.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_platform",
+              "category": "data",
+              "reference": "apps/sanctuary-api/src/platform.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_store",
+              "category": "api",
+              "reference": "apps/sanctuary-api/src/operations/store.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_dispatcher",
+              "category": "api",
+              "reference": "apps/sanctuary-api/src/operations/dispatcher.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_authorities",
+              "category": "authorization",
+              "reference": "packages/policies/src/authorizationAuthorities.json",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_parity",
+              "category": "tool",
+              "reference": "scripts/check-authorization-parity.mjs",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_fingerprint",
+              "category": "api",
+              "reference": "packages/core/src/lib/sync/idempotency.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_database_runner",
+              "category": "tool",
+              "reference": "apps/sanctuary-api/scripts/test-foundation-database.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_security_test",
+              "category": "test",
+              "reference": "apps/sanctuary-api/src/security/__tests__/security.integration.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_platform_test",
+              "category": "test",
+              "reference": "apps/sanctuary-api/src/platform.integration.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_operations_test",
+              "category": "test",
+              "reference": "apps/sanctuary-api/src/operations/store.integration.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_migration",
+              "category": "data",
+              "reference": "apps/gurudevi-mobile/supabase/migrations/20261030020000_api_operation_foundation.sql",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_rls_migration",
+              "category": "authorization",
+              "reference": "apps/gurudevi-mobile/supabase/migrations/20261030021000_user_rewards_rls_boundary.sql",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_quota_migration",
+              "category": "data",
+              "reference": "apps/gurudevi-mobile/supabase/migrations/20261030022000_api_request_budgets.sql",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_guide",
+              "category": "architecture",
+              "reference": "apps/sanctuary-api/docs/architecture/api-foundations/authority-and-durability.md",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            },
+            {
+              "id": "binding:api.secure_ci",
+              "category": "tool",
+              "reference": ".github/workflows/api-foundation-database.yml",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            }
+          ],
+          "evidence": [
+            {
+              "id": "evidence:api.secure_identity_g0_20261030",
+              "title": "Horizontal authority/durability G0",
+              "scenario": "scenario:api.secure_identity",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G0",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+              "reference": "reports/api-authority-durability-foundation-20261030.json",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_identity_g1_20261030",
+              "title": "Horizontal authority/durability G1",
+              "scenario": "scenario:api.secure_identity",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+              "reference": "reports/run-api_authority_boundary_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_identity_g2_20261030",
+              "title": "Horizontal authority/durability G2",
+              "scenario": "scenario:api.secure_identity",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G2",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+              "reference": "reports/run-api_authority_durability_database_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_rejection_g0_20261030",
+              "title": "Horizontal authority/durability G0",
+              "scenario": "scenario:api.secure_rejection",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G0",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+              "reference": "reports/api-authority-durability-foundation-20261030.json",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_rejection_g1_20261030",
+              "title": "Horizontal authority/durability G1",
+              "scenario": "scenario:api.secure_rejection",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+              "reference": "reports/run-api_authority_boundary_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_rejection_g2_20261030",
+              "title": "Horizontal authority/durability G2",
+              "scenario": "scenario:api.secure_rejection",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G2",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+              "reference": "reports/run-api_authority_durability_database_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_durability_g0_20261030",
+              "title": "Horizontal authority/durability G0",
+              "scenario": "scenario:api.secure_durability",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G0",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+              "reference": "reports/api-authority-durability-foundation-20261030.json",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_durability_g1_20261030",
+              "title": "Horizontal authority/durability G1",
+              "scenario": "scenario:api.secure_durability",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+              "reference": "reports/run-api_authority_boundary_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_durability_g2_20261030",
+              "title": "Horizontal authority/durability G2",
+              "scenario": "scenario:api.secure_durability",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G2",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+              "reference": "reports/run-api_authority_durability_database_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intent:api.operate_foundation",
+      "title": "Operate a bounded API runtime before admitting business capabilities",
+      "actor": "platform engineer or implementing agent",
+      "outcome": "Start, observe, cancel and drain one canonical runtime without leaking data or confusing host health with product readiness.",
+      "links": [],
+      "journeys": [
+        {
+          "id": "journey:api.operate_runtime",
+          "title": "Configure, start and drain the canonical Node host",
+          "situation": "The reset API has an empty native contract. Horizontal engineering is authorized; business admission remains deferred.",
+          "outcome": "Valid configuration starts the bounded Node HTTP/1 host; failures stay safe, cancellation propagates and shutdown completes or force-closes by its deadline.",
+          "context": "other",
+          "planning": {
+            "maturity": "development",
+            "implementation": "implemented",
+            "verification": "partial",
+            "priority": "P0"
+          },
+          "preconditions": [
+            "Use the repository toolchain and installed SDK cohort. No business procedures or external credentials are required."
+          ],
+          "entry": "step:api.runtime_configure",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "Empty native contract and Hono host existed after the authorized hard reset; Node and container lifecycle paths differed."
+            ],
+            "integrationPoints": [
+              "apps/sanctuary-api/src/core/app.ts",
+              "apps/sanctuary-api/src/node-server.ts",
+              "apps/sanctuary-api/Dockerfile",
+              "render.yaml",
+              "scripts/audit-api-composition.mjs"
+            ],
+            "invariants": [
+              "One native /api/v1 first-party transport; no business admission.",
+              "Use the SDK procedure signal, never a stale duplicate context signal.",
+              "Health and file presence do not prove identity, policy, persistence or production readiness.",
+              "No secret-bearing exceptions in client failures or application transport diagnostics."
+            ],
+            "openQuestions": [
+              "Actual edge/proxy timeout, shutdown and deployment behavior still require deployment evidence.",
+              "Identity, scoped persistence, Cedar and distributed operation/effect controls are subsequent horizontal checkpoints."
+            ]
+          },
+          "observations": [
+            {
+              "id": "observation:api.runtime_adapter",
+              "title": "Adapter response errors escape the Hono handler",
+              "statement": "Installed Node adapter response conversion/stream error paths can expose an exception; the Node boundary validates headers, sanitizes source errors and terminates failed HTTP/1 streams.",
+              "origin": "source",
+              "links": [
+                "binding:api.runtime_node"
+              ]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:api.runtime_container",
+              "title": "Production runtime is Node",
+              "statement": "Docker now runs the built Node entry used by lifecycle tests; Render probes foundation readiness. External services were not deployed or changed.",
+              "origin": "source",
+              "links": [
+                "binding:api.runtime_container",
+                "binding:api.runtime_render"
+              ]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:api.runtime_node",
+              "platform": "other",
+              "title": "Node evidence does not certify Bun",
+              "statement": "Node HTTP/1 loopback is exercised. Bun remains local-only and HTTP/2, real POSIX signals and deployment proxies are not verified.",
+              "origin": "source",
+              "links": [
+                "binding:api.runtime_guide"
+              ]
+            }
+          ],
+          "steps": [
+            {
+              "id": "step:api.runtime_configure",
+              "title": "Validate startup configuration",
+              "interaction": "Provide bounded environment values; invalid configuration fails before listening.",
+              "terminal": false,
+              "links": [
+                "binding:api.runtime_config"
+              ]
+            },
+            {
+              "id": "step:api.runtime_serve",
+              "title": "Observe and exercise the foundation",
+              "interaction": "Inspect foundation-only health and correlation; use synthetic test procedures to exercise safe failure and cancellation.",
+              "terminal": false,
+              "links": [
+                "binding:api.runtime_host"
+              ]
+            },
+            {
+              "id": "step:api.runtime_drained",
+              "title": "Finish or terminate in-flight work",
+              "interaction": "Begin drain; readiness and new RPC fail closed, then existing work finishes or sockets are closed at the deadline.",
+              "terminal": true,
+              "links": [
+                "binding:api.runtime_node"
+              ]
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:api.runtime_start",
+              "from": "step:api.runtime_configure",
+              "to": "step:api.runtime_serve",
+              "action": "Start with valid config; reject invalid budgets or occupied ports.",
+              "feedback": "A listening host exposes foundation-only readiness; startup failure never becomes a ready result.",
+              "links": [
+                "binding:api.runtime_config",
+                "binding:api.runtime_node"
+              ]
+            },
+            {
+              "id": "transition:api.runtime_stop",
+              "from": "step:api.runtime_serve",
+              "to": "step:api.runtime_drained",
+              "action": "Invoke the runtime shutdown path while requests are active.",
+              "feedback": "New RPC receives native 503; existing requests finish or are terminated and forced shutdown is reported.",
+              "links": [
+                "binding:api.runtime_host",
+                "binding:api.runtime_node"
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:api.runtime_safety",
+              "title": "Bounded and safe horizontal host",
+              "statement": "Validate budgets, preserve native errors, generate correlation, contain transport stream errors, propagate cancellation and expose truthful drain readiness.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.runtime_host",
+                "binding:api.runtime_node",
+                "binding:api.runtime_config"
+              ]
+            },
+            {
+              "id": "requirement:api.runtime_admission",
+              "title": "Keep business admission closed",
+              "statement": "Retired transports, unadmitted source modules and business procedure declarations fail the source gate until the next explicit engineering review. No identity or policy implementation is claimed by this runtime checkpoint.",
+              "classification": "constraint",
+              "origin": "user",
+              "links": [
+                "binding:api.runtime_gate"
+              ]
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:api.runtime_host",
+              "title": "Host/config boundary assertions",
+              "transitions": [
+                "transition:api.runtime_start"
+              ],
+              "completion": "checkpoint",
+              "checkpointReason": "Host fixtures verify startup and safe response contracts; lifecycle is a separate stateful scenario.",
+              "expected": "Native fixture errors, invalid budgets, correlation, origin guard, drain denial and SDK signals behave as asserted.",
+              "links": [
+                "requirement:api.runtime_safety",
+                "binding:api.runtime_host_test",
+                "binding:api.runtime_config_test"
+              ]
+            },
+            {
+              "id": "scenario:api.runtime_lifecycle",
+              "title": "Real HTTP/1 lifecycle and failure recovery",
+              "transitions": [
+                "transition:api.runtime_start",
+                "transition:api.runtime_stop"
+              ],
+              "expected": "Loopback sockets prove startup, port collision failure, in-flight graceful/forced drain, disconnect/stream cancellation and private stream-error containment under stated test conditions.",
+              "links": [
+                "requirement:api.runtime_safety",
+                "requirement:api.runtime_admission",
+                "binding:api.runtime_socket_test"
+              ]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:api.interoperability_guide",
+              "category": "architecture",
+              "reference": "apps/sanctuary-api/docs/architecture/api-foundations/interoperability-and-operation-semantics.md",
+              "status": "implemented",
+              "note": "Source-grounded engineering target; UUIDv8 identity, idempotency and standards guidance does not establish working identity/receipt/outbox infrastructure."
+            },
+            {
+              "id": "binding:api.runtime_host",
+              "category": "api",
+              "reference": "apps/sanctuary-api/src/core/app.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_node",
+              "category": "api",
+              "reference": "apps/sanctuary-api/src/node-server.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_config",
+              "category": "architecture",
+              "reference": "apps/sanctuary-api/src/config.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_container",
+              "category": "architecture",
+              "reference": "apps/sanctuary-api/Dockerfile",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_render",
+              "category": "architecture",
+              "reference": "render.yaml",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_gate",
+              "category": "tool",
+              "reference": "scripts/audit-api-composition.mjs",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_host_test",
+              "category": "test",
+              "reference": "apps/sanctuary-api/src/__tests__/foundation.test.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_config_test",
+              "category": "test",
+              "reference": "apps/sanctuary-api/src/__tests__/config.test.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_socket_test",
+              "category": "test",
+              "reference": "apps/sanctuary-api/src/__tests__/node-server.test.ts",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            },
+            {
+              "id": "binding:api.runtime_guide",
+              "category": "documentation",
+              "reference": "apps/sanctuary-api/docs/architecture/api-foundations/runtime-foundation.md",
+              "status": "implemented",
+              "note": "Horizontal foundation source; presence alone is not runtime or production proof."
+            }
+          ],
+          "evidence": [
+            {
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment."
+              ],
+              "links": [
+                "binding:api.runtime_host",
+                "binding:api.runtime_node",
+                "binding:api.runtime_guide"
+              ],
+              "id": "evidence:api.runtime_host_g0_20261030",
+              "title": "Static runtime contracts and build",
+              "scenario": "scenario:api.runtime_host",
+              "tier": "G0",
+              "reference": "reports/api-runtime-foundation-20261030.json",
+              "limitations": "Strict API and inventory CLI typechecks, source gate, Biome and artifact build succeed. G0 has no runtime proof. Source fingerprints qualify this mutable worktree, not clean HEAD. Full API quality remains blocked by six existing resource/model mismatches; broad anti-slop remains red."
+            },
+            {
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment."
+              ],
+              "links": [
+                "binding:api.runtime_host",
+                "binding:api.runtime_node",
+                "binding:api.runtime_guide"
+              ],
+              "id": "evidence:api.runtime_host_g1_20261030",
+              "title": "Host and configuration boundary assertions",
+              "scenario": "scenario:api.runtime_host",
+              "tier": "G1",
+              "reference": "reports/run-api_runtime_host_20261030.log",
+              "limitations": "28/28 Vitest host/config assertions, including in-memory drain denial and SDK cancellation. HTTP socket behavior and multi-step transport lifecycle are separate G2 evidence; no application identity, data policy, business capability or deployment claim."
+            },
+            {
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment."
+              ],
+              "links": [
+                "binding:api.runtime_host",
+                "binding:api.runtime_node",
+                "binding:api.runtime_guide"
+              ],
+              "id": "evidence:api.runtime_lifecycle_g0_20261030",
+              "title": "Static runtime contracts and build",
+              "scenario": "scenario:api.runtime_lifecycle",
+              "tier": "G0",
+              "reference": "reports/api-runtime-foundation-20261030.json",
+              "limitations": "Strict API and inventory CLI typechecks, source gate, Biome and artifact build succeed. G0 has no runtime proof. Source fingerprints qualify this mutable worktree, not clean HEAD. Full API quality remains blocked by six existing resource/model mismatches; broad anti-slop remains red."
+            },
+            {
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment."
+              ],
+              "links": [
+                "binding:api.runtime_host",
+                "binding:api.runtime_node",
+                "binding:api.runtime_guide"
+              ],
+              "id": "evidence:api.runtime_lifecycle_g1_20261030",
+              "title": "Host and configuration boundary assertions",
+              "scenario": "scenario:api.runtime_lifecycle",
+              "tier": "G1",
+              "reference": "reports/run-api_runtime_host_20261030.log",
+              "limitations": "28/28 Vitest host/config assertions, including in-memory drain denial and SDK cancellation. HTTP socket behavior and multi-step transport lifecycle are separate G2 evidence; no application identity, data policy, business capability or deployment claim."
+            },
+            {
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic SDK procedures; real local TCP sockets and Node adapter; no external storage, identity, policy service or provider."
+              ],
+              "links": [
+                "binding:api.runtime_host",
+                "binding:api.runtime_node",
+                "binding:api.runtime_guide"
+              ],
+              "id": "evidence:api.runtime_lifecycle_g2_20261030",
+              "title": "Real Node HTTP/1 socket lifecycle scenarios",
+              "scenario": "scenario:api.runtime_lifecycle",
+              "tier": "G2",
+              "reference": "reports/run-api_runtime_socket_20261030.log",
+              "limitations": "12/12 Vitest loopback assertions: startup/collision, header size, slow-header and partial-body HTTP 408, graceful/forced close, disconnect cancellation, initial/late/malformed stream failure containment, producer cancellation and local backpressure. Same lifecycle function as entry; OS SIGTERM delivery, container image, proxy/TLS, sustained capacity, database commit/effects and G3-G5/R1 are unverified. No assurance promotion asserted."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intent:api.understand",
+      "title": "Understand API and agent foundations before making implementation choices",
+      "actor": "product owner or implementing agent",
+      "outcome": "Distinguish concepts, sources, adopted rules, proposed dependencies and unresolved product choices without holding the whole system in memory.",
+      "links": [],
+      "journeys": [
+        {
+          "id": "journey:api.ground_architecture",
+          "title": "Read what, apply how, and preserve unresolved decisions",
+          "situation": "The owner is learning API fundamentals while the reset API has no business procedures and implementation is paused for grounding.",
+          "outcome": "A modular reading and source-trace path informs a bounded engineering task; unsupported choices remain explicit rather than becoming implementation claims.",
+          "context": "setup",
+          "planning": { "maturity": "development", "implementation": "implemented", "verification": "partial", "priority": "P0" },
+          "preconditions": ["Read the current canonical domain/channel policy and identify the topic or capability under discussion."],
+          "entry": "step:api.learn_what",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": ["The repository has a canonical API policy, an empty v1 foundation, existing PJC and AI declarations, and historical migration records."],
+            "integrationPoints": ["apps/sanctuary-api/docs/INDEX.md", "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md", "packages/core/src/flows/pjc/api.foundation.json"],
+            "invariants": ["Research is not permission to install dependencies or resume implementation.", "A protocol, framework, channel, skill and domain authority are separate responsibilities.", "Documented public vendor APIs do not reveal private vendor implementation stacks.", "A source observation, user rule, proposal and verified scenario must remain distinguishable."],
+            "openQuestions": ["The exact Anthropic announcement and intended Hermes project recalled by the owner remain unconfirmed.", "Meta webhook detail pages were access/rate limited; revalidate exact selected-version behavior before implementation.", "Launch channel scope, external interoperability, privacy and consequential action policies remain product decisions."]
+          },
+          "observations": [
+            {
+              "id": "observation:api.knowledge_scope",
+              "title": "Research and adopted implementation are different states",
+              "statement": "The reference bundle explains APIs, agent/channel protocols and dated primary-source examples. It does not implement bot execution, user MCP, WebMCP, AG-UI, domain operations or new framework integration in the empty foundation.",
+              "origin": "source",
+              "links": ["binding:api.knowledge_what", "binding:api.knowledge_how", "binding:api.knowledge_channels"]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:api.knowledge_context",
+              "title": "Bounded context packages replace full-system memorization",
+              "statement": "Stable entry points, focused modules and PJC references let maintainers load a relevant topic, journey and source authorities; runtime files and dependency manifests are outside this documentation change.",
+              "origin": "proposal",
+              "links": ["binding:api.knowledge_what", "binding:api.knowledge_how"]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:api.knowledge_channels",
+              "title": "Different entry protocols share capability authority",
+              "statement": "Web/mobile RPC, provider webhooks, user remote MCP, browser WebMCP and developer platform MCP have distinct protocol/trust boundaries; a reference to one is not implementation of another.",
+              "origin": "proposal",
+              "platform": "shared",
+              "links": ["binding:api.knowledge_channels", "binding:api.knowledge_how"]
+            }
+          ],
+          "steps": [
+            { "id": "step:api.learn_what", "title": "Read the relevant concepts", "interaction": "Enter through What and load only the relevant vocabulary, channel or evidence module.", "terminal": false, "links": ["binding:api.knowledge_what"] },
+            { "id": "step:api.learn_how", "title": "Map concepts to actual responsibilities", "interaction": "Use How with the canonical model and actual source contracts; identify implemented versus proposed behavior.", "terminal": false, "links": ["binding:api.knowledge_how"] },
+            { "id": "step:api.learn_decisions", "title": "Prepare the next bounded decision or task", "interaction": "Record user rules, evidence limits and open questions without granting authority or installing a framework.", "terminal": true, "links": ["binding:api.knowledge_rules"] }
+          ],
+          "transitions": [
+            { "id": "transition:api.learn_apply", "from": "step:api.learn_what", "to": "step:api.learn_how", "action": "Follow the focused module and source links to distinguish the layer and its responsibilities.", "feedback": "The reader can separate a capability contract, transport, agent harness and domain rule.", "links": ["binding:api.knowledge_glossary", "binding:api.knowledge_channels"] },
+            { "id": "transition:api.learn_record", "from": "step:api.learn_how", "to": "step:api.learn_decisions", "action": "Trace the relevant domain rule and evidence; prepare a bounded task or defer the affected product choice.", "feedback": "The task retains its necessary context and unresolved decisions; research claims do not become runtime assurance.", "links": ["binding:api.knowledge_rules", "binding:api.knowledge_evidence"] }
+          ],
+          "scenarios": [
+            { "id": "scenario:api.knowledge_read", "title": "Discover a modular learning and engineering path", "transitions": ["transition:api.learn_apply", "transition:api.learn_record"], "expected": "What and How resolve their focused modules and source authorities, a PJC query finds those bindings, and unresolved choices remain visible with no claim of feature implementation.", "links": ["requirement:api.knowledge_modularity", "requirement:api.knowledge_truthfulness", "binding:api.knowledge_what", "binding:api.knowledge_how"] }
+          ],
+          "requirements": [
+            { "id": "requirement:api.knowledge_modularity", "title": "Learning and engineering documentation stays granular", "statement": "Provide two stable What/How entry documents with focused modules, source links and PJC discoverability so the owner and agents need not retain the whole system at once.", "classification": "quality", "origin": "user", "links": ["binding:api.knowledge_what", "binding:api.knowledge_how"] },
+            { "id": "requirement:api.knowledge_truthfulness", "title": "Research does not imply adoption or working behavior", "statement": "Use dated primary sources, qualify surveys/benchmarks and ambiguous announcements, and distinguish documented vendor interfaces from private stacks. Preserve business decisions and implementation gaps; do not install or build during this grounding phase.", "classification": "constraint", "origin": "user", "links": ["binding:api.knowledge_evidence", "binding:api.knowledge_rules"] }
+          ],
+          "bindings": [
+            { "id": "binding:api.knowledge_what", "category": "documentation", "reference": "apps/sanctuary-api/docs/architecture/api-landscape.md", "status": "implemented", "note": "Stable educational entry point; document presence is not API feature coverage." },
+            { "id": "binding:api.knowledge_how", "category": "architecture", "reference": "apps/sanctuary-api/docs/architecture/api-engineering-playbook.md", "status": "implemented", "note": "Implementation sequence and evidence requirements; future responsibilities are not represented as completed." },
+            { "id": "binding:api.knowledge_glossary", "category": "documentation", "reference": "apps/sanctuary-api/docs/architecture/api-foundations/vocabulary-and-history.md", "status": "implemented", "note": "Definitions, historical choices, interaction types and RSS; primary-source learning material." },
+            { "id": "binding:api.knowledge_channels", "category": "documentation", "reference": "apps/sanctuary-api/docs/architecture/api-foundations/channels-and-agents.md", "status": "implemented", "note": "Channels, harnesses, MCP/WebMCP/AG-UI and Anthropic research; not admitted integrations." },
+            { "id": "binding:api.knowledge_evidence", "category": "documentation", "reference": "apps/sanctuary-api/docs/architecture/api-foundations/dependencies-and-evidence.md", "status": "implemented", "note": "Dated dependencies, LMS/ERP/public AI examples, interoperability standards and qualified statistics/benchmarks." },
+            { "id": "binding:api.knowledge_rules", "category": "architecture", "reference": "apps/sanctuary-api/docs/architecture/api-foundations/domain-rules-and-decisions.md", "status": "implemented", "note": "Rule authoring and decision method linking existing covenant/PJC/canonical policy, not a replacement authorization engine." }
+          ],
+          "evidence": [
+            {
+              "id": "evidence:api.knowledge_docs_g0_20261030",
+              "title": "Documentation metadata, local references and PJC discoverability",
+              "scenario": "scenario:api.knowledge_read",
+              "revision": "bf03fdea11624dd34433da910f6f562442d761f3+working-tree:api-knowledge-docs-20261030",
+              "environment": "Windows host, Python/PyYAML static documentation checks and Node/tsx PJC CLI",
+              "tier": "G0",
+              "result": "passed",
+              "substitutions": ["Static document/source inspection; no application runtime, provider or human learning assessment"],
+              "limitations": "Six document frontmatters and 31 local file/heading references resolve; PJC structural validation reports zero errors and trace/query commands discover the new references. Primary-source research and independent review do not establish exhaustive external correctness, future latest versions, application behavior, reader comprehension or adoption of researched frameworks. Mutable worktree evidence; no assurance-tier promotion claimed.",
+              "reference": "reports/api-knowledge-docs-validation-20261030.json",
+              "links": ["binding:api.knowledge_what", "binding:api.knowledge_how", "binding:api.knowledge_evidence"]
+            }
+          ],
+          "sharedRequirements": [],
+          "sharedBindings": []
+        }
+      ],
+      "sharedJourneys": []
+    },
+    {
+      "id": "intent:api.execute",
+      "title": "Execute an authorized operation reliably",
+      "actor": "authenticated user or delegated agent",
+      "outcome": "Receive a scoped result or safe recovery feedback without repeating an unconfirmed mutation.",
+      "links": [],
+      "journeys": [
+        {
+          "id": "journey:api.execute",
+          "title": "API admission, execution and recovery",
+          "situation": "Target execution journey with historical pre-reset implementation observations and evidence below. The current reset API has no admitted business procedures or wired identity/Cedar/database/channel execution; this journey is not current working feature coverage.",
+          "outcome": "A validated result or explicit rejection/recovery state.",
+          "context": "other",
+          "preconditions": ["Verified identity and current authority for protected operations."],
+          "entry": "step:api.request",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "Historical pre-reset source had a Hono identity bridge, Cedar procedures, operation receipts and AI providers. Those runtime implementations were retired; observations, bindings and evidence below retain their original historical scope and must not be read as current reset behavior."
+            ],
+            "invariants": [
+              "No actor identity or school authority comes from an LLM or client hint.",
+              "Read transport cannot invoke mutations.",
+              "A retry key is not proof of server idempotency.",
+              "Evidence applies only to the named seam and substitutions.",
+              "Required authority lookup failures reject the operation instead of producing a partial principal.",
+              "Production admission uses shared rate limits; invalid configuration cannot silently select memory."
+            ],
+            "openQuestions": [
+              "Real-Postgres Cedar/RLS authorization proofs still require an isolated policy-test database; the narrow receipt and bucket proof is recorded in the API guide.",
+              "Shared rate-limit tables are reachable; deployed proxy trust and cross-process contention remain unverified.",
+              "Bootstrap Cedar coverage and feature flag enforcement require procedure-specific audits.",
+              "Provider billing, retention and deployment canaries require external-system evidence.",
+              "The latest strict compiler audit reports 624 diagnostics; the API config still disables strict checks. Privacy, daily content and onboarding use native SDK inference. Legacy handler wrappers, transaction callback any types and client index-signature fallbacks remain.",
+              "Daily content caps recent lookbacks at 366 days, but pagination, full query-cost budgets, all-role authorization and real database execution remain unverified.",
+              "Ordinary reward points, badge and achievement mutations still require concurrency and idempotency verification; removing false-success catches does not make those writes atomic.",
+              "The new worktree todos router required a builder syntax correction to restore compiled startup. Its CRUD, Cedar coverage and database correctness remain unverified by liveness or the existing boundary suite.",
+              "WebSocket Node transport scenarios use real sockets with substituted identity, Cedar and database; browser authentication negotiation and actual Bun socket traffic remain unverified.",
+              "AdMob grants use one account-locked ORM transaction and explicit 503 failures. Real Postgres rollback and owner policy denial were exercised; contention, committed replay, provider delivery and historical partial-receipt reconciliation remain unverified.",
+              "MCP catalog registration caches immutable schema conversions through the SDK extension. The 2026-10-30 full host suite no longer reproduces the catalog deadlines; sustained production load remains unverified."
+            ],
+            "integrationPoints": [
+              "apps/sanctuary-api/src/core/app.ts",
+              "apps/sanctuary-api/src/core/orpcMiddleware.ts",
+              "apps/sanctuary-api/src/doors/mcp.ts",
+              "packages/core/src/api/orpcClient.ts"
+            ]
+          },
+          "links": [],
+          "observations": [
+            {
+              "id": "observation:api.onboarding_native",
+              "title": "Native onboarding inference and recovery classification",
+              "statement": "Onboarding now shares canonical schemas across native SDK implementation and Effect clients. Native errors previously lost recovery status because the client read the removed SDK status field; it now reuses the existing HTTP/code classifier. Explicit eligibility and transaction behavior remain, with live persistence and browser recovery unverified.",
+              "origin": "source",
+              "links": [
+                "binding:api.onboarding_contract",
+                "binding:api.onboarding_handler",
+                "binding:api.onboarding_client"
+              ]
+            },
+            {
+              "id": "observation:api.daily_content_native",
+              "title": "Daily-content normalization previously fabricated valid results",
+              "statement": "The handler now uses native SDK contracts and parses unknown query results. Non-array results, invalid content types, null content and string booleans reject rather than becoming empty arrays, motivation or true. The reviewed tagged SQL calls bind values separately; scanner findings alone do not establish injection.",
+              "origin": "source",
+              "links": [
+                "binding:api.daily_content_handler",
+                "binding:api.daily_content_test",
+                "binding:api.guide"
+              ]
+            },
+            {
+              "id": "observation:api.privacy_native",
+              "title": "Privacy success paths exposed an incomplete Cedar declaration",
+              "statement": "The privacy API now implements native oRPC contracts using existing canonical schemas. Success-path checks exposed an omitted Cedar appliesTo entry and invalid school attribute projection. Owner-scoped read/create policy and API projection now align; database authorization remains unverified.",
+              "origin": "source",
+              "links": [
+                "binding:api.privacy_contract",
+                "binding:api.privacy_policy",
+                "binding:api.privacy_api_test"
+              ]
+            },
+            {
+              "id": "observation:api.native_error_testing",
+              "title": "Native SDK errors are no longer patched by the test helper",
+              "statement": "The test client uses the installed SDK without prototype or wire mutations. Historical runs under the previous helper do not establish native v2 protocol compatibility. Current native error and batch scenarios use substituted identity and storage.",
+              "origin": "source",
+              "links": ["binding:api.native_client", "binding:api.native_admission"]
+            },
+            {
+              "id": "observation:api.contract_erasure",
+              "title": "Runtime validation does not establish compile-time contract safety",
+              "statement": "The converter now validates unknown declarations into native RouterContract objects without conversion casts or an application proxy. The implement wrapper still erases exact handler types through its any return. Configured compilation is not strict compilation.",
+              "origin": "source",
+              "links": ["binding:api.contract_conversion", "binding:api.contract_test"]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:api.daily_content_validation",
+              "title": "Invalid dates and oversized recent lookbacks now reject before SQL",
+              "statement": "Daily-content date inputs require ISO calendar dates and recent lookbacks are capped at 366 days as an operational request budget. Both existing route namespaces remain. Invalid stored values now produce safe errors rather than coerced content.",
+              "origin": "source",
+              "links": ["binding:api.daily_content_contract", "binding:api.daily_content_test"]
+            },
+            {
+              "id": "impact:api.reward_acknowledgement",
+              "title": "Reward callback acknowledgement requires a committed transaction",
+              "statement": "Provider callbacks now return unavailable when reward persistence fails; balance reads use the existing policy client. Callers must not treat 503 as a recorded grant. Older partial receipts need reconciliation.",
+              "origin": "source",
+              "links": ["binding:api.rewards", "binding:api.rewards_test"]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:api.reward_server",
+              "title": "Server verification and client balance reads",
+              "statement": "The provider-signed callback is a server ingress; browser and mobile balance consumers retain the existing JSON fields and receive explicit 503 during dependency failure. Their UI recovery behavior remains unverified.",
+              "origin": "source",
+              "platform": "shared",
+              "links": ["binding:api.rewards"]
+            }
+          ],
+          "steps": [
+            {
+              "id": "step:api.request",
+              "title": "request",
+              "interaction": "Send a validated command with captured account context.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:api.result",
+              "title": "result",
+              "interaction": "Consume the scoped result.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:api.recovery",
+              "title": "recovery",
+              "interaction": "Show a safe rejection, retain the command, or reconcile its receipt.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:api.onboarding_bootstrap",
+              "title": "Bootstrap the authenticated account",
+              "from": "step:api.request",
+              "to": "step:api.result",
+              "action": "Validate native onboarding input, check explicit eligibility and execute existing transactional provisioning or completion settlement.",
+              "feedback": "Return authoritative scope bootstrap or completion receipt; derive account identity from authenticated context.",
+              "links": ["binding:api.onboarding_handler"]
+            },
+            {
+              "id": "transition:api.onboarding_reject",
+              "title": "Reject bootstrap or propagate failure",
+              "from": "step:api.request",
+              "to": "step:api.recovery",
+              "action": "Reject unauthenticated or privileged caller-selected bootstrap, invalid completion intent or storage failure.",
+              "feedback": "Return safe SDK errors and preserve HTTP/code classification through the Effect error for existing recovery callers.",
+              "links": ["binding:api.onboarding_client", "binding:api.onboarding_test"]
+            },
+            {
+              "id": "transition:api.daily_content_read",
+              "title": "Read validated daily content",
+              "from": "step:api.request",
+              "to": "step:api.result",
+              "action": "Validate the date or lookback, evaluate Cedar and execute the existing parameterized read.",
+              "feedback": "Return validated content with normalized driver timestamps, or the existing absent-content result for an empty query.",
+              "links": ["binding:api.daily_content_handler"]
+            },
+            {
+              "id": "transition:api.daily_content_reject",
+              "title": "Reject invalid daily-content requests or storage results",
+              "from": "step:api.request",
+              "to": "step:api.recovery",
+              "action": "Reject malformed date/lookback input before SQL or propagate malformed query results and storage exceptions.",
+              "feedback": "Return BAD_REQUEST for invalid input or a safe INTERNAL_SERVER_ERROR for invalid storage, without private details or fabricated content.",
+              "links": ["binding:api.daily_content_test"]
+            },
+            {
+              "id": "transition:api.privacy_reject",
+              "title": "Reject an invalid privacy operation or storage result",
+              "from": "step:api.request",
+              "to": "step:api.recovery",
+              "action": "Reject invalid envelopes, other-owner or history-mutation authority, malformed stored rows and inserts without a stored result.",
+              "feedback": "Return a safe native error without private storage details or false success.",
+              "links": ["binding:api.privacy_api_test", "binding:api.privacy_policy_test"]
+            },
+            {
+              "id": "transition:api.privacy_owner",
+              "title": "Read or append the authenticated user's privacy ledger",
+              "from": "step:api.request",
+              "to": "step:api.result",
+              "action": "Validate the native contract, derive the owner from authenticated context, evaluate Cedar and execute the owner-scoped SQL.",
+              "feedback": "Return a schema-validated ledger or stored entry; legitimate absence remains an empty ledger.",
+              "links": ["binding:api.privacy_handler", "binding:api.privacy_policy"]
+            },
+            {
+              "id": "transition:api.native_failure",
+              "title": "Expose a dependency failure through the native protocol",
+              "from": "step:api.request",
+              "to": "step:api.recovery",
+              "action": "Reject failed admission or reward storage without fabricating an empty success.",
+              "feedback": "Return a safe native oRPC error with its standard code; retain private dependency details on neither the wire nor safe logs.",
+              "links": ["binding:api.native_admission", "binding:api.regular_rewards_test"]
+            },
+            {
+              "id": "transition:api.reward_commit",
+              "title": "Persist a verified reward",
+              "from": "step:api.request",
+              "to": "step:api.result",
+              "action": "Verify the signed reward and atomically record its receipt and balance increment, or acknowledge a committed replay or cap receipt.",
+              "feedback": "Return a successful acknowledgement only after the ORM transaction resolves.",
+              "links": ["binding:api.rewards"]
+            },
+            {
+              "id": "transition:api.reward_unavailable",
+              "title": "Reject unavailable reward dependencies",
+              "from": "step:api.request",
+              "to": "step:api.recovery",
+              "action": "Fail verification-key lookup or persistence without acknowledging a grant.",
+              "feedback": "Return 503 with safe failure details; retry using the same provider transaction ID.",
+              "links": ["binding:api.rewards"]
+            },
+            {
+              "id": "transition:api.http",
+              "title": "http boundary",
+              "from": "step:api.request",
+              "to": "step:api.result",
+              "action": "Evaluate http boundary",
+              "feedback": "Return a safe result or explicit recovery information.",
+              "links": []
+            },
+            {
+              "id": "transition:api.mcp",
+              "title": "mcp boundary",
+              "from": "step:api.request",
+              "to": "step:api.result",
+              "action": "Evaluate mcp boundary",
+              "feedback": "Return a safe result or explicit recovery information.",
+              "links": []
+            },
+            {
+              "id": "transition:api.entitlement",
+              "title": "entitlement boundary",
+              "from": "step:api.request",
+              "to": "step:api.recovery",
+              "action": "Evaluate entitlement boundary",
+              "feedback": "Return a safe result or explicit recovery information.",
+              "links": []
+            },
+            {
+              "id": "transition:api.ai_cancel",
+              "title": "ai_cancel boundary",
+              "from": "step:api.request",
+              "to": "step:api.recovery",
+              "action": "Evaluate ai_cancel boundary",
+              "feedback": "Return a safe result or explicit recovery information.",
+              "links": []
+            },
+            {
+              "id": "transition:api.retry",
+              "title": "retry boundary",
+              "from": "step:api.request",
+              "to": "step:api.recovery",
+              "action": "Evaluate retry boundary",
+              "feedback": "Return a safe result or explicit recovery information.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:api.onboarding_bootstrap",
+              "title": "Typed bootstrap and completion preserve existing prerequisites",
+              "transitions": ["transition:api.onboarding_bootstrap"],
+              "expected": "Account-bound bootstrap, default consent, selected-scope prerequisites and receipt replay remain in the native protocol.",
+              "links": ["binding:api.onboarding_test", "binding:api.onboarding_client_test"]
+            },
+            {
+              "id": "scenario:api.onboarding_reject",
+              "title": "Bootstrap errors remain explicit and classified",
+              "transitions": ["transition:api.onboarding_reject"],
+              "expected": "Unauthorized/privileged bootstrap and invalid completion requests reject. Storage failure cannot fabricate a bootstrap. Effect errors retain native 401/403/503 and custom HTTP 409 classification.",
+              "links": ["binding:api.onboarding_test", "binding:api.onboarding_client_test"]
+            },
+            {
+              "id": "scenario:api.daily_content_read",
+              "title": "Native daily content across existing namespaces",
+              "transitions": ["transition:api.daily_content_read"],
+              "expected": "Both namespaces return the canonical DTO, driver dates normalize, nullable authors remain absent, values remain separate from SQL segments and legitimate absence is retained.",
+              "links": ["binding:api.daily_content_test", "binding:api.daily_content_contract_test"]
+            },
+            {
+              "id": "scenario:api.daily_content_reject",
+              "title": "Daily-content invalid input and persistence failure",
+              "transitions": ["transition:api.daily_content_reject"],
+              "expected": "Invalid calendar dates, flattened envelopes and out-of-budget lookbacks reject before SQL. Invalid stored fields, non-array results and storage exceptions reject without leaking private details.",
+              "links": ["binding:api.daily_content_test"]
+            },
+            {
+              "id": "scenario:api.privacy_reject",
+              "title": "Privacy rejection and failure feedback",
+              "transitions": ["transition:api.privacy_reject"],
+              "expected": "Malformed envelopes reject before storage; the policy denies other-owner, missing-owner, update and delete access. Invalid stored rows and missing insert results reject without disclosing private values.",
+              "links": ["binding:api.privacy_api_test", "binding:api.privacy_policy_test"]
+            },
+            {
+              "id": "scenario:api.privacy_owner",
+              "title": "Native privacy contract and owner-only access",
+              "transitions": ["transition:api.privacy_owner"],
+              "expected": "Owner reads and appends use validated fields and server-derived account IDs. Database timestamps normalize to ISO strings, nullable metadata remains an empty object and a legitimately absent ledger remains an empty array.",
+              "links": [
+                "binding:api.privacy_api_test",
+                "binding:api.privacy_policy_test",
+                "binding:api.privacy_contract_test"
+              ]
+            },
+            {
+              "id": "scenario:api.native_failure",
+              "title": "Native admission and reward dependency errors",
+              "transitions": ["transition:api.native_failure"],
+              "expected": "Single and default-batch admission failures produce native ORPCError instances; reward storage failures reject rather than returning null or empty arrays, without leaking private details.",
+              "links": ["binding:api.native_admission", "binding:api.regular_rewards_test"]
+            },
+            {
+              "id": "scenario:api.reward_commit",
+              "title": "Verified grant, replay and quota outcomes",
+              "transitions": ["transition:api.reward_commit"],
+              "expected": "A grant updates receipt and balance in one transaction; replay does not credit twice and a capped receipt grants zero.",
+              "links": ["binding:api.rewards_test"]
+            },
+            {
+              "id": "scenario:api.reward_unavailable",
+              "title": "Reward dependency failure remains unavailable",
+              "transitions": ["transition:api.reward_unavailable"],
+              "expected": "Key lookup or database failure returns 503 without fabricated success; expired verification keys are not reused.",
+              "links": ["binding:api.rewards_test"]
+            },
+            {
+              "id": "scenario:api.http",
+              "title": "http contract",
+              "transitions": ["transition:api.http"],
+              "expected": "Preserve http behavior under its success and rejection cases.",
+              "links": []
+            },
+            {
+              "id": "scenario:api.mcp",
+              "title": "mcp contract",
+              "transitions": ["transition:api.mcp"],
+              "expected": "Preserve mcp behavior under its success and rejection cases.",
+              "links": []
+            },
+            {
+              "id": "scenario:api.entitlement",
+              "title": "entitlement contract",
+              "transitions": ["transition:api.entitlement"],
+              "expected": "Preserve entitlement behavior under its success and rejection cases.",
+              "links": []
+            },
+            {
+              "id": "scenario:api.ai_cancel",
+              "title": "ai_cancel contract",
+              "transitions": ["transition:api.ai_cancel"],
+              "expected": "Preserve ai_cancel behavior under its success and rejection cases.",
+              "links": []
+            },
+            {
+              "id": "scenario:api.retry",
+              "title": "retry contract",
+              "transitions": ["transition:api.retry"],
+              "expected": "Preserve retry behavior under its success and rejection cases.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:api.daily_content_contract",
+              "title": "Daily-content reads cannot fabricate valid data",
+              "statement": "Use native SDK contract inference, validate dates and the 1–366 day operational lookback budget, retain parameterized SQL and Cedar, and reject invalid stored results instead of silently coercing them.",
+              "origin": "source",
+              "classification": "quality",
+              "links": ["binding:api.daily_content_contract", "binding:api.daily_content_handler"]
+            },
+            {
+              "id": "requirement:api.privacy_owner",
+              "title": "Privacy ownership is independent of institutional role",
+              "statement": "Use native SDK contract implementation and client inference. Preserve authenticated-owner SQL predicates and explicit Cedar read/create checks; institutional or platform roles cannot confer cross-owner access or mutate ledger history.",
+              "origin": "source",
+              "classification": "constraint",
+              "links": [
+                "binding:api.privacy_contract",
+                "binding:api.privacy_handler",
+                "binding:api.privacy_policy"
+              ]
+            },
+            {
+              "id": "requirement:api.contract_composition",
+              "title": "Canonical admission rejects legacy compilation",
+              "statement": "The legacy compiler and its rejection tests are historical characterization, not permission to admit converted declarations. The hard-cutover target rejects legacy declaration conversion and uses native SDK contracts. Retain canonical schema identity, refinements and required validation behavior while retiring compatibility machinery.",
+              "origin": "user",
+              "classification": "constraint",
+              "links": ["binding:api.contract_conversion", "binding:api.contract_test"]
+            },
+            {
+              "id": "requirement:api.mcp_schema_cache",
+              "title": "MCP metadata reuse cannot reuse caller authority",
+              "statement": "Reuse immutable schema conversion by identity and direction while providing a distinct caller context to each per-request SDK server. Close servers even when registration fails.",
+              "classification": "quality",
+              "origin": "source",
+              "links": ["binding:api.mcp", "binding:api.mcp_door"]
+            },
+            {
+              "id": "requirement:api.explicit_failure",
+              "title": "Dependency failures remain explicit",
+              "statement": "Required storage and authority lookup failures must produce explicit unavailable feedback and safe telemetry; they must not become successful empty data or a partial principal.",
+              "origin": "user",
+              "links": [
+                "binding:api.readiness",
+                "binding:api.authority_failure",
+                "binding:api.rewards",
+                "scenario:api.reward_unavailable"
+              ]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:api.contract_inventory",
+              "title": "Declaration inventory CLI with native contract inspection",
+              "category": "tool",
+              "status": "implemented",
+              "reference": "scripts/audit-api-contracts.ts",
+              "note": "Manually registered declarations, metadata and lexical client observations only. Read-only JSON and guarded report output; no runtime, authorization, persistence or exact client typing proof.",
+              "links": ["binding:api.contract_inspector", "binding:api.contract_inventory_test"]
+            },
+            {
+              "id": "binding:api.contract_inspector",
+              "title": "Native and legacy contract inspection",
+              "category": "tool",
+              "status": "implemented",
+              "reference": "packages/core/src/api/contractInspection.ts",
+              "note": "Native SDK metadata, stacked schemas, encoded default paths, shared references and cycle rejection. Native/legacy schema counts have different meanings; dotted labels can be ambiguous for unusual keys.",
+              "links": ["binding:api.contract_inspector_test"]
+            },
+            {
+              "id": "binding:api.contract_inventory_test",
+              "title": "Inventory CLI and report preservation scenarios",
+              "category": "test",
+              "status": "implemented",
+              "reference": "scripts/tests/audit-api-contracts.test.mjs",
+              "note": "Actual CLI subprocesses over the local source registry with isolated output fixtures. Proves named report behavior, not application procedure execution.",
+              "links": ["binding:api.guide"]
+            },
+            {
+              "id": "binding:api.contract_inspector_test",
+              "title": "Isolated mixed-contract fixtures",
+              "category": "test",
+              "status": "implemented",
+              "reference": "packages/core/src/api/__tests__/contractInspection.test.ts",
+              "note": "Real installed SDK over synthetic declarations; verifies inspection only, not deployed handler routes.",
+              "links": ["binding:api.guide"]
+            },
+            {
+              "id": "binding:api.onboarding_contract",
+              "title": "Native onboarding contract and canonical schemas",
+              "category": "api",
+              "status": "implemented",
+              "reference": "packages/core/src/api/onboarding.orpc.contract.ts",
+              "note": "Uses existing canonical schemas, native metadata and SDK client inference. Does not establish bootstrap authority by itself.",
+              "links": ["binding:api.onboarding_handler"]
+            },
+            {
+              "id": "binding:api.onboarding_handler",
+              "title": "Authenticated bootstrap with explicit eligibility",
+              "category": "api",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/core/handlers/onboarding.ts",
+              "note": "Native SDK implementation retains actor-derived identity, eligibility checks, provisioning lock and completion settlement. Founder/revoke concurrency, full Cedar coverage and real database proof remain open.",
+              "links": ["binding:api.onboarding_test"]
+            },
+            {
+              "id": "binding:api.onboarding_client",
+              "title": "Effect onboarding commands and native error recovery",
+              "category": "failure",
+              "status": "implemented",
+              "reference": "packages/core/src/api/onboardingClient.ts",
+              "note": "Reuses canonical schemas and existing error classification; preserves captured session and no-retry context. Browser recovery rendering remains unverified.",
+              "links": ["binding:api.onboarding_client_test"]
+            },
+            {
+              "id": "binding:api.onboarding_test",
+              "title": "Bootstrap rejection and completion scenarios",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/onboarding.test.ts",
+              "note": "Real SDK with identity/database substituted. Includes scope prerequisites, receipt replay, unauthenticated bootstrap, privileged-capacity rejection and safe storage failure. No durable rollback proof.",
+              "links": ["binding:api.guide"]
+            },
+            {
+              "id": "binding:api.onboarding_client_test",
+              "title": "Onboarding Effect recovery and validation assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "packages/core/src/api/onboardingClient.test.ts",
+              "note": "Substituted command transport with real SDK error objects and Effect runtime. Checks 401/403/503, custom 409 cause, local validation, session capture and malformed responses.",
+              "links": ["binding:api.guide"]
+            },
+            {
+              "id": "binding:api.daily_content_contract",
+              "title": "Native daily-content contract",
+              "category": "api",
+              "status": "implemented",
+              "reference": "packages/core/src/api/dailyContent.orpc.contract.ts",
+              "note": "Reuses existing schemas and metadata. Other domains still use the legacy untyped converter.",
+              "links": ["requirement:api.daily_content_contract"]
+            },
+            {
+              "id": "binding:api.daily_content_handler",
+              "title": "Validated daily-content query result boundary",
+              "category": "api",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/core/handlers/dailyContent.ts",
+              "note": "Retains tagged SQL and Cedar while parsing unknown results. No real database, all-role authorization or query-cost assurance is claimed.",
+              "links": ["scenario:api.daily_content_read", "scenario:api.daily_content_reject"]
+            },
+            {
+              "id": "binding:api.daily_content_test",
+              "title": "Daily-content boundary and failure assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/daily-content.orpc.test.ts",
+              "note": "Real SDK and Cedar; identity and storage substituted. Covers input validation, separated query values, driver normalization, corrupt storage and dependency failures.",
+              "links": ["scenario:api.daily_content_read", "scenario:api.daily_content_reject"]
+            },
+            {
+              "id": "binding:api.daily_content_contract_test",
+              "title": "Daily-content shared-schema and native client type checks",
+              "category": "test",
+              "status": "implemented",
+              "reference": "packages/core/src/api/__tests__/dailyContent.contract.test.ts",
+              "note": "Checks schema identity, metadata and SDK input/output types for both client namespaces; does not execute a deployed route.",
+              "links": ["scenario:api.daily_content_read"]
+            },
+            {
+              "id": "binding:api.privacy_contract",
+              "title": "Native privacy contract using canonical route schemas",
+              "category": "api",
+              "status": "implemented",
+              "reference": "packages/core/src/api/privacy.orpc.contract.ts",
+              "note": "Uses native oc, shared metadata and existing privacy.contract schemas. Other domains still use the untyped converter.",
+              "links": ["requirement:api.privacy_owner"]
+            },
+            {
+              "id": "binding:api.privacy_handler",
+              "title": "Typed privacy implementation and row validation",
+              "category": "api",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/core/handlers/privacy.ts",
+              "note": "Uses native implement, Cedar middleware and account-scoped SQL; database rows are unknown until parsed. Real storage and RLS remain unverified.",
+              "links": ["scenario:api.privacy_owner"]
+            },
+            {
+              "id": "binding:api.privacy_policy",
+              "title": "Privacy owner and append-only Cedar rules",
+              "category": "authorization",
+              "status": "implemented",
+              "reference": "packages/policies/src/policies/platform/dataBoundaries.cedar",
+              "note": "Explicit forbids override generic platform-admin permission for other-owner and non-read/create ledger operations.",
+              "links": ["scenario:api.privacy_owner"]
+            },
+            {
+              "id": "binding:api.privacy_api_test",
+              "title": "Privacy native boundary and storage result assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/privacy.orpc.test.ts",
+              "note": "Real SDK and Cedar WASM with identity and database substituted. Covers owner parameters, trimmed fields, empty reads, malformed rows and unacknowledged inserts.",
+              "links": ["scenario:api.privacy_owner"]
+            },
+            {
+              "id": "binding:api.privacy_policy_test",
+              "title": "Real Cedar owner and role decision assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "packages/policies/src/__tests__/evaluator.test.ts",
+              "note": "Real installed WASM evaluator and source policies; synthetic principal/resource attributes. Does not prove source authority of those attributes or live database isolation.",
+              "links": ["scenario:api.privacy_owner"]
+            },
+            {
+              "id": "binding:api.privacy_contract_test",
+              "title": "Privacy shared-schema and SDK client type assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "packages/core/src/api/__tests__/privacy.contract.test.ts",
+              "note": "Schema identity, policy/OpenAPI metadata and compiler-checked native input/output inference. Does not establish deployed routes or storage behavior.",
+              "links": ["scenario:api.privacy_owner"]
+            },
+            {
+              "id": "binding:api.contract_conversion",
+              "title": "Server contract composition boundary",
+              "category": "api",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/core/orpc.ts",
+              "note": "Eagerly compiles validated legacy declarations into native SDK contracts with stable procedure instances. No application conversion proxy or conversion casts remain; the handler-facing implement wrapper still returns any.",
+              "links": ["requirement:api.contract_composition"]
+            },
+            {
+              "id": "binding:api.contract_test",
+              "title": "Contract conversion and transport assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/contract-conversion.characterization.test.ts",
+              "note": "Real SDK conversion, RPC and OpenAPI handlers with synthetic procedures. Does not prove actual domain handlers or database authority.",
+              "links": ["requirement:api.contract_composition"]
+            },
+            {
+              "id": "binding:api.native_client",
+              "title": "Unmodified SDK boundary test client",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/orpc-client.ts",
+              "note": "Real RPCLink and ORPCError shapes; in-process fetch replaces external network transport.",
+              "links": ["scenario:api.native_failure"]
+            },
+            {
+              "id": "binding:api.native_admission",
+              "title": "Single and batch admission error assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/canonical-account.security.test.ts",
+              "note": "Real SDK batching and native decoding; identity and database dependencies substituted.",
+              "links": ["scenario:api.native_failure"]
+            },
+            {
+              "id": "binding:api.regular_rewards_test",
+              "title": "Ordinary reward storage failure assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/rewards.orpc.test.ts",
+              "note": "Injected storage exceptions and corrupted snapshot, with legitimate empty reads retained. No concurrency or durable-write proof.",
+              "links": ["scenario:api.native_failure"]
+            },
+            {
+              "id": "binding:api.readiness",
+              "title": "Startup and readiness dependency checks",
+              "category": "failure",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/core/readiness.ts",
+              "note": "Both server entrypoints and health readiness validate the shared admission schema. Does not establish every domain schema, SQL write permission, or deployed traffic.",
+              "links": []
+            },
+            {
+              "id": "binding:api.authority_failure",
+              "title": "Reject unavailable authorization relationships",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/authorization-context-failure.test.ts",
+              "note": "G1 relationship storage substitutions distinguish empty results from lookup failures; this is not real Cedar/RLS evidence.",
+              "links": []
+            },
+            {
+              "id": "binding:api.http",
+              "title": "http executable boundary assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/rpc-method-policy.test.ts",
+              "note": "Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.",
+              "links": ["scenario:api.http"]
+            },
+            {
+              "id": "binding:api.mcp_door",
+              "title": "Per-request MCP servers and cached SDK schema conversion",
+              "category": "api",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/doors/mcp.ts",
+              "note": "Uses the installed StandardJsonSchemaConverter through the registrar's converters option. Only schema metadata is cached; caller context and authorization remain per request. Production load behavior is unverified.",
+              "links": ["binding:api.mcp", "requirement:api.mcp_schema_cache"]
+            },
+            {
+              "id": "binding:api.mcp",
+              "title": "mcp executable boundary assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/mcp-door.test.ts",
+              "note": "Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.",
+              "links": ["scenario:api.mcp"]
+            },
+            {
+              "id": "binding:api.entitlement",
+              "title": "entitlement executable boundary assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/orpc-entitlement.test.ts",
+              "note": "Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.",
+              "links": ["scenario:api.entitlement"]
+            },
+            {
+              "id": "binding:api.ai_cancel",
+              "title": "ai_cancel executable boundary assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/ai-streaming-resilience.test.ts",
+              "note": "Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.",
+              "links": ["scenario:api.ai_cancel"]
+            },
+            {
+              "id": "binding:api.retry",
+              "title": "retry executable boundary assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "packages/core/src/api/__tests__/orpcClient.errors.test.ts",
+              "note": "Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.",
+              "links": ["scenario:api.retry"]
+            },
+            {
+              "id": "binding:api.database_proof",
+              "title": "Rollback receipt and isolated rate bucket harness",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/integration/api-foundation.pg.test.ts",
+              "note": "Explicit opt-in real Postgres harness. Its G2 run is documented in the API guide; it does not establish Cedar/RLS or deployment assurance.",
+              "links": ["binding:api.guide"]
+            },
+            {
+              "id": "binding:api.rewards",
+              "title": "Verified reward persistence and policy-filtered balance reads",
+              "category": "api",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/core/routes/adRewards.ts",
+              "note": "Account-locked ORM transaction; real rollback was exercised, while contention and provider delivery remain unverified.",
+              "links": ["binding:api.rewards_test"]
+            },
+            {
+              "id": "binding:api.rewards_test",
+              "title": "Signed reward callback and failure boundary assertions",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/adRewards.test.ts",
+              "note": "Real ECDSA; database transactions, policy decisions and provider-key fetch substituted. Does not prove database rollback or authorization policy execution.",
+              "links": ["binding:api.guide"]
+            },
+            {
+              "id": "binding:api.rewards_pg",
+              "title": "Real reward ORM rollback and owner-write denial harness",
+              "category": "test",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/src/__tests__/integration/ad-reward.pg.test.ts",
+              "note": "Explicit opt-in real PostgreSQL proof. Provider key is synthetic and transaction completion is intercepted to force rollback. Does not prove concurrent grants or provider delivery.",
+              "links": ["scenario:api.reward_unavailable", "binding:api.rewards_storage"]
+            },
+            {
+              "id": "binding:api.rewards_storage",
+              "title": "Server-owned reward storage migration",
+              "category": "data",
+              "status": "implemented",
+              "reference": "apps/gurudevi-mobile/supabase/migrations/20261029220000_verified_ad_reward_storage.sql",
+              "note": "Applied to the authorized shared dev/production database; owner-read RLS and explicit client-write revocation. Full Data API RLS scenarios remain unverified.",
+              "links": ["binding:api.guide"]
+            },
+            {
+              "id": "binding:api.guide",
+              "title": "API architecture and release limitations",
+              "category": "documentation",
+              "status": "implemented",
+              "reference": "apps/sanctuary-api/docs/architecture/api-middleware.md",
+              "note": "Operating guidance and unresolved release evidence.",
+              "links": []
+            }
+          ],
+          "evidence": [
+            {
+              "id": "evidence:api.onboarding_reject_g1_20261030",
+              "title": "Native onboarding rejection and recovery regression",
+              "scenario": "scenario:api.onboarding_reject",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-onboarding-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "In-process transport and synthetic storage errors"
+              ],
+              "limitations": "Full API run recorded 1167 successful assertions and six existing skips. Includes unauthenticated bootstrap, privileged-capacity rejection, storage failure and strict completion identity rejection. Core recovery cases use real SDK errors but substituted command transport in a separate 22-assertion report. No live transaction rollback, committed idempotency, concurrency or browser recovery proof; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_onboarding_20261030.log",
+              "links": ["binding:api.onboarding_test", "binding:api.onboarding_client_test"]
+            },
+            {
+              "id": "evidence:api.daily_content_read_g1_20261030",
+              "title": "Daily-content native reads and namespace compatibility",
+              "scenario": "scenario:api.daily_content_read",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-daily-content-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": ["Identity and database services", "In-process HTTP transport"],
+              "limitations": "Full API suite: 1147 assertions passed and six existing skips. Includes both namespaces, driver-date/nullable-author normalization, separate query values and legitimate empty content. Real SDK and Cedar WASM are used. Does not prove live database execution, RLS, all-role access or deployment. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_daily_content_20261030.log",
+              "links": ["binding:api.daily_content_test", "binding:api.daily_content_handler"]
+            },
+            {
+              "id": "evidence:api.daily_content_reject_g1_20261030",
+              "title": "Daily-content invalid requests and storage rejection",
+              "scenario": "scenario:api.daily_content_reject",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-daily-content-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "Injected malformed query results and storage exceptions"
+              ],
+              "limitations": "Included in the 1147-assertion full API run: invalid calendar dates, SQL-like date text, invalid/oversized lookbacks, non-array results, invalid stored fields and storage exceptions reject with safe native errors. Does not prove live database failures or resistance to all injection paths. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_daily_content_20261030.log",
+              "links": ["binding:api.daily_content_test"]
+            },
+            {
+              "id": "evidence:api.privacy_api_g1_20261030",
+              "title": "Native privacy boundary, compatibility read and storage-result checks",
+              "scenario": "scenario:api.privacy_owner",
+              "revision": "1e0d1c76a6e5fa80768f2054fc08f96801c983d7+working-tree:native-privacy-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": ["Identity and database services", "In-process HTTP transport"],
+              "limitations": "42 focused API assertions passed across privacy, entitlement and contract conversion. Privacy checks use the real installed Cedar WASM, account-bound SQL parameters, canonical envelopes, empty ledger and malformed storage rejection. Does not prove live database RLS, committed writes, deployment or all-domain typing. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_privacy_focused_20261030.log",
+              "links": ["binding:api.privacy_api_test", "binding:api.privacy_handler"]
+            },
+            {
+              "id": "evidence:api.privacy_policy_g1_20261030",
+              "title": "Real WASM owner decisions and policy startup regression",
+              "scenario": "scenario:api.privacy_owner",
+              "revision": "1e0d1c76a6e5fa80768f2054fc08f96801c983d7+working-tree:native-privacy-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, installed Cedar WASM",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic principal and resource attributes",
+                "Filesystem failures injected in startup tests"
+              ],
+              "limitations": "24 policy assertions passed. Includes member, teacher, principal and admin own-ledger decisions, cross-owner and missing-owner denial, and append-only restrictions. No live database or identity proof. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-packages_policies-native_privacy_20261030.log",
+              "links": ["binding:api.privacy_policy_test"]
+            },
+            {
+              "id": "evidence:api.native_failure_g1_20261030",
+              "title": "Full boundary suite with native SDK error shapes",
+              "scenario": "scenario:api.native_failure",
+              "revision": "e1b0b9d0bf1f311604d01ecc90d9fff6a1c65628+working-tree:native-v2-errors-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "In-process fetch instead of deployed HTTP transport"
+              ],
+              "limitations": "Full suite: 1105 assertions passed, six existing skips. Native single/batch admission rejection, reward storage failures and corrupt snapshots are included. Does not establish production, database authority, concurrent writes or complete application coverage. Uncommitted working-tree evidence; no G0 scenario promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-native_v2_stable_20261030.log",
+              "links": [
+                "binding:api.native_client",
+                "binding:api.native_admission",
+                "binding:api.regular_rewards_test"
+              ]
+            },
+            {
+              "id": "evidence:api.mcp_g1_20261030",
+              "title": "MCP cache, caller isolation and full host regression run",
+              "scenario": "scenario:api.mcp",
+              "revision": "3533705df46b236a645090fd84a7ca084dc90644+working-tree:mcp-schema-cache-20261030",
+              "environment": "Windows Node 24.22.2, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Identity and database services",
+                "Domain procedures in the focused MCP tests"
+              ],
+              "limitations": "Full API run: 1081 assertions passed and six existing skips. MCP tests exercise real SDK dispatch, separate input/output conversion, metadata reuse, actor context isolation and registration failure cleanup. Real-router catalog and unknown-tool deadlines did not fail. Does not prove sustained production load, real identity or real Cedar/database authorization. Uncommitted working-tree evidence; no G0 scenario result or higher-tier promotion is claimed.",
+              "reference": "reports/run-apps_sanctuary-api-mcp_final_20261030.log",
+              "links": ["binding:api.mcp", "binding:api.mcp_door"]
+            },
+            {
+              "id": "evidence:api.reward_unavailable_g1",
+              "title": "Signed reward and dependency-failure boundary scenarios",
+              "scenario": "scenario:api.reward_unavailable",
+              "revision": "3533705df46b236a645090fd84a7ca084dc90644+working-tree:reward-hardening-20261029",
+              "environment": "Windows Node 24.22.2, Vitest 5.0.5",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Database transactions and policy outcomes",
+                "Provider verification-key fetch"
+              ],
+              "limitations": "26 reward assertions within 43 reward/readiness/retention assertions. Real ECDSA with synthetic keys. Does not prove real database rollback, real provider delivery or production behavior. Evidence describes uncommitted working-tree source; G0 scenario evidence is not yet recorded, so no tier promotion is claimed.",
+              "reference": "reports/run-apps_sanctuary-api-reward_boundaries_final.log",
+              "links": ["binding:api.rewards_test"]
+            },
+            {
+              "id": "evidence:api.reward_unavailable_g2",
+              "title": "Real PostgreSQL forced rollback through the signed callback",
+              "scenario": "scenario:api.reward_unavailable",
+              "revision": "3533705df46b236a645090fd84a7ca084dc90644+working-tree:reward-hardening-20261029",
+              "environment": "Windows Node 24.22.2, Vitest 5.0.5, authorized shared PostgreSQL",
+              "tier": "G2",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic provider signing key",
+                "Transaction completion intercepted to force rollback"
+              ],
+              "limitations": "Two reward assertions within five API database assertions. Observes receipt and balance writes together, then forces rollback and verifies absence of committed changes. Also proves owner create denial through the real ORM policy client. Does not prove successful provider delivery, contention, complete RLS isolation or production canary behavior. G0 scenario evidence remains unrecorded; no skipped-level promotion is claimed.",
+              "reference": "reports/run-apps_sanctuary-api-reward_policy_pg_final.log",
+              "links": ["binding:api.rewards_pg"]
+            }
+          ],
+          "sharedRequirements": [],
+          "sharedBindings": []
+        }
+      ],
+      "sharedJourneys": []
+    },
+    {
+      "id": "intent:api.compose",
+      "title": "Reject invalid API composition before serving operations",
+      "actor": "API maintainer or deployment agent",
+      "outcome": "Admit canonical native contracts and reject mixed or legacy architecture; declaration inventory and historical compiler evidence do not establish admission.",
+      "links": [],
+      "journeys": [
+        {
+          "id": "journey:api.compose",
+          "title": "Inspect, compile and validate API contracts",
+          "planning": {
+            "maturity": "development",
+            "implementation": "partial",
+            "verification": "partial",
+            "priority": "P0"
+          },
+          "situation": "A maintainer inspects the current empty v1 foundation while retaining pre-reset mixed-tree/compiler observations as historical evidence. The historical characterizations below are not current contract or feature admission claims.",
+          "outcome": "An honest inventory and explicit admission findings; legacy compiler characterization is retained as historical evidence, not target conformance.",
+          "context": "setup",
+          "preconditions": [
+            "Installed pinned oRPC/Zod versions and source route declarations are available."
+          ],
+          "entry": "step:api.compose_source",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "Historical pre-reset application proxy and eager legacy compiler behavior remains described below for context. Both the old runtime source and its legacy declaration tree were retired by the reset."
+            ],
+            "integrationPoints": [
+              "apps/sanctuary-api/src/core/orpc.ts",
+              "apps/sanctuary-api/src/core/router.ts"
+            ],
+            "invariants": [
+              "No declaration becomes proof of runtime authority.",
+              "Preserve schema identity, error metadata and declared validation behavior.",
+              "Invalid unused routes must fail before a compiled router is returned."
+            ],
+            "openQuestions": [
+              "Legacy handler-facing type erasure remains until domain migration.",
+              "Multiple-success variants do not dynamically select distinct HTTP statuses.",
+              "This compiler does not establish deployed behavior or database authorization."
+            ]
+          },
+          "links": [],
+          "observations": [
+            {
+              "id": "observation:api.canonical_horizontal",
+              "title": "Owner-authorized hard cutover starts with horizontal enforcement",
+              "statement": "The owner confirmed no deployed compatibility obligation, accepted the hybrid navigation/business ownership/channel model, and limited the current phase to horizontal foundation before feature migrations. Legacy declarations and aliases remain source debt, not accepted target behavior. Bot execution, browser WebMCP and broad user MCP exposure must not be inferred from ingress or router presence.",
+              "origin": "user",
+              "links": ["binding:api.canonical_model", "binding:api.composition_gate"]
+            },
+            {
+              "id": "observation:api.eager_composition",
+              "title": "Application proxy conversion has been replaced by native contract compilation",
+              "statement": "The compiler returns SDK contract objects with stable identities. Route fields are validated before SDK implement is invoked; source replacement requires explicit recomposition. Native contracts remain directly supported.",
+              "origin": "source",
+              "links": ["binding:api.contract_conversion", "binding:api.contract_test"]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:api.eager_composition",
+              "title": "Malformed unused declarations now prevent composition",
+              "statement": "Missing/invalid schemas, unsupported methods/channels, obsolete error-map fields and unsupported add_on entitlement scope now throw during composition. Existing source edits do not hot-rewrite already compiled procedures. OpenAPI uses the first declared numeric success status.",
+              "origin": "source",
+              "links": ["binding:api.contract_conversion", "binding:api.guide"]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:api.eager_composition",
+              "title": "Server composition and client authority",
+              "statement": "This is a server startup/composition boundary. Browser and mobile continue through their existing transports; client typing for unmigrated domains remains incomplete.",
+              "origin": "source",
+              "platform": "shared",
+              "links": ["binding:api.contract_conversion"]
+            }
+          ],
+          "steps": [
+            {
+              "id": "step:api.compose_source",
+              "title": "Assemble declarations",
+              "interaction": "Supply the existing source declarations and native contracts.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:api.compose_ready",
+              "title": "Inspect historical compiler output",
+              "interaction": "Inspect existing compiled objects as retirement characterization, without treating them as canonical native-source admission.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:api.inventory_review",
+              "title": "Review declarations and coverage gaps",
+              "interaction": "Query the JSON inventory while retaining its source, transport and evidence limitations.",
+              "terminal": true,
+              "links": ["binding:api.contract_inventory"]
+            },
+            {
+              "id": "step:api.compose_rejected",
+              "title": "Correct an invalid declaration",
+              "interaction": "Inspect the composition error, correct its source and recompile.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:api.architecture_reject",
+              "title": "Reject mixed API composition",
+              "from": "step:api.compose_source",
+              "to": "step:api.compose_rejected",
+              "action": "Run the required composition gate against the source substrate instead of accepting legacy conversion or a renamed OpenAPI transport as canonical native RPC.",
+              "feedback": "Exit nonzero with explicit source findings; fixture success does not make the application architecture conformant.",
+              "links": ["binding:api.composition_gate", "binding:api.composition_gate_test"]
+            },
+            {
+              "id": "transition:api.compose_valid",
+              "title": "Characterize existing declaration compilation",
+              "from": "step:api.compose_source",
+              "to": "step:api.compose_ready",
+              "action": "Characterize the existing compiler's validated outputs during retirement; use the separate architecture gate for canonical admission.",
+              "feedback": "Return historical compiler observations without admitting legacy conversion as target architecture.",
+              "links": ["binding:api.contract_conversion"]
+            },
+            {
+              "id": "transition:api.inventory_inspect",
+              "title": "Inspect registered contract declarations",
+              "from": "step:api.compose_source",
+              "to": "step:api.inventory_review",
+              "action": "Inspect native and legacy declarations through the existing audit CLI using read-only JSON or guarded explicit output.",
+              "feedback": "Return deterministic declaration metadata, lexical observations, warnings and known coverage gaps; preserve edited reports.",
+              "links": ["binding:api.contract_inventory", "binding:api.contract_inspector"]
+            },
+            {
+              "id": "transition:api.compose_invalid",
+              "title": "Reject an invalid declaration",
+              "from": "step:api.compose_source",
+              "to": "step:api.compose_rejected",
+              "action": "Reject invalid routes before returning a compiled router, even if no caller accesses that route.",
+              "feedback": "Throw an explicit composition error instead of constructing a schema-less procedure.",
+              "links": ["binding:api.contract_conversion"]
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:api.architecture_reject",
+              "title": "Mixed architecture is denied admission",
+              "transitions": ["transition:api.architecture_reject"],
+              "expected": "Wrong RPC bases, alternate first-party OpenAPI, reachable legacy declarations/conversion, unsafe boundary type escapes and duplicate router aliases produce explicit findings and a nonzero exit. This is static admission evidence, not runtime routing or authorization proof.",
+              "links": ["requirement:api.canonical_horizontal", "binding:api.composition_gate", "binding:api.composition_gate_test"]
+            },
+            {
+              "id": "scenario:api.compose_valid",
+              "title": "Historical compiler behavior remains inspectable",
+              "transitions": ["transition:api.compose_valid"],
+              "expected": "Characterize existing schema identity/refinements/errors, native leaf support, stable compiled instances and primary OpenAPI success status. This historical behavior does not satisfy the native-only architecture requirement.",
+              "links": ["binding:api.contract_test"]
+            },
+            {
+              "id": "scenario:api.inventory_inspect",
+              "title": "Native declaration inventory without false runtime claims",
+              "transitions": ["transition:api.inventory_inspect"],
+              "expected": "Native contracts are retained as leaves; stacked schemas, encoded paths, shared router references and cycles are handled. Repeated CLI JSON is deterministic, edited/ignored reports survive, invalid output options fail, and application behavior remains unverified.",
+              "links": [
+                "binding:api.contract_inventory_test",
+                "binding:api.contract_inspector_test"
+              ]
+            },
+            {
+              "id": "scenario:api.compose_invalid",
+              "title": "Invalid declaration stops composition",
+              "transitions": ["transition:api.compose_invalid"],
+              "expected": "Malformed nested members, missing/invalid request or response schemas, unsupported method/channel/scope and obsolete error fields throw without deferred property access.",
+              "links": ["binding:api.contract_test"]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:api.canonical_horizontal",
+              "title": "Native-only architecture is enforced before feature migrations",
+              "statement": "Use native oRPC v2 first-party commands/queries at /api/v1 only. Navigation, business ownership and channel adapters remain distinct. Required checks reject mismatched legacy architecture without waivers; current delivery is horizontal foundation, with product-policy conflicts held for the owner.",
+              "origin": "user",
+              "classification": "constraint",
+              "links": ["binding:api.canonical_model", "binding:api.composition_gate"]
+            },
+            {
+              "id": "requirement:api.inventory_truthfulness",
+              "title": "Declared coverage cannot become runtime assurance",
+              "statement": "Inspect native and legacy contracts while keeping namespace candidates distinct from OpenAPI paths. Preserve edited reports and report manual-registry gaps, metadata and lexical observations without claiming runtime, authorization, persistence or client typing proof.",
+              "origin": "source",
+              "classification": "constraint",
+              "links": ["binding:api.contract_inventory", "binding:api.contract_inspector"]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:api.canonical_model",
+              "category": "architecture",
+              "reference": "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md",
+              "status": "implemented",
+              "note": "Governing horizontal policy and deferred decision ledger, not proof of native cutover or channel execution."
+            },
+            {
+              "id": "binding:api.composition_gate",
+              "category": "tool",
+              "reference": "scripts/audit-api-composition.mjs",
+              "status": "implemented",
+              "note": "Required G0 AST source admission check. A nonzero actual-tree result means the application remains nonconformant; runtime transport, authorization and ownership semantics need separate evidence."
+            },
+            {
+              "id": "binding:api.composition_gate_test",
+              "category": "test",
+              "reference": "scripts/tests/audit-api-composition.test.mjs",
+              "status": "implemented",
+              "note": "Isolated synthetic source fixtures test the guard. They do not execute application procedures, real storage, channels or provider delivery."
+            }
+          ],
+          "evidence": [
+            {
+              "id": "evidence:api.architecture_reject_g1_20261030",
+              "title": "Horizontal composition guard rejects mixed source fixtures",
+              "scenario": "scenario:api.architecture_reject",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:horizontal-foundation-20261030",
+              "environment": "Windows Node 24.22.2, node:test, installed TypeScript 7.1.0-beta public sync and AST APIs",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": ["Synthetic source maps instead of a running application, database or provider"],
+              "limitations": "Eight fixture cases exercise malformed source, wrong bases, alternate transports, legacy declaration/converter shapes, boundary type escapes, aliases, disconnected RPC handlers, required mounts and CLI errors. Actual-tree G0 composition exits 1 with 142 findings; full API source quality also fails error taxonomy and authorization parity. Does not prove runtime transport, domain ownership, authorization, native-only cutover, real channel operation or deployed behavior. Mutable working-tree evidence; no tier promotion claimed.",
+              "reference": "reports/run-api_composition_foundation_20261030.log",
+              "links": ["requirement:api.canonical_horizontal", "binding:api.composition_gate", "binding:api.composition_gate_test"]
+            },
+            {
+              "id": "evidence:api.compose_valid_g1_20261030",
+              "title": "Native contract compilation and transport success metadata",
+              "scenario": "scenario:api.compose_valid",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic route declarations and procedure handlers",
+                "In-process SDK HTTP transport"
+              ],
+              "limitations": "46 converter assertions within the 1162-assertion full API run; six existing skips. Covers schema identity/refinements, errors, native contracts, stable instances, source replacement, router own properties and real SDK 201/202/204 responses. Does not prove deployed feature behavior, database authorization or exact legacy handler inference. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-eager_contracts_20261030.log",
+              "links": ["binding:api.contract_test", "binding:api.contract_conversion"]
+            },
+            {
+              "id": "evidence:api.inventory_inspect_g1_20261030",
+              "title": "Inventory subprocesses and report preservation",
+              "scenario": "scenario:api.inventory_inspect",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:contract-inventory-20261030",
+              "environment": "Windows Node, node:test, installed oRPC 2.0.0-beta.46 and Zod 4.6.7",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Isolated output fixtures; application procedures are not executed"
+              ],
+              "limitations": "Three CLI scenarios inspect the actual local manually registered sources and test deterministic JSON, modified/ignored report preservation and invalid flags. Inspector fixtures separately record five assertions within a 14-assertion core report. Does not prove exhaustive runtime inventory, live authorization/persistence, or sandboxed output confinement. Uncommitted working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-api_contract_inventory_cli_20261030.log",
+              "links": [
+                "binding:api.contract_inventory_test",
+                "binding:api.contract_inspector_test"
+              ]
+            },
+            {
+              "id": "evidence:api.compose_invalid_g1_20261030",
+              "title": "Eager invalid-declaration rejection",
+              "scenario": "scenario:api.compose_invalid",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": ["Synthetic malformed route declarations"],
+              "limitations": "Included in 46 converter assertions: malformed roots/members, missing/invalid schemas, invalid response keys/method/path/channel, obsolete error status fields and unsupported add_on scope reject during composition. Does not prove rejection of every possible malformed graph, native authority metadata or production deployment. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-eager_contracts_20261030.log",
+              "links": ["binding:api.contract_test", "binding:api.contract_conversion"]
+            }
+          ],
+          "sharedRequirements": ["requirement:api.contract_composition"],
+          "sharedBindings": [
+            "binding:api.contract_conversion",
+            "binding:api.contract_test",
+            "binding:api.contract_inventory",
+            "binding:api.contract_inspector",
+            "binding:api.contract_inventory_test",
+            "binding:api.contract_inspector_test",
+            "binding:api.guide"
+          ]
+        }
+      ],
+      "sharedJourneys": []
+    }
+  ]
+}

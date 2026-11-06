@@ -6,7 +6,7 @@
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStudentGoals } from '@repo/self/hooks/useStudentGoals';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { WorldSkeleton } from '@repo/ui/components/native';
 import { ChevronRight, Flame, Goal, Minus, Plus, Sparkles, Target, Trophy } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -84,8 +84,8 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
   if (isLoading && userId) {
     return (
       <VStack className="gap-lg p-lg">
-        <SkeletonCard height={120} />
-        <SkeletonCard height={200} />
+        <WorldSkeleton height={120} />
+        <WorldSkeleton height={200} />
       </VStack>
     );
   }

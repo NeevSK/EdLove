@@ -1,24 +1,20 @@
-import { authAPI, identityAPI } from '@repo/core/api/client';
-import { handleAPIError } from '@repo/core/api/interceptor';
+import { authAPI } from '@repo/core/auth';
+import { handleAPIError } from '@repo/core';
 import { useDeviceAccounts } from '@repo/core/hooks';
 import { useMachineActor } from '@repo/core/hooks/useMachineActor';
-import { accountPin, deepLink, getSessionIdentityMode } from '@repo/core/logic';
-import { FlowResolver, GuestDataSync } from '@repo/core/native';
+import { accountPin, getSessionIdentityMode } from '@repo/core/logic';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
 import {
   authorizeExistingAccountTransfer,
   beginGuestConversion,
   beginLocalGuestConversion,
   bindGuestConversionTarget,
   clearExistingAccountTransferAuthorization,
-  clearGuestConversionRecord,
-  discardGuestConversion,
 } from '@repo/core/native/guestConversionLedger';
 import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
-import { storage } from '@repo/core/storage';
 import { validators } from '@repo/core/utils';
 import AccountPinModal, { type AccountPinModalSubmit } from '@repo/ui/components/AccountPinModal';
 import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
-import { default as GuestDataSyncModal } from '@repo/ui/components/GuestDataSyncModal';
 import { LivingGlow } from '@repo/ui/components/LivingGlow';
 import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -40,7 +36,6 @@ import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import type React from 'react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -88,17 +83,10 @@ interface AuthScreenProps {
    * flow. The mobile app wrapper supplies this on native platforms only.
    */
   onGoogleNative?: () => Promise<{ idToken: string; accessToken: string | null }>;
-  /** Injected Scanner component to avoid circular dependencies with @repo/scanner-kit */
-  Scanner?: React.ComponentType<{
-    visible: boolean;
-    onClose: () => void;
-    onScan: (data: string) => Promise<void>;
-    title?: string;
-  }>;
 }
 
 const AuthScreen = memo(
-  ({ onSuccess, onBack, onNavigateRecovery, onGoogleNative, Scanner }: AuthScreenProps) => {
+  ({ onSuccess, onBack, onNavigateRecovery, onGoogleNative }: AuthScreenProps) => {
     const { t } = useTranslation();
     const { accent, text } = useTheme();
     const { showToast } = useSanctuaryToast();
@@ -128,9 +116,6 @@ const AuthScreen = memo(
       email,
       password,
       errors,
-      showScanner,
-      showSyncModal,
-      newUserId,
       pendingPinAccountId,
       pinError,
       usePassword,
@@ -170,15 +155,6 @@ const AuthScreen = memo(
           case 'RESET_ERRORS':
             actor.send({ type: 'RESET_ERRORS' });
             break;
-          case 'SET_SCANNER':
-            if (action.visible) actor.send({ type: 'OPEN_SCANNER' });
-            else actor.send({ type: 'CLOSE_SCANNER' });
-            break;
-          case 'SET_SYNC_MODAL':
-            if (action.isOpen)
-              actor.send({ type: 'OPEN_SYNC_MODAL', newUserId: context.newUserId });
-            else actor.send({ type: 'CLOSE_SYNC_MODAL' });
-            break;
           case 'SET_LOADING':
             if (action.loading) actor.send({ type: 'START_AUTHENTICATING' });
             else if (snapshot.value === 'authenticating')
@@ -186,7 +162,7 @@ const AuthScreen = memo(
             break;
         }
       },
-      [actor, context.newUserId, snapshot.value],
+      [actor, snapshot.value],
     );
 
     const {
@@ -203,22 +179,6 @@ const AuthScreen = memo(
         path: 'auth/callback',
       });
     }, []);
-
-    const notifyPendingInvite = useCallback(async () => {
-      try {
-        const pendingInvite = await storage.getStringAsync('pending_invite');
-        if (!pendingInvite) return;
-        const invite = JSON.parse(pendingInvite);
-        if (invite.school_id) {
-          showToast({
-            message: 'Your official school invitation is ready to claim.',
-            type: 'info',
-          });
-        }
-      } catch (e) {
-        console.error('Failed to apply pending invite', e);
-      }
-    }, [showToast]);
 
     const prepareGuestConversion = useCallback(
       async (
@@ -252,27 +212,10 @@ const AuthScreen = memo(
             is_anonymous: false,
           });
         }
-        const internalId = await identityAPI.getMyInternalId();
-        if (internalId) {
-          await notifyPendingInvite();
-        }
-
-        const hasGuestData = guestSourceId
-          ? await GuestDataSync.hasGuestData(guestSourceId)
-          : false;
-        if (guestSourceId && hasGuestData && internalId) {
-          dispatch({
-            type: 'SET_FIELD',
-            field: 'newUserId',
-            value: internalId,
-          });
-          dispatch({ type: 'SET_SYNC_MODAL', isOpen: true });
-        } else {
-          showToast({ message: 'Success! Welcome back to the sanctuary.', type: 'success' });
-          if (onSuccess) onSuccess();
-        }
+        showToast({ message: 'Success! Welcome back to the sanctuary.', type: 'success' });
+        if (onSuccess) onSuccess();
       },
-      [showToast, onSuccess, notifyPendingInvite],
+      [showToast, onSuccess],
     );
 
     const signInWithNativeGoogle = useCallback(
@@ -352,7 +295,7 @@ const AuthScreen = memo(
 
         const authResponse = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
         if (authResponse.type === 'success' && (authResponse as any).url) {
-          const result = await deepLink.handleURL((authResponse as { url: string }).url);
+          const result = await handleDeepLink((authResponse as { url: string }).url);
           if (!result.isHandled) {
             if (guestSourceId) {
               await clearExistingAccountTransferAuthorization(guestSourceId);
@@ -599,48 +542,6 @@ const AuthScreen = memo(
       },
       [handleAccountSwitch, pendingPinAccountId],
     );
-
-    const handleCloseScanner = useCallback(() => {
-      dispatch({ type: 'SET_SCANNER', visible: false });
-    }, []);
-
-    const handleScan = useCallback(
-      async (data: string) => {
-        hapticSuccess();
-        dispatch({ type: 'SET_SCANNER', visible: false });
-        const userId = await identityAPI.getMyInternalId();
-        if (!userId) {
-          showToast({
-            message: 'Please sign in first to use QR codes',
-            type: 'error',
-          });
-          return;
-        }
-        try {
-          const result = await FlowResolver.resolveQR(JSON.parse(data), userId);
-          if (result.outcome === 'error') {
-            showToast({
-              message: result.message || 'Unrecognized QR',
-              type: 'error',
-            });
-            return;
-          }
-          showToast({ message: result.message, type: 'success' });
-        } catch (_e) {
-          showToast({ message: 'Invalid QR code format', type: 'error' });
-        }
-      },
-      [showToast],
-    );
-
-    const handleSyncComplete = useCallback(() => {
-      dispatch({ type: 'SET_SYNC_MODAL', isOpen: false });
-      if (onSuccess) onSuccess();
-    }, [onSuccess]);
-
-    const handleSyncClose = useCallback(() => {
-      dispatch({ type: 'SET_SYNC_MODAL', isOpen: false });
-    }, []);
 
     const handleEmailChange = useCallback((text: string) => {
       dispatch({ type: 'SET_FIELD', field: 'email', value: text });
@@ -905,22 +806,6 @@ const AuthScreen = memo(
           </VStack>
         </Box>
 
-        {Scanner && (
-          <Scanner
-            visible={showScanner}
-            onClose={handleCloseScanner}
-            onScan={handleScan}
-            title="Scan Invite Code"
-          />
-        )}
-        <GuestDataSyncModal
-          isOpen={showSyncModal}
-          userId={newUserId}
-          onSyncComplete={handleSyncComplete}
-          onClose={handleSyncClose}
-          onSkipEmpty={clearGuestConversionRecord}
-          onDiscard={discardGuestConversion}
-        />
         <AccountPinModal
           isOpen={pendingPinAccountId !== null}
           mode="verify"

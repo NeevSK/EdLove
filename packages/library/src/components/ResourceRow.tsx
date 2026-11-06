@@ -1,7 +1,8 @@
 import { formatDuration, formatFileSize } from '@repo/core/lib';
 import type { BaseResource } from '@repo/core/types';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { IconButton } from '@repo/ui/components/native';
+import { Surface } from '@repo/ui/components/native';
+import { Pressable } from 'react-native';
 import {
   ArrowLeftRight,
   BookMarked,
@@ -125,7 +126,7 @@ export function ResourceRow({
   const metaParts = [resource.format?.toUpperCase(), fileSize, duration].filter(Boolean);
   return (
     <Box className="mb-2">
-      <SanctuaryCard onPress={onOpen}>
+      <Pressable onPress={onOpen} className="active:opacity-90"><Surface tone="raised" flush className="rounded-2xl">
         <HStack className="gap-4 items-center p-2">
           {/* File Type Icon - Refined Glass Effect */}
           <Box
@@ -181,61 +182,74 @@ export function ResourceRow({
           {/* Actions */}
           <HStack className="gap-1 items-center">
             {onFlashPlay && (
-              <SanctuaryButton onPress={onFlashPlay} variant="ghost" size="xs" leftIcon={Play}>
-                {''}
-              </SanctuaryButton>
+              <IconButton
+                onPress={onFlashPlay}
+                variant="quiet"
+                size="sm"
+                icon={Play}
+                label="Play preview"
+              />
             )}
             {onPullToDesk && (
-              <SanctuaryButton onPress={onPullToDesk} variant="ghost" size="xs" leftIcon={Bookmark}>
-                {''}
-              </SanctuaryButton>
+              <IconButton
+                onPress={onPullToDesk}
+                variant="quiet"
+                size="sm"
+                icon={Bookmark}
+                label="Bookmark resource"
+              />
             )}
             {onOpenAnotherWay && (
-              <SanctuaryButton
+              <IconButton
                 onPress={onOpenAnotherWay}
-                variant="ghost"
-                size="xs"
-                leftIcon={ArrowLeftRight}
-              >
-                {''}
-              </SanctuaryButton>
+                variant="quiet"
+                size="sm"
+                icon={ArrowLeftRight}
+                label="Open another way"
+              />
             )}
             {onDelete && (
-              <SanctuaryButton onPress={onDelete} variant="ghost" size="xs" leftIcon={Trash2}>
-                {''}
-              </SanctuaryButton>
+              <IconButton
+                onPress={onDelete}
+                variant="quiet"
+                size="sm"
+                icon={Trash2}
+                label="Delete resource"
+              />
             )}
 
             {onAISparkle && (
-              <SanctuaryButton onPress={onAISparkle} variant="ghost" size="xs" leftIcon={Sparkles}>
-                {''}
-              </SanctuaryButton>
+              <IconButton
+                onPress={onAISparkle}
+                variant="quiet"
+                size="sm"
+                icon={Sparkles}
+                label="AI Analysis"
+              />
             )}
 
             {onGenerateQuiz && (
-              <SanctuaryButton
+              <IconButton
                 onPress={onGenerateQuiz}
-                variant="ghost"
-                size="xs"
-                leftIcon={ClipboardCheck}
-              >
-                {''}
-              </SanctuaryButton>
+                variant="quiet"
+                size="sm"
+                icon={ClipboardCheck}
+                label="Generate quiz"
+              />
             )}
 
             {onGenerateGraphic && (
-              <SanctuaryButton
+              <IconButton
                 onPress={onGenerateGraphic}
-                variant="ghost"
-                size="xs"
-                leftIcon={Brain}
-              >
-                {''}
-              </SanctuaryButton>
+                variant="quiet"
+                size="sm"
+                icon={Brain}
+                label="Generate visual"
+              />
             )}
           </HStack>
         </HStack>
-      </SanctuaryCard>
+      </Surface></Pressable>
     </Box>
   );
 }

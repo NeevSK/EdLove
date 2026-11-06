@@ -80,7 +80,7 @@ vi.mock('@repo/core/hooks/useEntitlementQuery', () => ({
   useEntitlementQuery: () => mocks.entitlementState,
 }));
 
-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { usePermissions } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 
 function CapabilityProbe({
   action,

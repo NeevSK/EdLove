@@ -23,6 +23,7 @@ import { DocumentService } from './services/DocumentService.js';
 import { HelpService } from './services/HelpService.js';
 import { MaintenanceService } from './services/MaintenanceService.js';
 import { ScoutService } from './services/ScoutService.js';
+import { generateDownstreamCedarSchema } from './services/cedarMcpSchema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -147,7 +148,7 @@ function proxyScriptPath() {
 }
 
 function buildDownstreamServerSpecs(): DownstreamServerSpec[] {
-  return [
+  const specs: DownstreamServerSpec[] = [
     {
       name: 'sequential-thinking',
       envKey: 'EXPO_TOKEN', // sequential thinking doesn't need specific tokens but we want it always active
@@ -287,7 +288,66 @@ function buildDownstreamServerSpecs(): DownstreamServerSpec[] {
         'https://mcp.betterstack.com',
       ],
     },
+    {
+      name: 'meta',
+      envKey: 'META_ACCESS_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.facebook.com/devtools',
+      ],
+    },
+    {
+      name: 'whatsapp_biz',
+      envKey: 'WHATSAPP_ACCESS_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.facebook.com/whatsapp_business_tools',
+      ],
+    },
   ];
+
+  // Discover Stitch accounts (supports STITCH_API_KEY, STITCH_API_KEY_1, STITCH_API_KEY_ACCOUNT2, etc.)
+  const stitchEnvKeys = Object.keys(process.env).filter((k) => /^STITCH_API_KEY(_.*)?$/i.test(k));
+  if (stitchEnvKeys.length === 0) {
+    // Default placeholder so gateway logs skipping if missing
+    specs.push({
+      name: 'stitch',
+      envKey: 'STITCH_API_KEY',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://stitch.googleapis.com/mcp',
+      ],
+    });
+  } else {
+    for (const key of stitchEnvKeys) {
+      const isDefault = key.toUpperCase() === 'STITCH_API_KEY';
+      const suffix = isDefault ? '' : key.replace(/^STITCH_API_KEY_?/i, '').toLowerCase();
+      const serverName = suffix ? `stitch_${suffix}` : 'stitch';
+
+      specs.push({
+        name: serverName,
+        envKey: key,
+        command: 'node',
+        args: [
+          proxyScriptPath(),
+          'node',
+          path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+          'https://stitch.googleapis.com/mcp',
+        ],
+      });
+    }
+  }
+
+  return specs;
 }
 
 async function probeExpoToken(token: string | undefined) {
@@ -343,6 +403,15 @@ function resolveServerArgs(spec: DownstreamServerSpec, token: string | undefined
   }
   if (spec.name === 'betterstack' && token) {
     return [...spec.args, '--header', `Authorization:Bearer ${token}`];
+  }
+  if (spec.name === 'meta' && token) {
+    return [...spec.args, '--header', `Authorization:Bearer ${token}`];
+  }
+  if (spec.name === 'whatsapp_biz' && token) {
+    return [...spec.args, '--header', `Authorization:Bearer ${token}`];
+  }
+  if (spec.name.startsWith('stitch') && token) {
+    return [...spec.args, '--header', `X-Goog-Api-Key:${token}`];
   }
   return spec.args;
 }
@@ -438,13 +507,17 @@ class PolymathPlatformServer {
     console.error('[Gateway] Initializing Sovereign Downstream Multiplexer...');
 
     // Auto-sync local skills on boot
-    try {
-      await this.syncWorkspaceSkillsToAntigravity();
-    } catch (e: any) {
-      console.error('[Gateway] Skills Sync Warning:', e.message);
+    if (process.env.PLATFORM_MCP_SKIP_SKILL_SYNC !== '1') {
+      try {
+        await this.syncWorkspaceSkillsToAntigravity();
+      } catch (e: any) {
+        console.error('[Gateway] Skills Sync Warning:', e.message);
+      }
     }
 
+    const selectedDownstreams = process.env.PLATFORM_MCP_DOWNSTREAMS?.split(',').map((name) => name.trim());
     for (const serverConf of buildDownstreamServerSpecs()) {
+      if (selectedDownstreams && !selectedDownstreams.includes(serverConf.name)) continue;
       const token = process.env[serverConf.envKey];
       if (!token && !serverConf.alwaysRun) {
         console.error(
@@ -662,6 +735,8 @@ class PolymathPlatformServer {
       z.object({
         action: z.enum([
           'hygiene',
+          'cedar',
+          'cedar_scenarios',
           'legacy_ui',
           'architecture',
           'a11y',
@@ -697,6 +772,8 @@ class PolymathPlatformServer {
       async ({ action, params = {} }) => {
         const auditHandlers: Record<string, (p: Record<string, any>) => unknown> = {
           hygiene: () => this.audit.handleAuditHygiene(),
+          cedar: () => this.audit.handleCedarAudit(false),
+          cedar_scenarios: () => this.audit.handleCedarAudit(true),
           legacy_ui: (p) => this.audit.handleAuditLegacyUI(p as any),
           architecture: (p) => this.audit.handleAuditPackageArchitecture(p as any),
           a11y: (p) => this.audit.handleAuditA11y(p as any),
@@ -746,6 +823,7 @@ class PolymathPlatformServer {
           'scout',
           'docs',
           'inventory',
+          'cedar_mcp_schema',
           'view',
           'find',
           'lens',
@@ -770,6 +848,13 @@ class PolymathPlatformServer {
       }),
       async ({ action, params = {} }) => {
         switch (action) {
+          case 'cedar_mcp_schema': {
+            const serverName = z.string().min(1).parse(params.server);
+            const downstream = this.downstreamClients.get(serverName);
+            if (!downstream) throw new Error(`Downstream server ${serverName} is not connected.`);
+            const result = generateDownstreamCedarSchema(serverName, downstream.tools);
+            return { content: [{ type: 'text' as const, text: JSON.stringify({ source: serverName, ...result }) }] };
+          }
           case 'affordance':
             return this.discovery.handleAffordance(params as any);
           case 'context':
@@ -1538,9 +1623,11 @@ class PolymathPlatformServer {
     console.error('Polymath Master MCP Server (Modular) running on stdio');
 
     // Initialize downstream in the background so it doesn't block startup
-    this.initializeDownstream().catch((err) => {
-      console.error('[Gateway] Background downstream initialization failed:', err);
-    });
+    if (process.env.PLATFORM_MCP_SKIP_DOWNSTREAM !== '1') {
+      this.initializeDownstream().catch((err) => {
+        console.error('[Gateway] Background downstream initialization failed:', err);
+      });
+    }
 
     const cleanup = async () => {
       console.error('[Gateway] Shutting down, cleaning up downstream servers...');

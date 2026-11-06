@@ -9,7 +9,7 @@
  *  - Event Bus: "Something just happened, react to it." (push-based)
  *
  * Key use cases:
- *  1. SyncManager notifies UI of sync success/failure → UI shows indicator
+ *  1. SyncOrchestrator notifies UI of sync success/failure → UI shows indicator
  *  2. Conflict detected → UI opens ConflictResolutionSheet
  *  3. Background Task completes → Foreground screen re-fetches data
  */

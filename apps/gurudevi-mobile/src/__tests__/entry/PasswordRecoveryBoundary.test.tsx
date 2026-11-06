@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
   requestPasswordReauthentication: vi.fn(),
 }));
 
-vi.mock('@repo/core/api/auth', () => ({
+vi.mock('@repo/core/auth', () => ({
   authAPI: {
     onAuthStateChange: (callback: (event: string, session: Session | null) => void) => {
       mocks.callback = callback;

@@ -1,3 +1,5 @@
+'use client';
+
 import { type CSSProperties, type ReactNode, useState } from 'react';
 import type { MediaContract } from '../../../theme/contracts';
 import { fileKindOf, safeFileUrl } from '../../shared/files';

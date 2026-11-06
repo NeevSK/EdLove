@@ -1,5 +1,5 @@
 import { StorageKeys, buildPartitionedKey } from '@repo/core/lib/storage';
-import { storage } from '@repo/core/logic/managers/StorageManager';
+import { storage } from '@repo/core/lib/storage';
 import { deriveReframeOutcome } from '@repo/core/logic/reflection';
 import type {
   ReframeOutcome,

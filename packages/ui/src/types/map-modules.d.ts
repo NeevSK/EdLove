@@ -39,10 +39,10 @@ declare module 'react-native-maps' {
 declare module '@maplibre/maplibre-react-native' {
   import type * as React from 'react';
 
-  export interface PointAnnotationProps {
+  export interface ViewAnnotationProps {
     id: string;
-    coordinate: [number, number];
-    onSelected?: () => void;
+    lngLat: [number, number];
+    onSelect?: () => void;
     children?: React.ReactNode;
   }
 
@@ -50,6 +50,6 @@ declare module '@maplibre/maplibre-react-native' {
     children?: React.ReactNode;
   }
 
-  export const PointAnnotation: React.ComponentType<PointAnnotationProps>;
+  export const ViewAnnotation: React.ComponentType<ViewAnnotationProps>;
   export const Callout: React.ComponentType<CalloutProps>;
 }

@@ -8,7 +8,7 @@ import type {
   TextHighlight,
   TextNote,
 } from '@repo/library/types';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { WaitingSign } from '@repo/ui/components/native';
 import {
   ArrowLeft,
   ArrowRight,
@@ -282,7 +282,7 @@ export default function ReaderScreen() {
   if (isLoading) {
     return (
       <Box className="flex-1 items-center justify-center bg-black">
-        <BrandPulse size={48} tintColor="#D4843A" />
+        <WaitingSign size={48} />
         <Text className="text-mistGray mt-4">{t('reader.loading')}</Text>
       </Box>
     );
@@ -314,7 +314,7 @@ export default function ReaderScreen() {
   if (isLoading) {
     return (
       <Box className="flex-1 items-center justify-center bg-black">
-        <BrandPulse size={48} tintColor="#D4843A" />
+        <WaitingSign size={48} />
         <Text className="text-mistGray mt-4">{t('reader.loading')}</Text>
       </Box>
     );

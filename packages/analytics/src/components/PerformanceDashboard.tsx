@@ -1,7 +1,7 @@
+import { View, Text, ScrollView } from 'react-native';
 import { SimpleBarChart } from '@repo/graphics/charts';
-import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Surface } from '@repo/ui/components/native';
 import { useThemedColors } from '@repo/ui/hooks';
-import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { colors } from '@repo/ui/theme/Theme';
 import type { StudentPerformanceMetrics } from '@repo/analytics/types/AnalyticsTypes';
 import { formatGPA, getGradeColor, getPerformanceLevel } from '@repo/analytics/utils/analyticsHelpers';
@@ -29,8 +29,8 @@ export function PerformanceDashboard({
       contentContainerStyle={{ padding: 16 }}
       style={{ backgroundColor: colors.silk }}
     >
-      <VStack className="gap-4">
-        <Card className="rounded-3xl bg-white/75 px-6 py-6">
+      <View className="gap-4">
+        <Surface tone="raised" className="rounded-3xl bg-white/75 px-6 py-6">
           <Text className="text-xl font-bold" style={{ color: themeColors.text }}>
             Student Performance
           </Text>
@@ -38,34 +38,34 @@ export function PerformanceDashboard({
             ID: {metrics.studentId}
           </Text>
 
-          <HStack className="mb-4 w-full justify-around gap-3">
-            <VStack className="flex-1 items-center gap-1">
+          <View className="flex-row items-center mb-4 w-full justify-around gap-3">
+            <View className="flex-1 items-center gap-1">
               <Text className="text-lg font-bold" style={{ color: themeColors.text }}>
                 {formatGPA(metrics.currentGPA)}
               </Text>
               <Text className="text-xs" style={{ color: themeColors.textSecondary }}>
                 Current GPA
               </Text>
-            </VStack>
-            <VStack className="flex-1 items-center gap-1">
+            </View>
+            <View className="flex-1 items-center gap-1">
               <Text className="text-lg font-bold" style={{ color: themeColors.text }}>
                 {metrics.averageMarks.toFixed(1)}%
               </Text>
               <Text className="text-xs" style={{ color: themeColors.textSecondary }}>
                 Average Marks
               </Text>
-            </VStack>
-            <VStack className="flex-1 items-center gap-1">
+            </View>
+            <View className="flex-1 items-center gap-1">
               <Text className="text-lg font-bold" style={{ color: themeColors.text }}>
                 #{metrics.rankInClass}
               </Text>
               <Text className="text-xs" style={{ color: themeColors.textSecondary }}>
                 Class Rank
               </Text>
-            </VStack>
-          </HStack>
+            </View>
+          </View>
 
-          <Box
+          <View
             className="items-center border-t pt-3"
             style={{ borderTopColor: 'rgba(42,35,24,0.08)' }}
           >
@@ -84,10 +84,10 @@ export function PerformanceDashboard({
               {metrics.trendDirection.charAt(0).toUpperCase() + metrics.trendDirection.slice(1)} (
               {performanceLevel})
             </Text>
-          </Box>
-        </Card>
+          </View>
+        </Surface>
 
-        <Card className="rounded-3xl bg-white/70 px-4 py-4">
+        <Surface tone="raised" className="rounded-3xl bg-white/70 px-4 py-4">
           <SimpleBarChart
             title="Performance Overview"
             data={[
@@ -109,18 +109,18 @@ export function PerformanceDashboard({
             ]}
             height={180}
           />
-        </Card>
+        </Surface>
 
-        <Card className="rounded-3xl bg-white/70 px-4 py-4">
+        <Surface tone="raised" className="rounded-3xl bg-white/70 px-4 py-4">
           <SimpleBarChart title="Subject Performance" data={subjectData} height={150} />
-        </Card>
+        </Surface>
 
         {insights.length > 0 ? (
-          <Card className="rounded-3xl bg-white/70 px-4 py-4">
+          <Surface tone="raised" className="rounded-3xl bg-white/70 px-4 py-4">
             <Text className="mb-2 text-base font-semibold" style={{ color: themeColors.text }}>
               Insights
             </Text>
-            <VStack className="gap-2">
+            <View className="gap-2">
               {insights.map((insight) => (
                 <Text
                   key={insight}
@@ -130,16 +130,16 @@ export function PerformanceDashboard({
                   • {insight}
                 </Text>
               ))}
-            </VStack>
-          </Card>
+            </View>
+          </Surface>
         ) : null}
 
         {recommendations.length > 0 ? (
-          <Card className="rounded-3xl bg-white/70 px-4 py-4">
+          <Surface tone="raised" className="rounded-3xl bg-white/70 px-4 py-4">
             <Text className="mb-2 text-base font-semibold" style={{ color: themeColors.text }}>
               Recommendations
             </Text>
-            <VStack className="gap-2">
+            <View className="gap-2">
               {recommendations.map((recommendation, index) => (
                 <Text
                   key={recommendation}
@@ -149,10 +149,10 @@ export function PerformanceDashboard({
                   {index + 1}. {recommendation}
                 </Text>
               ))}
-            </VStack>
-          </Card>
+            </View>
+          </Surface>
         ) : null}
-      </VStack>
+      </View>
     </ScrollView>
   );
 }

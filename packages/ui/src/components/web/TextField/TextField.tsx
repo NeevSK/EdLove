@@ -1,3 +1,5 @@
+'use client';
+
 import { type InputHTMLAttributes, type Ref, type TextareaHTMLAttributes, useId } from 'react';
 import type { FieldContract } from '../../../theme/contracts';
 import { cx } from '../cx';

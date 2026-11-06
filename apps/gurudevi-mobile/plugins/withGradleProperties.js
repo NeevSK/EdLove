@@ -39,7 +39,7 @@ const withCustomGradleProperties = (config) => {
     };
 
     const gradleHeap = process.env.GRADLE_MAX_HEAP || '4096m';
-    const gradleMetaspace = process.env.GRADLE_MAX_METASPACE || '512m';
+    const gradleMetaspace = process.env.GRADLE_MAX_METASPACE || '1024m';
     const gradleWorkers = process.env.GRADLE_MAX_WORKERS || '1';
     updateProperty(
       'org.gradle.jvmargs',

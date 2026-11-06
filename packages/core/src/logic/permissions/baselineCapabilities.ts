@@ -27,6 +27,14 @@ const LOCAL_ONLY_MUTATION_SUBJECTS: ReadonlySet<string> = new Set([
   'SelfReflection',
 ]);
 
+/** Self work that stays on the person's device. Anything reaching the server still needs Cedar. */
+export function isOnDeviceSelfCapability(action: Action | string, subject: string) {
+  return (
+    ['read', 'create', 'update', 'delete'].includes(action) &&
+    LOCAL_ONLY_MUTATION_SUBJECTS.has(subject)
+  );
+}
+
 export function isBaselineReadCapability(action: Action | string, subject: string) {
   return action === 'read' && BASELINE_READ_SUBJECTS.has(subject);
 }

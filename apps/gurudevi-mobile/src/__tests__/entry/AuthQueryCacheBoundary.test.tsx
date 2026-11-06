@@ -4,9 +4,6 @@ import { act, cleanup, render, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  subjectId: 'credential-a',
-  token: 'token-a',
-  startEventsReceiver: vi.fn((_options: { getAuthToken: () => string }) => vi.fn()),
   setupHermesMemoryShield: vi.fn(() => vi.fn()),
 }));
 const { accountStore } = await vi.hoisted(async () => {
@@ -17,23 +14,12 @@ const { accountStore } = await vi.hoisted(async () => {
     })),
   };
 });
-vi.mock('@repo/core', () => ({
-  useAuth: () => ({
-    session: mocks.subjectId ? { user: { id: mocks.subjectId }, access_token: mocks.token } : null,
-  }),
-}));
 vi.mock('@repo/core/store/useAuthStore', () => ({ useAuthStore: accountStore }));
-vi.mock('@repo/core/api/eventsReceiver', () => ({
-  startEventsReceiver: mocks.startEventsReceiver,
-}));
 vi.mock('@repo/core/efficiency', () => ({
   setupHermesMemoryShield: mocks.setupHermesMemoryShield,
 }));
 vi.mock('@repo/core/logic/runtimeRegistry', () => ({
   coreRuntime: { device: { getTotalMemory: () => null } },
-}));
-vi.mock('react-native', () => ({
-  AppState: { addEventListener: vi.fn(() => ({ remove: vi.fn() })) },
 }));
 
 import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
@@ -50,8 +36,6 @@ function mount() {
 beforeEach(() => {
   vi.clearAllMocks();
   accountStore.setState({ user: { id: 'account-a' } });
-  mocks.subjectId = 'credential-a';
-  mocks.token = 'token-a';
   client = new QueryClient();
   client.setQueryData(accountKey('account-a'), 'A');
   client.setQueryData(accountKey('account-b'), 'B');
@@ -90,19 +74,6 @@ describe('canonical account Query boundary', () => {
     act(() => accountStore.setState({ user: null }));
     await waitFor(() => expect(client.getQueryData(accountKey('account-a'))).toBeUndefined());
     expect(client.getQueryData(accountKey('account-b'))).toBe('B');
-  });
-  it('preserves account data when credentials rotate and restarts only the credential-owned stream', () => {
-    const view = mount();
-    mocks.subjectId = 'credential-a-rebound';
-    mocks.token = 'new-token';
-    view.rerender(
-      <QueryClientProvider client={client}>
-        <AuthQueryCacheBoundary />
-      </QueryClientProvider>,
-    );
-    expect(client.getQueryData(accountKey('account-a'))).toBe('A');
-    expect(mocks.startEventsReceiver).toHaveBeenCalledTimes(2);
-    expect(mocks.startEventsReceiver.mock.calls[1]?.[0].getAuthToken()).toBe('new-token');
   });
   it('does not dispose for a same-account profile update and releases its subscription on unmount', async () => {
     const view = mount();

@@ -81,6 +81,17 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
       }
     });
 
+    it('refuses a QR or invitation link that failed validation, never routing it', () => {
+      for (const url of [
+        'gurudevi://qr?v=1&action=steal_credentials&token=bad',
+        'https://gurudevi.app/qr?v=1&action=steal_credentials',
+        'gurudevi://invite/unknown',
+        'https://gurudevi.app/invite/unknown',
+      ]) {
+        expect(classifyRouteIntent(url)).toEqual({ kind: 'unsupported' });
+      }
+    });
+
     it('fails with DeepLinkTraversalError on encoded or literal path traversals', async () => {
       const traversalCases = [
         'gurudevi://auth/callback/../../internal',

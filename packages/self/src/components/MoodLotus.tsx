@@ -1,7 +1,6 @@
 import BreathGuide from '@repo/self/components/BreathGuide';
-import { GlassCard } from '@repo/ui/components/GlassCard';
 import { CloudRain, Flower2, Sun, Wind, Zap } from '@repo/ui/icons';
-import { AnimatedView, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { AnimatedView, Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -82,7 +81,7 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({ onMoodChange, disabled }) 
   const selectedOption = selectedMood !== null ? moodOptions[selectedMood - 1] : null;
 
   return (
-    <GlassCard className="p-xl rounded-[32px]">
+    <Box className="p-xl rounded-[32px]">
       <VStack className="items-center gap-xl">
         <HStack className="justify-between items-center w-full">
           <VStack className="gap-1 flex-1">
@@ -172,7 +171,7 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({ onMoodChange, disabled }) 
           </>
         )}
       </VStack>
-    </GlassCard>
+    </Box>
   );
 };
 

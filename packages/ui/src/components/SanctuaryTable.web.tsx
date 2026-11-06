@@ -1,6 +1,8 @@
-import { flexRender, type Table } from '@tanstack/react-table';
+import { flexRender } from '@tanstack/react-table';
+import type { RowData } from '@tanstack/react-table';
+import type { LegacyTable as Table } from '@tanstack/react-table/legacy';
 
-export interface SanctuaryTableWebProps<TData> {
+export interface SanctuaryTableWebProps<TData extends RowData> {
   table: Table<TData>;
 }
 
@@ -8,7 +10,7 @@ export interface SanctuaryTableWebProps<TData> {
  * SanctuaryTable.web - Clean, semantic HTML/Tailwind table component for Web dashboards.
  * Consumes a TanStack Table instance.
  */
-export function SanctuaryTable<TData>({ table }: SanctuaryTableWebProps<TData>) {
+export function SanctuaryTable<TData extends RowData>({ table }: SanctuaryTableWebProps<TData>) {
   return (
     <div className="w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-950">
       <table className="w-full border-collapse text-left text-sm text-slate-500 dark:text-slate-400">

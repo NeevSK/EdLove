@@ -1,7 +1,7 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import type { INetwork, NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useConflictStore } from '@repo/core/store/useConflictStore';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
@@ -29,7 +29,7 @@ export function createScenarioTestContext(): ScenarioTestHarness {
       return () => networkListeners.delete(listener);
     },
   };
-  networkManager.registerAdapter(scenarioNetwork);
+  networkMonitor.registerAdapter(scenarioNetwork);
 
   const setOnline = (isOnline: boolean) => {
     const status = isOnline ? 'online' : 'offline';

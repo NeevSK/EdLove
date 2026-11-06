@@ -12,7 +12,7 @@ export interface ChequeRecord {
 
 const memoryChequeStore = new Map<string, ChequeRecord>();
 
-export class ChequeManager {
+export class ChequeLedger {
   /**
    * Registers a new cheque in the system.
    */
@@ -51,3 +51,6 @@ export class ChequeManager {
     return updated;
   }
 }
+
+export const registerCheque = ChequeLedger.registerCheque;
+export const clearCheque = ChequeLedger.clearCheque;

@@ -2,7 +2,7 @@
 
 import { subscribeToNetwork } from '@repo/core/adapters/subscribeToNetwork';
 import type { NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { useSyncExternalStore } from 'react';
 
 const SERVER_SNAPSHOT: NetworkSnapshot = Object.freeze({
@@ -20,7 +20,7 @@ export interface OfflineStatus extends NetworkSnapshot {
 export function useOfflineStatus(): OfflineStatus {
   const snapshot = useSyncExternalStore(
     subscribeToNetwork,
-    networkManager.getSnapshot,
+    networkMonitor.getSnapshot,
     () => SERVER_SNAPSHOT,
   );
 

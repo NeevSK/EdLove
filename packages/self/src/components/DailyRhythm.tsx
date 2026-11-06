@@ -8,8 +8,7 @@ import { useIsGuest } from '@repo/core/hooks';
 import { useTimetable } from '@repo/self/hooks/useTimetable';
 import type { Period } from '@repo/self/types';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { EmptyState , WorldSkeleton } from '@repo/ui/components/native';
 import {
   Book,
   ChevronDown,
@@ -221,19 +220,16 @@ function DailyRhythmContent() {
       {/* List */}
       {loading && (!periods || periods.length === 0) ? (
         <VStack className="gap-4 flex-1">
-          <SkeletonCard className="h-24 bg-white/5" />
-          <SkeletonCard className="h-24 bg-white/5" />
-          <SkeletonCard className="h-24 bg-white/5" />
+          <WorldSkeleton height={96} />
+          <WorldSkeleton height={96} />
+          <WorldSkeleton height={96} />
         </VStack>
       ) : !periods || periods.length === 0 ? (
         <Box className="flex-1 mt-10">
           <Animated.View entering={FadeInDown}>
-            <PositiveInvitation
-              icon={Clock}
+            <EmptyState
               title={t('self.noClasses') || 'Undetermined Flow'}
-              description={
-                t('self.addLesson') || 'Map your daily rhythm to surface moments of focus.'
-              }
+              message={t('self.addLesson') || 'Map your daily rhythm to surface moments of focus.'}
             />
           </Animated.View>
         </Box>

@@ -1,10 +1,12 @@
-import type { ActionFabContract, FabMenuContract } from '../../../theme/contracts';
+import type { ActionFabContract, FabAction, FabMenuContract } from '../../../theme/contracts';
 import { iconSize } from '../../../tokens/sizes';
 import { groupFabActions } from '../../shared/agent';
 import { cx } from '../cx';
 import { Group } from '../Group/Group';
 import { Row } from '../Row/Row';
 import { Sheet } from '../Sheet/Sheet';
+
+export type { FabAction };
 
 export interface ActionFabProps extends ActionFabContract {
   className?: string;

@@ -12,6 +12,8 @@ declare module 'expo-observe' {
     reportError: (error: Error, context?: Record<string, unknown>) => void;
     dispatchEvents: () => void;
     markInteractive: (attributes?: Record<string, unknown>) => void;
+    /** The EAS client id, recorded on every Observe metric as `expo.eas_client.id`. */
+    readonly clientId: string | null;
   };
   export const ObserveRoot: React.ComponentType<{ children: React.ReactNode }>;
   export const ObserveErrorBoundary: React.ComponentType<{ children: React.ReactNode }>;

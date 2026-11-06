@@ -8,7 +8,7 @@ export const PENDING_INTENT_STORAGE_KEY = 'gurudevi_pending_deep_link_intent';
 export const LEGACY_DEFERRED_DEEP_LINK_KEY = 'deferred_deep_link';
 
 export interface PendingDeepLinkIntent {
-  /** Target internal route to navigate to (e.g. `/community?inviteCode=abc` or `/qr?payload=...`) */
+  /** Target internal route to navigate to (for example, `/self`). */
   readonly targetPath: string;
   /** Semantic kind of the intent */
   readonly intentKind: 'classroomInvite' | 'qr' | 'authCallback' | 'generic';

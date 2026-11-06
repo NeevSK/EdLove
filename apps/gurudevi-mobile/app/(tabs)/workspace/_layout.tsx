@@ -10,29 +10,10 @@ export default function WorkspaceLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="atlas" />
         <Stack.Screen name="commercial/[batchId]" />
-        <Stack.Screen name="editorial" options={{ title: 'Editorial' }} />
         <Stack.Screen name="events" />
-        <Stack.Screen name="plan" options={{ title: 'Plan & notices' }} />
         <Stack.Screen name="inventory" />
         <Stack.Screen name="welfare" />
         <Stack.Screen name="peers" />
-        <Stack.Screen name="principal" />
-        <Stack.Screen name="admin" />
-        <Stack.Screen name="section-head" />
-        <Stack.Screen name="grade-head" />
-        <Stack.Screen name="founder" />
-        <Stack.Screen name="guardian" />
-        <Stack.Screen name="guardian/students" />
-        <Stack.Screen name="guardian/[studentId]" />
-        <Stack.Screen name="guardian/events" />
-        <Stack.Screen name="guardian/notifications" />
-        <Stack.Screen name="guardian/bridge" />
-        <Stack.Screen name="classroom/index" />
-        <Stack.Screen name="classroom/[classroomId]/index" />
-        <Stack.Screen name="classroom/[classroomId]/attendance" />
-        <Stack.Screen name="classroom/[classroomId]/gradebook" />
-        <Stack.Screen name="classroom/student/[classroomId]" />
-        <Stack.Screen name="classroom/reflect" />
         <Stack.Screen name="demo-fee" options={{ presentation: 'modal' }} />
         <Stack.Screen name="workforce-role" options={{ presentation: 'modal' }} />
       </Stack>

@@ -1,5 +1,13 @@
-import { CommunityScreen } from '@repo/community/feed';
+import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+import { UnbuiltPlace } from '@/components/navigation/UnbuiltPlace';
 
-export { RouteErrorBoundary as ErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+export { RouteErrorBoundary as ErrorBoundary };
 
-export default CommunityScreen;
+export default function CommunityPlace() {
+  return (
+    <UnbuiltPlace
+      title="Community is being rebuilt"
+      message="Groups and conversations will come back here."
+    />
+  );
+}

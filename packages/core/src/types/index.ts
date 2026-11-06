@@ -73,7 +73,7 @@ export type {
   Term,
 } from './GradeDomain';
 export type { StudentGroup } from './Group';
-export type { Bond, Perspective } from './Identity';
+export type { Bond, CitizenshipTier, Perspective } from './Identity';
 export type {
   FieldAnalytics,
   InstitutionalAsset,
@@ -234,3 +234,5 @@ export * from './FlowDAG';
 export * from './Growth';
 export type { AppNotification, NotificationStatus } from './notifications';
 export * from './Perspective';
+export * from './CivicRole';
+export * from './PreferredName';

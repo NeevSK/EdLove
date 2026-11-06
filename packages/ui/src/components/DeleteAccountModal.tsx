@@ -1,4 +1,4 @@
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { Button } from '@repo/ui/components/native';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { TriangleAlert } from '@repo/ui/icons';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
@@ -7,11 +7,10 @@ interface DeleteAccountModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: () => void;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 /**
- * A destructive confirmation modal for account deletion.
  * Hardened v3 implementation.
  */
 export default function DeleteAccountModal({
@@ -23,27 +22,25 @@ export default function DeleteAccountModal({
   const footer = (
     <HStack className="w-full gap-3">
       <Box className="flex-1">
-        <SanctuaryButton
-          action="secondary"
+        <Button
+          label="Cancel"
+          variant="secondary"
           onPress={onClose}
-          isDisabled={isLoading}
+          disabled={isLoading}
           accessibilityHint="Return without submitting an account deletion request"
-        >
-          Cancel
-        </SanctuaryButton>
+        />
       </Box>
       <Box className="flex-[1.5]">
-        <SanctuaryButton
-          action="negative"
+        <Button
+          label={isLoading ? 'Submitting...' : 'Request account deletion'}
+          variant="danger"
           onPress={onDelete}
-          isLoading={isLoading}
+          loading={isLoading}
           accessibilityLabel={
             isLoading ? 'Submitting account deletion request' : 'Request account deletion'
           }
           accessibilityHint="Submits a protected request that may permanently remove your account"
-        >
-          {isLoading ? 'Submitting...' : 'Request account deletion'}
-        </SanctuaryButton>
+        />
       </Box>
     </HStack>
   );
@@ -53,27 +50,17 @@ export default function DeleteAccountModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Delete Account"
-      icon={<TriangleAlert color="#FF6347" size={22} />}
       footer={footer}
-      size="md"
     >
-      <VStack className="py-2 gap-4">
-        <Text className="text-phase-text-secondary text-base">
-          This sends a protected request to delete your account. Your account will not be deleted
-          immediately; we will verify the request and apply the published retention policy.
+      <VStack className="items-center py-4 gap-4">
+        <Box className="w-12 h-12 rounded-full bg-emberRed/10 items-center justify-center">
+          <TriangleAlert size={24} className="text-emberRed" />
+        </Box>
+        <Text className="text-center text-sacredWhite/80 text-sm leading-relaxed px-2">
+          Are you sure you wish to initiate the account deletion process? This protected operation
+          will submit a request to the server, and full access will be revoked once the request is
+          processed.
         </Text>
-        {/* Data scope clarification */}
-        <Box className="bg-phase-surface p-4 rounded-xl border border-phase-surface">
-          <Text className="text-phase-text-secondary text-sm">
-            Some school, safeguarding, financial, or audit records may be retained when required by
-            law or institutional policy. See the deletion policy for details.
-          </Text>
-        </Box>
-        <Box className="bg-phase-danger/10 p-4 rounded-xl border border-phase-danger/20">
-          <Text className="text-phase-danger font-bold text-sm">
-            Need a break? You can sign out instead—your sanctuary will be waiting for you.
-          </Text>
-        </Box>
       </VStack>
     </SanctuaryModal>
   );

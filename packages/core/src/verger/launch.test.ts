@@ -12,6 +12,8 @@ import {
   VERGER_REMOTE_FLAG_KEYS,
   type VergerLaunchInputs,
   vergerRemoteFromFlags,
+  activationAtLevel,
+  resolveVergerLevel,
 } from './launch';
 
 const base: VergerLaunchInputs = {
@@ -171,8 +173,10 @@ describe('which policy decides this launch', () => {
   const pick = (over: Partial<Parameters<typeof resolveVergerPolicy>[0]>) =>
     resolveVergerPolicy({ build: undefined, remote: undefined, dev: false, ...over });
 
-  it('p4 by default; then build, lab (development only) and remote, weakest first', () => {
-    expect(pick({})).toMatchObject({ name: 'p4', source: 'default', rejected: null });
+  it('p5 by default; then build, lab (development only) and remote, weakest first', () => {
+    expect(pick({})).toMatchObject({ name: 'p5', source: 'default', rejected: null });
+    expect(pick({}).policy).toBe(VERGER_POLICIES.p5);
+    expect(pick({ build: 'p4' })).toMatchObject({ name: 'p4', source: 'build' });
     expect(pick({ build: 'p5' })).toMatchObject({ name: 'p5', source: 'build' });
     expect(pick({ build: 'p5', local: 'p4' })).toMatchObject({ name: 'p5', source: 'build' });
     expect(pick({ build: 'p5', local: 'p4', dev: true })).toMatchObject({ name: 'p4', source: 'lab' });
@@ -184,7 +188,7 @@ describe('which policy decides this launch', () => {
     const read = pick({ build: 'p5', remote: 'p9' });
     expect(read).toMatchObject({ name: 'p5', source: 'build' });
     expect(read.rejected).toMatch(/remote: unknown policy "p9"/);
-    expect(pick({ remote: 'constructor' }).name).toBe('p4');
+    expect(pick({ remote: 'constructor' })).toMatchObject({ name: 'p5', source: 'default' });
   });
 
   it('a split sends a stable share of installs to p5; a forced choice overrules it', () => {
@@ -201,8 +205,62 @@ describe('which policy decides this launch', () => {
   });
 
   it('another policy keys its own recovery ladder', () => {
-    const p5 = hostWith(GURUDEVI_MOBILE_HOST, { policy: VERGER_POLICIES.p5 });
-    expect(p5.experimentKey).not.toBe(GURUDEVI_MOBILE_HOST.experimentKey);
-    expect(p5.config).toEqual(GURUDEVI_MOBILE_HOST.config);
+    expect(GURUDEVI_MOBILE_HOST.policy).toBe(VERGER_POLICIES.p5);
+    const p4 = hostWith(GURUDEVI_MOBILE_HOST, { policy: VERGER_POLICIES.p4 });
+    expect(p4.experimentKey).not.toBe(GURUDEVI_MOBILE_HOST.experimentKey);
+    expect(p4.config).toEqual(GURUDEVI_MOBILE_HOST.config);
+  });
+});
+
+describe('one verger at two levels (2026-10-29)', () => {
+  it('a development build is exhaustive and a release normal; the phone, then remote, override', () => {
+    expect(resolveVergerLevel({ dev: true, device: undefined, remote: undefined })).toEqual({
+      level: 'exhaustive',
+      source: 'build',
+      rejected: null,
+    });
+    expect(resolveVergerLevel({ dev: false, device: undefined, remote: undefined }).level).toBe('normal');
+    expect(resolveVergerLevel({ dev: false, device: 'exhaustive', remote: undefined })).toMatchObject({
+      level: 'exhaustive',
+      source: 'device',
+    });
+    expect(resolveVergerLevel({ dev: true, device: 'normal', remote: undefined }).level).toBe('normal');
+    expect(resolveVergerLevel({ dev: false, device: 'exhaustive', remote: 'normal' })).toMatchObject({
+      level: 'normal',
+      source: 'remote',
+    });
+  });
+
+  it('refuses a value that is not a level and lets the layer below decide', () => {
+    const read = resolveVergerLevel({ dev: false, device: 'everything', remote: undefined });
+    expect(read).toMatchObject({ level: 'normal', source: 'build' });
+    expect(read.rejected).toMatch(/device: unknown level "everything"/);
+  });
+
+  it('exhaustive senses everything and observes in full, and never widens what verger may do', () => {
+    const base = resolveVergerLaunch({
+      override: undefined,
+      buildMode: 'active',
+      buildPreset: 'static',
+      remotePatch: undefined,
+      dev: false,
+      levers: GURUDEVI_MOBILE_HOST.levers,
+    }).activation;
+    expect(base).not.toBeNull();
+    if (base === null) return;
+    const exhaustive = activationAtLevel(base, 'exhaustive');
+    expect(Object.values(exhaustive.sense).every(Boolean)).toBe(true);
+    expect(exhaustive.observe).toBe('exhaustive');
+    const { sense: _s, observe: _o, ...may } = exhaustive;
+    const { sense: _bs, observe: _bo, ...baseMay } = base;
+    expect(may).toEqual(baseMay);
+    expect(activationAtLevel(base, 'normal')).toBe(base);
+  });
+
+  it('remote config can set the level as a flag', () => {
+    expect(vergerRemoteFromFlags({ [VERGER_REMOTE_FLAG_KEYS.level]: 'exhaustive' }).remoteLevel).toBe(
+      'exhaustive',
+    );
+    expect(vergerRemoteFromFlags({}).remoteLevel).toBeUndefined();
   });
 });

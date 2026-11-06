@@ -1,4 +1,4 @@
-import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
+import QRCodeGenerator from './QRCodeGenerator';
 import { Check, Copy, Download, Share2 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticSelection, hapticSuccess } from '@repo/ui/utils/haptics';

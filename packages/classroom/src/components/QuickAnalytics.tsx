@@ -1,6 +1,7 @@
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { marksToGPA } from '@repo/analytics/stats';
 import { ProgressRing } from '@repo/graphics/charts';
-import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Surface } from '@repo/ui/components/native';
 import {
   ArrowRight,
   ChartLine as ChartIcon,
@@ -14,7 +15,6 @@ import {
   Trophy,
   Zap,
 } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 
 interface AnalyticsWidgetProps {
@@ -45,47 +45,48 @@ function AnalyticsWidget({
       : trend === 'down'
         ? 'text-emberRed'
         : 'text-phase-text-tertiary';
+  const IconComp = icon;
   return (
-    <Card className="p-6 bg-phase-surface-secondary rounded-[32px] border border-phase-border shadow-sm">
-      <VStack className="gap-4">
-        <HStack className="justify-between items-center">
-          <HStack className="items-center gap-2">
-            {icon && <Icon as={icon} size="xs" className="text-phase-text-tertiary" />}
+    <Surface tone="raised" className="p-6 rounded-[32px]">
+      <View className="gap-4">
+        <View className="flex-row items-center justify-between items-center">
+          <View className="flex-row items-center items-center gap-2">
+            {IconComp && <IconComp size={12} className="text-phase-text-tertiary" />}
             <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-widest">
               {title}
             </Text>
-          </HStack>
+          </View>
           {trend && (
-            <HStack className="items-center gap-1">
-              <Icon as={TrendIcon} size="xs" className={trendColor} />
-            </HStack>
+            <View className="flex-row items-center items-center gap-1">
+              <TrendIcon size={12} className={trendColor} />
+            </View>
           )}
-        </HStack>
+        </View>
 
-        <VStack className="gap-1">
+        <View className="gap-1">
           <Text className="text-4xl font-black tracking-tighter" style={{ color: color }}>
             {value}
           </Text>
           {subtitle && (
             <Text className="text-sm font-medium text-phase-text-tertiary">{subtitle}</Text>
           )}
-        </VStack>
+        </View>
 
         {gradeInfo && (
-          <HStack className="bg-phase-surface p-3 rounded-[20px] justify-between items-center border border-phase-border/50">
-            <HStack className="items-center gap-2">
-              <Box className="w-2 h-2 rounded-full bg-sanctuarySaffron" />
+          <View className="flex-row items-center bg-phase-surface p-3 rounded-[20px] justify-between items-center border border-phase-border/50">
+            <View className="flex-row items-center items-center gap-2">
+              <View className="w-2 h-2 rounded-full bg-sanctuarySaffron" />
               <Text className="text-sm font-bold text-phase-text-primary">
                 Grade: {gradeInfo.grade}
               </Text>
-            </HStack>
+            </View>
             <Text className="text-xs font-black text-phase-text-tertiary uppercase">
               GPA: {gradeInfo.gpa.toFixed(2)}
             </Text>
-          </HStack>
+          </View>
         )}
-      </VStack>
-    </Card>
+      </View>
+    </Surface>
   );
 }
 interface QuickAnalyticsProps {
@@ -107,22 +108,22 @@ export default function QuickAnalytics({
   const currentGrade = marks !== undefined ? marksToGPA(marks) : null;
   return (
     <ScrollView className="flex-1 bg-phase-surface" showsVerticalScrollIndicator={false}>
-      <VStack className="p-6 gap-8 pb-32">
-        <HStack className="items-center gap-4 mt-2">
-          <Box className="p-3.5 bg-sanctuarySaffron rounded-[24px] shadow-lg shadow-sanctuarySaffron/20">
-            <Icon as={ChartIcon} size="md" className="text-sanctuary-ink" />
-          </Box>
-          <VStack>
+      <View className="p-6 gap-8 pb-32">
+        <View className="flex-row items-center items-center gap-4 mt-2">
+          <View className="p-3.5 bg-sanctuarySaffron rounded-[24px] shadow-lg shadow-sanctuarySaffron/20">
+            <ChartIcon size={20} className="text-sanctuary-ink" />
+          </View>
+          <View>
             <Text className="text-3xl font-black text-phase-text-primary tracking-tighter leading-none">
               Quick Analytics
             </Text>
             <Text className="text-base font-medium text-phase-text-tertiary">
               Academic Performance & Engagement
             </Text>
-          </VStack>
-        </HStack>
+          </View>
+        </View>
 
-        <VStack className="gap-4">
+        <View className="gap-4">
           <AnalyticsWidget
             title="Current Grade"
             value={currentGrade ? `${currentGrade.grade} (${marks}%)` : 'N/A'}
@@ -131,8 +132,8 @@ export default function QuickAnalytics({
             color={currentGrade ? getGradeColor(currentGrade.grade) : undefined}
             icon={GraduationCap}
           />
-          <HStack className="gap-4">
-            <Box className="flex-1">
+          <View className="flex-row items-center gap-4">
+            <View className="flex-1">
               <AnalyticsWidget
                 title="Average GPA"
                 value={averageGPA.toFixed(2)}
@@ -147,8 +148,8 @@ export default function QuickAnalytics({
                 }
                 icon={ChartIcon}
               />
-            </Box>
-            <Box className="flex-1">
+            </View>
+            <View className="flex-1">
               <AnalyticsWidget
                 title="Class Rank"
                 value={`#${rank || 'N/A'}`}
@@ -156,8 +157,8 @@ export default function QuickAnalytics({
                 color={Theme.colors.sacredWhite}
                 icon={Trophy}
               />
-            </Box>
-          </HStack>
+            </View>
+          </View>
           <AnalyticsWidget
             title="Attendance Rate"
             value={`${(attendanceRate * 100).toFixed(1)}%`}
@@ -172,17 +173,17 @@ export default function QuickAnalytics({
             }
             icon={CircleCheck}
           />
-        </VStack>
+        </View>
 
         <Card className="p-8 bg-phase-surface-secondary rounded-[40px] border border-phase-border shadow-md">
-          <HStack className="items-center gap-2 mb-8">
-            <Icon as={TrendingUp} size="sm" className="text-sanctuarySaffron" />
+          <View className="flex-row items-center items-center gap-2 mb-8">
+            <TrendingUp size={16} className="text-sanctuarySaffron" />
             <Text className="text-xl font-black text-phase-text-primary tracking-tighter uppercase">
               Progress Overview
             </Text>
-          </HStack>
-          <VStack className="gap-8 items-center">
-            <Box className="p-4 bg-phase-surface rounded-full shadow-inner border border-phase-border/30">
+          </View>
+          <View className="gap-8 items-center">
+            <View className="p-4 bg-phase-surface rounded-full shadow-inner border border-phase-border/30">
               <ProgressRing
                 value={averageGPA}
                 max={4.0}
@@ -195,26 +196,26 @@ export default function QuickAnalytics({
                       : Theme.colors.templeGold
                 }
               />
-            </Box>
-            <VStack className="items-center gap-1">
+            </View>
+            <View className="items-center gap-1">
               <Text className="text-4xl font-black text-phase-text-primary tracking-tight">
                 {((averageGPA / 4.0) * 100).toFixed(0)}%
               </Text>
               <Text className="text-sm font-bold text-phase-text-tertiary uppercase tracking-widest">
                 GPA Progress
               </Text>
-            </VStack>
-          </VStack>
+            </View>
+          </View>
         </Card>
 
-        <VStack className="gap-4">
-          <HStack className="items-center gap-2 px-2">
-            <Icon as={Zap} size="sm" className="text-sanctuarySaffron" />
+        <View className="gap-4">
+          <View className="flex-row items-center items-center gap-2 px-2">
+            <Zap size={16} className="text-sanctuarySaffron" />
             <Text className="text-xl font-black text-phase-text-primary tracking-tighter uppercase">
               Quick Actions
             </Text>
-          </HStack>
-          <VStack className="gap-3">
+          </View>
+          <View className="gap-3">
             {[
               { icon: FileText, label: 'View detailed gradebook' },
               { icon: ChartIcon, label: 'Track performance trends' },
@@ -225,29 +226,29 @@ export default function QuickAnalytics({
                 key={i}
                 className="flex-row items-center justify-between p-5 bg-phase-surface-secondary rounded-[24px] border border-phase-border active:bg-phase-border/10 transition-colors"
               >
-                <HStack className="items-center gap-4">
-                  <Box className="p-2 bg-phase-surface rounded-xl">
-                    <Icon as={action.icon} size="xs" className="text-sanctuarySaffron" />
-                  </Box>
+                <View className="flex-row items-center items-center gap-4">
+                  <View className="p-2 bg-phase-surface rounded-xl">
+                    <action.icon size={12} className="text-sanctuarySaffron" />
+                  </View>
                   <Text className="text-base font-bold text-phase-text-primary">
                     {action.label}
                   </Text>
-                </HStack>
-                <Icon as={ArrowRight} size="xs" className="text-phase-text-tertiary" />
+                </View>
+                <ArrowRight size={12} className="text-phase-text-tertiary" />
               </Pressable>
             ))}
-          </VStack>
-        </VStack>
+          </View>
+        </View>
 
         <Card className="p-8 bg-phase-surface-secondary rounded-[40px] border border-phase-border relative overflow-hidden">
-          <Box className="absolute -top-10 -right-10 w-40 h-40 bg-sanctuarySaffron/5 rounded-full" />
-          <HStack className="items-center gap-2 mb-6">
-            <Icon as={Lightbulb} size="sm" className="text-sanctuarySaffron" />
+          <View className="absolute -top-10 -right-10 w-40 h-40 bg-sanctuarySaffron/5 rounded-full" />
+          <View className="flex-row items-center items-center gap-2 mb-6">
+            <Lightbulb size={16} className="text-sanctuarySaffron" />
             <Text className="text-xl font-black text-phase-text-primary tracking-tighter uppercase">
               Performance Tips
             </Text>
-          </HStack>
-          <VStack className="gap-4">
+          </View>
+          <View className="gap-4">
             {averageGPA < 2.0 && (
               <Tip text="Focus on improving attendance and assignment completion to build a stronger foundation." />
             )}
@@ -260,20 +261,20 @@ export default function QuickAnalytics({
             {averageGPA >= 3.5 && (
               <Tip text="Outstanding scholarship. This is the perfect time to explore advanced coursework or research topics." />
             )}
-          </VStack>
+          </View>
         </Card>
-      </VStack>
+      </View>
     </ScrollView>
   );
 }
 function Tip({ text }: { text: string }) {
   return (
-    <HStack className="gap-4 items-start p-4 bg-phase-surface rounded-[20px] border border-phase-border/30">
-      <Box className="w-2 h-2 rounded-full bg-sanctuarySaffron mt-2" />
+    <View className="flex-row items-center gap-4 items-start p-4 bg-phase-surface rounded-[20px] border border-phase-border/30">
+      <View className="w-2 h-2 rounded-full bg-sanctuarySaffron mt-2" />
       <Text className="flex-1 text-sm font-bold text-phase-text-secondary leading-relaxed">
         {text}
       </Text>
-    </HStack>
+    </View>
   );
 }
 function getGradeColor(grade: string): string {

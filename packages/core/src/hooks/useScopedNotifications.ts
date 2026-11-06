@@ -1,12 +1,11 @@
-import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
-import { socialAPI } from '@repo/core/api/social';
+import { getSandboxSamples } from '@repo/core/logic/modes/sandboxDataset';
 import type { QueryScope } from '@repo/core/lib/clientStateFoundation';
 import { useExperienceState } from '@repo/core/lib/experienceState';
 import {
   NOTIFICATION_LIST_LIMIT,
   notificationQueryKeys,
 } from '@repo/core/lib/notificationQueryKeys';
-import { notification } from '@repo/core/logic/managers/factory';
+import { supabaseNotificationAdapter as notification } from '@repo/core/adapters/supabaseNotification.adapter';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { AppNotification, NotificationStatus } from '@repo/core/types';
@@ -112,21 +111,21 @@ export function acquireScopedNotificationRealtime(
       listeners.forEach((candidate) => candidate(status));
     const cleanup = notification.subscribe(
       scope.principalId,
-      (incoming) => {
+      (incoming: AppNotification) => {
         if (!active) return;
         queryClient.setQueryData<AppNotification[]>(listKey, (current) =>
           mergeNotification(current, incoming),
         );
         void queryClient.invalidateQueries({ queryKey: countKey, exact: true });
       },
-      (incoming) => {
+      (incoming: AppNotification) => {
         if (!active) return;
         queryClient.setQueryData<AppNotification[]>(listKey, (current) =>
           mergeNotification(current, incoming),
         );
         void queryClient.invalidateQueries({ queryKey: countKey, exact: true });
       },
-      (status) => {
+      (status: NotificationStatus) => {
         if (!active) return;
         notify(status);
         if (status === 'CONNECTED') {
@@ -231,13 +230,13 @@ export function useScopedNotifications(
 
   const listQuery = useQuery({
     queryKey: listKey ?? disabledListKey,
-    queryFn: () => socialAPI.getNotifications(NOTIFICATION_LIST_LIMIT),
+    queryFn: () => notification.getNotifications(requestedPrincipalId as string, NOTIFICATION_LIST_LIMIT),
     enabled: scope !== null,
     staleTime: 60_000,
   });
   const countQuery = useQuery({
     queryKey: countKey ?? disabledCountKey,
-    queryFn: () => socialAPI.getUnreadNotificationCount(),
+    queryFn: () => notification.getUnreadCount(requestedPrincipalId as string),
     enabled: scope !== null,
     staleTime: 30_000,
     refetchInterval: 60_000,
@@ -262,14 +261,14 @@ export function useScopedNotifications(
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {
       if (!scope) throw new Error('An authenticated notification scope is required.');
-      await socialAPI.markNotificationRead(notificationId);
+      await notification.markAsRead(requestedPrincipalId as string, notificationId);
     },
     onSuccess: invalidate,
   });
   const markAllReadMutation = useMutation({
     mutationFn: async () => {
       if (!scope) throw new Error('An authenticated notification scope is required.');
-      await socialAPI.markAllNotificationsRead();
+      await notification.markAllRead(requestedPrincipalId as string);
     },
     onSuccess: invalidate,
   });

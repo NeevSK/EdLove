@@ -23,14 +23,16 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { handoffNativeSplashAfterCommit, NATIVE_SPLASH_MAX_HOLD_MS } from '@/boot/nativeSplashService';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
-import { observeDevelopmentInteractions, recordDevelopmentTrace } from '@/boot/startupTelemetry';
+import {
+  observeDevelopmentInteractions,
+  observeDevelopmentTimings,
+  recordDevelopmentTrace,
+} from '@/boot/startupTelemetry';
 import { WorldFonts } from '@/boot/WorldFonts';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
-import { AuthenticatedSyncService } from '@/entry/AuthenticatedSyncService';
 import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
 import { GuestConversionBoundary } from '@/entry/GuestConversionBoundary';
-import { GuestLeaseBoundary } from '@/entry/GuestLeaseBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
@@ -68,6 +70,7 @@ export function EntryShell() {
 
   useEffect(() => {
     const stopObservingInteractions = observeDevelopmentInteractions();
+    const stopObservingTimings = observeDevelopmentTimings();
     recordDevelopmentTrace({
       category: 'startup-boundary',
       task: 'entry-shell-mounted',
@@ -93,6 +96,7 @@ export function EntryShell() {
     }, NATIVE_SPLASH_MAX_HOLD_MS);
     return () => {
       stopObservingInteractions();
+      stopObservingTimings();
       cancelAnimationFrame(shellFrame);
       clearTimeout(splashHold);
       stopSplashHandoff();
@@ -132,8 +136,7 @@ export function EntryShell() {
                                 <LayoutLoopSentinel name="RootShell" style={styles.root}>
                                   <Box className="flex-1 bg-phase-canvas">
                                     <AppVersionGateOverlay />
-                                    <GuestLeaseBoundary>
-                                      <GuestPersistenceNotice />
+                                    <GuestPersistenceNotice />
                                       <GuestConversionBoundary />
                                       <PasswordRecoveryBoundary />
                                       <SessionRouteGate appServices={<AuthenticatedAppServices />}>
@@ -153,7 +156,6 @@ export function EntryShell() {
                                           />
                                         </Stack>
                                       </SessionRouteGate>
-                                    </GuestLeaseBoundary>
                                     <LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />
                                     <SanctuaryPulseOverlay
                                       visible={isBreathingOpen}
@@ -188,7 +190,6 @@ function AuthenticatedAppServices() {
     <CapabilityHydrationProvider>
       <FeatureProvider>
         <CapabilityHydrationRecoveryNotice />
-        <AuthenticatedSyncService />
       </FeatureProvider>
     </CapabilityHydrationProvider>
   );

@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/logic/managers/StorageManager';
+import { storage } from '@repo/core/lib/storage';
 import type { WorkspaceRolePersona } from '@repo/core/types';
 import { createActor, setup } from 'xstate';
 import { z } from 'zod';

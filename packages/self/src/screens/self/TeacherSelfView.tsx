@@ -32,8 +32,8 @@ import type {
   DerivedHistoryEntry,
   DerivedHistoryPoint,
 } from '@repo/ui/components/DerivedHistoryView';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, VStack } from '@repo/ui/primitives';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -83,11 +83,11 @@ export default function TeacherSelfView() {
   }));
 
   const holisticSection = (
-    <VStack space="lg" style={{ padding: 20 }}>
+    <View style={{ padding: 20, gap: 16 }}>
       <JournalSection entries={journalEntries} loading={loadingJournals} />
       <MoodSection logs={moodHistory} loading={loadingMoods} />
       <TeacherPulse banyan={banyan} loading={banyanLoading} />
-    </VStack>
+    </View>
   );
 
   const handleMoodSelect = async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
@@ -106,7 +106,7 @@ export default function TeacherSelfView() {
   };
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="teacher"
         description={t('self.teacherDescription')}
@@ -199,7 +199,7 @@ export default function TeacherSelfView() {
                 id: 'energy_forecast',
                 label: 'Energy Rhythm',
                 content: (
-                  <Box
+                  <View
                     style={{
                       padding: 24,
                       backgroundColor: 'rgba(255,255,255,0.03)',
@@ -207,7 +207,7 @@ export default function TeacherSelfView() {
                     }}
                   >
                     <EnergyBarChart bars={forecasts.slice().reverse()} height={80} />
-                  </Box>
+                  </View>
                 ),
               },
               {
@@ -256,10 +256,10 @@ export default function TeacherSelfView() {
           },
         ]}
         sideBar={
-          <VStack space="lg">
+          <View style={{ gap: 16 }}>
             <WarmMirrorCard text={warmMirrorText} />
             <ImpactRipplesCard ripples={ripples} />
-          </VStack>
+          </View>
         }
       />
 
@@ -267,6 +267,6 @@ export default function TeacherSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

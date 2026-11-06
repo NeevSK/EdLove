@@ -1,0 +1,241 @@
+{
+  "id": "feature:classroom.teacher_first_workspace",
+  "title": "Start teaching in a workspace",
+  "description": "When I first open Workspace, I want to find or establish my teaching context so I can begin work with the right classroom.",
+  "lifecycle": {
+    "maturity": "proposed",
+    "owner": "unassigned"
+  },
+  "links": ["intent:classroom.teacher_first_workspace.legacy"],
+  "intents": [
+    {
+      "id": "intent:classroom.teacher_first_workspace.legacy",
+      "title": "Start teaching in a workspace",
+      "actor": "teacher",
+      "outcome": "Enter an authorized teaching workspace or establish an independent classroom.",
+      "links": ["journey:classroom.teacher_first_workspace.legacy"],
+      "journeys": [
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "situation": "A teacher opens Workspace for the first time and needs to find an authorized school context or establish a supported independent teaching context.",
+          "outcome": "Enter an authorized teaching workspace or establish an independent classroom.",
+          "context": "setup",
+          "preconditions": [],
+          "entry": "step:classroom.teacher_first_workspace.resolve",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "Web workspace shows a personal-scope state before institutional attendance.",
+              "Server provisioning can create a teacher-owned classroom and bond using an idempotent receipt."
+            ],
+            "invariants": [
+              "The selected account and server-verified bond govern authority; a local draft never grants access.",
+              "A personal teaching context is distinct from an institutional school role.",
+              "A teacher may optionally contact the founder for a school; opening WhatsApp is not message delivery or an authorization grant.",
+              "Existing teaching, onboarding, school and personal flows are preserved."
+            ],
+            "openQuestions": [
+              "How should a teacher provisioning command persist and reconcile across offline interruptions and account switches on web?",
+              "How should the bootstrap provisioning boundary align with Cedar and existing teacher bond checks?",
+              "Which existing school invitation and claim flows support teacher onboarding end to end?",
+              "Can signed Cedar snapshots, account-scoped draft persistence and outbox reconciliation support this journey on both platforms?"
+            ],
+            "integrationPoints": [
+              "apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx",
+              "apps/gurudevi-web/lib/sanctuary/workspaceScopes.ts",
+              "packages/core/src/api/workspace-provisioning.orpc.contract.ts",
+              "apps/sanctuary-api/src/core/handlers/workspaceProvisioning.ts",
+              "packages/policies/src/policies/school/teacher.cedar",
+              "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+              "packages/core/src/logic/workspace/provisionalWorkspace.ts",
+              "packages/core/src/adapters/supabase/schoolInviteRepository.ts"
+            ]
+          },
+          "links": [],
+          "steps": [
+            {
+              "id": "step:classroom.teacher_first_workspace.resolve",
+              "title": "Resolve teaching context",
+              "interaction": "Check the authenticated account and available scopes.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:classroom.teacher_first_workspace.choose",
+              "title": "Choose a teaching context",
+              "interaction": "Select an existing permitted context or begin a supported setup.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:classroom.teacher_first_workspace.workspace",
+              "title": "Teaching workspace",
+              "interaction": "Open a server-confirmed teaching scope.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:classroom.teacher_first_workspace.failure",
+              "title": "Unable to confirm context",
+              "interaction": "Explain the problem and offer safe recovery.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:classroom.teacher_first_workspace.self",
+              "title": "Personal Self",
+              "interaction": "Return to personal Self.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:classroom.teacher_first_workspace.selected",
+              "title": "A permitted teaching scope is selected",
+              "from": "step:classroom.teacher_first_workspace.resolve",
+              "to": "step:classroom.teacher_first_workspace.workspace",
+              "action": "A permitted teaching scope is selected",
+              "feedback": "Show the selected teaching context.",
+              "links": []
+            },
+            {
+              "id": "transition:classroom.teacher_first_workspace.personal",
+              "title": "Personal scope is selected",
+              "from": "step:classroom.teacher_first_workspace.resolve",
+              "to": "step:classroom.teacher_first_workspace.choose",
+              "action": "Personal scope is selected",
+              "feedback": "Offer supported teaching setup and existing scope selection.",
+              "links": []
+            },
+            {
+              "id": "transition:classroom.teacher_first_workspace.failure",
+              "title": "Identity or scope lookup fails",
+              "from": "step:classroom.teacher_first_workspace.resolve",
+              "to": "step:classroom.teacher_first_workspace.failure",
+              "action": "Identity or scope lookup fails",
+              "feedback": "Explain that the workspace could not be confirmed.",
+              "links": []
+            },
+            {
+              "id": "transition:classroom.teacher_first_workspace.return_self",
+              "title": "Return to Self",
+              "from": "step:classroom.teacher_first_workspace.choose",
+              "to": "step:classroom.teacher_first_workspace.self",
+              "action": "Return to Self",
+              "feedback": "Keep personal Self available.",
+              "links": []
+            },
+            {
+              "id": "transition:classroom.teacher_first_workspace.confirmed",
+              "title": "A new teaching bond is confirmed and selected",
+              "from": "step:classroom.teacher_first_workspace.choose",
+              "to": "step:classroom.teacher_first_workspace.workspace",
+              "action": "A new teaching bond is confirmed and selected",
+              "feedback": "Open the verified teaching workspace.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:classroom.teacher_first_workspace.existing",
+              "title": "Existing teaching scope",
+              "transitions": ["transition:classroom.teacher_first_workspace.selected"],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:classroom.teacher_first_workspace.first_visit",
+              "title": "Personal scope at first visit",
+              "completion": "checkpoint",
+              "checkpointReason": "The teacher is choosing a context; the journey has not yet reached an outcome.",
+              "transitions": ["transition:classroom.teacher_first_workspace.personal"],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:classroom.teacher_first_workspace.failure",
+              "title": "Scope lookup failure",
+              "transitions": ["transition:classroom.teacher_first_workspace.failure"],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:classroom.teacher_first_workspace.self",
+              "title": "Return to Self",
+              "transitions": [
+                "transition:classroom.teacher_first_workspace.personal",
+                "transition:classroom.teacher_first_workspace.return_self"
+              ],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            },
+            {
+              "id": "scenario:classroom.teacher_first_workspace.provision",
+              "title": "Provision and select a teaching scope",
+              "transitions": [
+                "transition:classroom.teacher_first_workspace.personal",
+                "transition:classroom.teacher_first_workspace.confirmed"
+              ],
+              "expected": "Legacy pilot scenario; expected outcome requires review.",
+              "links": []
+            }
+          ],
+          "requirements": [],
+          "bindings": [
+            {
+              "id": "binding:classroom.teacher_first_workspace.web-0",
+              "title": "web binding",
+              "category": "web",
+              "status": "planned",
+              "reference": "apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx",
+              "note": "The personal-scope state exists; classroom provisioning is not wired there.",
+              "links": ["journey:classroom.teacher_first_workspace.legacy"]
+            },
+            {
+              "id": "binding:classroom.teacher_first_workspace.mobile-1",
+              "title": "mobile binding",
+              "category": "mobile",
+              "status": "unknown",
+              "reference": "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+              "note": "The native first-day journey requires end-to-end verification.",
+              "links": ["journey:classroom.teacher_first_workspace.legacy"]
+            },
+            {
+              "id": "binding:classroom.teacher_first_workspace.api-2",
+              "title": "api binding",
+              "category": "api",
+              "status": "implemented",
+              "reference": "packages/core/src/api/workspace-provisioning.orpc.contract.ts",
+              "note": "Provisioning contract exists; UI and real seam evidence are not established.",
+              "links": ["journey:classroom.teacher_first_workspace.legacy"]
+            },
+            {
+              "id": "binding:classroom.teacher_first_workspace.data-3",
+              "title": "data binding",
+              "category": "data",
+              "status": "implemented",
+              "reference": "packages/schema/schema.zmodel",
+              "note": "Classroom, personal classroom, school and bond models exist; deployed schema not checked.",
+              "links": ["journey:classroom.teacher_first_workspace.legacy"]
+            },
+            {
+              "id": "binding:classroom.teacher_first_workspace.authorization-4",
+              "title": "authorization binding",
+              "category": "authorization",
+              "status": "unknown",
+              "reference": "apps/sanctuary-api/src/core/handlers/workspaceProvisioning.ts",
+              "note": "Server checks an active teacher bond; Cedar alignment and real database isolation need verification.",
+              "links": ["journey:classroom.teacher_first_workspace.legacy"]
+            }
+          ],
+          "evidence": [],
+          "sharedRequirements": [],
+          "sharedBindings": []
+        }
+      ],
+      "sharedJourneys": []
+    }
+  ]
+}

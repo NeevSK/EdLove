@@ -19,7 +19,6 @@ import { MUTATION_REGISTRY, type QueuedMutation, sovereignBus } from '@repo/core
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
 import { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 import { admitBackgroundWork } from '@/runtime/backgroundAdmission';
-import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
 
 export { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 
@@ -173,25 +172,14 @@ export async function runBackgroundSyncTask() {
           });
           continue;
         }
-        const workflowResult = await dispatchQueuedMutationToSovereignBus(item);
-        if (workflowResult === 'pending') {
-          updateMutation(item.id, {
-            commandState: 'retry_scheduled',
-            backoffUntil: Date.now() + 5000,
-            lastError: 'Workflow receipt pending',
-            lastErrorCode: 'WORKFLOW_RECEIPT_PENDING',
-            lockLeaseExpiresAt: undefined,
-          });
-          continue;
-        }
-        if (workflowResult === 'dispatched') {
-          removeFromQueue(item.id);
-          drained++;
-          continue;
-        }
         const mutationFn = MUTATION_REGISTRY[item.name];
         if (!mutationFn) {
-          moveToDeadLetter(item.id, 'UNKNOWN_MUTATION');
+          updateMutation(item.id, {
+            commandState: 'queued',
+            lastError: 'No domain command is admitted for this queued operation.',
+            lastErrorCode: 'API_CAPABILITY_NOT_ADMITTED',
+            lockLeaseExpiresAt: undefined,
+          });
           failed++;
           continue;
         }
@@ -334,25 +322,14 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
           });
           continue;
         }
-        const workflowResult = await dispatchQueuedMutationToSovereignBus(item);
-        if (workflowResult === 'pending') {
-          updateMutation(item.id, {
-            commandState: 'retry_scheduled',
-            backoffUntil: Date.now() + 5000,
-            lastError: 'Workflow receipt pending',
-            lastErrorCode: 'WORKFLOW_RECEIPT_PENDING',
-            lockLeaseExpiresAt: undefined,
-          });
-          continue;
-        }
-        if (workflowResult === 'dispatched') {
-          removeFromQueue(item.id);
-          drained++;
-          continue;
-        }
         const mutationFn = MUTATION_REGISTRY[item.name];
         if (!mutationFn) {
-          moveToDeadLetter(item.id, 'UNKNOWN_MUTATION');
+          updateMutation(item.id, {
+            commandState: 'queued',
+            lastError: 'No domain command is admitted for this queued operation.',
+            lastErrorCode: 'API_CAPABILITY_NOT_ADMITTED',
+            lockLeaseExpiresAt: undefined,
+          });
           failed++;
           continue;
         }

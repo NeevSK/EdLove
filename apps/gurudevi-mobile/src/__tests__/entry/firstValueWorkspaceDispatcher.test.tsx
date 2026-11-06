@@ -29,6 +29,7 @@ vi.mock('@repo/core/logic', () => ({
 vi.mock('@repo/core/store/useCedarDecisionStore', () => ({
   useCedarDecisionStore: <T,>(selector: (state: typeof mocks.cedar) => T) => selector(mocks.cedar),
 }));
+vi.mock('@repo/core/native/localGuestSession', () => ({ isLocalGuestSessionId: () => false }));
 vi.mock('@repo/ui/components/BrandPulse', () => ({ BrandPulse: () => null }));
 vi.mock('@repo/ui/components/ErrorBoundary', () => ({ RouteErrorBoundary: () => null }));
 vi.mock('@repo/ui/components/BrandedEmptyState', () => ({
@@ -54,6 +55,7 @@ vi.mock('expo-router', () => ({
     return null;
   },
   useLocalSearchParams: () => mocks.searchParams,
+  useRouter: () => ({ push: vi.fn() }),
 }));
 
 import WorkspaceDispatcher from '../../../app/(tabs)/workspace';
@@ -77,11 +79,9 @@ describe('first-value workspace dispatch', () => {
     mocks.searchParams = {};
   });
 
-  it.each([
-    ['parent', '/workspace/guardian'],
-    ['assistantPrincipal', '/workspace/principal'],
-    ['developer', '/workspace/founder'],
-  ])('sends %s to its existing institutional workspace surface', async (capacity, target) => {
+  it.each(['parent', 'assistantPrincipal', 'developer'])(
+    'shows the retired-capability state for %s',
+    async (capacity) => {
     mocks.context.activeBond.capacity = capacity;
     mocks.context.primaryCapacity = capacity;
 
@@ -89,8 +89,12 @@ describe('first-value workspace dispatch', () => {
       create(<WorkspaceDispatcher />);
     });
 
-    expect(mocks.redirects).toContain(target);
-  });
+      expect(mocks.errorState).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Workspace capability unavailable' }),
+      );
+      expect(mocks.redirects).toEqual([]);
+    },
+  );
 
   it('offers a real retry when first-value permission recovery fails', async () => {
     mocks.cedar.snapshotLoaded = false;
@@ -120,7 +124,7 @@ describe('first-value workspace dispatch', () => {
     });
 
     expect(mocks.emptyState).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'No classroom selected' }),
+      expect.objectContaining({ title: 'Workspace capability unavailable' }),
     );
     expect(mocks.redirects).toEqual([]);
   });

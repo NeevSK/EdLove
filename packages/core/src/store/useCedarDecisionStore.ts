@@ -18,6 +18,7 @@ import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { permissionSnapshots, policyVersion } from '@repo/core/adapters/powersync/schema';
 import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
 import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
+import { cedarActionFor } from '@repo/policies/authorizationRegistry';
 import { and, eq } from 'drizzle-orm';
 import { create } from 'zustand';
 
@@ -25,6 +26,14 @@ export type CedarDecision = 'allow' | 'deny' | 'no_decision';
 export type DecisionMap = Record<string, Record<string, CedarDecision>>;
 
 let decisionLoadGeneration = 0;
+let snapshotExpiry: number | null = null;
+let expiryTimer: ReturnType<typeof setTimeout> | null = null;
+
+function cancelSnapshotExpiry(): void {
+  if (expiryTimer !== null) clearTimeout(expiryTimer);
+  expiryTimer = null;
+  snapshotExpiry = null;
+}
 
 export interface CedarDecisionState {
   decisions: DecisionMap | null;
@@ -49,6 +58,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
 
   loadDecisions: async (userId: string, scopeId?: string | null) => {
     const generation = ++decisionLoadGeneration;
+    cancelSnapshotExpiry();
     if (!userId) {
       set({
         decisions: null,
@@ -167,7 +177,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
 
       const rawPermissions = JSON.parse(record.permissions) as Record<
         string,
-        Record<string, boolean>
+        Record<string, unknown>
       >;
 
       // Convert boolean map to CedarDecision map
@@ -175,10 +185,25 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
       for (const [subject, actions] of Object.entries(rawPermissions)) {
         decisions[subject] = {};
         for (const [action, allowed] of Object.entries(actions)) {
-          decisions[subject][action] = allowed ? 'allow' : 'deny';
+          if (typeof allowed === 'boolean') {
+            decisions[subject][action] = allowed ? 'allow' : 'deny';
+          } else {
+            decisions[subject][action] = 'no_decision';
+          }
         }
       }
 
+      snapshotExpiry = expiresAt.getTime();
+      const scheduleExpiry = () => {
+        const remaining = expiresAt.getTime() - Date.now();
+        if (generation !== decisionLoadGeneration) return;
+        if (remaining <= 0) {
+          cancelSnapshotExpiry();
+          set({ decisions: null, snapshotLoaded: false, error: 'Permission snapshot has expired' });
+          return;
+        }
+        expiryTimer = setTimeout(scheduleExpiry, Math.min(remaining, 2_147_483_647));
+      };
       set({
         decisions,
         snapshotLoaded: true,
@@ -186,6 +211,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
         error: null,
         snapshotScopeId: scopeId ?? record.activeBondId ?? record.schoolId,
       });
+      scheduleExpiry();
     } catch (err) {
       if (generation !== decisionLoadGeneration) return;
       console.error('[CedarDecisionStore] Error loading decisions:', err);
@@ -201,12 +227,17 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
 
   getDecision: (subject: string, action: string): CedarDecision => {
     const { decisions } = get();
-    if (!decisions) return 'no_decision';
-    return decisions[subject]?.[action] ?? 'no_decision';
+    if (!decisions || snapshotExpiry === null || Date.now() >= snapshotExpiry) return 'no_decision';
+    return (
+      decisions[subject]?.[action] ??
+      decisions[subject]?.[cedarActionFor(action, subject)] ??
+      'no_decision'
+    );
   },
 
   clearDecisions: () => {
     decisionLoadGeneration += 1;
+    cancelSnapshotExpiry();
     set({
       decisions: null,
       snapshotLoaded: false,

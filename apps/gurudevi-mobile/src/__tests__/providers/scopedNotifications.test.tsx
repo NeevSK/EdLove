@@ -14,8 +14,7 @@ const fixture = vi.hoisted(() => ({
   markAllNotificationsRead: vi.fn(),
   subscribe: vi.fn(() => vi.fn()),
 }));
-vi.mock('@repo/core/api/social', () => ({ socialAPI: fixture }));
-vi.mock('@repo/core/logic/managers/factory', () => ({ notification: fixture }));
+vi.mock('@repo/core/adapters/supabaseNotification.adapter', () => ({ supabaseNotificationAdapter: fixture }));
 vi.mock('@repo/core/store/useAuthStore', () => ({
   useAuthStore: (select: (value: typeof fixture.auth) => unknown) => select(fixture.auth),
 }));

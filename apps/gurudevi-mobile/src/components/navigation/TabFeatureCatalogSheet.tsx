@@ -14,7 +14,7 @@ import {
 export interface TabFeatureCatalogSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  activeTabKey: 'self' | 'workspace' | 'library' | 'community' | 'profile';
+  activeTabKey: 'self' | 'workspace';
 }
 
 /**

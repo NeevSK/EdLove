@@ -1,4 +1,4 @@
-import { authAPI } from '@repo/core/api/auth';
+import { authAPI } from '@repo/core/auth';
 import type { AuthMfaFactor } from '@repo/core/logic/ports/auth.port';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

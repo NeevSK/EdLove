@@ -45,7 +45,18 @@ const TRACE_NUMBER_FIELDS = new Set([
   'cumulative_trace_write_call_ms',
   'at_ms',
   'wall_time_ms',
+  // Resource Timing and the startup timing (observeDevelopmentTimings), on performance.now().
+  'response_start_ms',
+  'response_end_ms',
+  'status',
+  'startup_start_ms',
+  'runtime_init_ms',
+  'bundle_start_ms',
+  'startup_end_ms',
 ]);
+/** Origin and path only (`safeResourceName`): no query, no fragment, no credentials. */
+const TRACE_URL_FIELDS = new Set(['url']);
+const SAFE_URL = /^https?:\/\/[a-zA-Z0-9.:-]{1,80}(\/[a-zA-Z0-9._:~-]*){0,24}$/;
 const TRACE_BOOLEAN_FIELDS = new Set([
   'capacity_known',
   'battery_saver',
@@ -160,6 +171,13 @@ export function recordDevelopmentTrace(
       ) {
         attributes[key] = value;
       } else if (TRACE_BOOLEAN_FIELDS.has(key) && typeof value === 'boolean') {
+        attributes[key] = value;
+      } else if (
+        TRACE_URL_FIELDS.has(key) &&
+        typeof value === 'string' &&
+        value.length <= 160 &&
+        SAFE_URL.test(value)
+      ) {
         attributes[key] = value;
       }
     }
@@ -290,6 +308,124 @@ export function observeDevelopmentInteractions(): () => void {
     if (!capReported) {
       setDevelopmentTelemetrySource('event-timing', 'complete', 'Event Timing observer stopped.');
     }
+  };
+}
+
+const MAX_DEVELOPMENT_TIMING_ENTRIES = 4_096;
+const TIMING_TYPES = ['resource', 'mark', 'measure'] as const;
+
+/**
+ * A resource URL as origin and path only: the query is dropped and any path segment that looks
+ * like an id (long, digits or hex) is masked, so tokens and record ids never reach the store.
+ */
+export function safeResourceName(name: string): string {
+  try {
+    const url = new URL(name);
+    const path = url.pathname
+      .split('/')
+      .map((part) => (part.length > 24 || /\d{3,}|^[0-9a-f-]{16,}$/i.test(part) ? ':id' : part))
+      .join('/');
+    return `${url.origin}${path}`.slice(0, 160);
+  } catch {
+    return 'unparsed';
+  }
+}
+
+/**
+ * Records the in-app timings React Native 0.88 offers beyond Event Timing: Resource Timing (each
+ * fetch, XHR and image), user marks and measures (the app's and React's), and the startup timing
+ * (`performance.rnStartupTiming`). All on `performance.now()`'s clock, so they join the rest.
+ */
+export function observeDevelopmentTimings(): () => void {
+  if (!__DEV__) return () => undefined;
+  const startup = (performance as Performance & { rnStartupTiming?: Record<string, unknown> })
+    .rnStartupTiming;
+  if (startup) {
+    const marks: Record<string, number> = {};
+    for (const [key, field] of [
+      ['startTime', 'startup_start_ms'],
+      ['initializeRuntimeStart', 'runtime_init_ms'],
+      ['executeJavaScriptBundleEntryPointStart', 'bundle_start_ms'],
+      ['endTime', 'startup_end_ms'],
+    ] as const) {
+      const value = startup[key];
+      if (typeof value === 'number' && Number.isFinite(value)) marks[field] = value;
+    }
+    recordDevelopmentTrace({ category: 'process-bootstrap', task: 'rn-startup-timing', state: 'complete', ...marks });
+  }
+  if (typeof PerformanceObserver === 'undefined') {
+    setDevelopmentTelemetrySource('performance-timings', 'unsupported', 'PerformanceObserver is not available.');
+    return () => undefined;
+  }
+  const supported = (
+    PerformanceObserver as typeof PerformanceObserver & { supportedEntryTypes?: readonly string[] }
+  ).supportedEntryTypes;
+  const types = TIMING_TYPES.filter((type) => supported?.includes(type));
+  if (types.length === 0) {
+    setDevelopmentTelemetrySource('performance-timings', 'unsupported', 'No resource, mark or measure entries.');
+    return () => undefined;
+  }
+  let recorded = 0;
+  let capped = false;
+  const observers: PerformanceObserver[] = [];
+  const stopAll = () => {
+    for (const observer of observers) observer.disconnect();
+  };
+  const onEntries = (list: PerformanceObserverEntryList) => {
+    for (const entry of list.getEntries()) {
+      if (recorded >= MAX_DEVELOPMENT_TIMING_ENTRIES) {
+        if (!capped) {
+          capped = true;
+          setDevelopmentTelemetrySource('performance-timings', 'capped', 'Timing entry cap reached.');
+          stopAll();
+        }
+        return;
+      }
+      // A mark's or measure's own name, reduced to the characters the trace keeps.
+      const label = entry.name.replace(/[^a-zA-Z0-9._/-]/g, '_').slice(0, 80) || 'unnamed';
+      const resource = entry as PerformanceEntry & {
+        responseStart?: number;
+        responseEnd?: number;
+        responseStatus?: number;
+      };
+      recordDevelopmentTrace({
+        category: entry.entryType,
+        task: entry.entryType === 'resource' ? 'resource' : label,
+        state: 'observed',
+        at_ms: entry.startTime,
+        duration_ms: Math.max(0, entry.duration),
+        ...(entry.entryType === 'resource'
+          ? {
+              url: safeResourceName(entry.name),
+              response_start_ms: resource.responseStart ?? null,
+              response_end_ms: resource.responseEnd ?? null,
+              status: resource.responseStatus ?? null,
+            }
+          : {}),
+      });
+      recorded += 1;
+    }
+  };
+  try {
+    for (const type of types) {
+      const observer = new PerformanceObserver(onEntries);
+      observer.observe({ type, buffered: true });
+      observers.push(observer);
+    }
+  } catch {
+    stopAll();
+    setDevelopmentTelemetrySource('performance-timings', 'failed', 'Could not subscribe to timings.');
+    return () => undefined;
+  }
+  setDevelopmentTelemetrySource(
+    'performance-timings',
+    'recording',
+    `Recording ${types.join(', ')}; resource URLs keep origin and path, ids masked, no query.`,
+  );
+  return () => {
+    stopAll();
+    if (!capped)
+      setDevelopmentTelemetrySource('performance-timings', 'complete', 'Timing observers stopped.');
   };
 }
 

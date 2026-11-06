@@ -23,13 +23,15 @@ export {
   usePowerSyncStatus,
   useStudentsInClassroom,
 } from '@repo/core/adapters/powersync/hooks';
-export { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+export { useTodos, type UseTodosReturn } from '@repo/core/adapters/powersync/todosHook';
 export type {
   Attendance,
   Classroom,
   MoodLog,
   School,
   Student,
+  Todo,
+  TodoList,
 } from '@repo/core/adapters/powersync/schema';
 export {
   AppSchema,

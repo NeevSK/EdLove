@@ -20,7 +20,7 @@ import {
   Settings2,
   Trash2,
 } from '@repo/ui/icons';
-import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { FlashList } from '@shopify/flash-list';
 import {
   Box,
   Button,
@@ -379,7 +379,7 @@ export const FormBuilder = ({
       ) : activeTab === 'editor' ? (
         <HStack className="gap-8 flex-1">
           <VStack className="flex-[2]">
-            <SanctuaryFlashList
+            <FlashList
               data={fields}
               keyExtractor={(item) => item.id}
               renderItem={({ item, index }) => (

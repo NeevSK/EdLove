@@ -1,5 +1,5 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { GuestDataManager } from '@repo/core/native/guestDataManager';
+import { GuestStorage } from '@repo/core/native/guestStorage';
 import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 
 const GUEST_CONVERSION_LEDGER_KEY = 'auth:guest-conversion-ledger';
@@ -247,6 +247,6 @@ export async function clearGuestConversionRecord(): Promise<void> {
 
 /** Explicit discard removes guest payload first, retaining its ledger if storage cleanup fails. */
 export async function discardGuestConversion(): Promise<void> {
-  await GuestDataManager.clearAllGuestData();
+  await GuestStorage.clearAllGuestData();
   await clearGuestConversionRecord();
 }

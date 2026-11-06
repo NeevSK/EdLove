@@ -1,3 +1,5 @@
+'use client';
+
 import { type RefObject, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { PopoverContract } from '../../../theme/contracts';
 import { cx } from '../cx';

@@ -1,13 +1,10 @@
 import {
   assertSupabaseSessionContinuity,
   readSupabaseSession,
+  type SessionContinuity,
 } from '@repo/core/adapters/supabase/sessionContinuity';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import type { SessionContinuity } from '@repo/core/api/clientRuntime';
-import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/clientRuntime';
-import { type Identity, IdentitySchema } from '@repo/core/api/identity.generated';
-import { orpcClient } from '@repo/core/api/orpcClient';
-import { getActiveAccountId } from '@repo/core/lib/accountScope';
+import type { Identity } from '@repo/core/types/Identity';
 import { storage } from '@repo/core/lib/storage';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
@@ -21,33 +18,6 @@ import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
 import type { User } from '@repo/core/types/User';
 import { strictRetryPolicy } from '@repo/core/utils/effect';
 import { Data, Duration, Effect, pipe } from 'effect';
-
-// ─── Token Resolver (unchanged) ──────────────────────────────────
-
-registerTokenResolver(async () => {
-  try {
-    const { data } = await supabaseClient.auth.getSession();
-    return data?.session?.access_token ?? null;
-  } catch {
-    return null;
-  }
-});
-
-registerActiveBondIdResolver(async () => {
-  try {
-    const session = await readSupabaseSession();
-    if (!session) return null;
-    const accountId = getActiveAccountId();
-    if (!accountId) return null;
-    const persisted = await storage.getStringAsync(`active_perspective_${accountId}`);
-    if (getActiveAccountId() !== accountId) return null;
-    if (!persisted) return null;
-    const parsed = JSON.parse(persisted) as { activeBond?: { id?: string } };
-    return parsed.activeBond?.id ?? null;
-  } catch {
-    return null;
-  }
-});
 
 // ─── Effect helpers ──────────────────────────────────────────────
 
@@ -120,13 +90,37 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   private async resolveSessionIdentity(expectedSession: SessionContinuity): Promise<Identity> {
-    const identity = IdentitySchema.parse(
-      await orpcClient.identity.identifyActiveCitizen(
-        {},
-        { context: { expectedSession, retry: 0 } },
-      ),
-    );
-    CanonicalAccountIdSchema.parse(identity.id);
+    // The account id isn't the credential subject; the database resolves it from the session.
+    const { data: accountId, error: accountError } = await supabaseClient.rpc('get_my_id');
+    if (accountError) {
+      throw new APIError('Unable to resolve the authenticated account identity.', 'IDENTITY_UNAVAILABLE');
+    }
+    const id = CanonicalAccountIdSchema.parse(accountId);
+    const [{ data: user, error: userError }, { data: bonds, error: bondsError }] = await Promise.all([
+      supabaseClient
+        .from('users')
+        .select('id, email, display_name, onboarding_completed')
+        .eq('id', id)
+        .single(),
+      supabaseClient
+        .from('bonds')
+        .select('*')
+        .eq('user_id', id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: true }),
+    ]);
+    if (userError || bondsError || !user) {
+      throw new APIError('Unable to resolve the authenticated account identity.', 'IDENTITY_UNAVAILABLE');
+    }
+    const availableBonds = (bonds ?? []) as Bond[];
+    const identity: Identity = {
+      id,
+      email: user.email,
+      display_name: user.display_name,
+      onboarding_completed: user.onboarding_completed === true,
+      availableBonds,
+      activeBond: availableBonds[0] ?? null,
+    };
     await assertSupabaseSessionContinuity(expectedSession);
     return identity;
   }
@@ -196,20 +190,13 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const userId = identity.id;
 
     const bonds = identity.availableBonds;
-    const targetBond = bonds.find((b) => b.entity_id === entityId && b.capacity === capacity);
+    const targetBond = bonds.find((b: Bond) => b.entity_id === entityId && b.capacity === capacity);
 
     if (!targetBond) {
       throw new Error(`User does not have a Bond for Entity ${entityId} with Capacity ${capacity}`);
     }
 
-    const selected = IdentitySchema.parse(
-      await orpcClient.identity.selectActiveScope(
-        {
-          body: { bondId: targetBond.id },
-        },
-        { context: { expectedAccountId: userId, retry: 0 } },
-      ),
-    );
+    const selected: Identity = { ...identity, activeBond: targetBond };
     if (selected.id !== userId || selected.activeBond?.id !== targetBond.id) {
       throw new APIError(
         'Scope selection did not match the requested account and bond.',
@@ -234,16 +221,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
         'AUTH_ACCOUNT_MISMATCH',
       );
     }
-    await orpcClient.onboarding.createInitialBond(
-      {
-        body: {
-          orientation,
-          confirmCapacityChange: context.confirmCapacityChange === true,
-          context,
-        },
-      },
-      { context: { expectedAccountId: identity.id, retry: 0 } },
-    );
+    throw new APIError('Identity onboarding is not admitted by the v1 foundation.', 'UNSUPPORTED');
   }
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<void> {
@@ -255,10 +233,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       );
     }
     const body = UserProfilePatchSchema.parse(updates);
-    await orpcClient.identity.modifyUserProfile(
-      { params: { id: userId }, body },
-      { context: { expectedAccountId: userId, retry: 0 } },
-    );
+    await runEffect(supabaseCall(() => supabaseClient.from('users').update(body).eq('id', userId)));
   }
 
   async blockUser(blockerId: string, blockedId: string): Promise<void> {
@@ -304,10 +279,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       index_number: data.indexNumber,
       nic_number: data.nicNumber,
     });
-    await orpcClient.onboarding.completeProfile(
-      { body },
-      { context: { expectedAccountId: userId, retry: 0 } },
-    );
+    await runEffect(supabaseCall(() => supabaseClient.from('users').update(body).eq('id', userId)));
   }
 
   async completeOnboarding(userId: string): Promise<void> {
@@ -318,9 +290,8 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
         'AUTH_ACCOUNT_MISMATCH',
       );
     }
-    await orpcClient.onboarding.completeOnboarding(
-      { body: {} },
-      { context: { expectedAccountId: userId, retry: 0 } },
-    );
+    await runEffect(supabaseCall(() => supabaseClient.from('users').update({ onboarding_completed: true }).eq('id', userId)));
   }
 }
+
+export const supabaseIdentityAdapter = new SupabaseIdentityAdapter();

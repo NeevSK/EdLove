@@ -1,7 +1,6 @@
+import { View, Text, Pressable } from 'react-native';
 import QRCodeGenerator from '@repo/scanner-kit/QRCodeGenerator';
-import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import React, { useRef } from 'react';
-import type { View } from 'react-native';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {
@@ -123,17 +122,17 @@ export default function QRShareButton({
   };
 
   return (
-    <Box className="items-center p-4 rounded-2xl" style={{ backgroundColor }}>
-      <Box
+    <View className="items-center p-4 rounded-2xl" style={{ backgroundColor }}>
+      <View
         ref={viewRef}
         collapsable={false}
         className="p-3 rounded-xl mb-4"
         style={{ backgroundColor }}
       >
         <QRCodeGenerator value={value} size={size} label={label} />
-      </Box>
+      </View>
 
-      <HStack className="w-full gap-2">
+      <View className="flex-row items-center w-full gap-2">
         <Pressable
           onPress={() => {
             void handleShareImage();
@@ -172,7 +171,7 @@ export default function QRShareButton({
             Save
           </Text>
         </Pressable>
-      </HStack>
-    </Box>
+      </View>
+    </View>
   );
 }

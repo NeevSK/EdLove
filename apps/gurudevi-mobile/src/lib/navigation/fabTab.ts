@@ -2,11 +2,6 @@ import type { TabType } from '@repo/ui/types/fab';
 
 const FAB_TAB_BY_DOMAIN: Readonly<Record<string, TabType>> = {
   self: 'self',
-  library: 'library',
-  workspace: 'classroom',
-  classroom: 'classroom',
-  community: 'community',
-  profile: 'profile',
 };
 
 /**
@@ -20,7 +15,5 @@ export function getCurrentFabTab(pathname: string): TabType | null {
   const tab = segments[0] ? FAB_TAB_BY_DOMAIN[segments[0]] : undefined;
   if (!tab) return null;
   if (segments.length === 1) return tab;
-  const classroomDashboard =
-    segments[0] === 'workspace' && segments[1] === 'classroom' && segments.length === 3;
-  return classroomDashboard ? tab : null;
+  return segments.length === 1 ? tab : null;
 }

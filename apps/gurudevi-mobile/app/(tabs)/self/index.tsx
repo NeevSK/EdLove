@@ -1,8 +1,8 @@
+import { View } from 'react-native';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import { canonicalSelfFeatureId } from '@repo/self/constants/selfRegistry';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Box } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { ObserveInteractiveMarker } from 'expo-observe';
 import { useLocalSearchParams } from 'expo-router';
@@ -52,7 +52,7 @@ function SelfFeatureScreen({ featureId, title }: { featureId: string; title: str
   });
 
   return (
-    <Box
+    <View
       style={{
         flex: 1,
         backgroundColor: tokens.semantic.surface.canvas,
@@ -61,6 +61,6 @@ function SelfFeatureScreen({ featureId, title }: { featureId: string; title: str
       }}
     >
       <SelfFeatureRenderer featureId={canonicalSelfFeatureId(featureId)} userId={user?.id} />
-    </Box>
+    </View>
   );
 }

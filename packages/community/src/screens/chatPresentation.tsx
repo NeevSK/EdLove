@@ -1,8 +1,8 @@
 import type { useChatOutbox } from '@repo/community/hooks/useChatOutbox';
 import type { ChatMessage } from '@repo/community/types';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { WaitingSign } from '@repo/ui/components/native';
 import { ChatComposer } from '@repo/ui/components/ChatComposer';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { ErrorState } from '@repo/ui/components/native';
 import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { MessageSquare } from '@repo/ui/icons';
@@ -109,7 +109,7 @@ export function ChatHistory({
   if (loading)
     return (
       <Box className="flex-1 items-center justify-center">
-        <BrandPulse size={32} accessibilityLabel="Loading messages" />
+        <WaitingSign size="lg" />
         <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
           Tuning Frequencies...
         </Text>
@@ -117,20 +117,11 @@ export function ChatHistory({
     );
   if (unavailable)
     return (
-      <BrandedErrorState
+      <ErrorState
         title="Messages could not settle"
-        message={
-          error?.message ?? 'No saved history is available. Enable live access to load messages.'
-        }
-      >
-        <Pressable
-          onPress={() => void retry()}
-          accessibilityRole="button"
-          accessibilityLabel="Try loading messages again"
-        >
-          <Text className="text-phase-interactive font-bold">Try again</Text>
-        </Pressable>
-      </BrandedErrorState>
+        message={error?.message ?? 'No saved history is available. Enable live access to load messages.'}
+        retry={{ label: 'Try again', onPress: () => void retry() }}
+      />
     );
   return (
     <>

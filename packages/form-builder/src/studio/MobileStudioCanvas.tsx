@@ -1,9 +1,9 @@
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import type { FormPage, FormSchema } from '@intuitui-labs/form-builder-engine/schema';
 import type { FormStudioStore } from '@intuitui-labs/form-builder-engine/studio';
 import { DraggableCanvasSurface } from '@repo/ui/components/workspace';
 import { useThemedColors } from '@repo/ui/hooks';
 import { GitBranch, Plus, Sparkles } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import React, { memo } from 'react';
 import { MobileStudioCard } from './MobileStudioCard';
@@ -29,11 +29,11 @@ export const MobileStudioCanvas = memo(function MobileStudioCanvas({
   const fields = activePage.fields ?? [];
 
   return (
-    <VStack className="flex-1 w-full bg-slate-50">
+    <View className="flex-1 w-full bg-slate-50">
       {/* Horizontal Step Tabs Carousel */}
-      <Box className="py-2.5 px-4 bg-white border-b border-slate-200 shadow-2xs">
+      <View className="py-2.5 px-4 bg-white border-b border-slate-200 shadow-2xs">
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <HStack className="items-center gap-2">
+          <View className="flex-row items-center items-center gap-2">
             {allPages.map((page, idx) => {
               const isActive = page.id === activePage.id;
               return (
@@ -68,12 +68,12 @@ export const MobileStudioCanvas = memo(function MobileStudioCanvas({
               }
               className="px-3 py-1.5 rounded-full bg-slate-100 border border-dashed border-slate-300 flex-row items-center gap-1"
             >
-              <Icon as={Plus} size={14} color="#64748B" />
+              <Plus size={14} color="#64748B" />
               <Text className="text-xs font-bold text-slate-600">Add Step</Text>
             </Pressable>
-          </HStack>
+          </View>
         </ScrollView>
-      </Box>
+      </View>
 
       {/* Main Drag-and-Drop Scroll View */}
       <ScrollView
@@ -82,19 +82,19 @@ export const MobileStudioCanvas = memo(function MobileStudioCanvas({
         showsVerticalScrollIndicator={false}
       >
         {/* Step Title Header */}
-        <VStack className="mb-4">
+        <View className="mb-4">
           <Text className="text-xl font-black text-slate-900">{activePage.title || 'Step'}</Text>
           {activePage.description && (
             <Text className="text-xs text-slate-500 mt-0.5">{activePage.description}</Text>
           )}
-        </VStack>
+        </View>
 
         {/* Empty State */}
         {fields.length === 0 ? (
-          <Box className="p-8 rounded-3xl border-2 border-dashed border-slate-200 items-center justify-center bg-white/60 my-6">
-            <Box className="p-4 rounded-2xl bg-amber-50 mb-3">
-              <Icon as={Sparkles} size={28} color="#D97706" />
-            </Box>
+          <View className="p-8 rounded-3xl border-2 border-dashed border-slate-200 items-center justify-center bg-white/60 my-6">
+            <View className="p-4 rounded-2xl bg-amber-50 mb-3">
+              <Sparkles size={28} color="#D97706" />
+            </View>
             <Text className="text-base font-bold text-slate-800">
               No questions in this step yet
             </Text>
@@ -105,10 +105,10 @@ export const MobileStudioCanvas = memo(function MobileStudioCanvas({
               onPress={onOpenPalette}
               className="px-5 py-2.5 rounded-xl bg-slate-900 flex-row items-center gap-2"
             >
-              <Icon as={Plus} size={16} color="#FFFFFF" />
+              <Plus size={16} color="#FFFFFF" />
               <Text className="text-xs font-bold text-white">+ Add First Question</Text>
             </Pressable>
-          </Box>
+          </View>
         ) : (
           /* Sortable Field Cards using DraggableCanvasSurface */
           fields.map((field, index) => (
@@ -178,35 +178,35 @@ export const MobileStudioCanvas = memo(function MobileStudioCanvas({
 
         {/* Exit Rules Summary Card */}
         {fields.length > 0 && (
-          <Box className="mt-2 p-4 rounded-2xl bg-white border border-slate-200">
-            <HStack className="items-center justify-between">
-              <HStack className="items-center gap-2">
-                <Icon as={GitBranch} size={18} color="#7C3AED" />
+          <View className="mt-2 p-4 rounded-2xl bg-white border border-slate-200">
+            <View className="flex-row items-center items-center justify-between">
+              <View className="flex-row items-center items-center gap-2">
+                <GitBranch size={18} color="#7C3AED" />
                 <Text className="text-xs font-bold text-slate-800">
                   Step Exit Rules ({activePage.jumpRules?.length ?? 0})
                 </Text>
-              </HStack>
+              </View>
               <Pressable
                 onPress={onOpenBranching}
                 className="px-3 py-1 rounded-lg bg-purple-50 border border-purple-200"
               >
                 <Text className="text-xs font-bold text-purple-700">Configure Flow</Text>
               </Pressable>
-            </HStack>
-          </Box>
+            </View>
+          </View>
         )}
       </ScrollView>
 
       {/* Floating Add Button */}
-      <Box className="absolute bottom-6 right-6">
+      <View className="absolute bottom-6 right-6">
         <Pressable
           onPress={onOpenPalette}
           className="h-14 px-6 rounded-full bg-slate-900 shadow-xl flex-row items-center gap-2"
         >
-          <Icon as={Plus} size={20} color="#FFFFFF" />
+          <Plus size={20} color="#FFFFFF" />
           <Text className="text-sm font-black text-white">Add Question</Text>
         </Pressable>
-      </Box>
-    </VStack>
+      </View>
+    </View>
   );
 });

@@ -4,8 +4,8 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { View, Text } from 'react-native';
 import { Compass, Heart, MessageSquare, Star } from '@repo/ui/icons';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 import Animated, { FadeInLeft } from 'react-native-reanimated';
 
@@ -27,7 +27,7 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
   isLast,
 }) => {
   // Determine visuals based on event type
-  const { icon, colorClass, borderClass } = (() => {
+  const { icon: Icon, colorClass, borderClass } = (() => {
     switch (type) {
       case 'mood':
         return {
@@ -64,38 +64,38 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
 
   return (
     <Animated.View entering={FadeInLeft.duration(600)}>
-      <HStack className="min-h-[80px] gap-2">
+      <View className="flex-row items-center min-h-[80px] gap-2">
         {/* Visual Connector Path */}
-        <VStack className="w-10 items-center">
-          <Box
+        <View className="w-10 items-center">
+          <View
             className={`w-3 h-3 rounded-full z-10 mt-1.5 shadow-sm ${colorClass.replace('text-', 'bg-')}`}
             style={{ opacity: intensity * 0.8 + 0.2 }}
           />
           {!isLast && (
-            <Box
+            <View
               className={`w-0.5 flex-1 -mt-1 z-0 rounded-full ${colorClass.replace('text-', 'bg-')}/10`}
             />
           )}
-        </VStack>
+        </View>
 
         {/* Event Card Content */}
-        <VStack
+        <View
           className={`flex-1 p-4 mb-4 rounded-2xl bg-white/5 border border-white/5 shadow-sm ${borderClass}/10`}
         >
-          <HStack className="items-center justify-between mb-1">
-            <HStack className="items-center gap-2">
-              <Icon as={icon} size={12} className={colorClass} />
+          <View className="flex-row items-center items-center justify-between mb-1">
+            <View className="flex-row items-center items-center gap-2">
+              <Icon size={12} className={colorClass} />
               <Text className={`text-[10px] font-black uppercase tracking-[0.2em] ${colorClass}`}>
                 {type}
               </Text>
-            </HStack>
+            </View>
             <Text className="text-mistGray/30 text-[10px] font-bold">
               {new Date(timestamp).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',
               })}
             </Text>
-          </HStack>
+          </View>
 
           <Text className="text-sacredWhite/90 text-sm font-black mb-1">{title}</Text>
 
@@ -104,8 +104,8 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
               {content}
             </Text>
           )}
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Animated.View>
   );
 };

@@ -8,12 +8,9 @@ import { useAuthStore } from '@repo/core/store';
 
 import { usePendingActions } from '@repo/core/hooks';
 
-import { dailyContentAPI } from '@repo/self/api/dailyContent';
 import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
-import { DailyResonanceCard } from '@repo/ui/components/DailyResonanceCard';
-import { GlassCard } from '@repo/ui/components/GlassCard';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import { BookOpen, Calendar, ChevronRight, CircleCheck, Clock, Sparkles } from '@repo/ui/icons';
+import { WorldSkeleton } from '@repo/ui/components/native';
+import { Calendar, ChevronRight, CircleCheck, Clock } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -26,7 +23,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void }) {
@@ -36,10 +33,6 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void
   const router = useRouter();
 
   const [refreshing, setRefreshing] = useState(false);
-  const [dailyContent, setDailyContent] = useState<{
-    motivation: any;
-    didYouKnow: any;
-  } | null>(null);
 
   const {
     attendancePending,
@@ -48,24 +41,11 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void
     refresh: refreshActions,
   } = usePendingActions(user?.id);
 
-  const loadContent = useCallback(async () => {
-    try {
-      const content = await dailyContentAPI.getTodaysContent();
-      setDailyContent(content);
-    } catch (err) {
-      console.error('Failed to load daily content:', err);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadContent();
-  }, [loadContent]);
-
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([loadContent(), refreshActions()]);
+    await refreshActions();
     setRefreshing(false);
-  }, [refreshActions, loadContent]);
+  }, [refreshActions]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -104,36 +84,9 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void
           </VStack>
         </BreathAnimation>
 
-        {/* 2. Daily Motivation (The Spark) */}
-        <BreathAnimation delay={250}>
-          <DailyResonanceCard
-            title={t('pulse.motivation') || 'Daily Spark'}
-            content={
-              dailyContent?.motivation?.content ||
-              'May your day be filled with peace and resonance.'
-            }
-            author={dailyContent?.motivation?.author || 'Sanctuary'}
-            icon={Sparkles}
-            type="motivation"
-          />
-        </BreathAnimation>
-
-        {/* 3. Did You Know? (The Wisdom) */}
-        <BreathAnimation delay={400}>
-          <DailyResonanceCard
-            title={t('pulse.wisdom') || 'Seed of Wisdom'}
-            content={
-              dailyContent?.didYouKnow?.content ||
-              'Did you know? Every student brings a unique harmony to the classroom.'
-            }
-            icon={BookOpen}
-            type="wisdom"
-          />
-        </BreathAnimation>
-
         {/* 4. Clerical Relief / Action Pulse */}
         <BreathAnimation delay={550}>
-          <GlassCard className="p-lg rounded-comfortable border border-white/5 shadow-2xl bg-white/5">
+          <Box className="p-lg rounded-comfortable border border-white/5 shadow-2xl bg-white/5">
             <VStack className="gap-6">
               <HStack className="justify-between items-center">
                 <VStack className="gap-1">
@@ -149,8 +102,8 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void
 
               {actionsLoading ? (
                 <VStack className="gap-sm">
-                  <SkeletonCard height={72} />
-                  <SkeletonCard height={72} />
+                  <WorldSkeleton height={72} />
+                  <WorldSkeleton height={72} />
                 </VStack>
               ) : !hasActions ? (
                 <HStack className="items-center py-4 gap-3 bg-emeraldGreen/5 border border-emeraldGreen/10 rounded-xl px-4 justify-center">
@@ -198,7 +151,7 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void
                 </VStack>
               )}
             </VStack>
-          </GlassCard>
+          </Box>
         </BreathAnimation>
 
         {/* 5. Entrance to Full View */}

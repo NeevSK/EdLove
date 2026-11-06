@@ -19,16 +19,8 @@ export {
   useScopedDeviceSecurity,
 } from '@repo/core/hooks/useScopedDeviceSecurity';
 export { useDomainRollout } from '@repo/core/hooks/useDomainRollout';
-export {
-  useClassroomNotes,
-  useDomainServices,
-  useEducational,
-  useTeacherInsights,
-} from '@repo/core/hooks/useDomainServices';
-export { useEntity } from '@repo/core/hooks/useEntity';
 export { useForm } from '@repo/core/hooks/useForm';
 export { useGroupCreation } from '@repo/core/hooks/useGroupCreation';
-export { useIdentity } from '@repo/core/hooks/useIdentity';
 export { useIsGuest } from '@repo/core/hooks/useIsGuest';
 export { useJourneyHistory } from '@repo/core/hooks/useJourneyHistory';
 export {
@@ -42,7 +34,6 @@ export { useNaturePaths } from '@repo/core/hooks/useNaturePaths';
 export { usePendingActions } from '@repo/core/hooks/usePendingActions';
 export { usePendingGateAction } from '@repo/core/hooks/usePendingGateAction';
 export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
-export { useRewards } from '@repo/core/hooks/useRewards';
 export { useSafeMutation } from '@repo/core/hooks/useSafeMutation';
 export {
   type UseScaffoldDismissalResult,
@@ -57,8 +48,5 @@ export {
   useScopedNotifications,
 } from '@repo/core/hooks/useScopedNotifications';
 export { useStudentGoals } from '@repo/core/hooks/useStudentGoals';
-export { useTaskActions } from '@repo/core/hooks/useTaskActions';
-export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { useTenantContext } from '@repo/core/hooks/useTenantContext';
-export { useTracking } from '@repo/core/hooks/useTracking';

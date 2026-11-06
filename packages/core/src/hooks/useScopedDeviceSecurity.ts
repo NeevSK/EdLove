@@ -1,4 +1,4 @@
-import { deviceSecurity } from '@repo/core/logic/managers/factory';
+import { supabaseDeviceSecurityAdapter as deviceSecurity } from '@repo/core/adapters/supabaseDeviceSecurity.adapter';
 import {
   abortableQueryRead,
   type QueryScope,
@@ -70,7 +70,7 @@ export function useScopedDeviceSecurity(
     () => (scope ? deviceSecurityQueryKeys.summary(scope) : disabledSummaryKey),
     [scope?.principalId],
   );
-  const query = useQuery({
+  const query = useQuery<DeviceSecuritySummary>({
     queryKey: summaryKey,
     queryFn: ({ signal }) => abortableQueryRead(signal, () => deviceSecurity.getSecuritySummary()),
     enabled: scope !== null,

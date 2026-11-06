@@ -1,7 +1,6 @@
 export * from '@repo/core/logic/domains/attendanceProjection';
 export * from '@repo/core/logic/domains/classroomNotes';
 export * from '@repo/core/logic/domains/educational';
-export * from '@repo/core/logic/domains/factory';
 export * from '@repo/core/logic/domains/founder';
 export * from '@repo/core/logic/domains/gradingProjection';
 export * from '@repo/core/logic/domains/guardian';

@@ -34,7 +34,8 @@ vi.mock('../../../api/deviceTrust', () => ({
 // Mock the dynamic WebAssembly package
 const mockEvaluate = vi.fn();
 vi.mock('@cedar-policy/cedar-wasm/web', () => ({
-  evaluate: (...args: any[]) => mockEvaluate(...args),
+  default: async () => {},
+  isAuthorized: (...args: unknown[]) => mockEvaluate(...args),
 }));
 
 describe('localEvaluator (WASM PDP)', { tags: ['wasm', 'security'] }, () => {
@@ -144,7 +145,10 @@ describe('localEvaluator (WASM PDP)', { tags: ['wasm', 'security'] }, () => {
       mockDrizzle.query.classrooms.findFirst.mockResolvedValueOnce({
         schoolId: 'school-123',
       });
-      mockEvaluate.mockResolvedValueOnce({ decision: 'Allow' });
+      mockEvaluate.mockReturnValueOnce({
+        type: 'success',
+        response: { decision: 'allow', diagnostics: { errors: [] } },
+      });
 
       const isAllowed = await checkLocalPermission({
         action: 'read',
@@ -156,12 +160,10 @@ describe('localEvaluator (WASM PDP)', { tags: ['wasm', 'security'] }, () => {
       expect(isAllowed).toBe(true);
       expect(mockEvaluate).toHaveBeenCalledWith(
         expect.objectContaining({
-          policies: 'permit(principal, action, resource);',
-          request: expect.objectContaining({
-            principal: { type: 'User', id: 'user-123' },
-            action: { type: 'Action', id: 'read' },
-            resource: { type: 'Classroom', id: 'class-1' },
-          }),
+          policies: { staticPolicies: 'permit(principal, action, resource);' },
+          principal: { type: 'User', id: 'user-123' },
+          action: { type: 'Action', id: 'read' },
+          resource: { type: 'Classroom', id: 'class-1' },
         }),
       );
     });
@@ -173,7 +175,10 @@ describe('localEvaluator (WASM PDP)', { tags: ['wasm', 'security'] }, () => {
       mockDrizzle.query.classrooms.findFirst.mockResolvedValueOnce({
         schoolId: 'school-123',
       });
-      mockEvaluate.mockResolvedValueOnce({ decision: 'Deny' });
+      mockEvaluate.mockReturnValueOnce({
+        type: 'success',
+        response: { decision: 'deny', diagnostics: { errors: [] } },
+      });
 
       const isAllowed = await checkLocalPermission({
         action: 'read',
@@ -189,7 +194,9 @@ describe('localEvaluator (WASM PDP)', { tags: ['wasm', 'security'] }, () => {
       mockDrizzle.select.mockReturnValueOnce({
         from: vi.fn().mockResolvedValueOnce([{ content: 'permit(principal, action, resource);' }]),
       });
-      mockEvaluate.mockRejectedValueOnce(new Error('WASM compilation error'));
+      mockEvaluate.mockImplementationOnce(() => {
+        throw new Error('WASM compilation error');
+      });
 
       const isAllowed = await checkLocalPermission({
         action: 'read',

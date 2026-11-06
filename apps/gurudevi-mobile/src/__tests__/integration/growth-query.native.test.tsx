@@ -24,8 +24,8 @@ const fixture = vi.hoisted(() => {
     }),
   };
 });
-vi.mock('@repo/core/logic/managers/growth.factory', () => ({
-  growth: { getGrowthState: fixture.getGrowth },
+vi.mock('@repo/core/adapters/supabase/growth.adapter', () => ({
+  supabaseGrowthAdapter: { getGrowthState: fixture.getGrowth },
 }));
 vi.mock('@repo/core/lib/storage', () => ({
   storage: { getStringAsync: fixture.read, setAsync: fixture.write },

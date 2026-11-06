@@ -1,5 +1,5 @@
 import { TodoView } from './TodoView';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { EmptyState } from '@repo/ui/components/native';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,11 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const { t } = useTranslation();
 
   if (!userId) {
-    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
+    return <EmptyState
+        title="Sign in to use this"
+        message="Everything else in Self keeps working on this device."
+        action={{ label: 'Sign in', onPress: () => router.push('/auth') }}
+      />;
   }
 
   return (

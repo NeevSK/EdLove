@@ -1,0 +1,313 @@
+{
+  "id": "feature:self.learner_growth",
+  "title": "Learner Growth, Daily Preparation & Wellbeing Rhythm",
+  "description": "Personal sanctuary for learners and individuals to plan tomorrow with three gentle things, manage daily study goals, track school timetable periods, and engage in mindful reflection.",
+  "lifecycle": {
+    "maturity": "available",
+    "owner": "Naveen"
+  },
+  "links": ["intent:student.daily_prep", "intent:student.timetable_schedule", "intent:student.mindful_reflection"],
+  "intents": [
+    {
+      "id": "intent:student.daily_prep",
+      "title": "Prepare Tomorrow Rhythm & Study Priorities",
+      "actor": "student",
+      "outcome": "Capture three gentle prep goals and personal study tasks with fluid tactile interaction.",
+      "links": ["journey:student.daily_prep"],
+      "journeys": [
+        {
+          "id": "journey:student.daily_prep",
+          "title": "Manage Tomorrow's Preparation",
+          "situation": "In the evening during the wind-down phase, a learner opens Self to set three intentional things to prepare for tomorrow.",
+          "outcome": "Goals are captured in local SQLite and swiped complete the next day with tactile haptic feedback.",
+          "context": "daily",
+          "preconditions": [
+            "Authenticated account exists."
+          ],
+          "entry": "step:student.open_self",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "TomorrowPrep component renders the Tomorrow Prep list powered by TodoView.",
+              "SwipeableTodoRow provides fluid RNGH 3.4 + Reanimated 4 gesture completion."
+            ],
+            "invariants": [
+              "Daily prep must remain simple and non-coercive (encouraging 3 gentle things, avoiding overwhelming backlog pressure).",
+              "Tasks sync offline-first with zero lag."
+            ],
+            "openQuestions": [
+              "How should unfinished prep items carry over to the next morning without guilt framing?"
+            ],
+            "integrationPoints": [
+              "packages/self/src/components/TomorrowPrep.tsx",
+              "packages/ui/src/components/native/Todo/TodoView.tsx",
+              "packages/ui/src/components/native/Todo/SwipeableTodoRow.tsx",
+              "packages/core/src/adapters/powersync/todosHook.ts"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:student.open_self",
+              "title": "Open Self Workspace",
+              "interaction": "Navigate to the Self tab during evening wind-down.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:student.add_prep_goal",
+              "title": "Add Prep Item",
+              "interaction": "Enter gentle task and submit.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:student.complete_prep_goal",
+              "title": "Complete Prep Item",
+              "interaction": "Swipe right to mark item done.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:student.self_to_prep",
+              "title": "Focus Prep Input",
+              "from": "step:student.open_self",
+              "to": "step:student.add_prep_goal",
+              "action": "Focus Tomorrow Prep input",
+              "feedback": "Show clean inline input dressed in active world theme.",
+              "links": []
+            },
+            {
+              "id": "transition:student.prep_to_complete",
+              "title": "Mark Done",
+              "from": "step:student.add_prep_goal",
+              "to": "step:student.complete_prep_goal",
+              "action": "Swipe task to the right",
+              "feedback": "Green reveal with light haptic tick, strikethrough, and smooth spring layout.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:student.tactile_completion",
+              "title": "Sensory & Tactile Reinforcement",
+              "statement": "Completing a prep item must provide immediate visual spring easing and haptic reinforcement.",
+              "classification": "quality",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:student.tomorrow_prep_component",
+              "title": "Tomorrow Prep Component",
+              "category": "mobile",
+              "reference": "packages/self/src/components/TomorrowPrep.tsx",
+              "status": "implemented",
+              "note": "Renders modern TodoView for Tomorrow Prep.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:student.plan_tomorrow_and_complete",
+              "title": "Plan Tomorrow and Complete Next Day",
+              "transitions": [
+                "transition:student.self_to_prep",
+                "transition:student.prep_to_complete"
+              ],
+              "expected": "Item is created in Tomorrow Prep list and swiped complete smoothly.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:student.timetable_schedule",
+      "title": "Navigate Daily Timetable Periods",
+      "actor": "student",
+      "outcome": "View today's schedule, subjects, rooms, and upcoming class periods.",
+      "links": ["journey:student.timetable_schedule"],
+      "journeys": [
+        {
+          "id": "journey:student.timetable_schedule",
+          "title": "View Daily Class Timetable",
+          "situation": "A student needs to know which subject, teacher, and room they should be in during the current period.",
+          "outcome": "Current and upcoming class periods are displayed with active period highlighted.",
+          "context": "daily",
+          "preconditions": [
+            "Authenticated account is enrolled in at least one active classroom."
+          ],
+          "entry": "step:student.view_timetable",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "useTimetable loads period schedules with offline cache fallback.",
+              "DailyRhythm displays day-of-week periods."
+            ],
+            "invariants": [
+              "Timetable periods are cached locally so students in remote classrooms can view their schedule offline."
+            ],
+            "openQuestions": [
+              "How should room swaps or substitute teacher notices be indicated dynamically on the period card?"
+            ],
+            "integrationPoints": [
+              "packages/self/src/hooks/useTimetable.ts",
+              "packages/self/src/components/DailyRhythm.tsx",
+              "packages/schema/schema.zmodel"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:student.view_timetable",
+              "title": "View Timetable Periods",
+              "interaction": "Inspect morning and afternoon period cards.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:student.self_to_schedule",
+              "title": "Inspect Periods",
+              "from": "step:student.view_timetable",
+              "to": "step:student.view_timetable",
+              "action": "Select day of week",
+              "feedback": "Filter and display periods for the selected day.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:student.offline_schedule_access",
+              "title": "Offline Schedule Availability",
+              "statement": "Class period schedules must be readable even when the device is completely disconnected.",
+              "classification": "quality",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:student.timetable_hook",
+              "title": "useTimetable Hook",
+              "category": "data",
+              "reference": "packages/self/src/hooks/useTimetable.ts",
+              "status": "implemented",
+              "note": "Provides cached timetable period data.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:student.check_daily_periods",
+              "title": "Check Daily Periods",
+              "transitions": ["transition:student.self_to_schedule"],
+              "expected": "Daily periods are rendered with subject names and room numbers.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:student.mindful_reflection",
+      "title": "Engage in Mindful Breathing & Emotional Attunement",
+      "actor": "student",
+      "outcome": "Reset nervous system through guided breathing and record feelings.",
+      "links": ["journey:student.mindful_reflection"],
+      "journeys": [
+        {
+          "id": "journey:student.mindful_reflection",
+          "title": "Mindful Breathing Reset",
+          "situation": "A learner feeling agitated or overwhelmed seeks a quick calming reset.",
+          "outcome": "Gentle breath cadence is delivered with sensory haptics and peaceful visuals.",
+          "context": "recovery",
+          "preconditions": [
+            "App is running in any context."
+          ],
+          "entry": "step:student.initiate_breath",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "BreathGuide component renders expanding/contracting lotus visual.",
+              "mindfulBreathingFlow orchestrates the flow."
+            ],
+            "invariants": [
+              "Mindful breathing can be cancelled at any second without judgment or penalties."
+            ],
+            "openQuestions": [
+              "Should audio bells or binaural audio support be bundled or downloaded on demand?"
+            ],
+            "integrationPoints": [
+              "packages/self/src/components/BreathGuide.tsx",
+              "packages/core/src/flows/self/mindfulBreathing.flow.ts"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:student.initiate_breath",
+              "title": "Begin Breathing Exercise",
+              "interaction": "Tap Lotus breathing button from header or FAB.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:student.complete_breath",
+              "title": "Complete Breathing Cadence",
+              "interaction": "Follow 4-second inhale, 4-second hold, 4-second exhale cycle.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:student.breath_start_to_complete",
+              "title": "Settle into Calm",
+              "from": "step:student.initiate_breath",
+              "to": "step:student.complete_breath",
+              "action": "Complete at least one breath cycle",
+              "feedback": "Gentle haptic pulse at turnaround points.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:student.gentle_unforced_motion",
+              "title": "Unforced Calming Motion",
+              "statement": "Breathing animation curves must follow sinusoidal natural easing without sudden velocity breaks.",
+              "classification": "quality",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:student.breath_guide",
+              "title": "Breath Guide Component",
+              "category": "mobile",
+              "reference": "packages/self/src/components/BreathGuide.tsx",
+              "status": "implemented",
+              "note": "Renders breathing animations.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:student.calming_reset",
+              "title": "Calming Reset Session",
+              "transitions": ["transition:student.breath_start_to_complete"],
+              "expected": "Breathing visual expands and contracts with soothing haptics.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}

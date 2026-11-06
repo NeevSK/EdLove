@@ -1,3 +1,5 @@
+'use client';
+
 import { useId, useRef } from 'react';
 import type { TabsContract } from '../../../theme/contracts';
 import { cx } from '../cx';

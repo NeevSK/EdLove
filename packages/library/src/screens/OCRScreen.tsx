@@ -1,8 +1,9 @@
 import { getOCRInstance, type OCRResult } from '@repo/library/api';
 import { useLoadedBytes } from '@repo/library/hooks/useLoadedBytes';
 import { bytesToBase64, saveBytes } from '@repo/library/utils/bytes';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
+import { WaitingSign } from '@repo/ui/components/native';
 import { ArrowLeft, Download, ScanLine } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -57,16 +58,16 @@ export default function OCRScreen() {
 
   if (loading) {
     return (
-      <ScreenWrapper>
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
         <Box className="flex-1 items-center justify-center p-8">
-          <BrandPulse size={28} />
+          <WaitingSign size={28} />
         </Box>
-      </ScreenWrapper>
+      </ScrollView></SafeAreaView>
     );
   }
 
   return (
-    <ScreenWrapper>
+    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
       <VStack className="gap-3 p-4">
         <HStack className="items-center gap-2">
           <Pressable onPress={() => router.back()} className="active:opacity-60">
@@ -155,6 +156,6 @@ export default function OCRScreen() {
           </>
         ) : null}
       </VStack>
-    </ScreenWrapper>
+    </ScrollView></SafeAreaView>
   );
 }

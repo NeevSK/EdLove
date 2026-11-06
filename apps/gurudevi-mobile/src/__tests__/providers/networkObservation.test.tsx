@@ -1,6 +1,6 @@
 import { stopNetworkBusAdapter } from '@repo/core/adapters/NetworkBusAdapter';
 import type { NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
@@ -13,7 +13,7 @@ describe('mounted connectivity observer', () => {
       connection: null,
     };
     const listeners = new Set<() => void>();
-    networkManager.registerAdapter({
+    networkMonitor.registerAdapter({
       getSnapshot: () => snapshot,
       subscribe: (listener) => {
         listeners.add(listener);

@@ -1,4 +1,4 @@
-import { Box, Pressable, Text } from '@repo/ui/primitives';
+import { View, Text, Pressable } from 'react-native';
 import { tokens } from '@repo/ui/tokens';
 
 export interface WorkspaceLayoutRecoveryNoticeProps {
@@ -17,7 +17,7 @@ export function WorkspaceLayoutRecoveryNotice({
   if (!error) return null;
 
   return (
-    <Box style={styles.container}>
+    <View style={styles.container}>
       <Text accessibilityLiveRegion="assertive" style={styles.message}>
         Your floor changes have not been confirmed by the server.
       </Text>
@@ -36,7 +36,7 @@ export function WorkspaceLayoutRecoveryNotice({
       >
         <Text style={styles.buttonText}>{isRetrying ? 'Retrying…' : 'Retry floor sync'}</Text>
       </Pressable>
-    </Box>
+    </View>
   );
 }
 

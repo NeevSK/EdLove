@@ -1,5 +1,5 @@
+import { View, Text } from 'react-native';
 import { BookOpen, Clock, Compass, QrCode, Users, Zap } from '@repo/ui/icons';
-import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 
 interface Achievement {
@@ -65,8 +65,8 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
   const AchievementItem = ({ achievement }: { achievement: Achievement }) => {
     const IconComponent = achievement.icon;
     return (
-      <VStack className={`items-center w-[30%] mb-4 ${!achievement.unlocked ? 'opacity-30' : ''}`}>
-        <Box
+      <View className={`items-center w-[30%] mb-4 ${!achievement.unlocked ? 'opacity-30' : ''}`}>
+        <View
           className={`p-4 rounded-full border ${
             achievement.unlocked
               ? 'bg-phase-interactive/10 border-phase-interactive/30'
@@ -74,20 +74,20 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
           }`}
         >
           <IconComponent size={24} color={achievement.unlocked ? '#4A90E2' : '#9DA1A3'} />
-        </Box>
+        </View>
         <Text
           className={`text-center text-[10px] mt-2 px-1 ${achievement.unlocked ? 'font-bold text-phase-text-primary' : 'text-phase-text-tertiary'}`}
           numberOfLines={1}
         >
           {achievement.title}
         </Text>
-      </VStack>
+      </View>
     );
   };
 
   return (
-    <VStack className="mt-8 px-4">
-      <Box
+    <View className="mt-8 px-4">
+      <View
         className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
         style={{
           shadowColor: '#9DA1A3',
@@ -96,17 +96,17 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
           shadowRadius: 10,
         }}
       >
-        <Heading className="text-phase-text-secondary text-sm mb-6">
+        <Text className="text-phase-text-secondary text-sm mb-6">
           {t('achievements.title', 'Achievements')}
-        </Heading>
-        <HStack className="flex-row flex-wrap justify-between">
+        </Text>
+        <View className="flex-row flex-wrap justify-between">
           {achievements.map((item) => (
             <AchievementItem key={item.id} achievement={item} />
           ))}
           {/* Spacer for proper alignment */}
-          <Box className="w-[30%]" />
-        </HStack>
-      </Box>
-    </VStack>
+          <View className="w-[30%]" />
+        </View>
+      </View>
+    </View>
   );
 }

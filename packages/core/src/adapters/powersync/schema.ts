@@ -517,6 +517,37 @@ export const personalReminders = sqliteTable(
   ],
 );
 
+export const lists = sqliteTable(
+  'lists',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    name: text('name').notNull(),
+    color: text('color'),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [index('lists_user_idx').on(table.userId)],
+);
+
+export const todos = sqliteTable(
+  'todos',
+  {
+    id: text('id').primaryKey(),
+    listId: text('list_id').notNull(),
+    userId: text('user_id').notNull(),
+    title: text('title').notNull(),
+    notes: text('notes'),
+    isCompleted: integer('is_completed', { mode: 'boolean' }).notNull().default(false),
+    dueDate: text('due_date'),
+    createdAt: text('created_at').notNull(),
+    completedAt: text('completed_at'),
+  },
+  (table) => [
+    index('todos_list_idx').on(table.listId, table.isCompleted),
+    index('todos_user_idx').on(table.userId),
+  ],
+);
+
 export const AppSchema = {
   bonds,
   classroomStudents,
@@ -546,6 +577,8 @@ export const AppSchema = {
   timetablePeriods,
   dailyPrepItems,
   personalReminders,
+  lists,
+  todos,
 };
 
 // Tables that are NOT in the PowerSync publication scope (20260812000000_powersync_publication.sql).
@@ -655,6 +688,12 @@ export type InsertDailyPrepItem = typeof dailyPrepItems.$inferInsert;
 
 export type PersonalReminder = typeof personalReminders.$inferSelect;
 export type InsertPersonalReminder = typeof personalReminders.$inferInsert;
+
+export type TodoList = typeof lists.$inferSelect;
+export type InsertTodoList = typeof lists.$inferInsert;
+
+export type Todo = typeof todos.$inferSelect;
+export type InsertTodo = typeof todos.$inferInsert;
 
 export type JurisdictionNode = typeof jurisdictionNodes.$inferSelect;
 export type InsertJurisdictionNode = typeof jurisdictionNodes.$inferInsert;

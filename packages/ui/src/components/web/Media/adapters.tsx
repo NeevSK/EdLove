@@ -1,3 +1,5 @@
+'use client';
+
 import { type ComponentType, createContext, type ReactNode, useContext, useMemo } from 'react';
 import type {
   DocumentAdapterProps,

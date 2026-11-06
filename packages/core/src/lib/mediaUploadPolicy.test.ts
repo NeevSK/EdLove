@@ -22,24 +22,24 @@ describe('wallpaper upload policy', () => {
         { ...validWallpaper, mimeType: 'image/svg+xml' },
         WALLPAPER_UPLOAD_POLICY,
       ),
-    ).toThrowError(MediaUploadValidationError);
+    ).toThrow(MediaUploadValidationError);
     expect(() =>
       validateMediaUpload(
         { ...validWallpaper, byteLength: WALLPAPER_UPLOAD_POLICY.maxBytes + 1 },
         WALLPAPER_UPLOAD_POLICY,
       ),
-    ).toThrowError(MediaUploadValidationError);
+    ).toThrow(MediaUploadValidationError);
   });
 
   test('requires dimensions and bounds decoded pixel count', () => {
     expect(() =>
       validateMediaUpload({ mimeType: 'image/png', byteLength: 100 }, WALLPAPER_UPLOAD_POLICY),
-    ).toThrowError(MediaUploadValidationError);
+    ).toThrow(MediaUploadValidationError);
     expect(() =>
       validateMediaUpload(
         { ...validWallpaper, width: 5000, height: 5000 },
         WALLPAPER_UPLOAD_POLICY,
       ),
-    ).toThrowError(MediaUploadValidationError);
+    ).toThrow(MediaUploadValidationError);
   });
 });

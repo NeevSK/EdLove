@@ -1,7 +1,7 @@
 import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
 import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
-import { Box, Pressable, Text } from '@repo/ui/primitives';
 import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 export interface RoleWeightEditorProps {
   roles: SelfViewRole[];
@@ -19,11 +19,11 @@ const PRESETS: Array<{ label: string; weights: Partial<Record<SelfViewRole, numb
 export function RoleWeightEditor({ roles, weights, onChange }: RoleWeightEditorProps) {
   return (
     <SettingsGroup title="Role emphasis" subtitle="You hold multiple roles. Adjust prioritization.">
-      <Box className="gap-3">
+      <View className="gap-3">
         <Text className="text-xs text-ink/60">
           Detected roles: {roles.join(' + ') || 'student'}
         </Text>
-        <Box className="flex-row flex-wrap gap-2">
+        <View className="flex-row flex-wrap gap-2">
           {PRESETS.map((preset) => (
             <Pressable
               key={preset.label}
@@ -33,14 +33,14 @@ export function RoleWeightEditor({ roles, weights, onChange }: RoleWeightEditorP
               <Text className="text-xs font-semibold text-ink">{preset.label}</Text>
             </Pressable>
           ))}
-        </Box>
+        </View>
         {roles.map((role) => (
-          <Box
+          <View
             key={role}
             className="flex-row items-center justify-between rounded-xl border border-border p-3 bg-phase-surface"
           >
             <Text className="text-sm font-bold capitalize text-ink">{role}</Text>
-            <Box className="flex-row gap-1">
+            <View className="flex-row gap-1">
               {[0, 30, 70, 100].map((v) => (
                 <Pressable
                   key={v}
@@ -54,10 +54,12 @@ export function RoleWeightEditor({ roles, weights, onChange }: RoleWeightEditorP
                   </Text>
                 </Pressable>
               ))}
-            </Box>
-          </Box>
+            </View>
+          </View>
         ))}
-      </Box>
+      </View>
     </SettingsGroup>
   );
 }
+
+export default RoleWeightEditor;

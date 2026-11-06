@@ -1,6 +1,6 @@
 import { isQueuedDeviceSecurityMutation } from '@repo/core/lib/sync/deviceSecurityIntents';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { deviceSecurity } from '@repo/core/logic/managers/factory';
+import { supabaseDeviceSecurityAdapter as deviceSecurity } from '@repo/core/adapters/supabaseDeviceSecurity.adapter';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCallback, useMemo, useState } from 'react';
 import { useScopedDeviceSecurity } from '@repo/core/hooks/useScopedDeviceSecurity';
@@ -22,9 +22,13 @@ export async function completeDeviceSecurityCommand<T>(
  */
 export function useDeviceSecurity() {
   const requestedPrincipalId = useAuthStore((state) => state.user?.id ?? null);
-  const { scope, summary, isLoading, error: readError, refresh } = useScopedDeviceSecurity(
-    requestedPrincipalId,
-  );
+  const {
+    scope,
+    summary,
+    isLoading,
+    error: readError,
+    refresh,
+  } = useScopedDeviceSecurity(requestedPrincipalId);
   const [commandError, setCommandError] = useState<string | null>(null);
   const [isMutating, setIsMutating] = useState(false);
   const devices = summary?.devices ?? [];
@@ -39,7 +43,7 @@ export function useDeviceSecurity() {
   );
 
   const runCommand = useCallback(
-    async <T,>(operation: () => Promise<{ queued: boolean; data: T }>) => {
+    async <T>(operation: () => Promise<{ queued: boolean; data: T }>) => {
       if (!scope) throw new Error('An authenticated device-security scope is required.');
       setCommandError(null);
       setIsMutating(true);
@@ -88,7 +92,7 @@ export function useDeviceSecurity() {
     if (platforms.size > 2) score -= 10;
 
     // Deduct for stale devices
-    const staleCount = devices.filter((d) => d.trustStatus === 'stale').length;
+    const staleCount = devices.filter((d) => d.isTrusted === false).length;
     score -= staleCount * 5;
 
     return Math.max(0, score);

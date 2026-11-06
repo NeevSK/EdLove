@@ -1,8 +1,8 @@
+import { View, Text, Pressable } from 'react-native';
 import { useAuth } from '@repo/core/logic';
 import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
 import { BrandPulse } from '@repo/ui';
 import { Mascot } from '@repo/ui/components/Mascot';
-import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { type Href, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { type ReactNode, useEffect, useState } from 'react';
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
@@ -156,7 +156,7 @@ export function SessionRouteGate({
   if (presentation.kind === 'restoring') {
     if (presentation.message) {
       return (
-        <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
+        <View className="flex-1 items-center justify-center bg-phase-canvas px-8">
           <Mascot mode="offline" state="interrupted" size={140} podVariant="raw" />
           <Text className="mt-6 text-center text-xl font-bold text-phase-text-primary">
             Sanctuary Connection Paused
@@ -180,12 +180,12 @@ export function SessionRouteGate({
           >
             <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
           </Pressable>
-        </Box>
+        </View>
       );
     }
 
     return (
-      <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
+      <View className="flex-1 items-center justify-center bg-phase-canvas px-8">
         <BrandPulse size={32} tintColor="#D4843A" accessibilityLabel="Opening Gurudevi" />
         <Text className="mt-6 text-center text-base font-semibold text-phase-text-primary">
           Opening Gurudevi…
@@ -213,7 +213,7 @@ export function SessionRouteGate({
             </Pressable>
           </>
         ) : null}
-      </Box>
+      </View>
     );
   }
 
@@ -227,7 +227,7 @@ export function SessionRouteGate({
   if (presentation.kind !== 'transition') return content;
   const destination = presentation.target === '/welcome' ? 'Welcome' : 'your sanctuary';
   return (
-    <Box className="flex-1 items-center justify-center bg-phase-canvas px-8">
+    <View className="flex-1 items-center justify-center bg-phase-canvas px-8">
       <Text className="text-center text-base font-semibold text-phase-text-primary">
         Continue to {destination}
       </Text>
@@ -239,7 +239,7 @@ export function SessionRouteGate({
       >
         <Text className="font-semibold text-white">Continue</Text>
       </Pressable>
-    </Box>
+    </View>
   );
 }
 

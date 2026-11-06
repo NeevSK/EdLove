@@ -1,5 +1,7 @@
+import { ORPCError } from '@orpc/client';
 import { ErrorCategory, SovereignError } from '@repo/core/types/Errors';
 import { ZodError } from 'zod';
+import { getAPIErrorStatus } from './errorPolicy';
 
 /**
  * normalizeError: The Sovereign Sanitizer
@@ -21,6 +23,24 @@ export const normalizeError = (error: unknown, instanceId?: string): SovereignEr
       return new SovereignError({ ...error.details, instance: instanceId });
     }
     return error;
+  }
+
+  // Context construction may fail before oRPC owns the response. v2 errors
+  // carry a code rather than the removed instance status property.
+  if (error instanceof ORPCError) {
+    const status = getAPIErrorStatus(error) ?? 500;
+    return attachInstance(
+      new SovereignError({
+        status,
+        code: error.code,
+        detail:
+          status >= 500
+            ? 'The requested service is temporarily unavailable.'
+            : 'The operation could not be completed.',
+        category:
+          status === 401 || status === 403 ? ErrorCategory.AUTHORIZATION : ErrorCategory.NETWORK,
+      }),
+    );
   }
 
   // 2. Handle Zod Validation Errors (Schema Leakage Prevention)

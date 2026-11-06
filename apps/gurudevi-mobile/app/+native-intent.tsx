@@ -9,7 +9,7 @@ import { classifyRouteIntent, pendingIntentStore } from '@repo/core/logic';
  * Security:
  * - Sanitizes hostile payloads (path traversal, control chars, overlong URLs)
  * - Preserves unauthenticated intents in pendingIntentStore with 15-min TTL
- * - Rewrites vanity paths (/c/:code) to internal router canonical destinations
+ * - Retired invitation and QR intents fail closed without creating pending work
  */
 export async function redirectSystemPath({
   path,
@@ -26,32 +26,6 @@ export async function redirectSystemPath({
         const parsed = new URL(intent.url);
         const search = parsed.searchParams.toString();
         return search ? `/auth/callback?${search}` : '/auth/callback';
-      }
-
-      case 'classroomInvite': {
-        const targetPath = `/invitation-welcome?code=${encodeURIComponent(intent.inviteCode)}`;
-        // Stash intent so that if the user is unauthenticated, SessionRouteGate
-        // will automatically drain and navigate to this target after sign-in.
-        pendingIntentStore.getState().setPendingIntent({
-          targetPath,
-          intentKind: 'classroomInvite',
-          params: { inviteCode: intent.inviteCode },
-          originalUrl: intent.url,
-        });
-        return targetPath;
-      }
-
-      case 'qr': {
-        const payloadString = JSON.stringify(intent.payload);
-        const targetPath = `/qr?payload=${encodeURIComponent(payloadString)}`;
-        // Stash unauthenticated QR intent for post-auth resumption
-        pendingIntentStore.getState().setPendingIntent({
-          targetPath,
-          intentKind: 'qr',
-          params: { payload: payloadString },
-          originalUrl: intent.url,
-        });
-        return targetPath;
       }
 
       case 'internalRoute': {

@@ -7,7 +7,6 @@ export {
   ALLOWED_NATIVE_HOSTS,
   ALLOWED_WEB_HOSTS,
   ALLOWED_WEB_PATH_PREFIXES,
-  isQRDeepLink,
   MAX_DEEP_LINK_LENGTH,
   normalizeAcceptedDeepLink,
   normalizeAcceptedInternalRoute,

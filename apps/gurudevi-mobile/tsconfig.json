@@ -120,7 +120,6 @@
       "react",
       "react-native",
       "nativewind/types",
-      "jest",
       "vitest/globals",
       "@tanstack/react-query",
       "@repo/types-shim"

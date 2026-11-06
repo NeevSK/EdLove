@@ -1,6 +1,7 @@
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
 import { APIError } from '@repo/core/types/API';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export interface JourneyEventRecord {
   id: string;
@@ -323,3 +324,5 @@ export const createSupabaseUIExperienceRepository = (
     }));
   },
 });
+
+export const supabaseUIExperienceRepository = createSupabaseUIExperienceRepository(supabaseClient);

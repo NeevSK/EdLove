@@ -695,6 +695,22 @@ describe('verger invariants (property-based)', { timeout: 60_000 }, () => {
             },
             [{ type: 'compute-pressure', at: 1, state: 'critical' }],
           ],
+          // Found by this property (2026-10-29, seed -1775181554): heat is reported only on
+          // change, so a rise from two near-zero headrooms to the calm 0.3 kept projecting
+          // critical heat long after the trend window, and nine levers never came back.
+          [
+            {
+              at: 0,
+              levers: LEVERS,
+              capacity: UNKNOWN_CAPACITY,
+              activation: ACTIVATION_PRESETS.active,
+              memorySensing: false,
+            },
+            [
+              { type: 'thermal', status: null, headroom: 5e-324, at: 1 },
+              { type: 'thermal', status: null, headroom: 5e-324, at: 2 },
+            ],
+          ],
         ],
       },
     );

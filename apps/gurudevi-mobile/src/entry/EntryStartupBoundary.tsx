@@ -1,16 +1,11 @@
 import { coreRuntime, deviceAccounts } from '@repo/core';
 import { bootstrapPlatform } from '@repo/core/native';
 import { BrandPulse, Mascot, MascotProvider } from '@repo/ui';
-import { Pressable, Text, View } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { handoffNativeSplashAfterCommit, NATIVE_SPLASH_MAX_HOLD_MS } from '@/boot/nativeSplashService';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
-import {
-  measureDevelopmentStartupTask,
-  recordDevelopmentTrace,
-  recordStartupStage,
-} from '@/boot/startupTelemetry';
+import { recordDevelopmentTrace, recordStartupStage } from '@/boot/startupTelemetry';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { EntryShell } from '@/entry/EntryShell';
 import { installGlobalErrorHandlers } from '@/lib/globalErrorHandlers';
@@ -73,19 +68,6 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
   );
 }
 
-function startDeferredServices(): void {
-  void measureDevelopmentStartupTask('workflow-event-bridge', async () => {
-    const { installMobileWorkflowEventBridge } = await import('@/lib/inngestEvents');
-    await installMobileWorkflowEventBridge();
-  }).catch((error: unknown) => console.warn('[startup] workflow bridge deferred:', error));
-  void measureDevelopmentStartupTask('install-referrer-resolution', async () => {
-    const { resolveDeferredInstallIntent } = await import('@/lib/deepLinks/installReferrerBridge');
-    await resolveDeferredInstallIntent();
-  }).catch((error: unknown) =>
-    console.warn('[startup] deferred install referrer bridge deferred:', error),
-  );
-}
-
 export function EntryStartupBoundary() {
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<StartupState>({ status: 'starting' });
@@ -122,7 +104,6 @@ export function EntryStartupBoundary() {
           state: 'completed',
         });
         setState({ status: 'ready' });
-        startDeferredServices();
       })
       .catch((cause: unknown) => {
         if (cancelled) return;

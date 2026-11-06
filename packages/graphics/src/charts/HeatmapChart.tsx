@@ -1,5 +1,4 @@
-import { Card } from '@repo/ui/components/SanctuaryCard';
-import { HStack, VStack } from '@repo/ui/primitives';
+import { Surface } from '@repo/ui/components/native';
 import { Theme } from '@repo/ui/theme/Theme';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
@@ -62,14 +61,14 @@ export function HeatmapChart({
   };
 
   return (
-    <Card style={styles.container}>
+    <Surface tone="raised" style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
 
-      <VStack space="sm">
+      <View space="sm">
         {/* Heatmap Grid */}
         <View style={styles.heatmapContainer}>
           {grid.map((row, y) => (
-            <HStack key={`row-${y}`} style={styles.row}>
+            <View className="flex-row items-center" key={`row-${y}`} style={styles.row}>
               {row.map((cell, x) => (
                 <View
                   key={`cell-${x}-${y}`}
@@ -87,7 +86,7 @@ export function HeatmapChart({
                   {showLabels && cell.label && <Text style={styles.cellLabel}>{cell.label}</Text>}
                 </View>
               ))}
-            </HStack>
+            </View>
           ))}
         </View>
 
@@ -95,20 +94,20 @@ export function HeatmapChart({
         {showLegend && (
           <View style={styles.legend}>
             <Text style={styles.legendTitle}>Intensity Scale</Text>
-            <HStack style={styles.legendItems}>
+            <View className="flex-row items-center" style={styles.legendItems}>
               {colorScale.map((color, index) => (
-                <HStack key={index} style={styles.legendItem}>
+                <View className="flex-row items-center" key={index} style={styles.legendItem}>
                   <View style={[styles.legendColor, { backgroundColor: color }]} />
                   <Text style={styles.legendLabel}>
                     {Math.round((index / (colorScale.length - 1)) * maxValue)}
                   </Text>
-                </HStack>
+                </View>
               ))}
-            </HStack>
+            </View>
           </View>
         )}
-      </VStack>
-    </Card>
+      </View>
+    </Surface>
   );
 }
 

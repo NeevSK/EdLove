@@ -1,5 +1,5 @@
 import { getRememberedAccountAuthSubject } from '@repo/core/accounts/deviceAccounts';
-import { authAPI } from '@repo/core/api/auth';
+import { authAPI } from '@repo/core/auth';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 
 /** A durable command replays only under the live credential bound to its canonical owner. */

@@ -1,9 +1,7 @@
-import type {
-  AuthEvent,
-  DeviceSecurityEvent,
-  DeviceSecuritySession,
-  DeviceTrustSummary,
-} from '@repo/core/api/deviceTrust';
+import type { DeviceTrustSummary } from '@repo/core/native/deviceTrust';
+export type AuthEvent = Record<string, unknown>;
+export type DeviceSecurityEvent = Record<string, unknown>;
+export type DeviceSecuritySession = Record<string, unknown>;
 
 export interface DeviceSecuritySummary {
   readonly devices: DeviceTrustSummary[];

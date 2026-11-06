@@ -27,6 +27,26 @@
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/**/*.spec.ts",
-    "src/**/*.bench.ts"
+    "src/**/*.bench.ts",
+    "src/api/academicCycles.ts",
+    "src/api/assignments.ts",
+    "src/api/attendance-v1.orpc.contract.ts",
+    "src/api/auth.ts",
+    "src/api/classroomGroups.ts",
+    "src/api/classroomNotes.ts",
+    "src/api/classroomStudents.ts",
+    "src/api/contextualChallenges.ts",
+    "src/api/growthSignals.ts",
+    "src/api/impactRipples.ts",
+    "src/api/lessonMaterials.ts",
+    "src/api/media.ts",
+    "src/api/naturePaths.ts",
+    "src/api/onboarding.ts",
+    "src/api/profile.ts",
+    "src/api/school.ts",
+    "src/api/serverAdapter.ts",
+    "src/api/teacher.ts",
+    "src/api/teacherInsights.ts",
+    "src/api/userGrowthState.ts"
   ]
 }

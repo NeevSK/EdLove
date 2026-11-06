@@ -90,16 +90,16 @@ describe('GuestPersistenceNotice (component-real)', () => {
     expect(tree!.toJSON()).toBeNull();
   });
 
-  it('explains durable device-local guest storage without a lease countdown', async () => {
+  it('nudges a device-local guest without a countdown, and can be dismissed', async () => {
     mocks.user.id = 'local-123e4567-e89b-42d3-a456-426614174000';
-    mocks.pathname = '/self';
     let tree;
     await act(async () => {
       tree = create(<GuestPersistenceNotice />);
     });
 
-    expect(JSON.stringify(tree!.toJSON())).toContain('Guest mode · saved on this device');
-    expect(JSON.stringify(tree!.toJSON())).not.toContain('days left');
+    const text = JSON.stringify(tree!.toJSON());
+    expect(text).toContain('saved on this device');
+    expect(text).not.toContain('days left');
     const dismiss = tree!.root.findByProps({
       accessibilityLabel: 'Dismiss guest storage reminder',
     });

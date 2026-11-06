@@ -1,3 +1,4 @@
+import { View, Text } from 'react-native';
 import { useChatMessages } from '@repo/community/hooks/useChatMessages';
 import { useChatOutbox } from '@repo/community/hooks/useChatOutbox';
 import { useChatRealtime } from '@repo/community/hooks/useChatRealtime';
@@ -8,11 +9,10 @@ import {
 } from '@repo/core/logic/schemas/chat-command.schema';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useAuthStore, useTemporalStore } from '@repo/core/store';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { ErrorState } from '@repo/ui/components/native';
+import { AppHeader } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChatProvider } from '@repo/ui/context/ChatContext';
-import { Box, Text } from '@repo/ui/primitives';
 import type { ReactNode } from 'react';
 import {
   type ChatComposerAccess,
@@ -41,7 +41,7 @@ export interface BaseChatScreenProps {
 
 export default function BaseChatScreen(props: BaseChatScreenProps) {
   const principalId = useAuthStore((state) => state.user?.id);
-  if (!principalId) return <BrandedErrorState title="Sign in to open this conversation" />;
+  if (!principalId) return <ErrorState title="Sign in to open this conversation" message="An active session is required to participate." />;
   return (
     <AccountChat
       key={`${principalId}:${props.channel.kind}:${props.channel.id}`}
@@ -114,15 +114,13 @@ function AccountChat(props: BaseChatScreenProps & { principalId: string }) {
     }
   };
   return (
-    <ScreenWrapper scroll={false} noTopInset className="bg-phase-canvas">
-      <GlobalHeader
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
+      <AppHeader
         title={props.title}
-        subtitle={props.subtitle}
-        showBack
-        rightAction={props.headerRight}
+        eyebrow={props.subtitle}
       />
       <ChatProvider>
-        <Box className="flex-1">
+        <View className="flex-1">
           <ChatHistory
             messages={visibleMessages}
             loading={history.isLoading}
@@ -132,7 +130,7 @@ function AccountChat(props: BaseChatScreenProps & { principalId: string }) {
             principalId={principalId}
             onPressAuthor={props.onPressAuthor}
           />
-          <Box className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
+          <View className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
             {isOffline && !props.isReadOnly && (
               <Text className="text-phase-warning text-[11px] font-semibold text-center">
                 Offline — sending may be delayed until you reconnect.
@@ -150,9 +148,9 @@ function AccountChat(props: BaseChatScreenProps & { principalId: string }) {
               onTyping={realtime.sendTyping}
               typingUsers={realtime.typingUsers}
             />
-          </Box>
-        </Box>
+          </View>
+        </View>
       </ChatProvider>
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

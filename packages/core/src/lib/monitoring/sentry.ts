@@ -2,17 +2,17 @@
  * Telemetry Gateway
  *
  * Provides a platform-agnostic interface for exception reporting and breadcrumbs.
- * Delegates to TelemetryManager via the Adapter pattern.
+ * Delegates to TelemetrySink via the Adapter pattern.
  */
 
-import { telemetry } from '@repo/core/logic/managers/TelemetryManager';
+import { telemetrySink } from '@repo/core/platform/drivers/telemetrySink';
 import { sanitizeTelemetryData } from './safeData';
 
 export const initSentry = () => {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
   if (!dsn) return;
 
-  telemetry.init({
+  telemetrySink.init({
     dsn,
     environment: process.env.EXPO_PUBLIC_SENTRY_ENVIRONMENT || 'production',
     release: process.env.EXPO_PUBLIC_SENTRY_RELEASE,
@@ -23,7 +23,7 @@ export const initSentry = () => {
 };
 
 export const captureException = (error: unknown, context?: Record<string, unknown>) => {
-  telemetry.captureException(error, sanitizeTelemetryData(context));
+  telemetrySink.captureException(error, sanitizeTelemetryData(context));
 };
 
 export const logBreadcrumb = (
@@ -31,7 +31,7 @@ export const logBreadcrumb = (
   category?: string,
   data?: Record<string, unknown>,
 ) => {
-  telemetry.addBreadcrumb({ message, category, data: sanitizeTelemetryData(data) });
+  telemetrySink.addBreadcrumb({ message, category, data: sanitizeTelemetryData(data) });
 };
 
 export const setSentryUser = (user: {
@@ -39,11 +39,11 @@ export const setSentryUser = (user: {
   email?: string | null;
   username?: string | null;
 }) => {
-  telemetry.setUser({
+  telemetrySink.setUser({
     id: user.id,
   });
 };
 
 export const clearSentryUser = () => {
-  telemetry.setUser(null);
+  telemetrySink.setUser(null);
 };

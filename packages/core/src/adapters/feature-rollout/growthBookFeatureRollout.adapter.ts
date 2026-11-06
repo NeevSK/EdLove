@@ -1,6 +1,6 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
 import { storage } from '@repo/core/lib/storage';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,
@@ -83,7 +83,7 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
   }
 
   private async refreshPayload(): Promise<void> {
-    if (networkManager.getSnapshot().status !== 'online') return;
+    if (networkMonitor.getSnapshot().status !== 'online') return;
     const elapsed = this.refreshedAt ? Date.now() - Date.parse(this.refreshedAt) : Infinity;
     if (elapsed >= 0 && elapsed < GrowthBookFeatureRolloutAdapter.POLL_INTERVAL_MS) return;
     this.loadingPayload = true;
@@ -154,7 +154,7 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
         : GrowthBookFeatureRolloutAdapter.POLL_INTERVAL_MS;
     const refresh = () => {
       clearTimeout(timer);
-      if (this.rendererOwner !== owner || networkManager.getSnapshot().status !== 'online') return;
+      if (this.rendererOwner !== owner || networkMonitor.getSnapshot().status !== 'online') return;
       if (refreshing) return;
       refreshing = true;
       let succeeded = false;
@@ -169,7 +169,7 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
         })
         .finally(() => {
           refreshing = false;
-          if (this.rendererOwner === owner && networkManager.getSnapshot().status === 'online') {
+          if (this.rendererOwner === owner && networkMonitor.getSnapshot().status === 'online') {
             timer = setTimeout(
               refresh,
               succeeded ? nextDelay() : GrowthBookFeatureRolloutAdapter.POLL_INTERVAL_MS,
@@ -188,8 +188,8 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
       )
         callback(this.readSnapshot());
     });
-    const unsubscribeNetwork = networkManager.subscribe(refresh);
-    if (networkManager.getSnapshot().status === 'online') {
+    const unsubscribeNetwork = networkMonitor.subscribe(refresh);
+    if (networkMonitor.getSnapshot().status === 'online') {
       timer = setTimeout(refresh, nextDelay());
     }
 
@@ -230,3 +230,5 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
     );
   }
 }
+
+export const growthBookFeatureRolloutAdapter = new GrowthBookFeatureRolloutAdapter();

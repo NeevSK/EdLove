@@ -5,6 +5,21 @@
  */
 export * from '@repo/verger-core';
 export {
+  type GurudeviScenario,
+  GURUDEVI_SCENARIOS,
+  isGurudeviScenario,
+  type ScenarioMeta,
+  SCENARIO_METADATA,
+  activationPatchForScenario,
+} from './gurudeviScenarios';
+export {
+  type DiagnosisHealth,
+  type SensorStatus,
+  type VergerSystemDiagnosis,
+  type DiagnoseVergerOptions,
+  diagnoseVerger,
+} from './gurudeviDiagnostics';
+export {
   type DeviceTier,
   type ExperienceLevel,
   type ExperienceProfile,
@@ -12,6 +27,7 @@ export {
   experienceOf,
   type GurudeviExperience,
   type VisualQuality,
+  type TransitionMode,
 } from './experience';
 export {
   buildResponsiveWallpaperUrl,
@@ -41,6 +57,13 @@ export {
   type VergerRemoteInputs,
   vergerRemoteFromFlags,
   VERGER_LAB_RECORD_EVENTS,
+  activationAtLevel,
+  resolveVergerLevel,
+  VERGER_EXHAUSTIVE_STORE_PREFIX,
+  VERGER_LEVEL_KEY,
+  type VergerLevel,
+  type VergerLevelInputs,
+  type VergerLevelLaunch,
   type RuntimeMode,
   type VergerConfigInputs,
   type VergerConfigLaunch,

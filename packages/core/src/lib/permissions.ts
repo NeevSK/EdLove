@@ -25,6 +25,16 @@ export function getCapacityLabel(capacity: Capacity, language: 'en' | 'si' | 'ta
       ta: '\u0BA8\u0BBF\u0BB1\u0BC1\u0BB5\u0BA9\u0BB0\u0BCD',
       en: 'Founder',
     },
+    coFounder: {
+      si: '\u0DC3\u0DC4-\u0DB1\u0DD2\u0DBB\u0DCA\u0DB8\u0DCF\u0DAD\u0DD8',
+      ta: '\u0B87\u0BA3\u0BC8 \u0BA8\u0BBF\u0BB1\u0BC1\u0BB5\u0BA9\u0BB0\u0BCD',
+      en: 'Co-Founder',
+    },
+    director: {
+      si: '\u0DA0\u0DCF\u0DBB\u0DCA\u0DB8\u0DCA\u0DB4\u0DAD\u0DD2',
+      ta: '\u0B87\u0BAF\u0B95\u0BCD\u0B95\u0BC1\u0BA8\u0BB0\u0BCD',
+      en: 'Director',
+    },
     admin: {
       si: '\u0DB4\u0DBB\u0DD2\u0DB4\u0DCF\u0DBD\u0D9A',
       ta: '\u0BA8\u0BBF\u0BB0\u0BCD\u0BB5\u0BBE\u0B95\u0BBF',
@@ -34,6 +44,11 @@ export function getCapacityLabel(capacity: Capacity, language: 'en' | 'si' | 'ta
       si: '\u0DC3\u0D82\u0DC0\u0DBB\u0DCA\u0DB0\u0D9A',
       ta: '\u0B89\u0BB0\u0BC1\u0BB5\u0BBE\u0B95\u0BCD\u0B95\u0BC1\u0DB6\u0BB5\u0BB0\u0BCD',
       en: 'Developer',
+    },
+    systemEngineer: {
+      si: '\u0DB4\u0DAF\u0DCA\u0DB0\u0DAD\u0DD2 \u0D89\u0DB1\u0DCA\u0DA2\u0DD2\u0DB1\u0dda\u0DBB\u0DD4',
+      ta: '\u0B95\u0B9F\u0BCD\u0B9F\u0BAE\u0BC8\u0BAA\u0BCD\u0BAA\u0BC1 \u0BAA\u0BCA\u0BB1\u0BBF\u0BAF\u0BBE\u0BB2\u0BB0\u0BCD',
+      en: 'System Engineer',
     },
     gradeHead: {
       si: '\u0DC1\u0DCA\u200D\u0DBB\u0DDA\u0DAB\u0DD2 \u0DB4\u0DCA\u200D\u0DBB\u0DB0\u0DCF\u0DB1\u0DD3',

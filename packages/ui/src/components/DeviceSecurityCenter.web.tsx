@@ -1,4 +1,4 @@
-import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
+import DeviceAccountModal from '@repo/ui/components/DeviceAccountModal';
 import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
 
 export default function DeviceSecurityCenter({ compact = false }: { compact?: boolean }) {
@@ -18,7 +18,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
           the browser yet. Use the mobile app for those security controls.
         </Text>
       </Box>
-      <DeviceAccountManager compact={compact} />
+      <DeviceAccountModal compact={compact} />
     </VStack>
   );
 }

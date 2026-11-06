@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IStorage } from '../../logic/interfaces/storage.port';
-import { storage } from '../../logic/managers/StorageManager';
+import { storage } from '@repo/core/lib/storage';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useTemporalStore } from '../../store/useTemporalStore';
 

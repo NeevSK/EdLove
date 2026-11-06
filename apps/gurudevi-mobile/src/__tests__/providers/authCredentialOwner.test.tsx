@@ -23,7 +23,7 @@ vi.mock('@repo/core/accounts/deviceAccounts', () => ({
   deviceAccounts: { list: async () => [], retainRefreshedSession: fixture.retainRefreshedSession },
 }));
 vi.mock('@repo/core/adapters/powersync/database', () => ({ disconnectPowerSync: vi.fn() }));
-vi.mock('@repo/core/api/auth', () => ({
+vi.mock('@repo/core/auth', () => ({
   authAPI: {
     getAuthSession: fixture.getAuthSession,
     onAuthStateChange: (listener: typeof fixture.listener) => {
@@ -33,16 +33,13 @@ vi.mock('@repo/core/api/auth', () => ({
     signOut: vi.fn(),
   },
 }));
-vi.mock('@repo/core/api/highways', () => ({ assertHighway: vi.fn() }));
-vi.mock('@repo/core/api/identity', () => ({ identityAPI: {} }));
-vi.mock('@repo/core/api/school', () => ({ schoolAPI: {} }));
 vi.mock('@repo/core/lib/accountScope', () => ({ getActiveAccountId: () => null }));
 vi.mock('@repo/core/lib/sync/replayAdmission', () => ({ openReplayAdmission: vi.fn() }));
 vi.mock('@repo/core/logic/auth/profileResolution', () => ({
   resolveAuthProfile: fixture.resolveAuthProfile,
 }));
-vi.mock('@repo/core/logic/managers/factory', () => ({
-  realtime: {
+vi.mock('@repo/core/adapters/realtime/supabase.adapter', () => ({
+  supabaseRealtimeAdapter: {
     subscribe: () => ({ unsubscribe: async () => undefined }),
   },
 }));

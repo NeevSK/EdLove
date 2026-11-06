@@ -1,26 +1,22 @@
 /**
  * MOOD PICKER CARD
  * Self-contained mood resonance card for logging and viewing reflections.
- * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
+ * Reconstructed: Purged legacy UI primitives and replaced with React Native primitives + @repo/ui/theme/native.
  */
 
 import { MOOD_COLORS, MOOD_LABELS, MOOD_OPTIONS } from '@repo/self/constants/wellbeing';
 import type { MoodLog } from '@repo/self/types/Wellbeing';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { WaitingSign } from '@repo/ui/components/native';
 import { History, MessageSquare, Plus, X } from '@repo/ui/icons';
+import { useWorld } from '@repo/ui/theme/native';
+import { formatDistanceToNow } from 'date-fns';
+import React, { useMemo, useState } from 'react';
 import {
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
   Pressable,
   Text,
-  VStack,
-} from '@repo/ui/primitives';
-import { formatDistanceToNow } from 'date-fns';
-import { useMemo, useState } from 'react';
+  TextInput,
+  View,
+} from 'react-native';
 import Animated, { FadeIn, FadeInUp, LinearTransition } from 'react-native-reanimated';
 
 interface MoodPickerCardProps {
@@ -44,6 +40,7 @@ export function MoodPickerCard({
   accent = 'dark',
   isDisabled = false,
 }: MoodPickerCardProps) {
+  const { tokens } = useWorld();
   const [note, setNote] = useState('');
 
   const bgClass = useMemo(() => {
@@ -79,19 +76,18 @@ export function MoodPickerCard({
     setNote('');
   };
 
+  const IconComp = isDisabled ? History : isOpen ? X : Plus;
+
   return (
     <Animated.View layout={LinearTransition} entering={FadeIn.duration(800)}>
-      <Box className={`p-xl rounded-3xl border ${bgClass} shadow-sm overflow-hidden`}>
-        <VStack className="gap-lg">
+      <View className={`p-5 rounded-3xl border ${bgClass} shadow-sm overflow-hidden`}>
+        <View className="gap-4">
           {/* Header */}
-          <HStack className="items-center justify-between">
-            <VStack className="gap-0.5">
-              <Heading
-                size="xs"
-                className="text-sacredWhite/90 uppercase tracking-widest font-black"
-              >
+          <View className="flex-row items-center justify-between">
+            <View className="gap-0.5">
+              <Text className="text-sacredWhite/90 uppercase tracking-widest font-black text-xs">
                 Mood Resonance
-              </Heading>
+              </Text>
               {!isOpen && latestMood && (
                 <Text className="text-mistGray/40 text-[9px] uppercase font-bold tracking-tighter">
                   Last pulse:{' '}
@@ -100,41 +96,46 @@ export function MoodPickerCard({
                   })}
                 </Text>
               )}
-            </VStack>
+            </View>
 
             <Pressable
               onPress={onToggle}
               disabled={isDisabled || isSaving}
-              className={`flex-row items-center gap-2 px-4 py-2 rounded-full border ${isOpen ? 'bg-obsidian border-white/10' : 'bg-white/5 border-white/10'} active:scale-95 transition-all`}
+              className={`flex-row items-center gap-2 px-4 py-2 rounded-full border ${
+                isOpen ? 'bg-obsidian border-white/10' : 'bg-white/5 border-white/10'
+              } active:scale-95`}
             >
-              <Icon
-                as={isDisabled ? History : isOpen ? X : Plus}
+              <IconComp
                 size={12}
-                className={isOpen ? 'text-sacredWhite' : activeColorClass}
+                color={isOpen ? tokens.ink : tokens.lampDeep}
               />
               <Text
-                className={`text-[10px] font-black uppercase tracking-widest ${isOpen ? 'text-sacredWhite' : 'text-sacredWhite/80'}`}
+                className={`text-[10px] font-black uppercase tracking-widest ${
+                  isOpen ? 'text-sacredWhite' : 'text-sacredWhite/80'
+                }`}
               >
                 {isDisabled ? 'History' : isOpen ? 'Cancel' : 'Log Mood'}
               </Text>
             </Pressable>
-          </HStack>
+          </View>
 
           {/* Picker overlay */}
           {isOpen && (
             <Animated.View entering={FadeInUp.springify().damping(15)}>
-              <VStack className="bg-white/5 p-lg rounded-2xl gap-lg border border-white/5">
+              <View className="bg-white/5 p-4 rounded-2xl gap-4 border border-white/5">
                 <Text className="text-mistGray text-xs font-bold px-1">
                   How are you feeling right now?
                 </Text>
 
-                <HStack className="flex-wrap gap-2.5">
+                <View className="flex-row flex-wrap gap-2.5">
                   {MOOD_OPTIONS.map((opt) => (
                     <Pressable
                       key={opt.value}
                       disabled={isSaving}
                       onPress={() => void handleSelect(opt.value)}
-                      className={`items-center justify-center p-3 rounded-xl min-w-[64px] bg-white/5 border border-white/5 active:bg-white/10 active:scale-90 transition-all ${isSaving ? 'opacity-30' : ''}`}
+                      className={`items-center justify-center p-3 rounded-xl min-w-[64px] bg-white/5 border border-white/5 active:bg-white/10 active:scale-90 ${
+                        isSaving ? 'opacity-30' : ''
+                      }`}
                     >
                       <Text className="text-2xl mb-1">{opt.emoji}</Text>
                       <Text className="text-sacredWhite/60 text-[9px] font-black uppercase tracking-tighter">
@@ -142,65 +143,59 @@ export function MoodPickerCard({
                       </Text>
                     </Pressable>
                   ))}
-                </HStack>
+                </View>
 
-                <Box className="bg-white/5 rounded-xl border border-white/10 px-4 py-1">
-                  <Input className="border-0">
-                    <InputField
-                      value={note}
-                      onChangeText={setNote}
-                      placeholder="Optional somatic note..."
-                      placeholderTextColor="#6B7280"
-                      className="text-sacredWhite text-sm py-2"
-                    />
-                  </Input>
-                </Box>
+                <View className="bg-white/5 rounded-xl border border-white/10 px-4 py-1">
+                  <TextInput
+                    value={note}
+                    onChangeText={setNote}
+                    placeholder="Optional somatic note..."
+                    placeholderTextColor={tokens.inkFaint}
+                    className="text-sacredWhite text-sm py-2"
+                  />
+                </View>
 
                 {isSaving && (
-                  <HStack className="items-center gap-2 justify-center py-2">
-                    <BrandPulse size={18} accessibilityLabel="Saving mood" />
+                  <View className="flex-row items-center gap-2 justify-center py-2">
+                    <WaitingSign size={20} />
                     <Text className="text-sanctuarySaffron text-[10px] uppercase font-black">
                       Recording Breath...
                     </Text>
-                  </HStack>
+                  </View>
                 )}
-              </VStack>
+              </View>
             </Animated.View>
           )}
 
           {/* Latest mood display */}
           {!isOpen && (
-            <Box>
+            <View>
               {isLoading ? (
-                <HStack className="items-center justify-center py-6 gap-3">
-                  <BrandPulse
-                    size={18}
-                    tintColor="#7DD3FC"
-                    accessibilityLabel="Loading mood history"
-                  />
+                <View className="flex-row items-center justify-center py-6 gap-3">
+                  <WaitingSign size={20} />
                   <Text className="text-skyBlue opacity-60 text-xs font-bold uppercase tracking-widest">
                     Sensing resonance...
                   </Text>
-                </HStack>
+                </View>
               ) : latestMood ? (
-                <HStack className="items-center gap-6 py-2">
-                  <Box className="w-20 h-20 items-center justify-center bg-white/5 rounded-full border-2 border-white/5">
+                <View className="flex-row items-center gap-6 py-2">
+                  <View className="w-20 h-20 items-center justify-center bg-white/5 rounded-full border-2 border-white/5">
                     <Text className="text-4xl">
                       {MOOD_OPTIONS.find((o) => o.value === latestMood.mood)?.emoji || '✨'}
                     </Text>
-                    <Box className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-obsidian border border-white/10">
+                    <View className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-obsidian border border-white/10">
                       <Text
                         className="text-[10px] font-black"
                         style={{
-                          color: MOOD_COLORS[latestMood.mood_score] ?? '#FCD34D',
+                          color: MOOD_COLORS[latestMood.mood_score] ?? tokens.lampDeep,
                         }}
                       >
                         {latestMood.mood_score}/5
                       </Text>
-                    </Box>
-                  </Box>
+                    </View>
+                  </View>
 
-                  <VStack className="flex-1 gap-2">
+                  <View className="flex-1 gap-2">
                     <Text className="text-sacredWhite text-lg font-black tracking-tight leading-tight">
                       {latestMood.mood
                         ? latestMood.mood.charAt(0).toUpperCase() + latestMood.mood.slice(1)
@@ -208,31 +203,31 @@ export function MoodPickerCard({
                     </Text>
 
                     {latestMood.note ? (
-                      <HStack className="gap-2 items-start opacity-70">
-                        <Icon as={MessageSquare} size={10} className="text-mistGray mt-1" />
+                      <View className="flex-row gap-2 items-start opacity-70">
+                        <MessageSquare size={10} color={tokens.inkFaint} style={{ marginTop: 4 }} />
                         <Text className="text-mistGray text-[11px] leading-relaxed italic pr-2">
                           "{latestMood.note}"
                         </Text>
-                      </HStack>
+                      </View>
                     ) : (
                       <Text className="text-mistGray/30 text-[10px] italic">
                         No somatic note recorded.
                       </Text>
                     )}
-                  </VStack>
-                </HStack>
+                  </View>
+                </View>
               ) : (
-                <VStack className="items-center py-8 gap-3 opacity-30">
-                  <Icon as={Plus} size={32} className="text-mistGray" />
+                <View className="items-center py-8 gap-3 opacity-30">
+                  <Plus size={32} color={tokens.inkFaint} />
                   <Text className="text-mistGray text-xs font-bold text-center max-w-[200px]">
                     Awaiting your first resonance log.
                   </Text>
-                </VStack>
+                </View>
               )}
-            </Box>
+            </View>
           )}
-        </VStack>
-      </Box>
+        </View>
+      </View>
     </Animated.View>
   );
 }

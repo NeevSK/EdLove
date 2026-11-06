@@ -1,8 +1,7 @@
 import { accountTransition } from '@repo/core/accounts/accountTransition';
-import { authAPI } from '@repo/core/api/auth';
-import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
-import { assertHighway } from '@repo/core/api/highways';
-import { identityAPI } from '@repo/core/api/identity';
+import { authAPI } from '@repo/core/auth';
+import { deviceTrustAPI } from '@repo/core/native/deviceTrust';
+import { supabaseIdentityAdapter as identity } from '@repo/core/adapters/supabaseIdentity.adapter';
 import { accountPin } from '@repo/core/lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
 import { useExperienceState } from '@repo/core/lib/experienceState';
@@ -224,16 +223,15 @@ const deviceAccountOperations = {
       return null;
     }
 
-    assertHighway('identity_bootstrap', 'direct-api');
     await assertCurrentCaptureSession(session);
-    const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity || (profile && profile.id !== identity.id))
+    const activeIdentity = await identity.identifyActiveCitizen();
+    if (!activeIdentity || (profile && profile.id !== activeIdentity.id))
       throw new APIError(
         'The device account does not match its canonical identity.',
         'AUTH_ACCOUNT_MISMATCH',
       );
     await assertCurrentCaptureSession(session);
-    const accountId = identity.id;
+    const accountId = activeIdentity.id;
 
     await setStoredSessionForAccount(accountId, toSessionTokens(session));
     await assertCurrentCaptureSession(session);
@@ -281,13 +279,6 @@ const deviceAccountOperations = {
         { authUserId, email: nextRecord.email },
         accountId,
       ),
-    );
-    queueAuditOp(() =>
-      deviceTrustAPI.upsertCurrentSecuritySession({
-        accountId,
-        authUserId,
-        authStrength: 'session',
-      }),
     );
 
     return nextRecord;
@@ -362,24 +353,16 @@ const deviceAccountOperations = {
         accountId,
       ),
     );
-    queueAuditOp(() =>
-      deviceTrustAPI.upsertCurrentSecuritySession({
-        accountId,
-        authUserId: null,
-        authStrength: 'switch',
-      }),
-    );
   },
 
   async removeAccount(accountId: string) {
     const isActiveAccount = getActiveAccountId() === accountId;
     if (isActiveAccount) {
-      void deviceTrustAPI.getInstallId().then((installId) => {
+      void deviceTrustAPI.getInstallId().then((installId: string | null) => {
         if (installId) {
           queueAuditOp(() =>
             Promise.all([
               deviceTrustAPI.logAuditEvent('ACCOUNT_REMOVED_FROM_DEVICE', { installId }, accountId),
-              deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'removed_from_device'),
             ]),
           );
         }
@@ -438,11 +421,6 @@ const deviceAccountOperations = {
 
     const installId = await deviceTrustAPI.getInstallId();
     if (installId) {
-      try {
-        await deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_locally');
-      } catch (error) {
-        console.warn('[deviceAccounts] Current security-session revocation failed', error);
-      }
       queueAuditOp(() =>
         deviceTrustAPI.logAuditEvent(
           'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
@@ -474,11 +452,6 @@ const deviceAccountOperations = {
     }
     for (const entry of accounts) {
       queueAccountSignOutAudit(entry.accountId);
-    }
-    if (installId) {
-      queueAuditOp(() =>
-        deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_all_locally'),
-      );
     }
     await Promise.all(
       accounts.map((entry) =>

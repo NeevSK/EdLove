@@ -1,3 +1,5 @@
+'use client';
+
 import { useId } from 'react';
 import type { RichTextEditorContract } from '../../../theme/contracts';
 import { useMediaAdapters } from './adapters';

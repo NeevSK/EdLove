@@ -1,5 +1,5 @@
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { Button } from '@repo/ui/components/native';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import {
   ArrowLeftRight,
@@ -239,29 +239,23 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
           pendingRequest ? (
             <VStack className="gap-2">
               <HStack className="gap-2 flex-wrap">
-                <SanctuaryButton onPress={handleOpenNow} fullWidth>
-                  Open Now
-                </SanctuaryButton>
+                <Button label="Open Now" variant="primary" onPress={handleOpenNow} fullWidth />
               </HStack>
               <HStack className="gap-2 flex-wrap">
-                <SanctuaryButton
-                  variant="outline"
-                  action="secondary"
+                <Button
+                  label="Set as Default"
+                  variant="secondary"
                   onPress={handleSetDefault}
                   fullWidth
-                >
-                  Set as Default
-                </SanctuaryButton>
+                />
               </HStack>
               {pendingRequest.currentPreference && (
-                <SanctuaryButton
-                  variant="ghost"
-                  action="secondary"
+                <Button
+                  label="Reset Saved Preference"
+                  variant="quiet"
                   onPress={handleResetPreference}
-                  leftIcon={ArrowLeftRight}
-                >
-                  Reset Saved Preference
-                </SanctuaryButton>
+                  icon={ArrowLeftRight}
+                />
               )}
             </VStack>
           ) : null

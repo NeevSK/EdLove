@@ -1,7 +1,5 @@
-import { useTracking } from '@repo/core/hooks';
 import SelfScreenUnified from '@repo/self/screens/SelfScreen.unified';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
-import { useEffect } from 'react';
 
 /**
  * SelfScreen — declarative entry point for the user's sanctuary.
@@ -17,11 +15,5 @@ export default function SelfScreen() {
 }
 
 function SelfScreenContent() {
-  const { discoverFeature } = useTracking();
-
-  useEffect(() => {
-    void discoverFeature('section_self');
-  }, [discoverFeature]);
-
   return <SelfScreenUnified />;
 }

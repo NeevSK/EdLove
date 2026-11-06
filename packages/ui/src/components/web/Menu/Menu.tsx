@@ -1,3 +1,5 @@
+'use client';
+
 import { type KeyboardEvent, type RefObject, useEffect, useRef } from 'react';
 import type { MenuContract } from '../../../theme/contracts';
 import { Popover } from '../Popover/Popover';

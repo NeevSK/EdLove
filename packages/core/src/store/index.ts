@@ -25,3 +25,13 @@ export { type SensoryPreferencesState, useSensoryStore } from '@repo/core/store/
 export * from '@repo/core/store/useTemporalStore';
 export { useTenantStore } from '@repo/core/store/useTenantStore';
 export { useUIStore } from '@repo/core/store/useUIStore';
+export {
+  usePerspectiveStore,
+  type PerspectiveStoreState,
+  DEFAULT_PERSONAL_PERSPECTIVE as DEFAULT_STORE_PERSONAL_PERSPECTIVE,
+} from '@repo/core/store/usePerspectiveStore';
+export {
+  useEntitlementStore,
+  type EntitlementState,
+  isEntitlementSnapshotFresh,
+} from '@repo/core/store/useEntitlementStore';

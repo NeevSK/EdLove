@@ -5,7 +5,7 @@ import {
   savePoaClaimSnapshot,
   studentVerificationMachine,
 } from '@repo/classroom/machines/studentVerificationMachine';
-import { storage } from '@repo/core/logic/managers/StorageManager';
+import { storage } from '@repo/core/lib/storage';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createActor } from 'xstate';
 

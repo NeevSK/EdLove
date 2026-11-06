@@ -1,3 +1,5 @@
+'use client';
+
 import { type CSSProperties, type InputHTMLAttributes, useId } from 'react';
 import type { SliderContract } from '../../../theme/contracts';
 import { fraction, snap } from '../../shared/range';

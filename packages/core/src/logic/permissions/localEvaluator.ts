@@ -1,6 +1,6 @@
 import { getDrizzleDB, registerPermissionValidator } from '@repo/core/adapters/powersync/database';
 import { cedarPolicies } from '@repo/core/adapters/powersync/schema';
-import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+import { deviceTrustAPI } from '@repo/core/native/deviceTrust';
 import { DeviceTrustEngine } from '@repo/core/lib/security/deviceTrust';
 import { isAnonymousIdentity } from '@repo/core/logic/auth/identityState';
 import { evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
@@ -28,7 +28,7 @@ export async function checkLocalPermission(params: {
     // 2. Fetch current Device Trust details
     const isTrusted = await DeviceTrustEngine.checkDeviceTrustStatus();
     const trustSummary = await deviceTrustAPI.getCurrentDeviceTrust();
-    const trustStatus = trustSummary?.trustStatus ?? 'standard';
+    const trustStatus = trustSummary?.isTrusted ? 'trusted' : 'standard';
 
     // 3. Retrieve policies from SQLite and manage compilation cache / safety bounds
     const db = getDrizzleDB();

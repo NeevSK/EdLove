@@ -20,8 +20,8 @@ import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
 import { JournalSection, MoodSection } from '@repo/self/views/sections';
 import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { VStack } from '@repo/ui/primitives';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 export default function GuardianSelfView() {
@@ -42,7 +42,7 @@ export default function GuardianSelfView() {
   } = useJourneyHistory();
 
   const holisticSection = (
-    <VStack space="lg" style={{ padding: 20 }}>
+    <View style={{ padding: 20, gap: 16 }}>
       <JourneyHistoryCard
         events={journeyEvents}
         summary={holisticView.summary}
@@ -51,11 +51,11 @@ export default function GuardianSelfView() {
       />
       <JournalSection entries={journalEntries} loading={loadingJournals} />
       <MoodSection logs={moodLogs} loading={loadingMoods} />
-    </VStack>
+    </View>
   );
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="guardian"
         description={t('self.guardianDescription')}
@@ -132,10 +132,10 @@ export default function GuardianSelfView() {
           },
         ]}
         sideBar={
-          <VStack space="lg">
+          <View style={{ gap: 16 }}>
             <WarmMirrorCard text={warmMirrorText} />
             <ImpactRipplesCard ripples={ripples} />
-          </VStack>
+          </View>
         }
       />
 
@@ -143,6 +143,6 @@ export default function GuardianSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

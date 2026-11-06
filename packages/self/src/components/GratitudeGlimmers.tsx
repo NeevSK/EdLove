@@ -1,32 +1,20 @@
 /**
  * GRATITUDE GLIMMERS
- * morning check-in: small moments that made you smile.
- * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in event handlers.
+ * Morning check-in: small moments that made you smile.
+ * Standardized to October 29+ UI Kit architecture.
  */
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useGratitude } from '@repo/self/hooks/useGratitude';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import { ChevronLeft, Heart, MessageCircle, Plus, Save, Sparkles, User } from '@repo/ui/icons';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  InputField,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
+import { Button, Surface, Text as KitText } from '@repo/ui/components/native';
+import { ChevronLeft, Heart, LogIn, MessageCircle, Plus, Save, Sparkles, User } from '@repo/ui/icons';
+import { useWorld } from '@repo/ui/theme/native';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated';
 
 interface GratitudeGlimmersProps {
@@ -42,6 +30,7 @@ export default function GratitudeGlimmers({
   const { t } = useTranslation();
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
+  const { tokens } = useWorld();
 
   const { entries, refreshData, isLoading, addGratitudeEntry, error } = useGratitude(
     activeUserId ?? undefined,
@@ -88,63 +77,67 @@ export default function GratitudeGlimmers({
       label: t('self.studentSaid') || 'Student Joy',
       emoji: '💬',
       icon: MessageCircle,
-      color: 'text-templeGold',
-      bg: 'bg-templeGold/10',
-      border: 'border-templeGold/20',
     },
     {
       id: 'colleague-kindness',
       label: t('self.colleagueKindness') || 'Team Synergy',
       emoji: '🤝',
       icon: User,
-      color: 'text-skyBlue',
-      bg: 'bg-skyBlue/10',
-      border: 'border-skyBlue/20',
     },
     {
       id: 'personal-win',
       label: t('self.personalWin') || 'Personal Win',
       emoji: '🌟',
       icon: Sparkles,
-      color: 'text-emeraldGreen',
-      bg: 'bg-emeraldGreen/10',
-      border: 'border-emeraldGreen/20',
     },
   ];
 
   if (isLoading && activeUserId) {
     return (
-      <VStack className="p-lg gap-lg">
-        <SkeletonCard height={48} />
-        <SkeletonCard height={80} />
-        <SkeletonCard height={80} />
-      </VStack>
+      <View className="p-4 gap-4">
+        <Surface tone="raised" style={{ height: 48, borderRadius: 12 }} />
+        <Surface tone="raised" style={{ height: 80, borderRadius: 16 }} />
+        <Surface tone="raised" style={{ height: 80, borderRadius: 16 }} />
+      </View>
     );
   }
 
   if (!activeUserId) {
-    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
+    return (
+      <Surface tone="raised" style={{ padding: 24, alignItems: 'center', borderRadius: 16 }}>
+        <Heart size={36} color={tokens.lamp} />
+        <KitText kind="title" align="center" style={{ marginTop: 12 }}>
+          {t('invitation.guestTitle') || 'Gratitude Glimmers'}
+        </KitText>
+        <KitText kind="body" tone="soft" align="center" style={{ marginTop: 6 }}>
+          {t('invitation.guestDesc') || 'Sign in to record and cherish small moments that brought light to your day.'}
+        </KitText>
+        <View style={{ marginTop: 16 }}>
+          <Button label="Sign In" icon={LogIn} onPress={() => router.push('/auth')} />
+        </View>
+      </Surface>
+    );
   }
 
   return (
-    <VStack className="gap-lg">
+    <View className="gap-6">
       {/* Header */}
-      <VStack className="gap-1">
-        <HStack className="items-center gap-2">
-          <Icon as={Heart} className="text-sanctuarySaffron" size={24} fill="currentColor" />
-          <Heading className="text-sacredWhite" size="lg">
+      <View className="gap-1">
+        <View className="flex-row items-center gap-2">
+          <Heart size={24} color={tokens.lamp} />
+          <Text className="text-sacredWhite text-xl font-bold">
             {t('self.gratitude') || 'Gratitude Glimmers'}
-          </Heading>
-        </HStack>
+          </Text>
+        </View>
         <Text className="text-mistGray text-sm">
           {t('self.gratitudeDesc') || 'Small moments that brought light to your day.'}
         </Text>
-      </VStack>
+      </View>
 
       {!showForm ? (
-        <VStack className="gap-md">
+        <View className="gap-4">
           {error ? (
-            <HStack className="items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+            <View className="flex-row items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
               <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
                 {error} Showing the last available entries.
               </Text>
@@ -155,79 +148,76 @@ export default function GratitudeGlimmers({
               >
                 <Text className="font-bold text-sanctuarySaffron">Retry</Text>
               </Pressable>
-            </HStack>
+            </View>
           ) : null}
+
           <Button
+            label={t('self.addGratitude') || 'Record a Glimmer'}
+            icon={Plus}
+            variant="primary"
+            size="lg"
+            disabled={componentDisabled}
             onPress={() => {
               hapticLight();
               setShowForm(true);
             }}
-            isDisabled={componentDisabled}
-            className="bg-sanctuarySaffron rounded-comfortable py-4 shadow-lg shadow-sanctuarySaffron/20"
-          >
-            <HStack className="gap-2 items-center">
-              <Icon as={Plus} className="text-obsidian" size={20} />
-              <ButtonText className="text-obsidian font-black uppercase tracking-wider text-sm">
-                {t('self.addGratitude') || 'Record a Glimmer'}
-              </ButtonText>
-            </HStack>
-          </Button>
+          />
 
           <ScrollView className="max-h-[500px]" showsVerticalScrollIndicator={false}>
-            <VStack className="gap-4 pb-20">
+            <View className="gap-4 pb-20">
               {entries.map((entry, index) => {
                 const cat = categories.find((c) => c.id === entry.category);
                 return (
                   <Animated.View key={entry.id} entering={FadeInRight.delay(index * 100)}>
-                    <Box
-                      className={`p-md rounded-comfortable border border-white/5 bg-white/5 shadow-sm border-l-4 ${cat?.border.replace('border-', 'border-l-') || 'border-l-sanctuarySaffron'}`}
-                    >
-                      <VStack className="gap-2">
-                        <HStack className="justify-between items-center">
-                          <HStack className="gap-2 items-center">
+                    <View className="p-4 rounded-2xl border border-white/5 bg-white/5 border-l-4 border-l-sanctuarySaffron">
+                      <View className="gap-2">
+                        <View className="flex-row justify-between items-center">
+                          <View className="flex-row gap-2 items-center">
                             <Text className="text-lg">{cat?.emoji}</Text>
-                            <Text
-                              className={`text-[10px] uppercase font-black tracking-widest ${cat?.color || 'text-sanctuarySaffron'}`}
-                            >
+                            <Text className="text-[10px] uppercase font-black tracking-widest text-sanctuarySaffron">
                               {cat?.label}
                             </Text>
-                          </HStack>
+                          </View>
                           <Text className="text-dimGray text-[10px] italic">
                             {new Date(entry.created_at).toLocaleDateString(undefined, {
                               month: 'short',
                               day: 'numeric',
+                              year: 'numeric',
                             })}
                           </Text>
-                        </HStack>
+                        </View>
                         <Text className="text-sacredWhite/90 text-[15px] leading-relaxed font-medium">
                           "{entry.content}"
                         </Text>
-                      </VStack>
-                    </Box>
+                      </View>
+                    </View>
                   </Animated.View>
                 );
               })}
 
               {entries.length === 0 && (
-                <Box className="py-10">
-                  <PositiveInvitation
-                    icon={Heart}
-                    title={t('self.whatSmiledToday') || 'Capture your first light today.'}
-                  />
-                </Box>
+                <Surface tone="raised" style={{ padding: 24, alignItems: 'center', borderRadius: 16 }}>
+                  <Heart size={32} color={tokens.lamp} />
+                  <KitText kind="title" align="center" style={{ marginTop: 8 }}>
+                    {t('self.whatSmiledToday') || 'Capture your first light today.'}
+                  </KitText>
+                  <KitText kind="caption" tone="soft" align="center" style={{ marginTop: 4 }}>
+                    Small moments of gratitude ground your practice.
+                  </KitText>
+                </Surface>
               )}
-            </VStack>
+            </View>
           </ScrollView>
-        </VStack>
+        </View>
       ) : (
         <Animated.View entering={FadeInUp.duration(400)}>
-          <VStack className="gap-6 bg-white/5 p-lg rounded-comfortable border border-white/10">
+          <View className="gap-6 bg-white/5 p-5 rounded-2xl border border-white/10">
             {/* Category Selection */}
-            <Box>
+            <View>
               <Text className="text-mistGray text-xs uppercase font-black tracking-widest mb-3">
                 {t('self.category') || 'Source of Joy'}
               </Text>
-              <HStack className="gap-2 flex-wrap">
+              <View className="flex-row gap-2 flex-wrap">
                 {categories.map((cat) => (
                   <Pressable
                     key={cat.id}
@@ -238,9 +228,9 @@ export default function GratitudeGlimmers({
                     accessibilityRole="radio"
                     accessibilityLabel={cat.label}
                     accessibilityState={{ selected: category === cat.id }}
-                    className={`flex-row items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all ${
+                    className={`flex-row items-center gap-2 px-4 py-2.5 rounded-xl border-2 ${
                       category === cat.id
-                        ? 'bg-sanctuarySaffron border-sanctuarySaffron shadow-md'
+                        ? 'bg-sanctuarySaffron border-sanctuarySaffron'
                         : 'bg-white/5 border-white/10'
                     }`}
                   >
@@ -254,63 +244,60 @@ export default function GratitudeGlimmers({
                     </Text>
                   </Pressable>
                 ))}
-              </HStack>
-            </Box>
+              </View>
+            </View>
 
             {/* Content Area */}
-            <VStack className="gap-3">
+            <View className="gap-3">
               <Text className="text-mistGray text-xs uppercase font-black tracking-widest">
                 {t('self.whatSmiled') || 'The Reflection'}
               </Text>
-              <Box className="bg-white/5 rounded-xl border border-white/10 p-4 min-h-[140px]">
-                <InputField
+              <View className="bg-white/5 rounded-xl border border-white/10 p-3 min-h-[120px]">
+                <TextInput
                   placeholder={t('self.gratitudePlaceholder') || 'What warmed your heart?'}
                   value={content}
                   onChangeText={setContent}
                   multiline
                   accessibilityLabel="Gratitude reflection"
                   accessibilityHint="Write what warmed your heart"
-                  className="text-sacredWhite text-base text-start align-top"
-                  placeholderTextColor="rgba(255,255,255,0.2)"
+                  className="text-sacredWhite text-base"
+                  placeholderTextColor={tokens.inkFaint}
                 />
-              </Box>
-            </VStack>
+              </View>
+            </View>
 
             {/* Actions */}
-            <HStack className="gap-3">
-              <Button
+            <View className="flex-row gap-3">
+              <Pressable
                 onPress={() => {
                   hapticLight();
                   setShowForm(false);
                   setContent('');
                 }}
-                variant="outline"
-                className="flex-1 border-white/10 h-14"
+                className="flex-1 border border-white/10 h-12 rounded-full items-center justify-center flex-row gap-2"
+                accessibilityRole="button"
+                accessibilityLabel="Back"
               >
-                <HStack className="items-center gap-2">
-                  <Icon as={ChevronLeft} size={18} className="text-mistGray" />
-                  <ButtonText className="text-mistGray font-bold uppercase tracking-widest text-xs">
-                    Back
-                  </ButtonText>
-                </HStack>
-              </Button>
+                <ChevronLeft size={18} color={tokens.inkSoft} />
+                <Text className="text-mistGray font-bold uppercase tracking-widest text-xs">
+                  Back
+                </Text>
+              </Pressable>
 
-              <Button
-                onPress={handleSave}
-                isDisabled={!content.trim() || isSaving}
-                className="flex-[2] bg-emeraldGreen h-14 shadow-lg shadow-emeraldGreen/20"
-              >
-                <HStack className="items-center gap-2">
-                  <Icon as={Save} size={18} className="text-white" />
-                  <ButtonText className="text-white font-black uppercase tracking-widest text-xs">
-                    {t('common.save') || 'Seal Glimmer'}
-                  </ButtonText>
-                </HStack>
-              </Button>
-            </HStack>
-          </VStack>
+              <View className="flex-[2]">
+                <Button
+                  label={t('common.save') || 'Seal Glimmer'}
+                  icon={Save}
+                  variant="primary"
+                  size="lg"
+                  disabled={!content.trim() || isSaving}
+                  onPress={handleSave}
+                />
+              </View>
+            </View>
+          </View>
         </Animated.View>
       )}
-    </VStack>
+    </View>
   );
 }

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useId, useRef } from 'react';
 import type { AppHeaderContract, HeaderAction, KitIconProps } from '../../../theme/contracts';
 import { cx } from '../cx';

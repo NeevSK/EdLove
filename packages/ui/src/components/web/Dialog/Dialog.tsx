@@ -1,3 +1,5 @@
+'use client';
+
 import { type MouseEvent, type ReactNode, type SyntheticEvent, useEffect, useId, useRef } from 'react';
 import type { DialogContract } from '../../../theme/contracts';
 import { cx } from '../cx';

@@ -9,12 +9,12 @@ const mocks = vi.hoisted(() => ({
   signOut: vi.fn(),
 }));
 
-vi.mock('@repo/core/api/auth', () => ({ authAPI: { signOut: mocks.signOut } }));
+vi.mock('@repo/core/auth', () => ({ authAPI: { signOut: mocks.signOut } }));
 vi.mock('@repo/core/lib/storageWrapper', () => ({
   SafeZustandStorage: { removeItem: mocks.removeItem },
 }));
-vi.mock('@repo/core/native/guestDataManager', () => ({
-  GuestDataManager: { clearAllGuestData: mocks.clearAllGuestData },
+vi.mock('@repo/core/native/guestStorage', () => ({
+  GuestStorage: { clearAllGuestData: mocks.clearAllGuestData },
 }));
 vi.mock('@repo/core/native/guestDataSync', () => ({
   GuestDataSync: { clearPendingGuestSession: mocks.clearPendingGuestSession },

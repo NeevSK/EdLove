@@ -10,8 +10,8 @@ const mocks = vi.hoisted(() => ({
   updateLocalGuestIdentity: vi.fn(),
 }));
 
-vi.mock('@repo/core/native/guestDataManager', () => ({
-  GuestDataManager: { clearAllGuestData: mocks.clearAllGuestData },
+vi.mock('@repo/core/native/guestStorage', () => ({
+  GuestStorage: { clearAllGuestData: mocks.clearAllGuestData },
 }));
 vi.mock('@repo/core/native/guestIdentity', () => ({
   clearLocalGuestIdentity: mocks.clearLocalGuestIdentity,

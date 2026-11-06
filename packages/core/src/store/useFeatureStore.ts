@@ -5,7 +5,7 @@ import {
   projectFeatureFlags,
 } from '@repo/core/lib/featureRolloutSnapshot';
 import { storage } from '@repo/core/lib/storage';
-import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
+import { growthBookFeatureRolloutAdapter as featureFlags } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
 import type { FeatureRolloutSnapshot } from '@repo/core/logic/ports/featureRollout.port';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';

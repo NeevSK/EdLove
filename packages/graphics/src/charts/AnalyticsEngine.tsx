@@ -1,5 +1,5 @@
 import { marksToGPA } from '@repo/core/lib';
-import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Surface } from '@repo/ui/components/native';
 import {
   HStack,
   Input,
@@ -101,7 +101,7 @@ export function AnalyticsEngine({
     });
   }, [data, selectedMetric]);
   return (
-    <Card style={styles.container}>
+    <Surface tone="raised" style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
 
       {/* Filters */}
@@ -237,7 +237,7 @@ export function AnalyticsEngine({
           ))}
         </VStack>
       </ScrollView>
-    </Card>
+    </Surface>
   );
 }
 const styles = StyleSheet.create({

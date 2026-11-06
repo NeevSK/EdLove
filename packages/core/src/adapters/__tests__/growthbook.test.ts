@@ -3,8 +3,8 @@ import { UserContextSchema } from '../../logic/schemas/user.schema';
 import { GrowthBookFeatureRolloutAdapter } from '../feature-rollout/growthBookFeatureRollout.adapter';
 
 const growthBookInit = vi.hoisted(() => vi.fn());
-vi.mock('@repo/core/logic/managers/NetworkManager', () => ({
-  networkManager: { getSnapshot: () => ({ status: 'online' }), subscribe: () => () => undefined },
+vi.mock('@repo/core/platform/drivers/networkMonitor', () => ({
+  networkMonitor: { getSnapshot: () => ({ status: 'online' }), subscribe: () => () => undefined },
 }));
 
 // Mock GrowthBook SDK internally to prevent network calls

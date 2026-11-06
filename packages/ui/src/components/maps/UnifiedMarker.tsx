@@ -4,7 +4,7 @@ import { Box, Text } from '@repo/ui/primitives';
 import type React from 'react';
 
 const MapLibreGL = require('@maplibre/maplibre-react-native') as {
-  PointAnnotation: React.ComponentType<any>;
+  ViewAnnotation: React.ComponentType<any>;
   Callout: React.ComponentType<any>;
 };
 const ReactNativeMaps = require('react-native-maps') as {
@@ -25,10 +25,10 @@ export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
 
   if (provider === 'maplibre') {
     return (
-      <MapLibreGL.PointAnnotation
+      <MapLibreGL.ViewAnnotation
         id={id || `marker-${coordinate.latitude}-${coordinate.longitude}`}
-        coordinate={[coordinate.longitude, coordinate.latitude]}
-        onSelected={onPress}
+        lngLat={[coordinate.longitude, coordinate.latitude]}
+        onSelect={onPress}
       >
         {(children as React.ReactElement) || (
           <Box
@@ -42,7 +42,7 @@ export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
             {description && <Text className="text-[12px] text-[#666666]">{description}</Text>}
           </Box>
         </MapLibreGL.Callout>
-      </MapLibreGL.PointAnnotation>
+      </MapLibreGL.ViewAnnotation>
     );
   }
 

@@ -14,8 +14,8 @@ const fixture = vi.hoisted(() => ({
   unsubscribe: vi.fn(),
   listeners: [] as ((snapshot: FeatureRolloutSnapshot) => void)[],
 }));
-vi.mock('@repo/core/logic/managers/featureFlag.factory', () => ({
-  featureFlags: {
+vi.mock('@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter', () => ({
+  growthBookFeatureRolloutAdapter: {
     resolveFlags: fixture.resolve,
     subscribeToFlagChanges: (
       _context: unknown,

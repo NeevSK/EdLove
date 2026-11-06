@@ -4,7 +4,7 @@ import { DeltaResonance } from '@repo/core/lib/sync/delta';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { executeMutation$ } from '@repo/core/utils/mutation';
 import { useCallback, useRef, useState } from 'react';
@@ -154,7 +154,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
       try {
         const result = await runToPromise(
           executeMutation$({
-            isConnected: () => networkManager.isConnected(),
+            isConnected: () => networkMonitor.isConnected(),
             mutation: () => mutationFn(variables),
             retryCount: options?.retryCount,
           }),

@@ -1,6 +1,5 @@
 export { BaseSelfView } from '@repo/self/components/BaseSelfView';
 export { default as BreathGuide } from '@repo/self/components/BreathGuide';
-export { default as DailyContentCard } from '@repo/self/components/DailyContentCard';
 export { default as DailyRhythm } from '@repo/self/components/DailyRhythm';
 export { default as DecisionJournalSection } from '@repo/self/components/DecisionJournalSection';
 export { EnergyBarChart } from '@repo/self/components/EnergyBarChart';
@@ -8,7 +7,6 @@ export { default as EnergyForecastCard } from '@repo/self/components/EnergyForec
 export { default as FireJournal } from '@repo/self/components/FireJournal';
 export { GenesisNode } from '@repo/self/components/GenesisNode';
 export { default as GratitudeGlimmers } from '@repo/self/components/GratitudeGlimmers';
-export { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
 export { default as JoyJar } from '@repo/self/components/JoyJar';
 export { default as MoodLotus } from '@repo/self/components/MoodLotus';
 export { MoodPickerCard } from '@repo/self/components/MoodPickerCard';
@@ -16,7 +14,7 @@ export { default as MyGradesView } from '@repo/self/components/MyGradesView';
 export { OrientationCaptureStep } from '@repo/self/components/OrientationCaptureStep';
 export { default as ProgressTree } from '@repo/self/components/ProgressTree';
 export { PulseDashboard } from '@repo/self/components/PulseDashboard';
-export { default as RemindersManager } from '@repo/self/components/RemindersManager';
+export { default as RemindersPanel } from '@repo/self/components/RemindersPanel';
 export { default as ResonancePatternCard } from '@repo/self/components/ResonancePatternCard';
 export { ResonanceTimeline } from '@repo/self/components/ResonanceTimeline';
 export { default as SchoolLegacyTimeline } from '@repo/self/components/SchoolLegacyTimeline';
@@ -27,7 +25,6 @@ export { default as TeacherVitalityCard } from '@repo/self/components/TeacherVit
 export { TimelineEvent } from '@repo/self/components/TimelineEvent';
 export { default as TomorrowPrep } from '@repo/self/components/TomorrowPrep';
 export { default as VoiceJournaling } from '@repo/self/components/VoiceJournaling';
-export { WarmMirrorCard } from '@repo/self/components/WarmMirrorCard';
 export { default as WelcomeModal } from '@repo/self/components/WelcomeModal';
 export { default as WindDownRitual } from '@repo/self/components/WindDownRitual';
 export { default as WisdomSeeds } from '@repo/self/components/WisdomSeeds';

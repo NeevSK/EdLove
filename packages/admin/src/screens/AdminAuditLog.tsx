@@ -1,4 +1,4 @@
-import { Box, Text, VStack } from '@repo/ui/primitives';
+import { View, Text } from 'react-native';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { getAdminAuditEntries } from '@repo/admin/admin/adminControl';
@@ -28,19 +28,19 @@ export default function AdminAuditLog({ onBack }: { onBack?: () => void } = {}) 
         },
       ]}
     >
-      <VStack className="gap-4">
+      <View className="gap-4">
         <AdminRoomPanel
           title="Recent observations"
           description="The audit trail should read like a durable operator memory, not a debug dump."
         >
-          <VStack className="gap-3">
+          <View className="gap-3">
             {entries.length === 0 ? (
               <Text className="text-[13px] text-phaseText-secondary">
                 No admin audit entries are persisted yet.
               </Text>
             ) : (
               entries.map((item) => (
-                <Box
+                <View
                   key={item.id}
                   className="rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3"
                 >
@@ -49,12 +49,12 @@ export default function AdminAuditLog({ onBack }: { onBack?: () => void } = {}) 
                   <Text className="mt-2 text-[11px] text-phaseText-secondary">
                     {item.scope} • {item.status} • {new Date(item.updatedAt).toLocaleString()}
                   </Text>
-                </Box>
+                </View>
               ))
             )}
-          </VStack>
+          </View>
         </AdminRoomPanel>
-      </VStack>
+      </View>
     </AdminRoomShell>
   );
 }

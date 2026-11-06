@@ -9,8 +9,8 @@
  */
 
 import { handleAPIError } from '@repo/core/logic';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { WaitingSign } from '@repo/ui/components/native';
+import { Dialog } from '@repo/ui/components/native';
 import { Camera, CircleCheck, Send, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
@@ -171,7 +171,7 @@ export default function SubmissionModal({
             </Text>
           </VStack>
         </VStack>
-      </SanctuaryModal>
+      </Dialog>
     );
   }
   return (
@@ -187,11 +187,7 @@ export default function SubmissionModal({
         >
           {isSubmitting ? (
             <HStack className="items-center gap-2">
-              <BrandPulse
-                size={20}
-                tintColor="#FFFFFF"
-                accessibilityLabel="Submitting assignment"
-              />
+              <WaitingSign size="sm" />
               <ButtonText className="text-phaseText-inverse font-bold text-lg">
                 {t('submission.submitting') || 'Turning in...'}
               </ButtonText>
@@ -290,6 +286,6 @@ export default function SubmissionModal({
           )}
         </VStack>
       </VStack>
-    </SanctuaryModal>
+    </Dialog>
   );
 }

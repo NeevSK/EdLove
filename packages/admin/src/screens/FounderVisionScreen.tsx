@@ -1,15 +1,5 @@
-import { GlassCard } from '@repo/ui/components/GlassCard';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { GitMerge, Share2, Shield, Zap } from '@repo/ui/icons';
-import {
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
 
 /**
  * FounderVisionScreen - Strategic App-Logic Visualization.
@@ -72,15 +62,15 @@ export default function FounderVisionScreen() {
   };
 
   return (
-    <Box className="flex-1 bg-phase-canvas">
-      <Box className="pt-[60px] px-6 pb-5">
-        <HStack className="justify-between items-center">
-          <VStack>
-            <Heading className="text-3xl font-black text-phaseText-primary tracking-tighter">
+    <View className="flex-1 bg-phase-canvas">
+      <View className="pt-[60px] px-6 pb-5">
+        <View className="flex-row items-center justify-between items-center">
+          <View>
+            <Text className="text-3xl font-black text-phaseText-primary tracking-tighter">
               Strategic Vision
-            </Heading>
+            </Text>
             <Text className="text-base text-phaseText-secondary">Mapping the App Topology</Text>
-          </VStack>
+          </View>
           <Pressable
             disabled
             accessibilityRole="button"
@@ -89,44 +79,44 @@ export default function FounderVisionScreen() {
             accessibilityState={{ disabled: true }}
             className="w-11 h-11 rounded-full bg-phase-interactive/5 justify-center items-center opacity-50"
           >
-            <Icon as={Share2} size="md" className="text-phase-interactive" />
+            <Share2 size={20} className="text-phase-interactive" />
           </Pressable>
-        </HStack>
-      </Box>
+        </View>
+      </View>
 
-      <Box className="mx-4 flex-1 rounded-[30px] overflow-hidden border border-white/5 bg-black/20 p-6">
-        <VStack className="gap-4">
-          <Heading className="text-xl font-black text-phaseText-primary">
+      <View className="mx-4 flex-1 rounded-[30px] overflow-hidden border border-white/5 bg-black/20 p-6">
+        <View className="gap-4">
+          <Text className="text-xl font-black text-phaseText-primary">
             Architecture Pulse
-          </Heading>
+          </Text>
           <Text className="text-sm text-phaseText-secondary">
             The founder topology renderer is being refreshed for the new visualization contract.
             Until that lands, this screen summarizes the same strategic graph in a build-safe way.
           </Text>
-          <VStack className="gap-3">
+          <View className="gap-3">
             {appLogicTopology.nodes.map((node) => (
-              <GlassCard
+              <View
                 key={node.id}
                 className="rounded-2xl border border-phase-border/10 px-4 py-3"
               >
-                <HStack className="items-center justify-between gap-3">
-                  <VStack className="flex-1">
+                <View className="flex-row items-center items-center justify-between gap-3">
+                  <View className="flex-1">
                     <Text className="text-sm font-bold text-phaseText-primary">{node.label}</Text>
                     <Text className="text-xs uppercase tracking-wide text-phaseText-secondary">
                       {node.group}
                     </Text>
-                  </VStack>
+                  </View>
                   <Text className="text-xs font-semibold uppercase text-phaseText-secondary">
                     {node.type}
                   </Text>
-                </HStack>
-              </GlassCard>
+                </View>
+              </View>
             ))}
-          </VStack>
-        </VStack>
-      </Box>
+          </View>
+        </View>
+      </View>
 
-      <Box className="py-6">
+      <View className="py-6">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -136,8 +126,8 @@ export default function FounderVisionScreen() {
           <StatusPill icon={Zap} label="High Resonance" colorClass="text-phase-reward" />
           <StatusPill icon={Shield} label="RLS Protected" colorClass="text-phase-interactive" />
         </ScrollView>
-      </Box>
-    </Box>
+      </View>
+    </View>
   );
 }
 
@@ -151,11 +141,11 @@ const StatusPill = ({
   colorClass: string;
 }) => {
   return (
-    <GlassCard className="px-4 py-2 rounded-[20px] border border-phase-border/10">
-      <HStack className="items-center gap-1.5">
-        <Icon as={LucideIcon} size="sm" className={colorClass} />
+    <View className="px-4 py-2 rounded-[20px] border border-phase-border/10">
+      <View className="flex-row items-center items-center gap-1.5">
+        <LucideIcon size={16} className={colorClass} />
         <Text className="text-xs font-semibold text-phaseText-primary/80">{label}</Text>
-      </HStack>
-    </GlassCard>
+      </View>
+    </View>
   );
 };

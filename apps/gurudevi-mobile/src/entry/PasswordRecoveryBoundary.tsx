@@ -1,4 +1,4 @@
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Dialog } from '@repo/ui/components/native';
 import {
   Button,
   ButtonSpinner,
@@ -19,12 +19,7 @@ export function PasswordRecoveryBoundary() {
   const recovery = usePasswordRecovery();
 
   return (
-    <SanctuaryModal
-      isOpen={recovery.isOpen}
-      onClose={recovery.close}
-      title="Set a new password"
-      subtitle="Your recovery link is verified. Verify your authenticator and choose a new password."
-    >
+    <Dialog open={recovery.isOpen} onClose={recovery.close} title="Set a new password" description="Your recovery link is verified. Verify your authenticator and choose a new password.">
       <VStack className="gap-4">
         <Input className="rounded-xl border-phase-border bg-phase-surface">
           <InputField
@@ -114,6 +109,6 @@ export function PasswordRecoveryBoundary() {
           {recovery.pending ? <ButtonSpinner /> : <ButtonText>Save new password</ButtonText>}
         </Button>
       </VStack>
-    </SanctuaryModal>
+    </Dialog>
   );
 }

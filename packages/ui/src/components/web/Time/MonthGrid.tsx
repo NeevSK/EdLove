@@ -1,3 +1,5 @@
+'use client';
+
 import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 import type { MonthGridContract } from '../../../theme/contracts';
 import {

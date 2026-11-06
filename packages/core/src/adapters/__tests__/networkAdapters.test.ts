@@ -8,7 +8,7 @@ import { stopNetworkBusAdapter, startNetworkBusAdapter } from '@repo/core/adapte
 import { NativeNetworkAdapter } from '@repo/core/adapters/native/NativeNetworkAdapter';
 import { WebNetworkAdapter } from '@repo/core/adapters/WebNetworkAdapter';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import type { INetwork, NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
 
 function netInfoState(
@@ -94,7 +94,7 @@ describe('network adapters', () => {
         return () => listeners.delete(listener);
       },
     };
-    networkManager.registerAdapter(adapter);
+    networkMonitor.registerAdapter(adapter);
 
     const onlineEvent = vi.fn();
     const offlineEvent = vi.fn();

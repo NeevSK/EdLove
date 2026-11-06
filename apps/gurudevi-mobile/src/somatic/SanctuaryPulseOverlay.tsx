@@ -1,18 +1,10 @@
 import { useActorSnapshot } from '@repo/core/hooks';
 import { sanctuaryPulseMachine } from '@repo/self/machines/sanctuaryPulseMachine';
 import { Mascot } from '@repo/ui';
-import { Pressable } from '@repo/ui/primitives';
 import { sensoryFeedback } from '@repo/ui/sensory';
 import * as Haptics from 'expo-haptics';
 import React, { useEffect, useMemo } from 'react';
-import {
-  AccessibilityInfo,
-  Modal,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { AccessibilityInfo, Modal, Platform, StyleSheet, Text, View, Pressable } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,

@@ -9,8 +9,8 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useSanctuaryRegistry } from '@repo/self/hooks/useSanctuaryRegistry';
 import { JournalSection, MoodSection, StudentPulse } from '@repo/self/views/sections';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { VStack } from '@repo/ui/primitives';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -37,11 +37,11 @@ export default function StudentSelfView() {
       return {
         ...domain,
         content: (
-          <VStack space="lg" style={{ padding: 20 }}>
+          <View style={{ padding: 20, gap: 16 }}>
             <JournalSection entries={journalEntries} loading={loadingJournals} />
             <MoodSection logs={moodHistory} loading={loadingMoods} />
             <StudentPulse banyan={banyan} loading={banyanLoading} />
-          </VStack>
+          </View>
         ),
       };
     }
@@ -62,7 +62,7 @@ export default function StudentSelfView() {
   });
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="student"
         description={t('self.studentDescription')}
@@ -72,6 +72,6 @@ export default function StudentSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

@@ -10,6 +10,7 @@ import { Chip, Chips } from '../Chip/Chip';
 import { Row } from '../Row/Row';
 import { Section } from '../Section/Section';
 import { Surface } from '../Surface/Surface';
+import { LivingGround } from '../LivingGround/LivingGround';
 import { Text } from '../Text/Text';
 import { TextField } from '../TextField/TextField';
 
@@ -135,5 +136,13 @@ describe('world primitives (contract)', { tags: ['a11y', 'interaction', 'unit'] 
     const w = resolveWorld('ratna');
     const { getByTestId } = await render(inWorld('ratna', <Surface testID="s" tone="inset" />));
     expect(flat(getByTestId('s').props.style).backgroundColor).toBe(w.tokens.sunken);
+  });
+
+  it('LivingGround paints the background with the world ground', async () => {
+    const w = resolveWorld('kele');
+    const { getByTestId } = await render(
+      inWorld('kele', <LivingGround testID="lg"><Text>Forest Content</Text></LivingGround>),
+    );
+    expect(flat(getByTestId('lg').props.style).backgroundColor).toBe(w.tokens.ground);
   });
 });

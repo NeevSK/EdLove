@@ -1,3 +1,4 @@
+import { ORPCError } from '@orpc/client';
 import { describe, expect, it, vi } from 'vitest';
 import {
   isRetryableWorkspaceSyncError,
@@ -14,6 +15,13 @@ describe('workspace sync retry policy', () => {
     expect(isRetryableWorkspaceSyncError({ status: 400 })).toBe(false);
     expect(isRetryableWorkspaceSyncError({ status: 403 })).toBe(false);
     expect(isRetryableWorkspaceSyncError(new Error('invalid layout'))).toBe(false);
+  });
+
+  it('classifies v2 errors by protocol code without a status property', () => {
+    expect(isRetryableWorkspaceSyncError(new ORPCError('SERVICE_UNAVAILABLE'))).toBe(true);
+    expect(isRetryableWorkspaceSyncError(new ORPCError('TOO_MANY_REQUESTS'))).toBe(true);
+    expect(isRetryableWorkspaceSyncError(new ORPCError('FORBIDDEN'))).toBe(false);
+    expect(isRetryableWorkspaceSyncError(new ORPCError('CONFLICT'))).toBe(false);
   });
 
   it('caps retries and applies bounded full jitter', () => {

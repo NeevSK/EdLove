@@ -1,6 +1,6 @@
-import { authAPI } from '@repo/core/api/auth';
+import { authAPI } from '@repo/core/auth';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { GuestDataManager } from '@repo/core/native/guestDataManager';
+import { GuestStorage } from '@repo/core/native/guestStorage';
 import { GuestDataSync } from '@repo/core/native/guestDataSync';
 import { clearLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { clearGuestLeaseData } from '@repo/core/native/guestLease';
@@ -13,7 +13,7 @@ import { clearGuestLeaseData } from '@repo/core/native/guestLease';
  */
 export async function discardLocalGuestSession(userId: string): Promise<void> {
   const cleanup = await Promise.allSettled([
-    GuestDataManager.clearAllGuestData(),
+    GuestStorage.clearAllGuestData(),
     GuestDataSync.clearPendingGuestSession(),
     clearGuestLeaseData(userId),
     clearLocalGuestIdentity(userId),

@@ -16,7 +16,7 @@ export interface MobileFeatureItem {
 }
 
 export interface MobileDomainRegistry {
-  domain: 'workspace' | 'self' | 'library' | 'community' | 'profile';
+  domain: 'workspace' | 'self';
   title: string;
   subtitle: string;
   roleBadge?: string;

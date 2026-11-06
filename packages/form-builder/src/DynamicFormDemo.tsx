@@ -1,80 +1,88 @@
+import { View, Text } from 'react-native';
 import { FormHydrator, type HydrationPayload } from '@intuitui-labs/form-builder-engine/hydration';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import { Box, Text, VStack } from '@repo/ui/primitives';
-
+import { Button } from '@repo/ui/components/native';
 import { useState } from 'react';
 import NativeForm from '@repo/form-builder/NativeForm';
 
-/**
- * A demonstration of how to load a form dynamically from JSON.
- * This is the basis for a "Google Forms" style capability.
- */
-export default function DynamicFormDemo() {
-  const [submittedData, setSubmittedData] = useState<any>(null);
-
-  // This JSON could come from a database (Supabase)
-  const userGeneratedSchema: HydrationPayload = {
-    fields: [
-      {
-        name: 'fullName',
-        type: 'text',
-        label: 'What is your full name?',
-        placeholder: 'e.g. John Doe',
-        validate: 'nonEmpty',
+const DEMO_SCHEMA: HydrationPayload = {
+  version: '1.0.0',
+  title: 'Daily Reflection & Resonance',
+  description: 'A simple self-inquiry check-in powered by IntuitUI Form Builder.',
+  elements: [
+    {
+      id: 'mood_slider',
+      type: 'slider',
+      label: 'Inner Energy Level',
+      description: 'How is your reservoir feeling right now? (1 = Depleted, 5 = Radiant)',
+      required: true,
+      extraProps: {
+        min: 1,
+        max: 5,
+        step: 1,
+        defaultValue: 3,
       },
-      {
-        name: 'email',
-        type: 'email',
-        label: 'Your Contact Email',
-        placeholder: 'john@example.com',
-        validate: 'email',
-      },
-      {
-        name: 'feedback',
-        label: 'Share your thoughts with the community',
-        type: 'textarea',
-        placeholder: 'Write something inspired...',
-      },
-    ],
-  };
-
-  const manager = FormHydrator.hydrate(
-    userGeneratedSchema,
-    async (values: Record<string, unknown>) => {
-      console.log('Dynamic Form Submitted:', values);
-      setSubmittedData(values);
     },
+    {
+      id: 'focus_area',
+      type: 'select',
+      label: 'Domain of Attention',
+      description: 'Where is your primary mental current anchored today?',
+      required: true,
+      options: [
+        { label: 'Deep Learning & Study', value: 'study' },
+        { label: 'Creative Synthesis', value: 'creative' },
+        { label: 'Rest & Somatic Restoration', value: 'rest' },
+        { label: 'Community & Shared Space', value: 'community' },
+      ],
+    },
+    {
+      id: 'reflection_note',
+      type: 'textarea',
+      label: 'Somatic Observations',
+      description: 'Any physical sensations, thoughts, or subtle resistances?',
+      required: false,
+      extraProps: {
+        placeholder: 'Breathe into what is alive for you...',
+      },
+    },
+  ],
+};
+
+export function DynamicFormDemo() {
+  const [submittedData, setSubmittedData] = useState<Record<string, unknown> | null>(null);
+  const [manager] = useState(() =>
+    FormHydrator.hydrate(DEMO_SCHEMA, async (data: Record<string, unknown>) => {
+      setSubmittedData(data);
+    }),
   );
 
   return (
-    <VStack space="xl" className="p-4">
-      <Box>
-        <Text size="xl" className="font-bold">
-          Dynamic Form Preview
-        </Text>
-        <Text size="sm" className="text-phase-text-secondary">
+    <View className="flex-1 p-6">
+      <View className="mb-6">
+        <Text className="text-xl font-bold text-phase-text-primary">Dynamic Form Hydrator</Text>
+        <Text className="text-sm text-phase-text-secondary">
           This form was generated entirely from a JSON object.
         </Text>
-      </Box>
+      </View>
 
       {!submittedData ? (
         <NativeForm manager={manager} submitLabel="Share Resonance" />
       ) : (
-        <Box className="rounded-md bg-phase-surface p-4">
+        <View className="rounded-md bg-phase-surface p-4">
           <Text className="font-bold">Thank you for sharing!</Text>
-          <Text size="xs" className="mt-2">
+          <Text className="mt-2 text-xs">
             Data received: {JSON.stringify(submittedData, null, 2)}
           </Text>
-          <SanctuaryButton
-            onPress={() => setSubmittedData(null)}
-            variant="outline"
-            size="sm"
-            style={{ marginTop: 12 }}
-          >
-            Reset Demo
-          </SanctuaryButton>
-        </Box>
+          <View className="mt-3">
+            <Button
+              label="Reset Demo"
+              onPress={() => setSubmittedData(null)}
+              variant="secondary"
+              size="sm"
+            />
+          </View>
+        </View>
       )}
-    </VStack>
+    </View>
   );
 }

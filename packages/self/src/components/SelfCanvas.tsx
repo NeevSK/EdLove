@@ -8,14 +8,13 @@ import type {
 import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import type { AccessibleFeature } from '@repo/self/features/accessPolicy';
 import type { SelfCanvasViewMode } from '@repo/self/features/userPreferences';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Dialog } from '@repo/ui/components/native';
 import type { SpatialArrangement } from '@repo/ui/components/workspace';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace';
-import { Box, Pressable, Text, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
 
 export type { SelfCanvasViewMode } from '@repo/self/features/userPreferences';
 
@@ -212,22 +211,21 @@ export function SelfCanvas({
 
       {/* Deep Feature Inspector Modal for Tile / Discovery mode */}
       {activeModalFeature ? (
-        <SanctuaryModal
-          isOpen={Boolean(activeModalFeature)}
+        <Dialog
+          open={Boolean(activeModalFeature)}
           onClose={() => setActiveModalFeature(null)}
           title={`${activeModalFeature.emoji} ${activeModalFeature.label}`}
-          subtitle={activeModalFeature.category?.toUpperCase()}
-          size="lg"
+          description={activeModalFeature.category?.toUpperCase()}
         >
-          <Box className="py-2">
+          <View className="py-2">
             <SelfFeatureRenderer
               componentId={activeModalFeature.componentId}
               featureId={activeModalFeature.id}
               userId={userId}
               compact={false}
             />
-          </Box>
-        </SanctuaryModal>
+          </View>
+        </Dialog>
       ) : null}
     </View>
   );

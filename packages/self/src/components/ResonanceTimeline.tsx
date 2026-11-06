@@ -4,12 +4,12 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { View, Text, ScrollView } from 'react-native';
 import { useTemporalStore } from '@repo/core/logic';
 import { GenesisNode } from '@repo/self/components/GenesisNode';
 import { TimelineEvent } from '@repo/self/components/TimelineEvent';
 import { useJourneyData } from '@repo/self/hooks/useJourneyData';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { Box, Heading, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { WaitingSign } from '@repo/ui/components/native';
 import type React from 'react';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -19,22 +19,22 @@ export const ResonanceTimeline: React.FC = () => {
 
   if (loading) {
     return (
-      <Box className="flex-1 items-center justify-center min-h-[300px]">
-        <BrandPulse size={36} accessibilityLabel="Loading journey path" />
+      <View className="flex-1 items-center justify-center min-h-[300px]">
+        <WaitingSign size={48} />
         <Text className="text-mistGray/40 text-xs font-black uppercase tracking-[0.2em] mt-4">
           Synthesizing Journey Path...
         </Text>
-      </Box>
+      </View>
     );
   }
 
   if (journey.length === 0) {
     return (
-      <Box className="flex-1 items-center justify-center min-h-[200px]">
+      <View className="flex-1 items-center justify-center min-h-[200px]">
         <Text className="text-mistGray/30 text-sm italic font-medium">
           No resonance data found for this period.
         </Text>
-      </Box>
+      </View>
     );
   }
 
@@ -46,19 +46,19 @@ export const ResonanceTimeline: React.FC = () => {
     >
       <Animated.View entering={FadeIn.duration(800)}>
         {/* Timeline Header */}
-        <VStack className="items-center mb-8 gap-1">
-          <Heading size="xl" className="text-sacredWhite font-black tracking-tight">
+        <View className="items-center mb-8 gap-1">
+          <Text className="text-sacredWhite font-black tracking-tight">
             {viewDate}
-          </Heading>
-          <Box className="bg-sanctuarySaffron/10 px-3 py-1 rounded-full border border-sanctuarySaffron/20">
+          </Text>
+          <View className="bg-sanctuarySaffron/10 px-3 py-1 rounded-full border border-sanctuarySaffron/20">
             <Text className="text-sanctuarySaffron text-[10px] font-black uppercase tracking-[0.2em]">
               {viewScale} Journey
             </Text>
-          </Box>
-        </VStack>
+          </View>
+        </View>
 
         {/* Event Stream */}
-        <VStack className="gap-0">
+        <View className="gap-0">
           {journey.map((event, index) =>
             event.type === 'path' ? (
               <GenesisNode key={event.id} timestamp={event.timestamp} />
@@ -74,7 +74,7 @@ export const ResonanceTimeline: React.FC = () => {
               />
             ),
           )}
-        </VStack>
+        </View>
       </Animated.View>
     </ScrollView>
   );

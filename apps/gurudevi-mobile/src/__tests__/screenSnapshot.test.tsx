@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { act, create } from 'react-test-renderer';
 
 // Mock core imports
-vi.mock('@repo/core/api/auth', () => ({
+vi.mock('@repo/core/auth', () => ({
   authAPI: { signInAnonymously: vi.fn() },
 }));
 vi.mock('@repo/core/logic', () => ({

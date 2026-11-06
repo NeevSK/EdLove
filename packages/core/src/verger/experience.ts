@@ -1,4 +1,5 @@
 import type { CapacityClass, FidelityPreference, VergerSnapshot } from '@repo/verger-core';
+import type { GurudeviScenario } from './gurudeviScenarios';
 
 /**
  * Gurudevi's reading of verger's decision: lever levels turned into the fields its components
@@ -10,6 +11,7 @@ import type { CapacityClass, FidelityPreference, VergerSnapshot } from '@repo/ve
 export type DeviceTier = 'high' | 'medium' | 'low';
 export type ExperienceLevel = 'off' | 'essential' | 'refined' | 'rich';
 export type VisualQuality = 'full' | 'reduced' | 'essential';
+export type TransitionMode = 'full' | 'short-fade' | 'instant';
 
 export interface ExperienceProfile {
   readonly motion: ExperienceLevel;
@@ -41,6 +43,7 @@ export interface GurudeviExperience {
    */
   readonly listDrawDistance: number | undefined;
   readonly maxCelebrationParticles: number;
+  readonly transitionMode: TransitionMode;
   readonly experience: ExperienceProfile;
 }
 
@@ -51,6 +54,8 @@ export interface ExperienceSettings {
   readonly quietMode?: boolean;
   /** The emergency override (remote config or build flag): everything at its cheapest. */
   readonly safeMode?: boolean;
+  /** High-level operational scenario (e.g. 'exam', 'power-cut', 'low-data', 'auto'). */
+  readonly scenario?: GurudeviScenario;
 }
 
 /** The levers this view reads: the ones Gurudevi's components apply through it. */
@@ -97,6 +102,10 @@ export function experienceOf(
   const stepped = (id: ExperienceLever) => BY_LEVEL[Math.min(level(id), 2)] ?? 'essential';
   const safe = settings.safeMode === true;
   const quiet = settings.quietMode === true;
+  const scenario = settings.scenario ?? 'auto';
+  const isExam = scenario === 'exam';
+  const isPowerCut = scenario === 'power-cut';
+  const isLowData = scenario === 'low-data';
 
   const effectiveFidelity: 'low' | 'high' =
     settings.fidelity === 'low'
@@ -108,19 +117,30 @@ export function experienceOf(
           : 'high';
   // Transitions at "instant" means no motion at all (reduced motion, or a hidden app).
   const motion: ExperienceLevel =
-    safe || level('transitions') >= 2 ? 'off' : stepped('ambient-motion');
-  const visualEffects: ExperienceLevel = safe ? 'essential' : stepped('blur');
-  const celebration: ExperienceLevel = safe ? 'essential' : stepped('particles');
+    safe || isExam || isPowerCut || level('transitions') >= 2 ? 'off' : stepped('ambient-motion');
+  const visualEffects: ExperienceLevel = safe || isPowerCut ? 'essential' : stepped('blur');
+  const celebration: ExperienceLevel =
+    safe || isExam || isPowerCut ? 'essential' : stepped('particles');
   const sound: ExperienceLevel =
-    safe || quiet || settings.soundEnabled === false ? 'off' : 'essential';
+    safe || quiet || isExam || settings.soundEnabled === false ? 'off' : 'essential';
   // Haptics have no lever: a low-memory phone's motor stays light unless the user asks for high.
   const lightHaptics = safe || (deviceTier === 'low' && settings.fidelity !== 'high');
   const haptics: ExperienceLevel =
-    quiet || settings.hapticsEnabled === false ? 'off' : lightHaptics ? 'essential' : 'refined';
-  const prefetch = !safe && level('prefetch') === 0;
-  const maxParticles = safe ? 0 : PARTICLES[celebration];
+    quiet || isExam || settings.hapticsEnabled === false
+      ? 'off'
+      : lightHaptics
+        ? 'essential'
+        : 'refined';
+  const prefetch = !safe && !isExam && !isPowerCut && !isLowData && level('prefetch') === 0;
+  const maxParticles = safe || isExam || isPowerCut ? 0 : PARTICLES[celebration];
+  const transitionMode: TransitionMode =
+    safe || isExam || isPowerCut || level('transitions') >= 2
+      ? 'instant'
+      : level('transitions') === 1
+        ? 'short-fade'
+        : 'full';
 
-  const allowRichAnimation = !safe && level('ambient-motion') === 0;
+  const allowRichAnimation = !safe && !isExam && !isPowerCut && level('ambient-motion') === 0;
   const allowSubtleAnimation = motion !== 'off';
   return {
     deviceTier,
@@ -133,15 +153,16 @@ export function experienceOf(
           ? 'reduced'
           : 'essential',
     allowAmbientEffects: allowRichAnimation,
-    allowBlur: !safe && level('blur') === 0,
+    allowBlur: !safe && !isPowerCut && level('blur') === 0,
     allowRichAnimation,
     allowSubtleAnimation,
-    imageCachePolicy: !safe && level('image-cache') === 0 ? 'memory-disk' : 'disk',
-    imageDecodeFormat: safe || level('image-decode') >= 1 ? 'rgb' : 'argb',
+    imageCachePolicy: !safe && !isPowerCut && !isLowData && level('image-cache') === 0 ? 'memory-disk' : 'disk',
+    imageDecodeFormat: safe || isLowData || level('image-decode') >= 1 ? 'rgb' : 'argb',
     shouldPrefetchAssets: prefetch,
-    allowShimmer: !safe && level('loading-shimmer') === 0,
-    listDrawDistance: LIST_DRAW_DISTANCE[safe ? 2 : Math.min(level('list-window'), 2)],
+    allowShimmer: !safe && !isExam && !isPowerCut && level('loading-shimmer') === 0,
+    listDrawDistance: LIST_DRAW_DISTANCE[safe || isPowerCut ? 2 : Math.min(level('list-window'), 2)],
     maxCelebrationParticles: maxParticles,
+    transitionMode,
     experience: {
       motion,
       visualEffects,

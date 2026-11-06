@@ -1,4 +1,4 @@
-import { HStack, Pressable, Text, View } from '@repo/ui/primitives';
+import { View, Text, Pressable } from 'react-native';
 
 interface FormLikertProps {
   label: string;
@@ -40,7 +40,7 @@ export const FormLikert = ({
     <View className="mb-6">
       <Text className="text-phaseText-primary font-semibold text-base mb-3">{label}</Text>
 
-      <HStack className="justify-between items-center bg-phase-canvas p-2 rounded-2xl border border-phase-interactive/5">
+      <View className="flex-row items-center justify-between items-center bg-phase-canvas p-2 rounded-2xl border border-phase-interactive/5">
         {activeScale.map((item) => {
           const isActive = value === item.value;
           return (
@@ -61,7 +61,7 @@ export const FormLikert = ({
             </Pressable>
           );
         })}
-      </HStack>
+      </View>
 
       {error && <Text className="text-phase-error text-xs mt-2">{error}</Text>}
     </View>

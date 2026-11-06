@@ -5,8 +5,7 @@
 
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
 import { useFireJournal } from '@repo/self/hooks/useFireJournal';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { WorldSkeleton } from '@repo/ui/components/native';
 import { CircleCheck, Flame, Mic } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -218,8 +217,8 @@ export default function FireJournal({
   if (isLoading) {
     return (
       <VStack className="p-lg gap-lg">
-        <SkeletonCard height={40} />
-        <SkeletonCard height={200} />
+        <WorldSkeleton height={40} />
+        <WorldSkeleton height={200} />
         <HStack className="justify-end gap-md">
           <Box className="w-12 h-12 rounded-full bg-obsidian animate-pulse" />
           <Box className="w-[120px] h-12 rounded-full bg-obsidian animate-pulse" />

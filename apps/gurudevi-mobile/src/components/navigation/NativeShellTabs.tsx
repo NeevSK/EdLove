@@ -4,13 +4,13 @@ import { NativeTabs } from 'expo-router/native-tabs';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
-/** The five tabs, in the same order and with the same names as the custom tab bar. */
+/** Admitted tabs, in the same order as the custom tab bar. */
 const TABS = [
   { name: 'library', title: 'Library', sf: 'books.vertical', md: 'local_library' },
   { name: 'workspace', title: 'Workspace', sf: 'graduationcap', md: 'school' },
   { name: 'self', title: 'Self', sf: 'heart', md: 'favorite' },
-  { name: 'community', title: 'Community', sf: 'person.3', md: 'groups' },
-  { name: 'profile', title: 'Profile', sf: 'person.crop.circle', md: 'person' },
+  { name: 'community', title: 'Community', sf: 'person.2', md: 'group' },
+  { name: 'profile', title: 'Profile', sf: 'person', md: 'person' },
 ] as const;
 
 export type ShellTab = (typeof TABS)[number]['name'];
@@ -42,7 +42,7 @@ export function NativeShellTabs({ header, onTabPress, showLabels = true, badges 
   const solid = world.access.transparency === 'reduced';
 
   return (
-    <View style={{ flex: 1, backgroundColor: t.ground }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       {header}
       <NativeTabs
         activityEnabled

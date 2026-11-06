@@ -5,8 +5,8 @@
  * to ensure they render correctly with proper styling and dismiss functionality.
  */
 
+import { View, Text, ScrollView } from 'react-native';
 import ErrorMessage from '@repo/ui/components/ErrorMessage';
-import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
 
@@ -17,12 +17,12 @@ export default function ErrorMessageDemo() {
 
   return (
     <ScrollView className="flex-1 bg-obsidian">
-      <Box className="p-lg">
-        <VStack space="xl">
+      <View className="p-lg">
+        <View className="gap-5">
           <Text className="text-3xl font-bold text-sacredWhite">ErrorMessage Component Demo</Text>
 
           {/* Gentle Type */}
-          <Box>
+          <View>
             <Text className="text-xl font-bold text-starlightGray mb-sm">Gentle (Info)</Text>
             {showGentle && (
               <ErrorMessage
@@ -36,10 +36,10 @@ export default function ErrorMessageDemo() {
                 Gentle message dismissed. Refresh to see again.
               </Text>
             )}
-          </Box>
+          </View>
 
           {/* Warning Type */}
-          <Box>
+          <View>
             <Text className="text-xl font-bold text-starlightGray mb-sm">Warning</Text>
             {showWarning && (
               <ErrorMessage
@@ -53,10 +53,10 @@ export default function ErrorMessageDemo() {
                 Warning message dismissed. Refresh to see again.
               </Text>
             )}
-          </Box>
+          </View>
 
           {/* Severe Type */}
-          <Box>
+          <View>
             <Text className="text-xl font-bold text-starlightGray mb-sm">Severe (Error)</Text>
             {showSevere && (
               <ErrorMessage
@@ -70,10 +70,10 @@ export default function ErrorMessageDemo() {
                 Severe message dismissed. Refresh to see again.
               </Text>
             )}
-          </Box>
+          </View>
 
           {/* Without Dismiss Button */}
-          <Box>
+          <View>
             <Text className="text-xl font-bold text-starlightGray mb-sm">
               Without Dismiss (Warning)
             </Text>
@@ -81,18 +81,18 @@ export default function ErrorMessageDemo() {
               message="This is a persistent warning message without a dismiss button."
               type="warning"
             />
-          </Box>
+          </View>
 
           {/* Long Message Test */}
-          <Box>
+          <View>
             <Text className="text-xl font-bold text-starlightGray mb-sm">Long Message Test</Text>
             <ErrorMessage
               message="This is a very long error message to test how the component handles text wrapping and layout when the message content is quite extensive and spans multiple lines."
               type="severe"
             />
-          </Box>
-        </VStack>
-      </Box>
+          </View>
+        </View>
+      </View>
     </ScrollView>
   );
 }

@@ -6,7 +6,7 @@ import {
   createStudentGoal,
   fetchStudentGoalsForView,
   updateStudentGoal,
-} from '@repo/self/api/selfFeatureRepository';
+} from '@repo/self/data/selfFeature.data';
 import type { Goal } from '@repo/self/types';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -16,7 +16,8 @@ export function useStudentGoals(userId?: string) {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<Error | null>(null);
-  const { viewDate, isPastView } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   useEffect(() => {
     if (!userId) return;
     const loadCache = async () => {

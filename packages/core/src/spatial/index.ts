@@ -5,5 +5,5 @@ export * from './districtCentroids';
 export * from './geoMath';
 export * from './globalComparative';
 export * from './sampleSchools';
-export * from './spatialService';
+export * from './spatial.adapter';
 export * from './types';

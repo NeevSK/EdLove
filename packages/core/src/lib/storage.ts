@@ -1,10 +1,10 @@
 /**
  * Unified Storage Gateway
  *
- * This file serves as the public API for storage. It delegates to the
- * StorageManager which uses the Adapter pattern to maintain platform agnosticism.
+ * This file serves as the public API for key-value storage.
+ * It delegates to StorageDriver using the Port/Adapter pattern to maintain platform agnosticism.
  */
-export { storage } from '@repo/core/logic/managers/StorageManager';
+export { storage, storageDriver, StorageDriver } from '@repo/core/platform/drivers/storageDriver';
 
 export const StorageKeys = {
   USER_PREFERENCES: 'user_preferences',

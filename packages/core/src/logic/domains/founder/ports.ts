@@ -4,6 +4,7 @@ import type {
   EcosystemPulse,
   EcosystemStats,
   GlobalUser,
+  PlatformBroadcast,
   SentinelAuditLog,
 } from '@repo/core/logic/schemas/founder.schema';
 import type { SchoolZod } from '@repo/core/logic/schemas/school.schema';
@@ -27,4 +28,11 @@ export interface FounderRepository {
   updateSchoolMetadata(schoolId: string, metadata: Record<string, unknown>): Promise<SchoolZod>;
   getEcosystemPulse(): Promise<EcosystemPulse>;
   getSentinelGovernance(): Promise<SentinelAuditLog[]>;
+  broadcastAnnouncement(data: {
+    sender_id: string;
+    title: string;
+    message: string;
+    severity?: 'info' | 'advisory' | 'urgent' | 'critical';
+    target_school_ids?: string[];
+  }): Promise<PlatformBroadcast>;
 }

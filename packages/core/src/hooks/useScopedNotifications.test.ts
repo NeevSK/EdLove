@@ -1,4 +1,4 @@
-import { notification } from '@repo/core/logic/managers/factory';
+// retired notification import
 import type { AppNotification, NotificationStatus } from '@repo/core/types';
 import { QueryClient } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';

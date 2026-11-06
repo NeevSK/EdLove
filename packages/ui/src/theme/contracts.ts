@@ -25,6 +25,20 @@ import type {
   WorldLanguage,
 } from './types';
 
+export type {
+  BadgeTone,
+  ButtonSize,
+  ButtonVariant,
+  Radius,
+  SectionDensity,
+  SurfaceTone,
+  TextRole,
+  TextTone,
+  ToastTone,
+  WorldId,
+  WorldLanguage,
+};
+
 /** An icon component; drawn in the ink of whatever holds it. */
 export interface KitIconProps {
   size?: number;
@@ -112,6 +126,60 @@ export interface CardContract {
   icon?: ComponentType<KitIconProps>;
   selected?: boolean;
   disabled?: boolean;
+}
+
+/**
+ * Pebble corner slot modes:
+ * - `pin`: Toggleable bookmark / favorite pin
+ * - `menu`: 3-dot overflow menu triggering an action dropdown or bottom sheet
+ * - `counter`: Badge / unread count or streak scalar
+ * - `tooltip`: Explanatory domain or circadian guidance
+ * - `status`: Live pulse dot (ready / busy / syncing)
+ * - `custom`: Arbitrary child slot
+ */
+export type PebbleCornerSlotMode =
+  | 'pin'
+  | 'menu'
+  | 'counter'
+  | 'tooltip'
+  | 'status'
+  | 'custom';
+
+export interface PebbleCornerBadgeSpec {
+  mode: PebbleCornerSlotMode;
+  isPinned?: boolean;
+  count?: number;
+  status?: 'ready' | 'busy' | 'syncing';
+  dotOrientation?: 'vertical' | 'horizontal';
+  guidanceTooltip?: string;
+  menuActions?: Array<{ id: string; label: string; icon?: string }>;
+  onAction?: (actionId: string, event?: any) => void;
+}
+
+/**
+ * Discrete degradation gears for Pebble (driven by Container Queries):
+ * - `full` (G3, >=140px): 1:1 squircle with central illustration, title, rhythm row, full corner sticker
+ * - `medium` (G2, 110-139px): Proportional squircle with rhythm row
+ * - `compact` (G1, <110px / mobile ~88-92px): 1:1 squircle with 3rd line dropped completely and scaled corner sticker
+ * - `auto`: Automatically select gear based on container width
+ */
+export type PebbleGear = 'full' | 'medium' | 'compact' | 'auto';
+
+export interface PebbleContract {
+  title: string;
+  /** Central emoji or glyph illustration */
+  emoji?: string;
+  media?: ReactNode;
+  icon?: ComponentType<KitIconProps>;
+  /** 3rd line rhythm or context (omitted automatically in compact gear) */
+  rhythm?: string;
+  /** Autonomous corner sticker slot */
+  cornerBadge?: PebbleCornerBadgeSpec;
+  /** Discrete size gear or auto-responsive */
+  gear?: PebbleGear;
+  selected?: boolean;
+  disabled?: boolean;
+  onPress?: () => void;
 }
 
 /** A short horizontal run of cards that scrolls and snaps. */
@@ -291,6 +359,21 @@ export interface PrivacyNoteContract {
 export interface SurfaceContract {
   /** `plain`: ruled lines, no box. `raised`: a held sheet. `inset`: a quiet well. */
   tone?: SurfaceTone;
+}
+
+export interface LivingGroundContract {
+  /**
+   * Atmospheric lighting mode:
+   * - `canopy`: directional overhead sunbeam filtering through the world's canopy
+   * - `centered`: radial illumination from behind the primary focal area
+   * - `ambient`: gentle vertical wash
+   * - `none`: quiet ground without directional light
+   */
+  atmosphere?: 'canopy' | 'centered' | 'ambient' | 'none';
+  /** Whether to enable procedural grain dithering from the active world. Default true. */
+  dither?: boolean;
+  /** Explicit world override; when omitted, inherits the active world. */
+  worldId?: WorldId;
 }
 
 export interface FieldContract {
@@ -1262,6 +1345,169 @@ export interface TimeFieldContract extends FieldContract, TimeWords {
   disabled?: boolean;
 }
 
+/**
+ * Date: Primary temporal navigator that steps down across form factors:
+ * full (floor bar) -> medium (window bar) -> compact (pill) -> nano (tile).
+ */
+export interface DateContract extends TimeWords {
+  date: string;
+  onChange?: (date: string) => void;
+  /** Degradation form factor tier */
+  formFactor?: 'nano' | 'compact' | 'medium' | 'full' | 'auto' | 'expandable';
+  dateLabel?: string;
+  today?: string;
+  activity?: Readonly<Record<string, number>>;
+  disabled?: boolean;
+  min?: string;
+  max?: string;
+}
+
+/**
+ * Time: Minimalist ticking analog/digital time indicator.
+ */
+export interface TimeContract {
+  time?: string;
+  onChange?: (time: string) => void;
+  format?: '12h' | '24h';
+  live?: boolean;
+  showAnalog?: boolean;
+  disabled?: boolean;
+}
+
+/**
+ * DateTimeCombo: Unified master control combining Date and Time with decoupled dismissal.
+ */
+export interface DateTimeComboContract extends DateContract {
+  time?: string;
+  onTimeChange?: (time: string) => void;
+  timeFormat?: '12h' | '24h';
+  allowDismiss?: boolean;
+}
+
+export type ScrollAreaVariant =
+  | 'auto'
+  | 'sovereign'
+  | 'mechanical'
+  | 'fluid'
+  | 'circadian'
+  | 'ratna'
+  | 'perahera'
+  | 'leaf'
+  | 'perimeter'
+  | 'macos'
+  | 'fluent'
+  | 'classic'
+  | 'native';
+
+/**
+ * Resolves the living scrollbar archetype for a given world ID.
+ * Defaults to 'sovereign' for sanctuary (the quiet washi paper & lamp baseline).
+ */
+export function resolveScrollVariantForWorld(worldId?: string): ScrollAreaVariant {
+  switch (worldId) {
+    case 'wewa':
+      return 'fluid';
+    case 'kele':
+      return 'leaf';
+    case 'ratna':
+      return 'ratna';
+    case 'perahera':
+      return 'perahera';
+    case 'spark':
+      return 'circadian';
+    case 'kandyan':
+    case 'angampora':
+      return 'mechanical';
+    default:
+      return 'sovereign';
+  }
+}
+
+export interface ScrollAreaPip {
+  id: string;
+  /** Position along track as a percentage [0..100]. */
+  offsetPct: number;
+  /** Accessible label or chapter title. */
+  label?: string;
+}
+
+/**
+ * ScrollArea: Sovereign scroll container with normalized wheel translation,
+ * pointer-capture drag panning, kinetic momentum, and custom hairline tracking.
+ */
+export interface ScrollAreaContract {
+  children?: ReactNode;
+  /**
+   * Scroll axis.
+   * @default 'horizontal'
+   */
+  orientation?: 'horizontal' | 'vertical' | 'both';
+  /**
+   * Scrollbar style archetype:
+   * - 'sovereign': Gurudevi living light (world-responsive lamp glow).
+   * - 'mechanical': 3D tactile micro-trench with knurled brass/graphite louvers.
+   * - 'fluid': Kinetic dewdrop with velocity-driven surface tension elongation.
+   * - 'circadian': Living sundial needle casting diurnal solar shadows.
+   * - 'perimeter': Seamless frame indicator traveling along container's outer stroke.
+   * - 'macos': Apple floating translucent pill with auto-hide.
+   * - 'fluent': Windows 11 Fluent expanding rail (4px -> 10px on hover).
+   * - 'classic': Windows classic persistent track with stepper arrow buttons.
+   * - 'native': Standard unstyled browser native OS scrollbar.
+   * @default 'sovereign'
+   */
+  variant?: ScrollAreaVariant;
+  /**
+   * Visual tone for the scrollbar thumb and living glow.
+   * - 'lamp': World's radiant lamp color with glowing halo.
+   * - 'quiet': Minimal subtle hairline without bloom.
+   * - 'signal': High-contrast electric accent with crisp edge.
+   * @default 'lamp'
+   */
+  tone?: 'lamp' | 'quiet' | 'signal';
+  /**
+   * Show subtle alpha edge-fade masks when overflow exists.
+   * @default true
+   */
+  showEdgeGradients?: boolean;
+  /**
+   * Allow pointer dragging on canvas to scroll (desktop mouse/stylus).
+   * @default true
+   */
+  dragToScroll?: boolean;
+  /**
+   * Apply physics-based kinetic momentum decay on release after pointer panning.
+   * @default true
+   */
+  kineticMomentum?: boolean;
+  /**
+   * Visibility policy for the scrollbar track and thumb.
+   * @default 'hover'
+   */
+  scrollbarVisibility?: 'always' | 'hover' | 'scrolling';
+  /**
+   * Optional custom id assigned to the internal scrollable viewport element.
+   * Useful when anchor links or external scroll listeners (e.g. skip links, headers)
+   * need to target the exact scrolling element rather than the outer wrapper.
+   */
+  viewportId?: string;
+  /**
+   * Accessible region label.
+   */
+  label?: string;
+  /**
+   * Optional spatial landmark beads or chapter pips positioned along the rail.
+   */
+  pips?: readonly ScrollAreaPip[];
+  /**
+   * Optional HUD context label displayed on hover/drag scrub.
+   */
+  hudLabel?: string;
+  /**
+   * Optional callback reporting normalized scroll progress [0..1] per active axis.
+   */
+  onScrollProgress?: (progress: { x: number; y: number }) => void;
+}
+
 export interface TimelineEntry {
   id: string;
   at: string | Date;
@@ -1440,3 +1686,61 @@ export interface LauncherContract {
   placeholder?: string;
   labels?: Partial<LauncherLabels>;
 }
+
+export type LanguagePickerVariant = 'capsule' | 'dropdown' | 'auto';
+
+export interface LanguageItemMeta {
+  readonly code: WorldLanguage;
+  readonly label: string;
+  readonly nativeLabel: string;
+  readonly shortLabel: string;
+}
+
+export const CANONICAL_LANGUAGES: readonly LanguageItemMeta[] = [
+  { code: 'en', label: 'English', nativeLabel: 'English', shortLabel: 'EN' },
+  { code: 'si', label: 'Sinhala', nativeLabel: 'සිංහල', shortLabel: 'සි' },
+  { code: 'ta', label: 'Tamil', nativeLabel: 'தமிழ்', shortLabel: 'த' },
+] as const;
+
+export interface LanguagePickerContract {
+  /** Active language code ('en' | 'si' | 'ta'). */
+  value: WorldLanguage;
+  /** Called when language is selected. */
+  onChange: (language: WorldLanguage) => void;
+  /** Display presentation: 'capsule' (segmented buttons) or 'dropdown' (popout). Defaults to 'capsule'. */
+  variant?: LanguagePickerVariant;
+  /** Accessible label for the control. */
+  label?: string;
+  /** Languages displayed in the picker. Defaults to CANONICAL_LANGUAGES. */
+  languages?: readonly LanguageItemMeta[];
+  /** Optional container query threshold for 'auto' variant (px). Defaults to 360. */
+  threshold?: number;
+}
+
+export type ThemeSwitcherVariant = 'auto' | 'pill' | 'compact' | 'icon';
+export type LuminanceMode = 'light' | 'dark' | 'system';
+export type ResolvedLuminance = 'light' | 'dark';
+
+export interface ThemeSwitcherContract {
+  /** The active world id. */
+  world: WorldId;
+  /** Callback when world changes. */
+  onWorldChange: (world: WorldId) => void;
+  /** Current luminance preference. */
+  mode?: LuminanceMode;
+  /** Callback when luminance mode changes. */
+  onModeChange?: (mode: LuminanceMode) => void;
+  /** Resolved active luminance (light or dark), taking into account system preference. */
+  resolvedMode?: ResolvedLuminance;
+  /** Visual presentation mode. 'auto' degrades from pill -> compact -> icon via container width. */
+  variant?: ThemeSwitcherVariant;
+  /** Accessible label for the control. */
+  label?: string;
+  /** Current language for localized world labels. */
+  lang?: WorldLanguage;
+  /** Container width threshold in px for 'auto' degradation. Default: 420. */
+  threshold?: number;
+}
+
+
+

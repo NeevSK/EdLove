@@ -1,6 +1,5 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { assertHighway } from '@repo/core/api/highways';
-import { identityAPI } from '@repo/core/api/identity';
+import { supabaseIdentityAdapter as identity } from '@repo/core/adapters/supabaseIdentity.adapter';
 import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluator';
 import { APIError } from '@repo/core/types/API';
 import type { Action } from '@repo/core/types/authorization';
@@ -9,9 +8,8 @@ import type { Action } from '@repo/core/types/authorization';
  * requireAuth  Ensures the user is authenticated.
  */
 export async function requireAuth() {
-  assertHighway('identity_bootstrap', 'direct-api');
-  const identity = await identityAPI.identifyActiveCitizen();
-  const userId = identity?.id;
+  const activeIdentity = await identity.identifyActiveCitizen();
+  const userId = activeIdentity?.id;
   if (!userId) {
     throw new APIError('Not authenticated', 'UNAUTHENTICATED');
   }

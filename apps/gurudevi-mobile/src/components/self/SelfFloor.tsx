@@ -1,9 +1,9 @@
 import { useScrollChromeCollapser } from '@repo/ui';
+import { Pebble } from '@repo/ui/components/native';
 import { ArrowRight, Bookmark, Compass, Pin, Sparkles } from '@repo/ui/icons';
-import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { type ReactNode } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, View, Text, Pressable } from 'react-native';
 import { useSelfCanvas } from '@/hooks/useSelfCanvas';
 import type { MobileFeatureItem } from '@/navigation/registries/types';
 
@@ -28,19 +28,19 @@ export function SelfFloor() {
       }}
       showsVerticalScrollIndicator={false}
     >
-      <Box style={styles.orientationCard}>
-        <Box style={{ gap: tokens.spacing.xs }}>
-          <Box style={styles.eyebrow}>
+      <View style={styles.orientationCard}>
+        <View style={{ gap: tokens.spacing.xs }}>
+          <View style={styles.eyebrow}>
             <Sparkles size={16} color={tokens.colors.primary} />
             <Text style={styles.eyebrowText}>{canvas.registry.title}</Text>
-          </Box>
+          </View>
           <Text style={styles.orientationTitle}>Begin where you are, {canvas.displayName}</Text>
           <Text style={styles.orientationCopy}>{canvas.registry.subtitle}</Text>
-        </Box>
+        </View>
         <Text style={styles.orientationHint}>
           Choose a personal practice below. Open work stays available in your task strip.
         </Text>
-      </Box>
+      </View>
 
       <FloorSection
         count={canvas.pinnedFeatures.length}
@@ -93,7 +93,7 @@ export function SelfFloor() {
             );
           })}
         </ScrollView>
-        <Box style={{ flexDirection: 'row', flexWrap: 'wrap', gap: canvas.cardGap }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: canvas.cardGap }}>
           {canvas.visibleFeatures.map((feature) => (
             <CatalogFeatureCard
               feature={feature}
@@ -104,7 +104,7 @@ export function SelfFloor() {
               width={canvas.cardWidth}
             />
           ))}
-        </Box>
+        </View>
       </FloorSection>
     </ScrollView>
   );
@@ -123,16 +123,16 @@ function FloorSection({
   title: string;
 }) {
   return (
-    <Box style={{ gap: tokens.spacing.md }}>
-      <Box style={styles.sectionHeader}>
-        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.xs }}>
+    <View style={{ gap: tokens.spacing.md }}>
+      <View style={styles.sectionHeader}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.xs }}>
           {icon}
           <Text style={styles.sectionTitle}>{title}</Text>
-        </Box>
+        </View>
         <Text style={styles.count}>{count}</Text>
-      </Box>
+      </View>
       {children}
-    </Box>
+    </View>
   );
 }
 
@@ -145,39 +145,19 @@ function PinnedFeatureCard({
   onLaunch: () => void;
   onUnpin: () => void;
 }) {
-  const Icon = feature.icon || Compass;
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`Open ${feature.title}`}
+    <Pebble
+      title={feature.title}
+      icon={feature.icon || Compass}
+      gear="compact"
+      width={90}
+      cornerBadge={{
+        mode: 'pin',
+        isPinned: true,
+        onAction: onUnpin,
+      }}
       onPress={onLaunch}
-      style={styles.pinnedCard}
-    >
-      <Box style={styles.cardTopline}>
-        <Icon size={20} color={tokens.colors.primary} />
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Unpin ${feature.title}`}
-          hitSlop={8}
-          onPress={(event) => {
-            event.stopPropagation();
-            onUnpin();
-          }}
-          style={styles.pinButton}
-        >
-          <Pin size={14} color={tokens.colors.primary} />
-        </Pressable>
-      </Box>
-      <Box style={{ gap: 2 }}>
-        <Text numberOfLines={1} style={styles.cardTitle}>
-          {feature.title}
-        </Text>
-        <Text numberOfLines={1} style={styles.cardMeta}>
-          {feature.badge || feature.category || 'Practice'}
-        </Text>
-      </Box>
-      <CardAction />
-    </Pressable>
+    />
   );
 }
 
@@ -202,7 +182,7 @@ function CatalogFeatureCard({
       onPress={onLaunch}
       style={[styles.catalogCard, { width }]}
     >
-      <Box style={styles.cardTopline}>
+      <View style={styles.cardTopline}>
         <Icon size={18} color={tokens.colors.primary} />
         <Pressable
           accessibilityRole="button"
@@ -220,15 +200,15 @@ function CatalogFeatureCard({
             <Bookmark size={14} color={tokens.semantic.text.secondary} />
           )}
         </Pressable>
-      </Box>
-      <Box style={{ flex: 1, gap: tokens.spacing.xs }}>
+      </View>
+      <View style={{ flex: 1, gap: tokens.spacing.xs }}>
         <Text numberOfLines={1} style={styles.cardTitle}>
           {feature.title}
         </Text>
         <Text numberOfLines={2} style={styles.cardDescription}>
           {feature.description}
         </Text>
-      </Box>
+      </View>
       <CardAction />
     </Pressable>
   );
@@ -236,10 +216,10 @@ function CatalogFeatureCard({
 
 function CardAction() {
   return (
-    <Box style={styles.cardAction}>
+    <View style={styles.cardAction}>
       <Text style={styles.cardActionText}>Open</Text>
       <ArrowRight size={12} color={tokens.colors.primary} />
-    </Box>
+    </View>
   );
 }
 

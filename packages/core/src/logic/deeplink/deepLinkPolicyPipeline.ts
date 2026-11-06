@@ -238,6 +238,11 @@ export const classifyRouteIntentEffect = (
         ? `/${parsed.hostname}${parsed.pathname === '/' ? '' : parsed.pathname}`
         : parsed.pathname;
 
+    // A QR or invitation link that reached here failed its own validation; it isn't a route.
+    if (/^\/(qr|invite|c)(\/|$)/.test(internalCandidatePath)) {
+      return { kind: 'unsupported' } as const;
+    }
+
     if (isValidAppRoutePath(internalCandidatePath)) {
       const fullPath = internalCandidatePath + (parsed.search || '');
       return {

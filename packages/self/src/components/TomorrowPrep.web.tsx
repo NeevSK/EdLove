@@ -7,7 +7,6 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
 import type { DailyPrepItem } from '@repo/self/types';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Check, Moon, Plus, Target, Trash2, X } from '@repo/ui/icons';
 import {
   Box,

@@ -4,7 +4,7 @@
  */
 
 import { useAuthStore } from '@repo/core/store';
-import { identity } from '@repo/core/logic';
+import { supabaseIdentityAdapter } from '@repo/core/adapters/supabaseIdentity.adapter';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { FidelityProvider, useFidelity, useFidelityOptional } from './FidelityProvider';
 import { LanguageProvider, useLanguage, useLanguageOptional } from './LanguageProvider';
@@ -57,7 +57,7 @@ export function useEnvironment(): EnvironmentContextValue {
 
   // ReBAC actions
   const switchPerspective = useCallback(async (entityId: string, capacity: string) => {
-    await identity.switchPerspective(entityId, capacity as any);
+    await supabaseIdentityAdapter.switchPerspective(entityId, capacity as any);
   }, []);
 
   // Aggregate into a single memoized value to minimize blast radius for legacy consumers

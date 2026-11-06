@@ -1,5 +1,5 @@
 import { type DeviceAccountProfile, deviceAccounts } from '@repo/core/accounts/deviceAccounts';
-import type { ActiveCitizen } from '@repo/core/api/identity';
+import type { Identity as ActiveCitizen } from '@repo/core/types/Identity';
 import {
   getSessionIdentityMode,
   isResolvedAuthSubjectCurrent,
@@ -28,8 +28,8 @@ export function getVerifiedDeviceAccountProfile(
 
   return {
     id: identity.id,
-    email: identity.email,
-    display_name: identity.display_name,
+    email: identity.email ?? null,
+    display_name: identity.display_name ?? 'Gurudevi User',
     avatar_url: null,
     capacity: identity.activeBond?.capacity ?? null,
     school_id: identity.schoolId ?? null,
