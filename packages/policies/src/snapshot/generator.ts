@@ -8,9 +8,10 @@ import type { PermissionSnapshot, UserContext } from './types';
  * an offline-compatible capability snapshot signed with Ed25519.
  */
 export function generateSnapshot(user: UserContext, secret?: string): PermissionSnapshot {
-  const generatedAt = new Date().toISOString();
-  // Expires in 24 hours
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+  // One clock reading, so the lifetime is exactly 24 hours.
+  const now = Date.now();
+  const generatedAt = new Date(now).toISOString();
+  const expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString();
 
   const resourceTypes = AUTHORIZATION_RESOURCES;
 

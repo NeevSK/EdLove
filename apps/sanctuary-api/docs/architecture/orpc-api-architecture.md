@@ -2,13 +2,26 @@
 title: "Sanctuary API oRPC Architecture"
 status: "active"
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-10-30
 author: "Naveen"
 scribe: "Codex"
 tags: [api, architecture, orpc, powersync, hono, expo]
 ---
 
 # Sanctuary API oRPC Architecture
+
+## Governing cutover policy
+
+The [canonical domain and channel model](./api-domain-and-channel-model.md)
+governs the current hard cutover: native oRPC v2 commands and queries only at
+`/api/v1`, explicit protocol adapters, no first-party OpenAPI transport or legacy
+aliases. The owner confirmed there is no deployed-client compatibility obligation.
+Navigation places compose capabilities; they do not prescribe business ownership.
+
+The delivery phase is horizontal foundation and enforcement before bounded
+feature migrations. The implementation is still mixed and the architecture gate
+must fail until it conforms. The checkpoint descriptions below are historical
+source/evidence context, not permission to retain compatibility machinery.
 
 ## Purpose
 

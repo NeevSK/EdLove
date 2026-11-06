@@ -88,6 +88,25 @@ explicit external interoperability adapters only for approved needs. Public REST
 OpenAPI or OData support elsewhere does not justify resurrecting our retired
 parallel first-party transport.
 
+## Nitro v3 evaluation (2026-11-07): not now, kept possible
+
+[Nitro](https://nitro.build/blog/v3-rc) (the UnJS server toolkit, unrelated to
+`react-native-nitro-modules`) reached a v3 release candidate, tag `v3.0.261029-rc`, needing
+Node 22.22 or later. It sits under a framework: [any `fetch` handler, Hono included, can be
+its server entry](https://nitro.build/docs/server-entry), and it adds a build, deployment
+presets, cache and KV storage, and scheduled tasks. oRPC isn't mentioned in the pages read.
+
+Decision: don't adopt it now. The API is one long-running Node service, so it wouldn't use
+the presets. Nitro would replace the host, `node-server.ts`, whose limits and drain behaviour
+are already tested. The pages read don't document `headersTimeout`, `requestTimeout`,
+`keepAliveTimeout`, `maxHeaderSize` or `maxConnections`, though options pass through to srvx
+(its options page wasn't read). [Tasks](https://nitro.build/docs/tasks) are experimental and
+scheduled in-process, with no cross-instance coordination described, so they can't replace
+durable effects. Hono 5 and oRPC 2 are already pre-releases.
+
+Adoption stays cheap while the app remains a plain `fetch` handler. Revisit if the API must
+run on Cloudflare or Vercel, or once Nitro is stable and the Node limits above are verified.
+
 ## LMS standards are another layer
 
 | Standard family | Problem it addresses | Decision needed |

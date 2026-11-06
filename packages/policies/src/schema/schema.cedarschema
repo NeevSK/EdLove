@@ -391,7 +391,7 @@ action "read", "create", "update", "delete", "use_ai" appliesTo {
   resource: [
     User, Student, GratitudeGift, School, Classroom, AttendanceRecord, DailyAttendance, AttendanceSession, Grade, GradeMark, Assignment, Lesson, Material,
     StaffLeave, MoodLog, FireJournal, LearningReflection, InventoryItem, InventoryRequest, Group, Post, Ledger, Accounting, Payments, MappingTopology,
-    Guardian, SentinelAuditLog, OperationReceipt, JoyMoments, GratitudeEntries, EnergyForecasts,
+    Guardian, SentinelAuditLog, OperationReceipt, PrivacyLedgerEntry, JoyMoments, GratitudeEntries, EnergyForecasts,
     UserRewards, WhisperedMoment,
     PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent, DecisionJournal,
     Manifesto, ManifestoEndorsement, AssignmentSubmission, Calendar, Notification, PrincipalNote, Announcement,

@@ -109,6 +109,9 @@ product allowance; neither substitutes for authentication or Cedar authorization
 
 ## Entry points and shared capability execution
 
+Decisions on callers, tokens, linking and approval are in the
+[channel admission model](../../../../docs/architecture/channel-admission-model.md).
+
 The following is the target architecture, not a claim that these channels are
 currently connected or authorized.
 

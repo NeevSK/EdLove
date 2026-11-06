@@ -1,11 +1,11 @@
 ---
 title: "Omnichannel Sanctuary Foundation: Phased Delivery and Hostile Implementation Plan"
-status: "draft"
+status: "active"
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-11-01
 author: "Naveen"
-scribe: "Codex"
-tags: [architecture, delivery-plan, omnichannel, whatsapp, telegram, mobile, ai, operations]
+scribe: "Antigravity"
+tags: [architecture, delivery-plan, omnichannel, whatsapp, telegram, mobile, ai, operations, rebac, citizenship]
 ---
 
 # Omnichannel Sanctuary Foundation
@@ -59,6 +59,24 @@ The first five stages are synchronous only where their data is local and
 transactional. Provider sends, downloads, transcription, virus scanning,
 translation, AI calls, and notifications are effects: they must be outboxed,
 time-bounded, observable, and repairable.
+
+### Canonical Ingress Envelope, ReBAC Bond & Channel Affordances (2026-11-01 Harmonization)
+
+Following the canonical ReBAC cutover and omnichannel foundation harmonization:
+
+1. **Canonical Account Resolution & Active ReBAC Bond**:
+   - Every inbound envelope (`mobile`, `web`, `whatsapp`, `telegram`, `agent_mcp`) resolves exclusively to a canonical EdLove Identity UUIDv8 (`public.users.id`).
+   - Channel identities remain opaque provider linkages (`channel_identities`) and never merge accounts or act as principal authority.
+   - Authorization within the sanctuary domain evaluates the active **ReBAC Bond** (`FIRST_CLASS`, `SECOND_CLASS`, `THIRD_CLASS`), not raw provider roles or ad-hoc claims. The Bond embodies the user's civic covenant with the target entity (`SCHOOL`, `CLASSROOM`, `PERSONAL`, or `PLATFORM`).
+
+2. **Decoupling Physical Device Trust from Omnichannel Ingress**:
+   - **The Door (Channel)**: Which interface door the user enters through (`ChannelAffordanceSchema`).
+   - **The Covenant (Bond)**: What civic standing the user holds (`citizenship` tier on the Bond).
+   - **Device Trust**: A hardware attestation and secure enclave guarantee bound strictly to the `mobile` native client runtime. Device Trust is **never** imposed as a gatekeeper on non-device doors (`whatsapp`, `telegram`, `agent_mcp`), which instead enforce cryptographic provider signatures (Meta HMAC, webhook secrets), mTLS, and explicit human delegation grants.
+
+3. **Sub-Millisecond Synchronous Cedar PDP Evaluation**:
+   - Capability checks evaluate synchronously via local Cedar PDP engines (`@repo/core`), evicting cache entries atomically upon perspective or bond transitions.
+   - Asynchronous network waterfalls on permission queries are eliminated; background sync is decoupled from immediate UI and API admission decisions.
 
 ## Milestone programme
 

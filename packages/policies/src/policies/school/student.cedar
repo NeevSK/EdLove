@@ -4,6 +4,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   resource is Classroom &&
   principal has classroom_ids &&
@@ -16,6 +17,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   (resource is Grade || resource is GradeMark || resource is AttendanceRecord || resource is DailyAttendance || resource is AttendanceSession) &&
   resource has student_id &&
@@ -28,6 +30,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   (resource is Lesson || resource is Material || resource is ClassroomNote || resource is Assignment) &&
   resource has classroom_id &&
@@ -41,6 +44,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   resource is Library
 };
@@ -51,6 +55,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   resource is DailyContent
 };
@@ -62,9 +67,10 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   resource is Manifesto &&
-  resource.school_id == principal.school_id
+  (resource has school_id && principal has school_id && resource.school_id == principal.school_id)
 };
 
 permit(
@@ -72,8 +78,10 @@ permit(
   action in [Action::"read", Action::"create", Action::"delete"],
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   resource is ManifestoEndorsement &&
+  resource has user_id &&
   resource.user_id == principal.id
 };
 
@@ -83,9 +91,10 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   resource is Assignment &&
-  resource.school_id == principal.school_id
+  (resource has school_id && principal has school_id && resource.school_id == principal.school_id)
 };
 
 // 3d. Community permissions: Full CRUD on Group and Post in their school
@@ -94,9 +103,10 @@ permit(
   action,
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   (resource is Group || resource is Post) &&
-  resource.school_id == principal.school_id
+  (resource has school_id && principal has school_id && resource.school_id == principal.school_id)
 };
 
 // 4. Full CRUD on own MoodLog, FireJournal, JoyMoments, GratitudeEntries, EnergyForecasts
@@ -105,6 +115,7 @@ permit(
   action,
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   (
     (
@@ -134,6 +145,7 @@ permit(
   action in [Action::"read", Action::"update", Action::"delete"],
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "student" &&
   resource is User &&
   resource.id == principal.id

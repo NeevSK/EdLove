@@ -2,7 +2,7 @@
 title: "Channels, Agent Protocols and Execution Frameworks"
 status: "active"
 created: 2026-10-30
-updated: 2026-10-30
+updated: 2026-11-06
 author: "Naveen"
 scribe: "Codex"
 tags: [agents, mcp, ag-ui, webhooks, messaging, research]
@@ -57,6 +57,10 @@ register it automatically. Tool discovery is not permission to execute.
 
 ## Frameworks and harnesses
 
+The [agent infrastructure layer](../../../../../docs/architecture/agent-infrastructure-layer.md)
+(2026-11-07) has the newer landscape, including Mastra, Rivet and Render Workflows, and what
+belongs in the foundation now.
+
 | Project | Role | Evaluation question for Gurudevi |
 | --- | --- | --- |
 | [TanStack AI](https://tanstack.com/blog/ag-ui-compliance) | Model/tool and application integration; documented AG-UI support | Can the existing package cohort satisfy the named interaction without another harness? |
@@ -85,6 +89,10 @@ stars or the presence of a SECURITY.md are not evidence of isolation.
 
 ## Telegram, WhatsApp and other provider channels
 
+The [channel admission model](../../../../../docs/architecture/channel-admission-model.md)
+has the decisions and a research record of provider rules read on 2026-11-06, including
+WhatsApp's limits on AI assistants.
+
 An inbound webhook needs a provider-specific verifier, minimal durable envelope,
 event deduplication and a verified account-linking process. Only then may a
 supported intent be resolved into a bounded capability under current authority.
@@ -94,10 +102,8 @@ Telegram documents `setWebhook`, secret-token verification and update delivery;
 its exact transport controls differ from Meta's provider verification.
 [Telegram Bot API](https://core.telegram.org/bots/api#setwebhook)
 Use the [WhatsApp developer hub](https://whatsappbusiness.com/developers/developer-hub/)
-and selected product/version's webhook documentation. Detailed Meta webhook
-pages returned access/rate-limit errors in this research session; exact current
-signatures, retry windows, templates and delivery rules require renewed primary
-verification before implementation. Do not substitute Telegram assumptions.
+and selected product/version's webhook documentation. Do not substitute Telegram
+assumptions.
 
 ```text
 Provider message

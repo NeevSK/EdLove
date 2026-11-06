@@ -2,7 +2,7 @@
 title: "Sanctuary API Documentation Vault Index"
 status: "active"
 created: 2026-06-20
-updated: 2026-10-28
+updated: 2026-10-30
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -11,6 +11,20 @@ tags: [index, portal]
 # Sanctuary API Documentation Vault Index
 
 Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). This file serves as the entry point and index for all backend system documentation.
+
+Start API integration work with the [canonical domain and channel model](architecture/api-domain-and-channel-model.md).
+It governs the hard cutover, horizontal foundation, channel distinctions and
+deferred decisions; historical compatibility plans do not override it.
+
+For learning and grounded design, use the two entry documents:
+[What: API landscape](architecture/api-landscape.md) and
+[How: API engineering playbook](architecture/api-engineering-playbook.md).
+Their focused modules cover vocabulary/history, channels and agents,
+dependency/evidence research, and business rules/decisions. They are a linked
+reference bundle, not an announcement of implemented features or new dependencies.
+
+For the resumed horizontal build, use the [runtime foundation checkpoint](architecture/api-foundations/runtime-foundation.md)
+for actual guarantees, deployment runtime, configuration and remaining admission requirements.
 
 ---
 

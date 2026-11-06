@@ -2,13 +2,69 @@
 title: "API Engineering: First Principles to Verified Implementation"
 status: "active"
 created: 2026-10-30
-updated: 2026-11-02
+updated: 2026-11-03
 author: "Naveen"
 scribe: "Codex"
 tags: [api, engineering, architecture, verification, playbook]
 ---
 
 # API Engineering: First Principles to Verified Implementation
+
+## Owner direction and horizontal delivery contract (2026-11-03)
+
+Build the shared horizontal foundations before any business vertical slice. Earlier
+references below to a first slice describe later product admission, not the current
+verification strategy. No school, learning or wellbeing feature is selected to drive
+this work. Synthetic capabilities exercise shared machinery without admitting product
+policies or adding product endpoints.
+
+Generalization means a single implementation of each common guarantee, with explicit
+domain-owned inputs. It does not mean a universal CRUD endpoint, an arbitrary table
+name from a caller, a universal retention period, or an agent with unrestricted access.
+Use four independent synthetic ownership cases where applicable: person-owned,
+institution-owned, explicitly shared, and operational records. Exercise more than
+one tenant, actor and concurrent worker; adding a fifth fixture must not require a
+second implementation of the mechanism.
+
+The dependency order below governs the current work. The layer status table remains
+the status authority; acceptance requires executable evidence, not folders or types.
+
+| Foundation | Shared guarantee and extension input | Required acceptance scenarios |
+| --- | --- | --- |
+| Runtime and admission | Bounded connections, bodies, authentication, in-flight work and shutdown; deployment supplies limits | Saturation before expensive work, cancellation with ongoing work, malformed input, probes during overload, recovery |
+| Authority execution | Verified account, live bond, resource policy and scoped SQL in one execution boundary; modules supply capability and resource resolver | Cross-tenant denial, forged scope, revoked/expired identity, concurrent bond change, policy failure; neither channel nor worker bypasses the boundary |
+| Durable commands | One receipt identity, payload fingerprint, transaction and outcome model; modules supply deterministic mutation and effect intent | Concurrent duplicate, different payload with same key, rollback, unknown commit, restart and replay; no blind replay of uncertain external effects |
+| Fair resource budgets | Independent account, institution, workload and deployment budgets; trust-boundary code derives budget keys | Noisy tenant, distributed limit across replicas, quota-store outage, reconnect storm, bounded retry; caller cannot invent a tenant or priority |
+| Audit | Transaction-bound accepted-command evidence, sensitive-read evidence and separately durable denial/failure records; modules declare sensitivity and reason requirements | Commit/audit atomicity, denied transaction rollback, append-only permissions, chain verification, audited reads, redaction, unavailable audit storage |
+| Record lifecycle | Version checks, correction links, tombstones, restore, retention, holds and erasure coordination; modules declare record class and approved policy | Stale version, concurrent corrections, hold versus purge race, expired restore window, sync tombstone, backup expiry and export interactions |
+| Consent and delegation | Scoped, revocable, expiring grants with current authority checks; modules declare purpose and action | Revocation during execution, delegation cannot exceed delegator, guardian transition, expired grants, cross-channel confused deputy |
+| Durable workers and ingress | Verified ingress, deduplication, leased/fenced attempts, bounded retries, poison-message isolation and explicit reconciliation | Duplicate delivery, worker death before/after send, lease takeover, provider outage, forged/replayed webhook; no channel-specific mutation logic |
+| Portability | Versioned open records, stable identifiers, paginated export, checksummed manifests, controlled import and documented omissions | Independent reader round trip, references and originals preserved, interrupted export/resume, revoked download, no cross-owner leakage |
+| Operations and release | Reproducible artifact, migration compatibility, restore and incident procedures, external probes and measured objectives | Rolling deployment, mixed policy versions, pool exhaustion, backup restore, key rotation, dependency outage, rollback/forward recovery |
+
+No foundation may claim completion using only mock evidence where persistence,
+concurrency or delivery is part of its guarantee. Use the actual Node host and isolated
+PostgreSQL for those scenarios. Hosted identity, providers and deployment require
+separate named evidence. No local test grants production readiness.
+
+### Adaptive server control boundary
+
+First establish fixed limits and observations. Then evaluate a server-specific
+controller in observe-only mode before allowing bounded actuation. The existing
+client Verger host is not a server implementation. Reuse of its pure core requires
+its own compatibility and stability evidence.
+
+An eventual controller may reduce optional workload concurrency, pace workers and
+restore capacity gradually. It may never widen authority, omit required audit,
+weaken durability, silently drop accepted work or treat unknown telemetry as unlimited
+capacity. Critical classes still have hard limits and need reserved capacity rather
+than an unbounded bypass. Local admission, fleet quotas and infrastructure autoscaling
+have separate ownership and time scales; prove their combined stability under lag and
+failure before enabling feedback. The static protections remain active when adaptation
+is disabled. Redundancy and external incident monitoring stay outside the process.
+
+See [scale and production operation](api-foundations/scale-and-production-operation.md)
+for the national design horizon and the distinction between population and concurrency.
 
 This is the **how** entry point. [What](api-landscape.md) supplies vocabulary and
 research. The [canonical model](api-domain-and-channel-model.md) owns adopted API
@@ -141,6 +197,8 @@ The statement above that the audit passes describes an earlier tree.
 
 ## Horizontal layers: the base every domain stands on
 
+The [road to v1](../../../../docs/architecture/road-to-v1.md) orders these into gates with evidence.
+
 Domains are built on these layers, like bricks on a base plate. A domain card
 (see the [domain design method](../../../../docs/architecture/domain-design-method.md))
 names which layers it needs and isn't admitted until they are ready. The work order
@@ -165,6 +223,7 @@ second ledger. The rules for layers 5 to 7 are in
 | 11 | Files | Stored objects with access through authority | Not settled after the reset |
 | 12 | Exports | Person and institution exports in open and standard formats; see [data portability](api-foundations/data-portability-and-education-standards.md) | Not started |
 | 13 | Observability and operations | Request and operation identifiers through logs, traces and audit; readiness; deployment that doesn't sleep | Partial |
+| 14 | Agent provenance and runtime contract | Audit records channel, agent and delegator; agents are Cedar principals; long jobs return a run id; budgets can count cost. See [agent infrastructure layer](../../../../docs/architecture/agent-infrastructure-layer.md) | Not started |
 
 Layers 0–7 are needed before the first domain is admitted. Layers 8–13 can follow
 the first domains, but each domain card says which of them it needs.
@@ -260,7 +319,8 @@ boundaries. Record each platform's real persistence and sync behavior.
 
 ## Phase 5: admit a channel or agent tool
 
-Use [the channel module](api-foundations/channels-and-agents.md) to identify the
+Follow the [channel admission model](../../../../docs/architecture/channel-admission-model.md#admitting-a-channel)
+and its checklist. Use [the channel module](api-foundations/channels-and-agents.md) to identify the
 actual boundary. Specify credential/binding, audience, delegated scope, consent,
 approval, expiry, rate/cost budgets and revocation. Tools must call the owned
 capability, not raw generic SQL or an independent mutation implementation.

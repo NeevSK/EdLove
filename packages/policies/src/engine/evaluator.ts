@@ -1,21 +1,44 @@
+import { createHash, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { AuthRequest, AuthResponse } from '@repo/policies/engine/types';
 
-const require = createRequire(import.meta.url);
-const { isAuthorized, schemaToJson } = require('@cedar-policy/cedar-wasm/nodejs') as any;
+const packageUrl = import.meta.resolve('@repo/policies/package.json');
+const require = createRequire(packageUrl);
+const { statefulIsAuthorized, preparseSchema, preparsePolicySet, schemaToJson, validate } =
+  require('@cedar-policy/cedar-wasm/nodejs') as typeof import('@cedar-policy/cedar-wasm/nodejs');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const srcDir = join(__dirname, '..');
+const srcDir = fileURLToPath(new URL('./src/', packageUrl));
 
 // 1. Initialize and Cache Schema and Policies at Startup (Singleton pattern)
 let schemaJson: any = null;
 let concatenatedPolicies = '';
+let policyVersion = '';
 const gapsMap: Record<string, string[]> = {};
+const cachePrefix = `role-engine:${randomUUID()}`;
+let activeSlot = 0;
+let compiledGeneration = '';
+
+function prepareGeneration(schema: Parameters<typeof preparseSchema>[1], policies: string) {
+  // Two slots bound WASM cache growth and keep the active pair intact if a reload fails.
+  const nextSlot = 1 - activeSlot;
+  const key = `${cachePrefix}:${nextSlot}`;
+  if (
+    preparseSchema(key, schema).type !== 'success' ||
+    preparsePolicySet(key, { staticPolicies: policies }).type !== 'success'
+  ) {
+    throw new Error('Failed to compile Cedar policy generation');
+  }
+  activeSlot = nextSlot;
+  compiledGeneration = key;
+}
+
+// Fingerprint of exactly what the engine evaluates. Offline snapshots carry it, and
+// clients reject a snapshot whose version differs from the current one.
+const fingerprint = (schema: unknown, policies: string) =>
+  `sha256:${createHash('sha256').update(JSON.stringify(schema)).update('\n').update(policies).digest('hex')}`;
 
 try {
   const schemaPath = join(srcDir, 'schema', 'schema.cedarschema');
@@ -29,6 +52,7 @@ try {
 
   const policyFiles = [
     'platform/admin.cedar',
+    'platform/ai.cedar',
     'platform/editorial.cedar',
     'school/principal.cedar',
     'school/assistantPrincipal.cedar',
@@ -66,9 +90,19 @@ try {
     }
   }
 
-  concatenatedPolicies = policyTexts.join('\n\n');
+  const initialPolicies = policyTexts.join('\n\n');
+  const validation = validate({
+    schema: schemaJson,
+    policies: { staticPolicies: initialPolicies },
+  });
+  if (validation.type !== 'success' || validation.validationErrors.length > 0) {
+    throw new Error('Failed to validate Cedar policies against the schema');
+  }
+  prepareGeneration(schemaJson, initialPolicies);
+  concatenatedPolicies = initialPolicies;
+  policyVersion = fingerprint(schemaJson, initialPolicies);
 } catch (error) {
-  console.error('CRITICAL: Failed to initialize Cedar policy engine on startup:', error);
+  throw new Error('CEDAR_POLICY_INITIALIZATION_FAILED', { cause: error });
 }
 
 /**
@@ -80,14 +114,14 @@ export function reinitializeCedar(): void {
     const schemaPath = join(srcDir, 'schema', 'schema.cedarschema');
     const rawSchemaText = readFileSync(schemaPath, 'utf8');
     const schemaParse = schemaToJson(rawSchemaText);
-    if (schemaParse.type === 'success') {
-      schemaJson = schemaParse.json;
-    } else {
+    if (schemaParse.type !== 'success') {
       throw new Error('Failed to parse Cedar schema: ' + JSON.stringify(schemaParse.errors));
     }
+    const nextSchema = schemaParse.json;
 
     const policyFiles = [
       'platform/admin.cedar',
+      'platform/ai.cedar',
       'platform/editorial.cedar',
       'school/principal.cedar',
       'school/assistantPrincipal.cedar',
@@ -102,6 +136,7 @@ export function reinitializeCedar(): void {
     ];
 
     const policyTexts: string[] = [];
+    const nextGapsMap: Record<string, string[]> = {};
 
     for (const file of policyFiles) {
       const filePath = join(srcDir, 'policies', file);
@@ -119,15 +154,30 @@ export function reinitializeCedar(): void {
           }
         }
         if (gaps.length > 0) {
-          gapsMap[actorName] = gaps;
+          nextGapsMap[actorName] = gaps;
         }
       }
     }
 
-    concatenatedPolicies = policyTexts.join('\n\n');
+    const nextPolicies = policyTexts.join('\n\n');
+    const validation = validate({ schema: nextSchema, policies: { staticPolicies: nextPolicies } });
+    if (validation.type !== 'success' || validation.validationErrors.length > 0) {
+      throw new Error('Failed to validate Cedar policies against the schema');
+    }
+    prepareGeneration(nextSchema, nextPolicies);
+    schemaJson = nextSchema;
+    concatenatedPolicies = nextPolicies;
+    policyVersion = fingerprint(nextSchema, nextPolicies);
+    Object.assign(gapsMap, nextGapsMap);
   } catch (error) {
     console.error('CRITICAL: Failed to reinitialize Cedar policy engine:', error);
   }
+}
+
+/** The version of the loaded policy set, as `sha256:<hex>`. */
+export function cedarPolicyVersion(): string {
+  if (!policyVersion) throw new Error('Cedar engine was not properly initialized');
+  return policyVersion;
 }
 
 /**
@@ -146,8 +196,12 @@ export function check(request: AuthRequest): AuthResponse {
       attrs: {
         id: request.principal.id,
         school_id: request.principal.attributes.school_id,
-        active_entity_id: request.principal.attributes.active_entity_id,
-        active_entity_type: request.principal.attributes.active_entity_type,
+        ...(request.principal.attributes.active_entity_id !== undefined && {
+          active_entity_id: request.principal.attributes.active_entity_id,
+        }),
+        ...(request.principal.attributes.active_entity_type !== undefined && {
+          active_entity_type: request.principal.attributes.active_entity_type,
+        }),
         capacity: request.principal.attributes.capacity,
         ...(request.principal.attributes.grade_id && {
           grade_id: request.principal.attributes.grade_id,
@@ -163,8 +217,8 @@ export function check(request: AuthRequest): AuthResponse {
 
     // Build resource entity
     const resourceAttrs: Record<string, any> = {
-      id: request.resource.id,
       ...request.resource.attributes,
+      id: request.resource.id,
     };
     if (request.resource.type === 'User') {
       if (resourceAttrs.school_id === undefined) resourceAttrs.school_id = '';
@@ -200,13 +254,13 @@ export function check(request: AuthRequest): AuthResponse {
     }
 
     // Call Cedar WebAssembly function
-    const authResult = isAuthorized({
+    const authResult = statefulIsAuthorized({
       principal: { type: 'User', id: request.principal.id },
       action: { type: 'Action', id: mappedAction },
       resource: { type: request.resource.type, id: request.resource.id },
       context: (request.context as Record<string, any>) || {},
-      schema: schemaJson,
-      policies: { staticPolicies: concatenatedPolicies },
+      preparsedSchemaName: compiledGeneration,
+      preparsedPolicySetId: compiledGeneration,
       entities:
         principalEntity.uid.type === resourceEntity.uid.type &&
         principalEntity.uid.id === resourceEntity.uid.id
@@ -215,10 +269,7 @@ export function check(request: AuthRequest): AuthResponse {
     });
 
     if (authResult.type === 'failure') {
-      console.warn(
-        '[AUDIT] Cedar authorization compilation/evaluation failure:',
-        authResult.errors,
-      );
+      console.warn({ event: 'authorization.failed', category: 'evaluation' });
       return {
         permitted: false,
         reason: 'CedarEvaluationFailure',
@@ -226,8 +277,19 @@ export function check(request: AuthRequest): AuthResponse {
       };
     }
 
+    if (authResult.response.diagnostics.errors.length > 0) {
+      console.warn({
+        event: 'authorization.policy_evaluation_errors',
+        count: authResult.response.diagnostics.errors.length,
+        policyIds: authResult.response.diagnostics.errors.map(
+          (error: { policyId: string }) => error.policyId,
+        ),
+      });
+    }
+    if (authResult.response.diagnostics.errors.length > 0)
+      return { permitted: false, reason: 'CedarEvaluationFailure', gaps: [] };
     const decision = authResult.response.decision;
-    const permitted = decision === 'allow' || decision === 'Allow';
+    const permitted = decision.toLowerCase() === 'allow';
     const reasonList = Array.from(authResult.response.diagnostics.reason);
     const reason = reasonList.join(', ') || 'DefaultDeny';
 
@@ -237,11 +299,7 @@ export function check(request: AuthRequest): AuthResponse {
 
     // Audit Trail: Log denied decisions at WARN level
     if (!permitted) {
-      console.warn(
-        `[AUDIT] Permission DENIED: Principal "${request.principal.id}" (${request.principal.type}) ` +
-          `attempted to "${request.action}" resource "${request.resource.type}::${request.resource.id}". ` +
-          `Reason: ${reason}`,
-      );
+      console.warn({ event: 'authorization.denied' });
     }
 
     return {
@@ -249,11 +307,11 @@ export function check(request: AuthRequest): AuthResponse {
       reason,
       gaps,
     };
-  } catch (error) {
-    console.error('Graceful error handling in check():', error);
+  } catch {
+    console.error({ event: 'authorization.failed', category: 'exception' });
     return {
       permitted: false,
-      reason: `EvaluatorError: ${error instanceof Error ? error.message : String(error)}`,
+      reason: 'EvaluatorError',
       gaps: [],
     };
   }

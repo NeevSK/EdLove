@@ -1,31 +1,14 @@
-import './load-env';
-import './telemetry';
-import { constants } from 'node:crypto';
-import { startRetentionMaintenance } from './ai/maintenance/retention';
-import { app } from './core/app';
-import { loadServerTlsOptions } from './core/nodeTransport';
+import { readServerConfig } from './config';
+import { createApp } from './core/app';
 
-console.log('DATABASE_URL loaded:', process.env.DATABASE_URL ? 'YES' : 'NO');
-
-const port = Number(process.env.PORT) || 3000;
-const productionTls = loadServerTlsOptions();
-console.log(`Sanctuary API standing guard on port ${port} (Bun/Edge Native)`);
-
-startRetentionMaintenance();
-
-export default {
-  fetch: app.fetch,
-  port,
-  ...(productionTls
-    ? {
-        tls: {
-          ...productionTls,
-          // Bun.serve exposes protocol restrictions through secureOptions, not minVersion.
-          secureOptions: constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1,
-        },
-      }
-    : {}),
-};
-
-export { app } from './core/app';
-export type AppType = typeof app;
+const config = readServerConfig(process.env);
+if (config.API_AUTHENTICATION === 'required')
+  throw new Error('Authenticated foundation requires the Node entry point');
+const app = createApp(undefined, {
+  timeoutMs: config.API_REQUEST_TIMEOUT_MS,
+  streamingTimeoutMs: config.API_STREAM_TIMEOUT_MS,
+  maxInFlightRequests: config.API_MAX_IN_FLIGHT_REQUESTS,
+  browserOrigins: config.API_BROWSER_ORIGINS,
+});
+export default { fetch: app.fetch, port: config.PORT };
+export { app };

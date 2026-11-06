@@ -1,0 +1,106 @@
+[
+  {
+    "name": "member may use the assistant",
+    "request": {
+      "principal": "User::\"member\"",
+      "action": "Action::\"use_ai\"",
+      "resource": "AIAssistant::\"assistant\"",
+      "context": {}
+    },
+    "entities": [
+      {
+        "uid": {
+          "type": "User",
+          "id": "member"
+        },
+        "attrs": {
+          "id": "member",
+          "capacity": "member"
+        },
+        "parents": []
+      },
+      {
+        "uid": {
+          "type": "AIAssistant",
+          "id": "assistant"
+        },
+        "attrs": {
+          "id": "assistant"
+        },
+        "parents": []
+      }
+    ],
+    "decision": "allow",
+    "num_errors": 0,
+    "reason": []
+  },
+  {
+    "name": "wanderer cannot use the assistant",
+    "request": {
+      "principal": "User::\"wanderer\"",
+      "action": "Action::\"use_ai\"",
+      "resource": "AIAssistant::\"assistant\"",
+      "context": {}
+    },
+    "entities": [
+      {
+        "uid": {
+          "type": "User",
+          "id": "wanderer"
+        },
+        "attrs": {
+          "id": "wanderer",
+          "capacity": "wanderer"
+        },
+        "parents": []
+      },
+      {
+        "uid": {
+          "type": "AIAssistant",
+          "id": "assistant"
+        },
+        "attrs": {
+          "id": "assistant"
+        },
+        "parents": []
+      }
+    ],
+    "decision": "deny",
+    "num_errors": 0,
+    "reason": []
+  },
+  {
+    "name": "missing capacity denies without an evaluation error",
+    "request": {
+      "principal": "User::\"unknown\"",
+      "action": "Action::\"use_ai\"",
+      "resource": "AIAssistant::\"assistant\"",
+      "context": {}
+    },
+    "entities": [
+      {
+        "uid": {
+          "type": "User",
+          "id": "unknown"
+        },
+        "attrs": {
+          "id": "unknown"
+        },
+        "parents": []
+      },
+      {
+        "uid": {
+          "type": "AIAssistant",
+          "id": "assistant"
+        },
+        "attrs": {
+          "id": "assistant"
+        },
+        "parents": []
+      }
+    ],
+    "decision": "deny",
+    "num_errors": 0,
+    "reason": []
+  }
+]

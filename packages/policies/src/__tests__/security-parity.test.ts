@@ -11,7 +11,6 @@ import { AUTHORIZATION_ACTIONS, AUTHORIZATION_RESOURCES } from '../authorization
  */
 const RESOURCE_TO_ZMODEL_MAP: Record<string, string[] | string> = {
   Student: ['ClassroomStudent', 'User'],
-  PrivacyLedgerEntry: 'UserPreferences',
   ClassroomEchoFeedback: 'ClassroomLegacyRecord',
   FireJournal: 'FireJournalEntry',
   Ledger: 'LedgerEntry',
@@ -38,13 +37,21 @@ const RESOURCE_TO_ZMODEL_MAP: Record<string, string[] | string> = {
   OperationReceipt: 'Receipt',
 };
 
-const APPROVED_DOMAIN_ACTIONS = new Set<string>([
-  ...AUTHORIZATION_ACTIONS,
-  'grade',
-  'publish',
-]);
+const RESOURCE_TO_SQL_TABLE: Record<string, { table: string; migration: string }> = {
+  PrivacyLedgerEntry: {
+    table: 'privacy_ledger_entries',
+    migration:
+      '../../../../apps/gurudevi-mobile/supabase/migrations/20260306000000_privacy_ledger.sql',
+  },
+};
 
-function getAllFiles(dirPath: string, filter: (file: string) => boolean, arrayOfFiles: string[] = []): string[] {
+const APPROVED_DOMAIN_ACTIONS = new Set<string>([...AUTHORIZATION_ACTIONS, 'grade', 'publish']);
+
+function getAllFiles(
+  dirPath: string,
+  filter: (file: string) => boolean,
+  arrayOfFiles: string[] = [],
+): string[] {
   const files = fs.readdirSync(dirPath);
 
   for (const file of files) {
@@ -59,7 +66,9 @@ function getAllFiles(dirPath: string, filter: (file: string) => boolean, arrayOf
   return arrayOfFiles;
 }
 
-describe('Double-Gate Security Parity: Cedar PDP vs ZenStack DAL', { tags: ['policies', 'security', 'fast'] }, () => {
+describe('Authorization vocabulary and storage authorities', {
+  tags: ['policies', 'security', 'fast'],
+}, () => {
   const policiesDir = path.resolve(__dirname, '../policies');
   const zmodelPath = path.resolve(__dirname, '../../../schema/schema.zmodel');
 
@@ -139,7 +148,7 @@ describe('Double-Gate Security Parity: Cedar PDP vs ZenStack DAL', { tags: ['pol
     ).toEqual([]);
   });
 
-  it('enforces 1:1 or mapped parity between AUTHORIZATION_RESOURCES and ZenStack schema.zmodel models', () => {
+  it('requires a model or explicit SQL migration authority for registered resources', () => {
     const zmodelContent = fs.readFileSync(zmodelPath, 'utf-8');
     const zmodelModels = new Set([...zmodelContent.matchAll(/model\s+(\w+)/g)].map((m) => m[1]));
 
@@ -148,9 +157,19 @@ describe('Double-Gate Security Parity: Cedar PDP vs ZenStack DAL', { tags: ['pol
     for (const resource of AUTHORIZATION_RESOURCES) {
       const hasDirectModel = zmodelModels.has(resource);
       const hasExplicitMapping = resource in RESOURCE_TO_ZMODEL_MAP;
+      const sqlAuthority = RESOURCE_TO_SQL_TABLE[resource];
 
-      if (!hasDirectModel && !hasExplicitMapping) {
+      if (!hasDirectModel && !hasExplicitMapping && !sqlAuthority) {
         unmappedResources.push(resource);
+      }
+
+      if (sqlAuthority) {
+        const migrationPath = path.resolve(__dirname, sqlAuthority.migration);
+        const migration = fs.readFileSync(migrationPath, 'utf8');
+        expect(migration).toContain(`CREATE TABLE IF NOT EXISTS public.${sqlAuthority.table}`);
+        expect(migration).toContain(
+          `ALTER TABLE public.${sqlAuthority.table} ENABLE ROW LEVEL SECURITY`,
+        );
       }
 
       if (hasExplicitMapping) {
@@ -167,7 +186,7 @@ describe('Double-Gate Security Parity: Cedar PDP vs ZenStack DAL', { tags: ['pol
 
     expect(
       unmappedResources,
-      `The following AUTHORIZATION_RESOURCES have neither a direct ZenStack model nor an entry in RESOURCE_TO_ZMODEL_MAP: ${unmappedResources.join(', ')}`,
+      `The following AUTHORIZATION_RESOURCES have no model mapping or SQL migration authority: ${unmappedResources.join(', ')}`,
     ).toEqual([]);
   });
 });

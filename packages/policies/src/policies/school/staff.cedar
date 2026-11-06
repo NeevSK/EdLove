@@ -4,6 +4,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "staff" &&
   resource is StaffLeave &&
   resource has user_id &&

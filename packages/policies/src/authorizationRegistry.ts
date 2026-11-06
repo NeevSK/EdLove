@@ -4,6 +4,27 @@
  * The repository parity audit validates this registry against both schemas.
  */
 export const AUTHORIZATION_ACTIONS = ['read', 'create', 'update', 'delete', 'use_ai'] as const;
+export const GRADE_MARK_ACTIONS = ['grade', 'publish'] as const;
+
+/** Translate domain verbs at the Cedar boundary, including GradeMark's explicit actions. */
+export function cedarActionFor(action: string, resourceType: string): string {
+  switch (action) {
+    case 'resolve':
+      return 'read';
+    case 'grade':
+      return resourceType === 'GradeMark' ? 'grade' : 'create';
+    case 'submit':
+      return 'create';
+    case 'publish':
+      return resourceType === 'GradeMark' ? 'publish' : 'update';
+    case 'override':
+    case 'verify':
+    case 'manage':
+      return 'update';
+    default:
+      return action;
+  }
+}
 
 export const AUTHORIZATION_RESOURCES = [
   'User',
