@@ -363,7 +363,7 @@ export default function AuthScreen({
     <View style={[styles.root, { backgroundColor: wt.ground }]}>
       <SceneBackdrop
         scene={scene}
-        wash={{ colour: wt.ground, edge: 0.2, text: 0.85, textFrom: 0.35 }}
+        wash={{ colour: wt.ground, edge: 0.12, text: 1.0, textFrom: 0.35 }}
       />
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView

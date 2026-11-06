@@ -70,6 +70,25 @@ describe('browser workspace appearance persistence', () => {
     });
   });
 
+  it('keeps Explore appearance and layout preferences local', async () => {
+    const { result } = renderHook(() =>
+      useBrowserWorkspaceAppearance({ accountId: 'explore-guest', workspaceId: 'self' }),
+    );
+
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    await act(async () => {
+      await result.current.setAppearance({ preset: 'night', motion: 'subtle' });
+      await result.current.setGroupOrder(['wellbeing']);
+      await result.current.setPinnedIds(['fire_journal']);
+    });
+
+    expect(window.localStorage.getItem('workspace-appearance:self:web:explore-guest')).toBe(
+      JSON.stringify({ preset: 'night', motion: 'subtle' }),
+    );
+    expect(mocks.getLayout).not.toHaveBeenCalled();
+    expect(mocks.upsertLayout).not.toHaveBeenCalled();
+  });
+
   it('keeps the local appearance available when remote hydration fails', async () => {
     mocks.getLayout.mockRejectedValue(new Error('network unavailable'));
     window.localStorage.setItem(

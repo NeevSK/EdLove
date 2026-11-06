@@ -18,6 +18,7 @@ export {
   type WorldMotionTokens,
 } from './motion';
 export {
+  contrastInk,
   edgeStyle,
   glowStyle,
   isFontAvailable,

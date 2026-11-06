@@ -1,7 +1,9 @@
 import type { ComponentRef, ReactNode, Ref } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewProps, type ViewStyle } from 'react-native';
+import Animated from 'react-native-reanimated';
 import type { SurfaceContract } from '../../../theme/contracts';
 import { edgeStyle, insetRadius, radiusStyle, shadowStyle } from '../../../theme/native/style';
+import { useLivingStyle } from '../../../theme/native/motion';
 import { useWorld } from '../../../theme/native/WorldContext';
 import type { SurfaceToneRecipe } from '../../../theme/types';
 
@@ -51,10 +53,16 @@ export function InnerFrame({ recipe }: { recipe: SurfaceToneRecipe }) {
 
 export function Surface({ tone = 'raised', flush, style, children, ref, ...rest }: SurfaceProps) {
   const recipe = useWorld().recipes.surface[tone];
+  const staticStyle = surfaceStyle(recipe, flush);
+  const living = useLivingStyle({
+    backgroundColor: recipe.fill ?? undefined,
+    borderColor: recipe.edge?.color,
+  });
+
   return (
-    <View ref={ref} {...rest} style={[surfaceStyle(recipe, flush), style]}>
+    <Animated.View ref={ref as any} {...rest} style={[staticStyle, living, style]}>
       <InnerFrame recipe={recipe} />
       {children}
-    </View>
+    </Animated.View>
   );
 }

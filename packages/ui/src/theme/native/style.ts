@@ -6,6 +6,7 @@
  */
 
 import { Platform, type TextStyle, type ViewStyle } from 'react-native';
+import { contrastColor } from 'react-native-reanimated';
 import type {
   Edge,
   FaceSpec,
@@ -64,6 +65,22 @@ export function shadowStyle(shadow: Shadow | null): ViewStyle {
     shadowOffset: { width: 0, height: shadow.offsetY / 2 },
     elevation: Platform.OS === 'android' ? Math.round(shadow.radius / 4) : 0,
   };
+}
+
+/* ---------- Dynamic Worklet Contrast ---------- */
+
+/**
+ * Worklet-safe contrast ink resolver leveraging Reanimated's `contrastColor()`.
+ * Evaluates the WCAG relative luminance of `backgroundHex` and returns either
+ * the world's dark ink or light onLamp ink to mathematically guarantee legibility.
+ */
+export function contrastInk(backgroundHex: string, world: ResolvedWorld): string {
+  'worklet';
+  const choice = contrastColor(backgroundHex);
+  if (choice === 'white') {
+    return world.mode === 'dark' ? world.tokens.ink : world.tokens.onLamp;
+  }
+  return world.mode === 'light' ? world.tokens.ink : world.tokens.onLamp;
 }
 
 /* ---------- Type ---------- */

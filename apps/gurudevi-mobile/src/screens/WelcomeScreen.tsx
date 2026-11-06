@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { LanguageUtils } from '@repo/core/logic';
+import { useEnvironment } from '@repo/ui/context';
 import {
   Button,
   LanguagePicker,
@@ -69,12 +70,19 @@ const DEFAULT_REALM: RealmMeta = REALMS[0]!;
 
 export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
   const { t, i18n } = useTranslation();
+  const { isDark, setThemeMode } = useEnvironment();
   const world = useWorld();
   const wt = world.tokens;
   const scene = useScene({ presence: 'full' });
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [activeRealm, setActiveRealm] = useState<RealmId>('self');
+
+  const toggleTheme = useCallback(() => {
+    setThemeMode(isDark ? 'light' : 'dark').catch((err) => {
+      console.warn('[WelcomeScreen] Failed to toggle theme mode:', err);
+    });
+  }, [isDark, setThemeMode]);
 
   const selectedRealmMeta = useMemo(
     () => REALMS.find((r) => r.id === activeRealm) ?? DEFAULT_REALM,
@@ -109,7 +117,7 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
     <View style={[styles.root, { backgroundColor: wt.ground }]}>
       <SceneBackdrop
         scene={scene}
-        wash={{ colour: wt.ground, edge: 0.18, text: 0.85, textFrom: 0.35 }}
+        wash={{ colour: wt.ground, edge: 0.12, text: 1.0, textFrom: 0.38 }}
       />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
@@ -131,11 +139,27 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
               </Text>
             </View>
 
-            <LanguagePicker
-              value={(i18n.language?.slice(0, 2) ?? 'en') as 'en' | 'si' | 'ta'}
-              onChange={handleLanguageChange}
-              variant="capsule"
-            />
+            <View style={styles.topBarRight}>
+              <Pressable
+                onPress={toggleTheme}
+                accessibilityRole="button"
+                accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                style={[
+                  styles.modePill,
+                  { backgroundColor: wt.raised, borderColor: wt.line },
+                ]}
+              >
+                <Text kind="caption" tone="ink">
+                  {isDark ? '🌙 Dark' : '☀️ Light'}
+                </Text>
+              </Pressable>
+
+              <LanguagePicker
+                value={(i18n.language?.slice(0, 2) ?? 'en') as 'en' | 'si' | 'ta'}
+                onChange={handleLanguageChange}
+                variant="capsule"
+              />
+            </View>
           </View>
 
           {/* Living Mascot Hero with World Lamp Glow */}
@@ -285,6 +309,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
+  },
+  topBarRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  modePill: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 9999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   brandBadge: {
     flexDirection: 'row',

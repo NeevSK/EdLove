@@ -132,6 +132,7 @@ export function useBrowserWorkspaceAppearance({
     accountId === 'explore-guest' ||
     accountId === 'explore' ||
     workspaceId === 'explore';
+  const shouldSyncRemotely = enableRemoteSync && !isExplore;
   const initialFallback =
     defaultAppearance ?? (isExplore ? EXPLORE_DEFAULT_APPEARANCE : DEFAULT_APPEARANCE);
   const defaultGroupOrderKey = defaultGroupOrder.join('|');
@@ -177,7 +178,7 @@ export function useBrowserWorkspaceAppearance({
       setAppearanceState(initialFallback);
     }
 
-    if (!enableRemoteSync) {
+    if (!shouldSyncRemotely) {
       setStatus('ready');
       return () => {
         cancelled = true;
@@ -234,8 +235,8 @@ export function useBrowserWorkspaceAppearance({
     accountId,
     defaultGroupOrderKey,
     defaultPinnedIdsKey,
-    enableRemoteSync,
     layoutTarget,
+    shouldSyncRemotely,
     workspaceId,
   ]);
 
@@ -246,7 +247,7 @@ export function useBrowserWorkspaceAppearance({
       const canPersistLocally = writeLocal(key, next);
       setStatus(canPersistLocally ? 'saving' : 'error');
 
-      if (!enableRemoteSync) {
+      if (!shouldSyncRemotely) {
         setStatus(canPersistLocally ? 'saved' : 'error');
         return;
       }
@@ -280,7 +281,7 @@ export function useBrowserWorkspaceAppearance({
         setStatus('offline');
       }
     },
-    [accountId, enableRemoteSync, layoutTarget, workspaceId],
+    [accountId, layoutTarget, shouldSyncRemotely, workspaceId],
   );
 
   const setGroupOrder = useCallback(
@@ -292,7 +293,7 @@ export function useBrowserWorkspaceAppearance({
         normalized,
       );
       setStatus(canPersistLocally ? 'saving' : 'error');
-      if (!enableRemoteSync) {
+      if (!shouldSyncRemotely) {
         setStatus(canPersistLocally ? 'saved' : 'error');
         return;
       }
@@ -323,7 +324,7 @@ export function useBrowserWorkspaceAppearance({
         setStatus('offline');
       }
     },
-    [accountId, defaultGroupOrderKey, enableRemoteSync, layoutTarget, workspaceId],
+    [accountId, defaultGroupOrderKey, layoutTarget, shouldSyncRemotely, workspaceId],
   );
 
   const setPinnedIds = useCallback(
@@ -334,7 +335,7 @@ export function useBrowserWorkspaceAppearance({
         next,
       );
       setStatus(canPersistLocally ? 'saving' : 'error');
-      if (!enableRemoteSync) {
+      if (!shouldSyncRemotely) {
         setStatus(canPersistLocally ? 'saved' : 'error');
         return;
       }
@@ -365,7 +366,7 @@ export function useBrowserWorkspaceAppearance({
         setStatus('offline');
       }
     },
-    [accountId, enableRemoteSync, layoutTarget, workspaceId],
+    [accountId, layoutTarget, shouldSyncRemotely, workspaceId],
   );
 
   const resetAppearance = useCallback(() => setAppearance(DEFAULT_APPEARANCE), [setAppearance]);

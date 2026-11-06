@@ -1,4 +1,5 @@
 import React from 'react';
+import { roundTo } from './artisticMath';
 import type { SceneLayerProps } from './types';
 
 export function KeleWorldScene({
@@ -49,7 +50,7 @@ export function KeleWorldScene({
       {/* Layer 2: Intermediate Rolling Forest Valley Canopy */}
       {Array.from({ length: 14 }, (_, i) => {
         const cx = i * 115 + 20;
-        const cy = hy - 40 - Math.sin(i * 0.8) * 35;
+        const cy = roundTo(hy - 40 - Math.sin(i * 0.8) * 35, 3);
         const rx = 75 + ((i * 19) % 30);
         const ry = 42 + ((i * 13) % 20);
         return (

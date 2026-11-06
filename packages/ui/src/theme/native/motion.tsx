@@ -145,7 +145,8 @@ export type LivingColorKey =
   | 'backgroundColor'
   | 'borderColor'
   | 'borderBottomColor'
-  | 'shadowColor';
+  | 'shadowColor'
+  | 'color';
 
 /**
  * Living light: colours glide to their new state instead of snapping (an edge
