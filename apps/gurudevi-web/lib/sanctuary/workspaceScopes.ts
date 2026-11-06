@@ -1,6 +1,6 @@
-import { IdentityBootstrapSchema } from '@repo/core/api/identity.orpc.contract';
-import { orpcClient } from '@repo/core/api/orpcClient';
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import type { BrowserSupabaseClient } from '../supabase/browser';
+import { ACTIVE_BOND_COOKIE, chooseActiveScope, readV1Entry } from './v1Entry';
 
 type Session = Readonly<{ accessToken: string; subject: string }>;
 
@@ -18,20 +18,45 @@ async function assertSession(client: BrowserSupabaseClient, expected: Session): 
   }
 }
 
+function apiOrigin(): string {
+  const origin = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (!origin) throw new Error('Workspaces are not configured.');
+  assertSecureApiUrl(origin);
+  return origin;
+}
+
+function selectedBond(): string | undefined {
+  const prefix = `${ACTIVE_BOND_COOKIE}=`;
+  return document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(prefix))
+    ?.slice(prefix.length);
+}
+
 export async function loadWorkspaceScopes(client: BrowserSupabaseClient) {
   const session = await currentSession(client);
   if (!session) return null;
-  const identity = IdentityBootstrapSchema.parse(await orpcClient.identity.identifyActiveCitizen(
-    {}, { context: { expectedSession: session, retry: 0 } },
-  ));
+  const entry = await readV1Entry(apiOrigin(), session.accessToken);
   await assertSession(client, session);
-  if (!identity.onboarding_completed || identity.scopeBootstrap.userId !== identity.id ||
-      identity.availableBonds.some((bond) => bond.user_id !== identity.id) ||
-      !identity.activeBond || identity.scopeBootstrap.activeScope?.bondId !== identity.activeBond.id ||
-      !identity.availableBonds.some((bond) => bond.id === identity.activeBond?.id)) {
+  const active = chooseActiveScope(entry.scopes, selectedBond());
+  if (!entry.onboardingCompleted || !active) {
     throw new Error('Your workspace selection could not be verified. Please try again.');
   }
-  return { identity, session };
+  return {
+    identity: {
+      id: entry.accountId,
+      activeBond: { id: active.bondId },
+      availableBonds: entry.scopes
+        .filter((scope) => scope.admission === 'available')
+        .map((scope) => ({
+          id: scope.bondId,
+          entity_type: scope.entityType,
+          entity_id: scope.entityId,
+          capacity: scope.capacity,
+        })),
+    },
+    session,
+  };
 }
 
 export async function selectWorkspaceScope(
@@ -41,12 +66,14 @@ export async function selectWorkspaceScope(
   bondId: string,
 ) {
   await assertSession(client, session);
-  const identity = IdentityBootstrapSchema.parse(await orpcClient.identity.selectActiveScope(
-    { body: { bondId } }, { context: { expectedSession: session, retry: 0 } },
-  ));
+  const entry = await readV1Entry(apiOrigin(), session.accessToken);
   await assertSession(client, session);
-  if (identity.id !== accountId || identity.scopeBootstrap.userId !== accountId ||
-      identity.activeBond?.id !== bondId || identity.scopeBootstrap.activeScope?.bondId !== bondId) {
+  if (
+    entry.accountId !== accountId ||
+    chooseActiveScope(entry.scopes, bondId)?.bondId !== bondId
+  ) {
     throw new Error('The selected workspace could not be confirmed. Reload to check your workspace.');
   }
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${ACTIVE_BOND_COOKIE}=${bondId}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
 }

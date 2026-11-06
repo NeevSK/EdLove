@@ -16,42 +16,49 @@ function supabaseFor(subjectId = subject) {
   };
 }
 
+const personalBond = '00000000-0000-4000-8000-000000000010';
+const schoolBond = '00000000-0000-4000-8000-000000000011';
+
+function scope(bondId: string, entityType: string, capacity: string) {
+  return {
+    bondId,
+    entityId: `${entityType}-1`,
+    entityType,
+    capacity,
+    citizenship: 'FIRST_CLASS',
+    admission: 'available',
+  };
+}
+
 function identityPayload(overrides: Record<string, unknown> = {}) {
   return {
-    id: accountId,
-    display_name: 'Nadeesha',
-    onboarding_completed: true,
-    activeBond: { capacity: 'principal' },
-    scopeBootstrap: {
-      version: 1,
-      userId: accountId,
-      primaryCapacity: 'teacher',
-      selection: 'selected',
-      activeScope: {
-        bondId: '00000000-0000-4000-8000-000000000010',
-        entityId: 'personal-sanctuary-1',
-        entityType: 'PERSONAL_CLASSROOM',
-        roles: ['teacher'],
-      },
-    },
+    accountId,
+    displayName: 'Nadeesha',
+    onboardingCompleted: true,
+    scopes: [
+      scope(personalBond, 'PERSONAL', 'teacher'),
+      scope(schoolBond, 'SCHOOL', 'principal'),
+    ],
     ...overrides,
   };
 }
 
 function response(body: unknown): Response {
-  return new Response(JSON.stringify(body), { status: 200 });
+  return Response.json({ json: body });
 }
+
+const noSelection = async () => undefined;
 
 describe('resolveAuthorizedEntry', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
-  it('uses only the server-issued selected scope for a ready browser entry', async () => {
+  it('enters the chosen bond, keeping the personal capacity as primary', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
     const fetcher = vi.fn().mockResolvedValue(response(identityPayload()));
 
-    const result = await resolveAuthorizedEntry(supabaseFor(), fetcher);
+    const result = await resolveAuthorizedEntry(supabaseFor(), fetcher, async () => schoolBond);
 
     expect(result).toEqual({
       kind: 'ready',
@@ -62,18 +69,42 @@ describe('resolveAuthorizedEntry', () => {
       primaryCapacity: 'teacher',
       primaryScopeRole: 'teacher',
       activeScope: {
-        bondId: '00000000-0000-4000-8000-000000000010',
-        entityId: 'personal-sanctuary-1',
-        entityType: 'PERSONAL_CLASSROOM',
-        roles: ['teacher'],
+        bondId: schoolBond,
+        entityId: 'SCHOOL-1',
+        entityType: 'SCHOOL',
+        roles: ['principal'],
       },
     });
-    expect(fetcher).toHaveBeenCalledWith('https://sanctuary.example/api/openapi/identity/resolveIdentity', {
-      headers: { Authorization: 'Bearer verified-token' },
-      method: 'GET',
-      cache: 'no-store',
-      redirect: 'error',
-    });
+    const [url, init] = fetcher.mock.calls[0] ?? [];
+    expect(String(url)).toBe('https://sanctuary.example/api/v1/identity/entry');
+    expect(new Headers(init?.headers).get('authorization')).toBe('Bearer verified-token');
+    expect(init).toMatchObject({ cache: 'no-store', redirect: 'error' });
+  });
+
+  it('falls back to the personal bond when the chosen one is not this account\'s', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
+    const result = await resolveAuthorizedEntry(
+      supabaseFor(),
+      vi.fn().mockResolvedValue(response(identityPayload())),
+      async () => '00000000-0000-4000-8000-0000000000ff',
+    );
+    expect(result).toMatchObject({ kind: 'ready', activeScope: { bondId: personalBond } });
+  });
+
+  it('never enters through a bond that is not admitted', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
+    const result = await resolveAuthorizedEntry(
+      supabaseFor(),
+      vi.fn().mockResolvedValue(
+        response(
+          identityPayload({
+            scopes: [{ ...scope(schoolBond, 'SCHOOL', 'principal'), admission: 'denied' }],
+          }),
+        ),
+      ),
+      async () => schoolBond,
+    );
+    expect(result).toEqual({ kind: 'onboarding-required', reason: 'missing-active-scope' });
   });
 
   it('rejects an insecure API origin before session lookup or authenticated fetch', async () => {
@@ -88,20 +119,13 @@ describe('resolveAuthorizedEntry', () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
-  it('does not authorize a legacy activeBond card when scopeBootstrap is absent', async () => {
+  it('requires onboarding for an account with no bonds', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
     const result = await resolveAuthorizedEntry(
       supabaseFor(),
-      vi.fn().mockResolvedValue(
-        response({
-          id: accountId,
-          display_name: 'Nadeesha',
-          onboarding_completed: true,
-          activeBond: { capacity: 'teacher' },
-        }),
-      ),
+      vi.fn().mockResolvedValue(response(identityPayload({ scopes: [] }))),
+      noSelection,
     );
-
     expect(result).toEqual({ kind: 'onboarding-required', reason: 'missing-active-scope' });
   });
 
@@ -110,6 +134,7 @@ describe('resolveAuthorizedEntry', () => {
     const result = await resolveAuthorizedEntry(
       supabaseFor(),
       vi.fn().mockResolvedValue(response(identityPayload())),
+      noSelection,
     );
 
     expect(result).toMatchObject({ kind: 'ready', accountId, authSubjectId: subject });
@@ -119,35 +144,17 @@ describe('resolveAuthorizedEntry', () => {
     'rejects a missing or malformed canonical account ID: %s',
     async (id) => {
       vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
-      const payload = identityPayload({ id });
+      const payload = identityPayload({ accountId: id });
 
       const result = await resolveAuthorizedEntry(
         supabaseFor(),
         vi.fn().mockResolvedValue(response(payload)),
+        noSelection,
       );
 
       expect(result).toMatchObject({ kind: 'unavailable', reason: 'invalid-authoritative-entry' });
     },
   );
-
-  it('rejects a scope bootstrap whose canonical account ID differs from the identity payload', async () => {
-    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
-    const result = await resolveAuthorizedEntry(
-      supabaseFor(),
-      vi.fn().mockResolvedValue(
-        response(
-          identityPayload({
-            scopeBootstrap: {
-              ...identityPayload().scopeBootstrap,
-              userId: subject,
-            },
-          }),
-        ),
-      ),
-    );
-
-    expect(result).toMatchObject({ kind: 'unavailable', reason: 'invalid-authoritative-entry' });
-  });
 
   it('does not forward a bearer token when verified claims and provider session differ', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
@@ -158,7 +165,7 @@ describe('resolveAuthorizedEntry', () => {
     });
     const fetcher = vi.fn();
 
-    const result = await resolveAuthorizedEntry(supabase, fetcher);
+    const result = await resolveAuthorizedEntry(supabase, fetcher, noSelection);
 
     expect(result).toMatchObject({ kind: 'unavailable', reason: 'profile-unavailable' });
     expect(fetcher).not.toHaveBeenCalled();
@@ -172,7 +179,7 @@ describe('resolveAuthorizedEntry', () => {
       .mockResolvedValueOnce({ data: { claims: { sub: accountId } }, error: null });
     const fetcher = vi.fn().mockResolvedValue(response(identityPayload()));
 
-    const result = await resolveAuthorizedEntry(supabase, fetcher);
+    const result = await resolveAuthorizedEntry(supabase, fetcher, noSelection);
 
     expect(result).toMatchObject({ kind: 'unavailable', reason: 'profile-unavailable' });
   });
@@ -191,7 +198,7 @@ describe('resolveAuthorizedEntry', () => {
       });
     const fetcher = vi.fn().mockResolvedValue(response(identityPayload()));
 
-    const result = await resolveAuthorizedEntry(supabase, fetcher);
+    const result = await resolveAuthorizedEntry(supabase, fetcher, noSelection);
 
     expect(result).toMatchObject({ kind: 'unavailable', reason: 'profile-unavailable' });
   });
@@ -201,10 +208,12 @@ describe('resolveAuthorizedEntry', () => {
     const unavailable = await resolveAuthorizedEntry(
       supabaseFor(),
       vi.fn().mockRejectedValue(new Error('network unavailable')),
+      noSelection,
     );
     const unauthorized = await resolveAuthorizedEntry(
       supabaseFor(),
       vi.fn().mockResolvedValue(new Response(null, { status: 401 })),
+      noSelection,
     );
 
     expect(unavailable).toMatchObject({ kind: 'unavailable', reason: 'profile-unavailable' });

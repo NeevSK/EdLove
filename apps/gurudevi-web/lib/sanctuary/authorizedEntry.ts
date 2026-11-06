@@ -5,42 +5,15 @@ import {
 } from '@repo/core/web-authorized-entry';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import type { ServerSupabaseClient } from '../supabase/server';
+import {
+  ACTIVE_BOND_COOKIE,
+  chooseActiveScope,
+  personalCapacity,
+  readV1Entry,
+  type V1Entry,
+} from './v1Entry';
 
 export type AuthorizedEntry = AuthorizedEntryResult | Readonly<{ kind: 'signed-out' }>;
-
-type IdentityPayload = Readonly<{
-  activeBond?: unknown;
-  display_name?: unknown;
-  id?: unknown;
-  name?: unknown;
-  onboarding_completed?: unknown;
-  scopeBootstrap?: unknown;
-}>;
-
-type ScopeBootstrapPayload = Readonly<{
-  userId?: unknown;
-  primaryCapacity?: unknown;
-  selection?: unknown;
-  activeScope?: unknown;
-}>;
-
-type ActiveScopePayload = Readonly<{
-  bondId?: unknown;
-  entityId?: unknown;
-  entityType?: unknown;
-  roles?: unknown;
-}>;
-
-type BrowserActiveScope = Readonly<{
-  bondId: string;
-  entityId: string;
-  entityType: string;
-  roles: readonly string[];
-}>;
-
-function isIdentityPayload(value: unknown): value is IdentityPayload {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-}
 
 function apiOrigin(): string | null {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim();
@@ -53,82 +26,34 @@ function unavailable(message: string): AuthorizedEntryResult {
   return { kind: 'unavailable', reason: 'profile-unavailable', message };
 }
 
-function displayName(payload: IdentityPayload): string | null {
-  if (typeof payload.display_name === 'string' && payload.display_name.trim())
-    return payload.display_name;
-  if (typeof payload.name === 'string' && payload.name.trim()) return payload.name;
-  return null;
-}
-
-function activeScope(payload: IdentityPayload): BrowserActiveScope | null {
-  const bootstrap = payload.scopeBootstrap;
-  if (!bootstrap || typeof bootstrap !== 'object' || Array.isArray(bootstrap)) return null;
-  const candidate = bootstrap as ScopeBootstrapPayload;
-  if (candidate.selection !== 'selected') return null;
-  const scope = candidate.activeScope;
-  if (!scope || typeof scope !== 'object' || Array.isArray(scope)) return null;
-  const active = scope as ActiveScopePayload;
-  if (
-    typeof active.bondId !== 'string' ||
-    typeof active.entityId !== 'string' ||
-    typeof active.entityType !== 'string' ||
-    !Array.isArray(active.roles) ||
-    active.roles.length === 0 ||
-    active.roles.some((role) => typeof role !== 'string' || !role.trim())
-  ) {
-    return null;
-  }
-  return {
-    bondId: active.bondId,
-    entityId: active.entityId,
-    entityType: active.entityType,
-    roles: active.roles,
-  };
-}
-
-function selectedBondCapacity(payload: IdentityPayload): string | null {
-  const bond = payload.activeBond;
-  if (!bond || typeof bond !== 'object' || Array.isArray(bond)) return null;
-  const capacity = Reflect.get(bond, 'capacity');
-  return typeof capacity === 'string' && capacity.trim() ? capacity : null;
+async function selectedBondFromCookies(): Promise<string | undefined> {
+  const { cookies } = await import('next/headers');
+  return (await cookies()).get(ACTIVE_BOND_COOKIE)?.value;
 }
 
 function authoritativeFacts(
-  payload: IdentityPayload,
+  entry: V1Entry,
   subject: string,
+  selectedBondId: string | undefined,
 ): AuthoritativeAuthorizedEntryFacts {
-  if (typeof payload.onboarding_completed !== 'boolean') {
-    return {
-      kind: 'unavailable',
-      message: 'The authoritative sanctuary response was incomplete.',
-    };
-  }
-
+  const active = chooseActiveScope(entry.scopes, selectedBondId);
+  const primary = personalCapacity(entry.scopes) ?? active?.capacity ?? null;
   return {
     kind: 'active',
-    accountId: typeof payload.id === 'string' ? payload.id : '',
+    accountId: entry.accountId,
     authSubjectId: subject,
-    displayName: displayName(payload),
-    onboardingCompleted: payload.onboarding_completed,
-    activeCapacity: selectedBondCapacity(payload),
-    primaryCapacity: onboardingPrimaryCapacity(payload),
-    primaryScopeRole: onboardingPrimaryCapacity(payload),
-    activeScope: activeScope(payload),
+    displayName: entry.displayName,
+    onboardingCompleted: entry.onboardingCompleted,
+    activeCapacity: active?.capacity ?? null,
+    primaryCapacity: primary,
+    primaryScopeRole: primary,
+    activeScope: active && {
+      bondId: active.bondId,
+      entityId: active.entityId,
+      entityType: active.entityType,
+      roles: [active.capacity],
+    },
   };
-}
-
-function onboardingPrimaryCapacity(payload: IdentityPayload): string | null {
-  const bootstrap = payload.scopeBootstrap;
-  if (!bootstrap || typeof bootstrap !== 'object' || Array.isArray(bootstrap)) return null;
-  const capacity = (bootstrap as ScopeBootstrapPayload).primaryCapacity;
-  return typeof capacity === 'string' && capacity.trim() ? capacity : null;
-}
-
-function hasCanonicalAccountConsistency(payload: IdentityPayload): boolean {
-  if (typeof payload.id !== 'string') return false;
-  const bootstrap = payload.scopeBootstrap;
-  if (!bootstrap || typeof bootstrap !== 'object' || Array.isArray(bootstrap)) return true;
-  return (bootstrap as ScopeBootstrapPayload).userId === payload.id;
 }
 
 /**
@@ -139,6 +64,7 @@ function hasCanonicalAccountConsistency(payload: IdentityPayload): boolean {
 export async function resolveAuthorizedEntry(
   supabase: ServerSupabaseClient,
   fetcher: typeof fetch = fetch,
+  selectedBond: () => Promise<string | undefined> = selectedBondFromCookies,
 ): Promise<AuthorizedEntry> {
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   const subject = claimsData?.claims?.sub;
@@ -162,27 +88,7 @@ export async function resolveAuthorizedEntry(
   }
 
   try {
-    const response = await fetcher(`${origin}/api/openapi/identity/resolveIdentity`, {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-      method: 'GET',
-      cache: 'no-store',
-      redirect: 'error',
-    });
-
-    if (!response.ok)
-      return unavailable('The authoritative sanctuary service is unavailable. Please try again.');
-
-    const payload: unknown = await response.json();
-    if (!isIdentityPayload(payload))
-      return unavailable('The authoritative sanctuary service returned an invalid response.');
-
-    if (!hasCanonicalAccountConsistency(payload)) {
-      return {
-        kind: 'unavailable',
-        reason: 'invalid-authoritative-entry',
-        message: 'The authoritative sanctuary response contained inconsistent account identity.',
-      };
-    }
+    const entry = await readV1Entry(origin, session.access_token, fetcher);
 
     const [currentClaims, currentSession] = await Promise.all([
       supabase.auth.getClaims(),
@@ -199,7 +105,7 @@ export async function resolveAuthorizedEntry(
       );
     }
 
-    return mapAuthorizedEntry(authoritativeFacts(payload, subject));
+    return mapAuthorizedEntry(authoritativeFacts(entry, subject, await selectedBond()));
   } catch {
     return unavailable('We could not reach the authoritative sanctuary service. Please try again.');
   }
