@@ -20,27 +20,27 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"apps_edlove-web-clean\""
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.11",
+    "@astrojs/check": "^0.9.12",
     "@astrojs/sitemap": "^3.7.4",
-    "@astrojs/starlight": "^0.42.6",
-    "@astrojs/svelte": "^9.1.0",
+    "@astrojs/starlight": "^0.42.9",
+    "@astrojs/svelte": "^9.1.2",
     "@intuitui-labs/a11y-gate": "^0.2.0",
     "@repo/editorial": "workspace:*",
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/three": "^0.185.4",
-    "astro": "^7.4.1",
-    "pagefind": "^1.5.2",
-    "svelte": "^5.57.2",
-    "tailwindcss": "4.3.3",
-    "three": "^0.185.1",
+    "@tailwindcss/vite": "^4.3.4",
+    "@types/three": "^0.187.0",
+    "astro": "^7.4.5",
+    "pagefind": "^1.6.0",
+    "svelte": "^5.57.3",
+    "tailwindcss": "4.3.4",
+    "three": "^0.187.0",
     "typescript": "7.1.0-beta"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^10.13.0",
+    "eslint": "^10.14.0",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.0.5"
+    "vitest": "5.1.0"
   },
   "_originalScripts": {
     "dev": "pnpm exec astro dev",

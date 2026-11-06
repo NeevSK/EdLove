@@ -1,6 +1,7 @@
 {
   "name": "@repo/verger-react-native",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "description": "Verger's React Native shell: VergerRoot runs and binds verger, feeds app state, touches, reduced motion and long tasks, and applies the global reduced-motion lever.",
   "main": "src/index.ts",
@@ -24,7 +25,7 @@
   },
   "peerDependencies": {
     "react": "19.3.1",
-    "react-native": "0.88.0",
+    "react-native": "0.88.1",
     "react-native-reanimated": "4.7.1"
   },
   "devDependencies": {

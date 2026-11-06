@@ -1,6 +1,7 @@
 {
   "name": "@repo/classroom",
   "version": "1.5.0",
+  "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -9,60 +10,10 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./overview": {
-      "types": "./src/entrypoints/overview.ts",
-      "import": "./src/entrypoints/overview.ts",
-      "default": "./src/entrypoints/overview.ts"
-    },
-    "./teacher": {
-      "types": "./src/entrypoints/teacher.ts",
-      "import": "./src/entrypoints/teacher.ts",
-      "default": "./src/entrypoints/teacher.ts"
-    },
-    "./student": {
-      "types": "./src/entrypoints/student.ts",
-      "import": "./src/entrypoints/student.ts",
-      "default": "./src/entrypoints/student.ts"
-    },
-    "./attendance": {
-      "types": "./src/entrypoints/attendance.ts",
-      "import": "./src/entrypoints/attendance.ts",
-      "default": "./src/entrypoints/attendance.ts"
-    },
-    "./planBridge": {
-      "types": "./src/planBridge/index.ts",
-      "import": "./src/planBridge/index.ts",
-      "default": "./src/planBridge/index.ts"
-    },
-    "./gradebook": {
-      "types": "./src/entrypoints/gradebook.ts",
-      "import": "./src/entrypoints/gradebook.ts",
-      "default": "./src/entrypoints/gradebook.ts"
-    },
-    "./content": {
-      "types": "./src/entrypoints/content.ts",
-      "import": "./src/entrypoints/content.ts",
-      "default": "./src/entrypoints/content.ts"
-    },
-    "./api": {
-      "types": "./src/entrypoints/api.ts",
-      "import": "./src/entrypoints/api.ts",
-      "default": "./src/entrypoints/api.ts"
-    },
-    "./machines/studentClaimMachine": {
-      "types": "./src/machines/studentClaimMachine.ts",
-      "import": "./src/machines/studentClaimMachine.ts",
-      "default": "./src/machines/studentClaimMachine.ts"
-    },
     "./machines/*": {
       "types": "./src/machines/*.ts",
       "import": "./src/machines/*.ts",
       "default": "./src/machines/*.ts"
-    },
-    "./*": {
-      "types": "./src/*.ts",
-      "import": "./src/*.js",
-      "default": "./src/*.js"
     },
     "./package.json": "./package.json"
   },
@@ -91,13 +42,13 @@
     "@repo/scanner-kit": "workspace:*",
     "@repo/self": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.104.5",
+    "@tanstack/react-query": "^5.106.1",
     "date-fns": "^4.4.0",
+    "effect": "^4.1.2",
     "expo-clipboard": "~58.0.4",
     "expo-image-picker": "~58.0.10",
-    "expo-router": "~58.0.25",
-    "react-i18next": "^17.1.0",
-    "effect": "^4.0.5",
+    "expo-router": "~58.0.30",
+    "react-i18next": "^17.1.12",
     "xstate": "6.0.0-alpha.70",
     "zod": "4.6.7"
   },
@@ -105,19 +56,19 @@
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "eslint": "^10.13.0",
-    "tailwindcss": "4.3.3",
+    "eslint": "^10.14.0",
+    "tailwindcss": "4.3.4",
     "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.0.5"
+    "vitest": "5.1.0"
   },
   "peerDependencies": {
-    "expo-observe": "~58.0.16",
+    "expo-observe": "~58.0.18",
     "react": "19.3.1",
-    "react-i18next": "^17.1.0",
-    "react-native": "0.88.0",
+    "react-i18next": "^17.1.12",
+    "react-native": "0.88.1",
     "react-native-reanimated": "4.7.1",
-    "react-native-skia": "^3.7.0"
+    "react-native-skia": "^3.9.1"
   },
   "_originalScripts": {
     "check-types": "pnpm exec tsc --build --noEmit",

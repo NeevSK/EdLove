@@ -261,7 +261,8 @@ console.log(`⚖️  COMBINED COMPARATIVE ANALYSIS (Native vs Monorepo Web/API)`
 console.log(`========================================================================`);
 console.log(`🛡️  Sacred Native Pins Shield : ${sacredPinsMap.size}/${sacredPinsMap.size} Pins 100% Protected`);
 console.log(`📱 Expo SDK 58 Deterministic : ${expoPassed ? '✅ Deterministic & Aligned' : '⚠️ Monorepo symlink duplicates reported'}`);
-console.log(`🌐 Monorepo Modernity Floor   : Node 24.21.0 LTS | pnpm 12.10.1 | TS 7.0.2 | Biome 2.5.15`);
+const rootManifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+console.log(`🌐 Monorepo Modernity Floor   : Node ${process.version} | ${rootManifest.packageManager} | see scripts/lib/dependency-cohorts.mjs`);
 console.log(`📊 Pending Lifecycle Bumps   : ${majors.size} Major Architectural | ${minors.size} Safe Minor | ${patches.size} Patch`);
 console.log(`========================================================================\n`);
 

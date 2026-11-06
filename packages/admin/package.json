@@ -1,6 +1,7 @@
 {
   "name": "@repo/admin",
   "version": "1.5.0",
+  "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -53,31 +54,6 @@
       "types": "./src/screens/guardian/GuardianCommunicationBridgeScreen.tsx",
       "import": "./src/screens/guardian/GuardianCommunicationBridgeScreen.tsx",
       "default": "./src/screens/guardian/GuardianCommunicationBridgeScreen.tsx"
-    },
-    "./screens/GuardianDashboard": {
-      "types": "./src/screens/GuardianDashboard.tsx",
-      "import": "./src/screens/GuardianDashboard.tsx",
-      "default": "./src/screens/GuardianDashboard.tsx"
-    },
-    "./screens/GuardianEventsScreen": {
-      "types": "./src/screens/guardian/GuardianEventsScreen.tsx",
-      "import": "./src/screens/guardian/GuardianEventsScreen.tsx",
-      "default": "./src/screens/guardian/GuardianEventsScreen.tsx"
-    },
-    "./screens/GuardianNotificationsScreen": {
-      "types": "./src/screens/guardian/GuardianNotificationsScreen.tsx",
-      "import": "./src/screens/guardian/GuardianNotificationsScreen.tsx",
-      "default": "./src/screens/guardian/GuardianNotificationsScreen.tsx"
-    },
-    "./screens/GuardianStudentDetailScreen": {
-      "types": "./src/screens/guardian/GuardianStudentDetailScreen.tsx",
-      "import": "./src/screens/guardian/GuardianStudentDetailScreen.tsx",
-      "default": "./src/screens/guardian/GuardianStudentDetailScreen.tsx"
-    },
-    "./screens/GuardianStudentsScreen": {
-      "types": "./src/screens/guardian/GuardianStudentsScreen.tsx",
-      "import": "./src/screens/guardian/GuardianStudentsScreen.tsx",
-      "default": "./src/screens/guardian/GuardianStudentsScreen.tsx"
     },
     "./screens/PrincipalDashboard": {
       "types": "./src/screens/PrincipalDashboard.tsx",
@@ -150,32 +126,31 @@
     "@repo/scanner-kit": "workspace:*",
     "@repo/self": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.104.5",
+    "@tanstack/react-query": "^5.106.1",
     "date-fns": "^4.4.0",
-    "effect": "^4.0.5",
+    "effect": "^4.1.2",
     "expo-clipboard": "~58.0.4",
-    "expo-router": "~58.0.25",
-    "react-i18next": "^17.1.0",
+    "expo-router": "~58.0.30",
+    "react-i18next": "^17.1.12",
     "xstate": "6.0.0-alpha.70",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@jest/globals": "^30.5.2",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@testing-library/react-native": "14.0.1",
+    "@testing-library/react-native": "14.1.0",
     "@types/react": "^19.3.0",
-    "@types/react-test-renderer": "19.1.0",
-    "eslint": "^10.13.0",
+    "@types/react-test-renderer": "19.3.1",
+    "eslint": "^10.14.0",
     "react-test-renderer": "19.3.1",
     "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.0.5",
-    "vitest-native": "^0.13.0"
+    "vitest": "5.1.0",
+    "vitest-native": "^0.14.1"
   },
   "peerDependencies": {
     "react": "19.3.1",
-    "react-native": "0.88.0",
+    "react-native": "0.88.1",
     "react-native-reanimated": "4.7.1"
   },
   "_originalScripts": {

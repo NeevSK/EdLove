@@ -1,6 +1,7 @@
 {
   "name": "@repo/verger-react",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "description": "Verger's React bindings, for any React platform: hooks over the process's verger (no provider) and the long-task observer.",
   "main": "src/index.ts",

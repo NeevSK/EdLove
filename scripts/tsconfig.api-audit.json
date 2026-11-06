@@ -1,0 +1,19 @@
+{
+  "extends": ["../packages/typescript-config/base.json", "../tsconfig.json"],
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "files": [
+    "audit-api-contracts.ts",
+    "../packages/core/src/api/__tests__/contractInspection.test.ts"
+  ],
+  "include": [],
+  "references": []
+}

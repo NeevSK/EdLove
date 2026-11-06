@@ -24,7 +24,7 @@
  *   node scripts/check-ui-boundaries.mjs --update  # record lower counts after a migration
  */
 
-import { execFileSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, posix, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -143,6 +143,12 @@ for (const file of files) {
       if (!KIT_EXCEPTIONS.has(key)) violations.push(`${where}: kit imports legacy UI`);
     }
     if (!from && !inLegacy && isLegacy(target)) legacyImports++;
+
+    // Playground boundary rule: components/workbench is developer prototyping playground.
+    // Production sanctuary screens must never import from components/workbench directly.
+    if (spec.includes('components/workbench') && !file.includes('components/workbench') && !file.includes('/kit/')) {
+      violations.push(`${where}: production surface imports from components/workbench playground. Promote approved components to @repo/ui/components/web or app/(sanctuary)/components.`);
+    }
   }
 }
 
@@ -163,10 +169,14 @@ if (!baseline || update) {
     console.error(`Refusing to raise the baseline: ${raised.map(([k, v]) => `${k} ${v} > ${baseline[k]}`).join(', ')}.`);
     process.exit(1);
   }
-  writeFileSync(
-    RATCHET,
-    `${JSON.stringify({ ...counts, note: 'Imports of legacy UI from outside it, and *.web.tsx files. May only go down. node scripts/check-ui-boundaries.mjs --update' }, null, 2)}\n`,
-  );
+  const outJson = `${JSON.stringify({ ...counts, note: 'Imports of legacy UI from outside it, and *.web.tsx files. May only go down. node scripts/check-ui-boundaries.mjs --update' }, null, 2)}\n`;
+  try {
+    writeFileSync(RATCHET, outJson);
+  } catch {
+    const tmp = `${RATCHET}.tmp`;
+    writeFileSync(tmp, outJson);
+    execSync(`cmd.exe /c move /y "${tmp}" "${RATCHET}"`);
+  }
   console.log(`Recorded UI legacy baseline: ${legacyImports} legacy imports, ${webTsxFiles} *.web.tsx files.`);
 } else {
   const up = Object.entries(counts).filter(([k, v]) => v > baseline[k]);

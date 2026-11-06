@@ -6,6 +6,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
+    "cedar:mcp-schema": "tsx src/cli/cedarMcpSchema.ts",
     "build": "node ../../scripts/run-and-report.mjs --cmd \"tsc\" --name \"packages_platform-mcp-build\"",
     "watch": "node ../../scripts/run-and-report.mjs --cmd \"tsc -w\" --name \"packages_platform-mcp-watch\"",
     "start": "node ../../scripts/run-and-report.mjs --cmd \"node dist/index.js\" --name \"packages_platform-mcp-start\"",
@@ -21,24 +22,25 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_platform-mcp-clean\""
   },
   "dependencies": {
-    "@modelcontextprotocol/client": "^2.3.1",
-    "@modelcontextprotocol/core": "^2.3.1",
-    "@modelcontextprotocol/server": "^2.3.1",
+    "@cedar-policy/mcp-schema-generator-wasm": "0.7.0",
+    "@modelcontextprotocol/client": "^2.4.0",
+    "@modelcontextprotocol/core": "^2.4.0",
+    "@modelcontextprotocol/server": "^2.4.0",
     "@modelcontextprotocol/server-sequential-thinking": "2025.12.18",
-    "@swmansion/argent": "^0.31.0",
-    "agent-device": "^0.21.33",
-    "dotenv": "^17.4.2",
+    "@swmansion/argent": "^0.32.0",
+    "agent-device": "^0.21.36",
+    "dotenv": "^18.0.9",
     "zod": "4.6.7"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^26.6.5",
-    "eslint": "^10.13.0",
-    "mcp-remote": "^0.15.2",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
+    "mcp-remote": "^0.16.0",
     "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.0.5"
+    "vitest": "5.1.0"
   },
   "_originalScripts": {
     "build": "tsc",

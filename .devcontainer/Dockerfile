@@ -1,9 +1,9 @@
 # .devcontainer/Dockerfile
-# Base image with Node.js 24, pnpm 12.15.0, and development tools
+# Base image with Node.js 24, pnpm 12.16.1, and development tools
 # Optimized for Polymath Platform (Expo 57, React Native 0.86, Android SDK)
 
 ARG NODE_VERSION=24
-ARG PNPM_VERSION=12.15.0
+ARG PNPM_VERSION=12.16.1
 
 FROM node:${NODE_VERSION}-bookworm-slim AS base
 

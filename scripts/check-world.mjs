@@ -22,6 +22,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -138,10 +139,14 @@ if (!baseline || update) {
     console.error(`Refusing to raise the baseline: ${hexCount} > ${baseline.rawHex}.`);
     process.exit(1);
   }
-  writeFileSync(
-    RATCHET,
-    `${JSON.stringify({ rawHex: hexCount, note: 'Raw hex colours outside dressed files. May only go down. node scripts/check-world.mjs --update' }, null, 2)}\n`,
-  );
+  const outJson = `${JSON.stringify({ rawHex: hexCount, note: 'Raw hex colours outside dressed files. May only go down. node scripts/check-world.mjs --update' }, null, 2)}\n`;
+  try {
+    writeFileSync(RATCHET, outJson);
+  } catch {
+    const tmp = `${RATCHET}.tmp`;
+    writeFileSync(tmp, outJson);
+    execSync(`cmd.exe /c move /y "${tmp}" "${RATCHET}"`);
+  }
   console.log(`Recorded raw hex baseline: ${hexCount}.`);
 } else if (hexCount > baseline.rawHex) {
   failed = true;

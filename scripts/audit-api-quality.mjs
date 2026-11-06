@@ -16,7 +16,7 @@ const checks = [
   ['composition', process.execPath, ['scripts/audit-api-composition.mjs']],
   ['error taxonomy', process.execPath, ['scripts/audit-api-errors.mjs']],
   ['authorization parity', process.execPath, ['scripts/check-authorization-parity.mjs']],
-  ['data boundaries', process.execPath, ['scripts/audit-data-boundaries.mjs']],
+  ['data boundaries', process.execPath, ['scripts/audit-data-boundaries.mjs', '--stdout']],
   [
     'typed contracts',
     // pnpm.exe is available in the managed toolchain on Windows; using the
@@ -30,6 +30,7 @@ const checks = [
       '--tsconfig',
       '../../tsconfig.json',
       '../../scripts/audit-api-contracts.ts',
+      '--stdout',
     ],
   ],
 ];
@@ -39,6 +40,9 @@ for (const [name, command, args] of checks) {
   console.log(`\n[api-quality] ${name}`);
   const result = spawnSync(command, args, { cwd: root, stdio: 'inherit', env: process.env });
   if (result.error || result.status !== 0) {
+    if (result.error)
+      console.error(`[api-quality] ${name} could not start: ${result.error.message}`);
+    else if (result.signal) console.error(`[api-quality] ${name} terminated by ${result.signal}`);
     failures.push(name);
   }
 }
@@ -49,5 +53,5 @@ if (failures.length) {
 }
 
 console.log(
-  '\nAPI quality gate passed: composition, errors, authorization, boundaries, and contracts.',
+  '\nAPI source quality checks passed: composition, errors, authorization vocabulary, boundaries, and declarations. Runtime behavior remains unverified.',
 );

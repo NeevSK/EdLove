@@ -16,6 +16,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { DEPENDENCY_COHORTS } from './lib/dependency-cohorts.mjs';
 
 const repoRoot = process.cwd();
 const docsDir = path.join(repoRoot, 'docs', 'stack-map', 'landscape');
@@ -667,7 +668,8 @@ function renderDependencyCatalog(workspace) {
   const tools = ann.global_tools ?? {};
 
   const deps = collectExternalDeps(workspace);
-  const sacred = deps.filter((d) => entries[d.name]?.sacred);
+  const sacredPins = DEPENDENCY_COHORTS.SACRED_NATIVE.packages;
+  const sacred = deps.filter((d) => sacredPins[d.name]);
   const drift = deps.filter((d) => d.drift);
 
   const categories = new Map();
@@ -709,7 +711,7 @@ function renderDependencyCatalog(workspace) {
   for (const d of sacred) {
     const e = entries[d.name];
     rows.push(
-      `| ${escMd(d.name)} | \`${escMd(e.sacred)}\` | ${escMd(e.notes ?? e.purpose ?? 'new-arch compatibility')} |`,
+      `| ${escMd(d.name)} | \`${escMd(sacredPins[d.name])}\` | ${escMd(e?.notes ?? e?.purpose ?? 'new-arch compatibility')} |`,
     );
   }
   rows.push('');
@@ -766,7 +768,7 @@ function renderDependencyCatalog(workspace) {
   rows.push('');
   rows.push('- Every workspace package.json dependency lands here automatically on regenerate.');
   rows.push(
-    '- Curate purpose/category/notes/sacred in `dependency-annotations.yaml`, never the generated file.',
+    '- Curate purpose/category/notes in `dependency-annotations.yaml`, never the generated file.',
   );
   rows.push('- After adding a dep: `pnpm run stack-map:deps` to refresh.');
   return rows.join('\n') + '\n';

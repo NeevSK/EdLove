@@ -29,7 +29,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 | [@repo/verger-react-native](../stack-map.md#repoverger-react-native) | domain | Verger's React Native shell: VergerRoot runs and binds verger, feeds app state, touches, reduced motion and long tasks, and applies the global reduced-motion lever. |
 | [@repo/workforce](../stack-map.md#repoworkforce) | domain | Future non-academic & job-structure domain — school-wide operations beyond classrooms. |
 
-## External deps (183 direct)
+## External deps (182 direct)
 
 ```text
 @azure/core-asynciterator-polyfill
@@ -66,9 +66,11 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @stripe/stripe-react-native
 @supabase/postgrest-js
 @supabase/supabase-js
-@swmansion/react-native-bottom-sheet
 @tanstack/react-pacer
 @tanstack/react-query
+@tanstack/react-store
+@tanstack/react-table
+@tanstack/table-core
 @ts-rest/core
 @types/qrcode
 @zenstackhq/orm
@@ -154,7 +156,6 @@ fast-deep-equal
 hoist-non-react-statics
 i18next
 ieee754
-inline-style-prefixer
 invariant
 isomorphic-webcrypto
 jpeg-js
@@ -189,7 +190,6 @@ react-native-nano-icons
 react-native-nitro-google-signin
 react-native-nitro-modules
 react-native-nitro-theme-transition
-react-native-pager-view
 react-native-reanimated
 react-native-reanimated-carousel
 react-native-reanimated-skeleton
@@ -211,30 +211,27 @@ tailwindcss
 use-latest-callback
 use-sync-external-store
 uuid
-victory-native
 xstate
 zod
 zustand
 ```
 
-## Dev tooling (38)
+## Dev tooling (35)
 
 ```text
 @babel/runtime
 @babel/traverse
 @expo/agent-cli
 @playwright/test
+@react-native/metro-config
 @repo/eslint-config
 @repo/types-shim
 @repo/typescript-config
 @rozenite/performance-monitor-plugin
 @sentry/cli
 @tailwindcss/postcss
-@testing-library/jest-dom
-@testing-library/jest-native
 @testing-library/react
 @testing-library/react-native
-@types/jest
 @types/react
 @types/react-test-renderer
 babel-preset-expo
@@ -246,8 +243,6 @@ eslint-plugin-react-compiler
 eslint-plugin-react-native-a11y
 expo-doctor
 globals
-jest-cucumber
-jest-expo
 lightningcss-linux-x64-gnu
 playwright
 postcss
@@ -258,6 +253,7 @@ reassure
 supabase
 typescript
 vitest
+vitest-native
 ```
 
 ## Coupling notes

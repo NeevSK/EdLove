@@ -16,7 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync, spawnSync } from 'node:child_process';
-import { getCohortLookup, getWaiver } from './lib/dependency-cohorts.mjs';
+import { DEPENDENCY_COHORTS, getCohortLookup, getWaiver } from './lib/dependency-cohorts.mjs';
 import { classifyDependencyReachability } from './lib/reachability.mjs';
 
 const ROOT_DIR = process.cwd();
@@ -99,15 +99,7 @@ function parseSemver(v) {
   };
 }
 
-const SACRED_PINS = {
-  'react-native-gesture-handler': '3.3.0',
-  'react-native-reanimated': '4.7.1',
-  'react-native-worklets': '0.13.0',
-  'react-native-mmkv': '4.3.2',
-  'react-native-nitro-modules': '0.37.1',
-  'react-native-skia': '^3.3.0',
-  'typescript': '7.0.2',
-};
+const SACRED_PINS = DEPENDENCY_COHORTS.SACRED_NATIVE.packages;
 
 function cleanPackageName(rawKey) {
   let name = rawKey.replace(/\s*\([^)]*\)$/, '').trim();

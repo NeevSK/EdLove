@@ -23,7 +23,7 @@
         "typescript"
       ],
       "packages": ["**"],
-      "label": "Sacred Native Architecture (AGENTS.md Rule 2)"
+      "label": "Sacred Native Architecture (AGENTS.md Section 2)"
     },
     {
       "dependencies": [

@@ -2,7 +2,7 @@
 # Update this file (or agents add entries), then regenerate.
 
 metadata:
-  updated: 2026-10-27
+  updated: 2026-10-31
   convention: "1) bootstrap drafts new entries  2) curate summary/layer/floating  3) pnpm run stack-map"
 
 package_entries:
@@ -82,9 +82,9 @@ package_entries:
     floating: undecided
   @repo/sanctuary-api:
     layer: "app (api)"
-    summary: "Gurudevi backend — Hono + @orpc contracts, OpenTelemetry, AI SDK providers, repeated authorization."
+    summary: "Gurudevi API foundation — native oRPC v2, Hono, canonical identity, Cedar and durable PostgreSQL operations; business router empty."
     floating: "endpoint of web/mobile"
-    upgrade_notes: "keeps tRPC-style contracts in @orpc/contract."
+    upgrade_notes: "Native @orpc/contract is the first-party authority; no compatibility converter or alternate transport."
   @repo/scanner-kit:
     layer: domain
     summary: "Scanning, QR, OCR & code-based capture features reusable across platform surfaces."
@@ -159,8 +159,8 @@ overlap_verdicts:
 
 usecase_notes:
   @repo/sanctuary-api:
-    summary: "Gurudevi backend API — Hono, @orpc, OpenTelemetry, AI SDK, Cedar authorization."
-    coupling: "Binds core (contracts) + database (ZenStack) + policies (Cedar). Web/mobile talk to it; keep contracts in @repo/core."
+    summary: "Empty canonical API with verified horizontal Hono/oRPC, Cedar, identity and durable-operation seams."
+    coupling: "Binds core contracts + policies + pg for SQL-owned controls. ZenStack remains the domain ORM authority; client/business rebuild is deferred."
   apps-edlove-web:
     summary: "edlove.org — public face of the EdLove ecosystem."
     coupling: "Editorial-site class: only config deps by design. Zero domain coupling."

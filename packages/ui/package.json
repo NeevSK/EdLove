@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "@repo/ui",
   "version": "1.5.0",
+  "type": "module",
   "main": "src/index.ts",
   "license": "MIT",
   "sideEffects": false,
@@ -50,19 +51,19 @@
       "default": "./src/utils/*.ts"
     },
     "./hooks/*": {
-      "types": "./src/hooks/*.ts",
-      "import": "./src/hooks/*.ts",
-      "default": "./src/hooks/*.ts"
+      "types": "./src/hooks/*",
+      "import": "./src/hooks/*",
+      "default": "./src/hooks/*"
     },
     "./context/*": {
-      "types": "./src/context/*.ts",
-      "import": "./src/context/*.ts",
-      "default": "./src/context/*.ts"
+      "types": "./src/context/*",
+      "import": "./src/context/*",
+      "default": "./src/context/*"
     },
     "./providers/*": {
-      "types": "./src/providers/*.tsx",
-      "import": "./src/providers/*.tsx",
-      "default": "./src/providers/*.tsx"
+      "types": "./src/providers/*",
+      "import": "./src/providers/*",
+      "default": "./src/providers/*"
     },
     "./theme": {
       "types": "./src/theme/index.ts",
@@ -199,11 +200,6 @@
       "import": "./src/components/ConversationSheet.tsx",
       "default": "./src/components/ConversationSheet.tsx"
     },
-    "./components/DailyResonanceCard": {
-      "types": "./src/components/DailyResonanceCard.tsx",
-      "import": "./src/components/DailyResonanceCard.tsx",
-      "default": "./src/components/DailyResonanceCard.tsx"
-    },
     "./components/DeleteAccountModal": {
       "types": "./src/components/DeleteAccountModal.tsx",
       "import": "./src/components/DeleteAccountModal.tsx",
@@ -264,11 +260,6 @@
       "types": "./src/components/FounderGlow.tsx",
       "import": "./src/components/FounderGlow.tsx",
       "default": "./src/components/FounderGlow.tsx"
-    },
-    "./components/GlassCard": {
-      "types": "./src/components/GlassCard.tsx",
-      "import": "./src/components/GlassCard.tsx",
-      "default": "./src/components/GlassCard.tsx"
     },
     "./components/GlobalHeader": {
       "types": "./src/components/GlobalHeader.tsx",
@@ -757,11 +748,6 @@
       "import": "./src/context/index.ts",
       "default": "./src/context/index.ts"
     },
-    "./context/*": {
-      "types": "./src/context/*",
-      "import": "./src/context/*",
-      "default": "./src/context/*"
-    },
     "./context/FABContext": {
       "types": "./src/context/FABContext.tsx",
       "import": "./src/context/FABContext.tsx",
@@ -782,11 +768,6 @@
       "import": "./src/hooks/index.ts",
       "default": "./src/hooks/index.ts"
     },
-    "./hooks/*": {
-      "types": "./src/hooks/*",
-      "import": "./src/hooks/*",
-      "default": "./src/hooks/*"
-    },
     "./native": {
       "types": "./src/components-native/index.ts",
       "import": "./src/components-native/index.ts",
@@ -797,11 +778,6 @@
       "types": "./src/providers/index.ts",
       "import": "./src/providers/index.ts",
       "default": "./src/providers/index.ts"
-    },
-    "./providers/*": {
-      "types": "./src/providers/*",
-      "import": "./src/providers/*",
-      "default": "./src/providers/*"
     },
     "./screens": {
       "types": "./src/screens/index.ts",
@@ -859,8 +835,6 @@
     },
     "./screens/WelcomeScreen": {
       "import": "./src/screens/WelcomeScreen.tsx",
-      "browser": "./src/screens/WelcomeScreen.web.tsx",
-      "react-native": "./src/screens/WelcomeScreen.tsx",
       "default": "./src/screens/WelcomeScreen.tsx"
     },
     "./screens/WorkspaceCanvasDemo": {
@@ -936,94 +910,93 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@intuitui-labs/a11y-gate": "^0.2.0",
-    "@react-native-community/slider": "5.2.1",
+    "@react-native-community/slider": "5.2.2",
     "@repo/core": "workspace:*",
     "@repo/verger-react": "workspace:*",
-    "@tanstack/react-query": "^5.104.5",
-    "@tanstack/react-table": "^8.21.3",
-    "@tanstack/react-virtual": "^3.14.21",
+    "@tanstack/react-query": "^5.106.1",
+    "@tanstack/react-table": "^9.3.1",
+    "@tanstack/react-virtual": "^3.14.26",
     "apca-w3": "^0.1.9",
     "culori": "^4.0.2",
     "date-fns": "^4.4.0",
+    "effect": "^4.1.2",
     "expo-device": "~58.0.5",
     "expo-local-authentication": "~58.0.2",
-    "expo-router": "~58.0.25",
-    "expo-video": "~58.0.12",
-    "lucide-react": "^1.61.0",
-    "lucide-react-native": "^1.61.0",
+    "expo-router": "~58.0.30",
+    "expo-video": "~58.0.13",
+    "lucide-react": "^1.69.0",
+    "lucide-react-native": "^1.69.0",
     "nativewind": "5.0.0-rc.0",
-    "qrcode": "*",
+    "qrcode": "^1.5.4",
     "react-native-css": "3.1.0-rc.0",
-    "react-native-external-keyboard": "^1.2.1",
+    "react-native-external-keyboard": "^2.0.2",
     "react-native-fast-confetti": "^2.0.2",
     "react-native-reanimated": "4.7.1",
-    "react-native-reanimated-carousel": "5.2.0",
+    "react-native-reanimated-carousel": "5.2.1",
     "react-native-redash": "^18.1.5",
-    "react-native-svg": "15.16.0",
+    "react-native-svg": "15.16.1",
     "react-native-web": "~0.21.4",
     "sonner-native": "^0.27.0",
-    "tailwindcss": "4.3.3",
-    "victory-native": "^42.0.1",
+    "tailwindcss": "4.3.4",
     "xstate": "6.0.0-alpha.70",
-    "effect": "^4.0.5",
     "zod": "4.6.7"
   },
   "peerDependencies": {
-    "@legendapp/list": "3.6.0",
-    "@react-native-async-storage/async-storage": "*",
-    "@react-native-community/netinfo": "*",
+    "@legendapp/list": "3.7.1",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/netinfo": "12.0.1",
     "@shopify/flash-list": "2.3.3",
-    "expo-auth-session": "~58.0.14",
+    "expo-auth-session": "~58.0.17",
     "expo-blur": "~58.0.5",
     "expo-checkbox": "~58.0.2",
     "expo-clipboard": "~58.0.4",
-    "expo-file-system": "~58.0.10",
+    "expo-file-system": "~58.0.13",
     "expo-haptics": "~58.0.7",
-    "expo-image": "~58.0.16",
+    "expo-image": "~58.0.18",
     "expo-linear-gradient": "~58.0.3",
-    "expo-location": "~58.0.18",
-    "expo-screen-capture": "~58.0.5",
-    "expo-sharing": "~58.0.20",
-    "expo-web-browser": "~58.0.6",
-    "i18next": "^26.5.4",
+    "expo-location": "~58.0.20",
+    "expo-screen-capture": "~58.0.6",
+    "expo-sharing": "~58.0.22",
+    "expo-web-browser": "~58.0.7",
+    "i18next": "^26.7.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "react-i18next": "^17.1.0",
-    "react-native": "0.88.0",
-    "react-native-enriched-markdown": "^1.0.1",
-    "react-native-gesture-handler": "3.4.0",
-    "react-native-keyboard-controller": "1.22.8",
-    "react-native-safe-area-context": "5.10.1",
+    "react-i18next": "^17.1.12",
+    "react-native": "0.88.1",
+    "react-native-enriched-markdown": "1.1.1",
+    "react-native-gesture-handler": "3.5.0",
+    "react-native-keyboard-controller": "1.23.0",
+    "react-native-safe-area-context": "5.11.1",
+    "react-native-skia": "^3.9.1",
     "react-native-webview": "14.0.1",
-    "react-native-worklets": "0.13.0",
-    "svelte": "^5.57.0",
-    "react-native-skia": "^3.7.0"
+    "react-native-worklets": "0.13.1",
+    "svelte": "^5.57.3"
   },
   "devDependencies": {
-    "@babel/traverse": "7.29.8",
-    "@legendapp/list": "3.6.0",
+    "@babel/traverse": "7.29.13",
+    "@legendapp/list": "3.7.1",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@repo/verger-react-native": "workspace:*",
     "@shopify/flash-list": "2.3.3",
     "@types/apca-w3": "^0.1.3",
     "@types/culori": "^4.0.1",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",
-    "@types/react-test-renderer": "19.1.0",
-    "eslint": "^10.13.0",
-    "i18next": "^26.5.4",
-    "lightningcss-linux-x64-gnu": "1.30.1",
-    "react-i18next": "^17.1.0",
-    "react-native-enriched-markdown": "^1.1.1",
-    "react-native-keyboard-controller": "1.22.8",
+    "@types/react-test-renderer": "19.3.1",
+    "eslint": "^10.14.0",
+    "i18next": "^26.7.1",
+    "lightningcss-linux-x64-gnu": "1.33.0",
+    "react-i18next": "^17.1.12",
+    "react-native-enriched-markdown": "1.1.1",
+    "react-native-keyboard-controller": "1.23.0",
     "react-test-renderer": "19.3.1",
-    "tailwindcss": "4.3.3",
+    "tailwindcss": "4.3.4",
     "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.0.5",
-    "vitest-native": "^0.13.0"
+    "vitest": "5.1.0",
+    "vitest-native": "^0.14.1"
   },
   "_originalScripts": {
     "build": "node --max-old-space-size=4096 ../../node_modules/typescript/bin/tsc",
@@ -1034,9 +1007,6 @@
     "lint:eslint": "eslint .",
     "format": "node ../../scripts/scoped-biome.mjs --write",
     "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:ui": "jest --watch",
     "clean": "rm -rf .turbo node_modules dist"
   }
 }

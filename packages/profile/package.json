@@ -11,68 +11,6 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./own": {
-      "types": "./src/own.ts",
-      "import": "./src/own.ts",
-      "default": "./src/own.ts"
-    },
-    "./public": {
-      "types": "./src/public.ts",
-      "import": "./src/public.ts",
-      "default": "./src/public.ts"
-    },
-    "./settings": {
-      "types": "./src/settings.ts",
-      "import": "./src/settings.ts",
-      "default": "./src/settings.ts"
-    },
-    "./history": {
-      "types": "./src/history.ts",
-      "import": "./src/history.ts",
-      "default": "./src/history.ts"
-    },
-    "./api": {
-      "types": "./src/api/index.ts",
-      "import": "./src/api/index.ts",
-      "default": "./src/api/index.ts"
-    },
-    "./screens/FullProfileScreen": {
-      "import": "./src/screens/FullProfileScreen.tsx",
-      "browser": "./src/screens/FullProfileScreen.web.tsx",
-      "react-native": "./src/screens/FullProfileScreen.tsx",
-      "default": "./src/screens/FullProfileScreen.tsx"
-    },
-    "./screens/FullProfileScreen.web": {
-      "types": "./src/screens/FullProfileScreen.web.tsx",
-      "import": "./src/screens/FullProfileScreen.web.tsx",
-      "default": "./src/screens/FullProfileScreen.web.tsx"
-    },
-    "./screens/ProfileScreen": {
-      "import": "./src/screens/ProfileScreen.tsx",
-      "browser": "./src/screens/ProfileScreen.web.tsx",
-      "react-native": "./src/screens/ProfileScreen.tsx",
-      "default": "./src/screens/ProfileScreen.tsx"
-    },
-    "./screens/ProfileScreen.web": {
-      "types": "./src/screens/ProfileScreen.web.tsx",
-      "import": "./src/screens/ProfileScreen.web.tsx",
-      "default": "./src/screens/ProfileScreen.web.tsx"
-    },
-    "./screens/PublicProfileScreen.web": {
-      "types": "./src/screens/PublicProfileScreen.web.tsx",
-      "import": "./src/screens/PublicProfileScreen.web.tsx",
-      "default": "./src/screens/PublicProfileScreen.web.tsx"
-    },
-    "./screens/MuteHubScreen": {
-      "types": "./src/screens/MuteHubScreen.tsx",
-      "import": "./src/screens/MuteHubScreen.tsx",
-      "default": "./src/screens/MuteHubScreen.tsx"
-    },
-    "./screens/ThuthimalClaimScreen": {
-      "types": "./src/screens/ThuthimalClaimScreen.tsx",
-      "import": "./src/screens/ThuthimalClaimScreen.tsx",
-      "default": "./src/screens/ThuthimalClaimScreen.tsx"
-    },
     "./*": {
       "types": "./src/*.ts",
       "import": "./src/*.js",
@@ -94,38 +32,38 @@
   },
   "dependencies": {
     "@eslint/eslintrc": "^3.3.7",
-    "@react-native-async-storage/async-storage": "*",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@repo/core": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/people": "workspace:*",
     "@repo/scanner-kit": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.104.5",
+    "@tanstack/react-query": "^5.106.1",
     "expo-clipboard": "~58.0.4",
-    "expo-file-system": "~58.0.10",
-    "expo-image-manipulator": "~58.0.15",
+    "expo-file-system": "~58.0.13",
+    "expo-image-manipulator": "~58.0.16",
     "expo-image-picker": "~58.0.10",
-    "expo-router": "~58.0.25",
-    "react-i18next": "^17.1.0",
+    "expo-router": "~58.0.30",
+    "react-i18next": "^17.1.12",
     "react-native-reanimated": "4.7.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "@vitest/ui": "^5.0.5",
-    "eslint": "^10.13.0",
-    "i18next": "^26.5.4",
+    "@vitest/ui": "^5.1.0",
+    "eslint": "^10.14.0",
+    "i18next": "^26.7.1",
     "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.0.5"
+    "vitest": "5.1.0"
   },
   "peerDependencies": {
-    "@react-native-async-storage/async-storage": "*",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@repo/ui": "1.5.0",
     "react": "19.3.1",
-    "react-i18next": "^17.1.0",
-    "react-native": "0.88.0"
+    "react-i18next": "^17.1.12",
+    "react-native": "0.88.1"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

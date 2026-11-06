@@ -16,9 +16,12 @@ Canonical browser Gurudevi — unified Next.js 16 application for public marketi
 | [@repo/verger-web](../stack-map.md#repoverger-web) | domain | Verger in the browser: the browser platform (device facts from the navigator), its device signals (network, battery), a localStorage store, and the VergerBrowser shell for React web apps. |
 | [@repo/workforce](../stack-map.md#repoworkforce) | domain | Future non-academic & job-structure domain — school-wide operations beyond classrooms. |
 
-## External deps (9 direct)
+## External deps (14 direct)
 
 ```text
+@dnd-kit/core
+@dnd-kit/sortable
+@dnd-kit/utilities
 @orpc/client
 @supabase/ssr
 @tanstack/react-pacer
@@ -28,9 +31,11 @@ next
 qrcode
 react
 react-dom
+xstate
+zod
 ```
 
-## Dev tooling (17)
+## Dev tooling (16)
 
 ```text
 @playwright/test
@@ -45,7 +50,6 @@ react-dom
 @types/react-dom
 dotenv
 eslint
-msw
 postcss
 tailwindcss
 typescript

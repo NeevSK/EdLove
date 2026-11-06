@@ -22,7 +22,7 @@ and its documentation vault — lives in [NeevSK/rn-terrain](https://github.com/
 | `landscape/catalog/*.md` | **Generated** per-app dependency sheets. Orphans auto-pruned on regen. |
 | `landscape/dependency-catalog.md` | **Generated** external dependency footprint (`pnpm run stack-map:deps`). |
 | `landscape/stack-map-annotations.yaml` | **Curated source of truth** — edit this, then regenerate. |
-| `landscape/dependency-annotations.yaml` | **Curated** external-dep annotations (sacred pins documented here). |
+| `landscape/dependency-annotations.yaml` | **Curated** external-dep annotations (purpose and notes; versions and rules are in `docs/architecture/dependencies.md`). |
 | `radar/` | Tracked technology-radar research: ADOPT/TRIAL/ASSESS/HOLD verdict records for considered dependencies. |
 
 Workflow: edit annotation YAML → `pnpm run stack-map` → commit generated output.

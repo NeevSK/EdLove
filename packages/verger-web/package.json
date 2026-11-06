@@ -1,6 +1,7 @@
 {
   "name": "@repo/verger-web",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "description": "Verger in the browser: the browser platform (device facts from the navigator), its device signals (network, battery), a localStorage store, and the VergerBrowser shell for React web apps.",
   "main": "src/index.ts",
@@ -35,6 +36,6 @@
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
     "typescript": "7.1.0-beta",
-    "vitest": "5.0.5"
+    "vitest": "5.1.0"
   }
 }

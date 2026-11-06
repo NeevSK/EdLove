@@ -1,0 +1,45 @@
+name: API foundation database contracts
+
+on:
+  push:
+    branches: [main-dev]
+  pull_request:
+    branches: [main-dev]
+
+permissions:
+  contents: read
+
+jobs:
+  api-database:
+    name: API PostgreSQL scenarios (G2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
+      - name: Provision fixture roles in the disposable CI cluster
+        run: docker exec ${{ job.services.postgres.id }} psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c 'create role anon nologin; create role authenticated nologin; create role service_role nologin;'
+      - name: Execute isolated database scenarios
+        working-directory: apps/sanctuary-api
+        env:
+          DATABASE_URL: postgres://postgres@127.0.0.1:5432/postgres
+          API_DATABASE_CREATE_ACK: create-isolated-database
+        run: node ../../scripts/run-and-report.mjs --cmd "node node_modules/tsx/dist/cli.mjs --tsconfig tsconfig.json scripts/test-foundation-database.ts" --name api_authority_durability_database --evidence-level G2

@@ -29,17 +29,17 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules src/generated\" --name \"packages_schema-clean\""
   },
   "dependencies": {
-    "@zenstackhq/orm": "3.9.8",
-    "@zenstackhq/zod": "3.9.8",
+    "@zenstackhq/orm": "3.10.1",
+    "@zenstackhq/zod": "3.10.1",
     "decimal.js": "^10.6.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@zenstackhq/cli": "3.9.8",
-    "@zenstackhq/language": "3.9.8",
-    "@zenstackhq/plugin-policy": "3.9.8",
-    "@zenstackhq/sdk": "3.9.8",
+    "@zenstackhq/cli": "3.10.1",
+    "@zenstackhq/language": "3.10.1",
+    "@zenstackhq/plugin-policy": "3.10.1",
+    "@zenstackhq/sdk": "3.10.1",
     "typescript": "7.1.0-beta"
   },
   "_originalScripts": {

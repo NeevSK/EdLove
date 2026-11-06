@@ -41,12 +41,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.4.2
+          version: 12.16.1
       
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -95,12 +95,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.4.2
+          version: 12.16.1
       
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -147,12 +147,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.4.2
+          version: 12.16.1
       
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -188,12 +188,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.4.2
+          version: 12.16.1
       
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -228,12 +228,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.4.2
+          version: 12.16.1
       
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -274,12 +274,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.4.2
+          version: 12.16.1
       
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -329,12 +329,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.4.2
+          version: 12.16.1
       
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '22'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -363,7 +363,7 @@ jobs:
   #     - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
   #       with: { version: 11 }
   #     - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-  #       with: { node-version: '22', cache: 'pnpm' }
+  #       with: { node-version-file: '.nvmrc', cache: 'pnpm' }
   #     - run: pnpm install --frozen-lockfile
   #     - name: Run performance benchmarks
   #       run: pnpm --filter @repo/core test:bench

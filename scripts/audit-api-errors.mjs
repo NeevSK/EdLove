@@ -13,6 +13,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const handlersRoot = path.join(root, 'apps', 'sanctuary-api', 'src', 'core', 'handlers');
 
 function filesIn(directory) {
+  if (!fs.existsSync(directory)) return [];
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(directory, entry.name);
     return entry.isDirectory() ? filesIn(fullPath) : fullPath.endsWith('.ts') ? [fullPath] : [];
@@ -20,7 +21,8 @@ function filesIn(directory) {
 }
 
 const findings = [];
-for (const file of filesIn(handlersRoot)) {
+const handlers = filesIn(handlersRoot);
+for (const file of handlers) {
   const source = fs.readFileSync(file, 'utf8');
   const lines = source.split(/\r?\n/);
   lines.forEach((line, index) => {
@@ -35,4 +37,8 @@ if (findings.length) {
   process.exit(1);
 }
 
-console.log('API error taxonomy audit passed: active handlers use typed errors.');
+console.log(
+  handlers.length
+    ? 'Legacy handler lexical check: no raw throw new Error statements found; not a runtime error-contract proof.'
+    : 'No retired handlers exist. Business error taxonomy is not implemented or verified by this check.',
+);

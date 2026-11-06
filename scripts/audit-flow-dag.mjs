@@ -73,7 +73,7 @@ export function runFlowDAGAudit() {
   ];
 
   const declaredFlows = [];
-  const flowPattern = /jtbdFlow\s*:\s*\{|flowId\s*:\s*['"`]flow:/g;
+  const flowPattern = /jtbdFlow\s*:\s*\{|flowId\s*:\s*['"`]flow:/;
 
   // 3a. Scan dedicated flow definitions in @repo/core/src/flows
   const coreFlowsDir = path.join(ROOT_DIR, 'packages/core/src/flows');

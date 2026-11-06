@@ -1,6 +1,6 @@
 # Dependency Catalog annotations — curated.
 # Docs are generated: pnpm run stack-map:deps
-# Fields: category (override heuristic), purpose, notes, sacred (pinned version string)
+# Fields: category (override heuristic), purpose, notes (versions live in scripts/lib/dependency-cohorts.mjs)
 
 metadata:
   updated: 2026-10-05
@@ -9,11 +9,11 @@ global_tools:
   node:
     category: runtime
     purpose: "JS runtime for the whole monorepo"
-    notes: "mise-managed 24.22.1 (security patched); engines pin >=24.22.0."
+    notes: "mise-managed; see .nvmrc and mise.toml."
   pnpm:
     category: runtime
-    purpose: "Workspace package manager (v12.15)"
-    notes: "mise-managed 12.15.0; preinstall guard enforces pnpm; lockfile committed."
+    purpose: "Workspace package manager"
+    notes: "mise-managed; preinstall guard enforces pnpm; lockfile committed."
   bun:
     category: runtime
     purpose: "Script runner / bundle experiments"
@@ -54,7 +54,7 @@ dependency_entries:
     notes: "Do not bump independently of React Native 0.88."
   react-native:
     category: native
-    purpose: "Mobile platform runtime (0.88.0, new arch)"
+    purpose: "Mobile platform runtime (new arch)"
     notes: "Sacred platform — upgrades gated on Expo SDK 58 compatibility."
   expo:
     category: native
@@ -63,40 +63,36 @@ dependency_entries:
   react-native-reanimated:
     category: animation
     purpose: "Animation engine (v4, new arch)"
-    sacred: "4.7.1"
   react-native-worklets:
     category: animation
     purpose: "Worklet thread runtime required by Reanimated 4.7"
-    sacred: "0.13.0"
   react-native-gesture-handler:
     category: ui-kit
     purpose: "Gesture system (v3, new arch)"
-    sacred: "3.4.0"
   react-native-mmkv:
     category: storage
     purpose: "High-performance key-value store (Nitro v4)"
-    sacred: "4.3.2"
   react-native-nitro-modules:
     category: native
     purpose: "Nitro module bridge (new arch native modules)"
-    sacred: "0.37.1"
   react-native-skia:
     category: graphics
     purpose: "GPU graphics engine for RN (new arch Graphite/WebGPU fork by William Candillon)"
-    sacred: "^3.7.0"
   "@shopify/react-native-skia":
     category: graphics
     purpose: "RN Skia alias pointing to react-native-skia ^3.7.0"
-    sacred: "^3.7.0"
   typescript:
     category: tooling
-    purpose: "Compiler — sacred 7.1.0-beta (Go-native tsgo engine)"
-    sacred: "7.1.0-beta"
+    purpose: "Compiler (Go-native tsgo engine)"
   effect:
     category: resilience
-    purpose: "Resilience, retries, and typed error channels for @repo/core"
+    purpose: "Resilience and typed errors in core; scoped concurrent readiness probes in the API foundation"
     status: held
-    notes: "Monorepo baseline is Effect v4.0.2. Encapsulated inside packages/core."
+    notes: "Declared baseline ^4.0.5; API uses Effect v4 cancellation/concurrency without replacing the native oRPC transport."
+  jose:
+    category: auth
+    purpose: "API JWT/JWKS verification with explicit issuer, audience and algorithm admission"
+    notes: "API declares 6.2.10; signature checks are followed by authoritative canonical binding/session checks."
   "@supabase/supabase-js":
     category: data-sync
     purpose: "Postgres/Realtime client"
@@ -224,6 +220,10 @@ dependency_entries:
   "@cedar-policy/cedar-wasm":
     category: auth
     purpose: "Cedar authorization decision engine (permissions as data)"
+  "@cedar-policy/mcp-schema-generator-wasm":
+    category: auth
+    purpose: "Generate Cedar schemas from MCP tool descriptions for developer inspection"
+    notes: "Generated schemas do not enforce tool access."
   "@growthbook/growthbook":
     category: flags
     purpose: "Feature flags & experiments client"
