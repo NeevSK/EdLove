@@ -16,13 +16,15 @@ description: |
 
 ## 1. The 4 Architectural Weight Tiers
 
+Current state and held packages: `docs/architecture/dependencies.md`.
+
 Every package in the monorepo belongs to an explicit architectural tier with a distinct blast radius:
 
 | Tier | Classification | Core Packages | Blast Radius & Risk | Upgrade Protocol |
 | :--- | :--- | :--- | :--- | :--- |
-| **Tier 1** | **Critical Native Architecture** (Sacred Native Pins) | `react-native-reanimated@4.7.1`, `react-native-gesture-handler@3.3.0`, `react-native-worklets@0.13.0`, `react-native-mmkv@4.3.2`, `react-native-nitro-modules@0.37.1`, `react-native-skia@^3.3.0`, `typescript@7.0.2` | **CRITICAL (Native C++/JSI)**: Fatal `SIGABRT`, JSI memory corruption, Hermes GC pause loops, thread deadlocks. | **Cautious Upgrade Protocol**: Upstream changelog audit $\rightarrow$ peer matrix check $\rightarrow$ `audit-seams.mjs` $\rightarrow$ RFC sign-off $\rightarrow$ Harmonizer. |
-| **Tier 2** | **Framework Runtime Matrix** | `expo@~58.0.12`, `react-native@0.88.0`, `react@19.3.0`, `expo-router@~58.0.22`, +40 Expo SDK modules | **HIGH (Platform Engine)**: Monorepo-wide framework baseline. | Gated on Expo SDK release lifecycle and `pnpm --filter gurudevi-mobile exec expo-doctor`. |
-| **Tier 3** | **Database & Contract Schemas** (The Data Spine) | `@zenstackhq/*@3.9.7`, `zod@4.6.5`, `kysely@0.28.16`, `drizzle-orm`, `@powersync/*`, `@orpc/*` | **MODERATE (Domain/Schema)**: ZModel AST, generated ORM contracts, SQL query semantics, sync batch idempotency. | Harmonize cohort $\rightarrow$ `zenstack generate` $\rightarrow$ `tsc --build --noEmit` contract check. |
+| **Tier 1** | **Critical Native Architecture** (Sacred Native Pins) | See `scripts/lib/dependency-cohorts.mjs` | **CRITICAL (Native C++/JSI)**: Fatal `SIGABRT`, JSI memory corruption, Hermes GC pause loops, thread deadlocks. | **Cautious Upgrade Protocol**: Upstream changelog audit $\rightarrow$ peer matrix check $\rightarrow$ `audit-seams.mjs` $\rightarrow$ RFC sign-off $\rightarrow$ Harmonizer. |
+| **Tier 2** | **Framework Runtime Matrix** | See `scripts/lib/dependency-cohorts.mjs` | **HIGH (Platform Engine)**: Monorepo-wide framework baseline. | Gated on Expo SDK release lifecycle and `pnpm --filter gurudevi-mobile exec expo-doctor`. |
+| **Tier 3** | **Database & Contract Schemas** (The Data Spine) | See `scripts/lib/dependency-cohorts.mjs` | **MODERATE (Domain/Schema)**: ZModel AST, generated ORM contracts, SQL query semantics, sync batch idempotency. | Harmonize cohort $\rightarrow$ `zenstack generate` $\rightarrow$ `tsc --build --noEmit` contract check. |
 | **Tier 4** | **Standalone Utilities & Dev Tools** | `lucide-react`, `oxlint`, `vitest`, `date-fns`, `rimraf` | **LOW (Isolated)**: Scoped to toolchain or UI leaf nodes. | Upgraded via `pnpm run deps:upgrade` (preserves Tiers 1–3). |
 
 ---

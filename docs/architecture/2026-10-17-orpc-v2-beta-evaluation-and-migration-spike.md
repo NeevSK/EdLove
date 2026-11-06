@@ -1,6 +1,8 @@
 ---
 title: "oRPC v2 Beta Architectural Evaluation & Dual-Wire Migration Spike"
-status: "active"
+status: "superseded"
+updated: 2026-10-30
+superseded_by: "../../apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md"
 created: 2026-10-17
 author: "Naveen"
 scribe: "Antigravity"
@@ -8,6 +10,12 @@ tags: [orpc, architecture, migration, dual-wire, contracts]
 ---
 
 # oRPC v2 Beta Architectural Evaluation & Dual-Wire Migration Spike
+
+> Historical proposal. The owner confirmed no deployed-client compatibility
+> obligation and authorized a native oRPC v2-only hard cutover on 2026-10-30.
+> Follow the [current canonical policy](../../apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md),
+> not this document's dual-wire migration instructions. Claims below remain
+> historical statements, not evidence of current mounts or upstream APIs.
 
 ## 1. Executive Summary
 

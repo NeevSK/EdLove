@@ -36,7 +36,7 @@ lower layer owns.
 | 2. Places | Where people go | Self, Workspace, Community, Library, Profile, the AI companion present everywhere |
 | 3. Business domains | Who owns each fact | Wellbeing, Learning, Institution operations, Family, Community, Library, Journey, Rewards, AI and agents |
 | 4. Platform services | What every domain uses | Identity, bonds and authority, consent and privacy, audit, records lifecycle, notifications, files, search, time and calendar, entitlements, integrations, export |
-| 5. Runtime and edge | How it runs safely | Local-first sync, sessions and account switching, devices and trust, request controls, observability, client runtime (Verger), deployment |
+| 5. Runtime and edge | How it runs safely | Local-first sync, sessions and account switching, devices and trust, request controls, observability, client runtime (Verger), agent runtime, deployment |
 | 6. Substrate | Where it is stored | Postgres with row-level security, schemas and contracts, Cedar policies, object storage, durable jobs |
 
 ### The one rule
@@ -165,12 +165,17 @@ where they exist. Our own API should be clean enough to serve as an example. See
 
 | Question | Document |
 | --- | --- |
+| The first path that must run, and when each layer becomes mandatory | [Arrive journey](arrive-journey.md) |
 | How is it cut into modules, and how are modules added, removed and connected? | [Module structure](module-structure.md) |
 | Every domain, subdomain, platform module and channel, with status | [Domain index](domains/README.md) |
 | How do I find the owner of a new capability, and when is something a new subdomain? | [Domain design method](domain-design-method.md) |
 | Who may do what: accounts, bonds, capacities, Cedar, delegation, devices, minors | [Authority model](authority-model.md) |
 | Privacy defaults, sharing, audit, soft deletion, retention, export | [Data governance and records](data-governance-and-records.md) |
 | Threats, controls, and AI and agent security | [Security and AI threat model](security-and-ai-threat-model.md) |
+| What agents need underneath, and what to build when | [Agent infrastructure layer](agent-infrastructure-layer.md) |
+| How any channel or agent connects: MCP, WebMCP, WhatsApp, Telegram and others | [Channel admission model](channel-admission-model.md) |
+| The gates to a secure, production-grade v1 | [Road to v1](road-to-v1.md) |
+| Updating dependencies: what is held back and why | [Dependencies](dependencies.md) |
 | How to design an API call, and what not to do | [API design first principles](../../apps/sanctuary-api/docs/architecture/api-design-first-principles.md) |
 | Offline writes, replay, conflicts and sync | [Local-first writes and sync](../../apps/sanctuary-api/docs/architecture/api-foundations/local-first-writes-and-sync.md) |
 | Load shape, scaling, deployment and production readiness | [Scale and production operation](../../apps/sanctuary-api/docs/architecture/api-foundations/scale-and-production-operation.md) |

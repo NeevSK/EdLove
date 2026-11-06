@@ -21,7 +21,7 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 > 6. **The Upstream Depth Realism & Threshold Invariant (Layer 0 Meta-Ontology)**: Never commit the Epistemic Fallacy by mistaking Empirical metrics (dashboards, pass rates) for Real generative mechanisms. Never systems-wash heaps or passive tools as living systems. Respect non-linear phase transitions (Thresholds) and the Matthew Effect ($gap(t) = gap_0 \cdot e^{\lambda t}$). Automate the Clear, engineer the Complicated, but bow before and protect the living Complex. Code proposals must enforce the Convivial Limit—software exists to lift administrative drudgery, never to enclose human life. Reference: [`docs/architecture/2026-10-11-the-upstream-epistemic-and-systemic-invariants.md`](file:///c:/x/docs/architecture/2026-10-11-the-upstream-epistemic-and-systemic-invariants.md).
 > 7. **Deterministic Ecosystem Invariant Ledger (Zero-Tolerance Dialect Veto)**: The model CPU is strictly forbidden from emitting legacy dialects. Introducing any of the following triggers an instant gate veto under Step 5 Delta Gate:
 >    - **Reanimated 4 / Worklets**: NEVER use `runOnJS` or `runOnUI` from either package: both are `@deprecated` in the installed `react-native-worklets@0.13.1` and `react-native-reanimated@4.7.1`. Use `scheduleOnRN(fn, ...args)` and `scheduleOnUI(worklet, ...args)` from `react-native-worklets`. NEVER import `createWorkletRuntime`, `executeOnUIRuntimeSync` or `makeShareableCloneRecursive` from `react-native-reanimated` (deprecated re-exports; use `react-native-worklets`). On shared values prefer `.get()` / `.set()` (React compiler safe) over assigning `.value`.
->    - **RNGH 3.3**: NEVER use legacy `<PanGestureHandler>` or `useAnimatedGestureHandler`. ALWAYS use `Gesture.Pan()` with `<GestureDetector>`.
+>    - **RNGH 3.4**: NEVER use legacy `<PanGestureHandler>` or `useAnimatedGestureHandler`. ALWAYS use `Gesture.Pan()` with `<GestureDetector>`.
 >    - **React 19**: NEVER use `React.forwardRef` (pass `ref` directly as a standard prop). NEVER use `useFormState` (use `useActionState`).
 >    - **React Native 0.88**: NEVER use `findNodeHandle`, `Alert.alert`, `useNativeDriver: false`, or `InteractionManager`.
 >    - **Live Substrate Deprecations**: The verification gate enforces `reports/live-deprecations.json` (7,733 harvested deprecations) on all modified files. Zero unannotated deprecated symbols permitted.
@@ -60,6 +60,25 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 
 ### The Sovereign Context & Integration Pattern (The Anti-Island Law)
 
+**Sanctuary API cutover:** follow
+[`apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md`](apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md).
+The owner authorized retiring legacy procedure surfaces without deployed-client
+compatibility obligations. Native oRPC v2 commands/queries target `/api/v1` only;
+navigation, business ownership and channel adapters are distinct. The current
+phase is horizontal foundation, not feature migrations or invented domain rules.
+Owner clarification (2026-11-03): complete reusable horizontal foundations before
+business vertical slices. Prove common mechanisms with independent synthetic
+capabilities, without admitting product policies. Design for approximately 10,000
+Sri Lankan schools and synchronized morning demand; keep deployment size configurable.
+Graceful degradation, interoperability and portable data are foundation requirements.
+National-scale design is not national-scale performance evidence. The API engineering
+playbook owns the horizontal acceptance matrix; its scale guide owns workload assumptions.
+Run `pnpm audit:api-composition`; its failures must not be waived to preserve
+legacy aliases, conversion or parallel first-party transports. Passing its
+fixtures is not proof that the current API meets the target. User MCP, browser
+WebMCP and developer `platform-mcp` are distinct; record unimplemented channels
+and unresolved product decisions honestly.
+
 **Platform structure (read before any API, package or screen design):**
 [`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) is the
 top-down map: channels, places (tabs), business domains, platform services, runtime,
@@ -74,7 +93,9 @@ Modules follow [`docs/architecture/module-structure.md`](docs/architecture/modul
 follows [`docs/architecture/authority-model.md`](docs/architecture/authority-model.md);
 security and AI agents follow [`docs/architecture/security-and-ai-threat-model.md`](docs/architecture/security-and-ai-threat-model.md).
 Removing product screens or routes because their API is missing is a Deletion Veto
-case: ask first. **Current foundation work, its state and how to resume it in any tool:**
+case: ask first. Any channel or agent (MCP, WebMCP, WhatsApp, Telegram, ephemeral workers)
+follows [`docs/architecture/channel-admission-model.md`](docs/architecture/channel-admission-model.md);
+the gates to a production v1 are in [`docs/architecture/road-to-v1.md`](docs/architecture/road-to-v1.md). **Current foundation work, its state and how to resume it in any tool:**
 [`apps/sanctuary-api/docs/current_progress/2026-11-02-foundation-follow-ups.md`](apps/sanctuary-api/docs/current_progress/2026-11-02-foundation-follow-ups.md).
 
 Never treat the monorepo as an empty workspace or create ad-hoc "islands" (throwaway scripts, redundant utilities, or disconnected client configs). Integration is not just about where files go-it is a strict **Cognitive Order of Operations** that must precede any attempt to write code:
@@ -93,7 +114,7 @@ Never treat the monorepo as an empty workspace or create ad-hoc "islands" (throw
    - Identify active boundaries, secret configurations (Doppler), and runtime rules.
 3. **Phase 3: Think in Existing Terms (Conceptual Alignment):**
    - Translate the user's request into the codebase's existing vocabulary, abstractions, and structures.
-   - Do NOT invent new paradigms, ad-hoc wrapper scripts, or duplicate abstractions. If the monorepo uses `buildDownstreamServerSpecs()`, think in downstream specs. If it uses `StorageManager`, think in `StorageManager`.
+   - Do NOT invent new paradigms, ad-hoc wrapper scripts, or duplicate abstractions. If the monorepo uses `buildDownstreamServerSpecs()`, think in downstream specs. If it uses `storageDriver`, think in `storageDriver`.
 4. **Phase 4: Formulate the Minimal Additive Seam:**
    - Define the minimal, non-destructive modification that cleanly extends existing abstractions without violating the Deletion Veto.
 5. **Phase 5: Execute, Verify, and Codify:**
@@ -116,8 +137,22 @@ for migrations, the signed `canonical_account_id` claim, and real-database proof
 | Import legacy `@repo/ui` (primitives, `components/ui`, flat `components/*`) in Next.js | Use `@repo/ui/components/web`, `@repo/ui/theme`, `@repo/ui/theme/web` |
 | Import Expo/RN/PowerSync in `gurudevi-web` | Use `@repo/core/web-auth`, `@repo/core/web-authorized-entry` |
 | Build reusable UI ad hoc in an app (hand-made buttons, pills, fields) | Add it to `@repo/ui/components/web` and `/native` with the same props |
-| Import native storage (MMKV) in `@repo/core` | Use `StorageManager` polyfill proxy (zero native pollution) |
+| Import native storage (MMKV) in `@repo/core` | Use `storageDriver` polyfill proxy (zero native pollution) |
 | Use RN Web (`*.web.tsx`) for new features | RN Web is **migration source only** - being retired |
+| Use Java OOP names (`*Manager`, `*Service`, `*Repository`) | Use 2026 Taxonomy: `*Driver`, `*Monitor`, `*Vault`, `*.adapter.ts`, `use*` |
+| Import from `components/workbench` in production floors/routes | `components/workbench` is the developer's private prototyping playground (zero barrels). Never import workbench drafts into production; promote approved components to `@repo/ui/components/web` or `app/(sanctuary)/components`. |
+
+### The 2026 Sovereign Naming Taxonomy & Archetype Consistency Rules
+
+The monorepo enforces the 8 Sovereign Archetypes defined in [`docs/architecture/2026-11-02-monorepo-naming-conventions-and-consistency-rules.md`](docs/architecture/2026-11-02-monorepo-naming-conventions-and-consistency-rules.md):
+1. **Platform Drivers (`*Driver.ts`, `*Monitor.ts`, `*Sink.ts`, `*Vault.ts`)**: Low-level platform I/O (`storageDriver`, `networkMonitor`, `telemetrySink`, `cryptoVault`, `deviceIdentityDriver`).
+2. **Hexagonal Adapters (`*.adapter.ts`)**: Boundary translation (`academicAdapter`, `schoolAdapter`, etc.).
+3. **Atomic Client Stores (`use*Store.ts`)**: Zustand state with mandatory atomic selectors (`useStore((s) => s.foo)`).
+4. **Declarative Hooks (`use*.ts`)**: UI facades and React 19 Action transitions (`useActionState`, `useOptimistic`).
+5. **Live Queries & Procedures (`useLiveQuery()`, `orpcClient.*.*`)**: Reactive SQLite queries and typed RPC procedures. Zero "Repository" classes.
+6. **Pure Domain Cores (`*.port.ts`, `*.schema.ts`)**: 100% deterministic pure functions and schemas.
+7. **Spatial UI Containers (`*Modal.tsx`, `*Panel.tsx`, `*Drawer.tsx`, `*Sheet.tsx`, `*Floor.tsx`, `*Screen.tsx`)**: Visual presentation surfaces. Never named `*Manager`.
+8. **Agent Tool Services (`@repo/platform-mcp/src/services/*Service.ts`)**: Sovereign Agent MCP tools (the ONLY approved use of the word `Service`).
 
 ### Platform MCP Gateway & Sovereign Support Service Guide
 
@@ -169,11 +204,13 @@ Dependencies are governed by **Architectural Weight & Blast Radius**, not poetic
 
 ### The 4 Architectural Weight Tiers
 
+Versions live in [`scripts/lib/dependency-cohorts.mjs`](scripts/lib/dependency-cohorts.mjs) and `pnpm-workspace.yaml`, never here. Read [`docs/architecture/dependencies.md`](docs/architecture/dependencies.md) before updating anything: it has the held packages, why, and when to re-check.
+
 | Tier | Architectural Classification | Key Packages | Blast Radius & Risk | Upgrade Protocol |
 | :--- | :--- | :--- | :--- | :--- |
-| **Tier 1** | **Critical Native Architecture** (fka Sacred Pins) | `react-native-reanimated@4.7.1`, `react-native-gesture-handler@3.4.0`, `react-native-worklets@0.13.0`, `react-native-mmkv@4.3.2`, `react-native-nitro-modules@0.37.1`, `react-native-skia@^3.7.0`, `typescript@7.1.0-beta` | **CRITICAL (Native C++/JSI)**: Fatal `SIGABRT`, JSI memory corruption, native thread deadlocks. | **Cautious Upgrade Protocol**: Upstream changelog analysis $\rightarrow$ peer matrix check $\rightarrow$ `rn-terrain audit:seams` $\rightarrow$ RFC sign-off $\rightarrow$ Harmonizer. |
-| **Tier 2** | **Framework Runtime Matrix** | `expo@~58.0.12`, `react-native@0.88.0`, `react@19.3.0`, `expo-router@~58.0.21`, +40 Expo SDK modules | **HIGH (Platform Engine)**: Monorepo-wide framework baseline. | Gated on Expo SDK release lifecycle and `pnpm --filter gurudevi-mobile exec expo-doctor`. |
-| **Tier 3** | **Database & Contract Schemas** | `@zenstackhq/*@3.9.7`, `zod@4.6.5`, `kysely@0.28.16` | **MODERATE (Domain/Schema)**: ZModel AST, generated ORM contracts, SQL query semantics. | Harmonize cohort $\rightarrow$ `zenstack generate` $\rightarrow$ `tsc --build --noEmit` contract check. |
+| **Tier 1** | **Critical Native Architecture** (fka Sacred Pins) | Reanimated, Worklets, Gesture Handler, MMKV, Nitro Modules, Skia, TypeScript | **CRITICAL (Native C++/JSI)**: Fatal `SIGABRT`, JSI memory corruption, native thread deadlocks. | **Cautious Upgrade Protocol**: Upstream changelog analysis $\rightarrow$ peer matrix check $\rightarrow$ `rn-terrain audit:seams` $\rightarrow$ RFC sign-off $\rightarrow$ Harmonizer. |
+| **Tier 2** | **Framework Runtime Matrix** | Expo SDK and its modules, React Native, React, Expo Router | **HIGH (Platform Engine)**: Monorepo-wide framework baseline. | Gated on Expo SDK release lifecycle and `pnpm --filter gurudevi-mobile exec expo-doctor`. |
+| **Tier 3** | **Database & Contract Schemas** | ZenStack, Zod, Kysely | **MODERATE (Domain/Schema)**: ZModel AST, generated ORM contracts, SQL query semantics. | Harmonize cohort $\rightarrow$ `zenstack generate` $\rightarrow$ `tsc --build --noEmit` contract check. |
 | **Tier 4** | **Standalone Utilities & Dev Tools** | `lucide-react`, `oxlint`, `vitest`, `rimraf`, `wrangler` | **LOW (Isolated)**: Scoped to toolchain or UI leaf nodes. | Upgraded via `pnpm run deps:upgrade` (preserves Tiers 1–3). |
 
 ### The Senior Architect Dependency-Hell Precepts (Non-Negotiable Invariants)
@@ -189,7 +226,7 @@ When the Active Radar detects an upstream release on a Tier 1 or Cohort dependen
 1. **Upstream Investigation & Temporal Grounding:** Perform live research on release notes, C++ header changes, and breaking changes via the Temporal Grounded Search Ladder. Inspect `node_modules/<pkg>/.../*.d.ts` and GitHub releases tags. Never rely on training memory.
 2. **Peer Matrix & Blast Radius Simulation:** Verify that peer dependencies remain ABI-compatible (e.g. Worklets $\leftrightarrow$ Reanimated $\leftrightarrow$ Nitro $\leftrightarrow$ RN 0.88; ZenStack $\leftrightarrow$ Kysely $\leftrightarrow$ PowerSync $\leftrightarrow$ oRPC). Run `sovereign_discovery(action: "simulate")` to compute the monorepo blast radius.
 3. **Integrative Seams & Native Proof:** Run `node scripts/audit-seams.mjs` to verify that cross-thread worklet execution, gesture recognizers, window insets, and lifecycle state machines exhibit zero regressions.
-4. **Cohort Harmonization & Invariant Gate:** Use `node scripts/harmonize-dependencies.mjs --write` to propagate the upgrade across all 32 manifests in-place, lockfile sync (`pnpm install --lockfile-only`), and verify with `pnpm run deps:check` and `pnpm run check:anti-slop`.
+4. **Cohort Harmonization & Invariant Gate:** Use `node scripts/harmonize-dependencies.mjs --write` to propagate the upgrade across all manifests in-place, lockfile sync (`pnpm install --lockfile-only`), and verify with `pnpm run deps:check` and `pnpm run check:anti-slop`.
 
 ### Native Integrity Rules
 * **Rule 1:** NEVER run `npx expo install --fix` or `--check` (downgrades Tier 1 native pins). Run `pnpm --filter gurudevi-mobile exec expo-doctor` instead.

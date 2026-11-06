@@ -9,6 +9,12 @@ tags: [architecture, orpc, supabase, security, pqc, cedar, poa]
 
 # Sovereign API Evolution: oRPC v2, Supabase Middleware 1.0, POA, & Post-Quantum Cryptography
 
+> The dual-wire and compatibility directions in this historical plan are
+> superseded by the [canonical domain and channel model](../../apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md).
+> The current owner-authorized target is native oRPC v2 at `/api/v1`, without
+> deployed-client compatibility obligations. This notice does not adopt or
+> verify the other proposals or upstream claims below.
+
 > **THE COGNITIVE HANDSHAKE**
 > - **Surface & Mode**: API Spine, Contract Layer & Platform Cryptography (`Implement / Plan Mode`)
 > - **Grounded Substrate**: [`packages/core/src/api/orpcClient.ts`](file:///c:/x/packages/core/src/api/orpcClient.ts), [`apps/sanctuary-api/src/core/orpcMiddleware.ts`](file:///c:/x/apps/sanctuary-api/src/core/orpcMiddleware.ts), [`apps/sanctuary-api/src/core/app.ts`](file:///c:/x/apps/sanctuary-api/src/core/app.ts), [`packages/core/src/api/contracts.ts`](file:///c:/x/packages/core/src/api/contracts.ts), [`apps/gurudevi-mobile`](file:///c:/x/apps/gurudevi-mobile), `@supabase/middleware 1.0`, NIST FIPS 203 ML-KEM.

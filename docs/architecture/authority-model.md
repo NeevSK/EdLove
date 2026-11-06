@@ -64,9 +64,10 @@ the account:
 | `SECOND_CLASS` | Personal: the person's own studio or personal classroom | Signed-up, self-governing citizen |
 | `THIRD_CLASS` | None, or a platform or guest bond | Explorer; baseline reads and local-only work |
 
-It is derived from the bond's entity type unless the bond sets it explicitly
-(`resolveBondCitizenship` in `packages/core/src/types/Identity.ts`), so the client and the
-server compute it the same way. A teacher at a school who also keeps a personal studio has
+**Owner decision (2026-11-06): it is stored explicitly on each bond**, set by the server when
+the bond is created, and never derived later, so it can't drift. Today it is still derived
+(`resolveBondCitizenship`), `bonds` has no column and `users.citizenship` still exists; the
+move is listed in the [Arrive journey](arrive-journey.md). A teacher at a school who also keeps a personal studio has
 two bonds and two citizenships, and the active bond decides which applies. This follows the
 owner-approved plan of 2026-11-01, *Canonical Architecture: ReBAC Covenant, Semantic
 Citizenship in Bonds, and Omnichannel Doors*. That plan was written in an Antigravity
@@ -94,6 +95,9 @@ through, never a global barrier that blocks bots or agents.
    trail. Denials are audited too.
 
 ## Agents and delegation
+
+The [channel admission model](channel-admission-model.md) has the full set of callers, including
+short-lived, non-destructive ephemeral workers, which are a separate case with their own limits.
 
 - An agent acts **for** a person through a delegation grant: which capabilities, on
   which entities, until when, with which limits.

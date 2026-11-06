@@ -107,4 +107,5 @@ Rules for Gurudevi:
 New channels, new agent protocols and new models will arrive. They enter as channel
 adapters through the same authority, audit and budgets, so the core doesn't change when
 they do. A new protocol never gets permissions by being discovered; it gets them by an
-admitted delegation.
+admitted delegation. The [channel admission model](channel-admission-model.md) has the rules
+and the checklist.

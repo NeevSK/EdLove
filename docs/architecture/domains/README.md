@@ -103,6 +103,9 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 | Partner standards (OneRoster, LTI …) | skeleton |
 | Support and operators | skeleton |
 
+How a channel is admitted, and the full list with WebMCP and others:
+[channel admission model](../channel-admission-model.md).
+
 ## <a id="open-decisions"></a>Open decisions
 
 - Attendance: owned by Learning or Institution operations.

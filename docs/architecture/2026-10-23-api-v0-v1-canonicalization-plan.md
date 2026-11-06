@@ -10,6 +10,13 @@ tags: [architecture, api, versioning, orpc, migration, bff, compatibility]
 
 # API v0 Compatibility and v1 Canonicalization Plan
 
+> Current policy: the owner authorized a hard cutover without deployed-client
+> compatibility obligations on 2026-10-30. The compatibility/coexistence rules in
+> this historical plan are superseded by the
+> [canonical domain and channel model](../../apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md).
+> The plan's source observations and historical evidence remain contextual, not
+> proof of the new native oRPC `/api/v1` target.
+
 ## Decision
 
 The platform will separate its product API versions from library versions:
