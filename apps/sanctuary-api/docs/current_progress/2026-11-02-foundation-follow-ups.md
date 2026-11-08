@@ -20,6 +20,12 @@ tags: [api, foundation, authority, roadmap, follow-ups, todo]
   `/sync/stream` (200, checkpoint); the same grant with a tampered signature gets 401.
 - The `user_todos` stream (deployed) names `public.lists` and `public.todos`, which **don't exist** in
   the database, so device todos can't sync anywhere yet.
+- Snapshot signing key pair created (owner-approved): an Ed25519 pair generated in one process, the
+  private PKCS#8 PEM piped into Doppler `gurudevi-mobile:dev` as `SNAPSHOT_SIGNING_PRIVATE_KEY`, the
+  raw base64 public key as `EXPO_PUBLIC_` and `NEXT_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY`. Never printed
+  or kept on disk. Proof: a snapshot from `generateSnapshot` passes the client's
+  `verifySnapshotSignature`; one with an added permission fails. Render still needs the private key
+  set, and app builds need the public key at build time.
 - Render (`srv-dbgndsvlk1mc73914n0g`, free, Singapore, auto-deploy off) builds branch
   `terrain/version-hops`, not this branch. Blocked: Doppler's `RENDER_API_KEY` is rejected (401) and the
   Render CLI can't set env vars; and **no snapshot signing key pair exists** (no
