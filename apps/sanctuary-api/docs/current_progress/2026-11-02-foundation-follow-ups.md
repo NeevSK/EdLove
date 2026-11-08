@@ -10,6 +10,23 @@ tags: [api, foundation, authority, roadmap, follow-ups, todo]
 
 # Foundation Roadmap and Follow-ups
 
+## 2026-11-08 PowerSync deployed; Render blocked
+
+- PowerSync Cloud had two instances, Development and Production, **both unprovisioned**. Development
+  is now provisioned and deployed with `pnpm dlx powersync@0.10.3 deploy` (owner-authorized; Production
+  untouched). Live: connected to Supabase, initial replication done, `bonds`, `school_memberships`,
+  `classroom_students` and `classrooms` replicating.
+- Live trust proof: a grant from `identity.syncCredentials`, signed with Doppler's key, opens
+  `/sync/stream` (200, checkpoint); the same grant with a tampered signature gets 401.
+- The `user_todos` stream (deployed) names `public.lists` and `public.todos`, which **don't exist** in
+  the database, so device todos can't sync anywhere yet.
+- Render (`srv-dbgndsvlk1mc73914n0g`, free, Singapore, auto-deploy off) builds branch
+  `terrain/version-hops`, not this branch. Blocked: Doppler's `RENDER_API_KEY` is rejected (401) and the
+  Render CLI can't set env vars; and **no snapshot signing key pair exists** (no
+  `SNAPSHOT_SIGNING_PRIVATE_KEY`, no `EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY` in Doppler), which v1
+  production needs to start and clients need to verify snapshots. `AUTH_ISSUER`, `AUTH_JWKS_URL` and
+  `API_BROWSER_ORIGINS` aren't in Doppler either.
+
 ## 2026-11-08 Gate 1 evidence and device sync on v1
 
 - `test:database` ran (G2, 65/65, disposable database dropped). It proves a signed-in session
