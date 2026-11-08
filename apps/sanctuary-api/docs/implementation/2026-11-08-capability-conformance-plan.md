@@ -513,6 +513,13 @@ the database suite), `PRACTICE_BELOW_BAR` 2 (`createInitialBond`, `refreshSnapsh
   would otherwise depend on a local repository CI does not have. Measured recall on real exports:
   `@orpc/contract`, `@orpc/server`, `hono` 1.000; `zod` 1.000 (one CommonJS `module.exports` key);
   `expo-router` 188 names over 12 files, versus 5 before.
+- `rn-terrain caps-diff` (declared vs used exports) read names only from a package's main entry, so
+  everything imported from a sub-path was invisible. Measured against the import statements in
+  `apps/sanctuary-api`: `@orpc/server` 0.73 → 1.00, `hono` 0.56 → 1.00, `@orpc/contract` and
+  `@orpc/client` 1.00 (rn-terrain `bbf05acb`). Hono's declared API went from 89 entries, 67 of them
+  bare sub-path keys, to 277 names; pattern sub-paths it cannot expand (`./utils/*`) are reported
+  as partial coverage. Run on itself it scored 1.00 before and after: rn-terrain imports nothing
+  from sub-paths, so a self-test could not have found this.
 - The ratchet's `runRgCount` read every `rg` failure as 0. A stray `apps/gurudevi-mobile/NUL`
   folder made `rg` fail under Node since 2026-11-06, so four metrics read 0 and passed. Failures
   now fail the gate, and two hidden regressions show: files over 800 lines 41 > 36, root scripts
