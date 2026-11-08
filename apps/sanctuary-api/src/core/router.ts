@@ -31,6 +31,12 @@ export const router = api.router({
         signal ?? AbortSignal.timeout(5000),
       ),
     ),
+    // The identity was just re-checked against a live session, so the grant can't outlive it.
+    syncCredentials: api.identity.syncCredentials.handler(({ context }) => {
+      const issuer = context.platform.syncCredentials;
+      if (!issuer) throw new ORPCError('SERVICE_UNAVAILABLE');
+      return issuer.issue(context.identity.accountId, context.identity.expiresAt);
+    }),
   },
   authority: {
     refreshSnapshot: api.authority.refreshSnapshot.handler(({ input, context, signal }) =>

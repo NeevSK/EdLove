@@ -60,8 +60,19 @@ describe('foundation configuration admission', () => {
         AUTH_JWKS_URL: 'https://auth.example.test/jwks',
         AUTH_AUDIENCE: 'api',
         SNAPSHOT_SIGNING_PRIVATE_KEY: 'pkcs8-pem',
+        POWERSYNC_URL: 'https://instance.powersync.example.test',
+        POWERSYNC_SIGNING_JWK: '{"kty":"EC"}',
       }).API_AUTHENTICATION,
     ).toBe('required');
+  });
+
+  it('rejects a PowerSync URL without its signing key, and the reverse', () => {
+    expect(() =>
+      readServerConfig({ POWERSYNC_URL: 'https://instance.powersync.example.test' }),
+    ).toThrow(/both its URL and its signing key/);
+    expect(() => readServerConfig({ POWERSYNC_SIGNING_JWK: '{"kty":"EC"}' })).toThrow(
+      /both its URL and its signing key/,
+    );
   });
 
   it('rejects production without the permission snapshot signing key', () => {

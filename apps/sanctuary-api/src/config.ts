@@ -51,6 +51,9 @@ const environmentSchema = z
     API_BROWSER_ORIGINS: browserOrigins,
     // Ed25519 private key (PKCS#8 PEM) for offline permission snapshots; held in Doppler.
     SNAPSHOT_SIGNING_PRIVATE_KEY: z.string().trim().min(1).optional(),
+    // PowerSync instance origin and the ES256 private JWK that signs its grants; held in Doppler.
+    POWERSYNC_URL: z.url().optional(),
+    POWERSYNC_SIGNING_JWK: z.string().trim().min(1).optional(),
   })
   .refine((config) => config.NODE_HEADERS_TIMEOUT_MS <= config.NODE_REQUEST_TIMEOUT_MS, {
     path: ['NODE_HEADERS_TIMEOUT_MS'],
@@ -90,7 +93,12 @@ const environmentSchema = z
       path: ['SNAPSHOT_SIGNING_PRIVATE_KEY'],
       message: 'Production requires the permission snapshot signing key',
     },
-  );
+  )
+  // Without both, identity.syncCredentials answers SERVICE_UNAVAILABLE; half a configuration is a mistake.
+  .refine((config) => Boolean(config.POWERSYNC_URL) === Boolean(config.POWERSYNC_SIGNING_JWK), {
+    path: ['POWERSYNC_SIGNING_JWK'],
+    message: 'PowerSync needs both its URL and its signing key, or neither',
+  });
 
 export type ServerConfig = z.infer<typeof environmentSchema>;
 

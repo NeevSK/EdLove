@@ -18,7 +18,7 @@ and effect mechanisms; no teacher, principal,
 bot or AI feature is thereby implemented. New migrations were executed only in
 disposable databases; repository configuration is not a deployed system.
 
-## Current evidence checkpoint — 2026-11-01
+## Current evidence checkpoint — 2026-11-01 (latest run: 2026-11-08, 65/65)
 
 `pnpm --filter @repo/sanctuary-api test:database` completed **G2 / 3 files / 48
 scenarios passed** against a randomly named disposable PostgreSQL database via

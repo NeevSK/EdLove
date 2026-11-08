@@ -24,6 +24,7 @@ import {
   createSecurity,
   type SecurityOptions,
 } from './security/security';
+import { createSyncCredentialIssuer } from './security/syncCredentials';
 
 export function createPlatform(
   config: ServerConfig,
@@ -57,6 +58,14 @@ export function createPlatform(
     lockTimeoutMs: config.DB_LOCK_TIMEOUT_MS,
     idleTransactionTimeoutMs: config.DB_IDLE_TRANSACTION_TIMEOUT_MS,
   });
+  // Built here so a bad PowerSync key or URL stops the API at startup, not at first sync.
+  const syncCredentials =
+    config.POWERSYNC_URL && config.POWERSYNC_SIGNING_JWK
+      ? createSyncCredentialIssuer({
+          endpoint: config.POWERSYNC_URL,
+          signingJwk: config.POWERSYNC_SIGNING_JWK,
+        })
+      : undefined;
   const operations = new OperationStore(pool, {
     statementTimeoutMs: config.DB_STATEMENT_TIMEOUT_MS,
     lockTimeoutMs: config.DB_LOCK_TIMEOUT_MS,
@@ -582,6 +591,7 @@ export function createPlatform(
         }
       },
     },
+    syncCredentials,
     operations,
     executeAccountCommand,
     readSensitive,

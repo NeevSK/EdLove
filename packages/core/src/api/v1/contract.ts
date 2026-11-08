@@ -48,6 +48,15 @@ export const appContract = {
     ),
     // The one way a signed-in person gets in. Returns the existing personal bond on retry.
     createInitialBond: foundation.input(InitialBondInput).output(scope),
+    // A short-lived grant for the PowerSync instance (a connector's fetchCredentials). Stores
+    // nothing; SERVICE_UNAVAILABLE when sync isn't configured on this server.
+    syncCredentials: foundation.input(z.undefined()).output(
+      z.strictObject({
+        endpoint: z.url({ protocol: /^https$/ }),
+        token: z.string().min(1),
+        expiresAt: z.number().int().positive(),
+      }),
+    ),
   },
   authority: {
     // Issues the signed offline permission snapshot for one bond. The device stores it and

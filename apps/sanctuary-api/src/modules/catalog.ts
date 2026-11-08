@@ -161,6 +161,16 @@ export const capabilities: readonly CapabilityManifest[] = [
     requiredEvidence: 'G2',
   },
   {
+    // Signs a grant and stores nothing, so a query.
+    name: 'identity.syncCredentials',
+    module: 'identity',
+    kind: 'query',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
     name: 'authority.refreshSnapshot',
     module: 'authority',
     kind: 'command',

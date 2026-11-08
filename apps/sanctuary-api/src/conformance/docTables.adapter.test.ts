@@ -6,6 +6,11 @@ import { docDrift, parseIndexTable, parseModuleStructure } from './docTables.ada
 
 const repo = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url));
 const catalog = { modules: [...platformModules, ...domainModules], capabilities };
+// The catalog as it stood when that drift existed, so later capabilities don't rewrite history.
+const catalogOn20261108 = {
+  ...catalog,
+  capabilities: capabilities.filter((c) => c.name !== 'identity.syncCredentials'),
+};
 
 // The rows as they stood on 2026-11-08, before the drift was corrected.
 const driftedIndex = [
@@ -53,7 +58,7 @@ describe('doc tables adapter', () => {
       ...parseIndexTable('index.md', driftedIndex),
       ...parseModuleStructure('structure.md', driftedStructure),
     ];
-    expect(docDrift(claims, catalog)).toEqual([
+    expect(docDrift(claims, catalogOn20261108)).toEqual([
       {
         doc: 'index.md',
         line: 3,

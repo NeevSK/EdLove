@@ -10,6 +10,25 @@ tags: [api, foundation, authority, roadmap, follow-ups, todo]
 
 # Foundation Roadmap and Follow-ups
 
+## 2026-11-08 Gate 1 evidence and device sync on v1
+
+- `test:database` ran (G2, 65/65, disposable database dropped). It proves a signed-in session
+  can't insert or upgrade its own bond (`42501`), the Gate 1 security claim.
+- New capability `identity.syncCredentials`: a 5-minute ES256 grant for PowerSync, never past
+  the session (`src/security/syncCredentials.ts`). Verified against the real Doppler key: the
+  key id and public point match the key `powersync/service.yaml` trusts, and a grant verifies
+  with it. The API refuses half a PowerSync configuration; without one, the capability answers
+  `SERVICE_UNAVAILABLE`. Whether production must require sync is an open owner decision.
+- `createV1SyncConnector` in `@repo/core/adapters/powersync`, wired into mobile's
+  `PowerSyncProvider` with its rollout, network and read-policy admission restored (its 15
+  G3-substituted tests pass; 7 had failed since the reset). Synced writes have no v1 capability
+  yet, so they stay queued; each domain adds its path when its card is admitted.
+- Snapshots don't use sync: they come in the `refreshSnapshot` response and the client's
+  permission tables are local-only. The `issueSnapshot` comment saying otherwise was corrected.
+- PowerSync CLI: `pnpm dlx powersync@0.10.3`. Its top-level `--help` crashes inside the CLI's own
+  UI library; subcommands work. Cloud commands need `powersync login` by the owner (no token is
+  in Doppler). Nothing was deployed; the sync config needed no change.
+
 ## 2026-11-08 Capability conformance and bedrock
 
 - Every capability is declared in `src/modules/catalog.ts` (`capabilities`), held equal to the

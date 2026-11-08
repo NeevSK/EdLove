@@ -9,8 +9,8 @@ import {
 import { API_V1_PREFIX } from '@repo/core/api/v1/client';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
-import { createMiddleware } from 'hono/factory';
 import { cors } from 'hono/cors';
+import { createMiddleware } from 'hono/factory';
 import { secureHeaders } from 'hono/secure-headers';
 import {
   OperationConflict,
@@ -294,6 +294,7 @@ export function createApp(procedures: Router<APIContext> = router, options: AppO
         platform: options.platform && {
           security: options.platform.security,
           executeAccountCommand: options.platform.executeAccountCommand,
+          syncCredentials: options.platform.syncCredentials,
         },
       },
     });

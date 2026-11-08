@@ -25,6 +25,7 @@ const admittedHostFiles = new Set([
   'apps/sanctuary-api/src/node-server.ts',
   'apps/sanctuary-api/src/platform.ts',
   'apps/sanctuary-api/src/security/security.ts',
+  'apps/sanctuary-api/src/security/syncCredentials.ts',
   'apps/sanctuary-api/src/operations/store.ts',
   'apps/sanctuary-api/src/operations/dispatcher.ts',
   'apps/sanctuary-api/src/modules/catalog.ts',
@@ -221,6 +222,7 @@ export function auditComposition(files) {
             scopes: nativeProcedure,
             entry: nativeProcedure,
             createInitialBond: nativeProcedure,
+            syncCredentials: nativeProcedure,
           },
           authority: { refreshSnapshot: nativeProcedure },
         }) ||
@@ -280,6 +282,7 @@ export function auditComposition(files) {
             scopes: (node) => nativeHandler(node, 'identity.scopes'),
             entry: (node) => nativeHandler(node, 'identity.entry'),
             createInitialBond: (node) => nativeHandler(node, 'identity.createInitialBond'),
+            syncCredentials: (node) => nativeHandler(node, 'identity.syncCredentials'),
           },
           authority: {
             refreshSnapshot: (node) => nativeHandler(node, 'authority.refreshSnapshot'),
@@ -349,6 +352,8 @@ export function auditComposition(files) {
           security: (node) => accessPath(node)?.join('.') === 'options.platform.security',
           executeAccountCommand: (node) =>
             accessPath(node)?.join('.') === 'options.platform.executeAccountCommand',
+          syncCredentials: (node) =>
+            accessPath(node)?.join('.') === 'options.platform.syncCredentials',
         });
       if (nativeCalls.length !== 1 || !projection)
         add(

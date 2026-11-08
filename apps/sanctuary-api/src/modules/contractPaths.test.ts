@@ -19,6 +19,7 @@ describe('contract paths', () => {
       'identity.entry',
       'identity.scopes',
       'identity.session',
+      'identity.syncCredentials',
     ]);
   });
 

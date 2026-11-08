@@ -33,17 +33,21 @@ Five things, each enforced by something other than memory:
 | The same scenarios on every channel | Channels drifting apart | [Conformance suite](channel-admission-model.md#what-to-build-in-one-seam), to be built |
 | Evidence named by level | "Tests passed" meaning nothing | G0–G5 and R1 in `AGENTS.md`, the gates below |
 
-## Where we stand (2026-11-06)
+## Where we stand (2026-11-08)
 
-- **Not landed.** The reset and Arrive are uncommitted. The hosted API is pre-reset, with no
-  `/api/v1`.
-- **Evidence so far:** G4 Metro Android bundle; API 99/99, policies 88/88 at G1. Nothing on a
-  device, and the migrations have run nowhere hosted.
-- **Known failures:** 79 mobile type errors; 11 mobile entry tests and 3 suites, including a QR
-  link test where an invalid action passes through.
-- **Not yet safe in production:** an old database policy lets any signed-in person give
-  themselves an admin or principal bond. The fix is in unrun migration `20261106010000`, so
-  this gets more urgent, not less.
+- **Landed in git** (`472b6a0ae` reset, `308aa4f35` Arrive). The hosted Render API is still
+  pre-reset, with no `/api/v1`.
+- **Evidence:** API G1 157/157; G2 sockets 15/15; G2 real PostgreSQL 65/65 (2026-11-08, a
+  disposable database, created and dropped). Per-capability evidence is in the
+  [conformance report](../../apps/sanctuary-api/docs/implementation/2026-11-08-capability-conformance-plan.md).
+  Mobile type errors: 0. Nothing on a device yet.
+- **Bond self-grant closed on the Doppler database:** migration `20261106010000` ran on
+  2026-11-06, and a signed-in session inserting or upgrading its own bond to `admin` is refused
+  (`42501`) on real PostgreSQL. The test database applies the migration's revoke, not the full
+  migration chain.
+- **Device sync:** the v1 connector exists (`identity.syncCredentials` + `createV1SyncConnector`),
+  behind the `isPowerSyncEnabled` rollout flag (off by default). No v1 capability accepts synced
+  writes yet, so they stay queued on the device.
 
 ## The gates
 
@@ -58,15 +62,19 @@ Telegram, WhatsApp or both may be tried later. So Arrive on a phone moved after 
 
 Get the real thing running, and the old API gone.
 
-1. Check the QR test failure. It is a security path.
-2. Add provenance columns to `api_command_audit` before its migration runs; adding them is
-   cheapest now.
-3. Review deletions, then commit the reset and Arrive separately.
-4. Check what still depends on the old API: the PayHere webhook and sync upload. Web stops
-   working at the switch, with 44 files importing the retired client.
-5. Run migrations `20261030020000`, `021000`, `022000`, `20261104010000`, `20261106010000` on a
-   copy first. **Owner's yes needed.**
-6. Set Render's environment and snapshot keys in Doppler, deploy, and remove the old code path.
+1. ~~Check the QR test failure.~~ Done: an invalid action is rejected (`nativeIntent.test.ts`, G1 10/10).
+2. ~~Add provenance columns to `api_command_audit`.~~ Done 2026-11-06.
+3. ~~Review deletions, then commit the reset and Arrive separately.~~ Done (`472b6a0ae`, `308aa4f35`).
+4. What still depended on the old API: **sync** now has a v1 path (credentials and download;
+   writes wait for domain capabilities). **PayHere** has no server side at all, old or new; it
+   stays dead until a product needs payments. Web's 48 legacy imports are frozen by the
+   `legacyCoreApiImports` ratchet.
+5. ~~Run the migrations.~~ They ran on the Doppler database on 2026-11-06, without the copy
+   first (see the follow-ups). Still open: check whether the 2 archived principal bonds were
+   self-granted.
+6. Set Render's environment (snapshot key, and `POWERSYNC_URL` with `POWERSYNC_SIGNING_JWK` for
+   device sync), deploy, and remove the old code path. **Owner.** Whether production must refuse
+   to start without sync is an open owner decision.
 
 **Evidence:** `/health/live` reports `generation: v1`; old paths return 404; a client can no
 longer insert its own bond, shown on the real database.
@@ -121,7 +129,8 @@ on web and mobile.
 already lists hosting, the morning load test, a restored backup, migrations on a copy, tested
 alerts, and incident and revocation drills. Add:
 
-- **Dependencies:** oRPC is `2.0.0-beta.46` and Hono is `5.0.0-rc.1`. Accept these with a named
+- **Dependencies:** oRPC is on the 2.0 beta line and Hono on the 5.0 release candidate (versions in
+  `scripts/lib/dependency-cohorts.mjs`). Accept these with a named
   owner and a pin, or wait for stable. A conscious decision, not drift.
 - **Keys:** rotation drilled for snapshot signing, the `service_role` key and webhook secrets.
   Rotate the Stitch keys that were pasted in chat.

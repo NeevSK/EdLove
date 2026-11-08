@@ -930,7 +930,11 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
       records: os.$context<APIContext>().handler(async ({ context, signal: requestSignal }) => {
         if (!context.identity || !context.platform || !requestSignal)
           throw new ORPCError('UNAUTHORIZED');
-        expect(Object.keys(context.platform).sort()).toEqual(['executeAccountCommand', 'security']);
+        expect(Object.keys(context.platform).sort()).toEqual([
+          'executeAccountCommand',
+          'security',
+          'syncCredentials',
+        ]);
         const identity = context.identity;
         return platform.withAccountData(identity, requestSignal, async (client) => {
           const result = await client.query<{ owner_id: string; value: string }>(
