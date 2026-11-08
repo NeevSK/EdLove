@@ -10,11 +10,19 @@ import type { Bond } from '@repo/core/types/Identity';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { startPermissionSnapshotRefresh } from '../snapshotRefresh';
 
-const writes = vi.hoisted(() => ({ run: vi.fn(async (_statement: unknown) => undefined) }));
+const writes = vi.hoisted(() => ({
+  run: vi.fn(async (_statement: unknown) => undefined),
+  known: null as { updatedAt: string } | null,
+  valid: true,
+}));
 vi.mock('@repo/core/adapters/powersync/database', () => ({
   getDrizzleDB: () => ({
+    query: { policyVersion: { findFirst: async () => writes.known } },
     transaction: async (work: (tx: { run: typeof writes.run }) => Promise<void>) => work(writes),
   }),
+}));
+vi.mock('@repo/core/logic/permissions/signature', () => ({
+  verifySnapshotSignature: async () => writes.valid,
 }));
 
 const bond: Bond = {
@@ -89,6 +97,8 @@ describe('permission snapshot refresh', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     writes.run.mockClear();
+    writes.known = null;
+    writes.valid = true;
     loadDecisions = vi.fn(async () => undefined);
     useCedarDecisionStore.setState({ loadDecisions });
     useScopeSessionStore.setState({ snapshot: null });
@@ -107,6 +117,27 @@ describe('permission snapshot refresh', () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(writes.run).toHaveBeenCalledTimes(4);
     expect(loadDecisions).toHaveBeenCalledWith('account-1', PERSONAL_SCOPE_PERSPECTIVE.id);
+  });
+
+  it('stores nothing when the signature fails', async () => {
+    writes.valid = false;
+    const { refreshSnapshot, client: v1 } = client(async () => issued(24));
+    stop = startPermissionSnapshotRefresh(v1);
+    commit(scope());
+    await vi.waitFor(() => expect(refreshSnapshot).toHaveBeenCalledTimes(1));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(writes.run).not.toHaveBeenCalled();
+    expect(loadDecisions).not.toHaveBeenCalled();
+  });
+
+  it('never moves the policy version backwards past a newer synced one', async () => {
+    writes.known = { updatedAt: new Date(Date.now() + 60_000).toISOString() };
+    const { client: v1 } = client(async () => issued(24));
+    stop = startPermissionSnapshotRefresh(v1);
+    commit(scope());
+    await vi.waitFor(() => expect(loadDecisions).toHaveBeenCalledTimes(1));
+    // The snapshot row is replaced; policy_version is left alone.
+    expect(writes.run).toHaveBeenCalledTimes(2);
   });
 
   it('reloads decisions again when sync later delivers a newer row', async () => {

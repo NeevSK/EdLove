@@ -1,6 +1,7 @@
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import type { AppContractClient } from '@repo/core/api/v1/contract';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
 import { type ScopeSessionSnapshot, useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { permissionScopeId } from '@repo/core/store/scopeSessionCoordinator';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
@@ -13,10 +14,22 @@ const MIN_DELAY_MS = 60 * 1000;
 
 type IssuedSnapshot = Awaited<ReturnType<AppContractClient['authority']['refreshSnapshot']>>;
 
-/** Keeps the signed row on the device, so permissions survive a restart with no network. */
+/**
+ * Keeps the signed row on the device, so permissions survive a restart with no network.
+ * Nothing is stored unless the server's signature holds, and the policy version only
+ * moves forward: an older response never replaces a newer version that sync delivered.
+ */
 async function storeSnapshot(issued: IssuedSnapshot) {
+  const row = {
+    ...issued,
+    permissions: JSON.stringify(issued.permissions),
+    temporalHints: JSON.stringify(issued.temporalHints),
+  };
+  if (!(await verifySnapshotSignature(row))) throw new Error('Snapshot signature is invalid');
   const db = getDrizzleDB();
   const id = `${issued.userId}:${issued.activeBondId}`;
+  const known = await db.query.policyVersion.findFirst();
+  const newer = !known || Date.parse(issued.generatedAt) > Date.parse(known.updatedAt);
   await db.transaction(async (tx) => {
     await tx.run(sql`delete from permission_snapshots where id = ${id}`);
     await tx.run(sql`insert into permission_snapshots
@@ -24,8 +37,8 @@ async function storeSnapshot(issued: IssuedSnapshot) {
        generated_at, expires_at, permissions, temporal_hints, signature)
       values (${id}, ${issued.userId}, ${issued.activeBondId}, ${issued.activeEntityId},
        ${issued.activeEntityType}, ${issued.schoolId}, ${issued.policyVersion}, ${issued.generatedAt},
-       ${issued.expiresAt}, ${JSON.stringify(issued.permissions)}, ${JSON.stringify(issued.temporalHints)},
-       ${issued.signature})`);
+       ${issued.expiresAt}, ${row.permissions}, ${row.temporalHints}, ${issued.signature})`);
+    if (!newer) return;
     await tx.run(sql`delete from policy_version where id = 'cedar'`);
     await tx.run(sql`insert into policy_version (id, hash, updated_at)
       values ('cedar', ${issued.policyVersion}, ${issued.generatedAt})`);
