@@ -59,6 +59,23 @@ describe('GET /api/architecture/source and getFileSourceAction security', () => 
       expect(body.error).toBe('Endpoint unavailable');
     });
 
+    it('answers only loopback hosts, so a rebound DNS name gets nothing', async () => {
+      const req = new NextRequest(
+        'http://localhost:3000/api/architecture/source?path=packages/core/src/index.ts',
+        { headers: { host: 'attacker.example:3000' } },
+      );
+      expect((await GET(req)).status).toBe(404);
+    });
+
+    it('refuses files that are not source, even inside the repository', async () => {
+      for (const p of ['packages/core/package.json', 'apps/gurudevi-mobile/app.json', 'pnpm-lock.yaml']) {
+        const req = new NextRequest(
+          `http://localhost:3000/api/architecture/source?path=${encodeURIComponent(p)}`,
+        );
+        expect((await GET(req)).status).toBe(403);
+      }
+    });
+
     it('returns 404 for non-existent file in development', async () => {
       const req = new NextRequest(
         'http://localhost:3000/api/architecture/source?path=packages/core/does-not-exist.ts',

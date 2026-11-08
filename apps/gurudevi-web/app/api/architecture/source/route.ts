@@ -41,7 +41,7 @@ const ALLOWED_SOURCE = /^(apps|packages)\/[^?#]+\.(tsx?|jsx?|mjs|cjs|css|md)$/;
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', 'sanctuary.localhost']);
 
 function isLoopback(request: NextRequest): boolean {
-  const host = request.headers.get('host')?.replace(/:\d+$/, '').toLowerCase();
+  const host = (request.headers.get('host') ?? request.nextUrl.host).replace(/:\d+$/, '').toLowerCase();
   // Checked on the Host header, so a rebound DNS name pointing at this machine is refused.
   return Boolean(host && LOOPBACK_HOSTS.has(host));
 }
