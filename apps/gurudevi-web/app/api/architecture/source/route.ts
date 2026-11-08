@@ -36,13 +36,23 @@ function isForbiddenPath(filePath: string): boolean {
   return FORBIDDEN_FILE_PATTERNS.some((pattern) => pattern.test(filePath));
 }
 
+// The explorer shows source code. Anything else stays unreadable, whatever the denylist misses.
+const ALLOWED_SOURCE = /^(apps|packages)\/[^?#]+\.(tsx?|jsx?|mjs|cjs|css|md)$/;
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', 'sanctuary.localhost']);
+
+function isLoopback(request: NextRequest): boolean {
+  const host = request.headers.get('host')?.replace(/:\d+$/, '').toLowerCase();
+  // Checked on the Host header, so a rebound DNS name pointing at this machine is refused.
+  return Boolean(host && LOOPBACK_HOSTS.has(host));
+}
+
 export async function GET(request: NextRequest) {
   // CRITICAL GATE: Development tool only. Strictly disabled in production.
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' || !isLoopback(request)) {
     return NextResponse.json({ error: 'Endpoint unavailable' }, { status: 404 });
   }
 
-  const filePath = request.nextUrl.searchParams.get('path');
+  const filePath = request.nextUrl.searchParams.get('path')?.replace(/\\/g, '/');
 
   if (!filePath) {
     return NextResponse.json({ error: 'Missing path parameter' }, { status: 400 });
@@ -54,23 +64,22 @@ export async function GET(request: NextRequest) {
   }
 
   // Security guard: Block sensitive files (env, keys, credentials)
-  if (isForbiddenPath(filePath)) {
+  if (isForbiddenPath(filePath) || !ALLOWED_SOURCE.test(filePath)) {
     return NextResponse.json({ error: 'Access denied: protected file' }, { status: 403 });
   }
 
-  const repoRoot = getRepoRoot();
-  const absolutePath = path.resolve(repoRoot, filePath);
-
-  // Security guard: Ensure path remains inside repository root
-  if (!absolutePath.toLowerCase().startsWith(repoRoot.toLowerCase())) {
-    return NextResponse.json({ error: 'Access denied: outside workspace' }, { status: 403 });
-  }
-
-  if (!fs.existsSync(absolutePath)) {
-    return NextResponse.json({ error: `File not found: ${filePath}` }, { status: 404 });
+  const repoRoot = fs.realpathSync(getRepoRoot());
+  const candidate = path.resolve(repoRoot, filePath);
+  if (!fs.existsSync(candidate)) {
+    return NextResponse.json({ error: 'File not found' }, { status: 404 });
   }
 
   try {
+    // Resolve links first, then require the real file to sit inside the repository.
+    const absolutePath = fs.realpathSync(candidate);
+    if (!absolutePath.toLowerCase().startsWith(repoRoot.toLowerCase() + path.sep)) {
+      return NextResponse.json({ error: 'Access denied: outside workspace' }, { status: 403 });
+    }
     const stat = fs.statSync(absolutePath);
     if (!stat.isFile()) {
       return NextResponse.json({ error: 'Target is not a file' }, { status: 400 });
@@ -86,8 +95,7 @@ export async function GET(request: NextRequest) {
       sizeBytes: stat.size,
       content,
     });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: `Failed to read file: ${message}` }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Failed to read file' }, { status: 500 });
   }
 }
