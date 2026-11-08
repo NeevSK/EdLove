@@ -22,31 +22,37 @@ const __dirname = dirname(__filename);
 const REPO_ROOT = resolve(__dirname, '..');
 const RATCHET_FILE = resolve(REPO_ROOT, 'tooling/ratchet.json');
 
-function runRgCount(pattern, extraArgs = []) {
+// rg exits 1 for "no matches" and 2 for an error. An error must fail the gate: reading it as 0
+// once let every metric pass while a stray Windows `NUL` folder made rg fail (2026-11-08).
+function runRgCount(pattern, { roots = ['packages', 'apps'], extraArgs = [] } = {}) {
+  const args = [
+    pattern,
+    ...roots,
+    '-g', '*.ts',
+    '-g', '*.tsx',
+    '-g', '!**/__tests__/**',
+    '-g', '!**/*.test.*',
+    '-g', '!**/dist/**',
+    '-g', '!**/generated/**',
+    '-g', '!**/node_modules/**',
+    // A device name on Windows; rg can't open it and it can't hold source.
+    '-g', '!**/NUL',
+    ...extraArgs,
+    '--stats',
+  ];
   try {
-    const args = [
-      pattern,
-      'packages',
-      'apps',
-      '-g', '*.ts',
-      '-g', '*.tsx',
-      '-g', '!**/__tests__/**',
-      '-g', '!**/*.test.*',
-      '-g', '!**/dist/**',
-      '-g', '!**/generated/**',
-      '-g', '!**/node_modules/**',
-      ...extraArgs,
-      '--stats',
-    ];
     const output = execFileSync('rg', args, {
       cwd: REPO_ROOT,
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
+      stdio: ['ignore', 'pipe', 'pipe'],
+      maxBuffer: 256 * 1024 * 1024,
     });
     const match = output.match(/(\d+)\s+matches/);
-    return match ? parseInt(match[1], 10) : 0;
-  } catch {
-    return 0;
+    if (!match) throw new Error(`rg printed no match count for ${pattern}`);
+    return parseInt(match[1], 10);
+  } catch (error) {
+    if (error.status === 1) return 0;
+    throw new Error(`rg failed for ${pattern}: ${error.stderr || error.message}`);
   }
 }
 
@@ -64,6 +70,16 @@ function countLintSuppressions() {
 
 function countFromSites() {
   return runRgCount('(?:\\.from\\([`\'"]|(?:supabase|supabaseClient|client|db)\\.from\\()');
+}
+
+// Imports of the frozen pre-v1 API in packages/core/src/api from outside it. New code goes to
+// api/v1 and the module folders; this may only fall. See the capability conformance plan.
+function countLegacyCoreApiImports() {
+  const extraArgs = ['--pcre2', '-g', '!packages/core/src/api/**'];
+  return (
+    runRgCount('@repo/core/api/(?!v1/)', { extraArgs }) +
+    runRgCount('from\\s+[\'"](?:\\.\\./)+api/(?!v1/)', { roots: ['packages/core/src'], extraArgs })
+  );
 }
 
 function countRootScripts() {
@@ -106,6 +122,7 @@ function measureMetrics() {
     supabaseFromSites: countFromSites(),
     sourceFilesOver800Loc: countFilesOver800Loc(),
     rootScripts: countRootScripts(),
+    legacyCoreApiImports: countLegacyCoreApiImports(),
   };
 }
 
@@ -137,6 +154,7 @@ function main() {
     supabaseFromSites: 'Direct .from() database call sites',
     sourceFilesOver800Loc: 'Source files > 800 LOC',
     rootScripts: 'Root package.json scripts',
+    legacyCoreApiImports: 'Imports of frozen pre-v1 core API',
   };
 
   console.log('----------------------------------------------------------------------');

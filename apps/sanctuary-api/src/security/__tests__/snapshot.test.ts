@@ -4,6 +4,7 @@ import { cedarPolicyVersion } from '@repo/policies';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Pool, type PoolClient } from 'pg';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { capabilityTag } from '../../conformance/evidence';
 import { createSecurity } from '../security';
 
 const issuer = 'https://identity.example/auth/v1';
@@ -106,7 +107,7 @@ function syncedRow(params: unknown[]) {
   };
 }
 
-describe('offline permission snapshot issuance', () => {
+describe(`offline permission snapshot issuance ${capabilityTag('authority.refreshSnapshot')}`, () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });

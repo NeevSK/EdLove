@@ -76,8 +76,8 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 
 | Module | Namespace | Status |
 | --- | --- | --- |
-| Identity and accounts | `identity` | admitted (`session`, `scopes`) |
-| Bonds and authority | `authority` | admitted (`refreshSnapshot`; boundary in `security.ts`; domain namespaces permit nothing yet) |
+| Identity and accounts | `identity` | admitted (`session`, `scopes`, `entry`, `createInitialBond`; [card](platform/identity.md), draft) |
+| Bonds and authority | `authority` | admitted (`refreshSnapshot`; boundary in `security.ts`; domain namespaces permit nothing yet; [card](platform/authority.md), draft) |
 | Durable operations | `operations` | skeleton (store and dispatcher implemented internally) |
 | Request budgets | `budgets` | skeleton |
 | Devices and trust | `devices` | skeleton |

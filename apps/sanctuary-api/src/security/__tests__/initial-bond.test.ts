@@ -2,6 +2,7 @@ import { INITIAL_BOND_CAPACITIES, InitialBondInput } from '@repo/core/api/v1/con
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Pool, type PoolClient } from 'pg';
 import { describe, expect, it, vi } from 'vitest';
+import { capabilityTag } from '../../conformance/evidence';
 import { createSecurity } from '../security';
 
 const issuer = 'https://identity.example/auth/v1';
@@ -65,7 +66,7 @@ async function setup(existing: boolean, failOn?: string) {
 
 const input = { capacity: 'teacher', displayName: 'Nimali' } as const;
 
-describe('identity.createInitialBond', () => {
+describe(`identity.createInitialBond ${capabilityTag('identity.createInitialBond')}`, () => {
   it('creates one second-class personal bond on the account, with its evidence', async () => {
     const { security, identity, signal, ran, pool } = await setup(false);
     try {
@@ -121,7 +122,7 @@ describe('identity.createInitialBond', () => {
   });
 });
 
-describe('who may choose a first bond', () => {
+describe(`who may choose a first bond ${capabilityTag('identity.createInitialBond')}`, () => {
   it('offers teacher, student and guardian only', () => {
     expect(INITIAL_BOND_CAPACITIES).toEqual(['teacher', 'student', 'guardian']);
     for (const capacity of INITIAL_BOND_CAPACITIES)

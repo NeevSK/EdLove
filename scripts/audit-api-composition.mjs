@@ -28,6 +28,14 @@ const admittedHostFiles = new Set([
   'apps/sanctuary-api/src/operations/store.ts',
   'apps/sanctuary-api/src/operations/dispatcher.ts',
   'apps/sanctuary-api/src/modules/catalog.ts',
+  // Capability conformance: read-only checks of the catalog, never on the request path.
+  // docs: apps/sanctuary-api/docs/implementation/2026-11-08-capability-conformance-plan.md
+  'apps/sanctuary-api/src/modules/contractPaths.ts',
+  'apps/sanctuary-api/src/conformance/cards.adapter.ts',
+  'apps/sanctuary-api/src/conformance/consumers.adapter.ts',
+  'apps/sanctuary-api/src/conformance/docTables.adapter.ts',
+  'apps/sanctuary-api/src/conformance/evidence.ts',
+  'apps/sanctuary-api/src/conformance/reconcile.ts',
 ]);
 const visit = (node, fn) => {
   fn(node);
@@ -154,6 +162,7 @@ export function auditComposition(files) {
         file.startsWith('apps/sanctuary-api/scripts/') &&
         ![
           'apps/sanctuary-api/scripts/audit-contracts.ts',
+          'apps/sanctuary-api/scripts/capability-conformance.ts',
           'apps/sanctuary-api/scripts/test-foundation-database.ts',
         ].includes(file)
       )

@@ -2,7 +2,7 @@
 title: "Dependencies"
 status: "active"
 created: 2026-11-06
-updated: 2026-11-06
+updated: 2026-11-08
 author: "Naveen"
 scribe: "Claude"
 tags: [architecture, dependencies, upgrades, babel, esm, vitest, reference]
@@ -35,6 +35,9 @@ Never write a version number into a doc or a skill. Point here instead.
    cohort values, so a stale cohort downgrades real packages.
 5. Check nothing moved backwards. `pnpm outdated` follows the `latest` tag, so it will suggest
    going down from a prerelease we chose on purpose (this happened to Hono).
+   The target is the newest release **in the channel we already use** (beta, rc, preview or
+   stable), and every workspace is synced to the highest version any of them uses. Read it with
+   `npm view <pkg> dist-tags`, not `latest`.
 6. Typecheck and test the API, web and mobile, then run the Android Metro bundle.
 
 **`deps:upgrade` only scans.** Despite its name, `smart-upgrade-deps.mjs` runs a `taze` scan and
@@ -117,3 +120,9 @@ verified on 2026-11-06). What stays CommonJS, and why:
 - **pnpm 12's lockfile has two YAML documents.** Tools that read it must use the second.
 - **`allowBuilds` also lists package names.** A scripted edit of `pnpm-workspace.yaml` can hit
   the wrong block.
+- **Hono was split across majors** (2026-11-08): the API on the 5 release candidate, `@repo/core`
+  on 4. It is now in the `ORPC_FOUNDATION` cohort so the harmonizer keeps one version. Hono 5
+  types `c.req.json()` as `unknown`, which only the frozen legacy `packages/core/src/api/handlers`
+  trip over. `@zenstackhq/server` still lists `hono ^4.6.0` as an optional adapter peer; core
+  doesn't import it, so `pnpm peers check` warns and nothing breaks. Re-check when ZenStack
+  widens the range.

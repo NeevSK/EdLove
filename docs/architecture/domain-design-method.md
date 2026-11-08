@@ -66,7 +66,9 @@ itself a reason for a new subdomain.
 
 Write one before the first procedure exists. Keep it short; it is a decision record,
 not an essay. Cards live in `docs/architecture/domains/<domain>/<subdomain>.md`, one
-file each.
+file each; platform modules use `docs/architecture/domains/platform/<module>.md`. List each
+capability by its full name, in backticks, under `## Commands` or `## Queries`: the
+capability conformance report reads those two sections.
 
 ```markdown
 ---

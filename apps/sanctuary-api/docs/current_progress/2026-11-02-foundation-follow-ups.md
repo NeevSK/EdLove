@@ -10,6 +10,19 @@ tags: [api, foundation, authority, roadmap, follow-ups, todo]
 
 # Foundation Roadmap and Follow-ups
 
+## 2026-11-08 Capability conformance and bedrock
+
+- Every capability is declared in `src/modules/catalog.ts` (`capabilities`), held equal to the
+  contract and router by fitness tests. `pnpm --filter @repo/sanctuary-api audit:conformance`
+  compares intent (cards), symbol, code and practice (tagged evidence, client callers) and fails
+  if a gap count rises. Tag a test that proves a capability with `capabilityTag()`.
+- oRPC moved to the newest 2.0 beta and `hono` joined its cohort, synced to the version the API uses.
+- Legacy `@repo/core/api` (252 files) is frozen, not sorted: `legacyCoreApiImports` may only fall.
+- The ratchet had been reading `rg` failures as 0; it now fails loudly, which shows two older
+  regressions (files over 800 lines, root scripts). Ceilings were not raised.
+- Next: run `test:database` so the identity queries get G2 evidence; confirm the two platform
+  cards. Record: [capability conformance plan](../implementation/2026-11-08-capability-conformance-plan.md).
+
 ## 2026-11-06 Channels, agents and the road to v1
 
 Owner direction: narrow, person-bound agents are the main model. Short-lived, non-destructive

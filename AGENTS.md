@@ -78,6 +78,12 @@ legacy aliases, conversion or parallel first-party transports. Passing its
 fixtures is not proof that the current API meets the target. User MCP, browser
 WebMCP and developer `platform-mcp` are distinct; record unimplemented channels
 and unresolved product decisions honestly.
+Every capability is declared in `apps/sanctuary-api/src/modules/catalog.ts` and has a card;
+`pnpm --filter @repo/sanctuary-api audit:conformance` compares card, contract, router, docs,
+tagged evidence (`capabilityTag()`) and callers, and fails if a gap count rises. New code never
+imports the frozen pre-v1 `@repo/core/api/*` (ratchet `legacyCoreApiImports`). Bedrock first:
+dependencies at the newest release in their own channel, and a tool's output is grounding only
+once its recall is measured ([plan](apps/sanctuary-api/docs/implementation/2026-11-08-capability-conformance-plan.md)).
 
 **Platform structure (read before any API, package or screen design):**
 [`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) is the
