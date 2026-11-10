@@ -128,10 +128,20 @@ export {
   type LinkRowProps,
 } from './Settings/SettingsRows';
 export { Sheet, type SheetProps } from './Sheet/Sheet';
-export { AppHeader, type AppHeaderProps } from './Shell/AppHeader';
+export { AppHeader, type AppHeaderProps, HeaderAvatar } from './Shell/AppHeader';
 export { NotificationItem, type NotificationItemProps } from './Shell/NotificationItem';
 export { SwitchRow, type SwitchRowProps } from './Shell/SwitchRow';
 export { TaskTabs, type TaskTabsProps } from './Shell/TaskTabs';
+export { WorldHeader, type WorldHeaderLayout, type WorldHeaderProps } from './Shell/WorldHeader';
+export { WorldTabBar, type WorldTabBarProps, type WorldTabItem } from './Shell/WorldTabBar';
+export {
+  type AssistantChoice,
+  type HeaderLayoutChoice,
+  type TabBarLayoutChoice,
+  type VisualDetailChoice,
+  YouSheet,
+  type YouSheetProps,
+} from './Shell/YouSheet';
 export { Slider, type SliderProps } from './Slider/Slider';
 export {
   EmptyState,

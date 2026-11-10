@@ -19,22 +19,48 @@ import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useUIStore } from '@repo/core/store/useUIStore';
 import { BreathGuide } from '@repo/self/wellbeing';
-import { ActiveSubTabStrip, DomainSubHeader } from '@repo/ui';
+import { ActiveSubTabStrip } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { AppHeader, Text as WText, useFloorPresence } from '@repo/ui/components/native';
+import {
+  Sheet,
+  Text as WText,
+  useFloorPresence,
+  WorldHeader,
+  WorldPicker,
+  YouSheet,
+} from '@repo/ui/components/native';
+import { useFidelityOptional, useThemeContextOptional } from '@repo/ui/context';
+import { type KitIconProps, shellLayoutOf, worldName } from '@repo/ui/theme';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
-import { Bell, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons/native';
+import {
+  Bell,
+  ChevronLeft,
+  Compass,
+  Heart,
+  LifeBuoy,
+  Library,
+  School,
+  Sparkles,
+  User,
+  Users,
+  Wind,
+  X,
+} from '@repo/ui/icons/native';
 import { Box, Modal, ModalContent, Pressable } from '@repo/ui/primitives';
 import { useWorld } from '@repo/ui/theme/native';
 import { tokens } from '@repo/ui/tokens';
 import { router, useGlobalSearchParams, usePathname } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useWindowDimensions, View } from 'react-native';
+import { type ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
+import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSnapshotRefresh } from '@/boot/useSnapshotRefresh';
 import { NativeShellTabs } from '@/components/navigation/NativeShellTabs';
+import { AssistantSheet } from '@/components/shell/AssistantSheet';
+import { RoomFab } from '@/components/shell/RoomFab';
+import { type CommonActions, ROOM_NAMES } from '@/components/shell/roomActions';
+import { ShellTabBar } from '@/components/shell/ShellTabBar';
 import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
 import { useShellVariant } from '@/lib/navigation/shellVariant';
@@ -43,6 +69,22 @@ import { getNativeShellConfig } from '@/lib/responsiveShell';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
 const EMPTY_DOMAIN_TABS: readonly string[] = [];
+
+/** The rooms' signs, drawn by the world's rooms bar. */
+const TAB_ICONS = {
+  library: Library,
+  workspace: School,
+  self: Heart,
+  community: Users,
+  profile: User,
+} as unknown as Readonly<Record<string, ComponentType<KitIconProps>>>;
+
+function greetingFor(hour: number): string {
+  if (hour < 5) return 'Good night';
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
 
 export const unstable_settings = {
   // SDK 58 reads `anchor`; `initialRouteName` still works but is deprecated.
@@ -263,148 +305,110 @@ function TabsLayoutContent() {
     router.replace(overviewRoute[currentDomain]);
   }, [currentDomain]);
 
-  // The shell's own header actions, as data: the kit draws them with the world's
-  // press, light and spoken counts. The bell goes to the notifications page.
-  const globalHeaderActions = [
-    {
-      key: 'settings',
-      label: 'Open settings',
-      icon: Settings,
-      onPress: () => router.push('/settings'),
-    },
-  ];
+  // The shell's shape, chosen by the person in "You"; the rooms move to a rail on wide screens.
+  const headerLayout = useActiveSubTabsStore((s) => s.preferences.headerLayout) ?? 'greeting';
+  const tabBarChoice = useActiveSubTabsStore((s) => s.preferences.tabBarLayout) ?? 'auto';
+  const assistantChoice = useActiveSubTabsStore((s) => s.preferences.assistantButton) ?? 'tutii';
+  const updatePreferences = useActiveSubTabsStore((s) => s.updatePreferences);
+  const layout = useMemo(() => shellLayoutOf(width, tabBarChoice), [width, tabBarChoice]);
+  const chromeShown = !autoHideChromeOnScroll || isChromeVisible;
+
+  const [youOpen, setYouOpen] = useState(false);
+  const [worldOpen, setWorldOpen] = useState(false);
+  const [assistant, setAssistant] = useState<{ open: boolean; guide: boolean }>({
+    open: false,
+    guide: false,
+  });
+  const { worldId, setWorld } = useThemeContextOptional();
+  const { fidelityLevel, setFidelityLevel } = useFidelityOptional();
+
+  const goBack = useCallback(() => {
+    if (currentDomain === 'self') router.push('/self' as any);
+    else if (currentDomain === 'workspace') router.push('/workspace' as any);
+    else router.back();
+  }, [currentDomain]);
+
+  const subTabs =
+    showActiveSubTabs && (!isDomainRoot || domainTabs.length > 0) ? (
+      <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
+    ) : null;
 
   const renderHeader = () => {
+    // The oldest choice, kept: no header at all, only the task strip under the status bar.
     if (headerStyle === 'minimal_tabs_only') {
-      return (
-        <Box>
-          {showActiveSubTabs && (
-            <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
-          )}
-        </Box>
-      );
+      return <View style={{ paddingTop: insets.top }}>{subTabs}</View>;
     }
-
-    if (headerStyle === 'compact_domain') {
-      return (
-        <Box>
-          <DomainSubHeader
-            title={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
-            subtitle={isWorkspace ? undefined : displayName}
-            domain={currentDomain}
-            perspectivePill={
-              isWorkspace
-                ? {
-                    label: perspectiveLabel,
-                    onPress: () => setPerspectiveSwitcherOpen(true),
-                  }
-                : undefined
-            }
-            unreadCount={unreadCount}
-            onBackPress={
-              !isDomainRoot
-                ? () => {
-                    if (currentDomain === 'self') router.push('/self' as any);
-                    else if (currentDomain === 'workspace') router.push('/workspace' as any);
-                    else router.back();
-                  }
-                : undefined
-            }
-            onNotificationsPress={() => router.push('/notifications')}
-            onSettingsPress={() => router.push('/settings')}
-            onCatalogPress={() => setCatalogSheetTab(currentDomain)}
-          />
-          {showActiveSubTabs && (
-            <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
-          )}
-        </Box>
-      );
-    }
-
-    if (headerStyle === 'classic_global') {
-      return (
-        <Box>
-          <AppHeader
-            title={isWorkspace ? perspectiveLabel : title}
-            eyebrow={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
-            actions={globalHeaderActions}
-          />
-          {showActiveSubTabs && (
-            <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
-          )}
-        </Box>
-      );
-    }
-
-    // 'adaptive' (SMART DEFAULT)
-    if (!isDomainRoot) {
-      return (
-        <Box>
-          <DomainSubHeader
-            title={title}
-            subtitle={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
-            domain={currentDomain}
-            perspectivePill={
-              isWorkspace
-                ? {
-                    label: perspectiveLabel,
-                    onPress: () => setPerspectiveSwitcherOpen(true),
-                  }
-                : undefined
-            }
-            unreadCount={unreadCount}
-            onBackPress={() => {
-              if (currentDomain === 'self') {
-                router.push('/self' as any);
-              } else if (currentDomain === 'workspace') {
-                router.push('/workspace' as any);
-              } else {
-                router.back();
-              }
-            }}
-            onNotificationsPress={() => router.push('/notifications')}
-            onSettingsPress={() => router.push('/settings')}
-            onCatalogPress={() => setCatalogSheetTab(currentDomain)}
-          />
-          {showActiveSubTabs && (
-            <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
-          )}
-        </Box>
-      );
-    }
-
-    // Default Overview Screen under GlobalHeader (no redundant subheader!)
     return (
-      <Box>
-        <AppHeader
-          title={isWorkspace ? perspectiveLabel : title}
-          eyebrow={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
-          perspective={
-            isWorkspace
-              ? { label: perspectiveLabel, onPress: () => setPerspectiveSwitcherOpen(true) }
-              : undefined
-          }
-          actions={[
-            {
-              key: 'notifications',
-              label: 'Open notifications',
-              icon: Bell,
-              onPress: () => router.push('/notifications'),
-              badge: unreadCount || undefined,
-            },
-            ...globalHeaderActions,
-          ]}
-        />
-        {showActiveSubTabs && domainTabs.length > 0 && (
-          <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
-        )}
-      </Box>
+      <WorldHeader
+        layout={headerLayout}
+        posture={isDomainRoot ? 'home' : 'inside'}
+        room={ROOM_NAMES[currentDomain]}
+        title={title}
+        greeting={`${greetingFor(new Date().getHours())}, ${displayName}`}
+        person={{ name: user?.display_name || displayName, src: user?.avatar_url ?? undefined }}
+        onYou={() => setYouOpen(true)}
+        onBack={goBack}
+        icons={{ back: ChevronLeft as ComponentType<KitIconProps> }}
+        notifications={{
+          count: unreadCount,
+          label: 'Notifications',
+          icon: Bell as ComponentType<KitIconProps>,
+          onPress: () => router.push('/notifications'),
+        }}
+        assistant={{
+          label: assistantChoice === 'tutii' ? 'Tutii, help and guide' : 'Assistant',
+          icon: (assistantChoice === 'tutii' ? LifeBuoy : Sparkles) as ComponentType<KitIconProps>,
+          onPress: () => setAssistant({ open: true, guide: false }),
+        }}
+        perspective={
+          isWorkspace
+            ? {
+                label: perspectiveLabel,
+                switchLabel: 'Switch perspective',
+                onPress: () => setPerspectiveSwitcherOpen(true),
+              }
+            : undefined
+        }
+        below={subTabs}
+      />
     );
   };
 
+  const fabCommon = useMemo<CommonActions>(
+    () => ({
+      breathe: {
+        label: 'Breathing reset',
+        icon: Wind as ComponentType<KitIconProps>,
+        onPress: () => setBreathingOpen(true),
+      },
+      ask: {
+        label: assistantChoice === 'tutii' ? 'Ask Tutii' : 'Ask the assistant',
+        icon: Sparkles as ComponentType<KitIconProps>,
+        onPress: () => setAssistant({ open: true, guide: false }),
+      },
+      more:
+        currentDomain === 'self' || currentDomain === 'workspace'
+          ? {
+              label: `Everything in ${ROOM_NAMES[currentDomain]}`,
+              icon: Compass as ComponentType<KitIconProps>,
+              onPress: () => setCatalogSheetTab(currentDomain),
+            }
+          : undefined,
+    }),
+    [assistantChoice, currentDomain, setBreathingOpen],
+  );
+
+  // Space the floating action keeps above the rooms bar.
+  const fabBottom =
+    layout.tabs === 'rail'
+      ? insets.bottom + 20
+      : layout.tabs === 'floating'
+        ? Math.max(insets.bottom, 8) + 6 + 64 + 16
+        : Math.max(insets.bottom, 6) + 62 + 16;
+
   const nativeTabs = (
     <NativeShellTabs
-      header={!autoHideChromeOnScroll || isChromeVisible ? renderHeader() : null}
+      header={chromeShown ? renderHeader() : null}
       onTabPress={markTabPress}
       showLabels={shell.visibleChrome.tabLabels}
     />
@@ -416,28 +420,21 @@ function TabsLayoutContent() {
         nativeTabs
       ) : (
         <Tabs
+          tabBar={(props) => (
+            <ShellTabBar
+              {...props}
+              layout={layout.tabs}
+              icons={TAB_ICONS}
+              labels={ROOM_NAMES}
+              holds={{ self: true, workspace: true }}
+              signals={{ community: unreadCount > 0 }}
+              hidden={!chromeShown}
+            />
+          )}
           screenOptions={{
-            headerShown: !autoHideChromeOnScroll || isChromeVisible,
+            headerShown: chromeShown,
             tabBarHideOnKeyboard: true,
-            // The selected tab is the lit thing, at text strength (as in NativeShellTabs).
-            tabBarActiveTintColor: wt.lampDeep,
-            tabBarInactiveTintColor: wt.inkSoft,
-            tabBarShowLabel: shell.visibleChrome.tabLabels,
-            tabBarStyle: {
-              minHeight: shell.tabBar.minHeight,
-              paddingTop: shell.tabBar.paddingTop,
-              paddingBottom: shell.tabBar.paddingBottom,
-              backgroundColor: wt.ground,
-              borderTopColor: wt.line,
-              borderTopWidth: 0.75,
-              elevation: 0,
-              shadowOpacity: 0,
-              display: !autoHideChromeOnScroll || isChromeVisible ? 'flex' : 'none',
-            },
-            tabBarLabelStyle: {
-              fontSize: tokens.typography.sizes.xs,
-              fontWeight: '600',
-            },
+            tabBarPosition: layout.tabs === 'rail' ? 'left' : 'bottom',
             header: renderHeader,
             // Screens are see-through: the one floor under the app shows behind them.
             sceneStyle: { backgroundColor: 'transparent' },
@@ -446,10 +443,7 @@ function TabsLayoutContent() {
           <Tabs.Screen
             name="library"
             listeners={{ tabPress: () => markTabPress('library') }}
-            options={{
-              title: 'Library',
-              tabBarIcon: ({ color, size }) => <Library color={color} size={size} />,
-            }}
+            options={{ title: 'Library' }}
           />
           <Tabs.Screen
             name="workspace"
@@ -457,10 +451,7 @@ function TabsLayoutContent() {
               tabPress: () => markTabPress('workspace'),
               tabLongPress: () => setCatalogSheetTab('workspace'),
             }}
-            options={{
-              title: 'Workspace',
-              tabBarIcon: ({ color, size }) => <School color={color} size={size} />,
-            }}
+            options={{ title: 'Workspace' }}
           />
           <Tabs.Screen
             name="self"
@@ -468,44 +459,17 @@ function TabsLayoutContent() {
               tabPress: () => markTabPress('self'),
               tabLongPress: () => setCatalogSheetTab('self'),
             }}
-            options={{
-              title: 'Self',
-              tabBarIcon: ({ color, size, focused }) => (
-                <Box
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: size + 16,
-                    height: size + 16,
-                    borderRadius: tokens.radii.full,
-                    backgroundColor: focused ? wt.sunken : 'transparent',
-                  }}
-                >
-                  <Heart
-                    color={focused ? wt.lampDeep : color}
-                    size={size + 2}
-                    strokeWidth={focused ? 2.4 : 2}
-                    fill={focused ? wt.lamp : 'transparent'}
-                  />
-                </Box>
-              ),
-            }}
+            options={{ title: 'Self' }}
           />
           <Tabs.Screen
             name="community"
             listeners={{ tabPress: () => markTabPress('community') }}
-            options={{
-              title: 'Community',
-              tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
-            }}
+            options={{ title: 'Community' }}
           />
           <Tabs.Screen
             name="profile"
             listeners={{ tabPress: () => markTabPress('profile') }}
-            options={{
-              title: 'Profile',
-              tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
-            }}
+            options={{ title: 'Profile' }}
           />
           <Tabs.Screen
             name="notifications"
@@ -521,6 +485,66 @@ function TabsLayoutContent() {
           />
         </Tabs>
       )}
+
+      <RoomFab
+        room={currentDomain}
+        pathname={pathname}
+        atHome={isDomainRoot}
+        bottom={fabBottom}
+        right={Math.max(insets.right, 0) + 20}
+        common={fabCommon}
+        hidden={!chromeShown}
+      />
+
+      <YouSheet
+        open={youOpen}
+        onClose={() => setYouOpen(false)}
+        person={{
+          name: user?.display_name || displayName,
+          src: user?.avatar_url ?? undefined,
+          detail: isLocalGuest ? 'On this phone only' : (user?.email ?? undefined),
+        }}
+        perspective={{ label: perspectiveLabel, onPress: () => setPerspectiveSwitcherOpen(true) }}
+        world={{ name: worldName(worldId), onPress: () => setWorldOpen(true) }}
+        visualDetail={{ value: fidelityLevel, onChange: (v) => void setFidelityLevel(v) }}
+        reading={{ onPress: () => router.push('/settings') }}
+        shell={{
+          headerLayout,
+          onHeaderLayout: (v) => updatePreferences({ headerLayout: v }),
+          tabBarLayout: tabBarChoice,
+          onTabBarLayout: (v) => updatePreferences({ tabBarLayout: v }),
+          tabBarNote:
+            layout.tabs === 'rail' ? 'On this wide screen the rooms sit in a rail' : undefined,
+          assistant: assistantChoice,
+          onAssistant: (v) => updatePreferences({ assistantButton: v }),
+        }}
+        onProfile={() => router.push('/profile')}
+        onGuide={() => setAssistant({ open: true, guide: true })}
+        onHelp={() => setAssistant({ open: true, guide: false })}
+        onSettings={() => router.push('/settings')}
+      />
+
+      <Sheet open={worldOpen} onClose={() => setWorldOpen(false)} title="Your world">
+        <ScrollView style={{ flexShrink: 1 }}>
+          <WorldPicker
+            label="Your world"
+            value={worldId}
+            onChange={(id) => {
+              setWorldOpen(false);
+              void setWorld(id);
+            }}
+          />
+        </ScrollView>
+      </Sheet>
+
+      <AssistantSheet
+        open={assistant.open}
+        startOnGuide={assistant.guide}
+        onClose={() => setAssistant({ open: false, guide: false })}
+        room={currentDomain}
+        mode={assistantChoice}
+        onAsk={() => router.push('/a-i-assistant' as any)}
+      />
 
       <TabFeatureCatalogSheet
         isOpen={catalogSheetTab === 'self' || catalogSheetTab === 'workspace'}

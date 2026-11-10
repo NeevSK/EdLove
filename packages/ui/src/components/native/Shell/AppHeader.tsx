@@ -51,7 +51,9 @@ function Action({ action }: { action: HeaderAction }) {
     action.badgeTone === 'danger' ? t.danger : action.badgeTone === 'quiet' ? t.inkFaint : t.lamp;
   const ink = action.badgeTone === 'danger' ? t.onDanger : t.onLamp;
   // The app's familiar round well, warming toward the lamp while its toggle is open.
-  const well = useLivingStyle({ backgroundColor: action.expanded ? mix(t.sunken, t.lamp, 0.2) : t.sunken });
+  const well = useLivingStyle({
+    backgroundColor: action.expanded ? mix(t.sunken, t.lamp, 0.2) : t.sunken,
+  });
   return (
     <Animated.View style={[styles.action, styles.well, well]}>
       <IconButton
@@ -93,6 +95,36 @@ function Action({ action }: { action: HeaderAction }) {
   );
 }
 
+/** The person's photo in the header, opening their profile or "You" sheet. */
+export function HeaderAvatar({
+  name,
+  src,
+  label,
+  onPress,
+  size = 'sm',
+}: {
+  name: string;
+  src?: string;
+  label: string;
+  onPress: () => void;
+  size?: 'sm' | 'md';
+}) {
+  const feedback = useFeedback();
+  return (
+    <Pressable
+      role="button"
+      accessibilityLabel={label}
+      hitSlop={6}
+      onPress={() => {
+        feedback('press');
+        onPress();
+      }}
+    >
+      <Avatar name={name} src={src} size={size} />
+    </Pressable>
+  );
+}
+
 /**
  * The header every screen shares. Placement is the app's own: the leading
  * control and identity on the left, actions on the right, search opening
@@ -130,32 +162,36 @@ export function AppHeader({
 
   const pill = perspective ? (
     <Pressable
-                role="button"
-                accessibilityLabel={perspective.label}
-                accessibilityHint={perspective.switchLabel}
-                disabled={!perspective.onPress}
-                onPress={() => {
-                  feedback('select');
-                  perspective.onPress?.();
-                }}
-                style={[chipFrame(chip, chip.rest), styles.pill]}
-              >
-                <ChipPaint recipe={chip} selected={false} />
-                <RNText
-                  numberOfLines={1}
-                  style={[typeStyle(chip.label, language, world), { color: chip.rest.ink }]}
-                >
-                  {perspective.label}
-                </RNText>
-                {perspective.onPress ? (
-                  <RNText aria-hidden style={{ color: t.inkSoft }}>
-                    ▾
-                  </RNText>
-                ) : null}
-              </Pressable>
+      role="button"
+      accessibilityLabel={perspective.label}
+      accessibilityHint={perspective.switchLabel}
+      disabled={!perspective.onPress}
+      onPress={() => {
+        feedback('select');
+        perspective.onPress?.();
+      }}
+      style={[chipFrame(chip, chip.rest), styles.pill]}
+    >
+      <ChipPaint recipe={chip} selected={false} />
+      <RNText
+        numberOfLines={1}
+        style={[typeStyle(chip.label, language, world), { color: chip.rest.ink }]}
+      >
+        {perspective.label}
+      </RNText>
+      {perspective.onPress ? (
+        <RNText aria-hidden style={{ color: t.inkSoft }}>
+          ▾
+        </RNText>
+      ) : null}
+    </Pressable>
   ) : null;
   const heading = (
-    <RNText accessibilityRole="header" numberOfLines={1} style={[titleStyle, perspective?.beside ? { flexShrink: 1 } : null]}>
+    <RNText
+      accessibilityRole="header"
+      numberOfLines={1}
+      style={[titleStyle, perspective?.beside ? { flexShrink: 1 } : null]}
+    >
       {title}
     </RNText>
   );
@@ -182,19 +218,7 @@ export function AppHeader({
             onPress={leading.onPress}
           />
         ) : null}
-        {avatar ? (
-          <Pressable
-            role="button"
-            accessibilityLabel={avatar.label}
-            hitSlop={6}
-            onPress={() => {
-              feedback('press');
-              avatar.onPress();
-            }}
-          >
-            <Avatar name={avatar.name} src={avatar.src} size="sm" />
-          </Pressable>
-        ) : null}
+        {avatar ? <HeaderAvatar {...avatar} /> : null}
         <View style={styles.identity}>
           {status ? (
             <View
@@ -208,11 +232,21 @@ export function AppHeader({
                   styles.statusDot,
                   {
                     backgroundColor:
-                      status.tone === 'offline' ? t.inkFaint : status.tone === 'attention' ? t.danger : t.lamp,
+                      status.tone === 'offline'
+                        ? t.inkFaint
+                        : status.tone === 'attention'
+                          ? t.danger
+                          : t.lamp,
                   },
                 ]}
               />
-              <RNText numberOfLines={1} style={[typeStyle(world.recipes.text.caption, language, world), { color: t.inkSoft }]}>
+              <RNText
+                numberOfLines={1}
+                style={[
+                  typeStyle(world.recipes.text.caption, language, world),
+                  { color: t.inkSoft },
+                ]}
+              >
                 {status.label}
               </RNText>
             </View>
@@ -233,7 +267,10 @@ export function AppHeader({
             heading
           )}
           {subtitle ? (
-            <RNText numberOfLines={1} style={[typeStyle(world.recipes.text.caption, language, world), { color: t.inkSoft }]}>
+            <RNText
+              numberOfLines={1}
+              style={[typeStyle(world.recipes.text.caption, language, world), { color: t.inkSoft }]}
+            >
               {subtitle}
             </RNText>
           ) : null}

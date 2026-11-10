@@ -8,7 +8,6 @@ import { useUIStore } from '@repo/core/store';
 import { inMemoryHealthAdapter } from '@repo/self';
 import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
-import { LotusPetalFAB } from '@repo/ui/components/LotusPetalFAB';
 import { WorldStage } from '@repo/ui/components/native';
 import {
   CircadianProvider,
@@ -45,7 +44,6 @@ import { GuestConversionBoundary } from '@/entry/GuestConversionBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
-import { getCurrentFabTab } from '@/lib/navigation/fabTab';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 import { GurudeviVerger } from '@/runtime/GurudeviVerger';
@@ -172,7 +170,6 @@ export function EntryShell() {
                                           />
                                         </Stack>
                                       </SessionRouteGate>
-                                      <LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />
                                       <SanctuaryPulseOverlay
                                         visible={isBreathingOpen}
                                         onDismiss={() => setBreathingOpen(false)}
