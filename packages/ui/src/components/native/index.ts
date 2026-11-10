@@ -98,6 +98,24 @@ export {
   useMinuteClock,
   useScene,
 } from './Scene';
+export {
+  ArtLayerView,
+  ArtLife,
+  ArtStill,
+  FloorOverlays,
+  glowAt,
+  layerShows,
+  motionAt,
+  type StageContextValue,
+  splitLayers,
+  useFloorPresence,
+  useStage,
+  useStageContext,
+  useStageScroll,
+  WorldFloor,
+  WorldStage,
+  type WorldStageProps,
+} from './Stage';
 export { Section, type SectionProps } from './Section/Section';
 export { SegmentedControl, type SegmentedControlProps } from './Segmented/SegmentedControl';
 export { Select, type SelectProps } from './Select/Select';

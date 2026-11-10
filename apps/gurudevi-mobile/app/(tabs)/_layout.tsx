@@ -9,7 +9,7 @@ import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { useScopedNotifications } from '@repo/core/hooks';
 import { showToast } from '@repo/core/lib/feedback';
 import {
-isLocalOnlyIdentity,
+  isLocalOnlyIdentity,
   resolveWorkspaceSwitcherTargets,
   useAuth,
   usePermissions,
@@ -21,19 +21,10 @@ import { useUIStore } from '@repo/core/store/useUIStore';
 import { BreathGuide } from '@repo/self/wellbeing';
 import { ActiveSubTabStrip, DomainSubHeader } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { AppHeader, SceneBackdrop, Text as WText, useScene } from '@repo/ui/components/native';
+import { AppHeader, Text as WText, useFloorPresence } from '@repo/ui/components/native';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
-import {
-  Bell,
-  Heart,
-  Library,
-  School,
-  Settings,
-  User,
-  Users,
-  X,
-} from '@repo/ui/icons/native';
+import { Bell, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons/native';
 import { Box, Modal, ModalContent, Pressable } from '@repo/ui/primitives';
 import { useWorld } from '@repo/ui/theme/native';
 import { tokens } from '@repo/ui/tokens';
@@ -74,7 +65,6 @@ function TabsLayoutContent() {
   const pathname = usePathname();
   // The shell is dressed by the chosen world, like every screen inside it.
   const wt = useWorld().tokens;
-  const scene = useScene({ presence: 'full' });
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const shell = useMemo(
@@ -249,6 +239,8 @@ function TabsLayoutContent() {
     }
     return pathname === `/${currentDomain}` || pathname === `/${currentDomain}/`;
   }, [currentDomain, globalParams.feature, pathname]);
+  // A room's home shows the whole floor; inside a room it shows only behind the header.
+  useFloorPresence(isDomainRoot ? 'full' : 'band');
 
   const domainTabs = useActiveSubTabsStore(
     (s) => s.tabsByDomain[currentDomain] ?? EMPTY_DOMAIN_TABS,
@@ -274,9 +266,13 @@ function TabsLayoutContent() {
   // The shell's own header actions, as data: the kit draws them with the world's
   // press, light and spoken counts. The bell goes to the notifications page.
   const globalHeaderActions = [
-    { key: 'settings', label: 'Open settings', icon: Settings, onPress: () => router.push('/settings') },
+    {
+      key: 'settings',
+      label: 'Open settings',
+      icon: Settings,
+      onPress: () => router.push('/settings'),
+    },
   ];
-
 
   const renderHeader = () => {
     if (headerStyle === 'minimal_tabs_only') {
@@ -415,11 +411,7 @@ function TabsLayoutContent() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: wt.ground }}>
-      <SceneBackdrop
-        scene={scene}
-        wash={{ colour: wt.ground, edge: 0.15, text: 0.85, textFrom: 0.4 }}
-      />
+    <View style={{ flex: 1 }}>
       {shellChoice.variant === 'native' ? (
         nativeTabs
       ) : (
@@ -447,6 +439,8 @@ function TabsLayoutContent() {
               fontWeight: '600',
             },
             header: renderHeader,
+            // Screens are see-through: the one floor under the app shows behind them.
+            sceneStyle: { backgroundColor: 'transparent' },
           }}
         >
           <Tabs.Screen

@@ -586,6 +586,11 @@ export interface WorldDefinition {
   perch: import('./perches').PerchGroup;
   /** The mode this world is happiest in, used by previews. */
   preferredMode: WorldMode;
+  /**
+   * What lies under the rooms: the world's living scene (default), or its plain ground, tinted by
+   * the hour (Classic).
+   */
+  floor?: 'scene' | 'plain';
   palette: WorldPalette;
   style: WorldStyle;
   /** Optional per-world adjustments after recipes are built. */

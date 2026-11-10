@@ -30,11 +30,10 @@ import { showToast } from '@repo/core/lib/feedback';
 import {
   Button,
   IconButton,
-  SceneBackdrop,
   Surface,
   Text,
   TextField,
-  useScene,
+  useFloorPresence,
 } from '@repo/ui/components/native';
 import { ArrowLeft } from '@repo/ui/icons/native';
 import { useWorld } from '@repo/ui/theme/native';
@@ -78,15 +77,11 @@ function GoogleGlyph({ size = 18 }: { size?: number }) {
   );
 }
 
-export default function AuthScreen({
-  onSuccess,
-  onBack,
-  onNavigateRecovery,
-}: AuthScreenProps) {
+export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: AuthScreenProps) {
   const { t } = useTranslation();
   const world = useWorld();
   const wt = world.tokens;
-  const scene = useScene({ presence: 'full' });
+  useFloorPresence('full');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -186,12 +181,13 @@ export default function AuthScreen({
       } else {
         // Fallback for Web OAuth
         const redirectUrl = getRedirectUrl();
-        const oauthOptions = isAnon && session?.user
-          ? await authAPI.linkOAuthIdentity('google', redirectUrl, true)
-          : await (async () => {
-              if (guestSourceId) await authorizeExistingAccountTransfer(guestSourceId);
-              return authAPI.signInWithOAuth('google', redirectUrl, true);
-            })();
+        const oauthOptions =
+          isAnon && session?.user
+            ? await authAPI.linkOAuthIdentity('google', redirectUrl, true)
+            : await (async () => {
+                if (guestSourceId) await authorizeExistingAccountTransfer(guestSourceId);
+                return authAPI.signInWithOAuth('google', redirectUrl, true);
+              })();
 
         const oauthUrl = (oauthOptions as { url?: string })?.url;
         if (!oauthUrl) throw new Error('Could not establish Google OAuth URL.');
@@ -249,10 +245,7 @@ export default function AuthScreen({
       }
 
       hapticSuccess();
-      showToast(
-        'Check your email! A secure login link is on its way.',
-        'success',
-      );
+      showToast('Check your email! A secure login link is on its way.', 'success');
     } catch (error: any) {
       if (guestSourceId) {
         await clearExistingAccountTransferAuthorization(guestSourceId);
@@ -360,11 +353,7 @@ export default function AuthScreen({
   );
 
   return (
-    <View style={[styles.root, { backgroundColor: wt.ground }]}>
-      <SceneBackdrop
-        scene={scene}
-        wash={{ colour: wt.ground, edge: 0.12, text: 1.0, textFrom: 0.35 }}
-      />
+    <View style={styles.root}>
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -380,14 +369,11 @@ export default function AuthScreen({
                 size="md"
                 onPress={onBack}
               />
-            ) : <View style={{ width: 44, height: 44 }} />}
+            ) : (
+              <View style={{ width: 44, height: 44 }} />
+            )}
 
-            <View
-              style={[
-                styles.brandBadge,
-                { backgroundColor: wt.raised, borderColor: wt.line },
-              ]}
-            >
+            <View style={[styles.brandBadge, { backgroundColor: wt.raised, borderColor: wt.line }]}>
               <View style={[styles.brandDot, { backgroundColor: wt.lamp }]} />
               <Text kind="caption" tone="soft" style={styles.brandBadgeText}>
                 SANCTUARY AUTH
@@ -533,9 +519,7 @@ export default function AuthScreen({
                 {/* Password / Magic Link Mode Toggle */}
                 <Button
                   label={
-                    usePassword
-                      ? 'Email me a magic link instead'
-                      : 'Sign in with password instead'
+                    usePassword ? 'Email me a magic link instead' : 'Sign in with password instead'
                   }
                   variant="quiet"
                   size="sm"

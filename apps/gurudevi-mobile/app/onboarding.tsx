@@ -15,7 +15,7 @@ import {
   validatePreferredName,
 } from '@repo/core/types';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Button, SceneBackdrop, Surface, Text, useScene } from '@repo/ui/components/native';
+import { Button, Surface, Text, useFloorPresence } from '@repo/ui/components/native';
 import { useWorld } from '@repo/ui/theme/native';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -34,7 +34,7 @@ export default function OnboardingRoute() {
   const routeState = useBootstrapRouteState('/onboarding');
   const world = useWorld();
   const wt = world.tokens;
-  const scene = useScene({ presence: 'full' });
+  useFloorPresence('full');
 
   const [step, setStep] = useState<'name' | 'role'>('name');
   const [displayName, setDisplayName] = useState('');
@@ -101,11 +101,7 @@ export default function OnboardingRoute() {
 
   return (
     <ErrorBoundary name="OnboardingRoute">
-      <View style={[styles.root, { backgroundColor: wt.ground }]}>
-        <SceneBackdrop
-          scene={scene}
-          wash={{ colour: wt.ground, edge: 0.12, text: 1.0, textFrom: 0.35 }}
-        />
+      <View style={styles.root}>
         <SafeAreaView style={styles.safeArea}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}

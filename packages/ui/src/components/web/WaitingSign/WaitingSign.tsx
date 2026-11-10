@@ -78,6 +78,13 @@ const DRAW: Readonly<Record<SignKind, () => ReactNode>> = {
       ))}
     </span>
   ),
+  dots: () => (
+    <span className="gd-s-dots">
+      {[0, 1, 2].map((i) => (
+        <span key={i} className="gd-s-dot" style={ph((3 - i) / 3)} />
+      ))}
+    </span>
+  ),
   charge: () => (
     <span className="gd-s-charge">
       <span className="gd-s-cell">

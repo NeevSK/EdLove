@@ -85,7 +85,7 @@ async function main() {
           : null,
       );
       const image = await headless.drawOffscreen(surface, element);
-      const bytes = image.encodeToBytes();
+      const bytes = await image.encodeToBytes();
       const name = `${worldId}-${String(minute).padStart(4, '0')}-${weather}-${presence}.png`;
       writeFileSync(join(outDir, name), bytes);
       console.log(name);
