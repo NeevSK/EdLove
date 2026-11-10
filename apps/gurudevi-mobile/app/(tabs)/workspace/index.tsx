@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native';
+import { View } from 'react-native';
 import { usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
 import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
@@ -8,6 +8,14 @@ import { Redirect } from 'expo-router';
 import { resolveWorkspaceRoute } from '@/lib/workspace/routeResolution';
 
 export { RouteErrorBoundary as ErrorBoundary };
+
+/** States sit on the world's own floor, never on a painted page. */
+const STATE = {
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingHorizontal: 24,
+} as const;
 
 export default function WorkspaceDispatcher() {
   const { context } = usePermissions();
@@ -37,7 +45,7 @@ export default function WorkspaceDispatcher() {
 
   if (routeResolution.kind === 'loading') {
     return (
-      <View className="items-center justify-center flex-1 bg-phase-canvas">
+      <View style={STATE}>
         <WaitingSign size={48} />
       </View>
     );
@@ -45,7 +53,7 @@ export default function WorkspaceDispatcher() {
 
   if (routeResolution.kind === 'retryable-error') {
     return (
-      <View className="items-center justify-center flex-1 bg-phase-canvas">
+      <View style={STATE}>
         <ErrorState
           title="Workspace access needs attention"
           message={routeResolution.message}
@@ -57,18 +65,15 @@ export default function WorkspaceDispatcher() {
 
   if (routeResolution.kind === 'permission-denied') {
     return (
-      <View className="items-center justify-center flex-1 bg-phase-canvas">
-        <ErrorState
-          title="Workspace access is unavailable"
-          message={routeResolution.message}
-        />
+      <View style={STATE}>
+        <ErrorState title="Workspace access is unavailable" message={routeResolution.message} />
       </View>
     );
   }
 
   if (routeResolution.kind === 'empty') {
     return (
-      <View className="items-center justify-center flex-1 bg-phase-canvas px-6">
+      <View style={STATE}>
         <EmptyState title="Workspace capability unavailable" message={routeResolution.message} />
       </View>
     );
@@ -86,7 +91,7 @@ export default function WorkspaceDispatcher() {
   }
 
   return (
-    <View className="items-center justify-center flex-1 bg-phase-canvas px-6">
+    <View style={STATE}>
       <ErrorState
         title="Workspace capability unavailable"
         message="This workspace capability is not active in the current API foundation. No changes were made to your account or data."

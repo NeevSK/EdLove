@@ -1,18 +1,8 @@
 import { parseInstitutionalQR } from '@repo/scanner-kit';
-import {
-  Badge,
-  BadgeText,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-  VStack,
-} from '@repo/ui/primitives';
+import { Button, Group, SegmentedControl, Surface, Text } from '@repo/ui/components/native';
 import { useState } from 'react';
+import { View } from 'react-native';
+import { MarkedLine, RoomPage } from '@/components/shell/RoomPage';
 
 interface MockDurableAsset {
   id: string;
@@ -106,160 +96,84 @@ export default function MobileInventoryRoute() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-phase-canvas">
-      <VStack className="p-4 gap-4">
-        {/* Header */}
-        <VStack className="gap-1">
-          <HStack className="items-center justify-between">
-            <Heading size="xl" className="text-phase-world font-bold">
-              Materials & Asset Ledgers
-            </Heading>
-            <Badge className="bg-purple-500/10 border border-purple-500/20 rounded-full px-2.5 py-1">
-              <BadgeText className="text-purple-600 text-xs font-semibold">ERP Substrate</BadgeText>
-            </Badge>
-          </HStack>
-          <Text className="text-phase-muted text-sm">
-            Statutory Board of Survey equipment and continuous consumable stock.
+    <RoomPage
+      title="Materials & Asset Ledgers"
+      intro="Statutory Board of Survey equipment and continuous consumable stock."
+      mark={{ label: 'ERP Substrate' }}
+    >
+      <SegmentedControl
+        label="Ledger"
+        value={activeTab}
+        options={[
+          { value: 'durable', label: 'Durable Equipment' },
+          { value: 'consumable', label: 'Consumable Stock' },
+        ]}
+        onChange={setActiveTab}
+      />
+
+      <Surface
+        tone="raised"
+        style={{ padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 }}
+      >
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text kind="caption" tone="soft">
+            Fast Asset Barcode Lookup
           </Text>
-        </VStack>
+          <Text kind="label">{scannedFeedback || 'Ready to scan QR / barcode'}</Text>
+        </View>
+        <Button label="Scan Tag" variant="primary" size="sm" onPress={handleSimulateQRScan} />
+      </Surface>
 
-        {/* Tab Switcher */}
-        <HStack className="bg-phase-surface/80 p-1 rounded-xl border border-phase-border/40">
-          <Pressable
-            className={`flex-1 py-2 rounded-lg items-center ${
-              activeTab === 'durable' ? 'bg-phase-canvas shadow-sm' : ''
-            }`}
-            onPress={() => setActiveTab('durable')}
-          >
-            <Text
-              className={`text-sm font-semibold ${
-                activeTab === 'durable' ? 'text-phase-world' : 'text-phase-muted'
-              }`}
-            >
-              Durable Equipment
-            </Text>
-          </Pressable>
-          <Pressable
-            className={`flex-1 py-2 rounded-lg items-center ${
-              activeTab === 'consumable' ? 'bg-phase-canvas shadow-sm' : ''
-            }`}
-            onPress={() => setActiveTab('consumable')}
-          >
-            <Text
-              className={`text-sm font-semibold ${
-                activeTab === 'consumable' ? 'text-phase-world' : 'text-phase-muted'
-              }`}
-            >
-              Consumable Stock
-            </Text>
-          </Pressable>
-        </HStack>
-
-        {/* QR Scanner Action Bar */}
-        <HStack className="bg-phase-surface p-3 rounded-xl border border-phase-border/40 items-center justify-between">
-          <VStack className="flex-1 mr-2">
-            <Text className="text-xs text-phase-muted">Fast Asset Barcode Lookup</Text>
-            <Text className="text-sm font-semibold text-phase-world">
-              {scannedFeedback || 'Ready to scan QR / barcode'}
-            </Text>
-          </VStack>
-          <Button
-            className="bg-phase-primary px-3 py-1.5 rounded-lg h-9"
-            onPress={handleSimulateQRScan}
-          >
-            <ButtonText className="text-white text-xs font-bold">Scan Tag</ButtonText>
-          </Button>
-        </HStack>
-
-        {/* Tab Content */}
-        {activeTab === 'durable' ? (
-          <VStack className="gap-3">
-            <Heading size="sm" className="text-phase-world font-semibold">
-              Tracked Equipment & Board of Survey Audit
-            </Heading>
-            {durables.map((item) => (
-              <View
-                key={item.id}
-                className="bg-phase-surface border border-phase-border/40 rounded-2xl p-4"
-              >
-                <VStack className="gap-2">
-                  <HStack className="items-center justify-between">
-                    <Heading size="sm" className="text-phase-world font-bold flex-1 mr-2">
-                      {item.name}
-                    </Heading>
-                    <Badge
-                      className={`rounded px-2 py-0.5 ${
-                        item.condition === 'serviceable' ? 'bg-emerald-500/10' : 'bg-amber-500/10'
-                      }`}
-                    >
-                      <BadgeText
-                        className={`text-xs font-medium ${
-                          item.condition === 'serviceable' ? 'text-emerald-600' : 'text-amber-600'
-                        }`}
-                      >
-                        {item.condition}
-                      </BadgeText>
-                    </Badge>
-                  </HStack>
-                  <Text className="text-xs text-phase-muted">📍 Location: {item.location}</Text>
-                  <Text className="text-xs text-phase-muted">👤 Custodian: {item.custodian}</Text>
-                  <HStack className="justify-between items-center pt-2 border-t border-phase-border/30">
-                    <Text className="text-xs text-phase-muted">{item.lastSurvey}</Text>
-                    <Badge className="bg-purple-500/10 rounded px-2 py-0.5">
-                      <BadgeText className="text-purple-600 text-xs">Form 47 Verified</BadgeText>
-                    </Badge>
-                  </HStack>
-                </VStack>
-              </View>
-            ))}
-          </VStack>
-        ) : (
-          <VStack className="gap-3">
-            <Heading size="sm" className="text-phase-world font-semibold">
-              Operational Consumables & Reorder Alerts
-            </Heading>
-            {consumables.map((item) => {
-              const isLow = item.quantity <= item.reorderLevel;
-              return (
-                <View
-                  key={item.id}
-                  className="bg-phase-surface border border-phase-border/40 rounded-2xl p-4"
-                >
-                  <VStack className="gap-2">
-                    <HStack className="items-center justify-between">
-                      <Heading size="sm" className="text-phase-world font-bold flex-1 mr-2">
-                        {item.name}
-                      </Heading>
-                      <Badge
-                        className={`rounded px-2 py-0.5 ${
-                          isLow ? 'bg-rose-500/10' : 'bg-emerald-500/10'
-                        }`}
-                      >
-                        <BadgeText
-                          className={`text-xs font-medium ${
-                            isLow ? 'text-rose-600' : 'text-emerald-600'
-                          }`}
-                        >
-                          {isLow ? 'Low Stock' : 'Adequate'}
-                        </BadgeText>
-                      </Badge>
-                    </HStack>
-                    <HStack className="items-center justify-between mt-1">
-                      <Text className="text-base font-bold text-phase-world">
-                        {item.quantity} {item.unit}
-                      </Text>
-                      <Text className="text-xs text-phase-muted">
-                        Reorder Min: {item.reorderLevel} {item.unit}
-                      </Text>
-                    </HStack>
-                    <Text className="text-xs text-phase-muted">📍 {item.location}</Text>
-                  </VStack>
+      {activeTab === 'durable' ? (
+        <Group label="Tracked Equipment & Board of Survey Audit">
+          {durables.map((item) => (
+            <View key={item.id} style={{ gap: 6, paddingVertical: 12 }}>
+              <MarkedLine
+                title={item.name}
+                mark={{
+                  label: item.condition,
+                  tone: item.condition === 'serviceable' ? 'success' : 'lamp',
+                }}
+              />
+              <Text kind="caption" tone="soft">
+                Location: {item.location}
+              </Text>
+              <Text kind="caption" tone="soft">
+                Custodian: {item.custodian}
+              </Text>
+              <MarkedLine title={item.lastSurvey} mark={{ label: 'Form 47 Verified' }} />
+            </View>
+          ))}
+        </Group>
+      ) : (
+        <Group label="Operational Consumables & Reorder Alerts">
+          {consumables.map((item) => {
+            const isLow = item.quantity <= item.reorderLevel;
+            return (
+              <View key={item.id} style={{ gap: 6, paddingVertical: 12 }}>
+                <MarkedLine
+                  title={item.name}
+                  mark={{
+                    label: isLow ? 'Low Stock' : 'Adequate',
+                    tone: isLow ? 'danger' : 'success',
+                  }}
+                />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}>
+                  <Text kind="value">
+                    {item.quantity} {item.unit}
+                  </Text>
+                  <Text kind="caption" tone="soft">
+                    Reorder Min: {item.reorderLevel} {item.unit}
+                  </Text>
                 </View>
-              );
-            })}
-          </VStack>
-        )}
-      </VStack>
-    </ScrollView>
+                <Text kind="caption" tone="soft">
+                  {item.location}
+                </Text>
+              </View>
+            );
+          })}
+        </Group>
+      )}
+    </RoomPage>
   );
 }
