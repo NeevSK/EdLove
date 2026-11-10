@@ -46,13 +46,17 @@ function deadTrees(c: ArtContext, base: number): ArtLayer {
       const ex = bx + dir * W * (0.03 + rand() * 0.03);
       const ey = by - h * (0.18 + rand() * 0.15);
       limbs.push(bow(bx, by, ex, ey, dir * W * 0.006));
-      mirrors.push(bow(bx, base + (base - by) * 0.6, ex, base + (base - ey) * 0.6, -dir * W * 0.006));
+      mirrors.push(
+        bow(bx, base + (base - by) * 0.6, ex, base + (base - ey) * 0.6, -dir * W * 0.006),
+      );
     }
   }
   return {
     id: 'dead-trees',
     shapes: [
-      shape(limbs.join(''), undefined, { stroke: { colour: wood, width: Math.max(1.6, W * 0.005), cap: 'round' } }),
+      shape(limbs.join(''), undefined, {
+        stroke: { colour: wood, width: Math.max(1.6, W * 0.005), cap: 'round' },
+      }),
       shape(mirrors.join(''), undefined, {
         stroke: { colour: a(wood, 0.28), width: Math.max(1.4, W * 0.004), cap: 'round' },
         blur: 1.5,

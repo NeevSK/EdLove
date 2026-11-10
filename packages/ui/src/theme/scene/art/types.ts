@@ -14,8 +14,18 @@ export type Stop = readonly [string, number];
 
 export type ArtFill =
   | { readonly kind: 'solid'; readonly colour: string }
-  | { readonly kind: 'linear'; readonly from: Point; readonly to: Point; readonly stops: readonly Stop[] }
-  | { readonly kind: 'radial'; readonly centre: Point; readonly radius: number; readonly stops: readonly Stop[] };
+  | {
+      readonly kind: 'linear';
+      readonly from: Point;
+      readonly to: Point;
+      readonly stops: readonly Stop[];
+    }
+  | {
+      readonly kind: 'radial';
+      readonly centre: Point;
+      readonly radius: number;
+      readonly stops: readonly Stop[];
+    };
 
 export interface ArtStroke {
   readonly colour: string;
@@ -80,7 +90,12 @@ export interface ArtParticles {
   /** Radius in px, smallest to largest. */
   readonly size: readonly [number, number];
   /** The box they live in. */
-  readonly area: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+  readonly area: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  };
   /** Travel per second in px (x, y); they wrap around the box. */
   readonly drift: Point;
   /** Side-to-side wander in px. */

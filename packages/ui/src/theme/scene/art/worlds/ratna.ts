@@ -34,7 +34,8 @@ function lace(c: ArtContext): ArtLayer {
   const depth = H * 0.05;
   const r = W * 0.045;
   let edge = `M0 0L${n(W)} 0L${n(W)} ${n(depth)}`;
-  for (let x = W; x > -r * 2; x -= r * 2) edge += `A${n(r)} ${n(r * 0.8)} 0 0 1 ${n(x - r * 2)} ${n(depth)}`;
+  for (let x = W; x > -r * 2; x -= r * 2)
+    edge += `A${n(r)} ${n(r * 0.8)} 0 0 1 ${n(x - r * 2)} ${n(depth)}`;
   edge += `L0 ${n(depth)}Z`;
   const holes: string[] = [];
   const picots: string[] = [];
@@ -65,8 +66,14 @@ function peak(c: ArtContext, base: number): ArtLayer {
   return {
     id: 'peak',
     shapes: [
-      shape(`M${n(x - W * 0.42)} ${n(base)}C${n(x - W * 0.2)} ${n(base - H * 0.03)} ${n(x - W * 0.06)} ${n(top + H * 0.03)} ${n(x - W * 0.015)} ${n(top + H * 0.004)}Q${n(x)} ${n(top - H * 0.004)} ${n(x + W * 0.015)} ${n(top + H * 0.004)}C${n(x + W * 0.07)} ${n(top + H * 0.035)} ${n(x + W * 0.22)} ${n(base - H * 0.035)} ${n(x + W * 0.45)} ${n(base)}Z`, solid(colour)),
-      shape(`M${n(x - W * 0.012)} ${n(top + H * 0.006)}C${n(x - W * 0.05)} ${n(top + H * 0.04)} ${n(x - W * 0.16)} ${n(base - H * 0.03)} ${n(x - W * 0.3)} ${n(base)}L${n(x - W * 0.1)} ${n(base)}C${n(x - W * 0.05)} ${n(base - H * 0.05)} ${n(x - W * 0.02)} ${n(top + H * 0.05)} ${n(x - W * 0.012)} ${n(top + H * 0.006)}Z`, solid(a(face, 0.45))),
+      shape(
+        `M${n(x - W * 0.42)} ${n(base)}C${n(x - W * 0.2)} ${n(base - H * 0.03)} ${n(x - W * 0.06)} ${n(top + H * 0.03)} ${n(x - W * 0.015)} ${n(top + H * 0.004)}Q${n(x)} ${n(top - H * 0.004)} ${n(x + W * 0.015)} ${n(top + H * 0.004)}C${n(x + W * 0.07)} ${n(top + H * 0.035)} ${n(x + W * 0.22)} ${n(base - H * 0.035)} ${n(x + W * 0.45)} ${n(base)}Z`,
+        solid(colour),
+      ),
+      shape(
+        `M${n(x - W * 0.012)} ${n(top + H * 0.006)}C${n(x - W * 0.05)} ${n(top + H * 0.04)} ${n(x - W * 0.16)} ${n(base - H * 0.03)} ${n(x - W * 0.3)} ${n(base)}L${n(x - W * 0.1)} ${n(base)}C${n(x - W * 0.05)} ${n(base - H * 0.05)} ${n(x - W * 0.02)} ${n(top + H * 0.05)} ${n(x - W * 0.012)} ${n(top + H * 0.006)}Z`,
+        solid(a(face, 0.45)),
+      ),
     ],
   };
 }
@@ -103,7 +110,14 @@ function river(c: ArtContext, top: number): ArtLayer[] {
       id: 'river',
       shapes: [
         shape(d, undefined, { stroke: { colour: a(shallow, 0.6), width: 2.2, cap: 'round' } }),
-        shape(d, vertical(top, H, [[mix(sapphire, c.sky.horizon, 0.4), 0], [sapphire, 0.5], [c.lit(t.lampDeep), 1]])),
+        shape(
+          d,
+          vertical(top, H, [
+            [mix(sapphire, c.sky.horizon, 0.4), 0],
+            [sapphire, 0.5],
+            [c.lit(t.lampDeep), 1],
+          ]),
+        ),
       ],
     },
     {
@@ -129,11 +143,20 @@ export function ratnaArt(input: ArtInput): SceneArt {
   layers.push(...river(c, hy + H * 0.06));
   // Areca palms and bushes on the near banks, framing the river.
   const dark = c.lit(mix(leafy, t.ink, 0.45));
-  const palms = [palm(W * 0.1, H * 1.02, H * 0.42, 0.06, 5), palm(W * 0.9, H * 1.02, H * 0.36, -0.08, 9), palm(W * 0.78, H * 0.96, H * 0.26, -0.02, 13)];
+  const palms = [
+    palm(W * 0.1, H * 1.02, H * 0.42, 0.06, 5),
+    palm(W * 0.9, H * 1.02, H * 0.36, -0.08, 9),
+    palm(W * 0.78, H * 0.96, H * 0.26, -0.02, 13),
+  ];
   layers.push({
     id: 'banks',
     shapes: [
-      shape(bush(W * 0.06, H * 0.96, W * 0.12, 3) + bush(W * 0.94, H * 0.95, W * 0.13, 7) + bush(W * 0.68, H * 0.9, W * 0.07, 11), solid(dark)),
+      shape(
+        bush(W * 0.06, H * 0.96, W * 0.12, 3) +
+          bush(W * 0.94, H * 0.95, W * 0.13, 7) +
+          bush(W * 0.68, H * 0.9, W * 0.07, 11),
+        solid(dark),
+      ),
       shape(palms.map((p) => p.trunk).join(''), solid(dark)),
     ],
   });
@@ -204,7 +227,15 @@ export function ratnaArt(input: ArtInput): SceneArt {
       },
     ],
     shaders: [
-      { kind: 'water', x: W * 0.2, y: hy + H * 0.06, width: W * 0.5, height: H - hy - H * 0.06, colour: t.glow, strength: 0.3 },
+      {
+        kind: 'water',
+        x: W * 0.2,
+        y: hy + H * 0.06,
+        width: W * 0.5,
+        height: H - hy - H * 0.06,
+        colour: t.glow,
+        strength: 0.3,
+      },
     ],
   };
 }

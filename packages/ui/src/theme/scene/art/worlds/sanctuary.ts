@@ -57,7 +57,8 @@ function blossomBranch(c: ArtContext): ArtLayer[] {
         const fx = px + (rand() - 0.5) * W * 0.03;
         const fy = py + (rand() - 0.3) * H * 0.02;
         const r = W * (0.011 + rand() * 0.008);
-        for (let k = 0; k < 5; k++) petals.push(petal(fx, fy, r, r * 0.55, (k / 5) * Math.PI * 2 + rand()));
+        for (let k = 0; k < 5; k++)
+          petals.push(petal(fx, fy, r, r * 0.55, (k / 5) * Math.PI * 2 + rand()));
         hearts.push(ellipse(fx, fy, r * 0.22, r * 0.22));
       }
     }
@@ -67,7 +68,9 @@ function blossomBranch(c: ArtContext): ArtLayer[] {
     {
       id: 'branch',
       shapes: [
-        shape(twigs.join(''), undefined, { stroke: { colour: wood, width: Math.max(2.4, W * 0.007), cap: 'round' } }),
+        shape(twigs.join(''), undefined, {
+          stroke: { colour: wood, width: Math.max(2.4, W * 0.007), cap: 'round' },
+        }),
         shape(leaves.join(''), solid(a(leafColour, 0.88))),
         shape(petals.join(''), solid(a(flower, 0.95))),
         shape(hearts.join(''), solid(c.lit(t.lamp))),
@@ -98,7 +101,12 @@ export function sanctuaryArt(input: ArtInput): SceneArt {
         ),
       );
     }
-    layers.push({ id: 'beams', shapes: beams, from: 'middle', motion: { kind: 'glow', amount: 0.45, periodMs: 9000 } });
+    layers.push({
+      id: 'beams',
+      shapes: beams,
+      from: 'middle',
+      motion: { kind: 'glow', amount: 0.45, periodMs: 9000 },
+    });
   }
 
   layers.push(...hills(c, mix(t.ornament, t.glow, 0.5), hy - H * 0.05, 3, 4.1));
@@ -227,9 +235,26 @@ export function sanctuaryArt(input: ArtInput): SceneArt {
     ],
     shaders: [
       // The pool is an ellipse: the shimmer stays inside its widest band.
-      { ...pool.shader, x: W * 0.12, width: W * 0.76, y: poolTop + H * 0.02, height: H * 0.08, strength: 0.3 },
+      {
+        ...pool.shader,
+        x: W * 0.12,
+        width: W * 0.76,
+        y: poolTop + H * 0.02,
+        height: H * 0.08,
+        strength: 0.3,
+      },
       ...(c.light > 0.35
-        ? [{ kind: 'rays' as const, x: 0, y: 0, width: W, height: hy, colour: t.glow, strength: 0.3 * c.veil }]
+        ? [
+            {
+              kind: 'rays' as const,
+              x: 0,
+              y: 0,
+              width: W,
+              height: hy,
+              colour: t.glow,
+              strength: 0.3 * c.veil,
+            },
+          ]
         : []),
     ],
   };

@@ -55,20 +55,30 @@ function roofs(c: ArtContext, base: number): ArtLayer {
         y -= H * 0.015;
       }
     }
-    shapes.push(shape(`M${n(cx - 2)} ${n(y)}L${n(cx)} ${n(y - H * 0.025)}L${n(cx + 2)} ${n(y)}Z`, solid(c.lit(t.glow))));
+    shapes.push(
+      shape(
+        `M${n(cx - 2)} ${n(y)}L${n(cx)} ${n(y - H * 0.025)}L${n(cx + 2)} ${n(y)}Z`,
+        solid(c.lit(t.glow)),
+      ),
+    );
   }
   // Lit windows along the walls after dusk.
   if (c.light < 0.5) {
     const rand = rng(8);
     const lit: string[] = [];
-    for (let i = 0; i < 24; i++) lit.push(rect(W * (0.12 + rand() * 0.76), base - H * (0.015 + rand() * 0.025), 3, 4));
+    for (let i = 0; i < 24; i++)
+      lit.push(rect(W * (0.12 + rand() * 0.76), base - H * (0.015 + rand() * 0.025), 3, 4));
     shapes.push(shape(lit.join(''), solid(a(L.window, 0.85))));
   }
   return { id: 'roofs', shapes };
 }
 
 /** An elephant in its caparison, facing right, at (x, foot), `h` tall at the shoulder. */
-function elephant(x: number, foot: number, h: number): { body: string; cloth: string; lamps: Point[] } {
+function elephant(
+  x: number,
+  foot: number,
+  h: number,
+): { body: string; cloth: string; lamps: Point[] } {
   const w = h * 1.35;
   const legW = h * 0.17;
   const top = foot - h;
@@ -100,7 +110,12 @@ export function peraheraArt(input: ArtInput): SceneArt {
         rect(0, roadTop, W, H - roadTop),
         vertical(roadTop, H, [
           [c.lit(mix(t.ground, t.ornament, 0.3)), 0],
-          [night ? mix(c.lit(mix(t.ground, t.ink, 0.3)), L.flame, 0.18) : c.lit(mix(t.ground, t.ink, 0.25)), 0.5],
+          [
+            night
+              ? mix(c.lit(mix(t.ground, t.ink, 0.3)), L.flame, 0.18)
+              : c.lit(mix(t.ground, t.ink, 0.25)),
+            0.5,
+          ],
           [c.lit(mix(t.ground, t.ink, 0.55)), 1],
         ]),
       ),
@@ -119,12 +134,21 @@ export function peraheraArt(input: ArtInput): SceneArt {
     shapes: [
       shape(herd.map((e) => e.body).join(''), solid(hide)),
       shape(herd.map((e) => e.cloth).join(''), solid(c.lit(t.ornament))),
-      shape(lampDots.map(([x, y]) => circle(x, y, 1.6)).join(''), solid(night ? L.window : c.lit(t.glow))),
+      shape(
+        lampDots.map(([x, y]) => circle(x, y, 1.6)).join(''),
+        solid(night ? L.window : c.lit(t.glow)),
+      ),
     ],
     motion: { kind: 'drift', amount: W * 0.015, periodMs: 12_000 },
   });
   // Flags overhead, in the festival's colours.
-  const colours = [c.lit(t.lamp), c.lit(t.glow), c.lit(t.ornament), c.lit(mix(t.success, t.glow, 0.3)), c.lit(L.white)];
+  const colours = [
+    c.lit(t.lamp),
+    c.lit(t.glow),
+    c.lit(t.ornament),
+    c.lit(mix(t.success, t.glow, 0.3)),
+    c.lit(L.white),
+  ];
   layers.push({
     id: 'flags',
     shapes: [
@@ -143,10 +167,21 @@ export function peraheraArt(input: ArtInput): SceneArt {
   const poleTops: Point[] = poles.map(([x, y], i) => [x, y - H * (i < 2 ? 0.26 : 0.12)]);
   layers.push({
     id: 'torch-poles',
-    shapes: [shape(poles.map(([x, y], i) => rect(x - 1.6, poleTops[i]![1], 3.2, y - poleTops[i]![1])).join(''), solid(c.lit(mix(t.ink, t.ornament, 0.4))))],
+    shapes: [
+      shape(
+        poles.map(([x, y], i) => rect(x - 1.6, poleTops[i]![1], 3.2, y - poleTops[i]![1])).join(''),
+        solid(c.lit(mix(t.ink, t.ornament, 0.4))),
+      ),
+    ],
   });
   if (night) layers.push(...fireLayers(c, 'torches', poleTops, H * 0.035));
-  else layers.push({ id: 'torch-heads', shapes: [shape(poleTops.map(([x, y]) => ellipse(x, y - 4, 5, 6)).join(''), solid(c.lit(t.ornament)))] });
+  else
+    layers.push({
+      id: 'torch-heads',
+      shapes: [
+        shape(poleTops.map(([x, y]) => ellipse(x, y - 4, 5, 6)).join(''), solid(c.lit(t.ornament))),
+      ],
+    });
 
   return {
     width: W,
@@ -208,7 +243,17 @@ export function peraheraArt(input: ArtInput): SceneArt {
           },
         ],
     shaders: night
-      ? poleTops.slice(0, 2).map(([x, y]) => ({ kind: 'heat' as const, x: x - W * 0.07, y: y - H * 0.12, width: W * 0.14, height: H * 0.1, colour: L.flame, strength: 0.3 }))
+      ? poleTops
+          .slice(0, 2)
+          .map(([x, y]) => ({
+            kind: 'heat' as const,
+            x: x - W * 0.07,
+            y: y - H * 0.12,
+            width: W * 0.14,
+            height: H * 0.1,
+            colour: L.flame,
+            strength: 0.3,
+          }))
       : [],
   };
 }

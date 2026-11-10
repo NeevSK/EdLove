@@ -65,7 +65,13 @@ function teaHill(
 }
 
 /** Silver oaks: tall straight trunks standing in the rows, with thin tiers of foliage. */
-function silverOaks(c: ArtContext, base: number, amp: number, seed: number, colour: string): ArtLayer {
+function silverOaks(
+  c: ArtContext,
+  base: number,
+  amp: number,
+  seed: number,
+  colour: string,
+): ArtLayer {
   const { W, H } = c;
   const rand = rng(52);
   const trunks: string[] = [];
@@ -76,7 +82,9 @@ function silverOaks(c: ArtContext, base: number, amp: number, seed: number, colo
     const y = base - ridge(x / W, seed, amp, 2.1) + H * 0.035;
     const h = H * (0.13 + rand() * 0.06);
     const w = Math.max(1, W * 0.0028);
-    trunks.push(`M${n(x - w)} ${n(y)}L${n(x - w * 0.4)} ${n(y - h)}L${n(x + w * 0.4)} ${n(y - h)}L${n(x + w)} ${n(y)}Z`);
+    trunks.push(
+      `M${n(x - w)} ${n(y)}L${n(x - w * 0.4)} ${n(y - h)}L${n(x + w * 0.4)} ${n(y - h)}L${n(x + w)} ${n(y)}Z`,
+    );
     // Four thin tiers, wider below, each a flat ragged cloud off short branches.
     for (let k = 0; k < 4; k++) {
       const ty = y - h * (0.42 + k * 0.17);
@@ -109,13 +117,24 @@ export function teaArt(input: ArtInput): SceneArt {
     const rows = c.lit(mix(mix(green, t.ink, 0.25), sky.horizon, depth * 0.5));
     layers.push(teaHill(c, `tea-${i}`, base, amp, seed, body, rows, 7 + i * 3));
     if (i === 1) layers.push(silverOaks(c, base, amp, seed, c.lit(mix(t.ink, sky.horizon, 0.35))));
-    if (i < 2) layers.push(mistBand(c, base + H * 0.04, H * 0.06, 0.3 + (c.wx.mist ? 0.25 : 0), `mist-${i}`));
+    if (i < 2)
+      layers.push(
+        mistBand(c, base + H * 0.04, H * 0.06, 0.3 + (c.wx.mist ? 0.25 : 0), `mist-${i}`),
+      );
   }
   // A path winding up the near slope.
   const path = `M${n(W * 0.62)} ${n(H)}C${n(W * 0.5)} ${n(H * 0.9)} ${n(W * 0.74)} ${n(H * 0.84)} ${n(W * 0.6)} ${n(H * 0.76)}`;
   layers.push({
     id: 'path',
-    shapes: [shape(path, undefined, { stroke: { colour: a(c.lit(mix(t.ground, t.ornament, 0.35)), 0.45), width: W * 0.014, cap: 'round' } })],
+    shapes: [
+      shape(path, undefined, {
+        stroke: {
+          colour: a(c.lit(mix(t.ground, t.ornament, 0.35)), 0.45),
+          width: W * 0.014,
+          cap: 'round',
+        },
+      }),
+    ],
   });
 
   return {
@@ -158,8 +177,22 @@ export function teaArt(input: ArtInput): SceneArt {
       height: H * 0.08,
       colour: mix(L.mist, sky.horizon, 0.25),
       opacity: 0.5,
-      motion: { kind: 'drift' as const, amount: W * (0.06 + i * 0.03), periodMs: 20_000 + i * 7000 },
+      motion: {
+        kind: 'drift' as const,
+        amount: W * (0.06 + i * 0.03),
+        periodMs: 20_000 + i * 7000,
+      },
     })),
-    shaders: [{ kind: 'mist', x: 0, y: hy - H * 0.04, width: W, height: H * 0.35, colour: mix(L.mist, sky.horizon, 0.3), strength: 0.35 }],
+    shaders: [
+      {
+        kind: 'mist',
+        x: 0,
+        y: hy - H * 0.04,
+        width: W,
+        height: H * 0.35,
+        colour: mix(L.mist, sky.horizon, 0.3),
+        strength: 0.35,
+      },
+    ],
   };
 }

@@ -64,7 +64,11 @@ export function waterLayers(
     const spread = W * (0.015 + s * 0.12);
     const x = sx + (rand() - 0.5) * spread * 2;
     const len = W * (0.012 + s * 0.05) * (0.5 + rand());
-    if (within && ((x - within.cx) / (within.rx - len)) ** 2 + ((y - within.cy) / within.ry) ** 2 > 0.85) continue;
+    if (
+      within &&
+      ((x - within.cx) / (within.rx - len)) ** 2 + ((y - within.cy) / within.ry) ** 2 > 0.85
+    )
+      continue;
     dashes.push(ellipse(x, y, len, 0.6 + s * 1.4));
   }
   const glint = c.scene.celestial.body === 'sun' ? mix(L.sunDisc, sky.halo, 0.3) : L.moonDisc;
@@ -81,7 +85,15 @@ export function waterLayers(
   });
   return {
     layers,
-    shader: { kind: 'water', x: 0, y: top, width: W, height: bottom - top, colour: sky.halo, strength: 0.4 },
+    shader: {
+      kind: 'water',
+      x: 0,
+      y: top,
+      width: W,
+      height: bottom - top,
+      colour: sky.halo,
+      strength: 0.4,
+    },
   };
 }
 
@@ -159,11 +171,16 @@ export function fireLayers(
   const flames = spots.map(([x, y], i) => flame(x, y, h, (i % 2 ? 1 : -1) * 0.05)).join('');
   const cores = spots.map(([x, y]) => flame(x, y - h * 0.05, h * 0.5)).join('');
   return [
-    { id: `${id}-glow`, shapes: glow, motion: { kind: 'glow', amount: 0.35, periodMs: 1300 }, from },
+    {
+      id: `${id}-glow`,
+      shapes: glow,
+      motion: { kind: 'glow', amount: 0.35, periodMs: 1300 },
+      from,
+    },
     {
       id: `${id}-flame`,
       shapes: [shape(flames, solid(a(L.flame, 0.95))), shape(cores, solid(L.flameCore))],
-      motion: { kind: 'breathe', amount: 0.03, periodMs: 900, origin: spots[0] },
+      motion: { kind: 'breathe', amount: 0.03, periodMs: 1100, origin: spots[0] },
       from,
     },
   ];
@@ -200,7 +217,12 @@ export function pennants(
 }
 
 /** Reeds rising from the bottom edge on one side. */
-export function reeds(c: ArtContext, side: 'left' | 'right', colour: string, seed: number): ArtLayer {
+export function reeds(
+  c: ArtContext,
+  side: 'left' | 'right',
+  colour: string,
+  seed: number,
+): ArtLayer {
   const { W, H } = c;
   const rand = rng(seed);
   const blades: string[] = [];
@@ -214,8 +236,17 @@ export function reeds(c: ArtContext, side: 'left' | 'right', colour: string, see
   }
   return {
     id: `reeds-${side}`,
-    shapes: [shape(blades.join(''), solid(colour)), shape(heads.join(''), solid(mix(colour, L.white, 0.08)))],
-    motion: { kind: 'sway', amount: 1.4, periodMs: 6800, offset: seed % 3 / 3, origin: [side === 'left' ? 0 : W, H] },
+    shapes: [
+      shape(blades.join(''), solid(colour)),
+      shape(heads.join(''), solid(mix(colour, L.white, 0.08))),
+    ],
+    motion: {
+      kind: 'sway',
+      amount: 1.4,
+      periodMs: 6800,
+      offset: (seed % 3) / 3,
+      origin: [side === 'left' ? 0 : W, H],
+    },
   };
 }
 
@@ -236,7 +267,14 @@ export function hills(
       id: `hills-${seed}-${i}`,
       shapes: [
         shape(
-          ridgeShape(W, base + i * H * 0.035, H * (0.03 + i * 0.012), rollEvery + i * 0.4, seed + i * 1.3, H),
+          ridgeShape(
+            W,
+            base + i * H * 0.035,
+            H * (0.03 + i * 0.012),
+            rollEvery + i * 0.4,
+            seed + i * 1.3,
+            H,
+          ),
           solid(c.lit(mix(colour, c.sky.horizon, depth * 0.7), depth * 0.3)),
         ),
       ],
@@ -270,7 +308,16 @@ export function bush(x: number, y: number, r: number, seed: number): string {
   const rand = rng(seed);
   const parts: string[] = [];
   for (let i = 0; i < 5; i++) {
-    parts.push(blob(x + (rand() - 0.5) * r * 1.6, y - rand() * r * 0.6, r * (0.5 + rand() * 0.35), 7, seed + i, 0.8));
+    parts.push(
+      blob(
+        x + (rand() - 0.5) * r * 1.6,
+        y - rand() * r * 0.6,
+        r * (0.5 + rand() * 0.35),
+        7,
+        seed + i,
+        0.8,
+      ),
+    );
   }
   return parts.join('');
 }

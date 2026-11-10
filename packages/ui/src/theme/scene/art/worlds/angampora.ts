@@ -48,9 +48,23 @@ function ground(c: ArtContext, top: number): ArtLayer {
   return {
     id: 'ground',
     shapes: [
-      shape(rect(0, top, W, H - top), vertical(top, H, [[c.lit(mix(earth, t.ground, 0.25)), 0], [near, 1]])),
-      shape(square, vertical(top, H, [[earth, 0], [near, 1]])),
-      shape(lines.join(''), undefined, { stroke: { colour: a(brass, 0.35), width: 1.2, cap: 'butt' } }),
+      shape(
+        rect(0, top, W, H - top),
+        vertical(top, H, [
+          [c.lit(mix(earth, t.ground, 0.25)), 0],
+          [near, 1],
+        ]),
+      ),
+      shape(
+        square,
+        vertical(top, H, [
+          [earth, 0],
+          [near, 1],
+        ]),
+      ),
+      shape(lines.join(''), undefined, {
+        stroke: { colour: a(brass, 0.35), width: 1.2, cap: 'butt' },
+      }),
       shape(square, undefined, { stroke: { colour: a(brass, 0.85), width: 2.4, cap: 'butt' } }),
     ],
   };
@@ -69,10 +83,18 @@ function madu(c: ArtContext, base: number): ArtLayer {
   return {
     id: 'madu',
     shapes: [
-      shape(rect(x0, eave, x1 - x0, base - eave), solid(a(c.lit(mix(t.ink, t.ornament, 0.5)), 0.8))),
+      shape(
+        rect(x0, eave, x1 - x0, base - eave),
+        solid(a(c.lit(mix(t.ink, t.ornament, 0.5)), 0.8)),
+      ),
       shape(posts, solid(wood)),
-      shape(`M${n(x0 - W * 0.06)} ${n(eave)}L${n(W * 0.5)} ${n(roofTop)}L${n(x1 + W * 0.06)} ${n(eave)}Z`, solid(thatch)),
-      shape(`M${n(x0 - W * 0.06)} ${n(eave)}L${n(x1 + W * 0.06)} ${n(eave)}`, undefined, { stroke: { colour: wood, width: 2, cap: 'butt' } }),
+      shape(
+        `M${n(x0 - W * 0.06)} ${n(eave)}L${n(W * 0.5)} ${n(roofTop)}L${n(x1 + W * 0.06)} ${n(eave)}Z`,
+        solid(thatch),
+      ),
+      shape(`M${n(x0 - W * 0.06)} ${n(eave)}L${n(x1 + W * 0.06)} ${n(eave)}`, undefined, {
+        stroke: { colour: wood, width: 2, cap: 'butt' },
+      }),
     ],
   };
 }
@@ -102,7 +124,10 @@ export function angamporaArt(input: ArtInput): SceneArt {
     palm(W * 0.86, hy + H * 0.05, H * 0.25, -0.06, 9),
     palm(W * 0.98, hy + H * 0.07, H * 0.32, -0.1, 12),
   ];
-  layers.push({ id: 'palm-trunks', shapes: [shape(palms.map((p) => p.trunk).join(''), solid(palmDark))] });
+  layers.push({
+    id: 'palm-trunks',
+    shapes: [shape(palms.map((p) => p.trunk).join(''), solid(palmDark))],
+  });
   layers.push({
     id: 'palm-fronds',
     shapes: [shape(palms.map((p) => p.fronds).join(''), solid(palmDark))],
@@ -121,7 +146,10 @@ export function angamporaArt(input: ArtInput): SceneArt {
     id: 'lamp-stands',
     shapes: [
       shape(feet.map(([x, y]) => lampStand(x, y, h)).join(''), solid(brass)),
-      shape(feet.map(([x, y]) => rect(x - h * 0.012, y - h, h * 0.01, h)).join(''), solid(a(mix(brass, L.white, 0.5), 0.6))),
+      shape(
+        feet.map(([x, y]) => rect(x - h * 0.012, y - h, h * 0.01, h)).join(''),
+        solid(a(mix(brass, L.white, 0.5), 0.6)),
+      ),
     ],
   });
   const flames: Point[] = feet.map(([x, y]) => [x, y - h - 1]);

@@ -40,7 +40,9 @@ describe.each(Object.keys(WORLD_ART))('scene art: %s', (id) => {
             for (const v of shape.d.match(NUM) ?? []) expect(Number.isFinite(Number(v))).toBe(true);
             const colours = [
               shape.fill?.kind === 'solid' ? shape.fill.colour : undefined,
-              ...(shape.fill && shape.fill.kind !== 'solid' ? shape.fill.stops.map((s) => s[0]) : []),
+              ...(shape.fill && shape.fill.kind !== 'solid'
+                ? shape.fill.stops.map((s) => s[0])
+                : []),
               shape.stroke?.colour,
             ].filter(Boolean) as string[];
             for (const c of colours) expect(c).toMatch(/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/);
@@ -63,5 +65,12 @@ describe.each(Object.keys(WORLD_ART))('scene art: %s', (id) => {
 
 it('Classic has no scene art: its floor is plain', () => {
   expect(WORLDS.classic.floor).toBe('plain');
-  expect(sceneArtOf('classic', { width: 1, height: 1, scene: {} as never, tokens: WORLDS.classic.palette.light })).toBeNull();
+  expect(
+    sceneArtOf('classic', {
+      width: 1,
+      height: 1,
+      scene: {} as never,
+      tokens: WORLDS.classic.palette.light,
+    }),
+  ).toBeNull();
 });

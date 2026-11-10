@@ -50,7 +50,10 @@ function crownRidge(
   return {
     id,
     from,
-    shapes: [shape(rect(0, base, W, H - base), solid(colour)), shape(crowns.join(''), solid(colour))],
+    shapes: [
+      shape(rect(0, base, W, H - base), solid(colour)),
+      shape(crowns.join(''), solid(colour)),
+    ],
   };
 }
 
@@ -89,12 +92,7 @@ function branch(c: ArtContext, side: 'left' | 'right', seed: number): ArtLayer[]
       const d = leaf(tx, ty, len, wid, ang);
       if (rand() < 0.45) dark.push(d);
       else {
-        bright.push(
-          shape(
-            d,
-            solid(a(backlit, 0.72 + rand() * 0.25)),
-          ),
-        );
+        bright.push(shape(d, solid(a(backlit, 0.72 + rand() * 0.25))));
         veins.push(midrib(tx, ty, len, ang));
       }
     }
@@ -105,19 +103,23 @@ function branch(c: ArtContext, side: 'left' | 'right', seed: number): ArtLayer[]
     {
       id: `branch-${side}-shade`,
       shapes: [shape(dark.join(''), solid(a(shadowLeaf, 0.92)))],
-      motion: { kind: 'sway', amount: 1.1, periodMs: 7400, offset: seed % 7 / 7, origin },
+      motion: { kind: 'sway', amount: 1.1, periodMs: 7400, offset: (seed % 7) / 7, origin },
     },
     {
       id: `branch-${side}`,
       shapes: [
-        shape(limb, undefined, { stroke: { colour: wood, width: Math.max(5, W * 0.016), cap: 'round' } }),
-        shape(twigs.join(''), undefined, { stroke: { colour: a(wood, 0.75), width: Math.max(0.9, W * 0.0024), cap: 'round' } }),
+        shape(limb, undefined, {
+          stroke: { colour: wood, width: Math.max(5, W * 0.016), cap: 'round' },
+        }),
+        shape(twigs.join(''), undefined, {
+          stroke: { colour: a(wood, 0.75), width: Math.max(0.9, W * 0.0024), cap: 'round' },
+        }),
         ...bright,
         shape(veins.join(''), undefined, {
           stroke: { colour: a(mix(backlit, t.ink, 0.5), 0.55), width: 0.8, cap: 'round' },
         }),
       ],
-      motion: { kind: 'sway', amount: 1.4, periodMs: 6200, offset: seed % 5 / 5, origin },
+      motion: { kind: 'sway', amount: 1.4, periodMs: 6200, offset: (seed % 5) / 5, origin },
     },
   ];
 }
@@ -141,7 +143,9 @@ function lianas(c: ArtContext): ArtLayer {
     id: 'lianas',
     from: 'middle',
     shapes: [
-      shape(lines.join(''), undefined, { stroke: { colour: a(vine, 0.8), width: 1.3, cap: 'round' } }),
+      shape(lines.join(''), undefined, {
+        stroke: { colour: a(vine, 0.8), width: 1.3, cap: 'round' },
+      }),
       shape(tips.join(''), solid(a(c.lit(t.lamp), 0.8))),
     ],
     motion: { kind: 'sway', amount: 1.6, periodMs: 8800, origin: [W / 2, 0] },
@@ -204,10 +208,14 @@ function emergents(c: ArtContext, base: number, colour: string, crownLight: stri
     for (let k = 0; k < 5; k++) {
       const ox = (k - 2) * cr * 0.42;
       const oy = -Math.abs(k - 2) * -cr * 0.06 - cr * 0.05;
-      crown.push(blob(tx + ox, top + oy, cr * (0.55 - Math.abs(k - 2) * 0.08), 8, 300 + i * 10 + k, 0.55));
+      crown.push(
+        blob(tx + ox, top + oy, cr * (0.55 - Math.abs(k - 2) * 0.08), 8, 300 + i * 10 + k, 0.55),
+      );
     }
     shapes.push(shape(crown.join(''), solid(colour)));
-    shapes.push(shape(blob(tx - cr * 0.3, top - cr * 0.16, cr * 0.42, 7, 400 + i, 0.45), solid(crownLight)));
+    shapes.push(
+      shape(blob(tx - cr * 0.3, top - cr * 0.16, cr * 0.42, 7, 400 + i, 0.45), solid(crownLight)),
+    );
   }
   return { id: 'emergents', shapes };
 }
@@ -223,9 +231,13 @@ function trunks(c: ArtContext, colour: string, lightEdge: string): ArtLayer {
     const d = `M${edge - side * W * 0.02} -10L${inner.toFixed(1)} -10Q${(inner + side * W * 0.01).toFixed(1)} ${(H * 0.6).toFixed(1)} ${foot.toFixed(1)} ${(H + 10).toFixed(1)}L${(edge + side * 10).toFixed(1)} ${(H + 10).toFixed(1)}Z`;
     shapes.push(shape(d, solid(colour)));
     shapes.push(
-      shape(`M${inner.toFixed(1)} -10Q${(inner + side * W * 0.01).toFixed(1)} ${(H * 0.6).toFixed(1)} ${foot.toFixed(1)} ${(H + 10).toFixed(1)}`, undefined, {
-        stroke: { colour: lightEdge, width: 1.6, cap: 'round' },
-      }),
+      shape(
+        `M${inner.toFixed(1)} -10Q${(inner + side * W * 0.01).toFixed(1)} ${(H * 0.6).toFixed(1)} ${foot.toFixed(1)} ${(H + 10).toFixed(1)}`,
+        undefined,
+        {
+          stroke: { colour: lightEdge, width: 1.6, cap: 'round' },
+        },
+      ),
     );
   }
   return { id: 'trunks', shapes };
@@ -255,7 +267,12 @@ export function keleArt(input: ArtInput): SceneArt {
         ),
       );
     }
-    layers.push({ id: 'shafts', shapes: shafts, from: 'middle', motion: { kind: 'glow', amount: 0.4, periodMs: 7000 } });
+    layers.push({
+      id: 'shafts',
+      shapes: shafts,
+      from: 'middle',
+      motion: { kind: 'glow', amount: 0.4, periodMs: 7000 },
+    });
   }
 
   layers.push({
@@ -267,8 +284,12 @@ export function keleArt(input: ArtInput): SceneArt {
   layers.push(emergents(c, hy + H * 0.005, haze(green, 0.5), haze(mix(green, t.lamp, 0.35), 0.45)));
   layers.push(crownRidge(c, 'canopy-mid', hy + H * 0.02, W * 0.06, haze(green, 0.45), 31));
   layers.push(mistBand(c, hy + H * 0.02, H * 0.07, 0.45, 'mist-low'));
-  layers.push(crownRidge(c, 'canopy-near', hy + H * 0.09, W * 0.085, haze(mix(green, t.ink, 0.2), 0.22), 57));
-  layers.push(crownRidge(c, 'canopy-close', hy + H * 0.19, W * 0.11, haze(mix(green, t.ink, 0.42), 0.08), 73));
+  layers.push(
+    crownRidge(c, 'canopy-near', hy + H * 0.09, W * 0.085, haze(mix(green, t.ink, 0.2), 0.22), 57),
+  );
+  layers.push(
+    crownRidge(c, 'canopy-close', hy + H * 0.19, W * 0.11, haze(mix(green, t.ink, 0.42), 0.08), 73),
+  );
   const under = c.lit(mix(green, t.ink, 0.62));
   layers.push(crownRidge(c, 'undergrowth', hy + H * 0.3, W * 0.13, under, 97));
   // Dappled light on the undergrowth by day.
@@ -364,7 +385,27 @@ export function keleArt(input: ArtInput): SceneArt {
     ],
     shaders:
       c.light > 0.3
-        ? [{ kind: 'rays', x: 0, y: 0, width: W, height: hy, colour: t.glow, strength: 0.35 * c.veil }]
-        : [{ kind: 'mist', x: 0, y: hy - H * 0.08, width: W, height: H * 0.2, colour: sky.horizon, strength: 0.3 }],
+        ? [
+            {
+              kind: 'rays',
+              x: 0,
+              y: 0,
+              width: W,
+              height: hy,
+              colour: t.glow,
+              strength: 0.35 * c.veil,
+            },
+          ]
+        : [
+            {
+              kind: 'mist',
+              x: 0,
+              y: hy - H * 0.08,
+              width: W,
+              height: H * 0.2,
+              colour: sky.horizon,
+              strength: 0.3,
+            },
+          ],
   };
 }

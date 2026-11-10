@@ -95,7 +95,13 @@ export function ridgeShape(
 }
 
 /** An open ridge line (a shore, a terrace edge) for stroking. */
-export function ridgeLine(width: number, base: number, amp: number, freq: number, seed: number): string {
+export function ridgeLine(
+  width: number,
+  base: number,
+  amp: number,
+  freq: number,
+  seed: number,
+): string {
   const step = Math.max(3, width / 120);
   let d = '';
   for (let x = 0; x <= width + step; x += step) {
@@ -137,7 +143,14 @@ export function petal(cx: number, cy: number, len: number, width: number, angle:
 }
 
 /** A soft irregular blob (a cloud of foliage, a bush), `lobes` bumps around (cx, cy). */
-export function blob(cx: number, cy: number, r: number, lobes: number, seed: number, squash = 1): string {
+export function blob(
+  cx: number,
+  cy: number,
+  r: number,
+  lobes: number,
+  seed: number,
+  squash = 1,
+): string {
   const rand = rng(seed);
   const pts: Point[] = [];
   for (let i = 0; i < lobes; i++) {
@@ -285,7 +298,12 @@ export function skyLayers(c: ArtContext, glow: string): ArtLayer[] {
           ]),
         ),
         ...(veil > 0.25
-          ? [shape(circle(cx, cy, Math.max(13, W * 0.034)), solid(a(L.sunDisc, Math.min(1, veil + 0.1))))]
+          ? [
+              shape(
+                circle(cx, cy, Math.max(13, W * 0.034)),
+                solid(a(L.sunDisc, Math.min(1, veil + 0.1))),
+              ),
+            ]
           : []),
         ...(low > 0
           ? [
@@ -303,7 +321,9 @@ export function skyLayers(c: ArtContext, glow: string): ArtLayer[] {
   } else {
     const r = Math.max(11, W * 0.028);
     const shift =
-      scene.moonPhase < 0.5 ? -r * 2 * (scene.moonPhase / 0.5) : r * 2 * ((1 - scene.moonPhase) / 0.5);
+      scene.moonPhase < 0.5
+        ? -r * 2 * (scene.moonPhase / 0.5)
+        : r * 2 * ((1 - scene.moonPhase) / 0.5);
     // How much of the moon is lit: 0 at the new moon, 1 at the poya full moon.
     const lit = 1 - Math.abs(0.5 - scene.moonPhase) * 2;
     layers.push({
@@ -339,7 +359,15 @@ export function skyLayers(c: ArtContext, glow: string): ArtLayer[] {
     const py = hy * (0.12 + rand() * 0.5);
     const rx = W * (0.18 + rand() * 0.22);
     const ry = rx * (0.18 + rand() * 0.1);
-    puffs.push(shape(ellipse(px, py, rx, ry), radial([px, py], rx, [[a(cloud, alpha), 0], [a(cloud, 0), 1]])));
+    puffs.push(
+      shape(
+        ellipse(px, py, rx, ry),
+        radial([px, py], rx, [
+          [a(cloud, alpha), 0],
+          [a(cloud, 0), 1],
+        ]),
+      ),
+    );
   }
   layers.push({
     id: 'clouds',
@@ -350,7 +378,13 @@ export function skyLayers(c: ArtContext, glow: string): ArtLayer[] {
 }
 
 /** A mist band across the scene at `y`, `h` tall: a still shape plus a floor-tier overlay. */
-export function mistBand(c: ArtContext, y: number, h: number, strength: number, id = 'mist'): ArtLayer {
+export function mistBand(
+  c: ArtContext,
+  y: number,
+  h: number,
+  strength: number,
+  id = 'mist',
+): ArtLayer {
   const colour = mix(L.mist, c.sky.horizon, 0.35);
   return {
     id,

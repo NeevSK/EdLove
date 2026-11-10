@@ -45,8 +45,14 @@ function dagoba(c: ArtContext, base: number): ArtLayer {
   const domeR = W * 0.11;
   const shapes: ArtShape[] = [
     shape(rect(x - domeR * 1.35, base - H * 0.018, domeR * 2.7, H * 0.018), solid(shade)),
-    shape(`M${n(x - domeR)} ${n(base - H * 0.018)}A${n(domeR)} ${n(domeR * 0.9)} 0 0 1 ${n(x + domeR)} ${n(base - H * 0.018)}Z`, solid(white)),
-    shape(rect(x - domeR * 0.28, base - H * 0.018 - domeR * 0.9 - H * 0.016, domeR * 0.56, H * 0.016), solid(shade)),
+    shape(
+      `M${n(x - domeR)} ${n(base - H * 0.018)}A${n(domeR)} ${n(domeR * 0.9)} 0 0 1 ${n(x + domeR)} ${n(base - H * 0.018)}Z`,
+      solid(white),
+    ),
+    shape(
+      rect(x - domeR * 0.28, base - H * 0.018 - domeR * 0.9 - H * 0.016, domeR * 0.56, H * 0.016),
+      solid(shade),
+    ),
     shape(
       `M${n(x - domeR * 0.14)} ${n(base - H * 0.034 - domeR * 0.9)}L${n(x)} ${n(base - H * 0.034 - domeR * 0.9 - H * 0.06)}L${n(x + domeR * 0.14)} ${n(base - H * 0.034 - domeR * 0.9)}Z`,
       solid(c.lit(t.glow)),
@@ -68,7 +74,9 @@ function wall(c: ArtContext): ArtLayer {
   ]);
   // Above the arch: a slab whose lower edge follows the arch.
   const above = `M0 0L${n(W)} 0L${n(W)} ${n(d.spring)}L${n(d.right)} ${n(d.spring)}A${n(d.r)} ${n(d.r)} 0 0 0 ${n(d.left)} ${n(d.spring)}L0 ${n(d.spring)}Z`;
-  const sides = rect(0, d.spring - 1, d.left, d.sill - d.spring + 2) + rect(d.right, d.spring - 1, W - d.right, d.sill - d.spring + 2);
+  const sides =
+    rect(0, d.spring - 1, d.left, d.sill - d.spring + 2) +
+    rect(d.right, d.spring - 1, W - d.right, d.sill - d.spring + 2);
   const below = rect(0, d.sill, W, H - d.sill);
   // Weathered lime: soft blotches.
   const rand = rng(12);
@@ -86,10 +94,17 @@ function wall(c: ArtContext): ArtLayer {
     shapes: [
       shape(above + sides + below, fill),
       shape(blotches.join(''), solid(a(earth, 0.18)), { blur: 6 }),
-      shape(moulding, undefined, { stroke: { colour: c.lit(t.lamp), width: W * 0.022, cap: 'butt' } }),
-      shape(moulding, undefined, { stroke: { colour: c.lit(t.glow), width: W * 0.005, cap: 'butt' } }),
+      shape(moulding, undefined, {
+        stroke: { colour: c.lit(t.lamp), width: W * 0.022, cap: 'butt' },
+      }),
+      shape(moulding, undefined, {
+        stroke: { colour: c.lit(t.glow), width: W * 0.005, cap: 'butt' },
+      }),
       // The sill: a deep ledge.
-      shape(rect(d.left - W * 0.04, d.sill - H * 0.006, d.right - d.left + W * 0.08, H * 0.022), solid(c.lit(mix(t.ink, t.ornament, 0.3)))),
+      shape(
+        rect(d.left - W * 0.04, d.sill - H * 0.006, d.right - d.left + W * 0.08, H * 0.022),
+        solid(c.lit(mix(t.ink, t.ornament, 0.3))),
+      ),
     ],
   };
 }
@@ -102,8 +117,12 @@ function walakulu(c: ArtContext): ArtLayer {
   const rows: string[] = [];
   const inner: string[] = [];
   for (let x = -unit / 2; x < W + unit; x += unit) {
-    rows.push(`M${n(x)} ${n(y + unit * 0.5)}A${n(unit / 2)} ${n(unit / 2)} 0 0 1 ${n(x + unit)} ${n(y + unit * 0.5)}Z`);
-    inner.push(`M${n(x + unit * 0.2)} ${n(y + unit * 0.5)}A${n(unit * 0.3)} ${n(unit * 0.3)} 0 0 1 ${n(x + unit * 0.8)} ${n(y + unit * 0.5)}Z`);
+    rows.push(
+      `M${n(x)} ${n(y + unit * 0.5)}A${n(unit / 2)} ${n(unit / 2)} 0 0 1 ${n(x + unit)} ${n(y + unit * 0.5)}Z`,
+    );
+    inner.push(
+      `M${n(x + unit * 0.2)} ${n(y + unit * 0.5)}A${n(unit * 0.3)} ${n(unit * 0.3)} 0 0 1 ${n(x + unit * 0.8)} ${n(y + unit * 0.5)}Z`,
+    );
   }
   return {
     id: 'walakulu',
@@ -138,8 +157,12 @@ function liyawela(c: ArtContext): ArtLayer {
     id: 'liyawela',
     shapes: [
       shape(rect(0, y - amp * 3.2, W, 2) + rect(0, y + amp * 3.2, W, 2), solid(c.lit(t.ink))),
-      shape(stem, undefined, { stroke: { colour: c.lit(mix(t.ornament, t.ink, 0.3)), width: 2.2, cap: 'round' } }),
-      shape(curls.join(''), undefined, { stroke: { colour: c.lit(t.lamp), width: 1.6, cap: 'round' } }),
+      shape(stem, undefined, {
+        stroke: { colour: c.lit(mix(t.ornament, t.ink, 0.3)), width: 2.2, cap: 'round' },
+      }),
+      shape(curls.join(''), undefined, {
+        stroke: { colour: c.lit(t.lamp), width: 1.6, cap: 'round' },
+      }),
       shape(leaves.join(''), solid(c.lit(t.lamp))),
     ],
   };
@@ -155,7 +178,15 @@ export function kandyanArt(input: ArtInput): SceneArt {
   layers.push(dagoba(c, hy + H * 0.03));
   layers.push({
     id: 'yard',
-    shapes: [shape(rect(0, hy + H * 0.03, W, H), vertical(hy, H, [[c.lit(mix(t.ground, t.ornament, 0.3)), 0], [c.lit(mix(t.ground, t.ink, 0.25)), 1]]))],
+    shapes: [
+      shape(
+        rect(0, hy + H * 0.03, W, H),
+        vertical(hy, H, [
+          [c.lit(mix(t.ground, t.ornament, 0.3)), 0],
+          [c.lit(mix(t.ground, t.ink, 0.25)), 1],
+        ]),
+      ),
+    ],
   });
   layers.push(wall(c), walakulu(c), liyawela(c));
   const lamps: [number, number][] = [
@@ -166,7 +197,17 @@ export function kandyanArt(input: ArtInput): SceneArt {
   // The clay lamps under the flames.
   layers.push({
     id: 'pahana',
-    shapes: [shape(lamps.map(([x, y]) => `M${n(x - W * 0.03)} ${n(y)}Q${n(x)} ${n(y + H * 0.02)} ${n(x + W * 0.03)} ${n(y)}Z`).join(''), solid(c.lit(mix(t.ornament, t.ink, 0.35))))],
+    shapes: [
+      shape(
+        lamps
+          .map(
+            ([x, y]) =>
+              `M${n(x - W * 0.03)} ${n(y)}Q${n(x)} ${n(y + H * 0.02)} ${n(x + W * 0.03)} ${n(y)}Z`,
+          )
+          .join(''),
+        solid(c.lit(mix(t.ornament, t.ink, 0.35))),
+      ),
+    ],
   });
   layers.push(...fireLayers(c, 'lamps', lamps, H * 0.022));
 
@@ -198,7 +239,10 @@ export function kandyanArt(input: ArtInput): SceneArt {
         twinkle: true,
         seed: 5,
       },
-      ...rainOf(c).map((p) => ({ ...p, area: { x: d.left, y: d.top, width: d.right - d.left, height: d.sill - d.top } })),
+      ...rainOf(c).map((p) => ({
+        ...p,
+        area: { x: d.left, y: d.top, width: d.right - d.left, height: d.sill - d.top },
+      })),
     ],
     overlays: [
       {
@@ -213,6 +257,16 @@ export function kandyanArt(input: ArtInput): SceneArt {
         motion: { kind: 'glow', amount: 0.4, periodMs: 1600 },
       },
     ],
-    shaders: [{ kind: 'heat', x: d.left, y: d.sill - H * 0.12, width: d.right - d.left, height: H * 0.12, colour: L.flame, strength: 0.25 }],
+    shaders: [
+      {
+        kind: 'heat',
+        x: d.left,
+        y: d.sill - H * 0.12,
+        width: d.right - d.left,
+        height: H * 0.12,
+        colour: L.flame,
+        strength: 0.25,
+      },
+    ],
   };
 }

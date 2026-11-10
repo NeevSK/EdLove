@@ -7,12 +7,14 @@ import type { WorldId } from '../../types';
 import type { ArtInput } from './kit';
 import type { SceneArt } from './types';
 import { angamporaArt } from './worlds/angampora';
+import { colomboArt } from './worlds/colombo';
 import { kandyanArt } from './worlds/kandyan';
 import { keleArt } from './worlds/kele';
 import { peraheraArt } from './worlds/perahera';
 import { ratnaArt } from './worlds/ratna';
 import { rosaArt } from './worlds/rosa';
 import { sanctuaryArt } from './worlds/sanctuary';
+import { sparkArt } from './worlds/spark';
 import { teaArt } from './worlds/tea';
 import { wewaArt } from './worlds/wewa';
 
@@ -29,6 +31,8 @@ export const WORLD_ART: Readonly<Partial<Record<WorldId, ArtBuilder>>> = {
   kandyan: kandyanArt,
   angampora: angamporaArt,
   perahera: peraheraArt,
+  colombo: colomboArt,
+  spark: sparkArt,
 };
 
 /** Whether a world has its own scene art. */

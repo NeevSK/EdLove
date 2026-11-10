@@ -27,7 +27,12 @@ import {
 import type { ArtLayer, ArtShape, SceneArt } from '../types';
 
 /** A full rose seen from above: rings of petals turning inward. */
-function rose(cx: number, cy: number, r: number, seed: number): { outer: string; inner: string; heart: string } {
+function rose(
+  cx: number,
+  cy: number,
+  r: number,
+  seed: number,
+): { outer: string; inner: string; heart: string } {
   const rand = rng(seed);
   const outer: string[] = [];
   const inner: string[] = [];
@@ -79,7 +84,7 @@ function roseBush(c: ArtContext, side: 'left' | 'right', seed: number): ArtLayer
       shape(inners.join(''), solid(innerColour)),
       shape(hearts.join(''), solid(c.lit(t.lampDeep))),
     ],
-    motion: { kind: 'sway', amount: 0.9, periodMs: 7800, offset: seed % 4 / 4, origin: [x0, H] },
+    motion: { kind: 'sway', amount: 0.9, periodMs: 7800, offset: (seed % 4) / 4, origin: [x0, H] },
   };
 }
 
@@ -106,7 +111,8 @@ function pichcha(c: ArtContext): ArtLayer {
         const fx = x + (rand() - 0.5) * W * 0.02;
         const fy = y + H * (0.008 + rand() * 0.018);
         const r = W * (0.011 + rand() * 0.006);
-        for (let p = 0; p < 5; p++) flowers.push(petal(fx, fy, r, r * 0.5, (p / 5) * Math.PI * 2 + rand()));
+        for (let p = 0; p < 5; p++)
+          flowers.push(petal(fx, fy, r, r * 0.5, (p / 5) * Math.PI * 2 + rand()));
         hearts.push(circle(fx, fy, r * 0.18));
       }
     }
@@ -114,7 +120,9 @@ function pichcha(c: ArtContext): ArtLayer {
   return {
     id: 'pichcha',
     shapes: [
-      shape(vine.join(''), undefined, { stroke: { colour: c.lit(mix(t.ornament, t.ink, 0.4)), width: 1.6, cap: 'round' } }),
+      shape(vine.join(''), undefined, {
+        stroke: { colour: c.lit(mix(t.ornament, t.ink, 0.4)), width: 1.6, cap: 'round' },
+      }),
       shape(leaves.join(''), solid(c.lit(t.ornament))),
       shape(flowers.join(''), solid(c.lit(mix(L.white, t.glow, 0.12)))),
       shape(hearts.join(''), solid(c.lit(mix(t.glow, L.sunLow, 0.4)))),
@@ -131,7 +139,15 @@ export function rosaArt(input: ArtInput): SceneArt {
   // A blush wash low in the sky.
   layers.push({
     id: 'blush',
-    shapes: [shape(rect(0, hy * 0.4, W, hy * 0.6), vertical(hy * 0.4, hy, [[a(blush, 0), 0], [a(blush, 0.35 * c.light + 0.05), 1]]))],
+    shapes: [
+      shape(
+        rect(0, hy * 0.4, W, hy * 0.6),
+        vertical(hy * 0.4, hy, [
+          [a(blush, 0), 0],
+          [a(blush, 0.35 * c.light + 0.05), 1],
+        ]),
+      ),
+    ],
   });
   layers.push(...hills(c, mix(t.ornament, blush, 0.25), hy - H * 0.03, 2, 5.5, 2.4));
   layers.push(mistBand(c, hy - H * 0.02, H * 0.06, 0.4, 'mist'));
@@ -141,11 +157,18 @@ export function rosaArt(input: ArtInput): SceneArt {
     const y = hy + H * (0.04 + row * 0.08);
     const r = W * (0.05 + row * 0.03);
     const parts: string[] = [];
-    for (let x = -r; x < W + r; x += r * 1.3) parts.push(bush(x, y, r, 300 + row * 50 + Math.round(x)));
+    for (let x = -r; x < W + r; x += r * 1.3)
+      parts.push(bush(x, y, r, 300 + row * 50 + Math.round(x)));
     const colour = c.lit(mix(mix(t.ornament, t.ink, row * 0.18), sky.horizon, (2 - row) * 0.3));
     // Each hedge darkens toward its foot, so the rows read as rounded forms, not flat bands.
     hedge.push(
-      shape(rect(0, y, W, H - y), vertical(y, H, [[colour, 0], [c.lit(mix(colour, t.ink, 0.35)), 1]])),
+      shape(
+        rect(0, y, W, H - y),
+        vertical(y, H, [
+          [colour, 0],
+          [c.lit(mix(colour, t.ink, 0.35)), 1],
+        ]),
+      ),
       shape(parts.join(''), solid(colour)),
     );
     if (row < 2) {
@@ -153,7 +176,9 @@ export function rosaArt(input: ArtInput): SceneArt {
       const rand = rng(row + 5);
       const dots: string[] = [];
       for (let i = 0; i < 26; i++) dots.push(circle(rand() * W, y - rand() * r * 0.6, 1.4 + row));
-      hedge.push(shape(dots.join(''), solid(a(c.lit(row ? t.lamp : mix(L.white, blush, 0.3)), 0.85))));
+      hedge.push(
+        shape(dots.join(''), solid(a(c.lit(row ? t.lamp : mix(L.white, blush, 0.3)), 0.85))),
+      );
     }
   }
   layers.push({ id: 'hedges', shapes: hedge });
@@ -229,6 +254,19 @@ export function rosaArt(input: ArtInput): SceneArt {
         motion: { kind: 'drift', amount: W * 0.06, periodMs: 24_000 },
       },
     ],
-    shaders: c.light > 0.35 ? [{ kind: 'rays', x: 0, y: 0, width: W, height: hy, colour: blush, strength: 0.25 * c.veil }] : [],
+    shaders:
+      c.light > 0.35
+        ? [
+            {
+              kind: 'rays',
+              x: 0,
+              y: 0,
+              width: W,
+              height: hy,
+              colour: blush,
+              strength: 0.25 * c.veil,
+            },
+          ]
+        : [],
   };
 }
