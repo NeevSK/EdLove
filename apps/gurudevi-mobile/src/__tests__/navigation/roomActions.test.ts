@@ -17,9 +17,15 @@ describe('the room action offers', () => {
   it("puts the screen's own actions first, then pinned, then the room's common ones", () => {
     const actions = roomActions({
       room: 'self',
-      screen: { primary: { label: 'New entry', onPress: noop }, actions: [{ label: 'Share', onPress: noop }] },
+      screen: {
+        primary: { label: 'New entry', onPress: noop },
+        actions: [{ label: 'Share', onPress: noop }],
+      },
       pinned: [{ id: 'mood_lotus', title: 'Mood', open: noop }],
-      common: { breathe: { label: 'Breathe', onPress: noop }, ask: { label: 'Ask Tutii', onPress: noop } },
+      common: {
+        breathe: { label: 'Breathe', onPress: noop },
+        ask: { label: 'Ask Tutii', onPress: noop },
+      },
     });
     expect(actions.map((a) => a.key)).toEqual([
       'screen-primary',
@@ -30,8 +36,8 @@ describe('the room action offers', () => {
     ]);
     expect(actions[0]?.tone).toBe('lamp');
     expect(actions[2]?.group).toBe('Pinned in Self');
-    expect(fabLabelOf('self', { primary: { label: 'New entry', onPress: noop }, actions: [] })).toBe(
-      'New entry',
-    );
+    expect(
+      fabLabelOf('self', { primary: { label: 'New entry', onPress: noop }, actions: [] }),
+    ).toBe('New entry');
   });
 });

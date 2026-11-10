@@ -1,8 +1,7 @@
-import { View } from 'react-native';
 import { PowerSyncFormsAdapter, getDrizzleDB } from '@repo/core/powersync';
 import { formTemplates } from '@repo/core/adapters/powersync/schema';
 import { PublicFormScreenWeb } from '@repo/form-builder';
-import { BrandPulse } from '@repo/ui';
+import { WorldLoading } from '@repo/ui/components/native';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { eq } from 'drizzle-orm';
 import { Suspense, useMemo } from 'react';
@@ -10,11 +9,8 @@ import { Suspense, useMemo } from 'react';
 export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
-  return (
-    <View className="items-center justify-center flex-1">
-      <BrandPulse accessibilityLabel="Loading form" />
-    </View>
-  );
+  // The world's own waiting sign, on the floor (never a black screen between steps).
+  return <WorldLoading label="Loading form" fullscreen />;
 }
 
 export default function PublicFormRoute() {

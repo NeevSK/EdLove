@@ -1,5 +1,4 @@
-import { View } from 'react-native';
-import { BrandPulse } from '@repo/ui';
+import { WorldLoading } from '@repo/ui/components/native';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
@@ -9,11 +8,8 @@ import AuthScreen from '../src/screens/AuthScreen';
 export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
-  return (
-    <View className="items-center justify-center flex-1 bg-obsidian">
-      <BrandPulse accessibilityLabel="Loading sign in" />
-    </View>
-  );
+  // The world's own waiting sign, on the floor (never a black screen between steps).
+  return <WorldLoading label="Loading sign in" fullscreen />;
 }
 
 export default function AuthRoute() {

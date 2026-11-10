@@ -15,7 +15,9 @@ import {
   validatePreferredName,
 } from '@repo/core/types';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Button, Surface, Text, useFloorPresence } from '@repo/ui/components/native';
+import { Button, Surface, Text, useFloorPresence, WorldPicker } from '@repo/ui/components/native';
+import { useThemeContextOptional } from '@repo/ui/context';
+import { worldName } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -36,7 +38,8 @@ export default function OnboardingRoute() {
   const wt = world.tokens;
   useFloorPresence('full');
 
-  const [step, setStep] = useState<'name' | 'role'>('name');
+  const [step, setStep] = useState<'name' | 'role' | 'world'>('name');
+  const { worldId, setWorld } = useThemeContextOptional();
   const [displayName, setDisplayName] = useState('');
   const [detectedName, setDetectedName] = useState('');
   const [isEditingCustomName, setIsEditingCustomName] = useState(false);
@@ -165,7 +168,7 @@ export default function OnboardingRoute() {
                       ) : null}
                     </View>
                   </View>
-                ) : (
+                ) : step === 'role' ? (
                   <View style={styles.stepContainer}>
                     <View style={styles.header}>
                       <Text kind="title" align="center" tone="ink">
@@ -193,8 +196,37 @@ export default function OnboardingRoute() {
                         disabled={submitting}
                         onPress={() => setStep('name')}
                       />
+                      <Button label="Next →" variant="primary" onPress={() => setStep('world')} />
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.stepContainer}>
+                    <View style={styles.header}>
+                      <Text kind="title" align="center" tone="ink">
+                        Choose your world
+                      </Text>
+                      <Text kind="body" tone="soft" align="center" style={styles.subline}>
+                        It dresses everything you see, at every hour. Classic is plain and calm; the
+                        others are alive. You can change it any time from your photo.
+                      </Text>
+                    </View>
+
+                    {/* Choosing changes the floor behind this card at once: you see the world you pick. */}
+                    <WorldPicker
+                      label="Your world"
+                      value={worldId}
+                      onChange={(id) => void setWorld(id)}
+                    />
+
+                    <View style={styles.actionRow}>
                       <Button
-                        label={submitting ? 'Entering…' : 'Enter Sanctuary →'}
+                        label="← Back"
+                        variant="secondary"
+                        disabled={submitting}
+                        onPress={() => setStep('role')}
+                      />
+                      <Button
+                        label={submitting ? 'Entering…' : `Enter ${worldName(worldId)} →`}
                         variant="primary"
                         disabled={submitting}
                         onPress={handleComplete}
