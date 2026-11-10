@@ -7,12 +7,20 @@ import type { WorldId } from '../../types';
 import type { ArtInput } from './kit';
 import type { SceneArt } from './types';
 import { keleArt } from './worlds/kele';
+import { rosaArt } from './worlds/rosa';
+import { sanctuaryArt } from './worlds/sanctuary';
+import { teaArt } from './worlds/tea';
+import { wewaArt } from './worlds/wewa';
 
 export type ArtBuilder = (input: ArtInput) => SceneArt;
 
 /** The registry: a world draws its own floor by adding one line here. */
 export const WORLD_ART: Readonly<Partial<Record<WorldId, ArtBuilder>>> = {
   kele: keleArt,
+  sanctuary: sanctuaryArt,
+  wewa: wewaArt,
+  tea: teaArt,
+  rosa: rosaArt,
 };
 
 /** Whether a world has its own scene art. */

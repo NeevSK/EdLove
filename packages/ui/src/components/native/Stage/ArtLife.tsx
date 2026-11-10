@@ -73,6 +73,8 @@ function Particles({
   const [dx, dy] = set.drift;
   const [r0, r1] = set.size;
   const oval = set.kind === 'leaf' || set.kind === 'petal';
+  // Rain falls as thin streaks, not dots.
+  const streak = set.kind === 'drop';
   const { seed, twinkle, wander: reach } = set;
   const path = useDerivedValue(() => {
     const p = Skia.PathBuilder.Make();
@@ -95,6 +97,7 @@ function Particles({
         r *= 0.55 + 0.45 * glow;
       }
       if (oval) p.addOval({ x: x - r, y: y - r * 0.45, width: r * 2, height: r * 0.9 });
+      else if (streak) p.addRect({ x: x - r * 0.5, y: y - r * 7, width: r, height: r * 14 });
       else p.addCircle(x, y, r);
     }
     return p.detach();
