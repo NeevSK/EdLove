@@ -507,7 +507,8 @@ function TabsLayoutContent() {
         perspective={{ label: perspectiveLabel, onPress: () => setPerspectiveSwitcherOpen(true) }}
         world={{ name: worldName(worldId), onPress: () => setWorldOpen(true) }}
         visualDetail={{ value: fidelityLevel, onChange: (v) => void setFidelityLevel(v) }}
-        reading={{ onPress: () => router.push('/settings') }}
+        reading={{ onPress: () => router.push('/reading') }}
+        companions={{ onPress: () => router.push('/companions') }}
         shell={{
           headerLayout,
           onHeaderLayout: (v) => updatePreferences({ headerLayout: v }),

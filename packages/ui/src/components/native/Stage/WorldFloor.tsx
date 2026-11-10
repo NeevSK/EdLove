@@ -25,6 +25,7 @@ import { SceneBackdrop } from '../Scene/SceneBackdrop';
 import { useMinuteClock } from '../Scene/useScene';
 import { ArtLife } from './ArtLife';
 import { ArtStill, layerShows } from './ArtStill';
+import { CompanionOnFloor } from './CompanionOnFloor';
 import { FloorOverlays } from './FloorOverlays';
 
 export interface WorldFloorProps {
@@ -138,6 +139,8 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
           wash={{ colour: ground, edge: 0.15, text: 0.62, textFrom: 0.42 }}
         />
       )}
+      {/* The person's companion lives on the floor, under the veils, on a room's front screen. */}
+      {presence === 'full' ? <CompanionOnFloor stage={stage} /> : null}
       <Animated.View
         style={[
           StyleSheet.absoluteFill,

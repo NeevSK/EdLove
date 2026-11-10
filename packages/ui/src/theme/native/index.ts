@@ -20,8 +20,13 @@ export {
 export {
   contrastInk,
   edgeStyle,
+  getReading,
   glowStyle,
   isFontAvailable,
+  type Reading,
+  STANDARD_READING,
+  setReading,
+  subscribeWorldFonts,
   radiusStyle,
   registerAvailableFonts,
   shadowStyle,

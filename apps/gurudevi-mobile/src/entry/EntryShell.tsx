@@ -36,6 +36,7 @@ import {
   observeDevelopmentTimings,
   recordDevelopmentTrace,
 } from '@/boot/startupTelemetry';
+import { PersonalPreferences } from '@/boot/PersonalPreferences';
 import { WorldFonts } from '@/boot/WorldFonts';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
@@ -133,6 +134,7 @@ export function EntryShell() {
                   <GurudeviVerger>
                     <OptionalStartupServices phase="public-ready" />
                     <WorldFonts />
+                    <PersonalPreferences />
                     <CircadianProvider>
                       <PortalProvider>
                         <ToastProvider>
