@@ -102,21 +102,29 @@ export function palm(
   const midY = baseY - height * 0.5;
   const trunk = `M${n(x - w0)} ${n(baseY)}Q${n(midX - w1)} ${n(midY)} ${n(topX - w1)} ${n(topY)}L${n(topX + w1)} ${n(topY)}Q${n(midX + w1)} ${n(midY)} ${n(x + w0)} ${n(baseY)}Z`;
   const fronds: string[] = [];
-  const count = 9;
+  const count = 10;
   for (let i = 0; i < count; i++) {
-    const ang = -Math.PI / 2 + ((i / (count - 1)) - 0.5) * Math.PI * 1.7 + (rand() - 0.5) * 0.2;
-    const len = height * (0.32 + rand() * 0.12);
-    // Each frond: a drooping spine with leaflets on both sides.
-    const steps = 9;
-    for (let k = 1; k <= steps; k++) {
-      const s = k / steps;
-      const px = topX + Math.cos(ang) * len * s;
-      const py = topY + Math.sin(ang) * len * s + len * 0.55 * s * s;
-      const ll = len * 0.2 * (1 - s * 0.6);
-      const dir = Math.atan2(Math.sin(ang) + s * 1.1, Math.cos(ang));
-      fronds.push(leaf(px, py, ll, ll * 0.18, dir + 1.3));
-      fronds.push(leaf(px, py, ll, ll * 0.18, dir - 1.3));
+    // Fronds fan out from the crown and droop under their own weight.
+    const ang = -Math.PI / 2 + ((i + 0.5) / count - 0.5) * Math.PI * 1.9 + (rand() - 0.5) * 0.15;
+    const len = height * (0.3 + rand() * 0.1);
+    const tipX = topX + Math.cos(ang) * len;
+    const tipY = topY + Math.sin(ang) * len * 0.6 + len * 0.45;
+    const midX = topX + Math.cos(ang) * len * 0.55;
+    const midY = topY + Math.sin(ang) * len * 0.55 - len * 0.08;
+    // A frond is a long curved blade, widest a third of the way out, with a jagged lower edge.
+    const w = len * 0.11;
+    const nx = -Math.sin(ang);
+    const ny = Math.cos(ang);
+    let d = `M${n(topX)} ${n(topY)}Q${n(midX - nx * w)} ${n(midY - ny * w)} ${n(tipX)} ${n(tipY)}`;
+    const teeth = 7;
+    for (let k = teeth; k >= 1; k--) {
+      const s = k / (teeth + 1);
+      const bx = (1 - s) * (1 - s) * topX + 2 * (1 - s) * s * midX + s * s * tipX;
+      const by = (1 - s) * (1 - s) * topY + 2 * (1 - s) * s * midY + s * s * tipY;
+      const depth = w * (1.6 - s) * (k % 2 ? 1.3 : 0.6);
+      d += `L${n(bx + nx * depth)} ${n(by + ny * depth + depth * 0.5)}`;
     }
+    fronds.push(`${d}Z`);
   }
   return { trunk, fronds: fronds.join('') };
 }

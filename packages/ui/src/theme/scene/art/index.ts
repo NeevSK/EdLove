@@ -6,7 +6,11 @@
 import type { WorldId } from '../../types';
 import type { ArtInput } from './kit';
 import type { SceneArt } from './types';
+import { angamporaArt } from './worlds/angampora';
+import { kandyanArt } from './worlds/kandyan';
 import { keleArt } from './worlds/kele';
+import { peraheraArt } from './worlds/perahera';
+import { ratnaArt } from './worlds/ratna';
 import { rosaArt } from './worlds/rosa';
 import { sanctuaryArt } from './worlds/sanctuary';
 import { teaArt } from './worlds/tea';
@@ -21,6 +25,10 @@ export const WORLD_ART: Readonly<Partial<Record<WorldId, ArtBuilder>>> = {
   wewa: wewaArt,
   tea: teaArt,
   rosa: rosaArt,
+  ratna: ratnaArt,
+  kandyan: kandyanArt,
+  angampora: angamporaArt,
+  perahera: peraheraArt,
 };
 
 /** Whether a world has its own scene art. */
