@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -60,10 +61,17 @@ vi.mock('@repo/ui/components/BrandPulse', () => ({
 vi.mock('@repo/ui/components/Mascot', () => ({
   Mascot: () => null,
 }));
-vi.mock('@repo/ui/primitives', () => ({
-  Box: 'Box',
-  Pressable: 'Pressable',
+vi.mock('@repo/ui/components/native', () => ({
+  Button: ({ label, ...rest }: { label: string }) =>
+    createElement(
+      'Pressable',
+      { accessibilityRole: 'button', accessibilityLabel: label, ...rest },
+      label,
+    ),
   Text: 'Text',
+}));
+vi.mock('@repo/ui/theme/native', () => ({
+  useWorld: () => ({ tokens: { ground: 'ground', lamp: 'lamp' } }),
 }));
 
 import {
