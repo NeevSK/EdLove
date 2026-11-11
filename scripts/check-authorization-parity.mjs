@@ -165,7 +165,7 @@ function runAudit() {
     'apps/gurudevi-mobile/supabase/migrations/20260726000002_canonicalize_citizenship_default.sql',
   );
   const supabaseConfig = read('apps/gurudevi-mobile/supabase/config.toml');
-  const authManager = read('packages/core/src/logic/managers/AuthManager.ts');
+  const authClient = read('packages/core/src/logic/auth/AuthClient.ts');
 
   const parseArray = (name) => {
     const match = registry.match(new RegExp(`export const ${name} = \\[([\\s\\S]*?)\\] as const`));
@@ -263,8 +263,8 @@ function runAudit() {
   if (!/enable_anonymous_sign_ins\s*=\s*true/.test(supabaseConfig)) {
     failures.push('Supabase anonymous sign-ins must be enabled for the onboarding guest path');
   }
-  if (!authManager.includes('this.authPort.signInAnonymously()')) {
-    failures.push('AuthManager must preserve the Supabase anonymous onboarding path');
+  if (!authClient.includes('this.authPort.signInAnonymously()')) {
+    failures.push('AuthClient must preserve the Supabase anonymous onboarding path');
   }
 
   if (failures.length) {
