@@ -71,6 +71,9 @@ export const COMFORT_PRESETS: readonly ComfortPreset[] = [
 ];
 
 const KEY = '@gurudevi/comfort';
+/** Whose comfort this is: on a shared phone each account keeps its own. */
+let owner: string | null = null;
+const keyOf = () => (owner ? `${KEY}:${owner}` : KEY);
 let comfort: Comfort = STANDARD_COMFORT;
 const listeners = new Set<() => void>();
 
@@ -97,10 +100,20 @@ function sanitize(v: Partial<Comfort>, base: Comfort): Comfort {
 }
 
 /** Apply the saved comfort; safe to call more than once. */
-export async function loadComfort(): Promise<void> {
+export async function loadComfort(account?: string | null): Promise<void> {
+  if (account !== undefined) owner = account;
   try {
-    const raw = await storage.getStringAsync(KEY);
-    if (!raw) return;
+    // An account without its own comfort yet starts from what the phone already shows.
+    const raw =
+      (await storage.getStringAsync(keyOf())) ?? (owner ? await storage.getStringAsync(KEY) : null);
+    if (!raw) {
+      // Someone new on a shared phone does not inherit the last person's comfort.
+      if (account !== undefined && comfort !== STANDARD_COMFORT) {
+        comfort = STANDARD_COMFORT;
+        emit();
+      }
+      return;
+    }
     const parsed = JSON.parse(raw) as Partial<Comfort>;
     if (parsed && typeof parsed === 'object') {
       comfort = sanitize(parsed, STANDARD_COMFORT);
@@ -118,7 +131,7 @@ export function updateComfort(next: Partial<Comfort>): void {
   comfort = merged;
   emit();
   try {
-    storage.set(KEY, JSON.stringify(comfort));
+    storage.set(keyOf(), JSON.stringify(comfort));
   } catch (error) {
     console.warn('[comfort] could not save.', error);
   }

@@ -61,7 +61,7 @@ export function ReadingScreen() {
             ]}
           />
           <SegmentedControl
-            label="Number keypad, on its side"
+            label="Your main hand: the action button and the keypad sit on its side"
             value={comfort.hand}
             onChange={(hand) => updateComfort({ hand })}
             options={[

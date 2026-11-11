@@ -14,6 +14,9 @@ import {
 } from '../theme/native/style';
 
 const READING_KEY = '@gurudevi/reading';
+/** Whose reading this is: a shared phone keeps each account's own (a grandparent and a child). */
+let owner: string | null = null;
+const keyOf = () => (owner ? `${READING_KEY}:${owner}` : READING_KEY);
 
 function parse(raw: string | null | undefined): Partial<Reading> | null {
   if (!raw) return null;
@@ -26,10 +29,16 @@ function parse(raw: string | null | undefined): Partial<Reading> | null {
 }
 
 /** Apply the saved settings; safe to call more than once. */
-export async function loadReading(): Promise<void> {
+export async function loadReading(account?: string | null): Promise<void> {
+  if (account !== undefined) owner = account;
   try {
-    const saved = parse(await storage.getStringAsync(READING_KEY));
+    // An account without its own settings yet starts from what the phone already shows.
+    const saved =
+      parse(await storage.getStringAsync(keyOf())) ??
+      (owner ? parse(await storage.getStringAsync(READING_KEY)) : null);
     if (saved) setReading(saved);
+    // Someone new on a shared phone does not inherit the last person's reading.
+    else if (account !== undefined) setReading(STANDARD_READING);
   } catch (error) {
     console.warn('[reading] could not load settings; using standard reading.', error);
   }
@@ -39,7 +48,7 @@ export async function loadReading(): Promise<void> {
 export function updateReading(next: Partial<Reading>): void {
   setReading(next);
   try {
-    storage.set(READING_KEY, JSON.stringify(getReading()));
+    storage.set(keyOf(), JSON.stringify(getReading()));
   } catch (error) {
     console.warn('[reading] could not save settings.', error);
   }

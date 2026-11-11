@@ -18,6 +18,7 @@ export interface ShellTabBarProps extends BottomTabBarProps {
   hidden?: boolean;
   /** A phone on its side: the header's controls ride on the rail. */
   hud?: RailHud;
+  side?: 'left' | 'right';
 }
 
 export function ShellTabBar({
@@ -33,6 +34,7 @@ export function ShellTabBar({
   signals,
   hidden,
   hud,
+  side,
 }: ShellTabBarProps) {
   const items: WorldTabItem[] = [];
   state.routes.forEach((route, index) => {
@@ -61,5 +63,14 @@ export function ShellTabBar({
         : undefined,
     });
   });
-  return <WorldTabBar items={items} layout={layout} insets={insets} hidden={hidden} hud={hud} />;
+  return (
+    <WorldTabBar
+      items={items}
+      layout={layout}
+      insets={insets}
+      hidden={hidden}
+      hud={hud}
+      side={side}
+    />
+  );
 }

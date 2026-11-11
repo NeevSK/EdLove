@@ -30,6 +30,7 @@ import {
   YouSheet,
 } from '@repo/ui/components/native';
 import { useFidelityOptional, useThemeContextOptional } from '@repo/ui/context';
+import { useComfort } from '@repo/ui/context/ComfortPreferences';
 import { type KitIconProps, shellLayoutOf, worldName } from '@repo/ui/theme';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
@@ -321,6 +322,9 @@ function TabsLayoutContent() {
     [width, height, tabBarChoice],
   );
   const hud = layout.stance === 'hud';
+  // The person's hand puts the action by their dominant thumb (and, sideways, the rail opposite).
+  const { hand } = useComfort();
+  const railSide = hud && hand === 'left' ? 'right' : 'left';
   const chromeShown = !autoHideChromeOnScroll || isChromeVisible;
 
   const [youOpen, setYouOpen] = useState(false);
@@ -475,12 +479,13 @@ function TabsLayoutContent() {
               signals={{ community: unreadCount > 0 }}
               hidden={!chromeShown}
               hud={railHud}
+              side={railSide}
             />
           )}
           screenOptions={{
             headerShown: true,
             tabBarHideOnKeyboard: true,
-            tabBarPosition: layout.tabs === 'rail' ? 'left' : 'bottom',
+            tabBarPosition: layout.tabs === 'rail' ? railSide : 'bottom',
             header: renderHeader,
             // Screens are see-through: the one floor under the app shows behind them.
             sceneStyle: { backgroundColor: 'transparent' },
@@ -537,7 +542,13 @@ function TabsLayoutContent() {
         pathname={pathname}
         atHome={isDomainRoot}
         bottom={fabBottom}
-        right={Math.max(insets.right, 0) + (hud ? 16 : 20)}
+        side={hand}
+        right={
+          (hand === 'left' ? insets.left : insets.right) +
+          (hud ? 16 : 20) +
+          // On a tablet the rail stays left; a left-handed action sits just beside it.
+          (layout.tabs === 'rail' && railSide === hand ? 88 : 0)
+        }
         common={fabCommon}
         hidden={!chromeShown}
       />

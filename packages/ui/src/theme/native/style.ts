@@ -152,6 +152,19 @@ export function getReading(): Reading {
   return reading;
 }
 
+/**
+ * The phone's own text size and the person's reading size multiply. On an older teacher's phone
+ * set to its largest text, with "Large and clear" on top, words would grow past three times their
+ * designed size and stop fitting anywhere. So the total is held at this cap: the reading size is
+ * always honoured, and the phone's size fills the room left under the cap.
+ */
+export const TEXT_GROWTH_CAP = 2.2;
+
+/** How far the phone's text size may still grow words, given the reading size. */
+export function systemTextAllowance(scale: number = reading.scale): number {
+  return Math.max(1, TEXT_GROWTH_CAP / scale);
+}
+
 export function setReading(next: Partial<Reading>): void {
   const merged: Reading = {
     scale: Math.min(1.5, Math.max(0.85, next.scale ?? reading.scale)),

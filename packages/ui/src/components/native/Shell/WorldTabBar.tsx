@@ -62,6 +62,8 @@ export interface WorldTabBarProps {
   label?: string;
   /** On a rail held sideways: the header's controls move onto the rail. */
   hud?: RailHud;
+  /** Which edge a rail sits on (right for a left-handed person holding the phone sideways). */
+  side?: 'left' | 'right';
 }
 
 /** What a header would carry, worn by the rail when there is no header row. */
@@ -230,7 +232,7 @@ export function WorldTabBar(props: WorldTabBarProps) {
   );
 }
 
-function Bar({ items, layout, insets, label = 'Rooms', hud }: WorldTabBarProps) {
+function Bar({ items, layout, insets, label = 'Rooms', hud, side = 'left' }: WorldTabBarProps) {
   const { world } = useWorldContext();
   const t = world.tokens;
   const raised = world.recipes.surface.raised;
@@ -269,14 +271,23 @@ function Bar({ items, layout, insets, label = 'Rooms', hud }: WorldTabBarProps) 
         style={[
           styles.rail,
           short ? styles.railShort : null,
+          side === 'right'
+            ? {
+                width: RAIL_WIDTH + insets.right,
+                paddingRight: insets.right,
+                borderLeftColor: t.line,
+                borderLeftWidth: world.definition.style.lineWeight,
+              }
+            : {
+                width: RAIL_WIDTH + insets.left,
+                paddingLeft: insets.left,
+                borderRightColor: t.line,
+                borderRightWidth: world.definition.style.lineWeight,
+              },
           {
-            width: RAIL_WIDTH + insets.left,
             paddingTop: insets.top + (short ? 10 : 12),
             paddingBottom: insets.bottom + (short ? 10 : 12),
-            paddingLeft: insets.left,
             backgroundColor: alpha(t.ground, 0.9),
-            borderRightColor: t.line,
-            borderRightWidth: world.definition.style.lineWeight,
           },
         ]}
       >

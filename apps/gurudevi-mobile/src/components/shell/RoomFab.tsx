@@ -32,7 +32,10 @@ export interface RoomFabProps {
   atHome: boolean;
   /** Space below it: the rooms bar's height, or the safe area with a rail. */
   bottom: number;
+  /** Distance from the edge it sits on. */
   right: number;
+  /** The edge: the person's hand (left-handed people get it on the left). */
+  side?: 'left' | 'right';
   common: CommonActions;
   hidden?: boolean;
 }
@@ -47,7 +50,16 @@ function kitIcon(
   };
 }
 
-export function RoomFab({ room, pathname, atHome, bottom, right, common, hidden }: RoomFabProps) {
+export function RoomFab({
+  room,
+  pathname,
+  atHome,
+  bottom,
+  right,
+  side = 'right',
+  common,
+  hidden,
+}: RoomFabProps) {
   const router = useRouter();
   const { state } = useFAB();
   const [open, setOpen] = useState(false);
@@ -113,7 +125,11 @@ export function RoomFab({ room, pathname, atHome, bottom, right, common, hidden 
         signal={state.hasActiveGaps && Boolean(screen)}
         signalLabel="something needs you"
         hidden={hidden || typing || open}
-        style={{ position: 'absolute', right, bottom }}
+        style={
+          side === 'left'
+            ? { position: 'absolute', left: right, bottom }
+            : { position: 'absolute', right, bottom }
+        }
       />
       <FabMenu open={open} onClose={() => setOpen(false)} label={label} actions={actions} />
     </View>

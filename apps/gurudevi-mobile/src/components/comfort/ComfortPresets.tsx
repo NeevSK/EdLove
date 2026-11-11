@@ -2,7 +2,8 @@
  * The comfort presets as big, tappable previews: each card is drawn in the preset's own look
  * (control size, simpler look, contrast) inside the person's world, with its words at the
  * preset's size, so an older teacher sees "this one is easier to read" instead of reading a
- * description of it. One tap sets text and controls together.
+ * description of it. One tap sets text and controls together. A phone already set to large text
+ * gets "Large and clear" marked as suggested.
  */
 
 import { Badge, Button, Surface, Text } from '@repo/ui/components/native';
@@ -15,7 +16,7 @@ import {
 } from '@repo/ui/context/ComfortPreferences';
 import { useReading } from '@repo/ui/context/ReadingPreferences';
 import { useFeedback, useWorld, WorldScope } from '@repo/ui/theme/native';
-import { Pressable, View } from 'react-native';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 
 export function ComfortPresets({
   onChoose,
@@ -31,6 +32,9 @@ export function ComfortPresets({
   const reading = useReading();
   const chosen = matchingPreset(comfort, reading);
   const feedback = useFeedback();
+  // A phone already set to large text is a strong hint: suggest the large, clear look.
+  const { fontScale } = useWindowDimensions();
+  const suggested = fontScale >= 1.3 ? 'clear' : null;
 
   return (
     <View
@@ -77,7 +81,11 @@ export function ComfortPresets({
                   >
                     {p.label}
                   </Text>
-                  {selected ? <Badge label="Chosen" tone="lamp" /> : null}
+                  {selected ? (
+                    <Badge label="Chosen" tone="lamp" />
+                  ) : suggested === p.id ? (
+                    <Badge label="Suggested for this phone" tone="success" />
+                  ) : null}
                 </View>
                 <Text
                   kind="caption"

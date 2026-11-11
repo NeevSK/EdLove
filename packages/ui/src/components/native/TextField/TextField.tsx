@@ -10,7 +10,12 @@ import Animated from 'react-native-reanimated';
 import type { FieldContract } from '../../../theme/contracts';
 import { useErrorFeedback } from '../../../theme/native/feedback';
 import { useLivingStyle } from '../../../theme/native/motion';
-import { glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
+import {
+  glowStyle,
+  radiusStyle,
+  systemTextAllowance,
+  typeStyle,
+} from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { FieldState } from '../../../theme/types';
 import {
@@ -87,7 +92,11 @@ export function TextField({
 
   return (
     <View style={{ gap: 6 }}>
-      <RNText nativeID={`${nativeId}-label`} style={typeStyle(r.label, language, world)}>
+      <RNText
+        nativeID={`${nativeId}-label`}
+        maxFontSizeMultiplier={systemTextAllowance()}
+        style={typeStyle(r.label, language, world)}
+      >
         {label}
       </RNText>
       <Animated.View style={[lineWidth, light, glowStyle(s.glow), shake]}>
@@ -105,6 +114,7 @@ export function TextField({
           placeholderTextColor={r.placeholder.color}
           // The world stays in view while typing sideways; the typing bar echoes the words.
           disableFullscreenUI
+          maxFontSizeMultiplier={systemTextAllowance()}
           showSoftInputOnFocus={keypad ? false : undefined}
           onChangeText={onChangeText}
           onFocus={(e: TextInputFocusEvent) => {

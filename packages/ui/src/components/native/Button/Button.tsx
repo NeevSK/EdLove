@@ -15,6 +15,7 @@ import type { ButtonContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
 import { usePressMotion } from '../../../theme/native/motion';
 import {
+  systemTextAllowance,
   edgeStyle,
   glowStyle,
   insetRadius,
@@ -166,7 +167,11 @@ export function Button({
           ) : Icon ? (
             <Icon size={Math.round(dims.fontSize * 1.2)} color={v.ink} />
           ) : null}
-          <RNText numberOfLines={1} style={[labelStyle, { color: v.ink }]}>
+          <RNText
+            numberOfLines={1}
+            maxFontSizeMultiplier={systemTextAllowance()}
+            style={[labelStyle, { color: v.ink }]}
+          >
             {label}
           </RNText>
         </View>
