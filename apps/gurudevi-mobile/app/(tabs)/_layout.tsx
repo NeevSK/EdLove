@@ -15,6 +15,7 @@ import {
   resolveWorkspaceSwitcherTargets,
   useAuth,
   usePermissions,
+  workspaceRoomNameOf,
   usePerspectiveSwitch,
 } from '@repo/core/logic';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
@@ -130,16 +131,6 @@ function TabsLayoutContent() {
   // The rooms are named in the person's language (Sinhala and Tamil words run longer; the bar
   // fits them). English stays the fallback for any missing word.
   const { t } = useTranslation();
-  const roomLabels = useMemo(
-    () =>
-      Object.fromEntries(
-        (Object.keys(ROOM_NAMES) as (keyof typeof ROOM_NAMES)[]).map((room) => [
-          room,
-          t(`tabs.${room}`, { defaultValue: ROOM_NAMES[room] }),
-        ]),
-      ) as Record<keyof typeof ROOM_NAMES, string>,
-    [t],
-  );
   // Offline is ordinary here: say it quietly on the header (or the sideways rail), with what is kept.
   const network = useOfflineStatus().status;
   const queued = useMutationQueue((s) => s.queue.length);
@@ -223,8 +214,31 @@ function TabsLayoutContent() {
   const isWorkspace = pathname.startsWith('/workspace');
   const perspectiveLabel = activePerspective.displayName || 'Personal Sanctuary';
   const perspectiveKind = activePerspective.kind;
+  // The work room wears the person's role where they stand: Classroom, School, Learning, Family.
+  const workspaceRoom = workspaceRoomNameOf({
+    perspectiveKind,
+    capacity:
+      activePerspective.kind === 'institutional'
+        ? activePerspective.capacity
+        : (context.activeBond?.capacity ?? context.primaryCapacity),
+    studioType: activePerspective.kind === 'personal' ? activePerspective.studioType : null,
+  });
+  const roomLabels = useMemo(
+    () =>
+      Object.fromEntries(
+        (Object.keys(ROOM_NAMES) as (keyof typeof ROOM_NAMES)[]).map((room) => [
+          room,
+          room === 'workspace'
+            ? t(workspaceRoom.key, { defaultValue: workspaceRoom.fallback })
+            : t(`tabs.${room}`, { defaultValue: ROOM_NAMES[room] }),
+        ]),
+      ) as Record<keyof typeof ROOM_NAMES, string>,
+    [t, workspaceRoom.key, workspaceRoom.fallback],
+  );
 
-  const title = getNavigationTitle(pathname);
+  const navTitle = getNavigationTitle(pathname);
+  // The work room's front screen carries the room's role name, never "Workspace".
+  const title = navTitle === 'Workspace' ? roomLabels.workspace : navTitle;
 
   // A/B: the custom tab bar or the system one (NativeTabs), measured on this phone either way.
   const shellChoice = useShellVariant();
@@ -393,7 +407,10 @@ function TabsLayoutContent() {
         room={roomLabels[currentDomain]}
         title={title}
         greeting={`${greetingFor(new Date().getHours())}, ${displayName}`}
-        person={{ name: user?.display_name || displayName, src: user?.avatar_url ?? undefined }}
+        person={{
+          name: user?.display_name || displayName,
+          src: user?.avatar_url ?? undefined,
+        }}
         onYou={() => setYouOpen(true)}
         onBack={goBack}
         icons={{ back: ChevronLeft as ComponentType<KitIconProps> }}
@@ -470,7 +487,7 @@ function TabsLayoutContent() {
       more:
         currentDomain === 'self' || currentDomain === 'workspace'
           ? {
-              label: `Everything in ${ROOM_NAMES[currentDomain]}`,
+              label: `Everything in ${roomLabels[currentDomain]}`,
               icon: Compass as ComponentType<KitIconProps>,
               onPress: () => setCatalogSheetTab(currentDomain),
             }
@@ -502,6 +519,7 @@ function TabsLayoutContent() {
       header={renderHeader()}
       onTabPress={markTabPress}
       showLabels={shell.visibleChrome.tabLabels}
+      labels={roomLabels}
     />
   );
 
@@ -553,7 +571,7 @@ function TabsLayoutContent() {
               tabPress: () => markTabPress('workspace'),
               tabLongPress: () => setCatalogSheetTab('workspace'),
             }}
-            options={{ title: 'Workspace' }}
+            options={{ title: roomLabels.workspace }}
           />
           <Tabs.Screen
             name="self"
@@ -601,6 +619,7 @@ function TabsLayoutContent() {
           (layout.tabs === 'rail' && railSide === hand ? 88 : 0)
         }
         common={fabCommon}
+        roomName={roomLabels[currentDomain]}
         hidden={!chromeShown}
       />
 
@@ -612,11 +631,20 @@ function TabsLayoutContent() {
           src: user?.avatar_url ?? undefined,
           detail: isLocalGuest ? 'On this phone only' : (user?.email ?? undefined),
         }}
-        perspective={{ label: perspectiveLabel, onPress: () => setPerspectiveSwitcherOpen(true) }}
+        perspective={{
+          label: perspectiveLabel,
+          onPress: () => setPerspectiveSwitcherOpen(true),
+        }}
         world={{ name: worldName(worldId), onPress: () => setWorldOpen(true) }}
-        visualDetail={{ value: fidelityLevel, onChange: (v) => void setFidelityLevel(v) }}
+        visualDetail={{
+          value: fidelityLevel,
+          onChange: (v) => void setFidelityLevel(v),
+        }}
         reading={{ onPress: () => router.push('/reading') }}
-        sunlight={{ value: comfort.sunlight, onChange: (v) => updateComfort({ sunlight: v }) }}
+        sunlight={{
+          value: comfort.sunlight,
+          onChange: (v) => updateComfort({ sunlight: v }),
+        }}
         companions={{ onPress: () => router.push('/companions') }}
         showcase={{ onPress: () => router.push('/world-showcase') }}
         shell={{
@@ -649,6 +677,7 @@ function TabsLayoutContent() {
       </Sheet>
 
       <AssistantSheet
+        roomName={roomLabels[currentDomain]}
         open={assistant.open}
         startOnGuide={assistant.guide}
         onClose={() => setAssistant({ open: false, guide: false })}

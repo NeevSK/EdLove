@@ -6,8 +6,13 @@ import { View } from 'react-native';
 
 /** Admitted tabs, in the same order as the custom tab bar. */
 const TABS = [
-  { name: 'library', title: 'Library', sf: 'books.vertical', md: 'local_library' },
-  { name: 'workspace', title: 'Workspace', sf: 'graduationcap', md: 'school' },
+  {
+    name: 'library',
+    title: 'Library',
+    sf: 'books.vertical',
+    md: 'local_library',
+  },
+  { name: 'workspace', title: 'Classroom', sf: 'graduationcap', md: 'school' },
   { name: 'self', title: 'Self', sf: 'heart', md: 'favorite' },
   { name: 'community', title: 'Community', sf: 'person.2', md: 'group' },
   { name: 'profile', title: 'Profile', sf: 'person', md: 'person' },
@@ -22,6 +27,8 @@ export interface NativeShellTabsProps {
   showLabels?: boolean;
   /** A short badge per tab ("3", "•"); the system tab bar says it to screen readers. */
   badges?: Partial<Record<ShellTab, string>>;
+  /** Room names in the person's language; the work room is named for their role. */
+  labels?: Partial<Record<ShellTab, string>>;
 }
 
 /**
@@ -31,7 +38,13 @@ export interface NativeShellTabsProps {
  * person asks for less transparency. Inactive tabs stop drawing (`activityEnabled`).
  * Long-press on a tab (the feature catalog) has no native equivalent here.
  */
-export function NativeShellTabs({ header, onTabPress, showLabels = true, badges }: NativeShellTabsProps) {
+export function NativeShellTabs({
+  header,
+  onTabPress,
+  showLabels = true,
+  badges,
+  labels,
+}: NativeShellTabsProps) {
   const { world, language } = useWorldContext();
   const { animates } = useWorldMotion();
   const t = world.tokens;
@@ -61,13 +74,17 @@ export function NativeShellTabs({ header, onTabPress, showLabels = true, badges 
           selected: { ...label, color: lit },
         }}
         labelVisibilityMode={showLabels ? 'labeled' : 'unlabeled'}
-        screenListeners={({ route }) => ({ tabPress: () => onTabPress(route.name) })}
+        screenListeners={({ route }) => ({
+          tabPress: () => onTabPress(route.name),
+        })}
       >
         {TABS.map((tab) => (
           <NativeTabs.Trigger key={tab.name} name={tab.name}>
             <NativeTabs.Trigger.Icon sf={tab.sf} md={tab.md} />
-            <NativeTabs.Trigger.Label>{tab.title}</NativeTabs.Trigger.Label>
-            <NativeTabs.Trigger.Badge hidden={!badges?.[tab.name]}>{badges?.[tab.name]}</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Label>{labels?.[tab.name] ?? tab.title}</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge hidden={!badges?.[tab.name]}>
+              {badges?.[tab.name]}
+            </NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
         ))}
         <NativeTabs.Trigger name="notifications" hidden />

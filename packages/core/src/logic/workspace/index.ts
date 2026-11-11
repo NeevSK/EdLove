@@ -32,3 +32,7 @@ export {
   resolveWorkspaceRendererPlatform,
 } from '@repo/core/logic/workspace/renderer';
 export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
+export {
+  type WorkspaceRoomName,
+  workspaceRoomNameOf,
+} from '@repo/core/logic/workspace/roomName';

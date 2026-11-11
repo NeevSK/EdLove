@@ -15,8 +15,16 @@ import type { FabAction, KitIconProps } from '@repo/ui/theme';
 export type Room = 'workspace' | 'self' | 'library' | 'community' | 'profile';
 
 export interface ScreenFab {
-  primary?: { label: string; onPress: () => void; icon?: ComponentType<KitIconProps> };
-  actions: readonly { label: string; onPress: () => void; icon?: ComponentType<KitIconProps> }[];
+  primary?: {
+    label: string;
+    onPress: () => void;
+    icon?: ComponentType<KitIconProps>;
+  };
+  actions: readonly {
+    label: string;
+    onPress: () => void;
+    icon?: ComponentType<KitIconProps>;
+  }[];
 }
 
 export interface PinnedFeature {
@@ -27,18 +35,38 @@ export interface PinnedFeature {
 }
 
 export interface CommonActions {
-  breathe?: { label: string; icon?: ComponentType<KitIconProps>; onPress: () => void };
-  ask?: { label: string; icon?: ComponentType<KitIconProps>; onPress: () => void };
-  more?: { label: string; icon?: ComponentType<KitIconProps>; onPress: () => void };
+  breathe?: {
+    label: string;
+    icon?: ComponentType<KitIconProps>;
+    onPress: () => void;
+  };
+  ask?: {
+    label: string;
+    icon?: ComponentType<KitIconProps>;
+    onPress: () => void;
+  };
+  more?: {
+    label: string;
+    icon?: ComponentType<KitIconProps>;
+    onPress: () => void;
+  };
   /**
    * Notifications, offered in the menu too on tall phones, where the header's bell is out of
    * one thumb's reach.
    */
-  notices?: { label: string; icon?: ComponentType<KitIconProps>; onPress: () => void };
+  notices?: {
+    label: string;
+    icon?: ComponentType<KitIconProps>;
+    onPress: () => void;
+  };
 }
 
+/**
+ * English fallbacks. The work room's real name follows the person's role (Classroom, School,
+ * Learning, Family; see `workspaceRoomNameOf`), so screens pass `roomName` when they know it.
+ */
 export const ROOM_NAMES: Readonly<Record<Room, string>> = {
-  workspace: 'Workspace',
+  workspace: 'Classroom',
   self: 'Self',
   library: 'Library',
   community: 'Community',
@@ -50,18 +78,26 @@ export function roomActions({
   screen,
   pinned,
   common,
+  roomName = ROOM_NAMES[room],
 }: {
   room: Room;
   screen?: ScreenFab | null;
   pinned: readonly PinnedFeature[];
   common: CommonActions;
+  /** The room as the person sees it named. */
+  roomName?: string;
 }): FabAction[] {
   const out: FabAction[] = [];
   const here = 'Here';
   if (screen?.primary)
-    out.push({ key: 'screen-primary', group: here, tone: 'lamp', ...screen.primary });
+    out.push({
+      key: 'screen-primary',
+      group: here,
+      tone: 'lamp',
+      ...screen.primary,
+    });
   screen?.actions.forEach((a, i) => out.push({ key: `screen-${i}`, group: here, ...a }));
-  const pinnedGroup = `Pinned in ${ROOM_NAMES[room]}`;
+  const pinnedGroup = `Pinned in ${roomName}`;
   for (const p of pinned)
     out.push({
       key: `pin-${p.id}`,
@@ -79,6 +115,10 @@ export function roomActions({
 }
 
 /** The action the button itself names: the screen's primary, else the room's first action. */
-export function fabLabelOf(room: Room, screen?: ScreenFab | null): string {
-  return screen?.primary?.label ?? `${ROOM_NAMES[room]} actions`;
+export function fabLabelOf(
+  room: Room,
+  screen?: ScreenFab | null,
+  roomName: string = ROOM_NAMES[room],
+): string {
+  return screen?.primary?.label ?? `${roomName} actions`;
 }

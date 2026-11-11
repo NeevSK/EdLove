@@ -189,7 +189,6 @@
     "signUpWithGoogle": "Google மூலம் பதிவு செய்யுங்கள்"
   },
   "tabs": {
-    "workspace": "பணியிடம்",
     "self": "சுய",
     "myClassrooms": "என் வகுப்பறைகள்",
     "schoolOverview": "பள்ளி மேலோட்டம்",
@@ -202,10 +201,13 @@
     "library": "நூலகம்",
     "profile": "சுயவிவரம்",
     "grade": "வகுப்பு நிலை",
-    "school": "School",
-    "classroom": "Classroom",
-    "class": "Class",
-    "platform": "Platform"
+    "school": "பள்ளி",
+    "classroom": "வகுப்பறை",
+    "class": "வகுப்பு",
+    "platform": "தளம்",
+    "learning": "கற்றல்",
+    "family": "குடும்பம்",
+    "studio": "என் அறை"
   },
   "self": {
     "goodMorning": "காலை வணக்கம்!",

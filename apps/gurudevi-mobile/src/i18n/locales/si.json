@@ -274,7 +274,6 @@
     "signUpWithGoogle": "Google සමඟ ලියාපදිංචි වන්න"
   },
   "tabs": {
-    "workspace": "වැඩබිම",
     "self": "මම",
     "myClassrooms": "මගේ පන්ති",
     "schoolOverview": "පාසල් දළ විශ්ලේෂණය",
@@ -289,8 +288,11 @@
     "community": "ප්‍රජාව",
     "library": "පුස්තකාලය",
     "profile": "ගිණුම",
-    "class": "Class",
-    "platform": "Platform"
+    "class": "පන්තිය",
+    "platform": "වේදිකාව",
+    "learning": "ඉගෙනුම",
+    "family": "පවුල",
+    "studio": "මගේ මැදිරිය"
   },
   "self": {
     "goodMorning": "සුභ උදෑසනක්!",

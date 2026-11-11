@@ -22,9 +22,9 @@ const GUIDES: Readonly<Record<Room, readonly string[]>> = {
     'The round button at the bottom right keeps your pinned things one tap away.',
   ],
   workspace: [
-    'Workspace is where you teach and run your classes.',
+    '{room} is where your daily school work happens.',
     'Your perspective, under the header, says whose work you are seeing. Tap it to switch.',
-    'Hold the Workspace tab for every tool; pin the ones you use daily.',
+    'Hold the {room} tab for every tool; pin the ones you use daily.',
   ],
   library: [
     'Library keeps lessons, books and the things you save.',
@@ -48,6 +48,8 @@ export interface AssistantSheetProps {
   onAsk: () => void;
   /** Starts on the guide (from the You sheet's "Tutii's guide"). */
   startOnGuide?: boolean;
+  /** The room as the person sees it named (the work room follows their role). */
+  roomName?: string;
 }
 
 export function AssistantSheet({
@@ -57,6 +59,7 @@ export function AssistantSheet({
   mode,
   onAsk,
   startOnGuide,
+  roomName = ROOM_NAMES[room],
 }: AssistantSheetProps) {
   const t = useWorld().tokens;
   const [guide, setGuide] = useState(false);
@@ -67,23 +70,22 @@ export function AssistantSheet({
     onClose();
   };
   return (
-    <Sheet
-      open={open}
-      onClose={close}
-      title={showGuide ? `${ROOM_NAMES[room]}, in a minute` : name}
-    >
+    <Sheet open={open} onClose={close} title={showGuide ? `${roomName}, in a minute` : name}>
       {showGuide ? (
         <View style={styles.guide}>
-          {GUIDES[room].map((line, i) => (
-            <View key={line} style={styles.step}>
-              <Text kind="label" style={{ color: t.lampDeep }}>
-                {String(i + 1)}
-              </Text>
-              <Text kind="body" style={styles.stepText}>
-                {line}
-              </Text>
-            </View>
-          ))}
+          {GUIDES[room].map((template, i) => {
+            const line = template.replaceAll('{room}', roomName);
+            return (
+              <View key={line} style={styles.step}>
+                <Text kind="label" style={{ color: t.lampDeep }}>
+                  {String(i + 1)}
+                </Text>
+                <Text kind="body" style={styles.stepText}>
+                  {line}
+                </Text>
+              </View>
+            );
+          })}
           <Row label="Back to Tutii" onPress={() => setGuide(false)} />
         </View>
       ) : (
@@ -116,7 +118,7 @@ export function AssistantSheet({
                 onAsk();
               }}
             />
-            <Row label={`Guide me through ${ROOM_NAMES[room]}`} onPress={() => setGuide(true)} />
+            <Row label={`Guide me through ${roomName}`} onPress={() => setGuide(true)} />
           </Group>
           <Group label="Help and support">
             <LinkRow label="Help pages" href="https://gurudevi.app/help" external />

@@ -38,6 +38,8 @@ export interface RoomFabProps {
   side?: 'left' | 'right';
   common: CommonActions;
   hidden?: boolean;
+  /** The room as the person sees it named (the work room follows their role). */
+  roomName?: string;
 }
 
 /** Screen icons draw with a stroke width; the menu draws kit icons at its own size and tone. */
@@ -59,6 +61,7 @@ export function RoomFab({
   side = 'right',
   common,
   hidden,
+  roomName,
 }: RoomFabProps) {
   const router = useRouter();
   const { state } = useFAB();
@@ -71,7 +74,11 @@ export function RoomFab({
     if (!state.visible || !tab || !fabBelongsTo(tab, state.tabType)) return null;
     return {
       primary: state.onPress
-        ? { label: state.primaryActionLabel ?? 'New', onPress: state.onPress, icon: Plus }
+        ? {
+            label: state.primaryActionLabel ?? 'New',
+            onPress: state.onPress,
+            icon: Plus,
+          }
         : undefined,
       actions: state.actions.map((a) => ({
         label: a.label,
@@ -91,15 +98,16 @@ export function RoomFab({
         title: item.title,
         icon: item.icon as ComponentType<KitIconProps> | undefined,
         open: () =>
-          router.push({ pathname: item.route, params: item.params } as Parameters<
-            typeof router.push
-          >[0]),
+          router.push({
+            pathname: item.route,
+            params: item.params,
+          } as Parameters<typeof router.push>[0]),
       }));
   }, [pinnedIds, room, router]);
 
   const actions = useMemo(
-    () => roomActions({ room, screen, pinned, common }),
-    [room, screen, pinned, common],
+    () => roomActions({ room, screen, pinned, common, roomName }),
+    [room, screen, pinned, common, roomName],
   );
 
   // Typing tucks the action away too, so it never sits on the keyboard's edge.
@@ -114,7 +122,7 @@ export function RoomFab({
   }, []);
 
   if ((!atHome && !screen) || actions.length === 0) return null;
-  const label = fabLabelOf(room, screen);
+  const label = fabLabelOf(room, screen, roomName);
 
   return (
     <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, styles.layer]}>
