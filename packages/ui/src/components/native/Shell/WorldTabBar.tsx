@@ -34,6 +34,7 @@ import Animated, {
 import { alpha, mix } from '../../../theme/color';
 import type { HeaderAction, KitIconProps } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
+import { useFocusRing } from '../../../theme/native/focus';
 import { usePressMotion, useWorldMotion } from '../../../theme/native/motion';
 import { radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
@@ -52,6 +53,8 @@ export interface WorldTabItem {
   longPressHint?: string;
   /** A quiet dot that something waits in this room. */
   signal?: boolean;
+  /** What the dot means, said after the room's name ("something new"). */
+  signalLabel?: string;
 }
 
 export interface WorldTabBarProps {
@@ -182,13 +185,26 @@ function Item({
   const press = usePressMotion();
   const Glyph = item.icon;
   const rail = layout === 'rail';
+  const focusRing = useFocusRing();
   return (
     <Pressable
       onLayout={(e: LayoutChangeEvent) => onSpot(item.key, 'item', e.nativeEvent.layout)}
       role="tab"
       aria-selected={item.focused}
-      accessibilityLabel={item.label}
+      // The dot is said too; a screen reader cannot see it.
+      accessibilityLabel={
+        item.signal ? `${item.label}, ${item.signalLabel ?? 'something new'}` : item.label
+      }
       accessibilityHint={item.longPressHint}
+      // Holding is hard with a screen reader on: the catalogue is also a named action.
+      accessibilityActions={
+        item.onLongPress ? [{ name: 'longpress', label: item.longPressHint ?? 'More' }] : undefined
+      }
+      onAccessibilityAction={(e) => {
+        if (e.nativeEvent.actionName === 'longpress') item.onLongPress?.();
+      }}
+      onFocus={focusRing.onFocus}
+      onBlur={focusRing.onBlur}
       onPressIn={press.pressIn}
       onPressOut={press.pressOut}
       onPress={() => {
@@ -203,7 +219,11 @@ function Item({
             }
           : undefined
       }
-      style={[styles.item, rail ? (short ? styles.railItemShort : styles.railItem) : null]}
+      style={[
+        styles.item,
+        rail ? (short ? styles.railItemShort : styles.railItem) : null,
+        focusRing.ring,
+      ]}
     >
       <Animated.View
         onLayout={(e: LayoutChangeEvent) => onSpot(item.key, 'well', e.nativeEvent.layout)}

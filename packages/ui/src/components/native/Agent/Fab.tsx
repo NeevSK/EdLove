@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import type { ActionFabContract, FabMenuContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
+import { useFocusRing } from '../../../theme/native/focus';
 import { usePressMotion, useWorldMotion } from '../../../theme/native/motion';
 import { glowStyle, radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
@@ -46,6 +47,7 @@ export function ActionFab({
   const { world, language } = useWorldContext();
   const feedback = useFeedback();
   const press = usePressMotion();
+  const focusRing = useFocusRing();
   const m = useWorldMotion();
   // Tucked away (reading, typing): it shrinks and slips down, and comes back the world's way.
   const away = useSharedValue(hidden ? 1 : 0);
@@ -70,6 +72,8 @@ export function ActionFab({
         <Pressable
           role="button"
           accessibilityLabel={name}
+          onFocus={focusRing.onFocus}
+          onBlur={focusRing.onBlur}
           onPressIn={() => {
             press.pressIn();
             feedback('press');
@@ -82,6 +86,7 @@ export function ActionFab({
             { backgroundColor: t.lamp },
             shadowStyle(world.recipes.surface.raised.shadow),
             glowStyle(world.recipes.button.variants.primary.glow),
+            focusRing.ring,
           ]}
         >
           <Animated.View

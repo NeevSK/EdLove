@@ -34,6 +34,7 @@ import {
 } from '@repo/ui/components/native';
 import { useFidelityOptional, useThemeContextOptional } from '@repo/ui/context';
 import { useComfort } from '@repo/ui/context/ComfortPreferences';
+import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import { type KitIconProps, shellLayoutOf, worldName } from '@repo/ui/theme';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
@@ -337,7 +338,10 @@ function TabsLayoutContent() {
   // The person's hand puts the action by their dominant thumb (and, sideways, the rail opposite).
   const { hand } = useComfort();
   const railSide = hud && hand === 'left' ? 'right' : 'left';
-  const chromeShown = !autoHideChromeOnScroll || isChromeVisible;
+  // A screen reader moves through the page by swipes, so a bar that tucks away on scroll (and
+  // leaves the reader's reach while tucked) would strand the person: with one on, chrome stays.
+  const { isScreenReaderEnabled } = useAccessibility();
+  const chromeShown = !autoHideChromeOnScroll || isChromeVisible || isScreenReaderEnabled;
 
   const [youOpen, setYouOpen] = useState(false);
   const [worldOpen, setWorldOpen] = useState(false);
