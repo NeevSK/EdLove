@@ -1,19 +1,21 @@
 import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
-export { inspectJourneyPilot, inspectJourneyContract } from './journeyPilot';
+
+export { inspectJourneyContract, inspectJourneyPilot } from './journeyPilot';
+
+import { linkedProvidersFlow } from './account/linkedProviders.flow';
 import { guardianLinkStudentFlow } from './admin/guardianLinkStudent.flow';
-import { principalTermSetupFlow } from './admin/principalTermSetup.flow';
 import { principalConnectSchoolFlow } from './admin/principalConnectSchool.flow';
+import { principalTermSetupFlow } from './admin/principalTermSetup.flow';
 import { studentClaimPassFlow } from './classroom/studentClaimPass.flow';
 import { studentProfileSoulViewFlow } from './classroom/studentProfileSoulView.flow';
-import { teacherRollCallFlow } from './classroom/teacherRollCall.flow';
 import { teacherFirstWorkspaceFlow } from './classroom/teacherFirstWorkspace.flow';
+import { teacherRollCallFlow } from './classroom/teacherRollCall.flow';
 import { teacherStudentRadarAttunementFlow } from './classroom/teacherStudentRadarAttunement.flow';
-import { linkedProvidersFlow } from './account/linkedProviders.flow';
 import { mobileEntryFlow } from './entry/mobileEntry.flow';
 import { webSanctuaryEntryFlow } from './entry/webSanctuaryEntry.flow';
+import { founderCommandDeckFlow } from './founder/founderCommandDeck.flow';
 import { qrResolutionFlow } from './qr/qrResolution.flow';
 import { mindfulBreathingFlow } from './self/mindfulBreathing.flow';
-import { founderCommandDeckFlow } from './founder/founderCommandDeck.flow';
 import { studentDailyPrepFlow } from './self/studentDailyPrep.flow';
 
 export const FLOW_REGISTRY = {

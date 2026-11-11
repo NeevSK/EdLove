@@ -7,9 +7,9 @@ import {
   GroupMemberSchema,
   GroupMessageSchema,
 } from '@repo/core/logic/schemas/community.schema';
-import type { TemporalScale } from '@repo/core/types/Temporal';
 import type { Group } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 
 /**
  * Circles API (formerly Groups)

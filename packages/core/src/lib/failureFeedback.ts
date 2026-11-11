@@ -9,11 +9,6 @@ import type {
   UnauthorizedError,
 } from '@repo/core/effect/Errors';
 import { showToast } from '@repo/core/lib/feedback';
-import type {
-  AgentDatabaseError,
-  AgentSchemaError,
-  AgentTimeoutError,
-} from '@repo/core/logic/schemas/agentContracts.schema';
 import type { InvalidAuthCallbackAttempt } from '@repo/core/logic/auth/authCallbackAttempt';
 import type {
   DeepLinkForbiddenCharsError,
@@ -25,6 +20,11 @@ import type {
   ReferrerLengthError,
   ReferrerParseError,
 } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+import type {
+  AgentDatabaseError,
+  AgentSchemaError,
+  AgentTimeoutError,
+} from '@repo/core/logic/schemas/agentContracts.schema';
 import { captureException } from '@repo/core/monitoring';
 import type { GuestStorageError } from '@repo/core/native/guestStorage';
 import i18next from 'i18next';

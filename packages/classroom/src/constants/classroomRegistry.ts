@@ -1,5 +1,5 @@
-import { defineFeatureLifecycle } from '@repo/core/types/domainEntry';
 import type { DomainFeature } from '@repo/core/types';
+import { defineFeatureLifecycle } from '@repo/core/types/domainEntry';
 
 const REGISTRY_LIFECYCLE = defineFeatureLifecycle({
   owner: 'classroom',

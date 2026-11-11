@@ -1,9 +1,9 @@
 import { communityAPI } from '@repo/core/api/community';
 import { assertHighway } from '@repo/core/api/highways';
+import { MOCK_NOTIFICATIONS } from '@repo/core/api/mockData';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { createResonantProxy } from '@repo/core/api/resonantProxy';
 import { isEmptyOrNull, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
-import { MOCK_NOTIFICATIONS } from '@repo/core/api/mockData';
 import type { TemporalScale } from '@repo/core/types/Temporal';
 
 function assertSocialHighway() {
@@ -139,4 +139,3 @@ registerSandboxDomain({
     return undefined;
   },
 });
-

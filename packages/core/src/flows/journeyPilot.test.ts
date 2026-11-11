@@ -53,6 +53,8 @@ describe('teacher first workspace journey', () => {
     expect(report.valid).toBe(true);
     expect(report.gaps).toContain('web binding is planned');
     expect(report.gaps).toContain('authorization binding is unknown');
-    expect(report.expanded?.developmentContext?.invariants.join(' ')).toContain('server-verified bond');
+    expect(report.expanded?.developmentContext?.invariants.join(' ')).toContain(
+      'server-verified bond',
+    );
   });
 });

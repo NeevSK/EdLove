@@ -1,8 +1,8 @@
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { assertMutationCommandTransition } from '@repo/core/types/mutationCommand';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { CURRENT_OUTBOX_SCHEMA_VERSION } from '@repo/core/lib/sync/outboxMigration';
+import { assertMutationCommandTransition } from '@repo/core/types/mutationCommand';
 import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,

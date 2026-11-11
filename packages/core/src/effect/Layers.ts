@@ -1,5 +1,5 @@
-import { GrowthPort } from '@repo/core/logic/ports/growth.port';
 import { EntitlementPort } from '@repo/core/logic/ports/entitlement.port';
+import { GrowthPort } from '@repo/core/logic/ports/growth.port';
 import { PermissionSnapshotPort } from '@repo/core/logic/ports/permissionSnapshot.port';
 import { Effect, Layer } from 'effect';
 
@@ -18,7 +18,9 @@ import { Effect, Layer } from 'effect';
 export const GrowthLive = Layer.effect(
   GrowthPort,
   Effect.promise(() =>
-    import('@repo/core/adapters/supabase/growth.adapter').then((m) => new m.SupabaseGrowthAdapter()),
+    import('@repo/core/adapters/supabase/growth.adapter').then(
+      (m) => new m.SupabaseGrowthAdapter(),
+    ),
   ),
 );
 

@@ -43,13 +43,34 @@ export const principalConnectSchoolFlow: FeatureJTBDGraph = {
         'The principal capability registry models institutional leadership and existing native principal surfaces.',
       ],
       integrationPoints: [
-        { reference: 'packages/admin/src/principal/workspace.ts', role: 'Principal capability and scope registry' },
-        { reference: 'apps/gurudevi-web/lib/sanctuary/workspaceScopes.ts', role: 'Verified account and scope selection' },
-        { reference: 'packages/schema/schema.zmodel', role: 'School, bond and tuition institute models' },
-        { reference: 'apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx', role: 'Native workspace dispatcher and permission states' },
-        { reference: 'packages/admin/src/machines/principalSetupMachine.ts', role: 'Existing principal setup state machine; connection and server execution remain unverified' },
-        { reference: 'packages/admin/src/screens/SchoolCreationScreen.tsx', role: 'Existing native school creation flow; transaction and authority require verification' },
-        { reference: 'packages/core/src/adapters/supabase/schoolInviteRepository.ts', role: 'School invitation redemption and scope selection' },
+        {
+          reference: 'packages/admin/src/principal/workspace.ts',
+          role: 'Principal capability and scope registry',
+        },
+        {
+          reference: 'apps/gurudevi-web/lib/sanctuary/workspaceScopes.ts',
+          role: 'Verified account and scope selection',
+        },
+        {
+          reference: 'packages/schema/schema.zmodel',
+          role: 'School, bond and tuition institute models',
+        },
+        {
+          reference: 'apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx',
+          role: 'Native workspace dispatcher and permission states',
+        },
+        {
+          reference: 'packages/admin/src/machines/principalSetupMachine.ts',
+          role: 'Existing principal setup state machine; connection and server execution remain unverified',
+        },
+        {
+          reference: 'packages/admin/src/screens/SchoolCreationScreen.tsx',
+          role: 'Existing native school creation flow; transaction and authority require verification',
+        },
+        {
+          reference: 'packages/core/src/adapters/supabase/schoolInviteRepository.ts',
+          role: 'School invitation redemption and scope selection',
+        },
       ],
       invariants: [
         'Principal authority is institutional or commercial, never a personal principal workspace.',
@@ -88,7 +109,8 @@ export const principalConnectSchoolFlow: FeatureJTBDGraph = {
       {
         id: 'contact',
         title: 'Contact the founder',
-        interaction: 'Optionally prepare a WhatsApp message with school and contact details; send it in WhatsApp.',
+        interaction:
+          'Optionally prepare a WhatsApp message with school and contact details; send it in WhatsApp.',
         terminal: true,
       },
       {

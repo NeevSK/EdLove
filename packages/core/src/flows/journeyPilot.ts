@@ -1,5 +1,5 @@
-import { JourneyPilotSchema } from '@repo/core/types/domainEntry';
 import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
+import { JourneyPilotSchema } from '@repo/core/types/domainEntry';
 import { type FlowId, getFlow } from './index';
 
 /** Inspect declared coverage only; this does not execute a journey or verify a binding. */
@@ -63,7 +63,9 @@ export function inspectJourneyContract(flowId: string, flow: FeatureJTBDGraph) {
       .filter((binding) => binding.status !== 'verified')
       .map((binding) => `${binding.kind} binding is ${binding.status}`),
     ...(!journey.developmentContext ? ['Development context has not been documented'] : []),
-    ...(journey.developmentContext?.openQuestions ?? []).map((question) => `Open question: ${question}`),
+    ...(journey.developmentContext?.openQuestions ?? []).map(
+      (question) => `Open question: ${question}`,
+    ),
   ];
   return {
     valid: errors.length === 0,
@@ -76,6 +78,10 @@ export function inspectJourneyContract(flowId: string, flow: FeatureJTBDGraph) {
       steps: journey.steps,
       transitions: journey.transitions,
     },
-    expanded: { scenarios: journey.scenarios, bindings: journey.bindings, developmentContext: journey.developmentContext },
+    expanded: {
+      scenarios: journey.scenarios,
+      bindings: journey.bindings,
+      developmentContext: journey.developmentContext,
+    },
   };
 }

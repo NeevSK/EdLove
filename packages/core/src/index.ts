@@ -10,7 +10,6 @@ export {
   getDeviceAccountsConfig,
   setDeviceAccountsConfig,
 } from '@repo/core/accounts/deviceAccounts';
-export { isDemo } from '@repo/core/logic/modes/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
 export { marksToGPA } from '@repo/core/lib/grading';
@@ -133,6 +132,13 @@ export {
 } from '@repo/core/logic/experience/ActivityPulseContext';
 export { default as i18n } from '@repo/core/logic/i18n/config';
 export { mediaInitialState, mediaReducer } from '@repo/core/logic/mediaReducer';
+export { isDemo } from '@repo/core/logic/modes/demo';
+export {
+  decryptPairingPayload,
+  type EncryptedPairingEnvelope,
+  encryptPairingPayload,
+  generatePairingKey,
+} from '@repo/core/logic/pairing/pairingCrypto';
 export type {
   AccountTransitionDisposition,
   AccountTransitionOutcome,
@@ -170,12 +176,6 @@ export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 export type { QRResolveResult } from '@repo/core/logic/utils/QRResolver';
 export { resolveQR } from '@repo/core/logic/utils/QRResolver';
 export {
-  decryptPairingPayload,
-  encryptPairingPayload,
-  generatePairingKey,
-  type EncryptedPairingEnvelope,
-} from '@repo/core/logic/pairing/pairingCrypto';
-export {
   applyTemporalFilter,
   getTemporalRange,
   getTransactionRange,
@@ -196,12 +196,12 @@ export {
   useCapabilityHydration,
 } from '@repo/core/providers/CapabilityHydrationProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
-// 2. Logic State & Storage (Zustand & Supabase)
-export type { TemporalScale } from '@repo/core/types/Temporal';
 export { useTemporalStore } from '@repo/core/store/useTemporalStore';
 export { useTenantStore } from '@repo/core/store/useTenantStore';
 export { useUIStore } from '@repo/core/store/useUIStore';
 export * from '@repo/core/types';
+// 2. Logic State & Storage (Zustand & Supabase)
+export type { TemporalScale } from '@repo/core/types/Temporal';
 export type { IPostHog } from './monitoring';
 export {
   captureException,
@@ -228,10 +228,12 @@ export {
 export type { ValidatorRule } from '@intuitui-labs/form-builder-engine/schema';
 export { applyRule, validateRules } from '@intuitui-labs/form-builder-engine/validation';
 export { GrowthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
+export { PowerSyncFormsAdapter } from '@repo/core/adapters/powersync/forms.adapter';
+export { SupabaseFormsAdapter } from '@repo/core/adapters/supabase/forms.adapter';
 // Hexagonal Adapters
 export { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
-export { SupabaseFormsAdapter } from '@repo/core/adapters/supabase/forms.adapter';
-export { PowerSyncFormsAdapter } from '@repo/core/adapters/powersync/forms.adapter';
+export * from '@repo/core/ai/contextRegistry';
+export * from '@repo/core/ai/platformManifest';
 export * from '@repo/core/constants/SriLankanSchools';
 export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
 export {
@@ -280,11 +282,6 @@ export { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 export { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 export type { SyncOrchestratorTraceEvent } from '@repo/core/lib/sync/sync/SyncOrchestrator';
 export { default as SyncOrchestrator } from '@repo/core/lib/sync/sync/SyncOrchestrator';
-export type {
-  MutationOutcome,
-  QueuedMutation,
-  QueuedMutationDispatchResult,
-} from '@repo/core/types/mutationQueue';
 export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 // Hexagonal Ports
 export type {
@@ -300,11 +297,6 @@ export type {
 } from '@repo/core/logic';
 export { cryptoVault } from '@repo/core/logic';
 export * from '@repo/core/logic/agents';
-export type {
-  EntityDefinition,
-  EntityMode,
-  EntityType,
-} from '@repo/core/types/entityProtocol';
 export { GPACalculator } from '@repo/core/logic/grading/GPACalculator';
 export * from '@repo/core/logic/permissions';
 export {
@@ -396,9 +388,16 @@ export { UserSchema } from '@repo/core/logic/schemas/user.schema';
 export { validateForm, validators } from '@repo/core/logic/utils/validators';
 export * from '@repo/core/logic/workspace/canvas';
 export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
-export * from '@repo/core/ai/contextRegistry';
-export * from '@repo/core/ai/platformManifest';
-export { useWebTodos, type WebTodo, type UseWebTodosReturn } from './adapters/supabase/todosHook';
-export { z };
-
 export * from '@repo/core/platform/drivers';
+export type {
+  EntityDefinition,
+  EntityMode,
+  EntityType,
+} from '@repo/core/types/entityProtocol';
+export type {
+  MutationOutcome,
+  QueuedMutation,
+  QueuedMutationDispatchResult,
+} from '@repo/core/types/mutationQueue';
+export { type UseWebTodosReturn, useWebTodos, type WebTodo } from './adapters/supabase/todosHook';
+export { z };

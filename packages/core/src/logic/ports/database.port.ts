@@ -14,7 +14,6 @@ export interface LocalReadQuery {
   parameters?: readonly JsonValue[];
 }
 
-
 export interface MutationIntent {
   type: MutationType;
   scope: string;

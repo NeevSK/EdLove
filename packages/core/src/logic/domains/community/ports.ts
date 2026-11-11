@@ -1,5 +1,5 @@
-import type { TemporalScale } from '@repo/core/types/Temporal';
 import type { Comment, PollStatus, Post } from '@repo/core/types';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 
 export interface PostFilters {
   limit: number;

@@ -11,8 +11,8 @@ vi.mock('../../adapters/powersync/database', () => ({
   disconnectPowerSync: mocks.disconnectPowerSync,
 }));
 
-import { useMutationQueue } from '../../lib/sync/useMutationQueue';
 import { openReplayAdmission, tryBeginReplay } from '../../lib/sync/replayAdmission';
+import { useMutationQueue } from '../../lib/sync/useMutationQueue';
 import { accountTransition } from '../accountTransition';
 
 function command(id: string, userId?: string): QueuedMutation {

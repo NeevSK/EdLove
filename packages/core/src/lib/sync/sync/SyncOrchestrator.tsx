@@ -11,7 +11,6 @@ import {
 } from '@repo/core/lib/sync/replayAdmission';
 import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity';
 import { isMutationReplayDeferred, planMutationReplay } from '@repo/core/lib/sync/replayPolicy';
-import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/types/mutationQueue';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
@@ -19,6 +18,7 @@ import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useConflictStore } from '@repo/core/store/useConflictStore';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/types/mutationQueue';
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 /**
@@ -53,7 +53,10 @@ export interface SyncOrchestratorTraceEvent {
   queueWaitMs?: number;
 }
 
-export default function SyncOrchestrator({ dispatchQueuedMutation, onTrace }: SyncOrchestratorProps = {}) {
+export default function SyncOrchestrator({
+  dispatchQueuedMutation,
+  onTrace,
+}: SyncOrchestratorProps = {}) {
   const { isOnline } = useOfflineStatus();
   const readPolicy = useTemporalStore((state) => state.readPolicy);
   const activeAccountId = useAuthStore((state) => state.user?.id);
@@ -347,7 +350,10 @@ export default function SyncOrchestrator({ dispatchQueuedMutation, onTrace }: Sy
             const exitReason =
               errorType === 'PERMANENT' ? 'PERMANENT_FAILURE' : 'MAX_RETRIES_EXCEEDED';
             if (__DEV__) {
-              console.error(`[SyncOrchestrator] Terminal: ${item.name}  reason=${exitReason}`, error);
+              console.error(
+                `[SyncOrchestrator] Terminal: ${item.name}  reason=${exitReason}`,
+                error,
+              );
             }
             leaveBreadcrumb('sync', `Mutation terminal: ${item.name} (${exitReason})`, 'error', {
               mutationId: item.id,
@@ -472,8 +478,6 @@ export default function SyncOrchestrator({ dispatchQueuedMutation, onTrace }: Sy
     tryAcquireMutationLease,
     dispatchQueuedMutation,
     updateEntry,
-    showToast, // Resonance Fork: Data Conflict detected
-    // Note: addConflict now emits 'conflict:detected' on the SovereignBus internally
     addConflict,
     activeConflicts,
     onTrace,

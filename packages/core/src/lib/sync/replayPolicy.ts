@@ -1,4 +1,3 @@
-import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import {
   isQueuedMutationAcknowledged,
   useMutationQueue,
@@ -8,6 +7,7 @@ import {
   ChatSendCommandSchema,
 } from '@repo/core/logic/schemas/chat-command.schema';
 import { type TemporalReadPolicy, useTemporalStore } from '@repo/core/store/useTemporalStore';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 
 /** A pending message cannot overtake an unresolved predecessor in the same account/channel. */
 export function isMutationReplayDeferred(

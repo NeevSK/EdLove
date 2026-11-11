@@ -32,7 +32,8 @@ export const founderCommandDeckFlow: FeatureJTBDGraph = {
           condition: 'permission_denied',
           fallbackScreenId: 'workspace_hub',
           fallbackRoute: '/(tabs)/workspace',
-          guidancePrompt: 'Founder command deck is restricted to sovereign platform stewards (founder, co-founder, director).',
+          guidancePrompt:
+            'Founder command deck is restricted to sovereign platform stewards (founder, co-founder, director).',
           recoveryAction: 'switch_role',
         },
       ],

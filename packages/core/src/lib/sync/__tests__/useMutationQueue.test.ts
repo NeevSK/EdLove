@@ -1,14 +1,14 @@
 import { setActiveAccountId } from '@repo/core/lib/accountScope';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import {
+  isQueuedMutationAcknowledged,
+  useMutationQueue,
+} from '@repo/core/lib/sync/useMutationQueue';
+import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,
   MutationQueueCapacityError,
 } from '@repo/core/types/mutationQueue';
-import {
-  isQueuedMutationAcknowledged,
-  useMutationQueue,
-} from '@repo/core/lib/sync/useMutationQueue';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('useMutationQueue (G0 Unit / G1 State)', () => {
@@ -26,15 +26,13 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
     vi.spyOn(SafeZustandStorage, 'getItem').mockReturnValue(read.promise);
     const write = vi.spyOn(SafeZustandStorage, 'setItem').mockResolvedValue(undefined);
     const initialRead = useMutationQueue.persist.rehydrate();
-    const append = useMutationQueue
-      .getState()
-      .addToQueue({
-        name: 'new-work',
-        scope: 'chat',
-        type: 'CREATE',
-        variables: { text: 'new' },
-        userId: 'account-a',
-      });
+    const append = useMutationQueue.getState().addToQueue({
+      name: 'new-work',
+      scope: 'chat',
+      type: 'CREATE',
+      variables: { text: 'new' },
+      userId: 'account-a',
+    });
     await Promise.resolve();
     expect(write).not.toHaveBeenCalled();
     const saved = {
@@ -71,15 +69,13 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
     const write = vi.spyOn(SafeZustandStorage, 'setItem').mockResolvedValue(undefined);
     await useMutationQueue.persist.rehydrate();
     await expect(
-      useMutationQueue
-        .getState()
-        .addToQueue({
-          name: 'new-work',
-          scope: 'chat',
-          type: 'CREATE',
-          variables: { text: 'retain draft' },
-          userId: 'account-a',
-        }),
+      useMutationQueue.getState().addToQueue({
+        name: 'new-work',
+        scope: 'chat',
+        type: 'CREATE',
+        variables: { text: 'retain draft' },
+        userId: 'account-a',
+      }),
     ).rejects.toThrow('Original work was retained');
     expect(write).not.toHaveBeenCalled();
   });

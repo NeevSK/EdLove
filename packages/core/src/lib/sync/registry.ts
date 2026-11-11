@@ -7,12 +7,16 @@ import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/ty
  */
 export const MUTATION_REGISTRY: Record<
   string,
-  (variables: unknown, context?: { idempotencyKey: string; commandId?: string; userId?: string }) =>
-    Promise<QueuedMutationDispatchResult>
+  (
+    variables: unknown,
+    context?: { idempotencyKey: string; commandId?: string; userId?: string },
+  ) => Promise<QueuedMutationDispatchResult>
 > = Object.create(null) as Record<
   string,
-  (variables: unknown, context?: { idempotencyKey: string; commandId?: string; userId?: string }) =>
-    Promise<QueuedMutationDispatchResult>
+  (
+    variables: unknown,
+    context?: { idempotencyKey: string; commandId?: string; userId?: string },
+  ) => Promise<QueuedMutationDispatchResult>
 >;
 
 export function hasAdmittedMutation(name: QueuedMutation['name']): boolean {
