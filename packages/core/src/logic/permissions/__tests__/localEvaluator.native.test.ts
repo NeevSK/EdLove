@@ -2,6 +2,7 @@ import { generateKeyPairSync, sign as nodeSign } from 'node:crypto';
 import { generateSnapshot } from '@repo/policies';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { checkLocalPermission } from '../localEvaluator.native';
+import * as signatureModule from '../signature';
 import { verifySnapshotSignature } from '../signature';
 
 // Mock database wrapper
@@ -247,15 +248,18 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
     });
 
     it('denies access if snapshot signature is invalid (tamper check)', async () => {
+      const verifySpy = vi.spyOn(signatureModule, 'verifySnapshotSignature');
+
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValueOnce({
         userId: 'user-123',
         schoolId: 'school-123',
         activeBondId: 'bond-123',
         activeEntityId: 'entity-123',
         activeEntityType: 'SCHOOL',
+        policyVersion: 'policy-v1', // Precondition: must match current policy version
         generatedAt: '2026-05-10T12:00:00Z',
-        expiresAt: '2026-05-11T12:00:00Z',
-        permissions: JSON.stringify({ Classroom: { read: true } }),
+        expiresAt: '2099-01-01T12:00:00Z', // Precondition: must not be expired
+        permissions: JSON.stringify({ Classroom: { read: true } }), // Precondition: positive permission
         temporalHints: null,
         signature: 'invalid-sig',
       });
@@ -267,7 +271,20 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
         userContext,
       });
 
+      // Behavioral contract assertions (wording-independent):
+      // 1. Signature verifier was invoked with the snapshot
+      expect(verifySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          signature: 'invalid-sig',
+        }),
+      );
+      // 2. Permission request was denied
       expect(isAllowed).toBe(false);
+      // 3. Evaluation did not proceed to database policy queries
+      expect(mockDrizzle.select).not.toHaveBeenCalled();
+
+      verifySpy.mockRestore();
     });
 
     it('denies access if snapshot has expired', async () => {
