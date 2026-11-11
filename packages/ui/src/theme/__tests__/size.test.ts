@@ -61,3 +61,17 @@ describe('posture, aspect and stance', () => {
     expect(shellLayoutOf(640, 'auto', 360).columns).toBe(1);
   });
 });
+
+describe('small windows', () => {
+  it('a split-screen half or a cover screen is tight, with small edges', () => {
+    const cover = shellLayoutOf(280, 'auto', 650);
+    expect(cover.tight).toBe(true);
+    expect(cover.gutter).toBe(10);
+    expect(shellLayoutOf(411, 'auto', 540).tight).toBe(true);
+  });
+  it('an ordinary phone, a tablet and a sideways phone are not', () => {
+    expect(shellLayoutOf(411, 'auto', 891).tight).toBe(false);
+    expect(shellLayoutOf(800, 'auto', 1280).tight).toBe(false);
+    expect(shellLayoutOf(891, 'auto', 411).tight).toBe(false);
+  });
+});

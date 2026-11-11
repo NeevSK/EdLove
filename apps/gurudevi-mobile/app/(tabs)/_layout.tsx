@@ -56,6 +56,7 @@ import { Box, Modal, ModalContent, Pressable } from '@repo/ui/primitives';
 import { useWorld } from '@repo/ui/theme/native';
 import { tokens } from '@repo/ui/tokens';
 import { router, useGlobalSearchParams, usePathname } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Tabs } from 'expo-router/js-tabs';
 import { type ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StatusBar, useWindowDimensions, View } from 'react-native';
@@ -126,6 +127,19 @@ function TabsLayoutContent() {
   useSnapshotRefresh();
   const isLocalGuest = isLocalOnlyIdentity(user);
   const { unreadCount } = useScopedNotifications(isLocalGuest ? null : userId);
+  // The rooms are named in the person's language (Sinhala and Tamil words run longer; the bar
+  // fits them). English stays the fallback for any missing word.
+  const { t } = useTranslation();
+  const roomLabels = useMemo(
+    () =>
+      Object.fromEntries(
+        (Object.keys(ROOM_NAMES) as (keyof typeof ROOM_NAMES)[]).map((room) => [
+          room,
+          t(`tabs.${room}`, { defaultValue: ROOM_NAMES[room] }),
+        ]),
+      ) as Record<keyof typeof ROOM_NAMES, string>,
+    [t],
+  );
   // Offline is ordinary here: say it quietly on the header (or the sideways rail), with what is kept.
   const network = useOfflineStatus().status;
   const queued = useMutationQueue((s) => s.queue.length);
@@ -373,9 +387,10 @@ function TabsLayoutContent() {
     return (
       <WorldHeader
         // Reading down shrinks the header to one quiet line; reading up brings it back.
-        layout={chromeShown ? headerLayout : 'compact'}
+        // A small window (split screen) keeps the header to one line.
+        layout={chromeShown && !layout.tight ? headerLayout : 'compact'}
         posture={isDomainRoot ? 'home' : 'inside'}
-        room={ROOM_NAMES[currentDomain]}
+        room={roomLabels[currentDomain]}
         title={title}
         greeting={`${greetingFor(new Date().getHours())}, ${displayName}`}
         person={{ name: user?.display_name || displayName, src: user?.avatar_url ?? undefined }}
@@ -508,7 +523,7 @@ function TabsLayoutContent() {
               {...props}
               layout={layout.tabs}
               icons={TAB_ICONS}
-              labels={ROOM_NAMES}
+              labels={roomLabels}
               holds={{ self: true, workspace: true }}
               signals={{ community: unreadCount > 0 }}
               hidden={!chromeShown}

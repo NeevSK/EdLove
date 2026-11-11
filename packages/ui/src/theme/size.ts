@@ -52,6 +52,8 @@ export interface ShellLayout {
   tabs: 'docked' | 'floating' | 'rail';
   /** Whether a header row sits across the top (false in `hud`: the rail carries its controls). */
   header: boolean;
+  /** A small window (split screen, pop-up, cover screen): tight edges, one-line header. */
+  tight: boolean;
   /** Side gutter for screen content. */
   gutter: number;
   /** The widest a column of reading text grows; content centres beyond it. */
@@ -78,6 +80,9 @@ export function shellLayoutOf(
   const size = sizeClassOf(width);
   const wide = size === 'medium' || size === 'expanded';
   const stance: Stance = short ? 'hud' : wide ? 'wide' : 'upright';
+  // A small window (split screen, a pop-up window, a folding phone's cover screen): tighter
+  // edges and the one-line header, so the page keeps most of the little room there is.
+  const tight = stance !== 'hud' && (width < 360 || h < 560);
   const tabs =
     stance !== 'upright'
       ? 'rail'
@@ -96,10 +101,19 @@ export function shellLayoutOf(
     stance,
     tabs,
     header: stance !== 'hud',
-    gutter: size === 'compact' ? 14 : size === 'regular' ? 20 : stance === 'hud' ? 22 : 28,
+    tight,
+    gutter: tight
+      ? 10
+      : size === 'compact'
+        ? 14
+        : size === 'regular'
+          ? 20
+          : stance === 'hud'
+            ? 22
+            : 28,
     // A wide, short screen reads best in a slightly wider column (fewer, longer lines).
     readable: stance === 'hud' ? 760 : 680,
     columns,
-    rhythm: short ? { top: 10, gap: 16 } : { top: 18, gap: 22 },
+    rhythm: short || tight ? { top: 10, gap: 16 } : { top: 18, gap: 22 },
   };
 }

@@ -240,6 +240,10 @@ function Item({
       <RNText
         numberOfLines={1}
         maxFontSizeMultiplier={1.4}
+        // A long room name (Sinhala, Tamil, a narrow split screen) shrinks a little to fit
+        // whole, instead of being cut to "Commu…".
+        adjustsFontSizeToFit
+        minimumFontScale={0.75}
         style={[
           typeStyle(world.recipes.text.caption, language, world, short ? 10.5 : 11.5),
           { color: item.focused ? t.ink : t.inkSoft, fontWeight: item.focused ? '700' : '500' },
