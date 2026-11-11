@@ -1,6 +1,6 @@
 import { showToast } from '@repo/core/lib/feedback';
 import { usePermissions } from '@repo/core/logic';
-import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
+import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';

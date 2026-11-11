@@ -1,9 +1,9 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { setGuestScope } from '@repo/core/native/guestScope';
+import { isLocalGuestSessionId, LOCAL_GUEST_ID_PREFIX } from '@repo/core/types/localGuest';
 
 const LOCAL_GUEST_SESSION_KEY = 'gurudevi:local-guest-session';
 const LOCAL_GUEST_SESSION_VERSION = 1;
-const LOCAL_GUEST_ID_PREFIX = 'local-';
 
 export interface LocalGuestSession {
   version: 1;
@@ -15,14 +15,6 @@ export class LocalGuestSessionError extends Error {
     super(message);
     this.name = 'LocalGuestSessionError';
   }
-}
-
-/** Identifies a persisted device-local guest principal; it is never an Auth subject. */
-export function isLocalGuestSessionId(value: unknown): value is string {
-  return (
-    typeof value === 'string' &&
-    /^local-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
-  );
 }
 
 function parseLocalGuestSession(raw: string): LocalGuestSession | null {

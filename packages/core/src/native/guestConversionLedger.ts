@@ -1,6 +1,6 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { GuestStorage } from '@repo/core/native/guestStorage';
-import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
+import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 
 const GUEST_CONVERSION_LEDGER_KEY = 'auth:guest-conversion-ledger';
 const GUEST_CONVERSION_LEDGER_VERSION = 1;

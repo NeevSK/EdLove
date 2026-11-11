@@ -24,7 +24,6 @@ vi.mock('@repo/core/native/guestLease', () => ({
 vi.mock('@repo/core/native/guestScope', () => ({ setGuestScope: mocks.setGuestScope }));
 vi.mock('@repo/core/native/localGuestSession', () => ({
   clearLocalGuestSession: mocks.clearLocalGuestSession,
-  isLocalGuestSessionId: (value: unknown) => value === 'local-9ac0f584-4299-4b23-ae2c-5846be605c26',
 }));
 
 import {

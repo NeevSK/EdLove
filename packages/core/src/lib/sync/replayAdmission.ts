@@ -1,3 +1,5 @@
+import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
+
 type ReplayLease = {
   settled: Promise<void>;
   release: () => void;
@@ -14,8 +16,9 @@ export function subscribeReplayAdmission(listener: () => void): () => void {
   };
 }
 
+/** A local guest's work is device-only: it never replays to the server (types/localGuest.ts). */
 export function isReplayAdmissionOpen(principalId: string): boolean {
-  return !closedPrincipals.has(principalId);
+  return !isLocalGuestSessionId(principalId) && !closedPrincipals.has(principalId);
 }
 
 export interface ReplayAdmissionLease {
@@ -24,7 +27,7 @@ export interface ReplayAdmissionLease {
 
 /** Claims permission to start one principal-owned outbox handler. */
 export function tryBeginReplay(principalId: string): ReplayAdmissionLease | null {
-  if (closedPrincipals.has(principalId)) return null;
+  if (!isReplayAdmissionOpen(principalId)) return null;
 
   let settle!: () => void;
   const settled = new Promise<void>((resolve) => {

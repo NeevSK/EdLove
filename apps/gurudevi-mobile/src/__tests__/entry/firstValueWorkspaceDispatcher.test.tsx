@@ -29,7 +29,7 @@ vi.mock('@repo/core/logic', () => ({
 vi.mock('@repo/core/store/useCedarDecisionStore', () => ({
   useCedarDecisionStore: <T,>(selector: (state: typeof mocks.cedar) => T) => selector(mocks.cedar),
 }));
-vi.mock('@repo/core/native/localGuestSession', () => ({ isLocalGuestSessionId: () => false }));
+vi.mock('@repo/core/types/localGuest', () => ({ isLocalGuestSessionId: () => false }));
 vi.mock('@repo/ui/components/BrandPulse', () => ({ BrandPulse: () => null }));
 vi.mock('@repo/ui/components/ErrorBoundary', () => ({ RouteErrorBoundary: () => null }));
 vi.mock('@repo/ui/components/BrandedEmptyState', () => ({

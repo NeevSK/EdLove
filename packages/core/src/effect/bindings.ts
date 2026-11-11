@@ -10,7 +10,7 @@ import type {
 } from '@repo/core/logic/ports/featureRollout.port';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
 import { getGuestScopeRevision, guestStorageKey } from '@repo/core/native/guestScope';
-import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
+import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import type { StateStorage } from 'zustand/middleware';
 
 /**

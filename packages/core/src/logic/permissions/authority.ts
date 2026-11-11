@@ -1,3 +1,4 @@
+import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import { resolveScopedEntitlement } from '@repo/core/logic/permissions/entitlement';
 import type { EntitlementSnapshot } from '@repo/core/logic/ports/entitlement.port';
@@ -30,6 +31,18 @@ export const PERSONAL_SANCTUARY_READ_SUBJECTS: ReadonlySet<string> = new Set([
   'SelfReflection',
   'LibraryResource',
   'CommunityPost',
+]);
+
+/**
+ * A device-local guest's own Self data: the subjects they may create, change and delete on the
+ * phone. It stays on the device (see types/localGuest.ts); shared subjects such as posts need an
+ * account.
+ */
+export const LOCAL_GUEST_SELF_SUBJECTS: ReadonlySet<string> = new Set([
+  'SelfJourney',
+  'InnerPulse',
+  'SelfCare',
+  'SelfReflection',
 ]);
 
 type AuthUser = User | null;
@@ -150,6 +163,8 @@ export function decide(
 ): boolean {
   const openRead = action === 'read' && PERSONAL_SANCTUARY_READ_SUBJECTS.has(subject);
   if (!userId) return openRead;
+  // A local guest has no server permissions to consult; their Self data never leaves the phone.
+  if (isLocalGuestSessionId(userId)) return openRead || LOCAL_GUEST_SELF_SUBJECTS.has(subject);
   if (decision === 'allow') return true;
   if (decision === 'deny') return false;
   return openRead;

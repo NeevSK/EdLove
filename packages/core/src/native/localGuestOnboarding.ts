@@ -8,7 +8,8 @@ import {
 } from '@repo/core/native/guestIdentity';
 import { clearGuestLeaseData } from '@repo/core/native/guestLease';
 import { setGuestScope } from '@repo/core/native/guestScope';
-import { clearLocalGuestSession, isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
+import { clearLocalGuestSession } from '@repo/core/native/localGuestSession';
+import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import { APIError } from '@repo/core/types/API';
 
 function createBondId(): string {

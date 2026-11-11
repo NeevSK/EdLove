@@ -40,4 +40,11 @@ describe('principal replay admission', () => {
     expect(activated).not.toBeNull();
     activated?.release();
   });
+
+  it('never admits a local guest: their work stays on the device', () => {
+    const guest = 'local-9ac0f584-4299-4b23-ae2c-5846be605c26';
+    openReplayAdmission(guest);
+    expect(isReplayAdmissionOpen(guest)).toBe(false);
+    expect(tryBeginReplay(guest)).toBeNull();
+  });
 });

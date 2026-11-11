@@ -87,4 +87,16 @@ describe('authority', { tags: ['fast', 'security'] }, () => {
     expect(decide(null, 'allow', 'record', 'Attendance')).toBe(false);
     expect(decide(null, 'no_decision', 'read', 'LibraryResource')).toBe(true);
   });
+
+  it('lets a local guest write their own Self data on the device, and nothing shared', () => {
+    const guest = 'local-9ac0f584-4299-4b23-ae2c-5846be605c26';
+    expect(decide(guest, 'no_decision', 'create', 'SelfReflection')).toBe(true);
+    expect(decide(guest, 'no_decision', 'update', 'InnerPulse')).toBe(true);
+    expect(decide(guest, 'no_decision', 'delete', 'SelfCare')).toBe(true);
+    expect(decide(guest, 'no_decision', 'read', 'CommunityPost')).toBe(true);
+    expect(decide(guest, 'no_decision', 'create', 'CommunityPost')).toBe(false);
+    expect(decide(guest, 'no_decision', 'record', 'Attendance')).toBe(false);
+    // An id that only looks like a guest is an account and goes through the snapshot.
+    expect(decide('local-not-a-guest', 'no_decision', 'create', 'SelfReflection')).toBe(false);
+  });
 });
