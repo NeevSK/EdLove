@@ -49,3 +49,29 @@ describe('comfort', () => {
     expect(a).not.toBe(standard);
   });
 });
+
+describe('sunlight', () => {
+  it('wears the light palette at a neutral hour, whatever the clock says', async () => {
+    const { resolveWorld } = await import('../resolve');
+    const sun = { contrast: 'standard', transparency: 'standard', sunlight: true } as const;
+    const night = resolveWorld('kele', 'night', 'dark', sun);
+    const day = resolveWorld('kele', 'morning', 'light', sun);
+    expect(night.tokens).toEqual(day.tokens);
+  });
+  it('raises every ink well past the usual contrast', async () => {
+    const { resolveWorld } = await import('../resolve');
+    const { contrastRatio } = await import('../color');
+    const { WORLDS } = await import('../worlds');
+    for (const id of Object.keys(WORLDS) as (keyof typeof WORLDS)[]) {
+      const t = resolveWorld(id, 'dusk', 'light', {
+        contrast: 'standard',
+        transparency: 'standard',
+        sunlight: true,
+      }).tokens;
+      expect(contrastRatio(t.ink, t.ground)).toBeGreaterThanOrEqual(15);
+      expect(contrastRatio(t.inkSoft, t.ground)).toBeGreaterThanOrEqual(10);
+      expect(contrastRatio(t.inkFaint, t.ground)).toBeGreaterThanOrEqual(7);
+      expect(contrastRatio(t.line, t.ground)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});

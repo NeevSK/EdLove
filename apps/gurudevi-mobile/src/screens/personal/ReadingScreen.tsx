@@ -82,6 +82,12 @@ export function ReadingScreen() {
           value={comfort.contrast === 'more'}
           onChange={(on) => updateComfort({ contrast: on ? 'more' : 'system' })}
         />
+        <SwitchRow
+          label="Bright sunlight"
+          hint="Outdoors: the strongest words on a plain light ground. Also one tap away in You"
+          value={comfort.sunlight}
+          onChange={(sunlight) => updateComfort({ sunlight })}
+        />
       </Group>
       <Surface tone="raised" style={{ gap: 10, padding: 18 }}>
         <Text kind="label">Sample, in {worldName(world.id)}</Text>

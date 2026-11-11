@@ -615,6 +615,12 @@ export interface WorldAccess {
   size?: ComfortSize;
   /** A simpler look: plain surfaces, no ornaments or textures, clear edges. */
   simple?: boolean;
+  /**
+   * Bright sunlight (a teacher on the school ground, a parent at the bus stop): the light
+   * palette at a neutral hour whatever the clock says, every ink near full strength, solid
+   * layers, firmer lines, and a plain floor behind the words.
+   */
+  sunlight?: boolean;
 }
 
 export type ComfortSize = 'compact' | 'standard' | 'large';

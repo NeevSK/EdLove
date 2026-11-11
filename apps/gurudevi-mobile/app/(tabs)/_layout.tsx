@@ -33,7 +33,7 @@ import {
   YouSheet,
 } from '@repo/ui/components/native';
 import { useFidelityOptional, useThemeContextOptional } from '@repo/ui/context';
-import { useComfort } from '@repo/ui/context/ComfortPreferences';
+import { updateComfort, useComfort } from '@repo/ui/context/ComfortPreferences';
 import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import { type KitIconProps, shellLayoutOf, worldName } from '@repo/ui/theme';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
@@ -336,7 +336,8 @@ function TabsLayoutContent() {
   );
   const hud = layout.stance === 'hud';
   // The person's hand puts the action by their dominant thumb (and, sideways, the rail opposite).
-  const { hand } = useComfort();
+  const comfort = useComfort();
+  const { hand } = comfort;
   const railSide = hud && hand === 'left' ? 'right' : 'left';
   // A screen reader moves through the page by swipes, so a bar that tucks away on scroll (and
   // leaves the reader's reach while tucked) would strand the person: with one on, chrome stays.
@@ -592,6 +593,7 @@ function TabsLayoutContent() {
         world={{ name: worldName(worldId), onPress: () => setWorldOpen(true) }}
         visualDetail={{ value: fidelityLevel, onChange: (v) => void setFidelityLevel(v) }}
         reading={{ onPress: () => router.push('/reading') }}
+        sunlight={{ value: comfort.sunlight, onChange: (v) => updateComfort({ sunlight: v }) }}
         companions={{ onPress: () => router.push('/companions') }}
         showcase={{ onPress: () => router.push('/world-showcase') }}
         shell={{

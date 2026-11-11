@@ -18,6 +18,8 @@ export interface Comfort {
   contrast: 'system' | 'more';
   /** The side a keypad docks to when the phone is on its side. */
   hand: 'right' | 'left';
+  /** Outdoors in bright light: strongest inks, light palette, plain floor. A quick switch, not a preset. */
+  sunlight: boolean;
 }
 
 export const STANDARD_COMFORT: Comfort = {
@@ -25,6 +27,7 @@ export const STANDARD_COMFORT: Comfort = {
   simple: false,
   contrast: 'system',
   hand: 'right',
+  sunlight: false,
 };
 
 export type ComfortPresetId = 'clear' | 'standard' | 'young' | 'compact';
@@ -34,7 +37,7 @@ export interface ComfortPreset {
   label: string;
   /** Who it is for, in a few words. */
   hint: string;
-  comfort: Omit<Comfort, 'hand'>;
+  comfort: Omit<Comfort, 'hand' | 'sunlight'>;
   reading: Reading;
 }
 
@@ -96,6 +99,7 @@ function sanitize(v: Partial<Comfort>, base: Comfort): Comfort {
     simple: typeof v.simple === 'boolean' ? v.simple : base.simple,
     contrast: v.contrast === 'more' || v.contrast === 'system' ? v.contrast : base.contrast,
     hand: v.hand === 'left' || v.hand === 'right' ? v.hand : base.hand,
+    sunlight: typeof v.sunlight === 'boolean' ? v.sunlight : base.sunlight,
   };
 }
 

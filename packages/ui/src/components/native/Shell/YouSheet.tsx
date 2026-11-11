@@ -8,6 +8,7 @@
  * - Tutii's guide, help and support, and every other setting.
  */
 
+import { SwitchRow } from './SwitchRow';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import type { ChoiceOption } from '../../../theme/contracts';
 import { Group } from '../Group/Group';
@@ -30,6 +31,8 @@ export interface YouSheetProps {
   world: { name: string; onPress: () => void };
   visualDetail: { value: VisualDetailChoice; onChange: (v: VisualDetailChoice) => void };
   reading?: { detail?: string; onPress: () => void };
+  /** One tap for outdoors: strongest inks on a plain light ground. */
+  sunlight?: { value: boolean; onChange: (v: boolean) => void };
   companions?: { detail?: string; onPress: () => void };
   /** Every world, tier and hour on this phone, with the real shell: the World Showcase. */
   showcase?: { onPress: () => void };
@@ -80,6 +83,7 @@ export function YouSheet({
   world,
   visualDetail,
   reading,
+  sunlight,
   companions,
   showcase,
   shell,
@@ -130,6 +134,14 @@ export function YouSheet({
             onChange={visualDetail.onChange}
             note="Your phone's own limits are always kept"
           />
+          {sunlight ? (
+            <SwitchRow
+              label="Bright sunlight"
+              hint="Strongest words on a plain light ground, for outdoors"
+              value={sunlight.value}
+              onChange={sunlight.onChange}
+            />
+          ) : null}
           {reading ? (
             <LinkRow label="Reading and comfort" detail={reading.detail} onPress={go(reading.onPress)} />
           ) : null}

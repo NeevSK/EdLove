@@ -67,6 +67,20 @@ function moreContrast(t: WorldTokens): WorldTokens {
   };
 }
 
+/**
+ * Sunlight: glare washes out mid-tones, so every ink moves most of the way to full strength
+ * (secondary 10:1, faint 7:1, lines 4.5:1) and the main ink reaches at least 15:1.
+ */
+export function sunlightTokens(t: WorldTokens): WorldTokens {
+  return {
+    ...t,
+    ink: legible(t.ink, '#000000', t.ground, 15),
+    inkSoft: legible(t.inkSoft, t.ink, t.ground, 10),
+    inkFaint: legible(t.inkFaint, t.ink, t.ground, 7),
+    line: legible(t.line, t.ink, t.ground, 4.5),
+  };
+}
+
 /** How much bigger or smaller the things you touch, and the air between them, become. */
 export const COMFORT_SCALE: Readonly<Record<ComfortSize, number>> = {
   compact: 0.88,
@@ -107,25 +121,32 @@ export function scaleRecipes(recipes: WorldRecipes, f: number): WorldRecipes {
 
 export function resolveWorld(
   world: WorldId | WorldDefinition,
-  phase: Phase = 'morning',
-  mode: WorldMode = 'light',
+  clockPhase: Phase = 'morning',
+  clockMode: WorldMode = 'light',
   access: WorldAccess = STANDARD_ACCESS,
 ): ResolvedWorld {
+  // In sunlight the world wears its light palette at a neutral hour: dusk's warmth and night's
+  // dark both lose to glare.
+  const sun = access.sunlight === true;
+  const phase: Phase = sun ? 'morning' : clockPhase;
+  const mode: WorldMode = sun ? 'light' : clockMode;
   const definition =
     typeof world === 'string' ? WORLDS[isWorldId(world) ? world : DEFAULT_WORLD] : world;
   const size = access.size ?? 'standard';
   const simple = access.simple === true;
-  const key = `${definition.id}:${phase}:${mode}:${access.contrast}:${access.transparency}:${size}:${simple}`;
+  const key = `${definition.id}:${phase}:${mode}:${access.contrast}:${access.transparency}:${size}:${simple}:${sun}`;
   const cached = typeof world === 'string' ? cache.get(key) : undefined;
   if (cached) return cached;
 
   const phased = phaseTokens(definition.palette[mode], mode, phase);
-  const more = access.contrast === 'more';
-  const solid = access.transparency === 'reduced';
-  const tokens = more ? moreContrast(phased) : phased;
+  const more = access.contrast === 'more' || sun;
+  const solid = access.transparency === 'reduced' || sun;
+  const tokens = sun ? sunlightTokens(phased) : more ? moreContrast(phased) : phased;
   const style = {
     ...definition.style,
-    ...(more || simple ? { lineWeight: Math.max(1, definition.style.lineWeight) } : null),
+    ...(more || simple
+      ? { lineWeight: Math.max(sun ? 1.5 : 1, definition.style.lineWeight) }
+      : null),
     ...(solid || simple
       ? {
           material: {

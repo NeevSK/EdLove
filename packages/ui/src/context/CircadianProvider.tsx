@@ -30,10 +30,12 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
       contrast: comfort.contrast === 'more' ? ('more' as const) : system.contrast,
       size: comfort.size,
       simple: comfort.simple,
+      sunlight: comfort.sunlight,
     }),
-    [system, comfort.contrast, comfort.size, comfort.simple],
+    [system, comfort.contrast, comfort.size, comfort.simple, comfort.sunlight],
   );
   const world = useMemo(
+    // Sunlight wears the light palette at a neutral hour (resolveWorld does the same).
     () => resolveWorld(worldId, phase, isDark ? 'dark' : 'light', access),
     [worldId, phase, isDark, access],
   );

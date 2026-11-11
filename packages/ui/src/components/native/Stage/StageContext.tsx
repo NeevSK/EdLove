@@ -108,7 +108,9 @@ export function WorldStage({ children, cap, initialPresence = 'full' }: WorldSta
   const [scrolling, setScrollingState] = useState(false);
   const pinned = useStagePreview().cap;
   // A simpler look keeps the floor a calm, still picture (the showcase may still pin another).
-  const calm = world.access.simple === true ? 'floor' : undefined;
+  // In sunlight the words need a plain ground behind them.
+  const calm =
+    world.access.sunlight === true ? 'bare' : world.access.simple === true ? 'floor' : undefined;
   const stage = useMemo(() => stageOf(budget, cap ?? pinned ?? calm), [budget, cap, pinned, calm]);
   const setPresence = useCallback((next: ScenePresence) => setPresenceState(next), []);
   const setScrolling = useCallback((next: boolean) => setScrollingState(next), []);
