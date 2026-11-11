@@ -30,6 +30,7 @@ import {
   Surface,
   SwitchRow,
   Text,
+  TwoPane,
   TextField,
   useFloorPresence,
   useKeypadSpace,
@@ -136,6 +137,7 @@ export function WorldShowcaseScreen() {
   const keypadSpace = useKeypadSpace();
   const hud = shell.stance === 'hud';
   const [hold, setHold] = useState<'free' | 'upright' | 'sideways'>('free');
+  const [paneChoice, setPaneChoice] = useState<string | null>(null);
   const { worldId, setWorld } = useThemeContextOptional();
   const stage = useStage();
   const pins = useStagePreview();
@@ -466,6 +468,39 @@ export function WorldShowcaseScreen() {
         >
           <View style={styles.pad}>
             <ComfortPresets columns={shell.width >= 600 ? 2 : 1} />
+          </View>
+        </Group>
+
+        <Group
+          label="List and detail"
+          footer="Side by side when there are 720 points or more (a tablet, a phone on its side); one at a time on a phone."
+        >
+          <View style={{ height: 260 }}>
+            <TwoPane
+              list={
+                <View>
+                  {['Grade 7 B', 'Grade 8 A', 'Grade 9 C'].map((name) => (
+                    <Row
+                      key={name}
+                      label={name}
+                      detail={paneChoice === name ? 'Open' : undefined}
+                      onPress={() => setPaneChoice(name)}
+                    />
+                  ))}
+                </View>
+              }
+              detail={
+                paneChoice ? (
+                  <View style={[styles.pad, { gap: 8 }]}>
+                    <Text kind="title">{paneChoice}</Text>
+                    <Text kind="body">32 learners. Today's lesson is ready.</Text>
+                    <Row label="Back to the list" onPress={() => setPaneChoice(null)} />
+                  </View>
+                ) : null
+              }
+              emptyTitle="No class open"
+              emptyMessage="Choose a class on the left."
+            />
           </View>
         </Group>
 

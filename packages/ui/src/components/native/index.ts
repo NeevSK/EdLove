@@ -47,6 +47,7 @@ export { Launcher, type LauncherProps } from './Launcher/Launcher';
 export { Grid, type GridProps } from './Layout/Grid';
 export { Inline, type InlineProps, Stack, type StackProps } from './Layout/Layout';
 export { useContainerWidth } from './Layout/useContainerWidth';
+export { TWO_PANE_MIN, TwoPane, type TwoPaneProps, twoPaneOf } from './Layout/TwoPane';
 export { Link, type LinkProps } from './Link/Link';
 export { List, type ListProps } from './List/List';
 export {
