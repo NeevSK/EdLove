@@ -3,7 +3,7 @@ import { classroomsAPI } from '@repo/core/api/orchestration/educational';
 import { orpc } from '@repo/core/api/orpcClient';
 import { resolveSandboxMode } from '@repo/core/api/sandboxMode';
 import type {
-  Classroom,
+  ClassroomRow as Classroom,
   StudentAssignment,
   StudentStats,
 } from '@repo/core/logic/schemas/classroom.schema';

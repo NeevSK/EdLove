@@ -1,4 +1,4 @@
-import type { Grade } from '@repo/core/logic/schemas/grading.schema';
+import type { StudentGradeRow } from '@repo/core/logic/schemas/grading.schema';
 
 export const GRADE_PUBLISHED_ACTIONS = [
   'grade_published',
@@ -18,7 +18,7 @@ export type GradeLifecycleAuditRow = {
   metadata?: Record<string, any> | null;
 };
 
-export type GradePublicationSnapshot = Grade & {
+export type GradePublicationSnapshot = StudentGradeRow & {
   publication_state: GradePublicationState;
   published_at?: Date | null;
   published_by?: string | null;
@@ -48,7 +48,7 @@ function normalizeSnapshot(snapshot: any): GradePublicationSnapshot | null {
 }
 
 export function annotateGradesWithPublicationState(
-  grades: Grade[],
+  grades: StudentGradeRow[],
   rows: GradeLifecycleAuditRow[],
 ): GradePublicationSnapshot[] {
   const latestByGradeId = new Map<string, GradeLifecycleAuditRow>();

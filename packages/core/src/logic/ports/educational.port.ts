@@ -1,11 +1,11 @@
 import type { Attendance as AttendanceRecord } from '@repo/core/logic/schemas/attendance.schema';
 import type {
-  Assignment,
+  AssignmentRow,
   AssignmentSubmission,
-  Classroom,
+  ClassroomRow,
   ClassroomGroup,
   ClassroomLegacyRecord,
-  ClassroomStudent,
+  ClassroomStudentRow,
   PrincipalGovernanceRecord,
   SchoolLegacyRecord,
   StudentAcademicRecord,
@@ -13,8 +13,8 @@ import type {
   StudentSubmissionSummary,
   TeacherProfessionalRecord,
 } from '@repo/core/logic/schemas/classroom.schema';
-import type { ClassroomGradingSettings, Grade } from '@repo/core/logic/schemas/grading.schema';
-import type { Lesson } from '@repo/core/logic/schemas/lesson.schema';
+import type { ClassroomGradingSettingsRow, StudentGradeRow } from '@repo/core/logic/schemas/grading.schema';
+import type { LessonRow } from '@repo/core/logic/schemas/lesson.schema';
 import type { Material as LessonMaterial } from '@repo/core/logic/schemas/material.schema';
 import type { Student } from '@repo/core/logic/schemas/student.schema';
 
@@ -24,31 +24,31 @@ export interface EducationalRepository {
   getClassroomsByTeacher(
     teacherId: string,
     params?: { limit?: number; offset?: number },
-  ): Promise<Classroom[]>;
+  ): Promise<ClassroomRow[]>;
   getClassroomsByStudent(
     studentId: string,
     params?: { limit?: number; offset?: number },
-  ): Promise<Classroom[]>;
+  ): Promise<ClassroomRow[]>;
   getClassroomsBySchool(
     schoolId: string,
     params?: { limit?: number; offset?: number },
-  ): Promise<Classroom[]>;
-  getAvailableClassroomsByGrade(gradeId: string): Promise<Classroom[]>;
-  getClassroomById(id: string): Promise<Classroom | null>;
+  ): Promise<ClassroomRow[]>;
+  getAvailableClassroomsByGrade(gradeId: string): Promise<ClassroomRow[]>;
+  getClassroomById(id: string): Promise<ClassroomRow | null>;
   createClassroom(
-    classroom: Omit<Classroom, 'id' | 'created_at' | 'updated_at'>,
-  ): Promise<Classroom>;
-  updateClassroom(id: string, updates: Partial<Classroom>): Promise<Classroom>;
+    classroom: Omit<ClassroomRow, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<ClassroomRow>;
+  updateClassroom(id: string, updates: Partial<ClassroomRow>): Promise<ClassroomRow>;
   deleteClassroom(id: string): Promise<void>;
 
-  getLessons(classroomId: string): Promise<Lesson[]>;
-  getLessonsByDate(classroomId: string, date: string): Promise<Lesson[]>;
-  createLesson(lesson: Omit<Lesson, 'id' | 'created_at'>): Promise<Lesson>;
-  updateLesson(id: string, updates: Partial<Lesson>): Promise<Lesson>;
+  getLessons(classroomId: string): Promise<LessonRow[]>;
+  getLessonsByDate(classroomId: string, date: string): Promise<LessonRow[]>;
+  createLesson(lesson: Omit<LessonRow, 'id' | 'created_at'>): Promise<LessonRow>;
+  updateLesson(id: string, updates: Partial<LessonRow>): Promise<LessonRow>;
   deleteLesson(id: string): Promise<void>;
 
-  getAssignments(classroomId: string): Promise<Assignment[]>;
-  getAssignmentsByLesson(lessonId: string): Promise<Assignment[]>;
+  getAssignments(classroomId: string): Promise<AssignmentRow[]>;
+  getAssignmentsByLesson(lessonId: string): Promise<AssignmentRow[]>;
   getUpcomingAssignmentsForStudent(studentId: string): Promise<StudentAssignment[]>;
   getStudentSubmissionHistory(
     studentId: string,
@@ -62,9 +62,9 @@ export interface EducationalRepository {
     submitted_at: string;
   }): Promise<AssignmentSubmission>;
   createAssignment(
-    assignment: Omit<Assignment, 'id' | 'created_at' | 'updated_at'>,
-  ): Promise<Assignment>;
-  updateAssignment(id: string, updates: Partial<Assignment>): Promise<Assignment>;
+    assignment: Omit<AssignmentRow, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<AssignmentRow>;
+  updateAssignment(id: string, updates: Partial<AssignmentRow>): Promise<AssignmentRow>;
   deleteAssignment(id: string): Promise<void>;
   getRecentGradesOverviewForStudent(studentId: string, limit?: number): Promise<any[]>;
 
@@ -87,8 +87,8 @@ export interface EducationalRepository {
   ): Promise<ClassroomGroup>;
   deleteClassroomGroup(id: string): Promise<void>;
 
-  getSimpleStudents(classroomId: string): Promise<ClassroomStudent[]>;
-  enrollStudent(classroomId: string, studentId: string): Promise<ClassroomStudent>;
+  getSimpleStudents(classroomId: string): Promise<ClassroomStudentRow[]>;
+  enrollStudent(classroomId: string, studentId: string): Promise<ClassroomStudentRow>;
   removeStudent(classroomId: string, studentId: string): Promise<void>;
 
   getEnrollmentRecords(classroomId: string): Promise<EnrollmentRecord[]>;
@@ -142,8 +142,8 @@ export interface EducationalRepository {
     graded_by: string;
     created_at: string;
     updated_at: string;
-  }): Promise<Grade>;
-  getGradeById(gradeId: string): Promise<Grade | null>;
+  }): Promise<StudentGradeRow>;
+  getGradeById(gradeId: string): Promise<StudentGradeRow | null>;
   updateGrade(
     gradeId: string,
     updates: {
@@ -153,14 +153,14 @@ export interface EducationalRepository {
       feedback?: string | null;
       updated_at: string;
     },
-  ): Promise<Grade>;
-  getGradesByStudent(studentId: string): Promise<Grade[]>;
-  getGradesByClassroom(classroomId: string): Promise<Grade[]>;
-  getGradingSettings(classroomId: string): Promise<ClassroomGradingSettings | null>;
+  ): Promise<StudentGradeRow>;
+  getGradesByStudent(studentId: string): Promise<StudentGradeRow[]>;
+  getGradesByClassroom(classroomId: string): Promise<StudentGradeRow[]>;
+  getGradingSettings(classroomId: string): Promise<ClassroomGradingSettingsRow | null>;
   upsertGradingSettings(
     classroomId: string,
-    settings: Partial<ClassroomGradingSettings>,
-  ): Promise<ClassroomGradingSettings>;
+    settings: Partial<ClassroomGradingSettingsRow>,
+  ): Promise<ClassroomGradingSettingsRow>;
   deleteGrade(gradeId: string): Promise<void>;
 
   getAttendanceByDate(classroomId: string, date: string): Promise<AttendanceRecord[]>;
@@ -210,7 +210,7 @@ export interface EducationalRepository {
   updateAcademicCycle(id: string, schoolId: string, data: any): Promise<any>;
   deleteAcademicCycle(id: string): Promise<void>;
 
-  // Classroom Notes
+  // ClassroomRow Notes
   listVisibleNotes(classroomId: string): Promise<any[]>;
   listVisibleNotesAsOf(classroomId: string, viewDate: string): Promise<any[]>;
   createNote(authorId: string, note: any): Promise<any>;

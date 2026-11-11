@@ -1,5 +1,5 @@
 import type { IEventBusPort } from '@repo/core/logic/ports/eventBus.port';
-import type { Classroom, Student, StudentGrade, User } from '../schemas';
+import type { ClassroomRow, Student, StudentGradeRow, UserRow } from '../schemas';
 import type { Attendance } from '../schemas/attendance.schema';
 
 export interface WorkflowCorrelationMetadata {
@@ -9,10 +9,10 @@ export interface WorkflowCorrelationMetadata {
 }
 
 export type SchoolAttendanceRecordedPayload = Attendance & WorkflowCorrelationMetadata;
-export type UserCreatedPayload = User & WorkflowCorrelationMetadata;
-export type UserUpdatedPayload = User & WorkflowCorrelationMetadata;
-export type SchoolClassroomCreatedPayload = Classroom & WorkflowCorrelationMetadata;
-export type SchoolGradePublishedPayload = StudentGrade & WorkflowCorrelationMetadata;
+export type UserCreatedPayload = UserRow & WorkflowCorrelationMetadata;
+export type UserUpdatedPayload = UserRow & WorkflowCorrelationMetadata;
+export type SchoolClassroomCreatedPayload = ClassroomRow & WorkflowCorrelationMetadata;
+export type SchoolGradePublishedPayload = StudentGradeRow & WorkflowCorrelationMetadata;
 export type StudentOnboardedPayload = Student & WorkflowCorrelationMetadata;
 
 export interface WellbeingMoodLoggedPayload {

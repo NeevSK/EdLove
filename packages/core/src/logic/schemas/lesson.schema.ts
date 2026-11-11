@@ -7,4 +7,4 @@ import type { z } from 'zod';
  */
 export const LessonSchema = makeModelSchema('Lesson');
 
-export type Lesson = z.infer<typeof LessonSchema>;
+export type LessonRow = z.infer<typeof LessonSchema>;

@@ -1,5 +1,5 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { type Classroom, ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
+import { type ClassroomRow, ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
 import { APIError } from '@repo/core/types/API';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -21,7 +21,7 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
     query = withRange(query, params);
     const { data, error } = await query;
     if (error) throw new APIError('Failed to fetch teacher classrooms', error.code, error);
-    return (data || []).map((item) => ClassroomSchema.parse(item)) as Classroom[];
+    return (data || []).map((item) => ClassroomSchema.parse(item)) as ClassroomRow[];
   },
 
   async getClassroomsByStudent(
@@ -38,7 +38,7 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
     return (data || [])
       .map((item: any) => (Array.isArray(item.classroom) ? item.classroom[0] : item.classroom))
       .filter(Boolean)
-      .map((item: any) => ClassroomSchema.parse(item)) as Classroom[];
+      .map((item: any) => ClassroomSchema.parse(item)) as ClassroomRow[];
   },
 
   async getClassroomsBySchool(schoolId: string, params: { limit?: number; offset?: number } = {}) {
@@ -50,7 +50,7 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
     query = withRange(query, params);
     const { data, error } = await query;
     if (error) throw new APIError('Failed to fetch school classrooms', error.code, error);
-    return (data || []).map((item) => ClassroomSchema.parse(item)) as Classroom[];
+    return (data || []).map((item) => ClassroomSchema.parse(item)) as ClassroomRow[];
   },
 
   async getAvailableClassroomsByGrade(gradeId: string) {
@@ -62,7 +62,7 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
       .order('name', { ascending: true });
     if (error)
       throw new APIError('Failed to fetch available classrooms for grade', error.code, error);
-    return (data || []).map((item) => ClassroomSchema.parse(item)) as Classroom[];
+    return (data || []).map((item) => ClassroomSchema.parse(item)) as ClassroomRow[];
   },
 
   async getClassroomById(id: string) {
@@ -72,7 +72,7 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
       .eq('id', id)
       .maybeSingle();
     if (error) throw new APIError('Failed to fetch classroom', error.code, error);
-    return data ? (ClassroomSchema.parse(data) as Classroom) : null;
+    return data ? (ClassroomSchema.parse(data) as ClassroomRow) : null;
   },
 
   async getEnrolledCount(classroomId: string): Promise<number> {
@@ -84,13 +84,13 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
     return count ?? 0;
   },
 
-  async createClassroom(classroom: Omit<Classroom, 'id' | 'created_at' | 'updated_at'>) {
+  async createClassroom(classroom: Omit<ClassroomRow, 'id' | 'created_at' | 'updated_at'>) {
     const { data, error } = await supabase.from('classrooms').insert([classroom]).select().single();
     if (error) throw new APIError('Failed to create classroom', error.code, error);
-    return ClassroomSchema.parse(data) as Classroom;
+    return ClassroomSchema.parse(data) as ClassroomRow;
   },
 
-  async updateClassroom(id: string, updates: Partial<Classroom>) {
+  async updateClassroom(id: string, updates: Partial<ClassroomRow>) {
     const { data, error } = await supabase
       .from('classrooms')
       .update(updates)
@@ -98,7 +98,7 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
       .select()
       .single();
     if (error) throw new APIError('Failed to update classroom', error.code, error);
-    return ClassroomSchema.parse(data) as Classroom;
+    return ClassroomSchema.parse(data) as ClassroomRow;
   },
 
   async deleteClassroom(id: string) {

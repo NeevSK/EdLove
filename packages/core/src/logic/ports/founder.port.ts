@@ -1,5 +1,5 @@
-import type { Classroom } from '@repo/core/logic/schemas/classroom.schema';
-import type { CommunityGroup } from '@repo/core/logic/schemas/community.schema';
+import type { ClassroomRow } from '@repo/core/logic/schemas/classroom.schema';
+import type { CommunityGroupRow } from '@repo/core/logic/schemas/community.schema';
 import type {
   EcosystemPulse,
   EcosystemStats,
@@ -18,12 +18,12 @@ export interface FounderRepository {
     name: string;
     grade_number: number;
     created_by: string;
-  }): Promise<Classroom>;
+  }): Promise<ClassroomRow>;
   createGroup(data: {
     name: string;
     description: string;
     school_id: string;
-  }): Promise<CommunityGroup>;
+  }): Promise<CommunityGroupRow>;
   listAllUsers(): Promise<GlobalUser[]>;
   updateSchoolMetadata(schoolId: string, metadata: Record<string, unknown>): Promise<SchoolZod>;
   getEcosystemPulse(): Promise<EcosystemPulse>;

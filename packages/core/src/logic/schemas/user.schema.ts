@@ -24,7 +24,7 @@ export const UserSchema = makeModelSchema('User')
   })
   .catchall(z.unknown());
 
-export type User = z.infer<typeof UserSchema>;
+export type UserRow = z.infer<typeof UserSchema>;
 
 export const TenantKindSchema = z.enum(['internal', 'customer', 'demo', 'sandbox']);
 

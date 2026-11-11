@@ -169,14 +169,14 @@ export const ClassroomLegacyRecordSchema = z.object({
   updated_at: z.string(),
 });
 
-export type Classroom = z.infer<typeof ClassroomSchema>;
-export type Assignment = z.infer<typeof AssignmentSchema>;
+export type ClassroomRow = z.infer<typeof ClassroomSchema>;
+export type AssignmentRow = z.infer<typeof AssignmentSchema>;
 export type LearningReflection = z.infer<typeof LearningReflectionSchema>;
 export type StudentAssignment = z.infer<typeof StudentAssignmentSchema>;
 export type AssignmentSubmission = z.infer<typeof AssignmentSubmissionSchema>;
 export type StudentSubmissionSummary = z.infer<typeof StudentSubmissionSummarySchema>;
 export type ClassroomGroup = z.infer<typeof ClassroomGroupSchema>;
-export type ClassroomStudent = z.infer<typeof ClassroomStudentSchema>;
+export type ClassroomStudentRow = z.infer<typeof ClassroomStudentSchema>;
 export type TeacherStats = z.infer<typeof TeacherStatsSchema>;
 export type StudentStats = z.infer<typeof StudentStatsSchema>;
 export type Echo = z.infer<typeof EchoSchema>;
