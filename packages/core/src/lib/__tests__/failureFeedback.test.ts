@@ -25,7 +25,10 @@ function sourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) {
-      return name === '__tests__' || name === 'node_modules' ? [] : sourceFiles(path);
+      if (name === '__tests__' || name === 'node_modules') return [];
+      // The pre-v1 client is retired, not extended: new code doesn't depend on it.
+      if (path === join(SRC, 'api')) return sourceFiles(join(path, 'v1'));
+      return sourceFiles(path);
     }
     return /\.tsx?$/.test(name) && !/\.test\.tsx?$/.test(name) ? [path] : [];
   });
@@ -58,7 +61,7 @@ describe('failure feedback', { tags: ['fast'] }, () => {
     }
     // OnboardingCommandError is the onboarding client's own command result, shown by its screen.
     declared.delete('OnboardingCommandError');
-    expect(declared.size).toBeGreaterThanOrEqual(23);
+    expect(declared.size).toBeGreaterThanOrEqual(21);
     const missing = [...declared].filter((tag) => !Object.hasOwn(FEEDBACK, tag));
     expect(missing).toEqual([]);
   });

@@ -5,13 +5,10 @@ import { APIError } from '@repo/core/types/API';
 import { defaultRetryPolicy } from '@repo/core/utils/effect';
 import { Duration, Effect, pipe, Schema } from 'effect';
 
-export class AttendanceHttpError extends Schema.TaggedError<AttendanceHttpError>()(
-  'AttendanceHttpError',
-  {
-    message: Schema.String,
-    status: Schema.String,
-  },
-) {}
+class AttendanceHttpError extends Schema.TaggedError<AttendanceHttpError>()('AttendanceHttpError', {
+  message: Schema.String,
+  status: Schema.String,
+}) {}
 
 function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, AttendanceHttpError, never> {
   return pipe(

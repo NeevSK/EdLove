@@ -1,6 +1,4 @@
 import type { SupabaseQueryError } from '@repo/core/adapters/supabaseIdentity.adapter';
-import type { AttendanceHttpError } from '@repo/core/api/attendance';
-import type { PlanBridgeHttpError } from '@repo/core/api/planBridge';
 import type {
   DatabaseQueryError,
   NetworkError,
@@ -34,7 +32,8 @@ import i18next from 'i18next';
 /**
  * What the person sees for each expected failure, in one table.
  *
- * Every `Schema.TaggedError` in @repo/core belongs to `ExpectedFailure`, and `FEEDBACK` is typed
+ * Every `Schema.TaggedError` in @repo/core outside the pre-v1 client (`src/api`, except `src/api/v1`)
+ * belongs to `ExpectedFailure`, and `FEEDBACK` is typed
  * as a complete record over its tags, so adding an error class without deciding its feedback
  * fails the typecheck. Anything that isn't an expected failure is a defect: it is reported and
  * the person sees one calm, generic message, never the technical text.
@@ -61,8 +60,6 @@ export type ExpectedFailure =
   | AgentTimeoutError
   | AgentSchemaError
   | GuestStorageError
-  | AttendanceHttpError
-  | PlanBridgeHttpError
   | SupabaseQueryError;
 
 export type FailureTag = ExpectedFailure['_tag'];
@@ -129,8 +126,6 @@ export const FEEDBACK: { readonly [Tag in FailureTag]: FailureFeedback } = {
   AgentTimeoutError: retryable,
   AgentSchemaError: internal,
   GuestStorageError: internal,
-  AttendanceHttpError: retryable,
-  PlanBridgeHttpError: retryable,
   SupabaseQueryError: retryable,
 };
 
