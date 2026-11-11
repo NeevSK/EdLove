@@ -42,7 +42,15 @@ const base = [
 
 const domains = {
   wellbeing: ['mood', 'journal', 'reflection', 'practice'],
-  learning: ['classrooms', 'lessons', 'assignments', 'assessments', 'grading', 'notes'],
+  learning: [
+    'classrooms',
+    'relations',
+    'lessons',
+    'assignments',
+    'assessments',
+    'grading',
+    'notes',
+  ],
   ops: [
     'institutions',
     'enrolment',
