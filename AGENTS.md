@@ -83,7 +83,10 @@ Every capability is declared in `apps/sanctuary-api/src/modules/catalog.ts` and 
 tagged evidence (`capabilityTag()`) and callers, and fails if a gap count rises. New code never
 imports the frozen pre-v1 `@repo/core/api/*` (ratchet `legacyCoreApiImports`). Clients get no
 new direct database paths until the v1 API covers them (owner, 2026-11-11): `.from()`, `.rpc()` and
-realtime call sites are frozen (ratchets `supabaseFromSites`, `directRpcAndRealtimeSites`). Bedrock first:
+realtime call sites are frozen (ratchets `supabaseFromSites`, `directRpcAndRealtimeSites`).
+The whole system is modelled in C4 at `docs/architecture/model/gurudevi.c4` (LikeC4): query it
+through the `likec4` MCP server, check it with `pnpm exec likec4 validate docs/architecture/model`,
+and keep it current when a hop changes. Measure hops live with `scripts/probe-hops.mjs`. Bedrock first:
 dependencies at the newest release in their own channel, and a tool's output is grounding only
 once its recall is measured ([plan](apps/sanctuary-api/docs/implementation/2026-11-08-capability-conformance-plan.md)).
 

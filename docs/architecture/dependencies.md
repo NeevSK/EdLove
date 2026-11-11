@@ -109,6 +109,21 @@ verified on 2026-11-06). What stays CommonJS, and why:
 - `*.native.test.tsx` is an older naming convention that runs under jsdom in the main config. The
   name is misleading; don't assume those files use a native engine.
 
+## Architecture and supply-chain tools
+
+Dev tools, not shipped. How to use them: [system model](model/README.md).
+
+| Tool | Installed as | Why |
+| --- | --- | --- |
+| `likec4`, `@likec4/mcp` | root devDependencies (exact pins) | C4 model as code; `validate` checks it; the MCP server lets agents query it |
+| `syft` | winget binary on the developer machine | CycloneDX bill of materials from `pnpm-lock.yaml` |
+| PowerSync CLI | `pnpm dlx powersync@<version>` | Instance status, config diff, deploy |
+| `k6` | not installed (installer needs administrator approval) | Load and latency, the morning burst |
+
+The first bill of materials (2026-11-11) showed 479 of 3,315 packages present in more than one
+version. Hono 4 comes only from tooling (MCP SDK, LikeC4 MCP, ZenStack CLI); the API resolves
+Hono 5.
+
 ## Traps already hit
 
 - **Lucide renamed icons.** `*-alert` became `*-exclamation-point` in per-icon paths, while the

@@ -124,6 +124,7 @@ apps/gurudevi-mobile/web-smoke.png
 reports/playwright/
 # Per-run capability evidence and the report derived from it; regenerate, never commit.
 reports/evidence/
+reports/hops/
 reports/capability-conformance.*
 
 # Backup and one-off artifacts
