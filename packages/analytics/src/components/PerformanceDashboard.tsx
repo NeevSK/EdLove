@@ -3,7 +3,7 @@ import { SimpleBarChart } from '@repo/graphics/charts';
 import { Surface } from '@repo/ui/components/native';
 import { useThemedColors } from '@repo/ui/hooks';
 import { colors } from '@repo/ui/theme/Theme';
-import type { StudentPerformanceMetrics } from '@repo/analytics/types/AnalyticsTypes';
+import type { StudentPerformanceMetrics } from '@repo/core/types/Analytics';
 import { formatGPA, getGradeColor, getPerformanceLevel } from '@repo/analytics/utils/analyticsHelpers';
 
 interface PerformanceDashboardProps {

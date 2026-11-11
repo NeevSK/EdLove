@@ -1,4 +1,4 @@
-import type { ClassAnalytics, StudentPerformanceMetrics } from '@repo/analytics/types/AnalyticsTypes';
+import type { ClassAnalytics, StudentPerformanceMetrics } from '@repo/core/types/Analytics';
 
 export class InsightGenerator {
   /**

@@ -1,21 +1,4 @@
-/* StudentGrade is now imported from @repo/core in the root index.ts to ensure POA compliance */
-
-export interface GradingScale {
-  name: string;
-  ranges: {
-    min: number;
-    max: number;
-    grade: string;
-    gpa: number;
-  }[];
-}
-
-export interface GPACalculationOptions {
-  scale?: 'standard' | 'weighted' | 'simplified' | 'custom';
-  customScale?: GradingScale;
-  weights?: { [assignmentId: string]: number };
-  excludeAssignments?: string[];
-}
+// Moved from packages/analytics/src/types/AnalyticsTypes.ts (2026-11-11): @repo/core owns every contract.
 
 export interface StudentPerformanceMetrics {
   studentId: string;

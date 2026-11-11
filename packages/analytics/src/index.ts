@@ -20,7 +20,6 @@ export * from '@repo/analytics/ml/InsightGenerator';
 // the canonical export; Predictor's copy stays module-local.)
 export { Predictor } from '@repo/analytics/ml/Predictor';
 // Types and interfaces
-export * from '@repo/analytics/types';
 // Utility functions
 export * from '@repo/analytics/utils/analyticsHelpers';
 export * from '@repo/analytics/utils/benchmarking';

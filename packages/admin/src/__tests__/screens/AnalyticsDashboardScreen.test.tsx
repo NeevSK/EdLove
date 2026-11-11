@@ -1,6 +1,6 @@
 import { act, render, screen, waitFor } from '@testing-library/react-native';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { LiveMetrics, TenantMetrics } from '@repo/analytics';
+import type { LiveMetrics, TenantMetrics } from '@repo/core/types/Analytics';
 
 const analyticsApi = vi.hoisted(() => ({
   aggregateTenantMetrics: vi.fn(),
