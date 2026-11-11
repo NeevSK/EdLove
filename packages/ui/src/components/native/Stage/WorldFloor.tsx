@@ -105,7 +105,13 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
   ];
 
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+    // The floor is scenery: screen readers skip it, touches pass through it.
+    <View
+      pointerEvents="none"
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={StyleSheet.absoluteFill}
+    >
       {plain ? null : art ? (
         <>
           <Canvas style={{ width, height }}>

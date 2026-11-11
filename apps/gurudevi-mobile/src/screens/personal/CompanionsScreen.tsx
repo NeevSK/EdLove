@@ -25,6 +25,7 @@ import {
   updateCompanion,
   useCompanions,
 } from '@repo/ui/context/Companions';
+import { clearestOn } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
@@ -87,7 +88,10 @@ function Face({
       {companion.photo ? (
         <Image source={{ uri: companion.photo }} style={{ width: size, height: size }} />
       ) : (
-        <Text kind="title" style={{ color: companion.tone === 'ink' ? t.ground : t.onLamp }}>
+        <Text
+          kind="title"
+          style={{ color: clearestOn(t[companion.tone], [t.onLamp, t.ink, t.ground]) }}
+        >
           {(companion.name || '?').slice(0, 1).toUpperCase()}
         </Text>
       )}

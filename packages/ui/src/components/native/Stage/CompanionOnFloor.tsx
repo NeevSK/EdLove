@@ -9,7 +9,7 @@
 import { Image, Text as RNText, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useCompanionOut } from '../../../context/Companions';
-import { alpha } from '../../../theme/color';
+import { alpha, clearestOn } from '../../../theme/color';
 import { useWorld } from '../../../theme/native/WorldContext';
 import type { Stage } from '../../../theme/stage';
 
@@ -70,7 +70,7 @@ export function CompanionOnFloor({ stage }: { stage: Stage }) {
         {companion.photo ? (
           <Image source={{ uri: companion.photo }} style={styles.photo} />
         ) : (
-          <RNText style={[styles.letter, { color: t.onLamp }]}>
+          <RNText style={[styles.letter, { color: clearestOn(tone, [t.onLamp, t.ink, t.ground]) }]}>
             {companion.name.slice(0, 1).toUpperCase()}
           </RNText>
         )}
