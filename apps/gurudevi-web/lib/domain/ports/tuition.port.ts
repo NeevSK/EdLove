@@ -1,33 +1,13 @@
 /**
  * Hexagonal Tuition Port
  *
- * Grounded in monorepo substrate contracts:
- * - @repo/accounting: FinancialTransaction, LedgerEntry
- * - @repo/payments: PaymentIntent, PaymentStatus
- * - @repo/core/types/Perspective: CommercialPerspective
+ * Contracts come from @repo/core: types/Accounting (FinancialTransaction, LedgerEntry),
+ * types/Payments (PaymentIntent) and types/Perspective (CommercialPerspective).
  */
 
-import type { PaymentIntent } from '@repo/core/logic/schemas/payments.schema';
+import type { FinancialTransaction } from '@repo/core/types/Accounting';
+import type { PaymentIntent } from '@repo/core/types/Payments';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
-
-export interface LedgerEntry {
-  id: string;
-  transactionId: string;
-  accountId: string;
-  amount: number;
-  side: 'debit' | 'credit';
-  description?: string;
-  createdAt: string;
-}
-
-export interface FinancialTransaction {
-  id: string;
-  date: string;
-  description: string;
-  referenceNo?: string;
-  metadata?: Record<string, unknown>;
-  entries: LedgerEntry[];
-}
 
 export interface FeeReceiptInput {
   feeId: string;

@@ -1,4 +1,4 @@
-import type { FinancialTransaction, LedgerEntry } from '@repo/accounting/types';
+import type { FinancialTransaction, LedgerEntry } from '@repo/core/types/Accounting';
 import type { AccrualInvoiceJournal, CashSettlementJournal } from '@repo/core/types';
 
 export interface ChartOfAccountMapping {

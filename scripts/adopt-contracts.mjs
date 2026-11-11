@@ -54,7 +54,7 @@ function declarations(file) {
 }
 
 const fromCopy = declarations(copy);
-const inOwner = declarations(owner);
+const inOwner = fs.existsSync(owner) ? declarations(owner) : new Map();
 const inInto = fs.existsSync(into) ? declarations(into) : new Map();
 // Where core already declares each name in Tier 0 (types/, logic/schemas/, constants/).
 const T0_DIRS = ['packages/core/src/types', 'packages/core/src/logic/schemas', 'packages/core/src/constants'];

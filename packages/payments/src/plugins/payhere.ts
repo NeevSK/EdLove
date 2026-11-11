@@ -1,4 +1,5 @@
-import type { PaymentIntent, PaymentProvider, PaymentStatus } from '@repo/payments/types';
+import type { PaymentIntent, PaymentStatus } from '@repo/core/types/Payments';
+import type { PaymentProvider } from '@repo/core/logic/ports/paymentProvider.port';
 
 export class PayHereProvider implements PaymentProvider {
   id = 'payhere';

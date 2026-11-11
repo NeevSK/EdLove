@@ -12,15 +12,8 @@
 import { storage } from '@repo/core/lib/storage';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
-import type {
-  FeeReceiptInput,
-  FeeReceiptResult,
-  FinancialTransaction,
-  ITuitionPort,
-  ITuitionStoragePort,
-  LedgerEntry,
-  TuitionBatchSummary,
-} from '../../ports/tuition.port';
+import type { FeeReceiptInput, FeeReceiptResult, ITuitionPort, ITuitionStoragePort, TuitionBatchSummary } from '../../ports/tuition.port';
+import type { FinancialTransaction, LedgerEntry } from '@repo/core/types/Accounting';
 
 const BATCHES_CACHE_KEY = 'gurudevi:domain:tuition:batches';
 const RECEIPTS_CACHE_KEY = 'gurudevi:domain:tuition:receipts';

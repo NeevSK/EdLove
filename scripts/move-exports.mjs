@@ -64,7 +64,9 @@ function resolve(spec, from) {
 }
 function spell(styleSpec, importer, target) {
   const bare = (p) => p.replace(/\/index\.tsx?$/, '').replace(/\.tsx?$/, '');
-  if (styleSpec.startsWith('.')) {
+  // Relative only within one package or app; across them, the package name.
+  const home = (f) => f.split('/').slice(0, 2).join('/');
+  if (styleSpec.startsWith('.') && home(importer) === home(target)) {
     const rel = path.posix.relative(path.posix.dirname(importer), target);
     return bare(rel.startsWith('.') ? rel : `./${rel}`);
   }

@@ -78,7 +78,8 @@ const stripExt = (p, original) => {
   return p.replace(/\/index\.(tsx?)$/, original.endsWith('/index') ? '/index' : '').replace(/\.(m?tsx?)$/, '');
 };
 function respell(spec, importer, target) {
-  if (spec.startsWith('.')) {
+  const home = (f) => f.split('/').slice(0, 2).join('/');
+  if (spec.startsWith('.') && home(importer) === home(target)) {
     let rel = path.posix.relative(path.posix.dirname(importer), target);
     if (!rel.startsWith('.')) rel = `./${rel}`;
     return stripExt(rel, spec);

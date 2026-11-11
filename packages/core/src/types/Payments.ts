@@ -1,3 +1,5 @@
+/** Payment contracts. Database rows are in logic/schemas/payments.schema.ts (`*Row`). */
+
 export type PaymentStatus = 'pending' | 'succeeded' | 'failed' | 'refunded' | 'cancelled';
 
 export interface PaymentIntent {
@@ -18,16 +20,4 @@ export interface PaymentMethod {
   expiry?: string;
   isDefault: boolean;
   metadata?: Record<string, unknown>;
-}
-
-export interface PaymentProvider {
-  id: string;
-  name: string;
-  initializePayment(
-    amount: number,
-    currency: string,
-    metadata?: Record<string, unknown>,
-  ): Promise<PaymentIntent>;
-  verifyPayment(paymentIntentId: string): Promise<PaymentStatus>;
-  getFeeEstimate(amount: number): number;
 }

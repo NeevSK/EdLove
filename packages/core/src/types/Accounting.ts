@@ -1,3 +1,5 @@
+/** Accounting domain contracts. Database rows are in logic/schemas/accounting.schema.ts (`*Row`). */
+
 export type AccountType = 'asset' | 'liability' | 'equity' | 'income' | 'expense';
 
 export interface Account {
@@ -7,7 +9,7 @@ export interface Account {
   type: AccountType;
   parentId?: string;
   balance: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface LedgerEntry {
@@ -25,7 +27,7 @@ export interface FinancialTransaction {
   date: string;
   description: string;
   referenceNo?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   entries: LedgerEntry[];
 }
 
