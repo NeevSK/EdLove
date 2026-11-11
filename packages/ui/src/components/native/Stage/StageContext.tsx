@@ -16,7 +16,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
+import { relativeLuminance } from '../../../theme/color';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
 import { useWorld } from '../../../theme/native/WorldContext';
 import type { ScenePresence } from '../../../theme/scene';
@@ -116,6 +117,15 @@ export function WorldStage({ children, cap, initialPresence = 'full' }: WorldSta
   return (
     <StageContext value={value}>
       <View style={[styles.root, { backgroundColor: world.tokens.ground }]}>
+        {/* The status bar's words follow the world's ink: dark on a day ground, light at night. */}
+        <StatusBar
+          animated
+          barStyle={
+            relativeLuminance(world.tokens.ink) < relativeLuminance(world.tokens.ground)
+              ? 'dark-content'
+              : 'light-content'
+          }
+        />
         <WorldFloor stage={stage} presence={presence} scrolling={scrolling} />
         {children}
       </View>

@@ -2,6 +2,7 @@
  * The room's floating action: the world's lit control, bottom right, above the rooms bar (or the
  * bottom edge when the rooms sit in a rail). It shows on every room's front screen, and deeper
  * in only when the screen in front gave it something to do. Press opens the room's actions.
+ * Reading down, typing, or its own sheet being open tucks it away; it comes back the world's way.
  */
 
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
@@ -11,8 +12,8 @@ import { useFAB } from '@repo/ui/context/FABContext';
 import { Plus } from '@repo/ui/icons/native';
 import type { KitIconProps } from '@repo/ui/theme';
 import { useRouter } from 'expo-router';
-import { type ComponentType, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { type ComponentType, useEffect, useMemo, useState } from 'react';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { getCurrentFabTab } from '@/lib/navigation/fabTab';
 import { getDomainFeatureRegistry } from '@/navigation/registries';
 import {
@@ -89,7 +90,18 @@ export function RoomFab({ room, pathname, atHome, bottom, right, common, hidden 
     [room, screen, pinned, common],
   );
 
-  if (hidden || (!atHome && !screen) || actions.length === 0) return null;
+  // Typing tucks the action away too, so it never sits on the keyboard's edge.
+  const [typing, setTyping] = useState(false);
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', () => setTyping(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setTyping(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
+  if ((!atHome && !screen) || actions.length === 0) return null;
   const label = fabLabelOf(room, screen);
 
   return (
@@ -100,6 +112,7 @@ export function RoomFab({ room, pathname, atHome, bottom, right, common, hidden 
         onPress={() => setOpen(true)}
         signal={state.hasActiveGaps && Boolean(screen)}
         signalLabel="something needs you"
+        hidden={hidden || typing || open}
         style={{ position: 'absolute', right, bottom }}
       />
       <FabMenu open={open} onClose={() => setOpen(false)} label={label} actions={actions} />

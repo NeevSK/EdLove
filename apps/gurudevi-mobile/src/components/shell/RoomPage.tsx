@@ -4,7 +4,7 @@
  * and the bottom clears the rooms bar. No page draws its own background; the world does.
  */
 
-import { Badge, Stack, Text, useFloorPresence } from '@repo/ui/components/native';
+import { Badge, Stack, Text, useFloorPresence, useRoomScroll } from '@repo/ui/components/native';
 import { shellLayoutOf } from '@repo/ui/theme';
 import type { BadgeTone } from '@repo/ui/theme';
 import type { ReactNode } from 'react';
@@ -24,11 +24,13 @@ export function RoomPage({
   children: ReactNode;
 }) {
   useFloorPresence('band');
+  const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const layout = shellLayoutOf(width);
   return (
     <ScrollView
+      {...scroll}
       style={{ flex: 1, backgroundColor: 'transparent' }}
       contentContainerStyle={{
         paddingHorizontal: layout.gutter,

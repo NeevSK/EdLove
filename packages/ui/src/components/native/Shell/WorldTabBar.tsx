@@ -180,13 +180,34 @@ function Item({
   );
 }
 
-export function WorldTabBar({
-  items,
-  layout,
-  insets,
-  hidden = false,
-  label = 'Rooms',
-}: WorldTabBarProps) {
+/**
+ * Reading tucks the bar away: it slides off the bottom edge (it never leaves the layout, so the
+ * page does not jump) and comes back on the world's curve. A rail stays; it costs no height.
+ */
+export function WorldTabBar(props: WorldTabBarProps) {
+  const m = useWorldMotion();
+  const tucked = props.hidden === true && props.layout !== 'rail';
+  const away = useSharedValue(tucked ? 1 : 0);
+  useEffect(() => {
+    away.set(m.animates ? withTiming(tucked ? 1 : 0, m.timing()) : tucked ? 1 : 0);
+  }, [tucked, m, away]);
+  const slide = useAnimatedStyle(() => ({
+    opacity: 1 - away.get(),
+    transform: [{ translateY: away.get() * (96 + props.insets.bottom) }],
+  }));
+  return (
+    <Animated.View
+      pointerEvents={tucked ? 'none' : 'box-none'}
+      accessibilityElementsHidden={tucked}
+      importantForAccessibility={tucked ? 'no-hide-descendants' : 'auto'}
+      style={slide}
+    >
+      <Bar {...props} />
+    </Animated.View>
+  );
+}
+
+function Bar({ items, layout, insets, label = 'Rooms' }: WorldTabBarProps) {
   const { world } = useWorldContext();
   const t = world.tokens;
   const raised = world.recipes.surface.raised;
@@ -200,7 +221,6 @@ export function WorldTabBar({
       return { ...prev, [key]: { ...prev[key], [part]: { x: at.x, y: at.y } } };
     });
   }, []);
-  if (hidden) return null;
 
   const focused = items.find((i) => i.focused);
   const at = focused ? spots[focused.key] : undefined;

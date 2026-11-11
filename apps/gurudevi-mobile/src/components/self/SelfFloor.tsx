@@ -1,115 +1,141 @@
-import { useScrollChromeCollapser } from '@repo/ui';
-import { Pebble } from '@repo/ui/components/native';
-import { ArrowRight, Bookmark, Compass, Pin, Sparkles } from '@repo/ui/icons';
-import { tokens } from '@repo/ui/tokens';
-import { type ReactNode } from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
+/**
+ * The Self room's front screen, worn by the world: the world's floor shows in full behind it (no
+ * page colour of its own), a greeting on the world's raised surface, pinned practices as pebbles,
+ * and every practice as a card in the world's shape. Reading down tucks the chrome away and pauses
+ * the floor's life; the cards arrive the way the world moves.
+ */
+
+import {
+  Card,
+  Chip,
+  Chips,
+  IconButton,
+  Pebble,
+  Surface,
+  Text,
+  useFloorPresence,
+  useRoomScroll,
+} from '@repo/ui/components/native';
+import { Bookmark, Compass, Pin, Sparkles } from '@repo/ui/icons';
+import type { KitIconProps } from '@repo/ui/theme';
+import { useWorld, WorldEnter } from '@repo/ui/theme/native';
+import type { ComponentType, ReactNode } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelfCanvas } from '@/hooks/useSelfCanvas';
 import type { MobileFeatureItem } from '@/navigation/registries/types';
 
-/**
- * SelfFloor is the human visual floor for the personal inner domain.
- * Consumes the headless useSelfCanvas for spatial arrangement and sync.
- */
+const kit = (Glyph: unknown) => Glyph as ComponentType<KitIconProps>;
+
 export function SelfFloor() {
+  useFloorPresence('full');
   const canvas = useSelfCanvas();
-  const { onScroll } = useScrollChromeCollapser();
+  const scroll = useRoomScroll();
+  const insets = useSafeAreaInsets();
+  const t = useWorld().tokens;
 
   return (
     <ScrollView
-      onScroll={onScroll}
-      scrollEventThrottle={16}
-      style={{ backgroundColor: canvas.floorColor }}
+      {...scroll}
+      style={styles.screen}
       contentContainerStyle={{
         paddingHorizontal: canvas.gutter,
-        paddingTop: tokens.spacing.sm,
-        paddingBottom: tokens.spacing.xl * 2,
-        gap: tokens.spacing.xl,
+        paddingTop: 8,
+        paddingBottom: insets.bottom + 140,
+        gap: 28,
       }}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.orientationCard}>
-        <View style={{ gap: tokens.spacing.xs }}>
+      <WorldEnter index={0}>
+        <Surface tone="raised" style={styles.greeting}>
           <View style={styles.eyebrow}>
-            <Sparkles size={16} color={tokens.colors.primary} />
-            <Text style={styles.eyebrowText}>{canvas.registry.title}</Text>
+            <Sparkles size={16} color={t.lampDeep} aria-hidden />
+            <Text kind="label" tone="soft">
+              {canvas.registry.title}
+            </Text>
           </View>
-          <Text style={styles.orientationTitle}>Begin where you are, {canvas.displayName}</Text>
-          <Text style={styles.orientationCopy}>{canvas.registry.subtitle}</Text>
-        </View>
-        <Text style={styles.orientationHint}>
-          Choose a personal practice below. Open work stays available in your task strip.
-        </Text>
-      </View>
+          <Text kind="title">Begin where you are, {canvas.displayName}</Text>
+          <Text kind="body" tone="soft">
+            {canvas.registry.subtitle}
+          </Text>
+          <Text kind="caption" tone="faint">
+            Choose a practice below. Open work stays in your task strip.
+          </Text>
+        </Surface>
+      </WorldEnter>
 
-      <FloorSection
-        count={canvas.pinnedFeatures.length}
-        icon={<Pin size={16} color={tokens.colors.primary} />}
-        title="Pinned practices"
-      >
-        {canvas.pinnedFeatures.length > 0 ? (
+      <WorldEnter index={1}>
+        <FloorSection
+          count={canvas.pinnedFeatures.length}
+          icon={<Pin size={16} color={t.lampDeep} aria-hidden />}
+          title="Pinned practices"
+        >
+          {canvas.pinnedFeatures.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 10, paddingRight: canvas.gutter }}
+            >
+              {canvas.pinnedFeatures.map((feature) => (
+                <Pebble
+                  key={feature.id}
+                  title={feature.title}
+                  icon={feature.icon || Compass}
+                  gear="compact"
+                  width={90}
+                  cornerBadge={{
+                    mode: 'pin',
+                    isPinned: true,
+                    onAction: () => canvas.togglePin(feature.id),
+                  }}
+                  onPress={() => canvas.launchFeature(feature)}
+                />
+              ))}
+            </ScrollView>
+          ) : (
+            <Text kind="body" tone="soft">
+              Pin the practices you return to. They will appear here in your chosen order.
+            </Text>
+          )}
+        </FloorSection>
+      </WorldEnter>
+
+      <WorldEnter index={2}>
+        <FloorSection count={canvas.features.length} title="Self practices">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: tokens.spacing.sm, paddingRight: canvas.gutter }}
+            contentContainerStyle={{ paddingRight: canvas.gutter }}
           >
-            {canvas.pinnedFeatures.map((feature) => (
-              <PinnedFeatureCard
-                feature={feature}
+            <Chips label="Show practices" single>
+              {canvas.categories.map((category) => (
+                <Chip
+                  key={category.id}
+                  kind="radio"
+                  label={category.label}
+                  selected={canvas.selectedCategory === category.id}
+                  onPress={() => canvas.setSelectedCategory(category.id)}
+                />
+              ))}
+            </Chips>
+          </ScrollView>
+          <View style={[styles.grid, { gap: canvas.cardGap }]}>
+            {canvas.visibleFeatures.map((feature) => (
+              <PracticeCard
                 key={feature.id}
+                feature={feature}
+                isPinned={canvas.effectivePinnedIds.includes(feature.id)}
                 onLaunch={() => canvas.launchFeature(feature)}
-                onUnpin={() => canvas.togglePin(feature.id)}
+                onTogglePin={() => canvas.togglePin(feature.id)}
+                width={canvas.cardWidth}
               />
             ))}
-          </ScrollView>
-        ) : (
-          <Text style={styles.emptyCopy}>
-            Pin the practices you return to. They will appear here in your chosen order.
-          </Text>
-        )}
-      </FloorSection>
-
-      <FloorSection count={canvas.features.length} title="Self practices">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: tokens.spacing.xs, paddingRight: canvas.gutter }}
-        >
-          {canvas.categories.map((category) => {
-            const selected = canvas.selectedCategory === category.id;
-            return (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
-                accessibilityLabel={`Show ${category.label}`}
-                key={category.id}
-                onPress={() => canvas.setSelectedCategory(category.id)}
-                style={[styles.filterChip, selected && styles.filterChipSelected]}
-              >
-                <Text style={[styles.filterText, selected && styles.filterTextSelected]}>
-                  {category.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: canvas.cardGap }}>
-          {canvas.visibleFeatures.map((feature) => (
-            <CatalogFeatureCard
-              feature={feature}
-              isPinned={canvas.effectivePinnedIds.includes(feature.id)}
-              key={feature.id}
-              onLaunch={() => canvas.launchFeature(feature)}
-              onTogglePin={() => canvas.togglePin(feature.id)}
-              width={canvas.cardWidth}
-            />
-          ))}
-        </View>
-      </FloorSection>
+          </View>
+        </FloorSection>
+      </WorldEnter>
     </ScrollView>
   );
 }
-
 
 function FloorSection({
   children,
@@ -123,45 +149,24 @@ function FloorSection({
   title: string;
 }) {
   return (
-    <View style={{ gap: tokens.spacing.md }}>
+    <View style={{ gap: 14 }}>
       <View style={styles.sectionHeader}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.xs }}>
+        <View style={styles.eyebrow}>
           {icon}
-          <Text style={styles.sectionTitle}>{title}</Text>
+          <Text kind="label" accessibilityRole="header">
+            {title}
+          </Text>
         </View>
-        <Text style={styles.count}>{count}</Text>
+        <Text kind="caption" tone="soft">
+          {count}
+        </Text>
       </View>
       {children}
     </View>
   );
 }
 
-function PinnedFeatureCard({
-  feature,
-  onLaunch,
-  onUnpin,
-}: {
-  feature: MobileFeatureItem;
-  onLaunch: () => void;
-  onUnpin: () => void;
-}) {
-  return (
-    <Pebble
-      title={feature.title}
-      icon={feature.icon || Compass}
-      gear="compact"
-      width={90}
-      cornerBadge={{
-        mode: 'pin',
-        isPinned: true,
-        onAction: onUnpin,
-      }}
-      onPress={onLaunch}
-    />
-  );
-}
-
-function CatalogFeatureCard({
+function PracticeCard({
   feature,
   isPinned,
   onLaunch,
@@ -174,189 +179,37 @@ function CatalogFeatureCard({
   onTogglePin: () => void;
   width: number;
 }) {
-  const Icon = feature.icon || Compass;
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`Open ${feature.title}`}
-      onPress={onLaunch}
-      style={[styles.catalogCard, { width }]}
-    >
-      <View style={styles.cardTopline}>
-        <Icon size={18} color={tokens.colors.primary} />
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={isPinned ? `Unpin ${feature.title}` : `Pin ${feature.title}`}
-          hitSlop={8}
-          onPress={(event) => {
-            event.stopPropagation();
-            onTogglePin();
-          }}
-          style={[styles.pinButton, isPinned && styles.pinButtonActive]}
-        >
-          {isPinned ? (
-            <Pin size={14} color={tokens.colors.primary} />
-          ) : (
-            <Bookmark size={14} color={tokens.semantic.text.secondary} />
-          )}
-        </Pressable>
+    <View style={{ width }}>
+      <Card
+        title={feature.title}
+        meta={feature.description}
+        icon={kit(feature.icon || Compass)}
+        shape="tile"
+        size="sm"
+        accessibilityLabel={`Open ${feature.title}`}
+        onPress={onLaunch}
+        style={styles.card}
+      />
+      <View style={styles.pin}>
+        <IconButton
+          icon={kit(isPinned ? Pin : Bookmark)}
+          label={isPinned ? `Unpin ${feature.title}` : `Pin ${feature.title}`}
+          variant={isPinned ? 'secondary' : 'quiet'}
+          size="sm"
+          onPress={onTogglePin}
+        />
       </View>
-      <View style={{ flex: 1, gap: tokens.spacing.xs }}>
-        <Text numberOfLines={1} style={styles.cardTitle}>
-          {feature.title}
-        </Text>
-        <Text numberOfLines={2} style={styles.cardDescription}>
-          {feature.description}
-        </Text>
-      </View>
-      <CardAction />
-    </Pressable>
-  );
-}
-
-function CardAction() {
-  return (
-    <View style={styles.cardAction}>
-      <Text style={styles.cardActionText}>Open</Text>
-      <ArrowRight size={12} color={tokens.colors.primary} />
     </View>
   );
 }
 
-const styles = {
-  orientationCard: {
-    borderRadius: tokens.radii.lg,
-    backgroundColor: tokens.semantic.surface.elevated,
-    borderColor: tokens.semantic.border.subtle,
-    borderWidth: 1,
-    gap: tokens.spacing.lg,
-    padding: tokens.spacing.lg,
-  },
-  eyebrow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: tokens.spacing.xs },
-  eyebrowText: {
-    color: tokens.colors.primary,
-    fontSize: tokens.typography.sizes.xs,
-    fontWeight: '700' as const,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase' as const,
-  },
-  orientationTitle: {
-    color: tokens.semantic.text.primary,
-    fontSize: tokens.typography.sizes.xl,
-    fontWeight: '800' as const,
-  },
-  orientationCopy: {
-    color: tokens.semantic.text.secondary,
-    fontSize: tokens.typography.sizes.sm,
-    lineHeight: 20,
-  },
-  orientationHint: {
-    color: tokens.semantic.text.secondary,
-    fontSize: tokens.typography.sizes.xs,
-    lineHeight: 18,
-  },
-  sectionHeader: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-  },
-  sectionTitle: {
-    color: tokens.semantic.text.primary,
-    fontSize: tokens.typography.sizes.md,
-    fontWeight: '700' as const,
-  },
-  count: {
-    color: tokens.semantic.text.secondary,
-    fontSize: tokens.typography.sizes.sm,
-    fontWeight: '600' as const,
-  },
-  emptyCopy: {
-    color: tokens.semantic.text.secondary,
-    fontSize: tokens.typography.sizes.sm,
-    lineHeight: 20,
-  },
-  pinnedCard: {
-    width: 140,
-    minHeight: 110,
-    borderRadius: tokens.radii.md,
-    backgroundColor: tokens.semantic.surface.elevated,
-    borderColor: tokens.semantic.border.subtle,
-    borderWidth: 1,
-    padding: tokens.spacing.md,
-    justifyContent: 'space-between' as const,
-    gap: tokens.spacing.xs,
-  },
-  cardTopline: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-  },
-  cardTitle: {
-    color: tokens.semantic.text.primary,
-    fontSize: tokens.typography.sizes.sm,
-    fontWeight: '700' as const,
-  },
-  cardMeta: {
-    color: tokens.semantic.text.secondary,
-    fontSize: tokens.typography.sizes.xs,
-    textTransform: 'capitalize' as const,
-  },
-  cardDescription: {
-    color: tokens.semantic.text.secondary,
-    fontSize: tokens.typography.sizes.xs,
-    lineHeight: 16,
-  },
-  pinButton: {
-    width: 28,
-    height: 28,
-    borderRadius: tokens.radii.full,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-  },
-  pinButtonActive: {
-    backgroundColor: tokens.semantic.surface.interactive,
-  },
-  catalogCard: {
-    minHeight: 130,
-    borderRadius: tokens.radii.md,
-    backgroundColor: tokens.semantic.surface.elevated,
-    borderColor: tokens.semantic.border.subtle,
-    borderWidth: 1,
-    padding: tokens.spacing.md,
-    justifyContent: 'space-between' as const,
-    gap: tokens.spacing.sm,
-  },
-  filterChip: {
-    paddingHorizontal: tokens.spacing.md,
-    paddingVertical: tokens.spacing.xs,
-    borderRadius: tokens.radii.full,
-    backgroundColor: tokens.semantic.surface.elevated,
-    borderColor: tokens.semantic.border.subtle,
-    borderWidth: 1,
-    minHeight: 36,
-    justifyContent: 'center' as const,
-  },
-  filterChipSelected: {
-    backgroundColor: tokens.colors.primary,
-    borderColor: tokens.colors.primary,
-  },
-  filterText: {
-    color: tokens.semantic.text.secondary,
-    fontSize: tokens.typography.sizes.xs,
-    fontWeight: '600' as const,
-  },
-  filterTextSelected: {
-    color: '#ffffff',
-  },
-  cardAction: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 4,
-    alignSelf: 'flex-start' as const,
-  },
-  cardActionText: {
-    color: tokens.colors.primary,
-    fontSize: tokens.typography.sizes.xs,
-    fontWeight: '700' as const,
-  },
-};
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: 'transparent' },
+  greeting: { padding: 20, gap: 10 },
+  eyebrow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap' },
+  card: { minHeight: 130 },
+  pin: { position: 'absolute', top: 6, right: 6 },
+});

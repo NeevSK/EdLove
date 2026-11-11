@@ -291,6 +291,11 @@ function TabsLayoutContent() {
   const headerStyle = useActiveSubTabsStore((s) => s.preferences.headerStyle);
   const autoHideChromeOnScroll = useActiveSubTabsStore((s) => s.preferences.autoHideChromeOnScroll);
   const isChromeVisible = useActiveSubTabsStore((s) => s.isChromeVisible);
+  const setChromeVisible = useActiveSubTabsStore((s) => s.setChromeVisible);
+  // A new screen always arrives with its chrome; only reading tucks it away.
+  useEffect(() => {
+    setChromeVisible(true);
+  }, [pathname, setChromeVisible]);
   const returnToDomainOverview = useCallback(() => {
     const overviewRoute: Record<
       typeof currentDomain,
@@ -340,7 +345,8 @@ function TabsLayoutContent() {
     }
     return (
       <WorldHeader
-        layout={headerLayout}
+        // Reading down shrinks the header to one quiet line; reading up brings it back.
+        layout={chromeShown ? headerLayout : 'compact'}
         posture={isDomainRoot ? 'home' : 'inside'}
         room={ROOM_NAMES[currentDomain]}
         title={title}
@@ -369,7 +375,7 @@ function TabsLayoutContent() {
               }
             : undefined
         }
-        below={subTabs}
+        below={chromeShown ? subTabs : null}
       />
     );
   };
@@ -408,7 +414,7 @@ function TabsLayoutContent() {
 
   const nativeTabs = (
     <NativeShellTabs
-      header={chromeShown ? renderHeader() : null}
+      header={renderHeader()}
       onTabPress={markTabPress}
       showLabels={shell.visibleChrome.tabLabels}
     />
@@ -432,7 +438,7 @@ function TabsLayoutContent() {
             />
           )}
           screenOptions={{
-            headerShown: chromeShown,
+            headerShown: true,
             tabBarHideOnKeyboard: true,
             tabBarPosition: layout.tabs === 'rail' ? 'left' : 'bottom',
             header: renderHeader,

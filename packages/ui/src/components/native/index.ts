@@ -138,6 +138,7 @@ export { NotificationItem, type NotificationItemProps } from './Shell/Notificati
 export { SwitchRow, type SwitchRowProps } from './Shell/SwitchRow';
 export { TaskTabs, type TaskTabsProps } from './Shell/TaskTabs';
 export { WorldHeader, type WorldHeaderLayout, type WorldHeaderProps } from './Shell/WorldHeader';
+export { useRoomScroll } from './Shell/useRoomScroll';
 export { WorldTabBar, type WorldTabBarProps, type WorldTabItem } from './Shell/WorldTabBar';
 export {
   type AssistantChoice,
