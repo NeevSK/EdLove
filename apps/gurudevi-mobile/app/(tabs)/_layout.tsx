@@ -53,7 +53,7 @@ import { tokens } from '@repo/ui/tokens';
 import { router, useGlobalSearchParams, usePathname } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 import { type ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, useWindowDimensions, View } from 'react-native';
+import { ScrollView, StatusBar, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSnapshotRefresh } from '@/boot/useSnapshotRefresh';
 import { NativeShellTabs } from '@/components/navigation/NativeShellTabs';
@@ -315,7 +315,12 @@ function TabsLayoutContent() {
   const tabBarChoice = useActiveSubTabsStore((s) => s.preferences.tabBarLayout) ?? 'auto';
   const assistantChoice = useActiveSubTabsStore((s) => s.preferences.assistantButton) ?? 'tutii';
   const updatePreferences = useActiveSubTabsStore((s) => s.updatePreferences);
-  const layout = useMemo(() => shellLayoutOf(width, tabBarChoice), [width, tabBarChoice]);
+  // Width, height and aspect: a phone on its side is held like a game (the rail is the HUD).
+  const layout = useMemo(
+    () => shellLayoutOf(width, tabBarChoice, height),
+    [width, height, tabBarChoice],
+  );
+  const hud = layout.stance === 'hud';
   const chromeShown = !autoHideChromeOnScroll || isChromeVisible;
 
   const [youOpen, setYouOpen] = useState(false);
@@ -376,9 +381,40 @@ function TabsLayoutContent() {
             : undefined
         }
         below={chromeShown ? subTabs : null}
+        hud={hud}
       />
     );
   };
+
+  // Held sideways, the header's photo, help and bell ride on the rail instead.
+  const railHud = hud
+    ? {
+        person: {
+          name: user?.display_name || displayName,
+          src: user?.avatar_url ?? undefined,
+          label: `${user?.display_name || displayName}: you, settings and help`,
+          onPress: () => setYouOpen(true),
+        },
+        actions: [
+          {
+            key: 'assistant',
+            label: assistantChoice === 'tutii' ? 'Tutii, help and guide' : 'Assistant',
+            icon: (assistantChoice === 'tutii'
+              ? LifeBuoy
+              : Sparkles) as ComponentType<KitIconProps>,
+            onPress: () => setAssistant({ open: true, guide: false }),
+          },
+          {
+            key: 'notifications',
+            label: 'Notifications',
+            icon: Bell as ComponentType<KitIconProps>,
+            onPress: () => router.push('/notifications'),
+            badge: unreadCount > 0 ? unreadCount : undefined,
+            badgeLabel: unreadCount > 0 ? `${unreadCount} unread` : undefined,
+          },
+        ],
+      }
+    : undefined;
 
   const fabCommon = useMemo<CommonActions>(
     () => ({
@@ -405,8 +441,9 @@ function TabsLayoutContent() {
   );
 
   // Space the floating action keeps above the rooms bar.
-  const fabBottom =
-    layout.tabs === 'rail'
+  const fabBottom = hud
+    ? Math.max(insets.bottom, 12) + 4
+    : layout.tabs === 'rail'
       ? insets.bottom + 20
       : layout.tabs === 'floating'
         ? Math.max(insets.bottom, 8) + 6 + 64 + 16
@@ -422,6 +459,8 @@ function TabsLayoutContent() {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* A phone on its side gives the status bar's row back to the world, like a game. */}
+      <StatusBar hidden={hud} animated />
       {shellChoice.variant === 'native' ? (
         nativeTabs
       ) : (
@@ -435,6 +474,7 @@ function TabsLayoutContent() {
               holds={{ self: true, workspace: true }}
               signals={{ community: unreadCount > 0 }}
               hidden={!chromeShown}
+              hud={railHud}
             />
           )}
           screenOptions={{
@@ -497,7 +537,7 @@ function TabsLayoutContent() {
         pathname={pathname}
         atHome={isDomainRoot}
         bottom={fabBottom}
-        right={Math.max(insets.right, 0) + 20}
+        right={Math.max(insets.right, 0) + (hud ? 16 : 20)}
         common={fabCommon}
         hidden={!chromeShown}
       />

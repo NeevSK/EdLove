@@ -12,6 +12,7 @@ import {
   Text,
   useFloorPresence,
   useRoomScroll,
+  useShellLayout,
 } from '@repo/ui/components/native';
 import {
   Banknote,
@@ -23,11 +24,10 @@ import {
   Wifi,
 } from '@repo/ui/icons/native';
 import type { KitIconProps } from '@repo/ui/theme';
-import { shellLayoutOf } from '@repo/ui/theme';
 import { WorldEnter } from '@repo/ui/theme/native';
 import { router } from 'expo-router';
 import type { ComponentType } from 'react';
-import { ScrollView, useWindowDimensions, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const kit = (Glyph: unknown) => Glyph as ComponentType<KitIconProps>;
@@ -76,16 +76,17 @@ export function WorkspaceHome({ perspective, note }: { perspective?: string; not
   useFloorPresence('full');
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
-  const layout = shellLayoutOf(useWindowDimensions().width);
+  const layout = useShellLayout();
   return (
     <ScrollView
       {...scroll}
       style={{ flex: 1, backgroundColor: 'transparent' }}
       contentContainerStyle={{
-        paddingHorizontal: layout.gutter,
-        paddingTop: 8,
-        paddingBottom: insets.bottom + 140,
-        gap: 22,
+        paddingLeft: layout.gutter + layout.edges.left,
+        paddingRight: layout.gutter + layout.edges.right,
+        paddingTop: layout.stance === 'hud' ? layout.rhythm.top : 8,
+        paddingBottom: insets.bottom + (layout.tabs === 'rail' ? 96 : 140),
+        gap: layout.rhythm.gap,
         width: '100%',
         maxWidth: layout.readable,
         alignSelf: 'center',

@@ -46,7 +46,17 @@ export { phaseTokens, resolveWorld, STANDARD_ACCESS } from './resolve';
 export { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
 export type * from './types';
 export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS, worldName } from './worlds';
-export { type ShellLayout, type SizeClass, shellLayoutOf, sizeClassOf } from './size';
+export {
+  type AspectClass,
+  aspectClassOf,
+  HUD_MAX_HEIGHT,
+  type Posture,
+  type ShellLayout,
+  type SizeClass,
+  type Stance,
+  shellLayoutOf,
+  sizeClassOf,
+} from './size';
 export { fitRadius, type RoomMark, roomMarkOf } from './shellMarks';
 export {
   type CelebrationLevel,

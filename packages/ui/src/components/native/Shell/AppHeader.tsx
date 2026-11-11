@@ -40,7 +40,7 @@ export interface AppHeaderProps extends AppHeaderContract {
 }
 
 /** An action with its count or dot, the mark said as part of its name. */
-function Action({ action }: { action: HeaderAction }) {
+export function HeaderActionButton({ action }: { action: HeaderAction }) {
   const { world, language } = useWorldContext();
   const t = world.tokens;
   const name =
@@ -280,7 +280,7 @@ export function AppHeader({
         {actions.length > 0 || trailing ? (
           <View style={[styles.row, { gap: 4 }]}>
             {actions.map((a) => (
-              <Action key={a.key} action={a} />
+              <HeaderActionButton key={a.key} action={a} />
             ))}
             {trailing}
           </View>

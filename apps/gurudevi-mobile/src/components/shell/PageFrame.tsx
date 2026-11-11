@@ -3,13 +3,13 @@
  * header under the status bar with back, and a readable column that centres on a tablet.
  */
 
-import { AppHeader, useFloorPresence } from '@repo/ui/components/native';
+import { AppHeader, useFloorPresence, useShellLayout } from '@repo/ui/components/native';
 import { ChevronLeft } from '@repo/ui/icons/native';
-import { shellLayoutOf, type KitIconProps } from '@repo/ui/theme';
+import type { KitIconProps } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
 import { router } from 'expo-router';
 import type { ComponentType, ReactNode } from 'react';
-import { ScrollView, useWindowDimensions, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function PageFrame({
@@ -23,12 +23,19 @@ export function PageFrame({
 }) {
   useFloorPresence('quiet');
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
-  const layout = shellLayoutOf(width);
+  // Width, height and the cutouts on both sides: the column holds its reading width either way up.
+  const layout = useShellLayout();
   const t = useWorld().tokens;
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ paddingTop: insets.top, backgroundColor: t.ground }}>
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+          backgroundColor: t.ground,
+        }}
+      >
         <AppHeader
           title={title}
           eyebrow={eyebrow}
@@ -44,10 +51,11 @@ export function PageFrame({
       </View>
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: layout.gutter,
-          paddingTop: 20,
+          paddingLeft: layout.gutter + insets.left,
+          paddingRight: layout.gutter + insets.right,
+          paddingTop: layout.rhythm.top + 2,
           paddingBottom: insets.bottom + 40,
-          gap: 22,
+          gap: layout.rhythm.gap,
           width: '100%',
           maxWidth: layout.readable,
           alignSelf: 'center',

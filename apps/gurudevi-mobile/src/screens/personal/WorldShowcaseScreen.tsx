@@ -32,6 +32,7 @@ import {
   Text,
   TextField,
   useFloorPresence,
+  useShellLayout,
   useStage,
   useStagePreview,
   WorldHeader,
@@ -65,6 +66,7 @@ import {
   worldName,
 } from '@repo/ui/theme';
 import { router } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { type ComponentType, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -127,6 +129,9 @@ export function WorldShowcaseScreen() {
   useFloorPresence('full');
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const shell = useShellLayout();
+  const hud = shell.stance === 'hud';
+  const [hold, setHold] = useState<'free' | 'upright' | 'sideways'>('free');
   const { worldId, setWorld } = useThemeContextOptional();
   const stage = useStage();
   const pins = useStagePreview();
@@ -152,9 +157,23 @@ export function WorldShowcaseScreen() {
     () => () => {
       clearStagePreview();
       if (!kept.current) void setWorldRef.current(original.current);
+      // Whatever way it was turned here, the phone is free again on leave.
+      void ScreenOrientation.unlockAsync().catch(() => undefined);
     },
     [],
   );
+
+  // Turn the screen without turning the phone: see the sideways HUD and the wide floor at once.
+  const holdAs = (next: typeof hold) => {
+    setHold(next);
+    const lock =
+      next === 'upright'
+        ? ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
+        : next === 'sideways'
+          ? ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
+          : ScreenOrientation.unlockAsync();
+    void lock.catch(() => undefined);
+  };
 
   const now = new Date();
   const minute = pins.minute ?? now.getHours() * 60 + now.getMinutes();
@@ -183,9 +202,36 @@ export function WorldShowcaseScreen() {
     router.back();
   };
 
-  const railed = bar === 'rail';
+  // Held sideways on a phone, the rooms are always a rail and the rail is the HUD.
+  const shown: BarLayout = hud ? 'rail' : bar;
+  const railed = shown === 'rail';
   const railWidth = railed ? 88 + insets.left : 0;
   const barSpace = railed ? insets.bottom + 24 : Math.max(insets.bottom, 8) + 96;
+  const railHud = hud
+    ? {
+        person: {
+          ...person,
+          label: `${person.name}: back to your rooms`,
+          onPress: () => router.back(),
+        },
+        actions: [
+          {
+            key: 'assistant',
+            label: 'Tutii',
+            icon: icon(Sparkles),
+            onPress: () => setMenuOpen(true),
+          },
+          {
+            key: 'notifications',
+            label: 'Notifications',
+            icon: icon(Bell),
+            onPress: () => setSignal((v) => !v),
+            badge: signal ? 3 : undefined,
+            badgeLabel: signal ? '3 unread' : undefined,
+          },
+        ],
+      }
+    : undefined;
 
   return (
     <View style={styles.screen}>
@@ -207,6 +253,7 @@ export function WorldShowcaseScreen() {
           }}
           assistant={{ label: 'Tutii', icon: icon(Sparkles), onPress: () => setMenuOpen(true) }}
           icons={{ back: icon(ChevronLeft) }}
+          hud={hud}
         />
       </View>
 
@@ -214,7 +261,12 @@ export function WorldShowcaseScreen() {
         style={styles.scroll}
         contentContainerStyle={[
           styles.content,
-          { paddingLeft: railWidth + 18, paddingBottom: barSpace + 24 },
+          {
+            paddingLeft: railWidth + 18,
+            paddingRight: 18 + insets.right,
+            paddingBottom: barSpace + 24,
+            maxWidth: railWidth + (hud ? 800 : 720),
+          },
         ]}
       >
         <Group
@@ -287,6 +339,30 @@ export function WorldShowcaseScreen() {
               />
             ))}
           </Chips>
+        </Group>
+
+        <Group
+          label="Screen"
+          footer={`${shell.width} by ${shell.height}, ${shell.posture}, a ${shell.aspect} screen. ${
+            hud
+              ? 'Held like a game: no header row; you, the rooms, help and the bell sit on the rail by your left thumb, the action by your right.'
+              : shell.stance === 'wide'
+                ? 'Room for a header and a rail.'
+                : 'Upright: header on top, rooms along the bottom.'
+          }`}
+        >
+          <View style={styles.pad}>
+            <SegmentedControl
+              label="Hold the screen"
+              value={hold}
+              onChange={holdAs}
+              options={[
+                { value: 'free', label: 'As the phone turns' },
+                { value: 'upright', label: 'Upright' },
+                { value: 'sideways', label: 'Sideways' },
+              ]}
+            />
+          </View>
         </Group>
 
         <Group label="Shell">
@@ -389,7 +465,7 @@ export function WorldShowcaseScreen() {
         pointerEvents="box-none"
         style={railed ? [styles.railDock, { width: railWidth }] : styles.barDock}
       >
-        <WorldTabBar items={items} layout={bar} insets={insets} label="Rooms" />
+        <WorldTabBar items={items} layout={shown} insets={insets} label="Rooms" hud={railHud} />
       </View>
       <ActionFab
         label="Room actions"
@@ -397,7 +473,13 @@ export function WorldShowcaseScreen() {
         signal={signal}
         signalLabel="something waits"
         onPress={() => setMenuOpen(true)}
-        style={[styles.fab, { right: 18 + insets.right, bottom: barSpace }]}
+        style={[
+          styles.fab,
+          {
+            right: (hud ? 16 : 18) + insets.right,
+            bottom: hud ? Math.max(insets.bottom, 12) + 4 : barSpace,
+          },
+        ]}
       />
       <FabMenu
         open={menuOpen}

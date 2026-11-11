@@ -24,8 +24,12 @@ export function CompanionOnFloor({ stage }: { stage: Stage }) {
   const tone = t[companion.tone] ?? t.lamp;
   const still = stage.tier === 'bare';
   const perch = companion.way === 'perch';
-  const bottom = height * (perch ? 0.34 : 0.17);
-  const left = width * (perch ? 0.72 : 0.08);
+  // On its side the rooms rail covers the left edge, so the companion keeps clear of it.
+  const sideways = width > height;
+  const bottom = height * (perch ? 0.34 : sideways ? 0.12 : 0.17);
+  const left = sideways
+    ? Math.max(width * (perch ? 0.72 : 0.12), 104)
+    : width * (perch ? 0.72 : 0.08);
 
   const walk = still
     ? null

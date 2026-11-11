@@ -3,7 +3,7 @@
  * and which is in front; the world draws them. Hidden routes (notifications, settings) stay out.
  */
 
-import { WorldTabBar, type WorldTabItem } from '@repo/ui/components/native';
+import { type RailHud, WorldTabBar, type WorldTabItem } from '@repo/ui/components/native';
 import type { KitIconProps } from '@repo/ui/theme';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import type { ComponentType } from 'react';
@@ -16,6 +16,8 @@ export interface ShellTabBarProps extends BottomTabBarProps {
   holds?: Readonly<Record<string, boolean | undefined>>;
   signals?: Readonly<Record<string, boolean | undefined>>;
   hidden?: boolean;
+  /** A phone on its side: the header's controls ride on the rail. */
+  hud?: RailHud;
 }
 
 export function ShellTabBar({
@@ -30,6 +32,7 @@ export function ShellTabBar({
   holds,
   signals,
   hidden,
+  hud,
 }: ShellTabBarProps) {
   const items: WorldTabItem[] = [];
   state.routes.forEach((route, index) => {
@@ -58,5 +61,5 @@ export function ShellTabBar({
         : undefined,
     });
   });
-  return <WorldTabBar items={items} layout={layout} insets={insets} hidden={hidden} />;
+  return <WorldTabBar items={items} layout={layout} insets={insets} hidden={hidden} hud={hud} />;
 }

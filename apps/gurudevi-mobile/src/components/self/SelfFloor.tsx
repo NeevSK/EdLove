@@ -3,6 +3,10 @@
  * page colour of its own), a greeting on the world's raised surface, pinned practices as pebbles,
  * and every practice as a card in the world's shape. Reading down tucks the chrome away and pauses
  * the floor's life; the cards arrive the way the world moves.
+ *
+ * Turned on its side, the greeting and the pinned practices sit next to each other (the screen is
+ * short, so they share a row instead of stacking), and the practice cards fill as many columns as
+ * the width beside the rail holds.
  */
 
 import {
@@ -15,97 +19,118 @@ import {
   Text,
   useFloorPresence,
   useRoomScroll,
+  useShellLayout,
 } from '@repo/ui/components/native';
 import { Bookmark, Compass, Pin, Sparkles } from '@repo/ui/icons';
 import type { KitIconProps } from '@repo/ui/theme';
 import { useWorld, WorldEnter } from '@repo/ui/theme/native';
-import type { ComponentType, ReactNode } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { type ComponentType, type ReactNode, useState } from 'react';
+import { type LayoutChangeEvent, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelfCanvas } from '@/hooks/useSelfCanvas';
 import type { MobileFeatureItem } from '@/navigation/registries/types';
 
 const kit = (Glyph: unknown) => Glyph as ComponentType<KitIconProps>;
 
+/** A practice card is never narrower than this; the grid adds columns as the width allows. */
+const MIN_CARD = 160;
+
+/** How many cards fit across `width`, and how wide each one is. */
+export function practiceGrid(width: number, gap: number): { columns: number; card: number } {
+  if (width <= 0) return { columns: 2, card: 0 };
+  const columns = Math.max(2, Math.floor((width + gap) / (MIN_CARD + gap)));
+  return { columns, card: (width - gap * (columns - 1)) / columns };
+}
+
 export function SelfFloor() {
   useFloorPresence('full');
   const canvas = useSelfCanvas();
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
+  const shell = useShellLayout();
   const t = useWorld().tokens;
+  // The grid's own width, measured, so the rail and the cutouts are already taken out.
+  const [gridWidth, setGridWidth] = useState(0);
+  const grid = practiceGrid(gridWidth, canvas.cardGap);
+  const sideBySide = shell.posture === 'landscape';
+  const gutter = Math.max(canvas.gutter, shell.gutter);
 
   return (
     <ScrollView
       {...scroll}
       style={styles.screen}
       contentContainerStyle={{
-        paddingHorizontal: canvas.gutter,
-        paddingTop: 8,
-        paddingBottom: insets.bottom + 140,
-        gap: 28,
+        paddingLeft: gutter + shell.edges.left,
+        paddingRight: gutter + shell.edges.right,
+        paddingTop: shell.stance === 'hud' ? shell.rhythm.top : 8,
+        // Upright, the rooms bar floats over the bottom; on a rail only the action button does.
+        paddingBottom: insets.bottom + (shell.tabs === 'rail' ? 96 : 140),
+        gap: shell.stance === 'hud' ? 20 : 28,
       }}
       showsVerticalScrollIndicator={false}
     >
-      <WorldEnter index={0}>
-        <Surface tone="raised" style={styles.greeting}>
-          <View style={styles.eyebrow}>
-            <Sparkles size={16} color={t.lampDeep} aria-hidden />
-            <Text kind="label" tone="soft">
-              {canvas.registry.title}
-            </Text>
-          </View>
-          <Text kind="title">Begin where you are, {canvas.displayName}</Text>
-          <Text kind="body" tone="soft">
-            {canvas.registry.subtitle}
-          </Text>
-          <Text kind="caption" tone="faint">
-            Choose a practice below. Open work stays in your task strip.
-          </Text>
-        </Surface>
-      </WorldEnter>
-
-      <WorldEnter index={1}>
-        <FloorSection
-          count={canvas.pinnedFeatures.length}
-          icon={<Pin size={16} color={t.lampDeep} aria-hidden />}
-          title="Pinned practices"
-        >
-          {canvas.pinnedFeatures.length > 0 ? (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 10, paddingRight: canvas.gutter }}
-            >
-              {canvas.pinnedFeatures.map((feature) => (
-                <Pebble
-                  key={feature.id}
-                  title={feature.title}
-                  icon={feature.icon || Compass}
-                  gear="compact"
-                  width={90}
-                  cornerBadge={{
-                    mode: 'pin',
-                    isPinned: true,
-                    onAction: () => canvas.togglePin(feature.id),
-                  }}
-                  onPress={() => canvas.launchFeature(feature)}
-                />
-              ))}
-            </ScrollView>
-          ) : (
+      <View style={sideBySide ? styles.pair : styles.stack}>
+        <WorldEnter index={0} style={sideBySide ? styles.half : undefined}>
+          <Surface tone="raised" style={styles.greeting}>
+            <View style={styles.eyebrow}>
+              <Sparkles size={16} color={t.lampDeep} aria-hidden />
+              <Text kind="label" tone="soft">
+                {canvas.registry.title}
+              </Text>
+            </View>
+            <Text kind="title">Begin where you are, {canvas.displayName}</Text>
             <Text kind="body" tone="soft">
-              Pin the practices you return to. They will appear here in your chosen order.
+              {canvas.registry.subtitle}
             </Text>
-          )}
-        </FloorSection>
-      </WorldEnter>
+            <Text kind="caption" tone="faint">
+              Choose a practice below. Open work stays in your task strip.
+            </Text>
+          </Surface>
+        </WorldEnter>
+
+        <WorldEnter index={1} style={sideBySide ? styles.half : undefined}>
+          <FloorSection
+            count={canvas.pinnedFeatures.length}
+            icon={<Pin size={16} color={t.lampDeep} aria-hidden />}
+            title="Pinned practices"
+          >
+            {canvas.pinnedFeatures.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 10, paddingRight: gutter }}
+              >
+                {canvas.pinnedFeatures.map((feature) => (
+                  <Pebble
+                    key={feature.id}
+                    title={feature.title}
+                    icon={feature.icon || Compass}
+                    gear="compact"
+                    width={90}
+                    cornerBadge={{
+                      mode: 'pin',
+                      isPinned: true,
+                      onAction: () => canvas.togglePin(feature.id),
+                    }}
+                    onPress={() => canvas.launchFeature(feature)}
+                  />
+                ))}
+              </ScrollView>
+            ) : (
+              <Text kind="body" tone="soft">
+                Pin the practices you return to. They will appear here in your chosen order.
+              </Text>
+            )}
+          </FloorSection>
+        </WorldEnter>
+      </View>
 
       <WorldEnter index={2}>
         <FloorSection count={canvas.features.length} title="Self practices">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingRight: canvas.gutter }}
+            contentContainerStyle={{ paddingRight: gutter }}
           >
             <Chips label="Show practices" single>
               {canvas.categories.map((category) => (
@@ -119,7 +144,10 @@ export function SelfFloor() {
               ))}
             </Chips>
           </ScrollView>
-          <View style={[styles.grid, { gap: canvas.cardGap }]}>
+          <View
+            style={[styles.grid, { gap: canvas.cardGap }]}
+            onLayout={(e: LayoutChangeEvent) => setGridWidth(e.nativeEvent.layout.width)}
+          >
             {canvas.visibleFeatures.map((feature) => (
               <PracticeCard
                 key={feature.id}
@@ -127,7 +155,7 @@ export function SelfFloor() {
                 isPinned={canvas.effectivePinnedIds.includes(feature.id)}
                 onLaunch={() => canvas.launchFeature(feature)}
                 onTogglePin={() => canvas.togglePin(feature.id)}
-                width={canvas.cardWidth}
+                width={grid.card || canvas.cardWidth}
               />
             ))}
           </View>
@@ -206,6 +234,9 @@ function PracticeCard({
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
+  stack: { gap: 28 },
+  pair: { flexDirection: 'row', alignItems: 'stretch', gap: 20 },
+  half: { flex: 1, minWidth: 0 },
   greeting: { padding: 20, gap: 10 },
   eyebrow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

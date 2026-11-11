@@ -6,6 +6,10 @@
  *   it. Most phones.
  * - rail: a column at the side, for tablets and wide screens.
  *
+ * Held on its side, a phone has no height for a header row, so the rail becomes a game-style HUD
+ * (`hud`): the person's photo at the top, the rooms in the middle (scrolling if a small, old
+ * phone is shorter than the rooms), and help and notifications at the foot, all by the left thumb.
+ *
  * The room you are in is the lit thing, marked the world's own way (`roomMarkOf`): a well in the
  * world's chip shape, a lamp line, a halo, or an ornament frame. The mark glides from room to room
  * on the world's curve (it simply moves when motion is off), and the name goes to full ink. Names
@@ -13,7 +17,14 @@
  */
 
 import { type ComponentType, useCallback, useEffect, useState } from 'react';
-import { type LayoutChangeEvent, Pressable, Text as RNText, StyleSheet, View } from 'react-native';
+import {
+  type LayoutChangeEvent,
+  Pressable,
+  Text as RNText,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -21,12 +32,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { alpha, mix } from '../../../theme/color';
-import type { KitIconProps } from '../../../theme/contracts';
+import type { HeaderAction, KitIconProps } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
 import { usePressMotion, useWorldMotion } from '../../../theme/native/motion';
 import { radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { fitRadius, type RoomMark, roomMarkOf } from '../../../theme/shellMarks';
+import { HeaderActionButton, HeaderAvatar } from './AppHeader';
 
 export interface WorldTabItem {
   key: string;
@@ -48,6 +60,15 @@ export interface WorldTabBarProps {
   /** Hidden while the person reads (scroll hides chrome). */
   hidden?: boolean;
   label?: string;
+  /** On a rail held sideways: the header's controls move onto the rail. */
+  hud?: RailHud;
+}
+
+/** What a header would carry, worn by the rail when there is no header row. */
+export interface RailHud {
+  person: { name: string; src?: string; label: string; onPress: () => void };
+  /** Help and notifications, in the header's own order. */
+  actions: readonly HeaderAction[];
 }
 
 const RAIL_WIDTH = 88;
@@ -120,10 +141,12 @@ function Item({
   item,
   layout,
   onSpot,
+  short = false,
 }: {
   item: WorldTabItem;
   layout: WorldTabBarProps['layout'];
   onSpot: (key: string, part: 'item' | 'well', at: Spot) => void;
+  short?: boolean;
 }) {
   const { world, language } = useWorldContext();
   const t = world.tokens;
@@ -152,7 +175,7 @@ function Item({
             }
           : undefined
       }
-      style={[styles.item, rail ? styles.railItem : null]}
+      style={[styles.item, rail ? (short ? styles.railItemShort : styles.railItem) : null]}
     >
       <Animated.View
         onLayout={(e: LayoutChangeEvent) => onSpot(item.key, 'well', e.nativeEvent.layout)}
@@ -170,7 +193,7 @@ function Item({
         numberOfLines={1}
         maxFontSizeMultiplier={1.4}
         style={[
-          typeStyle(world.recipes.text.caption, language, world, 11.5),
+          typeStyle(world.recipes.text.caption, language, world, short ? 10.5 : 11.5),
           { color: item.focused ? t.ink : t.inkSoft, fontWeight: item.focused ? '700' : '500' },
         ]}
       >
@@ -207,7 +230,7 @@ export function WorldTabBar(props: WorldTabBarProps) {
   );
 }
 
-function Bar({ items, layout, insets, label = 'Rooms' }: WorldTabBarProps) {
+function Bar({ items, layout, insets, label = 'Rooms', hud }: WorldTabBarProps) {
   const { world } = useWorldContext();
   const t = world.tokens;
   const raised = world.recipes.surface.raised;
@@ -228,21 +251,28 @@ function Bar({ items, layout, insets, label = 'Rooms' }: WorldTabBarProps) {
     at?.item && at.well ? (
       <GlideMark kind={kind} spot={{ x: at.item.x + at.well.x, y: at.item.y + at.well.y }} />
     ) : null;
+  const short = layout === 'rail' && hud !== undefined;
   const rows = items.map((item) => (
-    <Item key={item.key} item={item} layout={layout} onSpot={onSpot} />
+    <Item key={item.key} item={item} layout={layout} onSpot={onSpot} short={short} />
   ));
 
   if (layout === 'rail') {
+    // The mark and the rooms share one box, so the mark's spot is measured in the same frame.
+    const rooms = (
+      <View role="tablist" aria-label={label} style={short ? styles.roomsShort : styles.rooms}>
+        {mark}
+        {rows}
+      </View>
+    );
     return (
       <View
-        role="tablist"
-        aria-label={label}
         style={[
           styles.rail,
+          short ? styles.railShort : null,
           {
             width: RAIL_WIDTH + insets.left,
-            paddingTop: insets.top + 12,
-            paddingBottom: insets.bottom + 12,
+            paddingTop: insets.top + (short ? 10 : 12),
+            paddingBottom: insets.bottom + (short ? 10 : 12),
             paddingLeft: insets.left,
             backgroundColor: alpha(t.ground, 0.9),
             borderRightColor: t.line,
@@ -250,8 +280,29 @@ function Bar({ items, layout, insets, label = 'Rooms' }: WorldTabBarProps) {
           },
         ]}
       >
-        {mark}
-        {rows}
+        {hud ? (
+          <View style={styles.hudLead}>
+            <HeaderAvatar {...hud.person} />
+          </View>
+        ) : null}
+        {short ? (
+          <ScrollView
+            style={styles.roomsScroll}
+            contentContainerStyle={styles.roomsScrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {rooms}
+          </ScrollView>
+        ) : (
+          rooms
+        )}
+        {hud && hud.actions.length > 0 ? (
+          <View style={styles.hudTail}>
+            {hud.actions.map((a) => (
+              <HeaderActionButton key={a.key} action={a} />
+            ))}
+          </View>
+        ) : null}
       </View>
     );
   }
@@ -313,6 +364,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   railItem: { flex: 0, width: RAIL_WIDTH, minHeight: 72 },
+  railItemShort: { flex: 0, width: RAIL_WIDTH, minHeight: 48, paddingVertical: 2, gap: 0 },
   well: { width: WELL_W, height: WELL_H, alignItems: 'center', justifyContent: 'center' },
   mark: { position: 'absolute', left: 0, top: 0, width: WELL_W, height: WELL_H },
   underline: { position: 'absolute', bottom: -4, left: (WELL_W - 24) / 2, width: 24 },
@@ -342,4 +394,12 @@ const styles = StyleSheet.create({
     maxWidth: 520,
   },
   rail: { alignItems: 'center', gap: 6 },
+  railShort: { flex: 1, gap: 4, justifyContent: 'space-between' },
+  rooms: { alignItems: 'center', gap: 6 },
+  roomsShort: { alignItems: 'center', gap: 2 },
+  roomsScroll: { flexGrow: 0, flexShrink: 1, alignSelf: 'stretch' },
+  roomsScrollContent: { flexGrow: 1, justifyContent: 'center' },
+  hudLead: { paddingBottom: 4 },
+  // Two round wells side by side fit the rail's width; a third wraps.
+  hudTail: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 4 },
 });

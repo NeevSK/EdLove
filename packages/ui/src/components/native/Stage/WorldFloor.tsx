@@ -5,7 +5,11 @@
  *   particles and shader on a second canvas that alone redraws, at the stage's frame rate.
  * - floor: the still picture without its finest layers, plus two or three soft overlays moved by
  *   CSS animations on the UI thread (no frame loop, no redraw). Still alive, almost free. Where a
- *   baked picture of the world at this phase is registered, it is shown instead (no canvas).
+ *   baked picture of the world at this phase is registered, it is shown instead (no canvas); a
+ *   wide screen gets the wide bake.
+ *
+ * The scene is composed for the screen's own width and height, so turning the phone redraws it
+ * for the new frame (the horizon, the sun's path and the reading wash all follow).
  * - bare, or a world whose floor is plain (Classic): no canvas; the ground, tinted by the hour.
  *
  * Over it, veils of the world's ground ease in and out with the screen's presence (full, band,
@@ -106,7 +110,11 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
   const quietStyle = useAnimatedStyle(() => ({ opacity: quiet.get() }));
 
   const ground = world.tokens.ground;
-  const picture = !plain && stage.tier === 'floor' ? floorPictureFor(world.id, scene.phase) : null;
+  // Turned on its side, the floor shows a picture composed for the wide frame, not a crop.
+  const picture =
+    !plain && stage.tier === 'floor'
+      ? floorPictureFor(world.id, scene.phase, width > height)
+      : null;
   const sun: [number, number] = [
     width * scene.celestial.x,
     height * 0.58 * (1 - scene.celestial.lift * 0.92) + 10,

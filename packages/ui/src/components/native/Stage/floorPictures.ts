@@ -13,11 +13,15 @@ export type FloorPictures = Readonly<
 >;
 
 let pictures: FloorPictures = {};
+let widePictures: FloorPictures = {};
 
-export function registerFloorPictures(next: FloorPictures): void {
+/** Upright pictures, and wide ones composed for a phone on its side or a tablet. */
+export function registerFloorPictures(next: FloorPictures, wide: FloorPictures = {}): void {
   pictures = next;
+  widePictures = wide;
 }
 
-export function floorPictureFor(world: string, phase: Phase): FloorPicture | null {
-  return pictures[world]?.[phase] ?? null;
+/** The picture for this world and phase; a wide screen gets the wide one where it was baked. */
+export function floorPictureFor(world: string, phase: Phase, wide = false): FloorPicture | null {
+  return (wide ? widePictures[world]?.[phase] : undefined) ?? pictures[world]?.[phase] ?? null;
 }

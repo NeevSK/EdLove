@@ -10,6 +10,9 @@
  * Inside a room (posture `inside`) every layout becomes the same working header: back, the
  * screen's title over the room's name, and the help and notification buttons.
  *
+ * Held sideways on a phone (`hud`), the photo, help and bell move onto the rail: at a room's front
+ * the header is gone (only the task strip stays), and inside a room it is one line, back and title.
+ *
  * The photo opens the person's "You" sheet (settings, world, reading, help live there). The help
  * button is Tutii or a plain AI button, while the two are being compared. Notifications always stay.
  */
@@ -55,6 +58,8 @@ export interface WorldHeaderProps {
   icons?: { back?: ComponentType<KitIconProps> };
   /** Draw no wash (a screen that paints its own top). */
   bare?: boolean;
+  /** The rail carries the photo, help and bell (a phone on its side). */
+  hud?: boolean;
 }
 
 export function WorldHeader({
@@ -73,6 +78,7 @@ export function WorldHeader({
   below,
   icons,
   bare = false,
+  hud = false,
 }: WorldHeaderProps) {
   const world = useWorld();
   const insets = useSafeAreaInsets();
@@ -107,6 +113,23 @@ export function WorldHeader({
   };
   const classic = layout === 'classic' && !inside;
 
+  if (hud && !inside && !perspective) {
+    // At a room's front, held sideways: no header row; the task strip alone, under a thin wash.
+    // (The workspace keeps one line, for its perspective switch.)
+    return below ? (
+      <View
+        style={[
+          { paddingTop: insets.top, paddingLeft: insets.left, paddingRight: insets.right },
+          bare ? null : { backgroundColor: alpha(t.ground, 0.72) },
+        ]}
+      >
+        {below}
+      </View>
+    ) : (
+      <View style={{ height: insets.top }} />
+    );
+  }
+
   // The wash: the world's ground, strong at the top where the status bar sits, gone at the bottom,
   // so the header reads over any scene and the floor still shows through.
   const wash = bare
@@ -124,16 +147,16 @@ export function WorldHeader({
     >
       <AppHeader
         title={inside ? (title ?? room) : room}
-        eyebrow={inside ? room : layout === 'greeting' ? greeting : undefined}
-        compact={layout === 'compact' || inside}
+        eyebrow={inside ? room : layout === 'greeting' && !hud ? greeting : undefined}
+        compact={layout === 'compact' || inside || hud}
         leading={inside && onBack ? { kind: 'back', label: backLabel, onPress: onBack } : undefined}
-        avatar={inside || classic ? undefined : avatar}
+        avatar={inside || classic || hud ? undefined : avatar}
         perspective={
           perspective ? { ...perspective, beside: layout !== 'greeting' || inside } : undefined
         }
-        actions={actions}
+        actions={hud ? [] : actions}
         trailing={
-          classic ? (
+          classic && !hud ? (
             <View style={styles.trailingAvatar}>
               <HeaderAvatar {...avatar} />
             </View>

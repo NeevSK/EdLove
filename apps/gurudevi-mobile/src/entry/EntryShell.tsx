@@ -51,7 +51,7 @@ import { GuestConversionBoundary } from '@/entry/GuestConversionBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
-import { FLOOR_PICTURES } from '@/generated/floorPictures';
+import { FLOOR_PICTURES, FLOOR_PICTURES_WIDE } from '@/generated/floorPictures';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 import { GurudeviVerger } from '@/runtime/GurudeviVerger';
@@ -67,7 +67,7 @@ import { useSomaticShake } from '@/somatic/useSomaticShake';
  * turn a public launch into a blank surface.
  */
 // Small phones show each world's floor as a baked picture instead of drawing it.
-registerFloorPictures(FLOOR_PICTURES);
+registerFloorPictures(FLOOR_PICTURES, FLOOR_PICTURES_WIDE);
 
 const readLocalGuestId = async () => (await readLocalGuestSession())?.id ?? null;
 

@@ -138,13 +138,24 @@ export {
   type LinkRowProps,
 } from './Settings/SettingsRows';
 export { Sheet, type SheetProps } from './Sheet/Sheet';
-export { AppHeader, type AppHeaderProps, HeaderAvatar } from './Shell/AppHeader';
+export {
+  AppHeader,
+  type AppHeaderProps,
+  HeaderActionButton,
+  HeaderAvatar,
+} from './Shell/AppHeader';
 export { NotificationItem, type NotificationItemProps } from './Shell/NotificationItem';
 export { SwitchRow, type SwitchRowProps } from './Shell/SwitchRow';
 export { TaskTabs, type TaskTabsProps } from './Shell/TaskTabs';
 export { WorldHeader, type WorldHeaderLayout, type WorldHeaderProps } from './Shell/WorldHeader';
 export { useRoomScroll } from './Shell/useRoomScroll';
-export { WorldTabBar, type WorldTabBarProps, type WorldTabItem } from './Shell/WorldTabBar';
+export {
+  type RailHud,
+  WorldTabBar,
+  type WorldTabBarProps,
+  type WorldTabItem,
+} from './Shell/WorldTabBar';
+export { useShellLayout } from './Shell/useShellLayout';
 export {
   type AssistantChoice,
   type HeaderLayoutChoice,

@@ -4,11 +4,17 @@
  * and the bottom clears the rooms bar. No page draws its own background; the world does.
  */
 
-import { Badge, Stack, Text, useFloorPresence, useRoomScroll } from '@repo/ui/components/native';
-import { shellLayoutOf } from '@repo/ui/theme';
+import {
+  Badge,
+  Stack,
+  Text,
+  useFloorPresence,
+  useRoomScroll,
+  useShellLayout,
+} from '@repo/ui/components/native';
 import type { BadgeTone } from '@repo/ui/theme';
 import type { ReactNode } from 'react';
-import { ScrollView, useWindowDimensions, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function RoomPage({
@@ -26,17 +32,18 @@ export function RoomPage({
   useFloorPresence('band');
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
-  const layout = shellLayoutOf(width);
+  // Width, height and the cutouts on both sides: the column holds its reading width either way up.
+  const layout = useShellLayout();
   return (
     <ScrollView
       {...scroll}
       style={{ flex: 1, backgroundColor: 'transparent' }}
       contentContainerStyle={{
-        paddingHorizontal: layout.gutter,
-        paddingTop: 18,
-        paddingBottom: insets.bottom + 120,
-        gap: 22,
+        paddingLeft: layout.gutter + layout.edges.left,
+        paddingRight: layout.gutter + layout.edges.right,
+        paddingTop: layout.rhythm.top,
+        paddingBottom: insets.bottom + (layout.tabs === 'rail' ? 96 : 120),
+        gap: layout.rhythm.gap,
         width: '100%',
         maxWidth: layout.readable,
         alignSelf: 'center',

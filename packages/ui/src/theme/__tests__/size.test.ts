@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shellLayoutOf, sizeClassOf } from '../size';
+import { aspectClassOf, shellLayoutOf, sizeClassOf } from '../size';
 
 describe('size classes', () => {
   it('names small phones, phones, small tablets and tablets', () => {
@@ -20,5 +20,44 @@ describe('size classes', () => {
   it("keeps the person's choice on a phone", () => {
     expect(shellLayoutOf(412, 'docked').tabs).toBe('docked');
     expect(shellLayoutOf(320, 'floating').tabs).toBe('floating');
+  });
+});
+
+describe('posture, aspect and stance', () => {
+  it('reads tall phones, classic phones and square tablets', () => {
+    expect(aspectClassOf(393, 873)).toBe('tall'); // 20:9
+    expect(aspectClassOf(360, 640)).toBe('classic'); // 16:9
+    expect(aspectClassOf(820, 1180)).toBe('square'); // tablet
+    expect(aspectClassOf(873, 393)).toBe('tall'); // the same phone on its side
+  });
+
+  it('holds a phone on its side like a game: rail, no header row', () => {
+    const a24 = shellLayoutOf(873, 'auto', 393);
+    expect(a24.posture).toBe('landscape');
+    expect(a24.stance).toBe('hud');
+    expect(a24.tabs).toBe('rail');
+    expect(a24.header).toBe(false);
+    // A small, old phone on its side is still a hud, even though it is not wide.
+    expect(shellLayoutOf(568, 'auto', 320).stance).toBe('hud');
+    expect(shellLayoutOf(568, 'docked', 320).tabs).toBe('rail');
+  });
+
+  it('gives a tablet on its side a header and a rail', () => {
+    const tab = shellLayoutOf(1180, 'auto', 820);
+    expect(tab.stance).toBe('wide');
+    expect(tab.header).toBe(true);
+    expect(tab.columns).toBe(3);
+  });
+
+  it('keeps a phone upright as before', () => {
+    const a52 = shellLayoutOf(412, 'auto', 915);
+    expect(a52.stance).toBe('upright');
+    expect(a52.tabs).toBe('floating');
+    expect(a52.columns).toBe(1);
+  });
+
+  it('counts columns beside the rail', () => {
+    expect(shellLayoutOf(873, 'auto', 393).columns).toBe(2);
+    expect(shellLayoutOf(640, 'auto', 360).columns).toBe(1);
   });
 });
