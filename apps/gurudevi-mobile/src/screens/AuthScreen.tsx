@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
@@ -28,18 +27,24 @@ import {
 import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
 import { showToast } from '@repo/core/lib/feedback';
 import {
+  Avatar,
   Button,
+  Group,
   IconButton,
+  Link,
+  Row,
   Surface,
   Text,
   TextField,
   useFloorPresence,
 } from '@repo/ui/components/native';
+import { WorldEnter } from '@repo/ui/theme/native';
 import { ArrowLeft } from '@repo/ui/icons/native';
 import { useWorld } from '@repo/ui/theme/native';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import AccountPinModal, { type AccountPinModalSubmit } from '@repo/ui/components/AccountPinModal';
+import type { AccountPinModalSubmit } from '@repo/ui/components/AccountPinModal';
+import { AccountPinDialog } from '@/components/pin/AccountPinDialog';
 import { signInWithGoogleNative } from '@/lib/googleSignIn';
 
 // Android requirement for deep-link completion in standalone browser
@@ -376,7 +381,7 @@ export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: Au
             <View style={[styles.brandBadge, { backgroundColor: wt.raised, borderColor: wt.line }]}>
               <View style={[styles.brandDot, { backgroundColor: wt.lamp }]} />
               <Text kind="caption" tone="soft" style={styles.brandBadgeText}>
-                SANCTUARY AUTH
+                Gurudevi
               </Text>
             </View>
 
@@ -400,138 +405,126 @@ export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: Au
 
             {/* Remembered Device Accounts */}
             {!accountsLoading && accounts.length > 0 ? (
-              <Surface tone="raised" style={styles.accountsCard}>
-                <Text kind="label" tone="soft">
-                  CONTINUE AS
-                </Text>
-                <View style={styles.accountsList}>
-                  {accounts.map((account) => (
-                    <Pressable
-                      key={account.accountId}
-                      onPress={() => handleRememberedAccountPress(account.accountId)}
-                      disabled={Boolean(busyAccountId)}
-                      style={[
-                        styles.accountRow,
-                        { borderColor: wt.line, backgroundColor: wt.ground },
-                      ]}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Continue as ${account.displayName || account.email}`}
-                    >
-                      <View style={{ flex: 1 }}>
-                        <Text kind="body" tone="ink" style={{ fontWeight: '600' }}>
-                          {account.displayName || account.email || 'Saved account'}
-                        </Text>
-                        {account.email ? (
-                          <Text kind="caption" tone="soft">
-                            {account.email}
-                          </Text>
-                        ) : null}
-                      </View>
-                    </Pressable>
-                  ))}
-                </View>
-              </Surface>
+              <WorldEnter index={0}>
+                <Group label="Continue as">
+                  {accounts.map((account) => {
+                    const name = account.displayName || account.email || 'Saved account';
+                    return (
+                      <Row
+                        key={account.accountId}
+                        label={name}
+                        detail={account.displayName ? (account.email ?? undefined) : undefined}
+                        accessory={<Avatar name={name} size="sm" />}
+                        chevron
+                        onPress={
+                          busyAccountId
+                            ? undefined
+                            : () => handleRememberedAccountPress(account.accountId)
+                        }
+                      />
+                    );
+                  })}
+                </Group>
+              </WorldEnter>
             ) : null}
 
             {/* Primary Sign-In Card */}
-            <Surface tone="raised" style={styles.authCard}>
-              {/* Google Native Action */}
-              <Button
-                label="Continue with Google"
-                icon={GoogleGlyph}
-                variant="secondary"
-                size="lg"
-                fullWidth
-                loading={loadingProvider === 'google'}
-                onPress={handleGoogleSignIn}
-              />
-
-              {/* Or Divider */}
-              <View style={styles.dividerRow}>
-                <View style={[styles.dividerLine, { backgroundColor: wt.line }]} />
-                <Text kind="caption" tone="faint" style={styles.dividerText}>
-                  or with email
-                </Text>
-                <View style={[styles.dividerLine, { backgroundColor: wt.line }]} />
-              </View>
-
-              {/* Email & Password Form */}
-              <View style={styles.formFields}>
-                <TextField
-                  label="Email address"
-                  value={email}
-                  onChangeText={(val) => {
-                    setEmail(val);
-                    if (errorField === 'email') setErrorField(null);
-                  }}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  error={errorField === 'email' ? (errorMessage ?? undefined) : undefined}
-                  placeholder="you@school.lk or personal"
-                />
-
-                {usePassword ? (
-                  <View style={{ gap: 8 }}>
-                    <TextField
-                      label="Password"
-                      value={password}
-                      onChangeText={(val) => {
-                        setPassword(val);
-                        if (errorField === 'password') setErrorField(null);
-                      }}
-                      secureTextEntry
-                      autoComplete="current-password"
-                      error={errorField === 'password' ? (errorMessage ?? undefined) : undefined}
-                      placeholder="Enter your password"
-                    />
-
-                    {onNavigateRecovery ? (
-                      <Pressable
-                        onPress={onNavigateRecovery}
-                        hitSlop={8}
-                        style={{ alignSelf: 'flex-end', paddingTop: 2 }}
-                      >
-                        <Text kind="caption" tone="lamp" style={styles.underlined}>
-                          Forgot password?
-                        </Text>
-                      </Pressable>
-                    ) : null}
-                  </View>
-                ) : null}
-
-                {errorField === 'form' && errorMessage ? (
-                  <Text kind="caption" tone="danger" align="center">
-                    {errorMessage}
-                  </Text>
-                ) : null}
-
-                {/* Primary Submit */}
+            <WorldEnter index={1}>
+              <Surface tone="raised" style={styles.authCard}>
+                {/* Google Native Action */}
                 <Button
-                  label={usePassword ? 'Sign In with Password' : 'Send Magic Link'}
-                  variant="primary"
+                  label="Continue with Google"
+                  icon={GoogleGlyph}
+                  variant="secondary"
                   size="lg"
                   fullWidth
-                  loading={loadingProvider === 'email'}
-                  onPress={usePassword ? handlePasswordSignIn : handleMagicLink}
+                  loading={loadingProvider === 'google'}
+                  onPress={handleGoogleSignIn}
                 />
 
-                {/* Password / Magic Link Mode Toggle */}
-                <Button
-                  label={
-                    usePassword ? 'Email me a magic link instead' : 'Sign in with password instead'
-                  }
-                  variant="quiet"
-                  size="sm"
-                  fullWidth
-                  onPress={() => {
-                    setUsePassword(!usePassword);
-                    setErrorField(null);
-                    setErrorMessage(null);
-                  }}
-                />
-              </View>
-            </Surface>
+                {/* Or Divider */}
+                <View style={styles.dividerRow}>
+                  <View style={[styles.dividerLine, { backgroundColor: wt.line }]} />
+                  <Text kind="caption" tone="faint" style={styles.dividerText}>
+                    or with email
+                  </Text>
+                  <View style={[styles.dividerLine, { backgroundColor: wt.line }]} />
+                </View>
+
+                {/* Email & Password Form */}
+                <View style={styles.formFields}>
+                  <TextField
+                    label="Email address"
+                    value={email}
+                    onChangeText={(val) => {
+                      setEmail(val);
+                      if (errorField === 'email') setErrorField(null);
+                    }}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    error={errorField === 'email' ? (errorMessage ?? undefined) : undefined}
+                    placeholder="you@school.lk or personal"
+                  />
+
+                  {usePassword ? (
+                    <View style={{ gap: 8 }}>
+                      <TextField
+                        label="Password"
+                        value={password}
+                        onChangeText={(val) => {
+                          setPassword(val);
+                          if (errorField === 'password') setErrorField(null);
+                        }}
+                        secureTextEntry
+                        autoComplete="current-password"
+                        error={errorField === 'password' ? (errorMessage ?? undefined) : undefined}
+                        placeholder="Enter your password"
+                      />
+
+                      {onNavigateRecovery ? (
+                        <View style={{ alignSelf: 'flex-end', paddingTop: 2 }}>
+                          <Link label="Forgot password?" onPress={onNavigateRecovery} />
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {errorField === 'form' && errorMessage ? (
+                    <Text kind="caption" tone="danger" align="center">
+                      {errorMessage}
+                    </Text>
+                  ) : null}
+
+                  {/* Primary Submit */}
+                  <Button
+                    label={usePassword ? 'Sign In with Password' : 'Send Magic Link'}
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    loading={loadingProvider === 'email'}
+                    onPress={usePassword ? handlePasswordSignIn : handleMagicLink}
+                  />
+
+                  {/* Password / Magic Link Mode Toggle */}
+                  <Button
+                    label={
+                      usePassword
+                        ? 'Email me a magic link instead'
+                        : 'Sign in with password instead'
+                    }
+                    variant="quiet"
+                    size="sm"
+                    fullWidth
+                    onPress={() => {
+                      setUsePassword(!usePassword);
+                      setErrorField(null);
+                      setErrorMessage(null);
+                    }}
+                  />
+                </View>
+              </Surface>
+            </WorldEnter>
 
             {/* Privacy & Terms Footnote */}
             <View style={styles.footer}>
@@ -544,7 +537,7 @@ export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: Au
       </SafeAreaView>
 
       {/* Account PIN verification modal */}
-      <AccountPinModal
+      <AccountPinDialog
         isOpen={Boolean(pendingPinAccountId)}
         mode="verify"
         accountLabel={
