@@ -509,6 +509,7 @@ function TabsLayoutContent() {
         visualDetail={{ value: fidelityLevel, onChange: (v) => void setFidelityLevel(v) }}
         reading={{ onPress: () => router.push('/reading') }}
         companions={{ onPress: () => router.push('/companions') }}
+        showcase={{ onPress: () => router.push('/world-showcase') }}
         shell={{
           headerLayout,
           onHeaderLayout: (v) => updatePreferences({ headerLayout: v }),

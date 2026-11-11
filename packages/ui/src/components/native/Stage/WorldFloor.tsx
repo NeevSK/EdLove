@@ -27,6 +27,7 @@ import { ArtLife } from './ArtLife';
 import { ArtStill, layerShows } from './ArtStill';
 import { CompanionOnFloor } from './CompanionOnFloor';
 import { FloorOverlays } from './FloorOverlays';
+import { useStagePreview } from './StagePreview';
 
 export interface WorldFloorProps {
   stage: Stage;
@@ -49,6 +50,7 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
   const budget = useVisualCapabilities();
   const visibility = useVergerSnapshot()?.visibility ?? 'active';
   const now = useMinuteClock();
+  const pins = useStagePreview();
   const { width, height } = useWindowDimensions();
   const plain = world.definition.floor === 'plain' || stage.tier === 'bare';
 
@@ -56,6 +58,8 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
     () =>
       resolveScene({
         now,
+        minute: pins.minute ?? null,
+        weather: pins.weather ?? null,
         world: { id: world.id, glow: world.tokens.glow },
         room: 'self',
         follows: 'world',
@@ -63,7 +67,7 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
         budget,
         visible: visibility === 'active',
       }),
-    [now, world.id, world.tokens.glow, budget, visibility],
+    [now, pins.minute, pins.weather, world.id, world.tokens.glow, budget, visibility],
   );
 
   // The world's own art, drawn from its light palette (the scene darkens itself at night).

@@ -10,8 +10,9 @@ import Animated from 'react-native-reanimated';
 import type { ActionFabContract, FabMenuContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
 import { usePressMotion } from '../../../theme/native/motion';
-import { glowStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
+import { glowStyle, radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import { fitRadius } from '../../../theme/shellMarks';
 import { iconSize } from '../../../tokens/sizes';
 import { gapFor } from '../../../tokens/space';
 import { groupFabActions } from '../../shared/agent';
@@ -27,8 +28,9 @@ export interface ActionFabProps extends ActionFabContract {
 }
 
 /**
- * The floating action: one lit control in the world's lamp, pressed with the
- * world's motion and light. A quiet signal marks that something needs the
+ * The floating action: one lit control in the world's lamp and in the world's
+ * control shape (Classic's circle, Kele's leaf, Spark's cut corner), pressed with
+ * the world's motion and light. A quiet signal marks that something needs the
  * person; its words are part of the name.
  */
 export function ActionFab({
@@ -45,6 +47,7 @@ export function ActionFab({
   const press = usePressMotion();
   if (hidden) return null;
   const t = world.tokens;
+  const shape = radiusStyle(fitRadius(world.definition.style.corner.control, FAB));
   const name = signal && signalLabel ? `${label}, ${signalLabel}` : label;
   return (
     <Animated.View style={[press.style, style]}>
@@ -59,6 +62,7 @@ export function ActionFab({
         onPress={onPress}
         style={[
           styles.fab,
+          shape,
           { backgroundColor: t.lamp },
           shadowStyle(world.recipes.surface.raised.shadow),
           glowStyle(world.recipes.button.variants.primary.glow),
@@ -68,7 +72,7 @@ export function ActionFab({
           pointerEvents="none"
           style={[
             StyleSheet.absoluteFill,
-            styles.round,
+            shape,
             { backgroundColor: press.light.color },
             press.light.style,
           ]}
@@ -149,11 +153,9 @@ const styles = StyleSheet.create({
   fab: {
     width: FAB,
     height: FAB,
-    borderRadius: FAB / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  round: { borderRadius: FAB / 2 },
   signal: {
     position: 'absolute',
     top: 6,

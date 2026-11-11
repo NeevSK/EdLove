@@ -102,15 +102,20 @@ export {
   ArtLayerView,
   ArtLife,
   ArtStill,
+  clearStagePreview,
   FloorOverlays,
+  getStagePreview,
   glowAt,
   layerShows,
   motionAt,
   type StageContextValue,
+  type StagePreview,
+  setStagePreview,
   splitLayers,
   useFloorPresence,
   useStage,
   useStageContext,
+  useStagePreview,
   useStageScroll,
   WorldFloor,
   WorldStage,
@@ -192,5 +197,3 @@ export {
   ThemeSwitcher,
   type ThemeSwitcherProps,
 } from './ThemeSwitcher/ThemeSwitcher';
-
-

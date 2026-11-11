@@ -21,6 +21,7 @@ import { useVisualCapabilities } from '../../../context/VisualCapabilities';
 import { useWorld } from '../../../theme/native/WorldContext';
 import type { ScenePresence } from '../../../theme/scene';
 import { type Stage, type StageTier, stageOf } from '../../../theme/stage';
+import { useStagePreview } from './StagePreview';
 import { WorldFloor } from './WorldFloor';
 
 export interface StageContextValue {
@@ -104,7 +105,8 @@ export function WorldStage({ children, cap, initialPresence = 'full' }: WorldSta
   const budget = useVisualCapabilities();
   const [presence, setPresenceState] = useState<ScenePresence>(initialPresence);
   const [scrolling, setScrollingState] = useState(false);
-  const stage = useMemo(() => stageOf(budget, cap), [budget, cap]);
+  const pinned = useStagePreview().cap;
+  const stage = useMemo(() => stageOf(budget, cap ?? pinned), [budget, cap, pinned]);
   const setPresence = useCallback((next: ScenePresence) => setPresenceState(next), []);
   const setScrolling = useCallback((next: boolean) => setScrollingState(next), []);
   const value = useMemo(

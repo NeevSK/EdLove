@@ -31,6 +31,8 @@ export interface YouSheetProps {
   visualDetail: { value: VisualDetailChoice; onChange: (v: VisualDetailChoice) => void };
   reading?: { detail?: string; onPress: () => void };
   companions?: { detail?: string; onPress: () => void };
+  /** Every world, tier and hour on this phone, with the real shell: the World Showcase. */
+  showcase?: { onPress: () => void };
   shell: {
     headerLayout: HeaderLayoutChoice;
     onHeaderLayout: (v: HeaderLayoutChoice) => void;
@@ -79,6 +81,7 @@ export function YouSheet({
   visualDetail,
   reading,
   companions,
+  showcase,
   shell,
   onProfile,
   onGuide,
@@ -135,6 +138,13 @@ export function YouSheet({
               label="Companions"
               detail={companions.detail}
               onPress={go(companions.onPress)}
+            />
+          ) : null}
+          {showcase ? (
+            <LinkRow
+              label="See every world"
+              detail="Try each one here, at any hour"
+              onPress={go(showcase.onPress)}
             />
           ) : null}
         </Group>
