@@ -107,11 +107,16 @@ publicHoistPattern:
 dedupePeerDependents: true
 
 overrides:
+  # Hono 5 everywhere (owner, 2026-11-11). Dev tools that declare ^4 (MCP SDK 1.26+, @modelcontextprotocol/node,
+  # ZenStack CLI, promptfoo) are forced onto it; each was smoke-tested. See docs/architecture/dependencies.md.
+  hono: '5.0.0-rc.1'
+  '@hono/node-server': '^2.1.6'
   "@typescript-eslint/typescript-estree>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@typescript-eslint/parser>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@typescript-eslint/eslint-plugin>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@typescript-eslint/type-utils>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@typescript-eslint/utils>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "eslint-plugin-sonarjs>typescript": "npm:@typescript/typescript6@^6.0.2"
   "typescript-eslint>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@eslint-react/core>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@eslint-react/eslint-plugin>typescript": "npm:@typescript/typescript6@^6.0.2"
@@ -128,7 +133,6 @@ overrides:
   '@zenstackhq/sdk': '3.10.1'
   '@zenstackhq/zod': '3.10.1'
   '@zenstackhq/schema': '3.10.1'
-  '@zenstackhq/server': '3.10.1'
   '@zenstackhq/plugin-policy': '3.10.1'
   '@ag-ui/core': '1.0.0'
   'shell-quote': '^1.12.0'
@@ -224,6 +228,7 @@ overrides:
 
 patchedDependencies:
   '@noble/hashes@1.8.0': 'patches/@noble__hashes@1.8.0.patch'
+  '@zenstackhq/server@3.10.1': patches/@zenstackhq__server@3.10.1.patch
   color@4.2.3: patches/color@4.2.3.patch
   eslint-plugin-react-native: patches/eslint-plugin-react-native.patch
   react-native-shared-hero@1.0.6: patches/react-native-shared-hero@1.0.6.patch

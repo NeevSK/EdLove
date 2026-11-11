@@ -133,7 +133,6 @@ export const DEPENDENCY_COHORTS = {
       '@zenstackhq/sdk': '3.10.1',
       '@zenstackhq/zod': '3.10.1',
       '@zenstackhq/schema': '3.10.1',
-      '@zenstackhq/server': '3.10.1',
       '@zenstackhq/plugin-policy': '3.10.1',
     },
   },

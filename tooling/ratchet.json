@@ -5,7 +5,7 @@
   "supabaseFromSites": 533,
   "sourceFilesOver800Loc": 36,
   "rootScripts": 129,
-  "plainErrorSubclasses": 21,
+  "plainErrorSubclasses": 20,
   "dataTaggedErrors": 23,
   "authorityStoreReads": 57,
   "machinesWithoutSetup": 14

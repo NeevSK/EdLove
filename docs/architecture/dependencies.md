@@ -54,11 +54,30 @@ packages have matured.
 | `@react-native-async-storage/async-storage` | 2.2.0 | Expo SDK 58 expects exactly this. 3.x renames APIs and needs a device test because it holds auth data | Expo SDK moves, or a planned migration |
 | `@sentry/browser` | 10.x | `@sentry/react-native` is built on the 10 line; v11 would put two Sentry cores in one tree | `@sentry/react-native` moves to 11 |
 | `react-native-web` | 0.21 | Latest, and pulled in by Expo. Brings `inline-style-prefixer`, which looks old but is its latest (last published 2024) | RN Web is retired |
-| TypeScript 6 alias | `overrides` | ESLint and ZenStack tooling need the TS 6 API. Everything else is on 7 | Those tools support 7 |
+| TypeScript 6 alias | `overrides` | ESLint (typescript-eslint and `eslint-plugin-sonarjs`) and ZenStack tooling need the TS 6 API. Everything else is on 7. Without the sonarjs alias, ESLint crashes on every file (`TypeFlags` undefined) | Those tools support 7 |
 
 Duplicates that remain come from tools, not the app: `eas-cli` brings older `@expo/*` packages,
 `vercel` brings its own `esbuild`, `rolldown` and `@types/node`, and `@rozenite/ui` brings older
 `lucide-react` and `tailwindcss`.
+
+## Hono 5 everywhere
+
+Decided by the owner on 2026-11-11: nothing in the tree uses Hono 4. The API and `@repo/core`
+pin `hono` 5.0.0-rc.1 (the newest v5). `pnpm-workspace.yaml` overrides `hono` to 5.0.0-rc.1 and
+`@hono/node-server` to `^2.1.6` (the first line that accepts Hono 5) for every dependency.
+
+Some tools declare Hono 4 themselves and are forced onto 5 by that override. They use Hono only
+for HTTP serving, never for the stdio paths the repo runs:
+
+| Tool | Where it uses Hono | Checked on Hono 5 |
+| --- | --- | --- |
+| `@modelcontextprotocol/sdk` 1.26+ (via promptfoo, aislop, argent, sequential-thinking) | `server/streamableHttp.js` | `initialize` and a tool call over HTTP |
+| `@modelcontextprotocol/node` 2.x (via the Supabase MCP server) | Node HTTP adapter | Same round trip |
+| `@zenstackhq/cli` (`zen proxy` only) and `@zenstackhq/server/hono` | Proxy server | Needed a patch: Hono 5 removed `c.req.routePath`. `patches/@zenstackhq__server@3.10.1.patch` uses `routePath(c)` from `hono/route`. `zen generate` doesn't touch Hono |
+| promptfoo | `promptfoo mcp` over HTTP | Loads; same `getRequestListener` as the SDK |
+
+Re-check when Hono 5 is stable, when any of these tools publishes a version that accepts Hono 5
+(then remove the override for it), and whenever ZenStack moves (rebuild or drop the patch).
 
 ## Babel 8
 

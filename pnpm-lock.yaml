@@ -164,11 +164,14 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  hono: 5.0.0-rc.1
+  '@hono/node-server': ^2.1.6
   '@typescript-eslint/typescript-estree>typescript': npm:@typescript/typescript6@^6.0.2
   '@typescript-eslint/parser>typescript': npm:@typescript/typescript6@^6.0.2
   '@typescript-eslint/eslint-plugin>typescript': npm:@typescript/typescript6@^6.0.2
   '@typescript-eslint/type-utils>typescript': npm:@typescript/typescript6@^6.0.2
   '@typescript-eslint/utils>typescript': npm:@typescript/typescript6@^6.0.2
+  eslint-plugin-sonarjs>typescript: npm:@typescript/typescript6@^6.0.2
   typescript-eslint>typescript: npm:@typescript/typescript6@^6.0.2
   '@eslint-react/core>typescript': npm:@typescript/typescript6@^6.0.2
   '@eslint-react/eslint-plugin>typescript': npm:@typescript/typescript6@^6.0.2
@@ -185,7 +188,6 @@ overrides:
   '@zenstackhq/sdk': 3.10.1
   '@zenstackhq/zod': 3.10.1
   '@zenstackhq/schema': 3.10.1
-  '@zenstackhq/server': 3.10.1
   '@zenstackhq/plugin-policy': 3.10.1
   '@ag-ui/core': 1.0.0
   shell-quote: ^1.12.0
@@ -283,6 +285,7 @@ pnpmfileChecksum: sha256-0ZI7VWxojsqCI3PrXOPE8F3qJF7zruj0m6IjdlQz7hc=
 
 patchedDependencies:
   '@noble/hashes@1.8.0': 8f29ec539b57f03e3a9292181436650de05718872694552273344b31198d92aa
+  '@zenstackhq/server@3.10.1': aa78ce9a3952db25bf325068b95f147f8e2054dc6790fed1b11772cfb675675f
   color@4.2.3: ae20007b1239a0d00a188e0d22a7cdf063bed6c581c42d9124e51cf86c5d28f6
   eslint-plugin-react-native: 929774bb381e1c664e3f367ecdc3fef855ce6a8183be7a63f4e179ba22cb3992
   react-native-shared-hero@1.0.6: 1e14538753ca23d53a8fbfe6c83391954220239c2ff26daec1ec297a78430a26
@@ -390,7 +393,7 @@ importers:
         version: 1.13.0
       '@zenstackhq/cli':
         specifier: 3.10.1
-        version: 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)(typescript@7.1.0-beta)
+        version: 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)(typescript@7.1.0-beta)
       '@zenstackhq/language':
         specifier: 3.10.1
         version: 3.10.1
@@ -2034,9 +2037,6 @@ importers:
       '@xstate/effect':
         specifier: 1.0.0-alpha.12
         version: 1.0.0-alpha.12(@oxlint/plugins@1.90.0)(effect@4.1.4)(xstate@6.0.0-alpha.70)
-      '@zenstackhq/server':
-        specifier: 3.10.1
-        version: 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(hono@4.13.16)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
       '@zenstackhq/zod':
         specifier: 3.10.1
         version: 3.10.1(zod@4.6.7)
@@ -2095,14 +2095,14 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       hono:
-        specifier: ^4.13.16
-        version: 4.13.16
+        specifier: 5.0.0-rc.1
+        version: 5.0.0-rc.1
       i18next:
         specifier: ^26.7.1
         version: 26.7.1(typescript@7.1.0-beta)
       inngest:
         specifier: ^4.26.2
-        version: 4.26.2(@opentelemetry/core@2.12.0(@opentelemetry/api@1.9.1))(@types/aws-lambda@8.10.162)(@types/react@19.3.0)(@vercel/node@29.0.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@vercel/build-utils@15.2.1)(rollup@4.67.5)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(hono@4.13.16)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(react@19.3.1)(supports-color@10.2.2)(typescript@7.1.0-beta)(zod@4.6.7)
+        version: 4.26.2(@opentelemetry/core@2.12.0(@opentelemetry/api@1.9.1))(@types/aws-lambda@8.10.162)(@types/react@19.3.0)(@vercel/node@29.0.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@vercel/build-utils@15.2.1)(rollup@4.67.5)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(hono@5.0.0-rc.1)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(react@19.3.1)(supports-color@10.2.2)(typescript@7.1.0-beta)(zod@4.6.7)
       isomorphic-webcrypto:
         specifier: ^2.3.8
         version: 2.3.8(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))
@@ -2218,7 +2218,7 @@ importers:
         version: 8.23.1
       '@zenstackhq/cli':
         specifier: 3.10.1
-        version: 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)(typescript@7.1.0-beta)
+        version: 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)(typescript@7.1.0-beta)
       '@zenstackhq/language':
         specifier: 3.10.1
         version: 3.10.1
@@ -2956,7 +2956,7 @@ importers:
         version: link:../typescript-config
       '@zenstackhq/cli':
         specifier: 3.10.1
-        version: 3.10.1(@types/pg@8.23.1)(@typescript/typescript6@6.0.2)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)
+        version: 3.10.1(@types/pg@8.23.1)(@typescript/typescript6@6.0.2)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)
       '@zenstackhq/language':
         specifier: 3.10.1
         version: 3.10.1
@@ -6564,32 +6564,12 @@ packages:
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
 
-  '@hono/node-server@1.19.17':
-    resolution: {integrity: sha512-dSneS5qhiauZWGDCeK4o695Xd9nUNjviSZCMQrj10eetr8Uln1ucn6bbphOM6UynAMMtNIzZNSpL9vnASJwrPQ==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      '@types/hono': '*'
-      hono: ^4
-    peerDependenciesMeta:
-      '@types/hono':
-        optional: true
-
-  '@hono/node-server@2.1.5':
-    resolution: {integrity: sha512-MgP/I06GdvsilDspMk/qmRzpk8LOUStP6jFAbSRi40W09DhoyUn+Mj7eyKICPqeYKybOjVFLVIAQzvu1bfIa7Q==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      '@types/hono': '*'
-      hono: ^4 || ^5.0.0-0
-    peerDependenciesMeta:
-      '@types/hono':
-        optional: true
-
   '@hono/node-server@2.1.6':
     resolution: {integrity: sha512-p/KH9MnfNcsm3sR6x4lNgm5j+QN4Et8srKredl9DZfXiyZ1UQ3aQ2YVpFLbqktYN5JI+DB+VZFKM2PqE5hLKjQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@types/hono': '*'
-      hono: ^4 || ^5.0.0-0
+      hono: 5.0.0-rc.1
     peerDependenciesMeta:
       '@types/hono':
         optional: true
@@ -14055,7 +14035,7 @@ packages:
       fastify: ^5.0.0
       fastify-plugin: ^5.0.0
       h3: ^1.15.0
-      hono: ^4.6.0
+      hono: 5.0.0-rc.1
       next: ^15.0.0 || ^16.0.0
       nuxt: ^4.0.0
       zod: 4.6.7
@@ -18310,9 +18290,6 @@ packages:
     resolution: {integrity: sha512-eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==}
     engines: {node: '>= 4.9.1'}
 
-  fastify-plugin@5.1.0:
-    resolution: {integrity: sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==}
-
   fastify@5.11.3:
     resolution: {integrity: sha512-W6hzDP8s0iSeL7LGwY6Oc/ZxuXWOvFEMs6p2L0Si415YRo27W5pBKdOTXxhemBDeSTAcpYf5evRA9onF2OYhPA==}
 
@@ -18968,10 +18945,6 @@ packages:
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
-  hono@4.13.16:
-    resolution: {integrity: sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A==}
-    engines: {node: '>=16.9.0'}
-
   hono@5.0.0-rc.1:
     resolution: {integrity: sha512-vTcfU9yAggXh/+ZSi8zpYbzYDubCgFnSt8d5afCAlgkd38dyYb3CVtOh8YWhS65NkEqBseCsTj/P8mceJ+7KNA==}
     engines: {node: '>=22.12.0'}
@@ -19233,7 +19206,7 @@ packages:
       express: '>=4.19.2'
       fastify: '>=4.21.0'
       h3: '>=1.8.1'
-      hono: '>=4.2.7'
+      hono: 5.0.0-rc.1
       koa: '>=2.14.2'
       next: '>=12.0.0'
       react: 19.3.1
@@ -30877,18 +30850,6 @@ snapshots:
     dependencies:
       '@hapi/hoek': 9.3.0
 
-  '@hono/node-server@1.19.17(hono@4.13.16)':
-    dependencies:
-      hono: 4.13.16
-
-  '@hono/node-server@2.1.5(hono@4.13.16)':
-    dependencies:
-      hono: 4.13.16
-
-  '@hono/node-server@2.1.6(hono@4.13.16)':
-    dependencies:
-      hono: 4.13.16
-
   '@hono/node-server@2.1.6(hono@5.0.0-rc.1)':
     dependencies:
       hono: 5.0.0-rc.1
@@ -31959,15 +31920,15 @@ snapshots:
 
   '@modelcontextprotocol/node@2.1.2(@modelcontextprotocol/server@2.4.0)':
     dependencies:
-      '@hono/node-server': 2.1.6(hono@4.13.16)
+      '@hono/node-server': 2.1.6(hono@5.0.0-rc.1)
       '@modelcontextprotocol/server': 2.4.0
-      hono: 4.13.16
+      hono: 5.0.0-rc.1
     transitivePeerDependencies:
       - '@types/hono'
 
   '@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(zod@4.6.7)':
     dependencies:
-      '@hono/node-server': 2.1.6(hono@4.13.16)
+      '@hono/node-server': 2.1.6(hono@5.0.0-rc.1)
       ajv: 8.20.0
       ajv-formats: 3.0.1
       content-type: 1.0.5
@@ -31977,7 +31938,7 @@ snapshots:
       eventsource-parser: 3.1.0
       express: 5.3.0(supports-color@10.2.2)
       express-rate-limit: 8.3.2(express@5.3.0(supports-color@10.2.2))
-      hono: 4.13.16
+      hono: 5.0.0-rc.1
       jose: 6.2.15
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -38045,23 +38006,23 @@ snapshots:
     optionalDependencies:
       '@oxlint/plugins': 1.90.0
 
-  '@zenstackhq/cli@3.10.1(@types/pg@8.23.1)(@typescript/typescript6@6.0.2)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)':
+  '@zenstackhq/cli@3.10.1(@types/pg@8.23.1)(@typescript/typescript6@6.0.2)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)':
     dependencies:
-      '@hono/node-server': 1.19.17(hono@4.13.16)
+      '@hono/node-server': 2.1.6(hono@5.0.0-rc.1)
       '@zenstackhq/common-helpers': 3.10.1
       '@zenstackhq/language': 3.10.1
       '@zenstackhq/orm': 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
       '@zenstackhq/plugin-policy': 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(kysely@0.29.8)(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
       '@zenstackhq/schema': 3.10.1
       '@zenstackhq/sdk': 3.10.1
-      '@zenstackhq/server': 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(hono@4.13.16)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
+      '@zenstackhq/server': 3.10.1(patch_hash=aa78ce9a3952db25bf325068b95f147f8e2054dc6790fed1b11772cfb675675f)(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(hono@5.0.0-rc.1)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
       chokidar: 5.0.0
       colors: 1.4.0
       commander: 8.3.0
       cors: 2.8.6
       dotenv: 17.4.2
       execa: 9.6.1
-      hono: 4.13.16
+      hono: 5.0.0-rc.1
       jiti: 2.7.0
       langium: 4.2.4
       mixpanel: 0.18.1(supports-color@10.2.2)
@@ -38106,23 +38067,23 @@ snapshots:
       - supports-color
       - typescript
 
-  '@zenstackhq/cli@3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)(typescript@7.1.0-beta)':
+  '@zenstackhq/cli@3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(kysely@0.29.8)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(supports-color@10.2.2)(typescript@7.1.0-beta)':
     dependencies:
-      '@hono/node-server': 1.19.17(hono@4.13.16)
+      '@hono/node-server': 2.1.6(hono@5.0.0-rc.1)
       '@zenstackhq/common-helpers': 3.10.1
       '@zenstackhq/language': 3.10.1
       '@zenstackhq/orm': 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
       '@zenstackhq/plugin-policy': 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(kysely@0.29.8)(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
       '@zenstackhq/schema': 3.10.1
       '@zenstackhq/sdk': 3.10.1
-      '@zenstackhq/server': 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(hono@4.13.16)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
+      '@zenstackhq/server': 3.10.1(patch_hash=aa78ce9a3952db25bf325068b95f147f8e2054dc6790fed1b11772cfb675675f)(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(hono@5.0.0-rc.1)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
       chokidar: 5.0.0
       colors: 1.4.0
       commander: 8.3.0
       cors: 2.8.6
       dotenv: 17.4.2
       execa: 9.6.1
-      hono: 4.13.16
+      hono: 5.0.0-rc.1
       jiti: 2.7.0
       langium: 4.2.4
       mixpanel: 0.18.1(supports-color@10.2.2)
@@ -38234,7 +38195,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/chevrotain'
 
-  '@zenstackhq/server@3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(hono@4.13.16)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)':
+  '@zenstackhq/server@3.10.1(patch_hash=aa78ce9a3952db25bf325068b95f147f8e2054dc6790fed1b11772cfb675675f)(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(hono@5.0.0-rc.1)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)':
     dependencies:
       '@zenstackhq/common-helpers': 3.10.1
       '@zenstackhq/orm': 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
@@ -38249,9 +38210,8 @@ snapshots:
     optionalDependencies:
       express: 5.3.0(supports-color@10.2.2)
       fastify: 5.11.3
-      fastify-plugin: 5.1.0
       h3: 1.15.11
-      hono: 4.13.16
+      hono: 5.0.0-rc.1
       next: 16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0)
     transitivePeerDependencies:
       - '@types/better-sqlite3'
@@ -41543,8 +41503,8 @@ snapshots:
       minimatch: 10.2.6
       scslre: 0.3.0
       semver: 7.8.6
-      ts-api-utils: 2.5.0(typescript@7.1.0-beta)
-      typescript: 7.1.0-beta
+      ts-api-utils: 2.5.0(@typescript/typescript6@6.0.2)
+      typescript: '@typescript/typescript6@6.0.2'
       yaml: 2.9.1
     transitivePeerDependencies:
       - '@types/typescript'
@@ -43372,9 +43332,6 @@ snapshots:
 
   fastest-levenshtein@1.0.16: {}
 
-  fastify-plugin@5.1.0:
-    optional: true
-
   fastify@5.11.3:
     dependencies:
       '@fastify/ajv-compiler': 4.0.6
@@ -44179,8 +44136,6 @@ snapshots:
     dependencies:
       react-is: 16.13.1
 
-  hono@4.13.16: {}
-
   hono@5.0.0-rc.1: {}
 
   hookified@1.15.1: {}
@@ -44464,7 +44419,7 @@ snapshots:
     dependencies:
       css-in-js-utils: 3.1.0
 
-  inngest@4.26.2(@opentelemetry/core@2.12.0(@opentelemetry/api@1.9.1))(@types/aws-lambda@8.10.162)(@types/react@19.3.0)(@vercel/node@29.0.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@vercel/build-utils@15.2.1)(rollup@4.67.5)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(hono@4.13.16)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(react@19.3.1)(supports-color@10.2.2)(typescript@7.1.0-beta)(zod@4.6.7):
+  inngest@4.26.2(@opentelemetry/core@2.12.0(@opentelemetry/api@1.9.1))(@types/aws-lambda@8.10.162)(@types/react@19.3.0)(@vercel/node@29.0.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@vercel/build-utils@15.2.1)(rollup@4.67.5)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))(fastify@5.11.3)(h3@1.15.11)(hono@5.0.0-rc.1)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(react@19.3.1)(supports-color@10.2.2)(typescript@7.1.0-beta)(zod@4.6.7):
     dependencies:
       '@bufbuild/protobuf': 2.13.0
       '@inngest/ai': 0.1.7
@@ -44496,7 +44451,7 @@ snapshots:
       express: 5.3.0(supports-color@10.2.2)
       fastify: 5.11.3
       h3: 1.15.11
-      hono: 4.13.16
+      hono: 5.0.0-rc.1
       next: 16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0)
       react: 19.3.1
       typescript: 7.1.0-beta
@@ -48318,7 +48273,7 @@ snapshots:
     dependencies:
       '@anthropic-ai/sdk': 0.133.0(zod@4.6.7)
       '@apidevtools/json-schema-ref-parser': 16.0.5(@types/json-schema@7.0.15)
-      '@hono/node-server': 2.1.5(hono@4.13.16)
+      '@hono/node-server': 2.1.6(hono@5.0.0-rc.1)
       '@inquirer/checkbox': 5.2.5(@types/node@26.6.6)
       '@inquirer/confirm': 6.3.2(@types/node@26.6.6)
       '@inquirer/core': 12.0.3(@types/node@26.6.6)
@@ -48416,7 +48371,7 @@ snapshots:
       '@slack/web-api': 8.1.1
       '@smithy/node-http-handler': 4.12.1
       google-auth-library: 11.3.0(supports-color@10.2.2)
-      hono: 4.13.16
+      hono: 5.0.0-rc.1
       ibm-cloud-sdk-core: 5.6.1(supports-color@10.2.2)
       jks-js: 1.1.7
       natural: 8.1.1(@aws-sdk/credential-providers@3.1152.0)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(gcp-metadata@9.0.3(supports-color@10.2.2))(socks@2.8.10)
@@ -51311,10 +51266,6 @@ snapshots:
   ts-api-utils@2.5.0(@typescript/typescript6@6.0.2):
     dependencies:
       typescript: '@typescript/typescript6@6.0.2'
-
-  ts-api-utils@2.5.0(typescript@7.1.0-beta):
-    dependencies:
-      typescript: 7.1.0-beta
 
   ts-deepmerge@6.2.0: {}
 

@@ -204,7 +204,7 @@ release-age guard, owner holds).
 | effect | 4.1.2 | 4.1.4 | **Updated** to 4.1.4 (exempt from the age guard) |
 | zustand | 5.0.16 | 5.1.0 | **Updated**. Type change only: `persist.rehydrate()` always returns a Promise, and storage may return any thenable. All callers already await it |
 | @tanstack/react-query, query-core, react-query-devtools | 5.106.1 | 5.107.1 | **Updated** together |
-| hono | API 5.0.0-rc.1; `@repo/core` 4.13.16 | 5.0.0-rc.1 is the newest v5 | Core moves to 5.0.0-rc.1 once its retired `api/handlers` are removed (owner sign-off). Hono 5 types `c.req.json()` as `unknown`, which exposes 44 unvalidated body reads in those unreachable handlers. Hono 4 stays only inside dev tools that declare it themselves (MCP SDK, ZenStack CLI, promptfoo) |
+| hono | API 5.0.0-rc.1; `@repo/core` 4.13.16 | 5.0.0-rc.1 is the newest v5 | **Hono 5 everywhere**, nothing on 4: core moved after its retired handlers were removed ([ledger](2026-11-11-retired-core-api-handlers-ledger.md)); tools forced through an override and one patch (see [dependencies](dependencies.md#hono-5-everywhere)) |
 | @powersync/* | 2.4.0 | 2.4.1 | Hold: owner decision, moves with the sync work |
 | xstate | 6.0.0-alpha.70 | 6.0.0-beta.2 | Move with `@xstate/effect` 1.0.0-beta.1 (which requires xstate `^6.0.0-beta.2`), exact pins, in step 4. Both released 11 Nov, so not before 12 Nov |
 | @orpc/* | 2.0.0-beta.46 | 2.0.0-beta.50 | **Updated** together (released 9 Nov, clears the guard). API 119/119, typecheck and build clean; core type errors unchanged (55) |
