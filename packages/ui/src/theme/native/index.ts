@@ -7,6 +7,7 @@
 
 export { useSystemAccess } from './access';
 export { useErrorFeedback, useFeedback } from './feedback';
+export { useFocusRing } from './focus';
 export {
   type LivingColorKey,
   useLivingStyle,

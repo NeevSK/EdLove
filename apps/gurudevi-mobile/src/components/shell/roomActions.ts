@@ -30,6 +30,11 @@ export interface CommonActions {
   breathe?: { label: string; icon?: ComponentType<KitIconProps>; onPress: () => void };
   ask?: { label: string; icon?: ComponentType<KitIconProps>; onPress: () => void };
   more?: { label: string; icon?: ComponentType<KitIconProps>; onPress: () => void };
+  /**
+   * Notifications, offered in the menu too on tall phones, where the header's bell is out of
+   * one thumb's reach.
+   */
+  notices?: { label: string; icon?: ComponentType<KitIconProps>; onPress: () => void };
 }
 
 export const ROOM_NAMES: Readonly<Record<Room, string>> = {
@@ -69,6 +74,7 @@ export function roomActions({
   if (common.breathe) out.push({ key: 'breathe', group: always, ...common.breathe });
   if (common.ask) out.push({ key: 'ask', group: always, ...common.ask });
   if (common.more) out.push({ key: 'more', group: always, ...common.more });
+  if (common.notices) out.push({ key: 'notices', group: always, ...common.notices });
   return out;
 }
 

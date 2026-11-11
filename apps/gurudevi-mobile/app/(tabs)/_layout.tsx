@@ -440,8 +440,17 @@ function TabsLayoutContent() {
               onPress: () => setCatalogSheetTab(currentDomain),
             }
           : undefined,
+      // On a tall phone held upright, the header's bell is beyond the thumb: the action carries it.
+      notices:
+        layout.aspect === 'tall' && layout.posture === 'portrait'
+          ? {
+              label: unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications',
+              icon: Bell as ComponentType<KitIconProps>,
+              onPress: () => router.push('/notifications'),
+            }
+          : undefined,
     }),
-    [assistantChoice, currentDomain, setBreathingOpen],
+    [assistantChoice, currentDomain, setBreathingOpen, layout.aspect, layout.posture, unreadCount],
   );
 
   // Space the floating action keeps above the rooms bar.
