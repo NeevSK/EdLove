@@ -1,11 +1,11 @@
 
 import { View, Text, Pressable } from 'react-native';
 import type React from 'react';
-import type { StudentOverview } from '@repo/admin/guardian/types';
+import type { GuardianStudentOverview } from '@repo/core/logic/schemas/guardian.schema';
 
 interface GuardianStudentsGridProps {
-  students: StudentOverview[];
-  onStudentPress: (student: StudentOverview) => void;
+  students: GuardianStudentOverview[];
+  onStudentPress: (student: GuardianStudentOverview) => void;
 }
 
 export const GuardianStudentsGrid: React.FC<GuardianStudentsGridProps> = ({
