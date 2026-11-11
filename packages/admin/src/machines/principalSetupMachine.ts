@@ -1,5 +1,6 @@
 import { storage } from '@repo/core/lib/storage';
 import { createActor, setup } from 'xstate';
+import { restoreActor } from 'xstate/persist';
 import { z } from 'zod';
 
 export const SchoolTypeEnum = z.enum([
@@ -171,7 +172,8 @@ export type PrincipalSetupMachine = typeof principalSetupMachine;
 // SNAPSHOT PERSISTENCE ENVELOPE (Crash-Proof Pause & Resume)
 // -----------------------------------------------------------------------------
 
-const PRINCIPAL_SETUP_SCHEMA_VERSION = 1;
+// 2: XState 6 beta; alpha snapshots are discarded on load.
+const PRINCIPAL_SETUP_SCHEMA_VERSION = 2;
 
 export const PrincipalSnapshotEnvelopeSchema = z.object({
   version: z.number().int(),
@@ -220,9 +222,13 @@ export function clearPrincipalSetupSnapshot(userId?: string): void {
 export function createPrincipalSetupActor(userId?: string) {
   const savedSnapshot = loadPrincipalSetupSnapshot(userId);
 
-  const actor = createActor(principalSetupMachine, {
-    snapshot: (savedSnapshot as never) ?? undefined,
-  });
+  const restored = savedSnapshot
+    ? restoreActor(principalSetupMachine, savedSnapshot as never)
+    : null;
+  // An unreadable snapshot restores to an actor in 'error' rather than throwing: drop it and start fresh.
+  const unreadable = restored?.getSnapshot().status === 'error';
+  if (unreadable) clearPrincipalSetupSnapshot(userId);
+  const actor = restored && !unreadable ? restored : createActor(principalSetupMachine);
 
   actor.start();
 

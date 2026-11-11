@@ -1234,8 +1234,8 @@ importers:
         specifier: ^14.0.3
         version: 14.0.3
       xstate:
-        specifier: 6.0.0-alpha.70
-        version: 6.0.0-alpha.70
+        specifier: 6.0.0-beta.2
+        version: 6.0.0-beta.2
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -1421,8 +1421,8 @@ importers:
         specifier: 19.3.1
         version: 19.3.1(@types/react@19.3.0)(react@19.3.1)
       xstate:
-        specifier: 6.0.0-alpha.70
-        version: 6.0.0-alpha.70
+        specifier: 6.0.0-beta.2
+        version: 6.0.0-beta.2
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -1628,8 +1628,8 @@ importers:
         specifier: 4.7.1
         version: 4.7.1(6013bb8e6325ede28b93bdea73dee27c)
       xstate:
-        specifier: 6.0.0-alpha.70
-        version: 6.0.0-alpha.70
+        specifier: 6.0.0-beta.2
+        version: 6.0.0-beta.2
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -1856,8 +1856,8 @@ importers:
         specifier: ^3.9.1
         version: 3.9.1(4dee4a5ab31a22d6f1ba23529198e32e)
       xstate:
-        specifier: 6.0.0-alpha.70
-        version: 6.0.0-alpha.70
+        specifier: 6.0.0-beta.2
+        version: 6.0.0-beta.2
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -2035,8 +2035,8 @@ importers:
         specifier: ^5.107.1
         version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       '@xstate/effect':
-        specifier: 1.0.0-alpha.12
-        version: 1.0.0-alpha.12(@oxlint/plugins@1.90.0)(effect@4.1.4)(xstate@6.0.0-alpha.70)
+        specifier: 1.0.0-beta.1
+        version: 1.0.0-beta.1(@oxlint/plugins@1.90.0)(effect@4.1.4)(xstate@6.0.0-beta.2)
       '@zenstackhq/zod':
         specifier: 3.10.1
         version: 3.10.1(zod@4.6.7)
@@ -2131,8 +2131,8 @@ importers:
         specifier: ^14.0.3
         version: 14.0.3
       xstate:
-        specifier: 6.0.0-alpha.70
-        version: 6.0.0-alpha.70
+        specifier: 6.0.0-beta.2
+        version: 6.0.0-beta.2
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -2902,8 +2902,8 @@ importers:
         specifier: 15.16.1
         version: 15.16.1(@types/react@19.3.0)(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))(react@19.3.1)
       xstate:
-        specifier: 6.0.0-alpha.70
-        version: 6.0.0-alpha.70
+        specifier: 6.0.0-beta.2
+        version: 6.0.0-beta.2
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -3033,8 +3033,8 @@ importers:
         specifier: ^3.9.1
         version: 3.9.1(4dee4a5ab31a22d6f1ba23529198e32e)
       xstate:
-        specifier: 6.0.0-alpha.70
-        version: 6.0.0-alpha.70
+        specifier: 6.0.0-beta.2
+        version: 6.0.0-beta.2
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -3261,8 +3261,8 @@ importers:
         specifier: 4.3.4
         version: 4.3.4
       xstate:
-        specifier: 6.0.0-alpha.70
-        version: 6.0.0-alpha.70
+        specifier: 6.0.0-beta.2
+        version: 6.0.0-beta.2
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -13918,15 +13918,15 @@ packages:
     engines: {node: '>=14.6'}
     deprecated: this version has critical issues, please update to the latest version
 
-  '@xstate/effect@1.0.0-alpha.12':
-    resolution: {integrity: sha512-D72whH2VWGnvMefc3CrylVwgqu2Ph2jfA861RG3gbLOk0mkXH8ZUn9h+IZO//xRKaCPFfKMXkXnqy4aIED1THg==}
+  '@xstate/effect@1.0.0-beta.1':
+    resolution: {integrity: sha512-XXti95k2E6ysYGS8gZ8pcsIs3koUfChb+hkBUmzHL12+5YV0Z0wZTJIdUITyMTfkh+cA88YjbaRLjYFefjlNWw==}
     peerDependencies:
       '@oxlint/plugins': ^1.76.0
       '@types/effect': '*'
       '@types/oxlint__plugins': '*'
       '@types/xstate': '*'
       effect: ^4.0.0
-      xstate: ^6.0.0-alpha.73
+      xstate: ^6.0.0-beta.2
     peerDependenciesMeta:
       '@oxlint/plugins':
         optional: true
@@ -26029,8 +26029,8 @@ packages:
   xorshift@1.2.0:
     resolution: {integrity: sha512-iYgNnGyeeJ4t6U11NpA/QiKy+PXn5Aa3Azg5qkwIFz1tBLllQrjjsk9yzD7IAK0naNU4JxdeDgqW9ov4u/hc4g==}
 
-  xstate@6.0.0-alpha.70:
-    resolution: {integrity: sha512-TSFfXYaTNz+ylEpguNsu0L5vDy8cjHRXAqpZBKQnJI++Jm61Vb41TAg1HzeEbC+Mnq9XelKs2dQNOizTwcnssQ==}
+  xstate@6.0.0-beta.2:
+    resolution: {integrity: sha512-jFqR+aZbmPCfwMhOw4TPqamfjWWN8H9DAVKlOp3pWY4W9IaqYu3mlb0VvkY8R5pNBn4kz7JsVbAFkddoZlii1A==}
     hasBin: true
 
   xtend@4.0.2:
@@ -37999,10 +37999,10 @@ snapshots:
 
   '@xmldom/xmldom@0.9.10': {}
 
-  '@xstate/effect@1.0.0-alpha.12(@oxlint/plugins@1.90.0)(effect@4.1.4)(xstate@6.0.0-alpha.70)':
+  '@xstate/effect@1.0.0-beta.1(@oxlint/plugins@1.90.0)(effect@4.1.4)(xstate@6.0.0-beta.2)':
     dependencies:
       effect: 4.1.4
-      xstate: 6.0.0-alpha.70
+      xstate: 6.0.0-beta.2
     optionalDependencies:
       '@oxlint/plugins': 1.90.0
 
@@ -52411,7 +52411,7 @@ snapshots:
 
   xorshift@1.2.0: {}
 
-  xstate@6.0.0-alpha.70: {}
+  xstate@6.0.0-beta.2: {}
 
   xtend@4.0.2: {}
 

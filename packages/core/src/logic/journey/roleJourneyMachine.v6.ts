@@ -1,6 +1,7 @@
 import { storage } from '@repo/core/lib/storage';
 import type { WorkspaceRolePersona } from '@repo/core/types';
 import { createActor, setup } from 'xstate';
+import { restoreActor } from 'xstate/persist';
 import { z } from 'zod';
 
 export const RoleJourneyContextSchema = z.object({
@@ -120,7 +121,9 @@ export type RoleJourneyMachine = typeof roleJourneyMachine;
 // SNAPSHOT PERSISTENCE ENVELOPE (Anti-Slop Corruption Firewall)
 // -----------------------------------------------------------------------------
 
-const SNAPSHOT_SCHEMA_VERSION = 1;
+// 2: XState 6 beta. Snapshots written by the alpha use shapes the beta does not read, so the
+// version bump discards them on load.
+const SNAPSHOT_SCHEMA_VERSION = 2;
 
 export const SnapshotEnvelopeSchema = z.object({
   version: z.number().int(),
@@ -168,18 +171,22 @@ export function loadJourneySnapshot(persona: WorkspaceRolePersona): unknown | nu
  */
 export function createRoleJourneyActor(persona: WorkspaceRolePersona) {
   const savedSnapshot = loadJourneySnapshot(persona);
+  // An unreadable snapshot restores to an actor in 'error' rather than throwing: drop it and start fresh.
+  let actor = savedSnapshot
+    ? restoreActor(roleJourneyMachine, savedSnapshot as never)
+    : null;
+  if (actor && actor.getSnapshot().status === 'error') {
+    storage.delete(getJourneySnapshotStorageKey(persona));
+    actor = null;
+  }
 
-  const actor = createActor(roleJourneyMachine, {
-    snapshot: (savedSnapshot as never) ?? undefined,
-  });
-
-  // Inject initial persona if starting fresh
-  if (!savedSnapshot) {
+  if (actor) {
+    actor.start();
+  } else {
+    actor = createActor(roleJourneyMachine);
     actor.start();
     // Start with assigned persona
     actor.send({ type: 'ADVANCE_STEP', stepId: `init_${persona}` });
-  } else {
-    actor.start();
   }
 
   // Subscribe to auto-persist transitions

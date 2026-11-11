@@ -79,6 +79,10 @@ for HTTP serving, never for the stdio paths the repo runs:
 Re-check when Hono 5 is stable, when any of these tools publishes a version that accepts Hono 5
 (then remove the override for it), and whenever ZenStack moves (rebuild or drop the patch).
 
+## XState 6 beta
+
+`xstate@6.0.0-beta.2` and `@xstate/effect@1.0.0-beta.1`, exact pins, in every package that uses XState. Taken inside the 24-hour window with the owner's approval (2026-11-11); drop the `minimumReleaseAgeExclude` entries once both are older than a day. Persisted actors restore through `xstate/persist`; see the statechart ADR, section 6.
+
 ## Babel 8
 
 **Not possible yet. Checked 2026-11-06, against upstream as well as releases.**

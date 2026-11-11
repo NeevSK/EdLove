@@ -113,3 +113,14 @@ To prevent "state machine bloat" and maintain our Anti-Slop standard:
 
 - **Positive**: Complete type safety with Zod, native Effect v4 integration, crash-proof pause & resume, and elimination of legacy v4/v5 DSL wrappers.
 - **Negative / Risks**: Pre-release alpha status (`6.0.0-alpha.70`). Guarded by pinning exact versions (no `^` floating ranges) and comprehensive boundary unit tests.
+
+## 6. Update 2026-11-11: beta.2
+
+Moved to `xstate@6.0.0-beta.2` and `@xstate/effect@1.0.0-beta.1` (owner-approved inside the 24-hour release window; see `pnpm-workspace.yaml`). What changed for us:
+
+- `createActor(machine, { snapshot })` is gone. Persisted actors restore with `restoreActor(logic, snapshot)` from `xstate/persist`; an unreadable snapshot gives an actor whose status is `'error'` instead of throwing, so both restore sites (role journey, principal setup) drop it and start fresh.
+- Snapshots written by the alphas use shapes the beta does not read (actor-ref marker, `timers` list, `scheduledAt`). The envelope version is now 2 in both places, so alpha snapshots are discarded on load.
+- None of the other prerelease renames (`fromEffect` → `createEffectLogic`, `xstate.timeout` → `xstate.timeout.state`, …) appear in our code.
+
+Verified: tsgo per package unchanged; vitest in core, admin, self, classroom, scanner-kit and ui has the same failing files on the alpha and on beta.2 (all pre-existing).
+

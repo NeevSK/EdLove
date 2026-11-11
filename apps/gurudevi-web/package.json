@@ -42,7 +42,7 @@
     "qrcode": "^1.5.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "xstate": "6.0.0-alpha.70",
+    "xstate": "6.0.0-beta.2",
     "zod": "4.6.7"
   },
   "devDependencies": {

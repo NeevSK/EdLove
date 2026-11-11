@@ -5,6 +5,10 @@ packages:
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
+  # Owner-approved 2026-11-11: XState 6 beta.2 and its Effect bridge, taken ~13h inside the window
+  # (published 2026-11-11T04:07Z). Remove once matured.
+  - 'xstate'
+  - '@xstate/effect'
   # Owner-approved 2026-11-06: taken inside the 24-hour window. Remove once matured.
   - '@zenstackhq/*'
   - '@sentry/*'
