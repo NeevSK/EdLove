@@ -7,7 +7,7 @@ import {
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { commitIdentityScopeSession } from '@repo/core/store/scopeSessionCoordinator';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import type { User } from '@repo/core/types/User';
 
 const activations = new Map<string, Promise<LocalGuestActivation | null>>();

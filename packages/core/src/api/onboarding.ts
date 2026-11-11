@@ -12,12 +12,9 @@ import { trackProductEvent } from '@repo/core/monitoring';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
 import { APIError } from '@repo/core/types/API';
-import type { Perspective } from '@repo/core/types/Identity';
-import type {
-  ClassroomJoinRequest,
-  RequestStatus,
-  SchoolJoinRequest,
-} from '@repo/core/types/Onboarding';
+import type { Perspective } from '@repo/core/logic/schemas/identity.schema';
+import type { ClassroomJoinRequest, RequestStatus } from '@repo/core/types/Onboarding';
+import type { SchoolJoinRequest } from '@repo/core/logic/schemas/identity.schema';
 
 /**
  * Onboarding API (Sovereign Orchestration)

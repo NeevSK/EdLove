@@ -22,7 +22,8 @@ export type { Assignment } from './Assignment';
 export type { AttendanceRecord } from './Attendance';
 export type { AttendanceStatus, StudentAttendance } from '../logic/schemas/attendance.schema';
 export type { AuthorityTier, Capacity } from './Authority';
-export type { Classroom, ClassroomStudent, StudentAcademicRecord } from './Classroom';
+export type { Classroom, ClassroomStudent } from './Classroom';
+export type { StudentAcademicRecord } from '../logic/schemas/classroom.schema';
 export type { ClassroomNote } from './ClassroomNote';
 export type {
   AnnouncementWithAuthor,
@@ -70,7 +71,8 @@ export type {
   Term,
 } from '@repo/core/logic/schemas/grade-domain.schema';
 export type { StudentGroup } from './Group';
-export type { Bond, CitizenshipTier, Perspective } from './Identity';
+export type { CitizenshipTier } from './Identity';
+export type { Bond, Perspective } from '../logic/schemas/identity.schema';
 export type {
   FieldAnalytics,
   InstitutionalAsset,
@@ -94,11 +96,8 @@ export type {
   ProfileStackParamList,
   SelfStackParamList,
 } from './navigation';
-export type {
-  ClassroomJoinRequest,
-  RequestStatus,
-  SchoolJoinRequest,
-} from './Onboarding';
+export type { ClassroomJoinRequest, RequestStatus } from './Onboarding';
+export type { SchoolJoinRequest } from '../logic/schemas/identity.schema';
 export type {
   CapabilityKey,
   CapabilityResource,

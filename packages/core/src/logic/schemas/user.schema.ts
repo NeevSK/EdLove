@@ -1,8 +1,5 @@
-import {
-  BondSchema,
-  CapacitySchema,
-  IdentityStateSchema,
-} from '@repo/core/logic/schemas/identity.schema';
+import { BondSchema, IdentityStateSchema } from '@repo/core/logic/schemas/identity.schema';
+import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import { makeModelSchema } from '@repo/schema';
 import { z } from 'zod';
 

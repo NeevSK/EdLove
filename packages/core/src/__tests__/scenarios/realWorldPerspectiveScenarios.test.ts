@@ -10,7 +10,7 @@ import { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/work
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { resetScopedStores } from '@repo/core/store/resetScopedStores';
 import { transitionScopeSession } from '@repo/core/store/scopeSessionCoordinator';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import type {
   GuardianBondPerspective,
   InstitutionalBondPerspective,

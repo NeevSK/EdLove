@@ -1,26 +1,10 @@
+import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import { z } from 'zod';
 import { isEdloveAccountId } from '@repo/core/logic/schemas/edloveUuidV8';
 
 export const CanonicalAccountIdSchema = z
   .uuid()
   .refine(isEdloveAccountId, 'Canonical account must be an EdLove Identity/account UUIDv8');
-
-export const CapacitySchema = z.enum([
-  'admin',
-  'founder',
-  'developer',
-  'teacher',
-  'student',
-  'principal',
-  'assistantPrincipal',
-  'gradeHead',
-  'sectionHead',
-  'parent',
-  'guardian',
-  'librarian',
-  'nurse',
-  'member',
-]);
 
 export const IdentityStateSchema = z.enum(['anonymous', 'onboarded', 'verified']);
 
@@ -34,10 +18,20 @@ export const BondSchema = z
       'SCHOOL',
       'CLASSROOM',
       'COMMUNITY',
+      'GROUP',
       'PERSONAL',
       'PERSONAL_CLASSROOM',
     ]),
     capacity: CapacitySchema,
+    // Stored per bond (default THIRD_CLASS; WANDERER is a legacy alias). An unknown value reads as
+    // unset, which resolveBondCitizenship treats as the lowest class.
+    citizenship: z
+      .preprocess(
+        (value) => (value === 'WANDERER' ? 'THIRD_CLASS' : value),
+        z.enum(['FIRST_CLASS', 'SECOND_CLASS', 'THIRD_CLASS']),
+      )
+      .optional()
+      .catch(undefined),
     status: z.enum(['active', 'archived', 'pending']).default('active'),
     created_at: z.coerce
       .date()

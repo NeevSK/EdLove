@@ -1,4 +1,4 @@
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import type { SocialLink } from '@repo/core/types/Social';
 import type { TenantKind } from '@repo/core/types/Tenancy';
 

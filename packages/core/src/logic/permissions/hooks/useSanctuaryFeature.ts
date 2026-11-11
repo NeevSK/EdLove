@@ -13,7 +13,8 @@ import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 import type { FeatureFlags } from '@repo/core/store/types/featureFlags';
 import type { Action, Subject } from '@repo/core/types/authorization';
-import type { Bond, CitizenshipTier } from '@repo/core/types/Identity';
+import type { CitizenshipTier } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import { useMemo } from 'react';
 
 export type UseSanctuaryFeatureReturn = SanctuaryFeatureResult & {

@@ -1,6 +1,7 @@
 import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { ChannelAffordanceSchema } from '@repo/core/types/domainEntry';
-import { type Bond, resolveBondCitizenship } from '@repo/core/types/Identity';
+import { resolveBondCitizenship } from '@repo/core/types/Identity';
+import { type Bond } from '@repo/core/logic/schemas/identity.schema';
 import { describe, expect, it } from 'vitest';
 
 describe('Canonical ReBAC & Omnichannel Invariant Sentinel', () => {

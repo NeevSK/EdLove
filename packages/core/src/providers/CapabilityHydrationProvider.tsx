@@ -3,7 +3,7 @@ import { useAuth } from '@repo/core/providers/AuthProvider';
 import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo } from 'react';
 

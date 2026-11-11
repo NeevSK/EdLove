@@ -1,4 +1,4 @@
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 import { describe, expect, it } from 'vitest';
 import { decide, resolveActiveBond, resolveAuthorityContext } from '../authority';

@@ -12,7 +12,7 @@ import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
 import type { Action, CedarDecision, Subject } from '@repo/core/types/authorization';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import { useCallback, useMemo } from 'react';
 
 /**

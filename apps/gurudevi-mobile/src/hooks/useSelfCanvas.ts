@@ -1,7 +1,7 @@
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import { useResponsiveGrid } from '@repo/ui';
 import { tokens } from '@repo/ui/tokens';
 import { router } from 'expo-router';

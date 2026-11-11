@@ -11,7 +11,7 @@ import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 
 /**
  * IDENTITY API (Sovereign RPC Proxy)

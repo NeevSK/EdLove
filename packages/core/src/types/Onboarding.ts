@@ -2,16 +2,6 @@ import type { Capacity } from '@repo/core/types/Authority';
 
 export type RequestStatus = 'pending' | 'approved' | 'rejected';
 
-export interface SchoolJoinRequest {
-  id: string;
-  user_id: string;
-  school_id: string;
-  capacity: Capacity;
-  status: RequestStatus;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface ClassroomJoinRequest {
   id: string;
   user_id: string;

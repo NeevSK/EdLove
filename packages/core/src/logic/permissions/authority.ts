@@ -9,7 +9,8 @@ import {
   UserContextSchema,
 } from '@repo/core/logic/schemas/user.schema';
 import type { CedarDecision } from '@repo/core/types/authorization';
-import { type Bond, resolveBondCitizenship } from '@repo/core/types/Identity';
+import { resolveBondCitizenship } from '@repo/core/types/Identity';
+import { type Bond } from '@repo/core/logic/schemas/identity.schema';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 import type { User } from '@repo/core/types/User';
 

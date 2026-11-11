@@ -8,7 +8,7 @@ import {
   useScopeSessionStore,
 } from '@repo/core/store/scopeSession';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 
 export interface ScopeSessionTransitionInput {

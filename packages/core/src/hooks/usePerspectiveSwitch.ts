@@ -1,7 +1,7 @@
 import { storage } from '@repo/core/lib/storage';
 import { TenantPartitionedStorageAdapter } from '@repo/core/lib/tenantStorage';
 import type { IStorage } from '@repo/core/logic/interfaces/storage.port';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import {
   PERSONAL_SCOPE_PERSPECTIVE,
   replaceScopeSessionPerspectives,

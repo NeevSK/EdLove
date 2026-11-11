@@ -13,7 +13,9 @@ import {
   UserProfilePatchSchema,
 } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { APIError } from '@repo/core/types/API';
-import type { Bond, Capacity, Identity, Perspective } from '@repo/core/types/Identity';
+import type { Identity } from '@repo/core/types/Identity';
+import type { Bond, Perspective } from '@repo/core/logic/schemas/identity.schema';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import type { User } from '@repo/core/types/User';
 import { strictRetryPolicy } from '@repo/core/utils/effect';
 import { Duration, Effect, pipe, Schema } from 'effect';
@@ -188,7 +190,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const identity = await this.identifyActiveCitizen();
     if (!identity) return null;
     return {
-      ...(identity.activeBond ? { activeBond: identity.activeBond } : {}),
+      activeBond: identity.activeBond ?? null,
       availableBonds: identity.availableBonds,
     };
   }
