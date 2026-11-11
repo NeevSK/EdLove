@@ -76,14 +76,14 @@ function countDataTaggedErrors() {
   return runRgCount('Data\\.TaggedError\\(');
 }
 
-// Authority has one reader: packages/core/src/logic/permissions/authority.ts, over the signed
+// Authority has one reader: packages/core/src/logic/permissions/hooks/useAuthority.ts, over the signed
 // snapshot. Feature flags (useFeatureStore) are rollout state, not authority, so they aren't counted.
 function countAuthorityStoreReads() {
   return runRgCount('\\b(useCedarDecisionStore|useEntitlementStore|usePerspectiveStore)\\b', [
     '-g',
     '!packages/core/src/store/**',
     '-g',
-    '!packages/core/src/logic/permissions/authority.ts',
+    '!packages/core/src/logic/permissions/hooks/useAuthority.ts',
   ]);
 }
 
@@ -95,6 +95,34 @@ function countMachinesWithoutSetup() {
 // Programs run outside the shared runtime skip its services and logging (packages/core/src/effect/AppRuntime.ts).
 function countDirectEffectRuns() {
   return runRgCount('Effect\\.run(Promise|PromiseExit|Fork|Sync|SyncExit)\\(');
+}
+
+// Tier standard (tooling/architecture-tiers.mjs) across packages/core: imports a tier may not make,
+// files with no tier, and pass-through files. Measured once per run.
+let tierSummary;
+function tierAudit() {
+  if (!tierSummary) {
+    try {
+      const out = execFileSync('node', ['scripts/audit-archetype-violations.mjs', '--scope', 'packages/core/src', '--summary-json'], {
+        cwd: REPO_ROOT,
+        encoding: 'utf8',
+      });
+      tierSummary = JSON.parse(out);
+    } catch {
+      tierSummary = { findings: {} };
+    }
+  }
+  return tierSummary.findings;
+}
+function countTierImportViolations() {
+  const f = tierAudit();
+  return (f['tier-import'] ?? 0) + (f['upward-import'] ?? 0) + (f['forbidden-package'] ?? 0) + (f['parse-above-boundary'] ?? 0);
+}
+function countUnplacedFiles() {
+  return tierAudit().unplaced ?? 0;
+}
+function countPassThroughFiles() {
+  return tierAudit()['pass-through'] ?? 0;
 }
 
 function countRootScripts() {
@@ -142,6 +170,9 @@ function measureMetrics() {
     authorityStoreReads: countAuthorityStoreReads(),
     machinesWithoutSetup: countMachinesWithoutSetup(),
     directEffectRuns: countDirectEffectRuns(),
+    tierImportViolations: countTierImportViolations(),
+    unplacedFiles: countUnplacedFiles(),
+    passThroughFiles: countPassThroughFiles(),
   };
 }
 
@@ -178,6 +209,9 @@ function main() {
     authorityStoreReads: 'Authority read from client stores',
     machinesWithoutSetup: 'Machines without setup()',
     directEffectRuns: 'Effect.run* outside the app runtime',
+    tierImportViolations: 'Tier import violations (core)',
+    unplacedFiles: 'Files with no tier (core)',
+    passThroughFiles: 'Pass-through files (core)',
   };
 
   console.log('----------------------------------------------------------------------');

@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import { usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
 import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
-import { useAuthorityStatus } from '@repo/core/logic/permissions/authority';
+import { useAuthorityStatus } from '@repo/core/logic/permissions/hooks/useAuthority';
 import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Redirect } from 'expo-router';

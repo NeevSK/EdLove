@@ -2,6 +2,7 @@
 title: "Canonical 7-Tier Architectural Hierarchy & Archetype Invariants"
 status: "active"
 date: "2026-11-01"
+updated: "2026-11-11"
 author: "Antigravity Pair Programming"
 tags: [architecture, clean-architecture, hexagonal, archetypes, tiers, boundaries]
 ---
@@ -50,21 +51,36 @@ A fundamental architectural flaw in naive dependency graph analysis is equating 
 
 ---
 
-## 2. The 7 Architectural Archetypes
+## 2. The tiers and what each may import (enforced)
 
-| Tier | Archetype Name | Semantic Definition | Monorepo Files (Subsystem) | Allowed Inward Imports | Forbidden Imports |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Tier 0** | **Contract / Schema / Type** | Pure data schemas (Zod), TypeScript interfaces, enums, error models, and static constants. | `capacity.schema.ts`, `identity.schema.ts`, `user.schema.ts`, `Identity.ts`, `authorization.ts`, `SriLankanSchools.ts` | External libs (`zod`), other Tier 0 schemas | Tier 1–6 (NEVER imports logic, stores, adapters, or UI) |
-| **Tier 1** | **Port / Interface** | Abstract contracts defining external capabilities for Dependency Inversion. | `entitlement.port.ts`, `authz.port.ts`, `network.port.ts`, `featureRollout.port.ts` | Tier 0 (Contracts & Schemas) | Tier 2–6 (NEVER imports concrete adapters or stores) |
-| **Tier 2** | **Pure Domain Logic** | Business invariant evaluators, feature calculators, policy manifests. Zero I/O, deterministic pure functions. | `sanctuaryFeature.ts`, `citizenship.ts`, `bondScope.ts`, `featureLifecycleManifest.ts` | Tier 0 (Schemas), Tier 1 (Ports) | Tier 3 (Adapters), Tier 4 (Stores), Tier 6 (UI) |
-| **Tier 3** | **Adapter / Storage / Infra** | Concrete implementations of Ports interacting with external databases (PowerSync, Supabase, SQLite, MMKV, GrowthBook). | `supabaseEntitlement.adapter.ts`, `database.ts`, `storage.ts`, `growthBookFeatureRollout.adapter.ts` | Tier 1 (Ports - implements them), Tier 0 (Schemas) | Tier 5–6 (Should never know about application hooks or UI) |
-| **Tier 4** | **State Store (Zustand)** | In-memory reactive state containers, selectors, and synchronizers. | `useFeatureStore.ts`, `useEntitlementStore.ts`, `useAuthStore.ts`, `usePerspectiveStore.ts` | Tier 1 (Ports), Tier 2 (Domain Logic), Tier 0 (Schemas) | **Tier 3 (Adapters)**: MUST NOT directly import concrete adapters; must use Port DI |
-| **Tier 5** | **Application Facade / Hook** | High-level client hooks coordinating multiple stores for UI consumers. | `useSanctuaryFeature.ts` | Tier 4 (Stores), Tier 2 (Domain Logic), Tier 0 (Types) | Tier 3 (Adapters), Tier 1 (Ports), Tier 0 (Runtime Schemas) |
-| **Tier 6** | **Presentation UI** | User-facing buttons, guards, prompts, icons, and screens. | `SanctuaryGuard.tsx`, `SanctuaryButton.tsx`, `SchoolJoinPrompt.tsx` | Tier 5 (Hooks), Tier 0 (Types & Themes) | Tier 1–4 (NEVER talks to stores, adapters, or databases directly) |
+The rules below are data in `tooling/architecture-tiers.mjs`, checked by
+`node scripts/audit-archetype-violations.mjs` (one feature tree, or `--scope packages/core/src`), and
+ratcheted in `tooling/ratchet.json` (`tierImportViolations`, `unplacedFiles`, `passThroughFiles`), so
+the counts can only go down. The /architecture views draw these tiers, not import depth: depth
+only measures the longest chain and says nothing about what a file is allowed to be.
 
----
+| Tier | What it is | May import | Why |
+| --- | --- | --- | --- |
+| **0 Contracts (bedrock)** | Schemas, types, constants, error classes, format checks they are built on | Tier 0, and pure libraries (zod, `effect` Schema) | Everything else depends on it, so it depends on nothing that changes for other reasons. No I/O, React or platform |
+| **1 Ports** | Interfaces and Effect service tags: what the outside world must provide | Tier 0 | A port states a need. It holds no logic, or callers end up importing a port to reach a function |
+| **2 Domain** | Pure decisions and calculations | Tiers 0 and 2 | Pure code takes data, not services. A domain file importing a port is either orchestrating I/O (so it isn't domain) or reaching for logic that sits in the wrong file |
+| **3 Adapters** | Real I/O implementing ports (Supabase, PowerSync, storage, drivers, crypto) | Tiers 0–3 | The only place untrusted data is decoded. Never reads application state; anything it needs from the session is passed in or comes through a port |
+| **C Composition root** | Where adapters are bound to ports (`effect/AppRuntime.ts`, `effect/Layers.ts`) | Tiers 0–3 | The single place that knows which adapter backs which port, so nothing else has to |
+| **4 State** | Zustand stores and their slices, state machines | Tiers 0, 1, 2 and the runtime | Holds already-validated snapshots. Reaches I/O only through ports run on the runtime. A store imports its own slices, never another store |
+| **5 Application hooks** | What screens call; composes state and domain | Tier 0 types, Tiers 2, 4 and 5 | Hooks compose hooks. No ports, adapters or schema parsing on render |
+| **6 Presentation** | Components | Tier 0 types, Tiers 5 and 6 | Screens ask hooks; they never read stores or domain files directly |
 
-## 3. The Three Critical Invariant Violations Discovered
+Also enforced:
+
+- **`import type` downward is always allowed.** Types are erased at runtime, so they create no coupling at run time; an upward type import is still a violation.
+- **Schema parsing happens only in Tiers 0, 3 and C.** `JSON.parse` doesn't count; it deserialises, it doesn't validate.
+- **No pass-through files.** A file that only re-exports or renames is a false chain. The exception is an entry point a package declares in `package.json` `exports`.
+- **Outside packages per tier.** For example, Tiers 0–2 may not use React, Zustand, XState, Supabase, PowerSync, MMKV or Drizzle.
+- **A file's folder states its tier.** A file whose folder doesn't is either `UNPLACED` (a finding) or has an entry in `PLACEMENTS` with its proper home, which is a move still to make.
+
+## 3. The three violations found on 2026-11-01
+
+Kept for history. Status on 2026-11-11: violation 3 is fixed (the hook no longer reaches into the port; the pure entitlement functions moved to `logic/permissions/entitlement.ts`). Violations 1 and 2 remain and are counted by the audit.
 
 Our audit revealed three distinct categories of architectural drift:
 

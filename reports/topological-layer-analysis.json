@@ -1,6 +1,6 @@
 {
-  "totalFiles": 75,
-  "totalEdges": 136,
+  "totalFiles": 77,
+  "totalEdges": 145,
   "cycles": [],
   "maxLayer": 14,
   "layerBreakdown": [
@@ -44,24 +44,8 @@
         },
         {
           "path": "packages/core/src/logic/ports/entitlement.port.ts",
-          "loc": 99,
-          "functions": [
-            {
-              "name": "resolveScopedEntitlement",
-              "isExported": true,
-              "params": "snapshot: EntitlementSnapshot,\n  scope: EntitlementScope = 'individual',"
-            },
-            {
-              "name": "meetsSubscriptionTier",
-              "isExported": true,
-              "params": "current: SubscriptionTier,\n  required: SubscriptionTier,"
-            },
-            {
-              "name": "satisfiesEntitlementRequirement",
-              "isExported": true,
-              "params": "snapshot: EntitlementSnapshot,\n  requirement: EntitlementRequirement,"
-            }
-          ],
+          "loc": 53,
+          "functions": [],
           "types": [
             {
               "name": "EntitlementReadiness",
@@ -98,36 +82,8 @@
               "isExported": true
             }
           ],
-          "constants": [
-            {
-              "name": "grants",
-              "isExported": false
-            },
-            {
-              "name": "tier",
-              "isExported": false
-            },
-            {
-              "name": "modules",
-              "isExported": false
-            },
-            {
-              "name": "scoped",
-              "isExported": false
-            },
-            {
-              "name": "tierSatisfied",
-              "isExported": false
-            },
-            {
-              "name": "modulesSatisfied",
-              "isExported": false
-            }
-          ],
+          "constants": [],
           "exports": [
-            "fn: resolveScopedEntitlement",
-            "fn: meetsSubscriptionTier",
-            "fn: satisfiesEntitlementRequirement",
             "interface: EntitlementGrant",
             "interface: EntitlementScopeContext",
             "interface: EntitlementRequirement",
@@ -348,6 +304,33 @@
           "imports": []
         },
         {
+          "path": "packages/core/src/types/authorization.ts",
+          "loc": 96,
+          "functions": [],
+          "types": [
+            {
+              "name": "Action",
+              "isExported": true
+            },
+            {
+              "name": "Subject",
+              "isExported": true
+            },
+            {
+              "name": "CedarDecision",
+              "isExported": true
+            }
+          ],
+          "interfaces": [],
+          "constants": [],
+          "exports": [
+            "type: Action",
+            "type: Subject",
+            "type: CedarDecision"
+          ],
+          "imports": []
+        },
+        {
           "path": "packages/core/src/types/Identity.ts",
           "loc": 71,
           "functions": [
@@ -524,6 +507,34 @@
           "exports": [
             "interface: CivicRoleOption",
             "type: CivicRoleId"
+          ],
+          "imports": []
+        },
+        {
+          "path": "packages/core/src/types/Social.ts",
+          "loc": 23,
+          "functions": [],
+          "types": [
+            {
+              "name": "SocialPlatform",
+              "isExported": true
+            },
+            {
+              "name": "PrivacyLevel",
+              "isExported": true
+            }
+          ],
+          "interfaces": [
+            {
+              "name": "SocialLink",
+              "isExported": true
+            }
+          ],
+          "constants": [],
+          "exports": [
+            "interface: SocialLink",
+            "type: SocialPlatform",
+            "type: PrivacyLevel"
           ],
           "imports": []
         },
@@ -830,34 +841,6 @@
             "interface: PushNotificationProvider",
             "interface: CoreRuntimeEnvironment",
             "type: DevicePressureLevel"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/types/Social.ts",
-          "loc": 23,
-          "functions": [],
-          "types": [
-            {
-              "name": "SocialPlatform",
-              "isExported": true
-            },
-            {
-              "name": "PrivacyLevel",
-              "isExported": true
-            }
-          ],
-          "interfaces": [
-            {
-              "name": "SocialLink",
-              "isExported": true
-            }
-          ],
-          "constants": [],
-          "exports": [
-            "interface: SocialLink",
-            "type: SocialPlatform",
-            "type: PrivacyLevel"
           ],
           "imports": []
         },
@@ -1747,28 +1730,6 @@
           "imports": []
         },
         {
-          "path": "packages/core/src/types/authorization.ts",
-          "loc": 93,
-          "functions": [],
-          "types": [
-            {
-              "name": "Action",
-              "isExported": true
-            },
-            {
-              "name": "Subject",
-              "isExported": true
-            }
-          ],
-          "interfaces": [],
-          "constants": [],
-          "exports": [
-            "type: Action",
-            "type: Subject"
-          ],
-          "imports": []
-        },
-        {
           "path": "packages/ui/src/components/ui/button.ts",
           "loc": 0,
           "functions": [],
@@ -1920,6 +1881,75 @@
     {
       "layer": 1,
       "files": [
+        {
+          "path": "packages/core/src/logic/permissions/entitlement.ts",
+          "loc": 58,
+          "functions": [
+            {
+              "name": "resolveScopedEntitlement",
+              "isExported": true,
+              "params": "snapshot: EntitlementSnapshot,\n  scope: EntitlementScope = 'individual',"
+            },
+            {
+              "name": "meetsSubscriptionTier",
+              "isExported": true,
+              "params": "current: SubscriptionTier,\n  required: SubscriptionTier,"
+            },
+            {
+              "name": "satisfiesEntitlementRequirement",
+              "isExported": true,
+              "params": "snapshot: EntitlementSnapshot,\n  requirement: EntitlementRequirement,"
+            }
+          ],
+          "types": [],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "grants",
+              "isExported": false
+            },
+            {
+              "name": "tier",
+              "isExported": false
+            },
+            {
+              "name": "modules",
+              "isExported": false
+            },
+            {
+              "name": "scoped",
+              "isExported": false
+            },
+            {
+              "name": "tierSatisfied",
+              "isExported": false
+            },
+            {
+              "name": "modulesSatisfied",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "fn: resolveScopedEntitlement",
+            "fn: meetsSubscriptionTier",
+            "fn: satisfiesEntitlementRequirement"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/logic/ports/entitlement.port",
+              "canonical": "packages/core/src/logic/ports/entitlement.port.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "EntitlementRequirement",
+                "EntitlementScope",
+                "EntitlementSnapshot",
+                "SubscriptionTier"
+              ],
+              "exists": true
+            }
+          ]
+        },
         {
           "path": "packages/core/src/logic/schemas/identity.schema.ts",
           "loc": 214,
@@ -3356,7 +3386,7 @@
         },
         {
           "path": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
-          "loc": 175,
+          "loc": 171,
           "functions": [
             {
               "name": "meetsPricingTier",
@@ -3372,14 +3402,6 @@
           "types": [
             {
               "name": "FeatureAccessContext",
-              "isExported": false
-            },
-            {
-              "name": "EntitlementScope",
-              "isExported": false
-            },
-            {
-              "name": "EntitlementSnapshot",
               "isExported": false
             },
             {
@@ -3469,15 +3491,24 @@
               "exists": true
             },
             {
-              "source": "@repo/core/logic/ports/entitlement.port",
-              "canonical": "packages/core/src/logic/ports/entitlement.port.ts",
+              "source": "@repo/core/logic/permissions/entitlement",
+              "canonical": "packages/core/src/logic/permissions/entitlement.ts",
               "isExternal": false,
               "isTypeOnly": false,
               "symbols": [
-                "EntitlementScope",
-                "EntitlementSnapshot",
                 "meetsSubscriptionTier",
                 "resolveScopedEntitlement"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/ports/entitlement.port",
+              "canonical": "packages/core/src/logic/ports/entitlement.port.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "EntitlementScope",
+                "EntitlementSnapshot"
               ],
               "exists": true
             },
@@ -4223,6 +4254,204 @@
     {
       "layer": 5,
       "files": [
+        {
+          "path": "packages/core/src/logic/permissions/authority.ts",
+          "loc": 157,
+          "functions": [
+            {
+              "name": "resolveActiveBond",
+              "isExported": true,
+              "params": "perspective: SanctuaryPerspective,\n  availableBonds: readonly Bond[],\n  sessionActiveBond: Bond | null,"
+            },
+            {
+              "name": "resolveAuthorityContext",
+              "isExported": true,
+              "params": "inputs: AuthorityInputs"
+            },
+            {
+              "name": "decide",
+              "isExported": true,
+              "params": "userId: string | null,\n  decision: CedarDecision,\n  action: string,\n  subject: string,"
+            }
+          ],
+          "types": [
+            {
+              "name": "Capacity",
+              "isExported": false
+            },
+            {
+              "name": "TenantKind",
+              "isExported": false
+            },
+            {
+              "name": "UserContext",
+              "isExported": false
+            },
+            {
+              "name": "Bond",
+              "isExported": false
+            },
+            {
+              "name": "AuthUser",
+              "isExported": false
+            }
+          ],
+          "interfaces": [
+            {
+              "name": "EntitlementInputs",
+              "isExported": true
+            },
+            {
+              "name": "AuthorityInputs",
+              "isExported": true
+            }
+          ],
+          "constants": [
+            {
+              "name": "schoolType",
+              "isExported": false
+            },
+            {
+              "name": "activeBond",
+              "isExported": false
+            },
+            {
+              "name": "bondScope",
+              "isExported": false
+            },
+            {
+              "name": "isPersonal",
+              "isExported": false
+            },
+            {
+              "name": "entitlementScope",
+              "isExported": false
+            },
+            {
+              "name": "effectiveEntitlement",
+              "isExported": false
+            },
+            {
+              "name": "effectiveCapacity",
+              "isExported": false
+            },
+            {
+              "name": "citizenship",
+              "isExported": false
+            },
+            {
+              "name": "parsed",
+              "isExported": false
+            },
+            {
+              "name": "openRead",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "fn: resolveActiveBond",
+            "fn: resolveAuthorityContext",
+            "fn: decide",
+            "interface: EntitlementInputs",
+            "interface: AuthorityInputs"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/logic/permissions/bondScope",
+              "canonical": "packages/core/src/logic/permissions/bondScope.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "resolveBondScope"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/permissions/entitlement",
+              "canonical": "packages/core/src/logic/permissions/entitlement.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "resolveScopedEntitlement"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/ports/entitlement.port",
+              "canonical": "packages/core/src/logic/ports/entitlement.port.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "EntitlementSnapshot"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/schemas/capacity.schema",
+              "canonical": "packages/core/src/logic/schemas/capacity.schema.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "Capacity",
+                "CapacitySchema"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/schemas/user.schema",
+              "canonical": "packages/core/src/logic/schemas/user.schema.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "TenantKind",
+                "UserContext",
+                "UserContextSchema"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/types/authorization",
+              "canonical": "packages/core/src/types/authorization.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "CedarDecision"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/types/Identity",
+              "canonical": "packages/core/src/types/Identity.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "Bond",
+                "resolveBondCitizenship"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/types/Perspective",
+              "canonical": "packages/core/src/types/Perspective.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "SanctuaryPerspective"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/types/User",
+              "canonical": "packages/core/src/types/User.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "User"
+              ],
+              "exists": true
+            }
+          ]
+        },
         {
           "path": "packages/core/src/types/index.ts",
           "loc": 239,
@@ -5083,10 +5312,6 @@
           ],
           "types": [
             {
-              "name": "CedarDecision",
-              "isExported": true
-            },
-            {
               "name": "DecisionMap",
               "isExported": true
             }
@@ -5137,7 +5362,6 @@
           ],
           "exports": [
             "interface: CedarDecisionState",
-            "type: CedarDecision",
             "type: DecisionMap",
             "const: useCedarDecisionStore"
           ],
@@ -5180,6 +5404,16 @@
               "isTypeOnly": false,
               "symbols": [
                 "isLocalGuestSessionId"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/types/authorization",
+              "canonical": "packages/core/src/types/authorization.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "CedarDecision"
               ],
               "exists": true
             }
@@ -5595,24 +5829,9 @@
       "layer": 12,
       "files": [
         {
-          "path": "packages/core/src/logic/permissions/authority.ts",
-          "loc": 240,
+          "path": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
+          "loc": 95,
           "functions": [
-            {
-              "name": "resolveActiveBond",
-              "isExported": true,
-              "params": "perspective: SanctuaryPerspective,\n  availableBonds: readonly Bond[],\n  sessionActiveBond: Bond | null,"
-            },
-            {
-              "name": "resolveAuthorityContext",
-              "isExported": true,
-              "params": "inputs: AuthorityInputs"
-            },
-            {
-              "name": "decide",
-              "isExported": true,
-              "params": "userId: string | null,\n  decision: CedarDecision,\n  action: string,\n  subject: string,"
-            },
             {
               "name": "useAuthority",
               "isExported": true,
@@ -5626,89 +5845,17 @@
           ],
           "types": [
             {
-              "name": "EntitlementSnapshot",
-              "isExported": false
-            },
-            {
-              "name": "Capacity",
-              "isExported": false
-            },
-            {
-              "name": "TenantKind",
-              "isExported": false
-            },
-            {
-              "name": "UserContext",
-              "isExported": false
-            },
-            {
-              "name": "CedarDecision",
-              "isExported": false
-            },
-            {
-              "name": "Bond",
-              "isExported": false
-            },
-            {
-              "name": "AuthUser",
+              "name": "EntitlementInputs",
               "isExported": false
             }
           ],
           "interfaces": [
-            {
-              "name": "EntitlementInputs",
-              "isExported": true
-            },
-            {
-              "name": "AuthorityInputs",
-              "isExported": true
-            },
             {
               "name": "Authority",
               "isExported": true
             }
           ],
           "constants": [
-            {
-              "name": "schoolType",
-              "isExported": false
-            },
-            {
-              "name": "activeBond",
-              "isExported": false
-            },
-            {
-              "name": "bondScope",
-              "isExported": false
-            },
-            {
-              "name": "isPersonal",
-              "isExported": false
-            },
-            {
-              "name": "entitlementScope",
-              "isExported": false
-            },
-            {
-              "name": "effectiveEntitlement",
-              "isExported": false
-            },
-            {
-              "name": "effectiveCapacity",
-              "isExported": false
-            },
-            {
-              "name": "citizenship",
-              "isExported": false
-            },
-            {
-              "name": "parsed",
-              "isExported": false
-            },
-            {
-              "name": "openRead",
-              "isExported": false
-            },
             {
               "name": "user",
               "isExported": false
@@ -5783,45 +5930,20 @@
             }
           ],
           "exports": [
-            "fn: resolveActiveBond",
-            "fn: resolveAuthorityContext",
-            "fn: decide",
             "fn: useAuthority",
             "fn: useAuthorityStatus",
-            "interface: EntitlementInputs",
-            "interface: AuthorityInputs",
             "interface: Authority"
           ],
           "imports": [
             {
-              "source": "@repo/core/logic/permissions/bondScope",
-              "canonical": "packages/core/src/logic/permissions/bondScope.ts",
+              "source": "@repo/core/logic/permissions/authority",
+              "canonical": "packages/core/src/logic/permissions/authority.ts",
               "isExternal": false,
               "isTypeOnly": false,
               "symbols": [
-                "resolveBondScope"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/ports/entitlement.port",
-              "canonical": "packages/core/src/logic/ports/entitlement.port.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "EntitlementSnapshot",
-                "resolveScopedEntitlement"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/schemas/capacity.schema",
-              "canonical": "packages/core/src/logic/schemas/capacity.schema.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "Capacity",
-                "CapacitySchema"
+                "decide",
+                "EntitlementInputs",
+                "resolveAuthorityContext"
               ],
               "exists": true
             },
@@ -5829,11 +5951,9 @@
               "source": "@repo/core/logic/schemas/user.schema",
               "canonical": "packages/core/src/logic/schemas/user.schema.ts",
               "isExternal": false,
-              "isTypeOnly": false,
+              "isTypeOnly": true,
               "symbols": [
-                "TenantKind",
-                "UserContext",
-                "UserContextSchema"
+                "UserContext"
               ],
               "exists": true
             },
@@ -5873,7 +5993,6 @@
               "isExternal": false,
               "isTypeOnly": false,
               "symbols": [
-                "CedarDecision",
                 "useCedarDecisionStore"
               ],
               "exists": true
@@ -5915,6 +6034,7 @@
               "isTypeOnly": true,
               "symbols": [
                 "Action",
+                "CedarDecision",
                 "Subject"
               ],
               "exists": true
@@ -5923,20 +6043,9 @@
               "source": "@repo/core/types/Identity",
               "canonical": "packages/core/src/types/Identity.ts",
               "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "Bond",
-                "resolveBondCitizenship"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/types/Perspective",
-              "canonical": "packages/core/src/types/Perspective.ts",
-              "isExternal": false,
               "isTypeOnly": true,
               "symbols": [
-                "SanctuaryPerspective"
+                "Bond"
               ],
               "exists": true
             }
@@ -6005,8 +6114,8 @@
           ],
           "imports": [
             {
-              "source": "@repo/core/logic/permissions/authority",
-              "canonical": "packages/core/src/logic/permissions/authority.ts",
+              "source": "@repo/core/logic/permissions/hooks/useAuthority",
+              "canonical": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
               "isExternal": false,
               "isTypeOnly": false,
               "symbols": [
@@ -6188,7 +6297,7 @@
   "edges": [
     {
       "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
-      "to": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "symbols": [
         "useAuthority"
       ],
@@ -6286,14 +6395,22 @@
     },
     {
       "from": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
-      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "to": "packages/core/src/logic/permissions/entitlement.ts",
       "symbols": [
-        "EntitlementScope",
-        "EntitlementSnapshot",
         "meetsSubscriptionTier",
         "resolveScopedEntitlement"
       ],
       "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "symbols": [
+        "EntitlementScope",
+        "EntitlementSnapshot"
+      ],
+      "isTypeOnly": true,
       "exists": true
     },
     {
@@ -6437,6 +6554,15 @@
       "exists": true
     },
     {
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "to": "packages/core/src/types/authorization.ts",
+      "symbols": [
+        "CedarDecision"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
       "from": "packages/core/src/store/useEntitlementStore.ts",
       "to": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
       "symbols": [
@@ -6494,47 +6620,27 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
-      "to": "packages/core/src/logic/permissions/bondScope.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
+      "to": "packages/core/src/logic/permissions/authority.ts",
       "symbols": [
-        "resolveBondScope"
+        "decide",
+        "EntitlementInputs",
+        "resolveAuthorityContext"
       ],
       "isTypeOnly": false,
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
-      "to": "packages/core/src/logic/ports/entitlement.port.ts",
-      "symbols": [
-        "EntitlementSnapshot",
-        "resolveScopedEntitlement"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/permissions/authority.ts",
-      "to": "packages/core/src/logic/schemas/capacity.schema.ts",
-      "symbols": [
-        "Capacity",
-        "CapacitySchema"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/logic/schemas/user.schema.ts",
       "symbols": [
-        "TenantKind",
-        "UserContext",
-        "UserContextSchema"
+        "UserContext"
       ],
-      "isTypeOnly": false,
+      "isTypeOnly": true,
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/scopeSession.ts",
       "symbols": [
         "useScopeSessionStore"
@@ -6543,7 +6649,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/types/featureFlags.ts",
       "symbols": [
         "FeatureFlags"
@@ -6552,7 +6658,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/useAuthStore.ts",
       "symbols": [
         "useAuthStore"
@@ -6561,17 +6667,16 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/useCedarDecisionStore.ts",
       "symbols": [
-        "CedarDecision",
         "useCedarDecisionStore"
       ],
       "isTypeOnly": false,
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/useEntitlementStore.ts",
       "symbols": [
         "useEntitlementStore"
@@ -6580,7 +6685,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/useFeatureStore.ts",
       "symbols": [
         "useFeatureStore"
@@ -6589,7 +6694,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/usePerspectiveStore.ts",
       "symbols": [
         "usePerspectiveStore"
@@ -6598,30 +6703,21 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/types/authorization.ts",
       "symbols": [
         "Action",
+        "CedarDecision",
         "Subject"
       ],
       "isTypeOnly": true,
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/types/Identity.ts",
       "symbols": [
-        "Bond",
-        "resolveBondCitizenship"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/permissions/authority.ts",
-      "to": "packages/core/src/types/Perspective.ts",
-      "symbols": [
-        "SanctuaryPerspective"
+        "Bond"
       ],
       "isTypeOnly": true,
       "exists": true
@@ -6682,6 +6778,18 @@
       "to": "packages/core/src/types/authorization.ts",
       "symbols": [
         "Action"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/entitlement.ts",
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "symbols": [
+        "EntitlementRequirement",
+        "EntitlementScope",
+        "EntitlementSnapshot",
+        "SubscriptionTier"
       ],
       "isTypeOnly": true,
       "exists": true
@@ -6886,6 +6994,91 @@
         "EntitlementSnapshot",
         "IEntitlementPort",
         "SubscriptionTier"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/permissions/bondScope.ts",
+      "symbols": [
+        "resolveBondScope"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/permissions/entitlement.ts",
+      "symbols": [
+        "resolveScopedEntitlement"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "symbols": [
+        "EntitlementSnapshot"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/schemas/capacity.schema.ts",
+      "symbols": [
+        "Capacity",
+        "CapacitySchema"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "symbols": [
+        "TenantKind",
+        "UserContext",
+        "UserContextSchema"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/types/authorization.ts",
+      "symbols": [
+        "CedarDecision"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/types/Identity.ts",
+      "symbols": [
+        "Bond",
+        "resolveBondCitizenship"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/types/Perspective.ts",
+      "symbols": [
+        "SanctuaryPerspective"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/types/User.ts",
+      "symbols": [
+        "User"
       ],
       "isTypeOnly": true,
       "exists": true
@@ -7212,6 +7405,33 @@
       "exists": true
     },
     {
+      "from": "packages/core/src/types/User.ts",
+      "to": "packages/core/src/types/Identity.ts",
+      "symbols": [
+        "Bond"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/types/User.ts",
+      "to": "packages/core/src/types/Social.ts",
+      "symbols": [
+        "SocialLink"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/types/User.ts",
+      "to": "packages/core/src/types/Tenancy.ts",
+      "symbols": [
+        "TenantKind"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
       "from": "packages/core/src/lib/featureRolloutSnapshot.ts",
       "to": "packages/core/src/logic/ports/featureRollout.port.ts",
       "symbols": [
@@ -7379,6 +7599,24 @@
       "exists": true
     },
     {
+      "from": "packages/core/src/types/Tenancy.ts",
+      "to": "packages/core/src/logic/schemas/capacity.schema.ts",
+      "symbols": [
+        "Capacity"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/types/Tenancy.ts",
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "symbols": [
+        "TenantKind"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
       "from": "packages/core/src/platform/drivers/networkMonitor.ts",
       "to": "packages/core/src/logic/interfaces/network.port.ts",
       "symbols": [
@@ -7426,51 +7664,6 @@
         "SovereignError"
       ],
       "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/types/User.ts",
-      "to": "packages/core/src/types/Identity.ts",
-      "symbols": [
-        "Bond"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/types/User.ts",
-      "to": "packages/core/src/types/Social.ts",
-      "symbols": [
-        "SocialLink"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/types/User.ts",
-      "to": "packages/core/src/types/Tenancy.ts",
-      "symbols": [
-        "TenantKind"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/types/Tenancy.ts",
-      "to": "packages/core/src/logic/schemas/capacity.schema.ts",
-      "symbols": [
-        "Capacity"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/types/Tenancy.ts",
-      "to": "packages/core/src/logic/schemas/user.schema.ts",
-      "symbols": [
-        "TenantKind"
-      ],
-      "isTypeOnly": true,
       "exists": true
     }
   ]

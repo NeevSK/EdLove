@@ -1,35 +1,24 @@
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
-import {
-  type EntitlementSnapshot,
-  resolveScopedEntitlement,
-} from '@repo/core/logic/ports/entitlement.port';
+import { resolveScopedEntitlement } from '@repo/core/logic/permissions/entitlement';
+import type { EntitlementSnapshot } from '@repo/core/logic/ports/entitlement.port';
 import { type Capacity, CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import {
   type TenantKind,
   type UserContext,
   UserContextSchema,
 } from '@repo/core/logic/schemas/user.schema';
-import { useScopeSessionStore } from '@repo/core/store/scopeSession';
-import type { FeatureFlags } from '@repo/core/store/types/featureFlags';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { type CedarDecision, useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
-import { useFeatureStore } from '@repo/core/store/useFeatureStore';
-import { usePerspectiveStore } from '@repo/core/store/usePerspectiveStore';
-import type { Action, Subject } from '@repo/core/types/authorization';
+import type { CedarDecision } from '@repo/core/types/authorization';
 import { type Bond, resolveBondCitizenship } from '@repo/core/types/Identity';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
-import { useCallback, useMemo } from 'react';
+import type { User } from '@repo/core/types/User';
 
 /**
- * The one authority read on the client.
+ * Authority decisions on the client (Tier 2, pure).
  *
- * What a person may do comes from the signed permission snapshot (verified in
- * useCedarDecisionStore against signature, expiry, policy version, person and bond), the bond
- * the scope session made active, the perspective, and the entitlement manifest. This module is
- * the only reader of those stores outside `store/`; screens and hooks ask it, through
- * `useAuthority` or `useSanctuaryFeature`. The client only hides what isn't allowed; the server
- * decides. The ratchet's `authorityStoreReads` counts reads anywhere else and only goes down.
+ * Builds the person's context from the bond, perspective and entitlement inputs, and decides an
+ * action from a permission snapshot decision. The hooks that read those inputs live in
+ * ./hooks/useAuthority.ts (Tier 5), the only client reader of the decision, entitlement and
+ * perspective stores. The client only hides what isn't allowed; the server decides.
  * See docs/architecture/2026-11-11-product-shape-and-tool-ownership.md, section 3.
  */
 
@@ -43,7 +32,7 @@ export const PERSONAL_SANCTUARY_READ_SUBJECTS: ReadonlySet<string> = new Set([
   'CommunityPost',
 ]);
 
-type AuthUser = ReturnType<typeof useAuthStore.getState>['user'];
+type AuthUser = User | null;
 
 export interface EntitlementInputs {
   readonly pricingTier: EntitlementSnapshot['pricingTier'];
@@ -164,76 +153,4 @@ export function decide(
   if (decision === 'allow') return true;
   if (decision === 'deny') return false;
   return openRead;
-}
-
-export interface Authority {
-  readonly context: UserContext;
-  readonly can: (action: Action, subject: Subject) => boolean;
-  readonly cannot: (action: Action, subject: Subject) => boolean;
-  readonly getDecision: (subject: string, action: string) => CedarDecision;
-  readonly cedarSnapshotLoaded: boolean;
-  readonly entitlement: EntitlementInputs & {
-    readonly manifestLoaded: boolean;
-    readonly readiness: ReturnType<typeof useEntitlementStore.getState>['readiness'];
-  };
-  readonly flags: FeatureFlags;
-}
-
-/** The person's authority, subscribed to every input it depends on. */
-export function useAuthority(): Authority {
-  const user = useAuthStore((s) => s.user);
-  const activePerspective = usePerspectiveStore((s) => s.activePerspective);
-  // Subscribed, so switching bonds recomputes the context.
-  const scopeSnapshot = useScopeSessionStore((s) => s.snapshot);
-  const pricingTier = useEntitlementStore((s) => s.pricingTier);
-  const activeEntitlements = useEntitlementStore((s) => s.activeEntitlements);
-  const grants = useEntitlementStore((s) => s.grants);
-  const manifestLoaded = useEntitlementStore((s) => s.manifestLoaded);
-  const readiness = useEntitlementStore((s) => s.readiness);
-  const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
-  const getDecision = useCedarDecisionStore((s) => s.getDecision);
-  const flags = useFeatureStore((s) => s.flags);
-
-  const context = useMemo(
-    () =>
-      resolveAuthorityContext({
-        user,
-        activePerspective,
-        availableBonds: (scopeSnapshot?.availableBonds as readonly Bond[] | undefined) ?? [],
-        sessionActiveBond: (scopeSnapshot?.activeBond as Bond | null | undefined) ?? null,
-        entitlement: { pricingTier, activeEntitlements, grants },
-      }),
-    [user, activePerspective, scopeSnapshot, pricingTier, activeEntitlements, grants],
-  );
-
-  const can = useCallback(
-    (action: Action, subject: Subject): boolean =>
-      decide(
-        context.userId,
-        context.userId ? getDecision(subject as string, action as string) : 'no_decision',
-        action as string,
-        subject as string,
-      ),
-    [context.userId, getDecision],
-  );
-  const cannot = useCallback((action: Action, subject: Subject) => !can(action, subject), [can]);
-
-  return {
-    context,
-    can,
-    cannot,
-    getDecision,
-    cedarSnapshotLoaded,
-    entitlement: { pricingTier, activeEntitlements, grants, manifestLoaded, readiness },
-    flags,
-  };
-}
-
-/** Whether the permission snapshot is ready, for screens that wait on it. */
-export function useAuthorityStatus() {
-  const isLoading = useCedarDecisionStore((s) => s.isLoading);
-  const error = useCedarDecisionStore((s) => s.error);
-  const snapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
-  const loadDecisions = useCedarDecisionStore((s) => s.loadDecisions);
-  return { isLoading, error, snapshotLoaded, loadDecisions };
 }

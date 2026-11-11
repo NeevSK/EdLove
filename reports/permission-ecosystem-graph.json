@@ -1,6 +1,6 @@
 {
-  "totalNodes": 78,
-  "totalEdges": 154,
+  "totalNodes": 80,
+  "totalEdges": 163,
   "phantomEdges": [
     {
       "from": "packages/core/src/adapters/powersync/database.ts",
@@ -18,8 +18,8 @@
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/logic/permissions/authority",
-          "resolved": "packages/core/src/logic/permissions/authority.ts",
+          "source": "@repo/core/logic/permissions/hooks/useAuthority",
+          "resolved": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
           "symbols": [
             "useAuthority"
           ],
@@ -118,13 +118,20 @@
           "exists": true
         },
         {
+          "source": "@repo/core/logic/permissions/entitlement",
+          "resolved": "packages/core/src/logic/permissions/entitlement.ts",
+          "symbols": [
+            "meetsSubscriptionTier",
+            "resolveScopedEntitlement"
+          ],
+          "exists": true
+        },
+        {
           "source": "@repo/core/logic/ports/entitlement.port",
           "resolved": "packages/core/src/logic/ports/entitlement.port.ts",
           "symbols": [
             "EntitlementScope",
-            "EntitlementSnapshot",
-            "meetsSubscriptionTier",
-            "resolveScopedEntitlement"
+            "EntitlementSnapshot"
           ],
           "exists": true
         },
@@ -150,7 +157,7 @@
         "FeatureRequirement",
         "sanctuaryFeature"
       ],
-      "loc": 175
+      "loc": 171
     },
     {
       "path": "packages/core/src/logic/permissions/accessContext.ts",
@@ -359,10 +366,17 @@
             "isLocalGuestSessionId"
           ],
           "exists": true
+        },
+        {
+          "source": "@repo/core/types/authorization",
+          "resolved": "packages/core/src/types/authorization.ts",
+          "symbols": [
+            "CedarDecision"
+          ],
+          "exists": true
         }
       ],
       "exports": [
-        "CedarDecision",
         "DecisionMap",
         "CedarDecisionState",
         "useCedarDecisionStore"
@@ -642,9 +656,10 @@
       "imports": [],
       "exports": [
         "Action",
-        "Subject"
+        "Subject",
+        "CedarDecision"
       ],
-      "loc": 93
+      "loc": 96
     },
     {
       "path": "packages/core/src/logic/registry/citizenship.ts",
@@ -671,40 +686,21 @@
         "EntitlementScopeContext",
         "EntitlementRequirement",
         "EntitlementSnapshot",
-        "resolveScopedEntitlement",
-        "meetsSubscriptionTier",
-        "satisfiesEntitlementRequirement",
         "IEntitlementPort"
       ],
-      "loc": 99
+      "loc": 53
     },
     {
-      "path": "packages/core/src/logic/permissions/authority.ts",
+      "path": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/logic/permissions/bondScope",
-          "resolved": "packages/core/src/logic/permissions/bondScope.ts",
+          "source": "@repo/core/logic/permissions/authority",
+          "resolved": "packages/core/src/logic/permissions/authority.ts",
           "symbols": [
-            "resolveBondScope"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/logic/ports/entitlement.port",
-          "resolved": "packages/core/src/logic/ports/entitlement.port.ts",
-          "symbols": [
-            "EntitlementSnapshot",
-            "resolveScopedEntitlement"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/logic/schemas/capacity.schema",
-          "resolved": "packages/core/src/logic/schemas/capacity.schema.ts",
-          "symbols": [
-            "Capacity",
-            "CapacitySchema"
+            "decide",
+            "EntitlementInputs",
+            "resolveAuthorityContext"
           ],
           "exists": true
         },
@@ -712,9 +708,7 @@
           "source": "@repo/core/logic/schemas/user.schema",
           "resolved": "packages/core/src/logic/schemas/user.schema.ts",
           "symbols": [
-            "TenantKind",
-            "UserContext",
-            "UserContextSchema"
+            "UserContext"
           ],
           "exists": true
         },
@@ -746,7 +740,6 @@
           "source": "@repo/core/store/useCedarDecisionStore",
           "resolved": "packages/core/src/store/useCedarDecisionStore.ts",
           "symbols": [
-            "CedarDecision",
             "useCedarDecisionStore"
           ],
           "exists": true
@@ -780,6 +773,7 @@
           "resolved": "packages/core/src/types/authorization.ts",
           "symbols": [
             "Action",
+            "CedarDecision",
             "Subject"
           ],
           "exists": true
@@ -788,32 +782,17 @@
           "source": "@repo/core/types/Identity",
           "resolved": "packages/core/src/types/Identity.ts",
           "symbols": [
-            "Bond",
-            "resolveBondCitizenship"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/types/Perspective",
-          "resolved": "packages/core/src/types/Perspective.ts",
-          "symbols": [
-            "SanctuaryPerspective"
+            "Bond"
           ],
           "exists": true
         }
       ],
       "exports": [
-        "PERSONAL_SANCTUARY_READ_SUBJECTS",
-        "EntitlementInputs",
-        "AuthorityInputs",
-        "resolveActiveBond",
-        "resolveAuthorityContext",
-        "decide",
         "Authority",
         "useAuthority",
         "useAuthorityStatus"
       ],
-      "loc": 240
+      "loc": 95
     },
     {
       "path": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
@@ -900,6 +879,29 @@
         "DEFAULT_FEATURE_FLAGS"
       ],
       "loc": 34
+    },
+    {
+      "path": "packages/core/src/logic/permissions/entitlement.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/logic/ports/entitlement.port",
+          "resolved": "packages/core/src/logic/ports/entitlement.port.ts",
+          "symbols": [
+            "EntitlementRequirement",
+            "EntitlementScope",
+            "EntitlementSnapshot",
+            "SubscriptionTier"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "resolveScopedEntitlement",
+        "meetsSubscriptionTier",
+        "satisfiesEntitlementRequirement"
+      ],
+      "loc": 58
     },
     {
       "path": "packages/core/src/adapters/powersync/database.ts",
@@ -1560,6 +1562,97 @@
       "loc": 18
     },
     {
+      "path": "packages/core/src/logic/permissions/authority.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/logic/permissions/bondScope",
+          "resolved": "packages/core/src/logic/permissions/bondScope.ts",
+          "symbols": [
+            "resolveBondScope"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/permissions/entitlement",
+          "resolved": "packages/core/src/logic/permissions/entitlement.ts",
+          "symbols": [
+            "resolveScopedEntitlement"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/ports/entitlement.port",
+          "resolved": "packages/core/src/logic/ports/entitlement.port.ts",
+          "symbols": [
+            "EntitlementSnapshot"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/schemas/capacity.schema",
+          "resolved": "packages/core/src/logic/schemas/capacity.schema.ts",
+          "symbols": [
+            "Capacity",
+            "CapacitySchema"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/schemas/user.schema",
+          "resolved": "packages/core/src/logic/schemas/user.schema.ts",
+          "symbols": [
+            "TenantKind",
+            "UserContext",
+            "UserContextSchema"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/types/authorization",
+          "resolved": "packages/core/src/types/authorization.ts",
+          "symbols": [
+            "CedarDecision"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/types/Identity",
+          "resolved": "packages/core/src/types/Identity.ts",
+          "symbols": [
+            "Bond",
+            "resolveBondCitizenship"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/types/Perspective",
+          "resolved": "packages/core/src/types/Perspective.ts",
+          "symbols": [
+            "SanctuaryPerspective"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/types/User",
+          "resolved": "packages/core/src/types/User.ts",
+          "symbols": [
+            "User"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "PERSONAL_SANCTUARY_READ_SUBJECTS",
+        "EntitlementInputs",
+        "AuthorityInputs",
+        "resolveActiveBond",
+        "resolveAuthorityContext",
+        "decide"
+      ],
+      "loc": 157
+    },
+    {
       "path": "packages/core/src/logic/registry/domainEntry.ts",
       "exists": true,
       "imports": [
@@ -2046,6 +2139,44 @@
       "loc": 12
     },
     {
+      "path": "packages/core/src/types/User.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/types/Identity",
+          "resolved": "packages/core/src/types/Identity.ts",
+          "symbols": [
+            "Bond"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/types/Social",
+          "resolved": "packages/core/src/types/Social.ts",
+          "symbols": [
+            "SocialLink"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/types/Tenancy",
+          "resolved": "packages/core/src/types/Tenancy.ts",
+          "symbols": [
+            "TenantKind"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "ProfileStats",
+        "User",
+        "AuthSession",
+        "SignUpData",
+        "LoginData"
+      ],
+      "loc": 117
+    },
+    {
       "path": "packages/core/src/logic/utils/edloveUuidV8.ts",
       "exists": true,
       "imports": [],
@@ -2230,44 +2361,6 @@
       "loc": 46
     },
     {
-      "path": "packages/core/src/types/User.ts",
-      "exists": true,
-      "imports": [
-        {
-          "source": "@repo/core/types/Identity",
-          "resolved": "packages/core/src/types/Identity.ts",
-          "symbols": [
-            "Bond"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/types/Social",
-          "resolved": "packages/core/src/types/Social.ts",
-          "symbols": [
-            "SocialLink"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/types/Tenancy",
-          "resolved": "packages/core/src/types/Tenancy.ts",
-          "symbols": [
-            "TenantKind"
-          ],
-          "exists": true
-        }
-      ],
-      "exports": [
-        "ProfileStats",
-        "User",
-        "AuthSession",
-        "SignUpData",
-        "LoginData"
-      ],
-      "loc": 117
-    },
-    {
       "path": "packages/core/src/utils/effect.ts",
       "exists": true,
       "imports": [],
@@ -2426,7 +2519,7 @@
   "edges": [
     {
       "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
-      "to": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "symbols": [
         "useAuthority"
       ],
@@ -2514,12 +2607,19 @@
     },
     {
       "from": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+      "to": "packages/core/src/logic/permissions/entitlement.ts",
+      "symbols": [
+        "meetsSubscriptionTier",
+        "resolveScopedEntitlement"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
       "to": "packages/core/src/logic/ports/entitlement.port.ts",
       "symbols": [
         "EntitlementScope",
-        "EntitlementSnapshot",
-        "meetsSubscriptionTier",
-        "resolveScopedEntitlement"
+        "EntitlementSnapshot"
       ],
       "exists": true
     },
@@ -2671,6 +2771,14 @@
       "to": "packages/core/src/native/localGuestSession.ts",
       "symbols": [
         "isLocalGuestSessionId"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "to": "packages/core/src/types/authorization.ts",
+      "symbols": [
+        "CedarDecision"
       ],
       "exists": true
     },
@@ -2859,43 +2967,25 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
-      "to": "packages/core/src/logic/permissions/bondScope.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
+      "to": "packages/core/src/logic/permissions/authority.ts",
       "symbols": [
-        "resolveBondScope"
+        "decide",
+        "EntitlementInputs",
+        "resolveAuthorityContext"
       ],
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
-      "to": "packages/core/src/logic/ports/entitlement.port.ts",
-      "symbols": [
-        "EntitlementSnapshot",
-        "resolveScopedEntitlement"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/permissions/authority.ts",
-      "to": "packages/core/src/logic/schemas/capacity.schema.ts",
-      "symbols": [
-        "Capacity",
-        "CapacitySchema"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/logic/schemas/user.schema.ts",
       "symbols": [
-        "TenantKind",
-        "UserContext",
-        "UserContextSchema"
+        "UserContext"
       ],
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/scopeSession.ts",
       "symbols": [
         "useScopeSessionStore"
@@ -2903,7 +2993,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/types/featureFlags.ts",
       "symbols": [
         "FeatureFlags"
@@ -2911,7 +3001,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/useAuthStore.ts",
       "symbols": [
         "useAuthStore"
@@ -2919,16 +3009,15 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/useCedarDecisionStore.ts",
       "symbols": [
-        "CedarDecision",
         "useCedarDecisionStore"
       ],
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/useEntitlementStore.ts",
       "symbols": [
         "useEntitlementStore"
@@ -2936,7 +3025,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/useFeatureStore.ts",
       "symbols": [
         "useFeatureStore"
@@ -2944,7 +3033,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/store/usePerspectiveStore.ts",
       "symbols": [
         "usePerspectiveStore"
@@ -2952,28 +3041,20 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/types/authorization.ts",
       "symbols": [
         "Action",
+        "CedarDecision",
         "Subject"
       ],
       "exists": true
     },
     {
-      "from": "packages/core/src/logic/permissions/authority.ts",
+      "from": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "to": "packages/core/src/types/Identity.ts",
       "symbols": [
-        "Bond",
-        "resolveBondCitizenship"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/permissions/authority.ts",
-      "to": "packages/core/src/types/Perspective.ts",
-      "symbols": [
-        "SanctuaryPerspective"
+        "Bond"
       ],
       "exists": true
     },
@@ -3003,6 +3084,17 @@
         "BondSchema",
         "CapacitySchema",
         "IdentityStateSchema"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/entitlement.ts",
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "symbols": [
+        "EntitlementRequirement",
+        "EntitlementScope",
+        "EntitlementSnapshot",
+        "SubscriptionTier"
       ],
       "exists": true
     },
@@ -3306,6 +3398,82 @@
       "exists": true
     },
     {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/permissions/bondScope.ts",
+      "symbols": [
+        "resolveBondScope"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/permissions/entitlement.ts",
+      "symbols": [
+        "resolveScopedEntitlement"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "symbols": [
+        "EntitlementSnapshot"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/schemas/capacity.schema.ts",
+      "symbols": [
+        "Capacity",
+        "CapacitySchema"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "symbols": [
+        "TenantKind",
+        "UserContext",
+        "UserContextSchema"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/types/authorization.ts",
+      "symbols": [
+        "CedarDecision"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/types/Identity.ts",
+      "symbols": [
+        "Bond",
+        "resolveBondCitizenship"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/types/Perspective.ts",
+      "symbols": [
+        "SanctuaryPerspective"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/authority.ts",
+      "to": "packages/core/src/types/User.ts",
+      "symbols": [
+        "User"
+      ],
+      "exists": true
+    },
+    {
       "from": "packages/core/src/logic/registry/domainEntry.ts",
       "to": "packages/core/src/logic/registry/citizenship.ts",
       "symbols": [
@@ -3566,6 +3734,30 @@
       "exists": true
     },
     {
+      "from": "packages/core/src/types/User.ts",
+      "to": "packages/core/src/types/Identity.ts",
+      "symbols": [
+        "Bond"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/types/User.ts",
+      "to": "packages/core/src/types/Social.ts",
+      "symbols": [
+        "SocialLink"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/types/User.ts",
+      "to": "packages/core/src/types/Tenancy.ts",
+      "symbols": [
+        "TenantKind"
+      ],
+      "exists": true
+    },
+    {
       "from": "packages/core/src/lib/authStorage.ts",
       "to": "packages/core/src/lib/storage.ts",
       "symbols": [
@@ -3620,30 +3812,6 @@
       "to": "packages/core/src/types/User.ts",
       "symbols": [
         "User"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/types/User.ts",
-      "to": "packages/core/src/types/Identity.ts",
-      "symbols": [
-        "Bond"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/types/User.ts",
-      "to": "packages/core/src/types/Social.ts",
-      "symbols": [
-        "SocialLink"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/types/User.ts",
-      "to": "packages/core/src/types/Tenancy.ts",
-      "symbols": [
-        "TenantKind"
       ],
       "exists": true
     },
@@ -3724,5 +3892,5 @@
       "exists": true
     }
   ],
-  "mermaid": "graph TD\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts[\"⭐ useSanctuaryFeature.ts<br/>(132 lines)\"]:::core\n    packages_core_src_logic_permissions_sanctuaryFeature_ts[\"⭐ sanctuaryFeature.ts<br/>(175 lines)\"]:::core\n    packages_core_src_logic_permissions_accessContext_ts[\"📄 accessContext.ts\"]:::logic\n    packages_core_src_logic_permissions_baselineCapabilities_ts[\"📄 baselineCapabilities.ts\"]:::logic\n    packages_core_src_logic_permissions_bondScope_ts[\"📄 bondScope.ts\"]:::logic\n    packages_core_src_logic_permissions_cedarEvaluator_ts[\"📄 cedarEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_localEvaluator_ts[\"📄 localEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_sovereignty_ts[\"📄 sovereignty.ts\"]:::logic\n    packages_core_src_store_useCedarDecisionStore_ts[\"🗄️ useCedarDecisionStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_usePerspectiveStore_ts[\"🗄️ usePerspectiveStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_useEntitlementStore_ts[\"🗄️ useEntitlementStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_useFeatureStore_ts[\"🗄️ useFeatureStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_scopeSession_ts[\"🗄️ scopeSession.ts<br/>(Store)\"]:::store\n    packages_core_src_types_Identity_ts[\"🏷️ Identity.ts<br/>(Types)\"]:::type\n    packages_core_src_types_Perspective_ts[\"🏷️ Perspective.ts<br/>(Types)\"]:::type\n    packages_core_src_types_authorization_ts[\"🏷️ authorization.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_registry_citizenship_ts[\"📄 citizenship.ts\"]:::logic\n    packages_core_src_logic_ports_entitlement_port_ts[\"📄 entitlement.port.ts\"]:::logic\n    packages_core_src_logic_permissions_authority_ts[\"📄 authority.ts\"]:::logic\n    packages_core_src_logic_registry_featureLifecycleManifest_ts[\"📄 featureLifecycleManifest.ts\"]:::logic\n    packages_core_src_logic_schemas_capacity_schema_ts[\"📄 capacity.schema.ts\"]:::logic\n    packages_core_src_logic_schemas_user_schema_ts[\"📄 user.schema.ts\"]:::logic\n    packages_core_src_store_types_featureFlags_ts[\"🗄️ featureFlags.ts<br/>(Store)\"]:::store\n    packages_core_src_adapters_powersync_database_ts[\"📄 database.ts\"]:::logic\n    packages_core_src_adapters_powersync_schema_ts[\"📄 schema.ts\"]:::logic\n    packages_core_src_native_deviceTrust_ts[\"📄 deviceTrust.ts\"]:::logic\n    packages_core_src_lib_security_deviceTrust_ts[\"📄 deviceTrust.ts\"]:::logic\n    packages_core_src_logic_auth_identityState_ts[\"📄 identityState.ts\"]:::logic\n    packages_core_src_logic_permissions_cedarClientEvaluator_ts[\"📄 cedarClientEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_localResourceAttributes_ts[\"📄 localResourceAttributes.ts\"]:::logic\n    packages_core_src_logic_permissions_signature_ts[\"📄 signature.ts\"]:::logic\n    packages_core_src_native_localGuestSession_ts[\"📄 localGuestSession.ts\"]:::logic\n    packages_core_src_lib_storageWrapper_ts[\"📄 storageWrapper.ts\"]:::logic\n    packages_core_src_lib_sync_eventBus_ts[\"📄 eventBus.ts\"]:::logic\n    packages_core_src_store_useAuthStore_ts[\"🗄️ useAuthStore.ts<br/>(Store)\"]:::store\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts[\"📄 supabaseEntitlement.adapter.ts\"]:::logic\n    packages_core_src_lib_accountScope_ts[\"📄 accountScope.ts\"]:::logic\n    packages_core_src_lib_featureRolloutSnapshot_ts[\"📄 featureRolloutSnapshot.ts\"]:::logic\n    packages_core_src_lib_storage_ts[\"📄 storage.ts\"]:::logic\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts[\"📄 growthBookFeatureRollout.adapter.ts\"]:::logic\n    packages_core_src_logic_ports_featureRollout_port_ts[\"📄 featureRollout.port.ts\"]:::logic\n    packages_core_src_monitoring_breadcrumbs_ts[\"📄 breadcrumbs.ts\"]:::logic\n    packages_core_src_native_guestScope_ts[\"📄 guestScope.ts\"]:::logic\n    packages_core_src_constants_SriLankanSchools_ts[\"📄 SriLankanSchools.ts\"]:::logic\n    packages_core_src_types_CivicRole_ts[\"🏷️ CivicRole.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_registry_domainEntry_ts[\"📄 domainEntry.ts\"]:::logic\n    packages_core_src_logic_schemas_identity_schema_ts[\"📄 identity.schema.ts\"]:::logic\n    packages_core_src_powersync_ts[\"❌ powersync.ts<br/>(PHANTOM/DEAD)\"]:::dead\n    packages_core_src_adapters_powersync_databaseRegistry_ts[\"📄 databaseRegistry.ts\"]:::logic\n    packages_core_src_adapters_powersync_powersync_shim_ts[\"📄 powersync-shim.ts\"]:::logic\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts[\"📄 secureDrizzleProxy.ts\"]:::logic\n    packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts[\"📄 singleActivePowerSyncRuntime.ts\"]:::logic\n    packages_core_src_logic_runtimeRegistry_ts[\"📄 runtimeRegistry.ts\"]:::logic\n    packages_core_src_adapters_supabaseClient_ts[\"📄 supabaseClient.ts\"]:::logic\n    packages_core_src_adapters_supabaseIdentity_adapter_ts[\"📄 supabaseIdentity.adapter.ts\"]:::logic\n    packages_core_src_types_API_ts[\"🏷️ API.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_devicePreferences_ts[\"📄 devicePreferences.ts\"]:::logic\n    packages_core_src_lib_authProfileStorage_ts[\"📄 authProfileStorage.ts\"]:::logic\n    packages_core_src_store_slices_auth_slice_ts[\"🗄️ auth.slice.ts<br/>(Store)\"]:::store\n    packages_core_src_platform_drivers_networkMonitor_ts[\"📄 networkMonitor.ts\"]:::logic\n    packages_core_src_monitoring_index_ts[\"📄 index.ts\"]:::logic\n    packages_core_src_logic_utils_edloveUuidV8_ts[\"📄 edloveUuidV8.ts\"]:::logic\n    packages_core_src_logic_ports_authz_port_ts[\"📄 authz.port.ts\"]:::logic\n    packages_core_src_types_Errors_ts[\"🏷️ Errors.ts<br/>(Types)\"]:::type\n    packages_core_src_types_runtime_ts[\"🏷️ runtime.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_authStorage_ts[\"📄 authStorage.ts\"]:::logic\n    packages_core_src_lib_security_transportSecurity_ts[\"📄 transportSecurity.ts\"]:::logic\n    packages_core_src_adapters_supabase_sessionContinuity_ts[\"📄 sessionContinuity.ts\"]:::logic\n    packages_core_src_logic_ports_identity_port_ts[\"📄 identity.port.ts\"]:::logic\n    packages_core_src_logic_schemas_profileUpdate_schema_ts[\"📄 profileUpdate.schema.ts\"]:::logic\n    packages_core_src_types_User_ts[\"🏷️ User.ts<br/>(Types)\"]:::type\n    packages_core_src_utils_effect_ts[\"📄 effect.ts\"]:::logic\n    packages_core_src_lib_experienceState_ts[\"📄 experienceState.ts\"]:::logic\n    packages_core_src_types_index_ts[\"🏷️ index.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_interfaces_network_port_ts[\"📄 network.port.ts\"]:::logic\n    packages_core_src_types_Social_ts[\"🏷️ Social.ts<br/>(Types)\"]:::type\n    packages_core_src_types_Tenancy_ts[\"🏷️ Tenancy.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_scopedStateStorage_ts[\"📄 scopedStateStorage.ts\"]:::logic\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"useAuthority\"| packages_core_src_logic_permissions_authority_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"CITIZENSHIP, FeatureRequirement...\"| packages_core_src_logic_permissions_sanctuaryFeature_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"resolveFeatureFlagClass, resolveFeatureFlagValue\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Bond, CitizenshipTier\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"FeatureAccessContext, isFeatureAccessContextReady\"| packages_core_src_logic_permissions_accessContext_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"isBaselineReadCapability, isOnDeviceSelfCapability\"| packages_core_src_logic_permissions_baselineCapabilities_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"EntitlementScope, EntitlementSnapshot...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"CITIZENSHIP, CitizenshipLevel...\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_permissions_accessContext_ts -->|\"EntitlementReadiness, EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_accessContext_ts -->|\"CitizenshipLevel\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_permissions_baselineCapabilities_ts -->|\"Action\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"getDrizzleDB, registerPermissionValidator\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"cedarPolicies\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"deviceTrustAPI\"| packages_core_src_native_deviceTrust_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"DeviceTrustEngine\"| packages_core_src_lib_security_deviceTrust_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"isAnonymousIdentity\"| packages_core_src_logic_auth_identityState_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"evaluateShape2\"| packages_core_src_logic_permissions_cedarClientEvaluator_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"getLocalResourceAttributes\"| packages_core_src_logic_permissions_localResourceAttributes_ts\n    packages_core_src_logic_permissions_sovereignty_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"permissionSnapshots, policyVersion\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"verifySnapshotSignature\"| packages_core_src_logic_permissions_signature_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"isLocalGuestSessionId\"| packages_core_src_native_localGuestSession_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"sovereignBus\"| packages_core_src_lib_sync_eventBus_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"useCedarDecisionStore\"| packages_core_src_store_useCedarDecisionStore_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"SupabaseEntitlementAdapter\"| packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"EntitlementGrant, EntitlementReadiness...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"getAccountScopeRevision, scopeStorageKey\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS, normalizeFeatureRolloutSnapshot...\"| packages_core_src_lib_featureRolloutSnapshot_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"growthBookFeatureRolloutAdapter as featureFlags\"| packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"leaveBreadcrumb\"| packages_core_src_monitoring_breadcrumbs_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"getGuestScopeRevision, guestStorageKey\"| packages_core_src_native_guestScope_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"DEFAULT_FEATURE_FLAGS, FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_store_scopeSession_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_store_scopeSession_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_types_Perspective_ts -->|\"SchoolType\"| packages_core_src_constants_SriLankanSchools_ts\n    packages_core_src_types_Perspective_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_types_Perspective_ts -->|\"CivicRoleId\"| packages_core_src_types_CivicRole_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"resolveBondScope\"| packages_core_src_logic_permissions_bondScope_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"EntitlementSnapshot, resolveScopedEntitlement\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Capacity, CapacitySchema\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"TenantKind, UserContext...\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"useScopeSessionStore\"| packages_core_src_store_scopeSession_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"CedarDecision, useCedarDecisionStore\"| packages_core_src_store_useCedarDecisionStore_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"useEntitlementStore\"| packages_core_src_store_useEntitlementStore_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"useFeatureStore\"| packages_core_src_store_useFeatureStore_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"usePerspectiveStore\"| packages_core_src_store_usePerspectiveStore_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Bond, resolveBondCitizenship\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_logic_registry_featureLifecycleManifest_ts -->|\"FeatureFlagClass, FeatureFlagClassSchema...\"| packages_core_src_logic_registry_domainEntry_ts\n    packages_core_src_logic_registry_featureLifecycleManifest_ts -->|\"DEFAULT_FEATURE_FLAGS\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_schemas_user_schema_ts -->|\"BondSchema, CapacitySchema...\"| packages_core_src_logic_schemas_identity_schema_ts\n    packages_core_src_adapters_powersync_database_ts -.->|❌ getPowerSyncDB, getDrizzleDB| packages_core_src_powersync_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncDatabaseRegistry\"| packages_core_src_adapters_powersync_databaseRegistry_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncDatabase as MockPowerSyncDatabase\"| packages_core_src_adapters_powersync_powersync_shim_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"AppSchema\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"createSecureDrizzleProxy\"| packages_core_src_adapters_powersync_secureDrizzleProxy_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncRuntimeOwnership\"| packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"coreRuntime\"| packages_core_src_logic_runtimeRegistry_ts\n    packages_core_src_native_deviceTrust_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_native_deviceTrust_ts -->|\"supabaseIdentityAdapter as identity\"| packages_core_src_adapters_supabaseIdentity_adapter_ts\n    packages_core_src_native_deviceTrust_ts -->|\"Identity as ActiveCitizen\"| packages_core_src_types_Identity_ts\n    packages_core_src_native_deviceTrust_ts -->|\"coreRuntime\"| packages_core_src_logic_runtimeRegistry_ts\n    packages_core_src_native_deviceTrust_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_lib_security_deviceTrust_ts -->|\"deviceTrustAPI\"| packages_core_src_native_deviceTrust_ts\n    packages_core_src_logic_permissions_localResourceAttributes_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_logic_permissions_localResourceAttributes_ts -->|\"classrooms, schools\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_native_localGuestSession_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_native_localGuestSession_ts -->|\"setGuestScope\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_storageWrapper_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_lib_storageWrapper_ts -->|\"ensureDeviceThemePreference\"| packages_core_src_lib_devicePreferences_ts\n    packages_core_src_store_useAuthStore_ts -->|\"authProfileStorage, restoreIdentityProfile\"| packages_core_src_lib_authProfileStorage_ts\n    packages_core_src_store_useAuthStore_ts -->|\"AuthSlice, createAuthSlice\"| packages_core_src_store_slices_auth_slice_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"pricingManifest\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"EntitlementGrant, EntitlementScopeContext...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"FEATURE_FLAG_MANIFEST\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"DEFAULT_FEATURE_FLAGS, FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"networkMonitor\"| packages_core_src_platform_drivers_networkMonitor_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"FeatureRolloutSnapshot, IFeatureRolloutPort\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"FEATURE_FLAG_MANIFEST\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"trackProductEvent\"| packages_core_src_monitoring_index_ts\n    packages_core_src_logic_ports_featureRollout_port_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_monitoring_breadcrumbs_ts -->|\"leaveBreadcrumb, getBreadcrumbs\"| packages_core_src_monitoring_breadcrumbs_ts\n    packages_core_src_logic_registry_domainEntry_ts -->|\"CITIZENSHIP\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_schemas_identity_schema_ts -->|\"isEdloveAccountId\"| packages_core_src_logic_utils_edloveUuidV8_ts\n    packages_core_src_adapters_powersync_databaseRegistry_ts -->|\"ManagedPowerSyncDatabase, PowerSyncRuntimeOwnership\"| packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"resolveBondScope\"| packages_core_src_logic_permissions_bondScope_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"CapabilityToken\"| packages_core_src_logic_ports_authz_port_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"useScopeSessionStore\"| packages_core_src_store_scopeSession_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"ErrorCategory, SovereignError\"| packages_core_src_types_Errors_ts\n    packages_core_src_logic_runtimeRegistry_ts -->|\"CoreRuntimeEnvironment\"| packages_core_src_types_runtime_ts\n    packages_core_src_adapters_supabaseClient_ts -->|\"supabaseAuthStorage\"| packages_core_src_lib_authStorage_ts\n    packages_core_src_adapters_supabaseClient_ts -->|\"assertSecureApiUrl, secureApiFetch\"| packages_core_src_lib_security_transportSecurity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"assertSupabaseSessionContinuity, readSupabaseSession...\"| packages_core_src_adapters_supabase_sessionContinuity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"IIdentityPort\"| packages_core_src_logic_ports_identity_port_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"CanonicalAccountIdSchema\"| packages_core_src_logic_schemas_identity_schema_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"CompleteProfileSchema, ProfileCompletionDetails...\"| packages_core_src_logic_schemas_profileUpdate_schema_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"Bond, Capacity...\"| packages_core_src_types_Identity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"strictRetryPolicy\"| packages_core_src_utils_effect_ts\n    packages_core_src_types_API_ts -->|\"SovereignError\"| packages_core_src_types_Errors_ts\n    packages_core_src_lib_devicePreferences_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"scopeStorageKey\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"useExperienceState\"| packages_core_src_lib_experienceState_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"guestStorageKey, isGuestUserId\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"User\"| packages_core_src_types_index_ts\n    packages_core_src_store_slices_auth_slice_ts -->|\"leaveBreadcrumb\"| packages_core_src_monitoring_index_ts\n    packages_core_src_store_slices_auth_slice_ts -->|\"User\"| packages_core_src_types_index_ts\n    packages_core_src_platform_drivers_networkMonitor_ts -->|\"INetwork, NetworkSnapshot\"| packages_core_src_logic_interfaces_network_port_ts\n    packages_core_src_lib_authStorage_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_supabase_sessionContinuity_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabase_sessionContinuity_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"Identity\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"ProfileCompletionDetails\"| packages_core_src_logic_schemas_profileUpdate_schema_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"Bond, Capacity...\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_types_User_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_types_User_ts -->|\"SocialLink\"| packages_core_src_types_Social_ts\n    packages_core_src_types_User_ts -->|\"TenantKind\"| packages_core_src_types_Tenancy_ts\n    packages_core_src_lib_experienceState_ts -->|\"createScopedStateStorage\"| packages_core_src_lib_scopedStateStorage_ts\n    packages_core_src_types_index_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_types_index_ts -->|\"DeviceMetadata\"| packages_core_src_types_runtime_ts\n    packages_core_src_types_index_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_types_Tenancy_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_types_Tenancy_ts -->|\"TenantKind\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"getActiveAccountId, getAccountScopeRevision...\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"getGuestScope, getGuestScopeRevision...\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n\n    classDef core fill:#dbeafe,stroke:#2563eb,stroke-width:3px,color:#1e3a8a;\n    classDef store fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;\n    classDef type fill:#e0e7ff,stroke:#6366f1,stroke-width:1px,color:#312e81;\n    classDef logic fill:#f3f4f6,stroke:#9ca3af,stroke-width:1px,color:#1f2937;\n    classDef dead fill:#fee2e2,stroke:#ef4444,stroke-width:2px,stroke-dasharray: 5 5,color:#991b1b;\n"
+  "mermaid": "graph TD\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts[\"⭐ useSanctuaryFeature.ts<br/>(132 lines)\"]:::core\n    packages_core_src_logic_permissions_sanctuaryFeature_ts[\"⭐ sanctuaryFeature.ts<br/>(171 lines)\"]:::core\n    packages_core_src_logic_permissions_accessContext_ts[\"📄 accessContext.ts\"]:::logic\n    packages_core_src_logic_permissions_baselineCapabilities_ts[\"📄 baselineCapabilities.ts\"]:::logic\n    packages_core_src_logic_permissions_bondScope_ts[\"📄 bondScope.ts\"]:::logic\n    packages_core_src_logic_permissions_cedarEvaluator_ts[\"📄 cedarEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_localEvaluator_ts[\"📄 localEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_sovereignty_ts[\"📄 sovereignty.ts\"]:::logic\n    packages_core_src_store_useCedarDecisionStore_ts[\"🗄️ useCedarDecisionStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_usePerspectiveStore_ts[\"🗄️ usePerspectiveStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_useEntitlementStore_ts[\"🗄️ useEntitlementStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_useFeatureStore_ts[\"🗄️ useFeatureStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_scopeSession_ts[\"🗄️ scopeSession.ts<br/>(Store)\"]:::store\n    packages_core_src_types_Identity_ts[\"🏷️ Identity.ts<br/>(Types)\"]:::type\n    packages_core_src_types_Perspective_ts[\"🏷️ Perspective.ts<br/>(Types)\"]:::type\n    packages_core_src_types_authorization_ts[\"🏷️ authorization.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_registry_citizenship_ts[\"📄 citizenship.ts\"]:::logic\n    packages_core_src_logic_ports_entitlement_port_ts[\"📄 entitlement.port.ts\"]:::logic\n    packages_core_src_logic_permissions_hooks_useAuthority_ts[\"📄 useAuthority.ts\"]:::logic\n    packages_core_src_logic_registry_featureLifecycleManifest_ts[\"📄 featureLifecycleManifest.ts\"]:::logic\n    packages_core_src_logic_schemas_capacity_schema_ts[\"📄 capacity.schema.ts\"]:::logic\n    packages_core_src_logic_schemas_user_schema_ts[\"📄 user.schema.ts\"]:::logic\n    packages_core_src_store_types_featureFlags_ts[\"🗄️ featureFlags.ts<br/>(Store)\"]:::store\n    packages_core_src_logic_permissions_entitlement_ts[\"📄 entitlement.ts\"]:::logic\n    packages_core_src_adapters_powersync_database_ts[\"📄 database.ts\"]:::logic\n    packages_core_src_adapters_powersync_schema_ts[\"📄 schema.ts\"]:::logic\n    packages_core_src_native_deviceTrust_ts[\"📄 deviceTrust.ts\"]:::logic\n    packages_core_src_lib_security_deviceTrust_ts[\"📄 deviceTrust.ts\"]:::logic\n    packages_core_src_logic_auth_identityState_ts[\"📄 identityState.ts\"]:::logic\n    packages_core_src_logic_permissions_cedarClientEvaluator_ts[\"📄 cedarClientEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_localResourceAttributes_ts[\"📄 localResourceAttributes.ts\"]:::logic\n    packages_core_src_logic_permissions_signature_ts[\"📄 signature.ts\"]:::logic\n    packages_core_src_native_localGuestSession_ts[\"📄 localGuestSession.ts\"]:::logic\n    packages_core_src_lib_storageWrapper_ts[\"📄 storageWrapper.ts\"]:::logic\n    packages_core_src_lib_sync_eventBus_ts[\"📄 eventBus.ts\"]:::logic\n    packages_core_src_store_useAuthStore_ts[\"🗄️ useAuthStore.ts<br/>(Store)\"]:::store\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts[\"📄 supabaseEntitlement.adapter.ts\"]:::logic\n    packages_core_src_lib_accountScope_ts[\"📄 accountScope.ts\"]:::logic\n    packages_core_src_lib_featureRolloutSnapshot_ts[\"📄 featureRolloutSnapshot.ts\"]:::logic\n    packages_core_src_lib_storage_ts[\"📄 storage.ts\"]:::logic\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts[\"📄 growthBookFeatureRollout.adapter.ts\"]:::logic\n    packages_core_src_logic_ports_featureRollout_port_ts[\"📄 featureRollout.port.ts\"]:::logic\n    packages_core_src_monitoring_breadcrumbs_ts[\"📄 breadcrumbs.ts\"]:::logic\n    packages_core_src_native_guestScope_ts[\"📄 guestScope.ts\"]:::logic\n    packages_core_src_constants_SriLankanSchools_ts[\"📄 SriLankanSchools.ts\"]:::logic\n    packages_core_src_types_CivicRole_ts[\"🏷️ CivicRole.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_permissions_authority_ts[\"📄 authority.ts\"]:::logic\n    packages_core_src_logic_registry_domainEntry_ts[\"📄 domainEntry.ts\"]:::logic\n    packages_core_src_logic_schemas_identity_schema_ts[\"📄 identity.schema.ts\"]:::logic\n    packages_core_src_powersync_ts[\"❌ powersync.ts<br/>(PHANTOM/DEAD)\"]:::dead\n    packages_core_src_adapters_powersync_databaseRegistry_ts[\"📄 databaseRegistry.ts\"]:::logic\n    packages_core_src_adapters_powersync_powersync_shim_ts[\"📄 powersync-shim.ts\"]:::logic\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts[\"📄 secureDrizzleProxy.ts\"]:::logic\n    packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts[\"📄 singleActivePowerSyncRuntime.ts\"]:::logic\n    packages_core_src_logic_runtimeRegistry_ts[\"📄 runtimeRegistry.ts\"]:::logic\n    packages_core_src_adapters_supabaseClient_ts[\"📄 supabaseClient.ts\"]:::logic\n    packages_core_src_adapters_supabaseIdentity_adapter_ts[\"📄 supabaseIdentity.adapter.ts\"]:::logic\n    packages_core_src_types_API_ts[\"🏷️ API.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_devicePreferences_ts[\"📄 devicePreferences.ts\"]:::logic\n    packages_core_src_lib_authProfileStorage_ts[\"📄 authProfileStorage.ts\"]:::logic\n    packages_core_src_store_slices_auth_slice_ts[\"🗄️ auth.slice.ts<br/>(Store)\"]:::store\n    packages_core_src_platform_drivers_networkMonitor_ts[\"📄 networkMonitor.ts\"]:::logic\n    packages_core_src_monitoring_index_ts[\"📄 index.ts\"]:::logic\n    packages_core_src_types_User_ts[\"🏷️ User.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_utils_edloveUuidV8_ts[\"📄 edloveUuidV8.ts\"]:::logic\n    packages_core_src_logic_ports_authz_port_ts[\"📄 authz.port.ts\"]:::logic\n    packages_core_src_types_Errors_ts[\"🏷️ Errors.ts<br/>(Types)\"]:::type\n    packages_core_src_types_runtime_ts[\"🏷️ runtime.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_authStorage_ts[\"📄 authStorage.ts\"]:::logic\n    packages_core_src_lib_security_transportSecurity_ts[\"📄 transportSecurity.ts\"]:::logic\n    packages_core_src_adapters_supabase_sessionContinuity_ts[\"📄 sessionContinuity.ts\"]:::logic\n    packages_core_src_logic_ports_identity_port_ts[\"📄 identity.port.ts\"]:::logic\n    packages_core_src_logic_schemas_profileUpdate_schema_ts[\"📄 profileUpdate.schema.ts\"]:::logic\n    packages_core_src_utils_effect_ts[\"📄 effect.ts\"]:::logic\n    packages_core_src_lib_experienceState_ts[\"📄 experienceState.ts\"]:::logic\n    packages_core_src_types_index_ts[\"🏷️ index.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_interfaces_network_port_ts[\"📄 network.port.ts\"]:::logic\n    packages_core_src_types_Social_ts[\"🏷️ Social.ts<br/>(Types)\"]:::type\n    packages_core_src_types_Tenancy_ts[\"🏷️ Tenancy.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_scopedStateStorage_ts[\"📄 scopedStateStorage.ts\"]:::logic\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"useAuthority\"| packages_core_src_logic_permissions_hooks_useAuthority_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"CITIZENSHIP, FeatureRequirement...\"| packages_core_src_logic_permissions_sanctuaryFeature_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"resolveFeatureFlagClass, resolveFeatureFlagValue\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Bond, CitizenshipTier\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"FeatureAccessContext, isFeatureAccessContextReady\"| packages_core_src_logic_permissions_accessContext_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"isBaselineReadCapability, isOnDeviceSelfCapability\"| packages_core_src_logic_permissions_baselineCapabilities_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"meetsSubscriptionTier, resolveScopedEntitlement\"| packages_core_src_logic_permissions_entitlement_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"EntitlementScope, EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"CITIZENSHIP, CitizenshipLevel...\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_permissions_accessContext_ts -->|\"EntitlementReadiness, EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_accessContext_ts -->|\"CitizenshipLevel\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_permissions_baselineCapabilities_ts -->|\"Action\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"getDrizzleDB, registerPermissionValidator\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"cedarPolicies\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"deviceTrustAPI\"| packages_core_src_native_deviceTrust_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"DeviceTrustEngine\"| packages_core_src_lib_security_deviceTrust_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"isAnonymousIdentity\"| packages_core_src_logic_auth_identityState_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"evaluateShape2\"| packages_core_src_logic_permissions_cedarClientEvaluator_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"getLocalResourceAttributes\"| packages_core_src_logic_permissions_localResourceAttributes_ts\n    packages_core_src_logic_permissions_sovereignty_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"permissionSnapshots, policyVersion\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"verifySnapshotSignature\"| packages_core_src_logic_permissions_signature_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"isLocalGuestSessionId\"| packages_core_src_native_localGuestSession_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"CedarDecision\"| packages_core_src_types_authorization_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"sovereignBus\"| packages_core_src_lib_sync_eventBus_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"useCedarDecisionStore\"| packages_core_src_store_useCedarDecisionStore_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"SupabaseEntitlementAdapter\"| packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"EntitlementGrant, EntitlementReadiness...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"getAccountScopeRevision, scopeStorageKey\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS, normalizeFeatureRolloutSnapshot...\"| packages_core_src_lib_featureRolloutSnapshot_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"growthBookFeatureRolloutAdapter as featureFlags\"| packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"leaveBreadcrumb\"| packages_core_src_monitoring_breadcrumbs_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"getGuestScopeRevision, guestStorageKey\"| packages_core_src_native_guestScope_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"DEFAULT_FEATURE_FLAGS, FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_store_scopeSession_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_store_scopeSession_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_types_Perspective_ts -->|\"SchoolType\"| packages_core_src_constants_SriLankanSchools_ts\n    packages_core_src_types_Perspective_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_types_Perspective_ts -->|\"CivicRoleId\"| packages_core_src_types_CivicRole_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"decide, EntitlementInputs...\"| packages_core_src_logic_permissions_authority_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useScopeSessionStore\"| packages_core_src_store_scopeSession_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useCedarDecisionStore\"| packages_core_src_store_useCedarDecisionStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useEntitlementStore\"| packages_core_src_store_useEntitlementStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useFeatureStore\"| packages_core_src_store_useFeatureStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"usePerspectiveStore\"| packages_core_src_store_usePerspectiveStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"Action, CedarDecision...\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_registry_featureLifecycleManifest_ts -->|\"FeatureFlagClass, FeatureFlagClassSchema...\"| packages_core_src_logic_registry_domainEntry_ts\n    packages_core_src_logic_registry_featureLifecycleManifest_ts -->|\"DEFAULT_FEATURE_FLAGS\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_schemas_user_schema_ts -->|\"BondSchema, CapacitySchema...\"| packages_core_src_logic_schemas_identity_schema_ts\n    packages_core_src_logic_permissions_entitlement_ts -->|\"EntitlementRequirement, EntitlementScope...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_adapters_powersync_database_ts -.->|❌ getPowerSyncDB, getDrizzleDB| packages_core_src_powersync_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncDatabaseRegistry\"| packages_core_src_adapters_powersync_databaseRegistry_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncDatabase as MockPowerSyncDatabase\"| packages_core_src_adapters_powersync_powersync_shim_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"AppSchema\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"createSecureDrizzleProxy\"| packages_core_src_adapters_powersync_secureDrizzleProxy_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncRuntimeOwnership\"| packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"coreRuntime\"| packages_core_src_logic_runtimeRegistry_ts\n    packages_core_src_native_deviceTrust_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_native_deviceTrust_ts -->|\"supabaseIdentityAdapter as identity\"| packages_core_src_adapters_supabaseIdentity_adapter_ts\n    packages_core_src_native_deviceTrust_ts -->|\"Identity as ActiveCitizen\"| packages_core_src_types_Identity_ts\n    packages_core_src_native_deviceTrust_ts -->|\"coreRuntime\"| packages_core_src_logic_runtimeRegistry_ts\n    packages_core_src_native_deviceTrust_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_lib_security_deviceTrust_ts -->|\"deviceTrustAPI\"| packages_core_src_native_deviceTrust_ts\n    packages_core_src_logic_permissions_localResourceAttributes_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_logic_permissions_localResourceAttributes_ts -->|\"classrooms, schools\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_native_localGuestSession_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_native_localGuestSession_ts -->|\"setGuestScope\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_storageWrapper_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_lib_storageWrapper_ts -->|\"ensureDeviceThemePreference\"| packages_core_src_lib_devicePreferences_ts\n    packages_core_src_store_useAuthStore_ts -->|\"authProfileStorage, restoreIdentityProfile\"| packages_core_src_lib_authProfileStorage_ts\n    packages_core_src_store_useAuthStore_ts -->|\"AuthSlice, createAuthSlice\"| packages_core_src_store_slices_auth_slice_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"pricingManifest\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"EntitlementGrant, EntitlementScopeContext...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"FEATURE_FLAG_MANIFEST\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"DEFAULT_FEATURE_FLAGS, FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"networkMonitor\"| packages_core_src_platform_drivers_networkMonitor_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"FeatureRolloutSnapshot, IFeatureRolloutPort\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"FEATURE_FLAG_MANIFEST\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"trackProductEvent\"| packages_core_src_monitoring_index_ts\n    packages_core_src_logic_ports_featureRollout_port_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_monitoring_breadcrumbs_ts -->|\"leaveBreadcrumb, getBreadcrumbs\"| packages_core_src_monitoring_breadcrumbs_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"resolveBondScope\"| packages_core_src_logic_permissions_bondScope_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"resolveScopedEntitlement\"| packages_core_src_logic_permissions_entitlement_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Capacity, CapacitySchema\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"TenantKind, UserContext...\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"CedarDecision\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Bond, resolveBondCitizenship\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_logic_registry_domainEntry_ts -->|\"CITIZENSHIP\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_schemas_identity_schema_ts -->|\"isEdloveAccountId\"| packages_core_src_logic_utils_edloveUuidV8_ts\n    packages_core_src_adapters_powersync_databaseRegistry_ts -->|\"ManagedPowerSyncDatabase, PowerSyncRuntimeOwnership\"| packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"resolveBondScope\"| packages_core_src_logic_permissions_bondScope_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"CapabilityToken\"| packages_core_src_logic_ports_authz_port_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"useScopeSessionStore\"| packages_core_src_store_scopeSession_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"ErrorCategory, SovereignError\"| packages_core_src_types_Errors_ts\n    packages_core_src_logic_runtimeRegistry_ts -->|\"CoreRuntimeEnvironment\"| packages_core_src_types_runtime_ts\n    packages_core_src_adapters_supabaseClient_ts -->|\"supabaseAuthStorage\"| packages_core_src_lib_authStorage_ts\n    packages_core_src_adapters_supabaseClient_ts -->|\"assertSecureApiUrl, secureApiFetch\"| packages_core_src_lib_security_transportSecurity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"assertSupabaseSessionContinuity, readSupabaseSession...\"| packages_core_src_adapters_supabase_sessionContinuity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"IIdentityPort\"| packages_core_src_logic_ports_identity_port_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"CanonicalAccountIdSchema\"| packages_core_src_logic_schemas_identity_schema_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"CompleteProfileSchema, ProfileCompletionDetails...\"| packages_core_src_logic_schemas_profileUpdate_schema_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"Bond, Capacity...\"| packages_core_src_types_Identity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"strictRetryPolicy\"| packages_core_src_utils_effect_ts\n    packages_core_src_types_API_ts -->|\"SovereignError\"| packages_core_src_types_Errors_ts\n    packages_core_src_lib_devicePreferences_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"scopeStorageKey\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"useExperienceState\"| packages_core_src_lib_experienceState_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"guestStorageKey, isGuestUserId\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"User\"| packages_core_src_types_index_ts\n    packages_core_src_store_slices_auth_slice_ts -->|\"leaveBreadcrumb\"| packages_core_src_monitoring_index_ts\n    packages_core_src_store_slices_auth_slice_ts -->|\"User\"| packages_core_src_types_index_ts\n    packages_core_src_platform_drivers_networkMonitor_ts -->|\"INetwork, NetworkSnapshot\"| packages_core_src_logic_interfaces_network_port_ts\n    packages_core_src_types_User_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_types_User_ts -->|\"SocialLink\"| packages_core_src_types_Social_ts\n    packages_core_src_types_User_ts -->|\"TenantKind\"| packages_core_src_types_Tenancy_ts\n    packages_core_src_lib_authStorage_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_supabase_sessionContinuity_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabase_sessionContinuity_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"Identity\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"ProfileCompletionDetails\"| packages_core_src_logic_schemas_profileUpdate_schema_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"Bond, Capacity...\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_lib_experienceState_ts -->|\"createScopedStateStorage\"| packages_core_src_lib_scopedStateStorage_ts\n    packages_core_src_types_index_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_types_index_ts -->|\"DeviceMetadata\"| packages_core_src_types_runtime_ts\n    packages_core_src_types_index_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_types_Tenancy_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_types_Tenancy_ts -->|\"TenantKind\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"getActiveAccountId, getAccountScopeRevision...\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"getGuestScope, getGuestScopeRevision...\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n\n    classDef core fill:#dbeafe,stroke:#2563eb,stroke-width:3px,color:#1e3a8a;\n    classDef store fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;\n    classDef type fill:#e0e7ff,stroke:#6366f1,stroke-width:1px,color:#312e81;\n    classDef logic fill:#f3f4f6,stroke:#9ca3af,stroke-width:1px,color:#1f2937;\n    classDef dead fill:#fee2e2,stroke:#ef4444,stroke-width:2px,stroke-dasharray: 5 5,color:#991b1b;\n"
 }

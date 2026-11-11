@@ -2,14 +2,32 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT_DIR = process.cwd();
+import { ALLOWED, TIERS, tierOf } from '../tooling/architecture-tiers.mjs';
+
 const data = JSON.parse(fs.readFileSync('reports/topological-layer-analysis.json', 'utf8'));
+
+// Columns are the architecture tiers (tooling/architecture-tiers.mjs), not import depth: depth
+// only counts how long the longest chain is, which says nothing about what a file is allowed to be.
+const audit = fs.existsSync('reports/tier-audit.json')
+  ? JSON.parse(fs.readFileSync('reports/tier-audit.json', 'utf8'))
+  : { findings: [] };
+const findingsByFile = Object.groupBy(audit.findings, (f) => f.file);
+const TIER_ORDER = ['T6', 'T5', 'T4', 'C', 'T3', 'T2', 'T1', 'T0', 'UNPLACED'];
+const allFiles = data.layerBreakdown.flatMap((l) => l.files);
+const columns = TIER_ORDER.map((t) => ({
+  tier: t,
+  title: TIERS[t].icon + ' ' + TIERS[t].name,
+  allowed: t === 'UNPLACED' ? '' : (ALLOWED[t] ?? []).map((a) => TIERS[a].name.replace(/^Tier \d: /, '')).join(', '),
+  files: allFiles.filter((f) => tierOf(f.path) === t),
+})).filter((c) => c.files.length > 0);
+const totalFindings = audit.findings.length;
 
 // Format data for layered dag
 const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sanctuary Feature: 14-Layer Topological Architectural Matrix</title>
+  <title>Sanctuary Feature: Architecture Tiers</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -187,31 +205,34 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
   <header>
-    <h1>Sanctuary Feature: Topological Layer & Anatomy Matrix</h1>
-    <p>Every file categorized by its exact dependency depth from Bedrock (Layer 0) to UI Consumer (Layer 13). Zero cycles. Pure directed order.</p>
+    <h1>Sanctuary Feature: Architecture Tiers</h1>
+    <p>Every file in its tier, from the Tier 0 contracts (bedrock) up to presentation. A tier may import only the tiers listed under it. Red cards break that rule; open one to see why.</p>
     <div class="stats-bar">
       <div class="stat-pill">Total Subsystem Files: <strong>${data.totalFiles}</strong></div>
       <div class="stat-pill">Internal Dependency Edges: <strong>${data.totalEdges}</strong></div>
       <div class="stat-pill">Cycles: <strong style="color: #4ade80">0 (Zero Cycles)</strong></div>
-      <div class="stat-pill">Architectural Depth: <strong>14 Distinct Layers</strong></div>
+      <div class="stat-pill">Tiers: <strong>${columns.length}</strong> (import depth ${data.maxLayer}, which is not a tier)</div>
+      <div class="stat-pill">Rule findings: <strong style="color: ${totalFindings ? '#f87171' : '#4ade80'}">${totalFindings}</strong></div>
     </div>
   </header>
 
   <div class="board">
-    ${data.layerBreakdown.map(l => `
+    ${columns.map(l => `
       <div class="layer-column">
         <div class="layer-header">
-          <span class="layer-title">Layer ${l.layer} ${getLayerDescriptor(l.layer)}</span>
+          <span class="layer-title">${l.title}</span>
           <span class="layer-badge">${l.files.length} files</span>
         </div>
+        ${l.allowed ? `<div class="file-meta" style="padding: 0 12px 8px">May import: ${l.allowed}</div>` : ''}
         <div class="file-list">
           ${l.files.map(f => `
-            <div class="file-card" onclick="inspectFile('${f.path}')">
+            <div class="file-card" onclick="inspectFile('${f.path}')" style="${findingsByFile[f.path] ? 'border-color: #f87171' : ''}">
               <div class="file-name">${path.basename(f.path)}</div>
               <div class="file-meta">
                 <span>${f.loc} lines</span>
                 <span class="tag">${f.functions.length} fns</span>
                 <span class="tag">${f.types.length + f.interfaces.length} types</span>
+                ${findingsByFile[f.path] ? `<span class="tag" style="color: #f87171">${findingsByFile[f.path].length} findings</span>` : ''}
               </div>
             </div>
           `).join('')}
@@ -228,12 +249,15 @@ const html = `<!DOCTYPE html>
     <div id="ins-fns"></div>
     <div class="section-title">Interfaces & Types (<span id="ins-type-count">0</span>)</div>
     <div id="ins-types"></div>
+    <div class="section-title">Tier findings</div>
+    <div id="ins-findings"></div>
     <div class="section-title">Outgoing Monorepo Imports (<span id="ins-imp-count">0</span>)</div>
     <div id="ins-imports"></div>
   </div>
 
   <script>
-    const dataset = ${JSON.stringify(data.layerBreakdown)};
+    const dataset = ${JSON.stringify(columns)};
+    const findings = ${JSON.stringify(findingsByFile)};
     const fileMap = new Map();
     for (const l of dataset) {
       for (const f of l.files) {
@@ -246,6 +270,10 @@ const html = `<!DOCTYPE html>
       if (!f) return;
       document.getElementById('ins-name').innerText = filePath.split('/').pop();
       document.getElementById('ins-path').innerText = f.path;
+      const own = findings[filePath] || [];
+      document.getElementById('ins-findings').innerHTML = own.length
+        ? own.map(x => '<div style="margin: 4px 0; font-size: 11px; color: #fca5a5"><strong>' + x.rule + '</strong>' + (x.to ? ' → ' + x.to.split('/').pop() : '') + ': ' + x.reason + '</div>').join('')
+        : '<div style="font-size: 11px; color: #4ade80">None</div>';
 
       // Functions
       document.getElementById('ins-fn-count').innerText = f.functions.length;
@@ -277,25 +305,6 @@ const html = `<!DOCTYPE html>
 </html>
 `;
 
-function getLayerDescriptor(layer) {
-  switch (layer) {
-    case 0: return '(Bedrock Primitives)';
-    case 1: return '(Pure Protocols)';
-    case 2: return '(Pure Evaluators)';
-    case 3: return '(Prompts & Roles)';
-    case 4: return '(Feature Adapters)';
-    case 5: return '(Factories)';
-    case 6: return '(State Slices)';
-    case 7: return '(Auth Store)';
-    case 8: return '(DB Proxy)';
-    case 9: return '(DB Engine)';
-    case 10: return '(Cedar Store)';
-    case 11: return '(Atomic Stores)';
-    case 12: return '(Unified Hook)';
-    case 13: return '(UI Consumer)';
-    default: return '';
-  }
-}
 
 fs.writeFileSync(path.join(ROOT_DIR, 'reports/sanctuary-feature-topological-dag.html'), html);
 console.log('Generated Layered DAG Matrix at reports/sanctuary-feature-topological-dag.html');

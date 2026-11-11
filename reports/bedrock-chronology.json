@@ -43,18 +43,20 @@
   {
     "path": "packages/core/src/types/authorization.ts",
     "layer": 0,
-    "loc": 93,
+    "loc": 96,
     "commitCount": 13,
     "birthDate": "2026-03-30",
     "birthCommit": "2e4791087: WIP: pre-recovery snapshot (stash0=667d991cdeb0a7c8d2a2171e09200f0cc56fbda8 stash1=bcfbf1603588064a868bb8ffb2f2250a7341c258)",
     "latestCommit": "ad9c59edd (2026-09-12): wip: save current progress and untracked changes",
     "era": "Unknown",
     "depsCount": 0,
-    "callersCount": 3,
+    "callersCount": 5,
     "callers": [
       "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts",
+      "packages/core/src/logic/permissions/baselineCapabilities.ts",
       "packages/core/src/logic/permissions/authority.ts",
-      "packages/core/src/logic/permissions/baselineCapabilities.ts"
+      "packages/core/src/store/useCedarDecisionStore.ts"
     ],
     "deps": [],
     "verdict": "Bedrock Invariant",
@@ -90,9 +92,10 @@
     "latestCommit": "308aa4f35 (2026-11-06): feat(mobile): Arrive journey on the v1 API",
     "era": "Era 1: Legacy Bootstrap (June 2026)",
     "depsCount": 0,
-    "callersCount": 4,
+    "callersCount": 5,
     "callers": [
       "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "packages/core/src/logic/permissions/authority.ts",
       "packages/core/src/store/scopeSession.ts",
       "packages/core/src/types/User.ts"
@@ -340,7 +343,7 @@
     "callersCount": 5,
     "callers": [
       "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
-      "packages/core/src/logic/permissions/authority.ts",
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "packages/core/src/logic/registry/featureLifecycleManifest.ts",
       "packages/core/src/store/useFeatureStore.ts",
       "packages/core/src/lib/featureRolloutSnapshot.ts"
@@ -352,18 +355,19 @@
   {
     "path": "packages/core/src/logic/ports/entitlement.port.ts",
     "layer": 0,
-    "loc": 99,
+    "loc": 53,
     "commitCount": 3,
     "birthDate": "2026-06-13",
     "birthCommit": "5a2c092f8: chore: quality audit verification and codebase healing fixes",
     "latestCommit": "8b53a75c0 (2026-07-28): core: implement observability, permissions, powersync adapters, and identity logic",
     "era": "Era 1: Legacy Bootstrap (June 2026)",
     "depsCount": 0,
-    "callersCount": 5,
+    "callersCount": 6,
     "callers": [
       "packages/core/src/logic/permissions/sanctuaryFeature.ts",
-      "packages/core/src/logic/permissions/authority.ts",
       "packages/core/src/logic/permissions/accessContext.ts",
+      "packages/core/src/logic/permissions/entitlement.ts",
+      "packages/core/src/logic/permissions/authority.ts",
       "packages/core/src/store/useEntitlementStore.ts",
       "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts"
     ],
@@ -468,6 +472,24 @@
     "redundancyNotes": "Foundational contract/port with 0 internal dependencies."
   },
   {
+    "path": "packages/core/src/types/Social.ts",
+    "layer": 0,
+    "loc": 23,
+    "commitCount": 2,
+    "birthDate": "2026-02-28",
+    "birthCommit": "f8ed0e7f3: Introduce school pulse, staff presence, social links, and new UI components across profile, library, community, and classroom modules, alongside extensive documentation.",
+    "latestCommit": "6b56a2a7b (2026-04-22): chore: biome safe-sweep @repo/core",
+    "era": "Unknown",
+    "depsCount": 0,
+    "callersCount": 1,
+    "callers": [
+      "packages/core/src/types/User.ts"
+    ],
+    "deps": [],
+    "verdict": "Bedrock Invariant",
+    "redundancyNotes": "Foundational contract/port with 0 internal dependencies."
+  },
+  {
     "path": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
     "layer": 0,
     "loc": 125,
@@ -535,24 +557,6 @@
     "callersCount": 1,
     "callers": [
       "packages/core/src/platform/drivers/networkMonitor.ts"
-    ],
-    "deps": [],
-    "verdict": "Bedrock Invariant",
-    "redundancyNotes": "Foundational contract/port with 0 internal dependencies."
-  },
-  {
-    "path": "packages/core/src/types/Social.ts",
-    "layer": 0,
-    "loc": 23,
-    "commitCount": 2,
-    "birthDate": "2026-02-28",
-    "birthCommit": "f8ed0e7f3: Introduce school pulse, staff presence, social links, and new UI components across profile, library, community, and classroom modules, alongside extensive documentation.",
-    "latestCommit": "6b56a2a7b (2026-04-22): chore: biome safe-sweep @repo/core",
-    "era": "Unknown",
-    "depsCount": 0,
-    "callersCount": 1,
-    "callers": [
-      "packages/core/src/types/User.ts"
     ],
     "deps": [],
     "verdict": "Bedrock Invariant",
@@ -863,6 +867,27 @@
     "redundancyNotes": ""
   },
   {
+    "path": "packages/core/src/logic/permissions/entitlement.ts",
+    "layer": 1,
+    "loc": 58,
+    "commitCount": 0,
+    "birthDate": "Uncommitted",
+    "birthCommit": "N/A",
+    "latestCommit": "N/A",
+    "era": "Unknown",
+    "depsCount": 1,
+    "callersCount": 2,
+    "callers": [
+      "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+      "packages/core/src/logic/permissions/authority.ts"
+    ],
+    "deps": [
+      "packages/core/src/logic/ports/entitlement.port.ts"
+    ],
+    "verdict": "Essential Component",
+    "redundancyNotes": ""
+  },
+  {
     "path": "packages/core/src/logic/schemas/user.schema.ts",
     "layer": 2,
     "loc": 126,
@@ -872,9 +897,10 @@
     "latestCommit": "308aa4f35 (2026-11-06): feat(mobile): Arrive journey on the v1 API",
     "era": "Unknown",
     "depsCount": 1,
-    "callersCount": 6,
+    "callersCount": 7,
     "callers": [
       "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "packages/core/src/logic/permissions/authority.ts",
       "packages/core/src/store/useFeatureStore.ts",
       "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
@@ -939,13 +965,13 @@
   {
     "path": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
     "layer": 2,
-    "loc": 175,
+    "loc": 171,
     "commitCount": 8,
     "birthDate": "2026-06-22",
     "birthCommit": "e6297ee27: chore: savepoint -- commit existing changes",
     "latestCommit": "308aa4f35 (2026-11-06): feat(mobile): Arrive journey on the v1 API",
     "era": "Era 1: Legacy Bootstrap (June 2026)",
-    "depsCount": 4,
+    "depsCount": 5,
     "callersCount": 2,
     "callers": [
       "packages/ui/src/components/SanctuaryGuard.tsx",
@@ -954,6 +980,7 @@
     "deps": [
       "packages/core/src/logic/permissions/accessContext.ts",
       "packages/core/src/logic/permissions/baselineCapabilities.ts",
+      "packages/core/src/logic/permissions/entitlement.ts",
       "packages/core/src/logic/ports/entitlement.port.ts",
       "packages/core/src/logic/registry/citizenship.ts"
     ],
@@ -1016,7 +1043,7 @@
     "depsCount": 2,
     "callersCount": 2,
     "callers": [
-      "packages/core/src/logic/permissions/authority.ts",
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "packages/core/src/adapters/powersync/secureDrizzleProxy.ts"
     ],
     "deps": [
@@ -1183,8 +1210,9 @@
     "latestCommit": "9f37c05a9 (2026-10-27): wip",
     "era": "Unknown",
     "depsCount": 3,
-    "callersCount": 1,
+    "callersCount": 2,
     "callers": [
+      "packages/core/src/logic/permissions/authority.ts",
       "packages/core/src/types/index.ts"
     ],
     "deps": [
@@ -1277,7 +1305,7 @@
     "depsCount": 9,
     "callersCount": 1,
     "callers": [
-      "packages/core/src/logic/permissions/authority.ts"
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts"
     ],
     "deps": [
       "packages/core/src/lib/accountScope.ts",
@@ -1289,6 +1317,34 @@
       "packages/core/src/monitoring/breadcrumbs.ts",
       "packages/core/src/native/guestScope.ts",
       "packages/core/src/store/types/featureFlags.ts"
+    ],
+    "verdict": "Essential Component",
+    "redundancyNotes": ""
+  },
+  {
+    "path": "packages/core/src/logic/permissions/authority.ts",
+    "layer": 5,
+    "loc": 157,
+    "commitCount": 1,
+    "birthDate": "2026-11-11",
+    "birthCommit": "b104d9fb5: feat(core): one authority read behind useSanctuaryFeature",
+    "latestCommit": "b104d9fb5 (2026-11-11): feat(core): one authority read behind useSanctuaryFeature",
+    "era": "Era 4: Canonical ReBAC & Architecture Modernization (Oct-Nov 2026)",
+    "depsCount": 9,
+    "callersCount": 1,
+    "callers": [
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts"
+    ],
+    "deps": [
+      "packages/core/src/logic/permissions/bondScope.ts",
+      "packages/core/src/logic/permissions/entitlement.ts",
+      "packages/core/src/logic/ports/entitlement.port.ts",
+      "packages/core/src/logic/schemas/capacity.schema.ts",
+      "packages/core/src/logic/schemas/user.schema.ts",
+      "packages/core/src/types/authorization.ts",
+      "packages/core/src/types/Identity.ts",
+      "packages/core/src/types/Perspective.ts",
+      "packages/core/src/types/User.ts"
     ],
     "verdict": "Essential Component",
     "redundancyNotes": ""
@@ -1350,7 +1406,7 @@
     "depsCount": 2,
     "callersCount": 3,
     "callers": [
-      "packages/core/src/logic/permissions/authority.ts",
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "packages/core/src/store/usePerspectiveStore.ts",
       "packages/core/src/adapters/powersync/secureDrizzleProxy.ts"
     ],
@@ -1420,17 +1476,18 @@
     "birthCommit": "5270b5c79: refactor(permissions): migrate CASL → Cedar + capability tokens",
     "latestCommit": "308aa4f35 (2026-11-06): feat(mobile): Arrive journey on the v1 API",
     "era": "Era 2: CASL & Permissions Accretion (July-Aug 2026)",
-    "depsCount": 4,
+    "depsCount": 5,
     "callersCount": 2,
     "callers": [
-      "packages/core/src/logic/permissions/authority.ts",
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "packages/core/src/store/usePerspectiveStore.ts"
     ],
     "deps": [
       "packages/core/src/adapters/powersync/database.ts",
       "packages/core/src/adapters/powersync/schema.ts",
       "packages/core/src/logic/permissions/signature.ts",
-      "packages/core/src/native/localGuestSession.ts"
+      "packages/core/src/native/localGuestSession.ts",
+      "packages/core/src/types/authorization.ts"
     ],
     "verdict": "Essential Component",
     "redundancyNotes": ""
@@ -1470,7 +1527,7 @@
     "depsCount": 3,
     "callersCount": 1,
     "callers": [
-      "packages/core/src/logic/permissions/authority.ts"
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts"
     ],
     "deps": [
       "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
@@ -1492,7 +1549,7 @@
     "depsCount": 5,
     "callersCount": 1,
     "callers": [
-      "packages/core/src/logic/permissions/authority.ts"
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts"
     ],
     "deps": [
       "packages/core/src/lib/storageWrapper.ts",
@@ -1505,23 +1562,21 @@
     "redundancyNotes": ""
   },
   {
-    "path": "packages/core/src/logic/permissions/authority.ts",
+    "path": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
     "layer": 12,
-    "loc": 240,
-    "commitCount": 1,
-    "birthDate": "2026-11-11",
-    "birthCommit": "b104d9fb5: feat(core): one authority read behind useSanctuaryFeature",
-    "latestCommit": "b104d9fb5 (2026-11-11): feat(core): one authority read behind useSanctuaryFeature",
-    "era": "Era 4: Canonical ReBAC & Architecture Modernization (Oct-Nov 2026)",
-    "depsCount": 14,
+    "loc": 95,
+    "commitCount": 0,
+    "birthDate": "Uncommitted",
+    "birthCommit": "N/A",
+    "latestCommit": "N/A",
+    "era": "Unknown",
+    "depsCount": 11,
     "callersCount": 1,
     "callers": [
       "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts"
     ],
     "deps": [
-      "packages/core/src/logic/permissions/bondScope.ts",
-      "packages/core/src/logic/ports/entitlement.port.ts",
-      "packages/core/src/logic/schemas/capacity.schema.ts",
+      "packages/core/src/logic/permissions/authority.ts",
       "packages/core/src/logic/schemas/user.schema.ts",
       "packages/core/src/store/scopeSession.ts",
       "packages/core/src/store/types/featureFlags.ts",
@@ -1531,8 +1586,7 @@
       "packages/core/src/store/useFeatureStore.ts",
       "packages/core/src/store/usePerspectiveStore.ts",
       "packages/core/src/types/authorization.ts",
-      "packages/core/src/types/Identity.ts",
-      "packages/core/src/types/Perspective.ts"
+      "packages/core/src/types/Identity.ts"
     ],
     "verdict": "Essential Component",
     "redundancyNotes": ""
@@ -1552,7 +1606,7 @@
       "packages/ui/src/components/SanctuaryGuard.tsx"
     ],
     "deps": [
-      "packages/core/src/logic/permissions/authority.ts",
+      "packages/core/src/logic/permissions/hooks/useAuthority.ts",
       "packages/core/src/logic/permissions/sanctuaryFeature.ts",
       "packages/core/src/logic/registry/featureLifecycleManifest.ts",
       "packages/core/src/logic/schemas/capacity.schema.ts",

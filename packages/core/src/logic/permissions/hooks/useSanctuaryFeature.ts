@@ -1,4 +1,4 @@
-import { useAuthority } from '@repo/core/logic/permissions/authority';
+import { useAuthority } from '@repo/core/logic/permissions/hooks/useAuthority';
 import {
   CITIZENSHIP,
   type FeatureRequirement,

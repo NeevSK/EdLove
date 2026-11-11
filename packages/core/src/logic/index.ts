@@ -6,7 +6,6 @@ export {
   useDeviceAccounts,
 } from '@repo/core/hooks/useDeviceAccounts';
 export { useDeviceSecurity } from '@repo/core/hooks/useDeviceSecurity';
-export { useScopedDeviceSecurity } from '@repo/core/hooks/useScopedDeviceSecurity';
 export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 // Logic Hooks & Utilities
 export { usePerspectiveSwitch } from '@repo/core/hooks/usePerspectiveSwitch';
@@ -14,6 +13,7 @@ export {
   type SanctuaryVisitorState,
   useSanctuaryVisitor,
 } from '@repo/core/hooks/useSanctuaryVisitor';
+export { useScopedDeviceSecurity } from '@repo/core/hooks/useScopedDeviceSecurity';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { accountPin } from '@repo/core/lib/accountPin';
 export {
@@ -28,10 +28,10 @@ export {
   setPendingGateAction,
 } from '@repo/core/lib/pendingGateAction';
 export {
-  StorageKeys,
-  storage,
   buildPartitionedKey,
   type PartitionKeyOptions,
+  StorageKeys,
+  storage,
 } from '@repo/core/lib/storage';
 export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 export type {
@@ -75,6 +75,7 @@ export {
   type RouteIntent,
   type ValidatedReferrerIntent,
 } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+export { DeepLinkType, handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
 export {
   isPendingIntentExpired,
   type PendingDeepLinkIntent,
@@ -91,9 +92,12 @@ export * from '@repo/core/logic/experience/ActivityPulseContext';
 export * from '@repo/core/logic/forms';
 export * from '@repo/core/logic/grading';
 export { default as i18n } from '@repo/core/logic/i18n/config';
-export { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
-export { DeepLinkType, handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
 export * from '@repo/core/logic/mediaReducer';
+export {
+  meetsSubscriptionTier,
+  resolveScopedEntitlement,
+  satisfiesEntitlementRequirement,
+} from '@repo/core/logic/permissions/entitlement';
 export * from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 export * from '@repo/core/logic/permissions/sanctuaryFeature';
 export * from '@repo/core/logic/permissions/sovereignty';
@@ -118,11 +122,6 @@ export type {
   EntitlementSnapshot,
   IEntitlementPort,
   SubscriptionTier,
-} from '@repo/core/logic/ports/entitlement.port';
-export {
-  meetsSubscriptionTier,
-  resolveScopedEntitlement,
-  satisfiesEntitlementRequirement,
 } from '@repo/core/logic/ports/entitlement.port';
 export type { IEventBusPort } from '@repo/core/logic/ports/eventBus.port';
 export type {
@@ -152,6 +151,7 @@ export * from '@repo/core/logic/schemas';
 export * from '@repo/core/logic/store-slices';
 export * from '@repo/core/logic/utils';
 export * from '@repo/core/logic/workspace/index';
+export { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
 export { useAuth } from '@repo/core/providers/AuthProvider';
 export {
   CapabilityHydrationProvider,
@@ -176,7 +176,6 @@ export type { APIError } from '@repo/core/types/API';
 export type { LessonMaterial } from '@repo/core/types/LessonMaterial';
 
 export {
-  parseInstitutionalQR,
   type ParsedInstitutionalQR,
+  parseInstitutionalQR,
 } from './utils/institutionalQrParser';
-

@@ -3,6 +3,7 @@ export * from '@repo/core/logic/permissions/authority';
 export * from '@repo/core/logic/permissions/bondScope';
 export * from '@repo/core/logic/permissions/cedarEvaluator';
 export * from '@repo/core/logic/permissions/featurePresentation';
+export * from '@repo/core/logic/permissions/hooks/useAuthority';
 export * from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 export * from '@repo/core/logic/permissions/localEvaluator';
 export * from '@repo/core/logic/permissions/sanctuaryFeature';

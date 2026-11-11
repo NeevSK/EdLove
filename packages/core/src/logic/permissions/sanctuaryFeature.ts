@@ -7,10 +7,12 @@ import {
   isOnDeviceSelfCapability,
 } from '@repo/core/logic/permissions/baselineCapabilities';
 import {
-  type EntitlementScope,
-  type EntitlementSnapshot,
   meetsSubscriptionTier,
   resolveScopedEntitlement,
+} from '@repo/core/logic/permissions/entitlement';
+import type {
+  EntitlementScope,
+  EntitlementSnapshot,
 } from '@repo/core/logic/ports/entitlement.port';
 import {
   CITIZENSHIP,
@@ -78,7 +80,10 @@ export function sanctuaryFeature(
   ctx: SanctuaryEvaluationContext,
   requirement: FeatureRequirement,
 ): SanctuaryFeatureResult {
-  const onDeviceSelf = isOnDeviceSelfCapability(requirement.action ?? '', requirement.subject ?? '');
+  const onDeviceSelf = isOnDeviceSelfCapability(
+    requirement.action ?? '',
+    requirement.subject ?? '',
+  );
   if (!isFeatureAccessContextReady(ctx)) {
     if (onDeviceSelf && Boolean(ctx.userId) && ctx.flagActive) {
       return { permitted: true };

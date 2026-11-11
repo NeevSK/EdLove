@@ -90,3 +90,6 @@ export type Subject =
   | 'TrustNetwork'
   | 'LibraryArchive'
   | 'ProFeatures';
+
+/** A permission snapshot's answer for one subject and action. */
+export type CedarDecision = 'allow' | 'deny' | 'no_decision';

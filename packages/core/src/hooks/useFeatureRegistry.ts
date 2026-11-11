@@ -1,10 +1,10 @@
 import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
-import { useAuthority } from '@repo/core/logic/permissions/authority';
 import { isBaselineReadCapability } from '@repo/core/logic/permissions/baselineCapabilities';
 import {
   type FeaturePresentation,
   resolveFeaturePresentation,
 } from '@repo/core/logic/permissions/featurePresentation';
+import { useAuthority } from '@repo/core/logic/permissions/hooks/useAuthority';
 import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
 import type { DomainFeature } from '@repo/core/types/Workspace';
