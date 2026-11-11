@@ -4,7 +4,8 @@
  * Standardized to Zero-Legacy: native layout + RN TextInput + Lucide vector icons.
  */
 
-import React, { useState } from 'react';
+import { useDraft } from '@repo/ui/context/Drafts';
+import React from 'react';
 import {
   Pressable,
   ScrollView,
@@ -27,7 +28,7 @@ interface DecisionJournalSectionProps {
 export default function DecisionJournalSection({ userId }: DecisionJournalSectionProps) {
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
-  const [decisionText, setDecisionText] = useState('');
+  const { value: decisionText, setValue: setDecisionText } = useDraft('self:decision');
   const { decisions, refreshData, addDecision, error } = useDecisionJournal(
     activeUserId ?? undefined,
   );
