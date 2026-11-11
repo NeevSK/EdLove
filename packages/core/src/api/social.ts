@@ -4,7 +4,7 @@ import { orpcClient } from '@repo/core/api/orpcClient';
 import { createResonantProxy } from '@repo/core/api/resonantProxy';
 import { isEmptyOrNull, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
 import { MOCK_NOTIFICATIONS } from '@repo/core/api/mockData';
-import type { TemporalScale } from '@repo/core/store/useTemporalStore';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 
 function assertSocialHighway() {
   assertHighway('social_core', 'direct-api');

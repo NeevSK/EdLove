@@ -10,7 +10,7 @@ export type {
   DailyAttendance,
   DailyAttendanceStatus,
   GradeClassSubject,
-} from './AcademicLifecycle';
+} from '@repo/core/logic/schemas/academic-lifecycle.schema';
 export type {
   Actor,
   ActorRelationship,
@@ -71,7 +71,7 @@ export type {
   GradeMark,
   GradeMarkPublicationState,
   Term,
-} from './GradeDomain';
+} from '@repo/core/logic/schemas/grade-domain.schema';
 export type { StudentGroup } from './Group';
 export type { Bond, CitizenshipTier, Perspective } from './Identity';
 export type {
@@ -231,6 +231,20 @@ export type AppConfig = { env: string; apiHost: string };
 export type AppContext = { user?: User; schoolId?: string };
 export * from './EducationalEconomics';
 export * from './FlowDAG';
+export {
+  FeatureJTBDGraphSchema,
+  FlowFallbackConditionSchema,
+  FlowFallbackEdgeSchema,
+  FlowNodeStepSchema,
+  FlowTriggerSchema,
+} from './domainEntry';
+export type {
+  FeatureJTBDGraph,
+  FlowFallbackCondition,
+  FlowFallbackEdge,
+  FlowNodeStep,
+  FlowTrigger,
+} from './domainEntry';
 export * from './Growth';
 export type { AppNotification, NotificationStatus } from './notifications';
 export * from './Perspective';

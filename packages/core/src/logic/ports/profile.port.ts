@@ -1,4 +1,4 @@
-import type { TemporalScale } from '@repo/core/store';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 import type { SocialLink, User } from '@repo/core/types';
 import type { UserGrowthState } from '@repo/schema/contracts';
 

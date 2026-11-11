@@ -13,7 +13,7 @@ import type {
   AgentDatabaseError,
   AgentSchemaError,
   AgentTimeoutError,
-} from '@repo/core/logic/agents/agentContracts';
+} from '@repo/core/logic/schemas/agentContracts.schema';
 import type { InvalidAuthCallbackAttempt } from '@repo/core/logic/auth/authCallbackAttempt';
 import type {
   DeepLinkForbiddenCharsError,

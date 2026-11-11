@@ -1,4 +1,4 @@
-import type { ChannelEndpointKind, ChannelTransport } from './channelAuthority';
+import type { ChannelEndpointKind, ChannelTransport } from '../schemas/channelAuthority.schema';
 
 export type SanctuaryChannel = ChannelTransport;
 

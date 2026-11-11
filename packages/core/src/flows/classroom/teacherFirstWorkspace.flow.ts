@@ -1,4 +1,4 @@
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 
 /** Proposed contract. The listed routes exist; the proposed provisioning interaction is not wired. */
 export const teacherFirstWorkspaceFlow: FeatureJTBDGraph = {

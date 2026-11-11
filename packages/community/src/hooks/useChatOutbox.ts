@@ -1,5 +1,5 @@
 import { storage } from '@repo/core/lib/storage';
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import {
   isQueuedMutationAcknowledged,
   useMutationQueue,
@@ -18,7 +18,7 @@ import { useEffect, useMemo, useState } from 'react';
 function readCommand(
   item: QueuedMutation,
   principalId: string,
-  channel: ChatChannel,
+  channel: Pick<ChatChannel, 'kind' | 'id'>,
 ): ChatSendCommand | null {
   if (item.userId !== principalId || item.name !== CHAT_SEND_COMMAND) return null;
   const parsed = ChatSendCommandSchema.safeParse(item.variables);
@@ -52,21 +52,24 @@ export function useChatOutbox(principalId: string, channel: ChatChannel) {
   const queue = useMutationQueue((state) => state.queue);
   const deadLetters = useMutationQueue((state) => state.deadLetterQueue);
   const addToQueue = useMutationQueue((state) => state.addToQueue);
+  // The filters depend on the channel's identity, not on the caller passing a fresh object.
+  const { kind: channelKind, id: channelId } = channel;
   const pending = useMemo(
     () =>
       queue.filter((item) => {
         return (
-          isQueuedMutationAcknowledged(item.id) && readCommand(item, principalId, channel) !== null
+          isQueuedMutationAcknowledged(item.id) &&
+          readCommand(item, principalId, { kind: channelKind, id: channelId }) !== null
         );
       }),
-    [queue, principalId, channel.kind, channel.id],
+    [queue, principalId, channelKind, channelId],
   );
   const rejected = useMemo(
     () =>
       deadLetters.filter((item) => {
-        return readCommand(item, principalId, channel) !== null;
+        return readCommand(item, principalId, { kind: channelKind, id: channelId }) !== null;
       }),
-    [deadLetters, principalId, channel.kind, channel.id],
+    [deadLetters, principalId, channelKind, channelId],
   );
   const admission = useMutation({
     mutationFn: async (command: ChatSendCommand) => {

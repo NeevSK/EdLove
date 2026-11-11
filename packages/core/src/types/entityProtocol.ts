@@ -1,4 +1,4 @@
-import type { FormConfig } from '@repo/core/logic/forms/form-engine';
+import type { FormConfig } from '@repo/core/types/Form';
 
 export type EntityType =
   | 'user'

@@ -156,7 +156,7 @@ export type {
   EdloveUuidV8Parts,
   EdloveUuidV8Subtype,
   ParsedEdloveUuidV8,
-} from '@repo/core/logic/utils/edloveUuidV8';
+} from '@repo/core/logic/schemas/edloveUuidV8';
 export {
   edloveUuidV8Domain,
   edloveUuidV8MintOrigin,
@@ -164,7 +164,7 @@ export {
   encodeEdloveUuidV8,
   isEdloveUuidV8,
   parseEdloveUuidV8,
-} from '@repo/core/logic/utils/edloveUuidV8';
+} from '@repo/core/logic/schemas/edloveUuidV8';
 export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
 export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 export type { QRResolveResult } from '@repo/core/logic/utils/QRResolver';
@@ -197,7 +197,8 @@ export {
 } from '@repo/core/providers/CapabilityHydrationProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
 // 2. Logic State & Storage (Zustand & Supabase)
-export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
+export type { TemporalScale } from '@repo/core/types/Temporal';
+export { useTemporalStore } from '@repo/core/store/useTemporalStore';
 export { useTenantStore } from '@repo/core/store/useTenantStore';
 export { useUIStore } from '@repo/core/store/useUIStore';
 export * from '@repo/core/types';
@@ -283,7 +284,7 @@ export type {
   MutationOutcome,
   QueuedMutation,
   QueuedMutationDispatchResult,
-} from '@repo/core/lib/sync/types';
+} from '@repo/core/types/mutationQueue';
 export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 // Hexagonal Ports
 export type {
@@ -303,7 +304,7 @@ export type {
   EntityDefinition,
   EntityMode,
   EntityType,
-} from '@repo/core/logic/entities/entity-protocol';
+} from '@repo/core/types/entityProtocol';
 export { GPACalculator } from '@repo/core/logic/grading/GPACalculator';
 export * from '@repo/core/logic/permissions';
 export {

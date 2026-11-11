@@ -2,7 +2,7 @@ import { isBaselineReadCapability } from '@repo/core/logic/permissions/baselineC
 import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 import type { SanctuaryFeatureResult } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { getDomainEntry } from '@repo/core/logic/registry/appCatalog';
-import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+import type { DomainEntry } from '@repo/core/types/domainEntry';
 
 export interface DomainFeatureResult {
   entry: DomainEntry;

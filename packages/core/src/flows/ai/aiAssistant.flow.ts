@@ -1,4 +1,4 @@
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 
 /**
  * AI Assistant & Ambient Companion Flow Contract

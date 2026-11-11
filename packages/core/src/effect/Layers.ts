@@ -1,3 +1,4 @@
+import { GrowthPort } from '@repo/core/logic/ports/growth.port';
 import { EntitlementPort } from '@repo/core/logic/ports/entitlement.port';
 import { PermissionSnapshotPort } from '@repo/core/logic/ports/permissionSnapshot.port';
 import { Effect, Layer } from 'effect';
@@ -13,11 +14,13 @@ import { Effect, Layer } from 'effect';
  * - v4 note: Context.Tag maps to Context.Service with inverted argument order.
  */
 
-export {
-  GrowthLayer,
+/** Growth data from Supabase, loaded on first use like the others. Not in AppLayer until consumed. */
+export const GrowthLive = Layer.effect(
   GrowthPort,
-  GrowthPortLive,
-} from '@repo/core/logic/ports/growth.tags';
+  Effect.promise(() =>
+    import('@repo/core/adapters/supabase/growth.adapter').then((m) => new m.SupabaseGrowthAdapter()),
+  ),
+);
 
 /**
  * Entitlements come from Supabase. The adapter is loaded on first use: a static import here would

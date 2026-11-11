@@ -1,6 +1,6 @@
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { assertMutationCommandTransition } from '@repo/core/lib/sync/commandLifecycle';
+import { assertMutationCommandTransition } from '@repo/core/types/mutationCommand';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { CURRENT_OUTBOX_SCHEMA_VERSION } from '@repo/core/lib/sync/outboxMigration';
 import {
@@ -8,7 +8,7 @@ import {
   MAX_MUTATION_QUEUE_SIZE,
   MutationQueueCapacityError,
   type MutationQueueState,
-} from '@repo/core/lib/sync/types';
+} from '@repo/core/types/mutationQueue';
 import { v7 as uuidv7 } from 'uuid';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';

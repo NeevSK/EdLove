@@ -1,6 +1,6 @@
 import { oc, type RouterContract, type RouterContractClient } from '@orpc/contract';
 import { z } from 'zod';
-import { isEdloveAccountId } from '../../logic/utils/edloveUuidV8';
+import { isEdloveAccountId } from '../../logic/schemas/edloveUuidV8';
 
 const foundation = oc.errors({
   UNAUTHORIZED: {},

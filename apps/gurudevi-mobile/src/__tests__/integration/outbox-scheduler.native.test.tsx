@@ -1,6 +1,6 @@
 import { closeReplayAdmission, openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
 import SyncOrchestrator from '@repo/core/lib/sync/sync/SyncOrchestrator';
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { act, render } from '@testing-library/react';

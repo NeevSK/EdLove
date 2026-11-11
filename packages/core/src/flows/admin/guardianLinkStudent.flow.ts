@@ -1,4 +1,4 @@
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 
 export const guardianLinkStudentFlow: FeatureJTBDGraph = {
   featureId: 'guardian.student_link',

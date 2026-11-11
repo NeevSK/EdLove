@@ -1,4 +1,4 @@
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 
 export const teacherStudentRadarAttunementFlow: FeatureJTBDGraph = {
   featureId: 'classroom.teacher_student_radar_attunement',

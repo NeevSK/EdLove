@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { classifyCustomTrapSlope, filterTrapsBySlope, findTrapById, resolveTraps } from '..';
-import type { ThinkingTrap } from '../types';
+import type { ThinkingTrap } from '../../../types/reflection';
 
 const FIXTURE_TRAPS: ThinkingTrap[] = [
   {

@@ -7,7 +7,7 @@ import {
   ChannelInboundEnvelopeSchema,
   ChannelLinkAttemptSchema,
   ChannelMediaJobSchema,
-} from '@repo/core/logic/omnichannel/channelAuthority';
+} from '@repo/core/logic/schemas/channelAuthority.schema';
 import { describe, expect, it } from 'vitest';
 
 const accountId = '123e4567-e89b-12d3-a456-426614174000';

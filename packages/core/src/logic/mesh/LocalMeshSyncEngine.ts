@@ -1,5 +1,5 @@
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
-import type { IMeshBearerTransport, MeshPacket, MeshPeer, MeshSyncResult } from './types';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
+import type { IMeshBearerTransport, MeshPacket, MeshPeer, MeshSyncResult } from '../../types/mesh';
 
 export interface LocalMeshSyncEngineOptions {
   nodeId: string;

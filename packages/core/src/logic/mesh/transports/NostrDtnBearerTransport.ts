@@ -1,4 +1,4 @@
-import type { IMeshBearerTransport, MeshBearerType, MeshPacket, MeshPeer } from '../types';
+import type { IMeshBearerTransport, MeshBearerType, MeshPacket, MeshPeer } from '../../../types/mesh';
 
 export interface NostrDtnOptions {
   localNodeId: string;

@@ -1,7 +1,7 @@
 // packages/core/src/spatial/geoMath.ts
 // Pure, zero-dependency spatial mathematics and clustering
 
-import type { LatLng, MapClusterNode, SchoolMapPoint, SpatialBoundingBox } from './types';
+import type { LatLng, MapClusterNode, SchoolMapPoint, SpatialBoundingBox } from '../types/spatial';
 
 const EARTH_RADIUS_KM = 6371;
 

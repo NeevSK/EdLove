@@ -3,7 +3,7 @@
  *
  * Re-exports core execution primitives and canonical retry policies.
  * Specialized layer compositions and domain tags should be imported from `@repo/core/effect/layers`
- * or `@repo/core/logic/ports/growth.tags`.
+ * or `@repo/core/logic/ports/growth.port`.
  */
 
 export {

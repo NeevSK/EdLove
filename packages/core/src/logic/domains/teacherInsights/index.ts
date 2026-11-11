@@ -1,1 +1,1 @@
-export * from '@repo/core/logic/domains/teacherInsights/ports';
+export type * from '@repo/core/logic/ports/teacherInsights.port';

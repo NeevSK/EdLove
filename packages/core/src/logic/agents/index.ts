@@ -1,8 +1,8 @@
 import { runEffect } from '@repo/core/effect';
-import type { ClassroomRow, CoordinationGap } from './agentContracts';
+import type { ClassroomRow, CoordinationGap } from '../schemas/agentContracts.schema';
 import { checkSectionReliefGapsEffect, detectAttendanceGapsEffect } from './reliefAgent';
 
-export * from './agentContracts';
+export * from '../schemas/agentContracts.schema';
 export * from './reliefAgent';
 
 /**

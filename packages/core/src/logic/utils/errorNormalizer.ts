@@ -12,7 +12,7 @@ import { getAPIErrorStatus } from './errorPolicy';
 export const normalizeError = (error: unknown, instanceId?: string): SovereignError => {
   const attachInstance = (normalized: SovereignError): SovereignError => {
     if (instanceId && !normalized.details.instance) {
-      return new SovereignError({ ...normalized.details, instance: instanceId });
+      return new SovereignError({ ...normalized.details, instance: instanceId }, normalized.cause);
     }
     return normalized;
   };
@@ -20,7 +20,7 @@ export const normalizeError = (error: unknown, instanceId?: string): SovereignEr
   // 1. If already a SovereignError, just pass through (or add instance ID)
   if (error instanceof SovereignError) {
     if (instanceId && !error.details.instance) {
-      return new SovereignError({ ...error.details, instance: instanceId });
+      return new SovereignError({ ...error.details, instance: instanceId }, error.cause);
     }
     return error;
   }

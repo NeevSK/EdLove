@@ -125,6 +125,15 @@ function countPassThroughFiles() {
   return tierAudit()['pass-through'] ?? 0;
 }
 
+function countTierContentViolations() {
+  try {
+    const out = execSync('node scripts/audit-tier-content.mjs --summary-json', { cwd: REPO_ROOT, encoding: 'utf8' });
+    return JSON.parse(out.trim().split('\n').pop()).contentViolations;
+  } catch {
+    return Number.POSITIVE_INFINITY;
+  }
+}
+
 function countRootScripts() {
   try {
     const pkg = JSON.parse(readFileSync(resolve(REPO_ROOT, 'package.json'), 'utf8'));
@@ -173,6 +182,7 @@ function measureMetrics() {
     tierImportViolations: countTierImportViolations(),
     unplacedFiles: countUnplacedFiles(),
     passThroughFiles: countPassThroughFiles(),
+    tierContentViolations: countTierContentViolations(),
   };
 }
 
@@ -212,6 +222,7 @@ function main() {
     tierImportViolations: 'Tier import violations (core)',
     unplacedFiles: 'Files with no tier (core)',
     passThroughFiles: 'Pass-through files (core)',
+    tierContentViolations: 'Tier 0/1 files holding runtime code',
   };
 
   console.log('----------------------------------------------------------------------');

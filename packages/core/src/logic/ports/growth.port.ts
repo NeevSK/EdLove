@@ -1,3 +1,4 @@
+import { Context } from 'effect';
 import type {
   Challenge,
   ChallengeMetric,
@@ -122,3 +123,6 @@ export interface IGrowthPort {
   endorseManifesto(manifestoId: string, userId: string, commitmentText?: string): Promise<void>;
   unendorseManifesto(manifestoId: string, userId: string): Promise<void>;
 }
+
+/** Effect tag for the growth data port; bound in effect/Layers.ts. */
+export class GrowthPort extends Context.Service<GrowthPort, IGrowthPort>()('app/GrowthPort') {}

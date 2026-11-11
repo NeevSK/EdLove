@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { deriveReframeOutcome, isFollowUpDue } from '../reframe';
-import type { ThoughtRecord } from '../types';
+import type { ThoughtRecord } from '../../../types/reflection';
 
 const baseRecord: ThoughtRecord = {
   id: 'r1',

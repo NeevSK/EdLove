@@ -2,10 +2,9 @@
  * Persistence Types for Offline Synchronization
  */
 
-import type { MutationCommandState } from '@repo/core/lib/sync/commandLifecycle';
-import type { MutationType } from '@repo/core/logic/ports/database.port';
+import type { MutationCommandState } from '@repo/core/types/mutationCommand';
 
-export type { MutationType };
+export type MutationType = 'CREATE' | 'UPDATE' | 'DELETE' | 'CUSTOM' | 'PATCH';
 
 export type MutationReceipt = Readonly<{
   operationId: string;

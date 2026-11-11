@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export type TemporalPhase = 'past' | 'present' | 'future';
-export type TemporalScale = 'day' | 'week' | 'month' | 'year' | 'custom';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 export type TemporalViewMode = 'spotlight' | 'timeline';
 export type TemporalReadPolicy = 'live' | 'cached-only';
 export type TemporalCapability =

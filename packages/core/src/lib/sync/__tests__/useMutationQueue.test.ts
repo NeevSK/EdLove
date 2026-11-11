@@ -4,7 +4,7 @@ import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,
   MutationQueueCapacityError,
-} from '@repo/core/lib/sync/types';
+} from '@repo/core/types/mutationQueue';
 import {
   isQueuedMutationAcknowledged,
   useMutationQueue,
@@ -240,33 +240,20 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
 
   it('prevents duplicate intents for the same user without blocking other users', async () => {
     const { addToQueue } = useMutationQueue.getState();
+    const likeAs = (userId: string) =>
+      addToQueue({
+        name: 'likePost',
+        scope: 'community',
+        type: 'UPDATE',
+        variables: { postId: 'post-1' },
+        userId,
+      });
 
-    // User 1 adds an intent
-    await addToQueue({
-      name: 'likePost',
-      scope: 'community',
-      type: 'UPDATE',
-      variables: { postId: 'post-1' },
-      userId: 'user-123',
-    });
-
-    // User 1 submits same intent again -> should be deduplicated
-    await addToQueue({
-      name: 'likePost',
-      scope: 'community',
-      type: 'UPDATE',
-      variables: { postId: 'post-1' },
-      userId: 'user-123',
-    });
-
-    // User 2 submits the identical variables -> MUST NOT be suppressed
-    await addToQueue({
-      name: 'likePost',
-      scope: 'community',
-      type: 'UPDATE',
-      variables: { postId: 'post-1' },
-      userId: 'user-456',
-    });
+    await likeAs('user-123');
+    // User 1 submits the same intent again -> deduplicated
+    await likeAs('user-123');
+    // User 2 submits identical variables -> MUST NOT be suppressed
+    await likeAs('user-456');
 
     const queue = useMutationQueue.getState().queue;
     expect(queue).toHaveLength(2);

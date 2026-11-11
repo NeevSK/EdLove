@@ -4,7 +4,7 @@ import {
   migrateQueuedMutation,
 } from '../../lib/sync/outboxMigration';
 import { MUTATION_REGISTRY } from '../../lib/sync/registry';
-import type { QueuedMutation } from '../../lib/sync/types';
+import type { QueuedMutation } from '../../types/mutationQueue';
 import { useMutationQueue } from '../../lib/sync/useMutationQueue';
 
 describe('Disaster Suite 4: Clock Skew, Schema Migration & In-Flight Lease Recovery', () => {

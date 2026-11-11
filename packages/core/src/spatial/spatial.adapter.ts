@@ -3,7 +3,7 @@
 // Replaces static hardcoding with live PostgreSQL / PostGIS database queries.
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { CoordinatePrecisionTier, SchoolMapPoint } from './types';
+import type { CoordinatePrecisionTier, SchoolMapPoint } from '../types/spatial';
 
 export interface FetchSpatialSchoolsOptions {
   districtId?: string | null;

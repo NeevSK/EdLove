@@ -9,9 +9,9 @@ import type {
   EntitlementRequirement,
   EntitlementSnapshot,
 } from '@repo/core/logic/ports/entitlement.port';
-import type { CitizenshipLevel } from '@repo/core/logic/registry/citizenship';
-import { meetsCitizenship } from '@repo/core/logic/registry/citizenship';
-import type { FeatureState } from '@repo/core/logic/registry/domainEntry';
+import type { CitizenshipLevel } from '@repo/core/types/citizenship';
+import { meetsCitizenship } from '@repo/core/types/citizenship';
+import type { FeatureState } from '@repo/core/types/domainEntry';
 
 /** The common interaction vocabulary that a feature may declare. */
 export type CapabilityOperation = 'read' | 'create' | 'update' | 'delete' | 'export';

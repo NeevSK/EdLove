@@ -3,7 +3,7 @@ import {
   resolvePersistenceWriteDecision,
 } from '@repo/core/lib/persistenceBoundary';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
-import { isEdloveAccountId } from '@repo/core/logic/utils/edloveUuidV8';
+import { isEdloveAccountId } from '@repo/core/logic/schemas/edloveUuidV8';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 type ORPCResponse<T> = Readonly<{ json?: T }>;

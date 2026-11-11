@@ -2,7 +2,7 @@
 // Curated Representative Ground-Truth & Tentative School Points across Sri Lanka
 // Multi-Scale Atlas Substrate for Web & Native Mobile
 
-import type { SchoolMapPoint } from './types';
+import type { SchoolMapPoint } from '../types/spatial';
 
 export const SAMPLE_SCHOOL_MAP_POINTS: SchoolMapPoint[] = [
   // --- Western Province (P_1) ---

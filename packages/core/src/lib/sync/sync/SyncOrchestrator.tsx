@@ -11,7 +11,7 @@ import {
 } from '@repo/core/lib/sync/replayAdmission';
 import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity';
 import { isMutationReplayDeferred, planMutationReplay } from '@repo/core/lib/sync/replayPolicy';
-import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/lib/sync/types';
+import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/types/mutationQueue';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';

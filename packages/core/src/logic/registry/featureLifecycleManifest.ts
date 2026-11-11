@@ -3,7 +3,7 @@ import {
   FeatureFlagClassSchema,
   type FeatureLifecycle,
   FeatureLifecycleSchema,
-} from '@repo/core/logic/registry/domainEntry';
+} from '@repo/core/types/domainEntry';
 import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
 import { z } from 'zod';
 

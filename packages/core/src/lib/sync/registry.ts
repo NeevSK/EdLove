@@ -1,4 +1,4 @@
-import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/lib/sync/types';
+import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/types/mutationQueue';
 
 /**
  * The pre-cutover domain replay table was retired with the legacy API.

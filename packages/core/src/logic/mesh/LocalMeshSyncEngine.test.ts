@@ -1,7 +1,7 @@
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import { describe, expect, it, vi } from 'vitest';
 import { LocalMeshSyncEngine } from './LocalMeshSyncEngine';
-import type { IMeshBearerTransport, MeshPacket, MeshPeer } from './types';
+import type { IMeshBearerTransport, MeshPacket, MeshPeer } from '../../types/mesh';
 
 class MockBearerTransport implements IMeshBearerTransport {
   public bearerType = 'lan_mdns' as const;

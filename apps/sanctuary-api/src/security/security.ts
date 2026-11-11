@@ -1,7 +1,7 @@
 import { createPrivateKey, randomUUID } from 'node:crypto';
 import { ORPCError } from '@orpc/server';
 import type { InitialBondCapacity } from '@repo/core/api/v1/contract';
-import { isEdloveAccountId } from '@repo/core/logic/utils/edloveUuidV8';
+import { isEdloveAccountId } from '@repo/core/logic/schemas/edloveUuidV8';
 import type { CitizenshipTier } from '@repo/core/types/Identity';
 import {
   AUTHORIZATION_ACTIONS,

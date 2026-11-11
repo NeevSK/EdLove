@@ -1,4 +1,4 @@
-import { CITIZENSHIP } from '@repo/core/logic/registry/citizenship';
+import { CITIZENSHIP } from '@repo/core/types/citizenship';
 import { z } from 'zod';
 
 /**

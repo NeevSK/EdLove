@@ -1,1 +1,1 @@
-export * from '@repo/core/logic/domains/workspaceLayout/ports';
+export type * from '@repo/core/logic/ports/workspaceLayout.port';

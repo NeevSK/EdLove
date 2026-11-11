@@ -1,7 +1,7 @@
 // ============================================================================
 // LIBRARY RESOURCE TYPES
 // ============================================================================
-import type { TemporalScale } from '@repo/core/store';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 import type {
   BaseResource,
   Capacity,

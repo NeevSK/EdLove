@@ -6,4 +6,4 @@ export * from './geoMath';
 export * from './globalComparative';
 export * from './sampleSchools';
 export * from './spatial.adapter';
-export * from './types';
+export * from '../types/spatial';

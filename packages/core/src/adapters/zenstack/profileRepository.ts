@@ -12,7 +12,7 @@ import type {
   UserPreferences,
   UserRewardsSnapshot,
   WhisperedMomentSnapshot,
-} from '@repo/core/logic/domains/profile/ports';
+} from '@repo/core/logic/ports/profile.port';
 import type { IFileStoragePort } from '@repo/core/logic/ports/storage.port';
 import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';

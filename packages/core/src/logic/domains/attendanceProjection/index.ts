@@ -1,1 +1,1 @@
-export * from '@repo/core/logic/domains/attendanceProjection/ports';
+export type * from '@repo/core/logic/ports/attendanceProjection.port';

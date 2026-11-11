@@ -136,13 +136,13 @@ export {
   type ProductAnalyticsEventName,
   type ProductAnalyticsEventProperties,
   type ProductAnalyticsScalar,
-} from '@repo/core/logic/ports/productAnalytics.port';
+} from '@repo/core/types/productAnalytics';
 // sanctuaryFeature re-exports the four core citizenship symbols, so only the
 // remaining helper is pulled from the registry to avoid duplicate exports.
-export { citizenshipName } from '@repo/core/logic/registry/citizenship';
+export { citizenshipName } from '@repo/core/types/citizenship';
 // registry/citizenship is re-exported selectively above (line ~72) because
 // sanctuaryFeature already re-exports its four main symbols.
-export * from '@repo/core/logic/registry/domainEntry';
+export * from '@repo/core/types/domainEntry';
 export * from '@repo/core/logic/registry/featureLifecycleManifest';
 export * from '@repo/core/logic/registry/featureLifecyclePolicy';
 export * from '@repo/core/logic/registry/useDomainFeature';
@@ -168,7 +168,8 @@ export { useAuthStore } from '@repo/core/store/useAuthStore';
 export { useConsentStore } from '@repo/core/store/useConsentStore';
 export { type DraftEntry, type DraftsState, useDraftsStore } from '@repo/core/store/useDraftsStore';
 export { useFeatureStore } from '@repo/core/store/useFeatureStore';
-export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
+export type { TemporalScale } from '@repo/core/types/Temporal';
+export { useTemporalStore } from '@repo/core/store/useTemporalStore';
 
 // Types (Agnostic / logic-layer)
 export type { Bond } from '@repo/core/types';

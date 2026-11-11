@@ -1,4 +1,4 @@
-import { FeatureJTBDGraphSchema } from '@repo/core/logic/registry/domainEntry';
+import { FeatureJTBDGraphSchema } from '@repo/core/types/domainEntry';
 import { describe, expect, it } from 'vitest';
 import { principalConnectSchoolFlow } from './admin/principalConnectSchool.flow';
 import { teacherFirstWorkspaceFlow } from './classroom/teacherFirstWorkspace.flow';

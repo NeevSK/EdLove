@@ -1,5 +1,8 @@
 export type TemporalPoint = string;
 
+/** The zoom levels a time view can show. */
+export type TemporalScale = 'day' | 'week' | 'month' | 'year' | 'custom';
+
 export interface TemporalBounds {
   occurredAt: TemporalPoint;
   recordedAt: TemporalPoint;

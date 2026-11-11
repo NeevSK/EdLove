@@ -12,5 +12,6 @@
   "directEffectRuns": 43,
   "tierImportViolations": 161,
   "unplacedFiles": 335,
-  "passThroughFiles": 41
+  "passThroughFiles": 41,
+  "tierContentViolations": 0
 }

@@ -6,5 +6,5 @@ export * from '@repo/core/lib/sync/idempotency';
 export * from '@repo/core/lib/sync/MutationAuditLog';
 export * from '@repo/core/lib/sync/registry';
 export { default as SyncOrchestrator } from '@repo/core/lib/sync/sync/SyncOrchestrator';
-export * from '@repo/core/lib/sync/types';
+export * from '@repo/core/types/mutationQueue';
 export * from '@repo/core/lib/sync/useMutationQueue';

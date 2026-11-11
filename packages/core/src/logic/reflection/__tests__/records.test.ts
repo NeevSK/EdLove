@@ -5,7 +5,7 @@ import {
   type ThoughtRecordRpcPort,
   thoughtRecordCodec,
 } from '../records';
-import type { ThoughtRecord } from '../types';
+import type { ThoughtRecord } from '../../../types/reflection';
 
 vi.mock('../../../lib/sync', () => ({
   useMutationQueue: {

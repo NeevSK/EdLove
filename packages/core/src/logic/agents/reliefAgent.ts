@@ -9,7 +9,7 @@ import {
   type ClassroomRow,
   type CoordinationGap,
   CoordinationGapSchema,
-} from './agentContracts';
+} from '../schemas/agentContracts.schema';
 
 type SupabaseQueryClient = typeof defaultClient;
 

@@ -1,8 +1,5 @@
-import {
-  type TemporalCapability,
-  type TemporalScale,
-  useTemporalStore,
-} from '@repo/core/store/useTemporalStore';
+import { type TemporalCapability, useTemporalStore } from '@repo/core/store/useTemporalStore';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 import {
   endOfDay,
   endOfMonth,

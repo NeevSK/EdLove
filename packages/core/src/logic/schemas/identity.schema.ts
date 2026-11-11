@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { isEdloveAccountId } from '@repo/core/logic/utils/edloveUuidV8';
+import { isEdloveAccountId } from '@repo/core/logic/schemas/edloveUuidV8';
 
 export const CanonicalAccountIdSchema = z
   .uuid()

@@ -1,2 +1,2 @@
 export * from '@repo/core/logic/domains/guardian/gradeVisibility';
-export * from '@repo/core/logic/domains/guardian/ports';
+export type * from '@repo/core/logic/ports/guardian.port';

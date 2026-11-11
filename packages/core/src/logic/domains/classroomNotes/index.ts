@@ -1,1 +1,1 @@
-export * from '@repo/core/logic/domains/classroomNotes/ports';
+export type * from '@repo/core/logic/ports/classroomNotes.port';

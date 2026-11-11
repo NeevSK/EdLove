@@ -1,5 +1,5 @@
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import type { MutationOutcome } from '@repo/core/lib/sync/types';
+import type { MutationOutcome } from '@repo/core/types/mutationQueue';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 

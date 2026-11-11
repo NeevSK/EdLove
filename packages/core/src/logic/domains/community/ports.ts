@@ -1,4 +1,4 @@
-import type { TemporalScale } from '@repo/core/store/useTemporalStore';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 import type { Comment, PollStatus, Post } from '@repo/core/types';
 
 export interface PostFilters {

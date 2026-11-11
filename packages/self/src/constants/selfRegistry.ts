@@ -1,4 +1,4 @@
-import { type DomainEntry, defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
+import { type DomainEntry, defineFeatureLifecycle } from '@repo/core/types/domainEntry';
 
 /**
  * SelfSection Registry

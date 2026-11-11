@@ -11,7 +11,7 @@ import { thoughtRecords } from '@repo/core/adapters/powersync/schema';
 import type { ThoughtRecord as WireThoughtRecord } from '@repo/core/logic/schemas/self.schema';
 import { desc, eq } from 'drizzle-orm';
 import { deriveReframeOutcome } from './reframe';
-import type { ReframeFollowUp, ReframeOutcome, ThoughtEmotion, ThoughtRecord } from './types';
+import type { ReframeFollowUp, ReframeOutcome, ThoughtEmotion, ThoughtRecord } from '../../types/reflection';
 
 const CUSTOM_TRAP_ID = '#custom';
 

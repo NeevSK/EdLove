@@ -19,7 +19,7 @@ import {
   type CitizenshipLevel,
   type CitizenshipName,
   meetsCitizenship,
-} from '@repo/core/logic/registry/citizenship';
+} from '@repo/core/types/citizenship';
 
 export { CITIZENSHIP, type CitizenshipLevel, type CitizenshipName, meetsCitizenship };
 

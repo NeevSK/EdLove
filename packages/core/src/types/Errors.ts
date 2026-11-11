@@ -1,7 +1,3 @@
-/* eslint-disable no-var */
-declare var __DEV__: boolean | undefined;
-/* eslint-enable no-var */
-
 /**
  * Sovereign Error Architecture (2026 Standard)
  * -------------------------------------------
@@ -56,23 +52,18 @@ export class SovereignError extends Error {
     this.name = 'SovereignError';
     this.cause = cause ?? details.devDetails;
 
+    // Raw detail travels as `cause` only. `details` is the shape that can be shown or sent, so it
+    // never carries it, in any build: the old dev-only copy made a contract behave per environment.
+    const { devDetails: _raw, ...shareable } = details;
     this.details = {
       type: 'https://polymath.network/errors/unknown',
       title: 'Unknown Error',
       status: 500,
       category: ErrorCategory.UNKNOWN,
       code: 'INTERNAL_ERROR',
-      ...details,
+      ...shareable,
     };
 
-    const isDevelopment =
-      (typeof __DEV__ !== 'undefined' && __DEV__) ||
-      (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development');
-
-    // Auto-sanitize dev details if not in development
-    if (!isDevelopment) {
-      delete this.details.devDetails;
-    }
   }
 
   /**

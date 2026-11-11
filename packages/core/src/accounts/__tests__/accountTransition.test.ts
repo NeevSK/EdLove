@@ -1,4 +1,4 @@
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({

@@ -1,1 +1,1 @@
-export * from '@repo/core/logic/domains/founder/ports';
+export type * from '@repo/core/logic/ports/founder.port';

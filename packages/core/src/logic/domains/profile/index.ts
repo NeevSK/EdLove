@@ -1,2 +1,2 @@
 export * from '@repo/core/logic/domains/profile/onboarding';
-export * from '@repo/core/logic/domains/profile/ports';
+export type * from '@repo/core/logic/ports/profile.port';

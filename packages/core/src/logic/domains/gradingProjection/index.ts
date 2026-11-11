@@ -1,1 +1,1 @@
-export * from '@repo/core/logic/domains/gradingProjection/ports';
+export type * from '@repo/core/logic/ports/gradingProjection.port';

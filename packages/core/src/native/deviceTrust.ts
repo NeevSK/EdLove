@@ -3,22 +3,12 @@ import { supabaseIdentityAdapter as identity } from '@repo/core/adapters/supabas
 import type { Identity as ActiveCitizen } from '@repo/core/types/Identity';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { APIError } from '@repo/core/types/API';
+import type { DeviceTrustSummary } from '@repo/core/types/deviceTrust';
 import { v7 as uuidv7 } from 'uuid';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
 
-export interface DeviceTrustSummary {
-  deviceId: string;
-  installId: string;
-  isTrusted: boolean;
-  modelName: string | null;
-  osVersion: string | null;
-  platform: string | null;
-  lastSeenAt: string | null;
-  lastAccessedAt: string | null;
-  linkedAccountId: string | null;
-}
 
 interface DeviceTrustRow {
   device_id: string;

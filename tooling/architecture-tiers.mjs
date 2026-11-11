@@ -47,10 +47,15 @@ export const PARSE_ALLOWED_IN = ['T0', 'T3', 'C'];
 
 /** Ordered: first match wins. Paths are repo-relative. */
 export const FOLDER_RULES = [
+  // The generated database contract (ZModel types and Zod factories): the bedrock of the bedrock.
+  ['packages/schema/src/', 'T0'],
   ['packages/core/src/types/', 'T0'],
   ['packages/core/src/logic/schemas/', 'T0'],
   ['packages/core/src/constants/', 'T0'],
   ['packages/core/src/store/types/', 'T0'],
+  // Journey definitions are declarative data checked by types/FlowDAG.ts; the rest of flows/ is logic.
+  [/^packages\/core\/src\/flows\/.*\.flow\.ts$/, 'T0'],
+  ['packages/core/src/flows/', 'T2'],
   ['packages/core/src/effect/Errors.ts', 'T0'],
   ['packages/core/src/logic/ports/', 'T1'],
   ['packages/core/src/logic/interfaces/', 'T1'],
@@ -73,11 +78,6 @@ export const FOLDER_RULES = [
  * proper home. Remove an entry once the file has moved.
  */
 export const PLACEMENTS = {
-  'packages/core/src/logic/utils/edloveUuidV8.ts': {
-    tier: 'T0',
-    home: 'packages/core/src/logic/schemas/',
-    why: 'The account ID format check that identity.schema.ts is built on; a contract primitive',
-  },
   'packages/core/src/lib/accountScope.ts': {
     tier: 'T3',
     home: 'packages/core/src/adapters/session/',

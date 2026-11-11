@@ -1,8 +1,8 @@
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import { describe, expect, it } from 'vitest';
 import { LanMdnsBearerTransport } from '../transports/LanMdnsBearerTransport';
 import { NostrDtnBearerTransport } from '../transports/NostrDtnBearerTransport';
-import type { MeshPacket } from '../types';
+import type { MeshPacket } from '../../../types/mesh';
 import {
   computeMeshStateDigest,
   decryptMeshPacket,

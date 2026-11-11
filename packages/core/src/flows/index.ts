@@ -1,4 +1,4 @@
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 export { inspectJourneyPilot, inspectJourneyContract } from './journeyPilot';
 import { guardianLinkStudentFlow } from './admin/guardianLinkStudent.flow';
 import { principalTermSetupFlow } from './admin/principalTermSetup.flow';

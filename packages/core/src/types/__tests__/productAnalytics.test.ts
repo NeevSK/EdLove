@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PRODUCT_ANALYTICS_EVENTS } from '../productAnalytics.port';
+import { PRODUCT_ANALYTICS_EVENTS } from '../productAnalytics';
 
 describe('product analytics contract', () => {
   it('keeps the canonical event vocabulary stable', () => {

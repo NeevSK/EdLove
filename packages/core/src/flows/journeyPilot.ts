@@ -1,5 +1,5 @@
-import { JourneyPilotSchema } from '@repo/core/logic/registry/domainEntry';
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import { JourneyPilotSchema } from '@repo/core/types/domainEntry';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 import { type FlowId, getFlow } from './index';
 
 /** Inspect declared coverage only; this does not execute a journey or verify a binding. */

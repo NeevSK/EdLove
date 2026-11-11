@@ -27,7 +27,7 @@ export const telemetryLogger = Logger.make<unknown, void>(({ logLevel, message, 
 /** Keeps the default console logger and adds telemetry. */
 export const TelemetryLoggerLayer = Logger.layer([telemetryLogger], { mergeWithExisting: true });
 
-// Ports join this layer when something consumes them. GrowthLayer (./Layers) has no consumer yet.
+// Ports join this layer when something consumes them. GrowthLive (./Layers) has no consumer yet.
 export const AppLayer = Layer.mergeAll(
   TelemetryLoggerLayer,
   EntitlementLive,

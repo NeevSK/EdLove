@@ -126,7 +126,7 @@ export interface WorkspaceRendererConfig {
   maxColumns?: number;
 }
 
-import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+import type { DomainEntry } from '@repo/core/types/domainEntry';
 
 export interface DomainFeature extends DomainEntry {
   icon?: string;
