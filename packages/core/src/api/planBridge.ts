@@ -21,19 +21,22 @@ import type {
 } from '@repo/core/api/planBridge.orpc.contract';
 import { APIError } from '@repo/core/types/API';
 import { defaultRetryPolicy } from '@repo/core/utils/effect';
-import { Data, Duration, Effect, pipe } from 'effect';
+import { Duration, Effect, pipe, Schema } from 'effect';
 import type { z } from 'zod';
 
 export type CreatePlanEventInput = z.infer<typeof createPlanEventInputSchema>;
 export type ScheduleNoticeInput = z.infer<typeof scheduleNoticeInputSchema>;
 export type UpdateQuietHoursInput = z.infer<typeof updateQuietHoursInputSchema>;
 
-export class PlanBridgeHttpError extends Data.TaggedError('PlanBridgeHttpError')<{
-  readonly message: string;
-  readonly status: string;
-  readonly code?: string;
-  readonly data?: Record<string, unknown>;
-}> {}
+export class PlanBridgeHttpError extends Schema.TaggedError<PlanBridgeHttpError>()(
+  'PlanBridgeHttpError',
+  {
+    message: Schema.String,
+    status: Schema.String,
+    code: Schema.optional(Schema.String),
+    data: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
+  },
+) {}
 
 function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, PlanBridgeHttpError, never> {
   return pipe(

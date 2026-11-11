@@ -1,5 +1,5 @@
 import { normalizeAcceptedInternalRoute } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
-import { Data, Effect } from 'effect';
+import { Effect, Schema } from 'effect';
 
 export type AuthCallbackPurpose = 'sign-in' | 'sign-up' | 'recovery' | 'link-identity';
 
@@ -16,9 +16,12 @@ export type AuthCallbackAttemptResult =
   | Readonly<{ kind: 'accepted'; attempt: AuthCallbackAttempt }>
   | Readonly<{ kind: 'rejected'; reason: 'missing' | 'expired' | 'replayed' | 'account-changed' }>;
 
-export class InvalidAuthCallbackAttempt extends Data.TaggedError('InvalidAuthCallbackAttempt')<{
-  readonly reason: 'id' | 'return-path' | 'ttl';
-}> {}
+export class InvalidAuthCallbackAttempt extends Schema.TaggedError<InvalidAuthCallbackAttempt>()(
+  'InvalidAuthCallbackAttempt',
+  {
+    reason: Schema.Literals(['id', 'return-path', 'ttl']),
+  },
+) {}
 
 const MAX_ATTEMPT_TTL_MS = 15 * 60 * 1000;
 const ATTEMPT_ID = /^[A-Za-z0-9_-]{16,128}$/;

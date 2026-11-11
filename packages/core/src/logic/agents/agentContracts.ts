@@ -1,4 +1,4 @@
-import { Data, Schema } from 'effect';
+import { Schema } from 'effect';
 
 /**
  * Coordination Gap Schema
@@ -38,19 +38,25 @@ export type ClassroomRow = typeof ClassroomRowSchema.Type;
 
 // ─── Typed Agent Domain Errors ───────────────────────────────────────
 
-export class AgentDatabaseError extends Data.TaggedError('AgentDatabaseError')<{
-  readonly message: string;
-  readonly operation: string;
-}> {}
+export class AgentDatabaseError extends Schema.TaggedError<AgentDatabaseError>()(
+  'AgentDatabaseError',
+  {
+    message: Schema.String,
+    operation: Schema.String,
+  },
+) {}
 
-export class AgentTimeoutError extends Data.TaggedError('AgentTimeoutError')<{
-  readonly message: string;
-  readonly timeoutMs: number;
-}> {}
+export class AgentTimeoutError extends Schema.TaggedError<AgentTimeoutError>()(
+  'AgentTimeoutError',
+  {
+    message: Schema.String,
+    timeoutMs: Schema.Number,
+  },
+) {}
 
-export class AgentSchemaError extends Data.TaggedError('AgentSchemaError')<{
-  readonly message: string;
-  readonly cause: unknown;
-}> {}
+export class AgentSchemaError extends Schema.TaggedError<AgentSchemaError>()('AgentSchemaError', {
+  message: Schema.String,
+  cause: Schema.Defect(),
+}) {}
 
 export type AgentDomainError = AgentDatabaseError | AgentTimeoutError | AgentSchemaError;

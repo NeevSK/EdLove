@@ -2,7 +2,7 @@ import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
 import { resolveQR } from '@repo/core/logic/utils/QRResolver';
 import { isValidAppRoutePath } from '@repo/core/routing/routeManifest';
 import type { QRPayload } from '@repo/core/types/QRPayload';
-import { Data, Effect } from 'effect';
+import { Effect, Schema } from 'effect';
 
 export const MAX_DEEP_LINK_LENGTH = 8192;
 const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
@@ -44,45 +44,69 @@ export const ALLOWED_WEB_PATH_PREFIXES = [
 /**
  * Tagged Error Types for Deep Link Failures (Effect v4 compatible)
  */
-export class DeepLinkLengthError extends Data.TaggedError('DeepLinkLengthError')<{
-  readonly length: number;
-  readonly max: number;
-}> {}
+export class DeepLinkLengthError extends Schema.TaggedError<DeepLinkLengthError>()(
+  'DeepLinkLengthError',
+  {
+    length: Schema.Number,
+    max: Schema.Number,
+  },
+) {}
 
-export class DeepLinkForbiddenCharsError extends Data.TaggedError('DeepLinkForbiddenCharsError')<{
-  readonly url: string;
-}> {}
+export class DeepLinkForbiddenCharsError extends Schema.TaggedError<DeepLinkForbiddenCharsError>()(
+  'DeepLinkForbiddenCharsError',
+  {
+    url: Schema.String,
+  },
+) {}
 
-export class DeepLinkTraversalError extends Data.TaggedError('DeepLinkTraversalError')<{
-  readonly url: string;
-}> {}
+export class DeepLinkTraversalError extends Schema.TaggedError<DeepLinkTraversalError>()(
+  'DeepLinkTraversalError',
+  {
+    url: Schema.String,
+  },
+) {}
 
-export class DeepLinkHostOrSchemeError extends Data.TaggedError('DeepLinkHostOrSchemeError')<{
-  readonly url: string;
-  readonly protocol?: string;
-  readonly hostname?: string;
-}> {}
+export class DeepLinkHostOrSchemeError extends Schema.TaggedError<DeepLinkHostOrSchemeError>()(
+  'DeepLinkHostOrSchemeError',
+  {
+    url: Schema.String,
+    protocol: Schema.optional(Schema.String),
+    hostname: Schema.optional(Schema.String),
+  },
+) {}
 
-export class DeepLinkParseError extends Data.TaggedError('DeepLinkParseError')<{
-  readonly url: string;
-  readonly cause: unknown;
-}> {}
+export class DeepLinkParseError extends Schema.TaggedError<DeepLinkParseError>()(
+  'DeepLinkParseError',
+  {
+    url: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 export const MAX_REFERRER_LENGTH = 1024;
 
-export class ReferrerLengthError extends Data.TaggedError('ReferrerLengthError')<{
-  readonly length: number;
-  readonly max: number;
-}> {}
+export class ReferrerLengthError extends Schema.TaggedError<ReferrerLengthError>()(
+  'ReferrerLengthError',
+  {
+    length: Schema.Number,
+    max: Schema.Number,
+  },
+) {}
 
-export class ReferrerForbiddenCharsError extends Data.TaggedError('ReferrerForbiddenCharsError')<{
-  readonly raw: string;
-}> {}
+export class ReferrerForbiddenCharsError extends Schema.TaggedError<ReferrerForbiddenCharsError>()(
+  'ReferrerForbiddenCharsError',
+  {
+    raw: Schema.String,
+  },
+) {}
 
-export class ReferrerParseError extends Data.TaggedError('ReferrerParseError')<{
-  readonly raw: string;
-  readonly cause: unknown;
-}> {}
+export class ReferrerParseError extends Schema.TaggedError<ReferrerParseError>()(
+  'ReferrerParseError',
+  {
+    raw: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 export interface ValidatedReferrerIntent {
   readonly inviteCode?: string;

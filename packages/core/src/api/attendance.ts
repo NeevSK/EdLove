@@ -3,12 +3,15 @@ import { orpcClient } from '@repo/core/api/orpcClient';
 import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 import { APIError } from '@repo/core/types/API';
 import { defaultRetryPolicy } from '@repo/core/utils/effect';
-import { Data, Duration, Effect, pipe } from 'effect';
+import { Duration, Effect, pipe, Schema } from 'effect';
 
-class AttendanceHttpError extends Data.TaggedError('AttendanceHttpError')<{
-  readonly message: string;
-  readonly status: string;
-}> {}
+export class AttendanceHttpError extends Schema.TaggedError<AttendanceHttpError>()(
+  'AttendanceHttpError',
+  {
+    message: Schema.String,
+    status: Schema.String,
+  },
+) {}
 
 function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, AttendanceHttpError, never> {
   return pipe(
@@ -120,7 +123,9 @@ export const attendanceAPI = {
       ttl: 12 * 60 * 60 * 1000,
       fetchRemote: () =>
         toPromise(
-          apiEffect(() => orpcClient.attendance.getGradeClassRoster({ query: { gradeClassId, date } })),
+          apiEffect(() =>
+            orpcClient.attendance.getGradeClassRoster({ query: { gradeClassId, date } }),
+          ),
         ) as Promise<GradeClassRosterRow[]>,
     });
     return result ?? [];
@@ -374,18 +379,20 @@ export const attendanceAPI$ = {
     ),
 };
 
+import { MOCK_ATTENDANCE_SNAPSHOTS, MOCK_STUDENT_PULSE } from '@repo/core/api/mockData';
 import { registerSandboxDomain } from '@repo/core/api/sandboxDataset';
-import {
-  MOCK_ATTENDANCE_SNAPSHOTS,
-  MOCK_STUDENT_PULSE,
-} from '@repo/core/api/mockData';
 
 registerSandboxDomain({
   domain: 'attendance',
   ghostMethods: ['getClassroomAttendanceSnapshot', 'getSchoolAttendancePulse'],
   isEmpty: (method, d) => {
     if (method === 'getClassroomAttendanceSnapshot') {
-      return !d || typeof d !== 'object' || !Array.isArray((d as any).records) || (d as any).records.length === 0;
+      return (
+        !d ||
+        typeof d !== 'object' ||
+        !Array.isArray((d as any).records) ||
+        (d as any).records.length === 0
+      );
     }
     return !d;
   },

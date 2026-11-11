@@ -1,4 +1,5 @@
 import { OfflineMutationError, runToPromise } from '@repo/core/effect';
+import { presentFailure } from '@repo/core/lib/failureFeedback';
 import { showToast } from '@repo/core/lib/feedback';
 import { DeltaResonance } from '@repo/core/lib/sync/delta';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
@@ -265,7 +266,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
         if (options?.onError) {
           await options.onError(err, variables, context);
         } else {
-          showToast(errorMessage || 'Action failed', 'error');
+          presentFailure(err, name);
         }
 
         if (options?.onSettled) {
@@ -277,7 +278,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
         inFlightKeysRef.current.delete(inFlightKey);
       }
     },
-    [mutationFn, options, showToast, addToQueue, logAudit],
+    [mutationFn, options, addToQueue, logAudit],
   );
 
   const mutate = useCallback(

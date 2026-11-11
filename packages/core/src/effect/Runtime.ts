@@ -1,6 +1,7 @@
 import { captureException } from '@repo/core/monitoring';
 import { APIError } from '@repo/core/types/API';
 import { Effect, Fiber } from 'effect';
+import { type AppServices, appRuntime } from './AppRuntime';
 
 /**
  * Runtime execution boundary for @repo/core.
@@ -32,9 +33,9 @@ export function normalizeError(error: unknown): Error {
  * Report best-effort background effects with full error and defect capture.
  */
 export function reportBestEffort<E>(
-  effect: Effect.Effect<unknown, E, never>,
+  effect: Effect.Effect<unknown, E, AppServices>,
   label: string,
-): Effect.Effect<void, never, never> {
+): Effect.Effect<void, never, AppServices> {
   return effect.pipe(
     Effect.catch((error: E) =>
       Effect.sync(() => {
@@ -56,20 +57,20 @@ export function reportBestEffort<E>(
  * Failures and defects are captured by telemetry and logged; they never crash the caller.
  */
 export function runForkBestEffort<E>(
-  effect: Effect.Effect<unknown, E, never>,
+  effect: Effect.Effect<unknown, E, AppServices>,
   label: string,
 ): Fiber.Fiber<void, never> {
-  return Effect.runFork(reportBestEffort(effect, label));
+  return appRuntime.runFork(reportBestEffort(effect, label));
 }
 
 /**
  * Bridge an Effect to a Promise, converting typed domain errors AND unhandled defects to APIError at the boundary.
  */
 export function runToPromise<T, E extends { message?: string }>(
-  effect: Effect.Effect<T, E, never>,
+  effect: Effect.Effect<T, E, AppServices>,
   errorCode?: string,
 ): Promise<T> {
-  return Effect.runPromise(
+  return appRuntime.runPromise(
     effect.pipe(
       Effect.catch((e: E) =>
         Effect.sync(() => {

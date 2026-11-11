@@ -113,7 +113,7 @@ to the person.
 
 | Kind | What it is | How it is built | Who sees it |
 | --- | --- | --- | --- |
-| **Expected failure** | Something the caller can act on: denied, offline, conflict, invalid, not found, rate limited, step-up needed | `Schema.TaggedErrorClass`, so it serializes across oRPC and storage; each capability declares its closed set in the contract | The person, through the feedback path, in their language |
+| **Expected failure** | Something the caller can act on: denied, offline, conflict, invalid, not found, rate limited, step-up needed | `Schema.TaggedError`, so it serializes across oRPC and storage; each capability declares its closed set in the contract | The person, through the feedback path, in their language |
 | **Defect** | A bug or a broken invariant | Effect `die`; never caught by business code | Telemetry only; the person sees a calm generic message |
 | **Interruption** | Cancelled: navigated away, account switched, timed out | Effect interruption | No one, unless the person asked for the work |
 
@@ -171,7 +171,7 @@ replaces are marked as replaced. Steps 2 to 4 are guarded by four ceilings in
 | Metric | Ceiling (11 Nov 2026) | Target |
 | --- | --- | --- |
 | `plainErrorSubclasses` (`class X extends Error`) | 21 | 0 outside adapters to third-party code |
-| `dataTaggedErrors` (`Data.TaggedError`, not serializable) | 23 | 0; expected failures use `Schema.TaggedErrorClass` |
+| `dataTaggedErrors` (`Data.TaggedError`, not serializable) | 23 | 0; expected failures use `Schema.TaggedError` |
 | `authorityStoreReads` (decision, entitlement, flag and perspective stores read outside `store/`) | 57 | 0 |
 | `machinesWithoutSetup` (`= createMachine(`) | 14 | 0 |
 

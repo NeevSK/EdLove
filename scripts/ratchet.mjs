@@ -89,6 +89,11 @@ function countMachinesWithoutSetup() {
   return runRgCount('= createMachine\\(');
 }
 
+// Programs run outside the shared runtime skip its services and logging (packages/core/src/effect/AppRuntime.ts).
+function countDirectEffectRuns() {
+  return runRgCount('Effect\\.run(Promise|PromiseExit|Fork|Sync|SyncExit)\\(');
+}
+
 function countRootScripts() {
   try {
     const pkg = JSON.parse(readFileSync(resolve(REPO_ROOT, 'package.json'), 'utf8'));
@@ -133,6 +138,7 @@ function measureMetrics() {
     dataTaggedErrors: countDataTaggedErrors(),
     authorityStoreReads: countAuthorityStoreReads(),
     machinesWithoutSetup: countMachinesWithoutSetup(),
+    directEffectRuns: countDirectEffectRuns(),
   };
 }
 
@@ -168,6 +174,7 @@ function main() {
     dataTaggedErrors: 'Data.TaggedError (not serializable)',
     authorityStoreReads: 'Authority read from client stores',
     machinesWithoutSetup: 'Machines without setup()',
+    directEffectRuns: 'Effect.run* outside the app runtime',
   };
 
   console.log('----------------------------------------------------------------------');
