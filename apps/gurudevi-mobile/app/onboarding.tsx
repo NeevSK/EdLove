@@ -17,6 +17,7 @@ import {
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import {
   Button,
+  celebrate,
   RadioGroup,
   Surface,
   Text,
@@ -108,7 +109,7 @@ export default function OnboardingRoute() {
         await completeLocalGuestOnboarding(guest.id);
         await activateLocalGuestSession(guest);
       }
-      showToast(`Welcome to Gurudevi, ${firstName}!`, 'success');
+      celebrate(`Welcome, ${firstName}`);
       router.replace('/self');
     } catch (error) {
       // No bond means no entry, so the person stays here and can try again.

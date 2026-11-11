@@ -165,7 +165,16 @@ function StackedToastItem({
   );
 }
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export interface ToastProviderProps {
+  children: React.ReactNode;
+  /**
+   * Hand every toast to another host instead of drawing it here (the world's own toast host on
+   * mobile). The context and the feedback bus keep working; only the drawing moves.
+   */
+  delegate?: (toast: { message: string; type: ToastType; duration: number }) => void;
+}
+
+export const ToastProvider: React.FC<ToastProviderProps> = ({ children, delegate }) => {
   const [toasts, dispatch] = useReducer(toastReducer, []);
   const counterRef = useRef(0);
   const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
@@ -181,8 +190,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const showToast = useCallback(
     ({ message, type = 'sanctuary', duration = 4000 }: Omit<ToastItem, 'id' | 'count'>) => {
-      const id = `toast-${counterRef.current++}`;
       const readableDuration = Math.max(2500, Math.min(duration, 10000));
+      if (delegate) {
+        delegate({ message, type, duration: readableDuration });
+        return;
+      }
+      const id = `toast-${counterRef.current++}`;
 
       dispatch({ type: 'ADD_TOAST', payload: { id, message, type, duration: readableDuration } });
 
@@ -192,7 +205,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       timersRef.current.set(id, timer);
     },
-    [removeToast],
+    [removeToast, delegate],
   );
 
   useEffect(

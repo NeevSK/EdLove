@@ -49,6 +49,13 @@ export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS, worldName } from './worlds
 export { type ShellLayout, type SizeClass, shellLayoutOf, sizeClassOf } from './size';
 export { fitRadius, type RoomMark, roomMarkOf } from './shellMarks';
 export {
+  type CelebrationLevel,
+  type MomentShape,
+  momentOf,
+  momentPieces,
+  type WorldMomentStyle,
+} from './moments';
+export {
   atLeast,
   type Stage,
   type StageTier,

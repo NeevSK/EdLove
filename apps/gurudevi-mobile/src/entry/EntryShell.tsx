@@ -8,7 +8,7 @@ import { useUIStore } from '@repo/core/store';
 import { inMemoryHealthAdapter } from '@repo/self';
 import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
-import { WorldStage } from '@repo/ui/components/native';
+import { toast, ToastHost, WorldMomentHost, WorldStage } from '@repo/ui/components/native';
 import {
   CircadianProvider,
   EnvironmentProvider,
@@ -60,6 +60,23 @@ import { useSomaticShake } from '@/somatic/useSomaticShake';
  * turn a public launch into a blank surface.
  */
 const readLocalGuestId = async () => (await readLocalGuestSession())?.id ?? null;
+
+/** Every app toast is drawn by the world's own toast host, in the world's surface and words. */
+function toWorldToast({
+  message,
+  type,
+  duration,
+}: {
+  message: string;
+  type: string;
+  duration: number;
+}) {
+  toast.show({
+    message,
+    tone: type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info',
+    durationMs: duration,
+  });
+}
 
 export function EntryShell() {
   const pathname = usePathname();
@@ -137,7 +154,7 @@ export function EntryShell() {
                     <PersonalPreferences />
                     <CircadianProvider>
                       <PortalProvider>
-                        <ToastProvider>
+                        <ToastProvider delegate={toWorldToast}>
                           <ExternalLinkProvider>
                             <DeepLinkProvider>
                               <AuthQueryCacheBoundary />
@@ -181,6 +198,8 @@ export function EntryShell() {
                                           sensoryFeedback.emit('success');
                                         }}
                                       />
+                                      <WorldMomentHost />
+                                      <ToastHost bottomOffset={120} />
                                     </WorldStage>
                                   </LayoutLoopSentinel>
                                 </MascotProvider>

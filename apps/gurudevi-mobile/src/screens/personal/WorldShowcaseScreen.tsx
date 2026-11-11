@@ -14,6 +14,7 @@ import {
   ActionFab,
   Badge,
   Button,
+  celebrate,
   Chip,
   Chips,
   clearStagePreview,
@@ -345,7 +346,11 @@ export function WorldShowcaseScreen() {
               onPress={() => setProgress((p) => (p >= 1 ? 0 : p + 0.2))}
             />
             <Button label="Secondary" variant="secondary" onPress={() => setMenuOpen(true)} />
-            <Button label="Quiet" variant="quiet" onPress={() => undefined} />
+            <Button
+              label="Celebrate"
+              variant="quiet"
+              onPress={() => celebrate(`Well done in ${worldName(worldId)}`)}
+            />
             <Button label="Delete" variant="danger" icon={icon(Trash2)} onPress={() => undefined} />
           </View>
           <Progress value={progress} label="Lesson progress" />
