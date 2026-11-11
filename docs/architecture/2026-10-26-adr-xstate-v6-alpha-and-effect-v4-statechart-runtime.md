@@ -10,6 +10,8 @@ tags: [adr, xstate-v6, effect-v4, statecharts, architecture, actors]
 
 # ADR: Adoption of XState v6 Alpha and @xstate/effect with Effect v4 Runtime
 
+> **Updated 2026-11-11.** Read [product shape and tool ownership](2026-11-11-product-shape-and-tool-ownership.md) first. It keeps this document's decision and adds errors, the Effect runtime, the authority read and current versions; where they differ, it wins.
+
 ## 1. Context & Problem Statement
 
 The Polymath monorepo requires deterministic state orchestration across its role-based domain experiences:

@@ -9,6 +9,8 @@ tags: [architecture, client-state, zustand, xstate, tanstack-query, offline-firs
 
 # Client State Architecture Decision
 
+> **Updated 2026-11-11.** Read [product shape and tool ownership](2026-11-11-product-shape-and-tool-ownership.md) first. It keeps this document's decision and adds errors, the Effect runtime, the authority read and current versions; where they differ, it wins.
+
 > **Canonical integration:** This dated decision records the rationale. The
 > continuously maintained platform reference is
 > [`client-state-and-web-offline-capability-canon.md`](client-state-and-web-offline-capability-canon.md).

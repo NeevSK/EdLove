@@ -169,6 +169,7 @@ where they exist. Our own API should be clean enough to serve as an example. See
 | How is it cut into modules, and how are modules added, removed and connected? | [Module structure](module-structure.md) |
 | Every domain, subdomain, platform module and channel, with status | [Domain index](domains/README.md) |
 | How do I find the owner of a new capability, and when is something a new subdomain? | [Domain design method](domain-design-method.md) |
+| What kind of work each pillar is, and which tool owns which job (state, errors, Effect, versions) | [Product shape and tool ownership](2026-11-11-product-shape-and-tool-ownership.md) |
 | Who may do what: accounts, bonds, capacities, Cedar, delegation, devices, minors | [Authority model](authority-model.md) |
 | Privacy defaults, sharing, audit, soft deletion, retention, export | [Data governance and records](data-governance-and-records.md) |
 | Threats, controls, and AI and agent security | [Security and AI threat model](security-and-ai-threat-model.md) |

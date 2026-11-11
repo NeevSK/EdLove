@@ -66,6 +66,29 @@ function countFromSites() {
   return runRgCount('(?:\\.from\\([`\'"]|(?:supabase|supabaseClient|client|db)\\.from\\()');
 }
 
+// State seam (docs/architecture/2026-11-11-product-shape-and-tool-ownership.md, section 7).
+// Expected failures become Schema.TaggedErrorClass so they can cross the wire; these two only go down.
+function countPlainErrorSubclasses() {
+  return runRgCount('class \\w+ extends Error\\b');
+}
+
+function countDataTaggedErrors() {
+  return runRgCount('Data\\.TaggedError\\(');
+}
+
+// Authority belongs to one read over the signed snapshot, not to client stores.
+function countAuthorityStoreReads() {
+  return runRgCount(
+    '\\b(useCedarDecisionStore|useEntitlementStore|useFeatureStore|usePerspectiveStore)\\b',
+    ['-g', '!packages/core/src/store/**'],
+  );
+}
+
+// Machines are declared with setup({ schemas }) so their context and events are checked.
+function countMachinesWithoutSetup() {
+  return runRgCount('= createMachine\\(');
+}
+
 function countRootScripts() {
   try {
     const pkg = JSON.parse(readFileSync(resolve(REPO_ROOT, 'package.json'), 'utf8'));
@@ -106,6 +129,10 @@ function measureMetrics() {
     supabaseFromSites: countFromSites(),
     sourceFilesOver800Loc: countFilesOver800Loc(),
     rootScripts: countRootScripts(),
+    plainErrorSubclasses: countPlainErrorSubclasses(),
+    dataTaggedErrors: countDataTaggedErrors(),
+    authorityStoreReads: countAuthorityStoreReads(),
+    machinesWithoutSetup: countMachinesWithoutSetup(),
   };
 }
 
@@ -137,6 +164,10 @@ function main() {
     supabaseFromSites: 'Direct .from() database call sites',
     sourceFilesOver800Loc: 'Source files > 800 LOC',
     rootScripts: 'Root package.json scripts',
+    plainErrorSubclasses: 'class X extends Error',
+    dataTaggedErrors: 'Data.TaggedError (not serializable)',
+    authorityStoreReads: 'Authority read from client stores',
+    machinesWithoutSetup: 'Machines without setup()',
   };
 
   console.log('----------------------------------------------------------------------');
