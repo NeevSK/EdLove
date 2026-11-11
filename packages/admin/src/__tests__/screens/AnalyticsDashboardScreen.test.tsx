@@ -7,7 +7,7 @@ const analyticsApi = vi.hoisted(() => ({
   getLiveMetrics: vi.fn(),
 }));
 
-vi.mock('@repo/analytics', () => ({ multiTenantAnalyticsAPI: analyticsApi }));
+vi.mock('@repo/admin/analytics/api', () => ({ multiTenantAnalyticsAPI: analyticsApi }));
 
 vi.mock('@repo/ui/components/GlobalHeader', async () => {
   const React = await import('react');
@@ -43,12 +43,27 @@ vi.mock('@repo/ui/primitives', async () => {
 import { AnalyticsDashboardScreen } from '../../screens/AnalyticsDashboardScreen';
 
 const tenantMetrics: TenantMetrics = {
-  id: 'tenant-1',
-  metrics: { attendance_rate: 96 },
+  tenantId: 'tenant-1',
+  tenantName: 'Royal College',
+  tenantKind: 'customer',
+  metrics: {
+    attendance_rate: 96,
+    grade_average: 81,
+    enrollment_count: 1240,
+    staff_turnover: 4,
+    resource_utilization: 72,
+    parent_engagement: 63,
+    document_processing_time: 18,
+    revenue_per_student: 0,
+    operational_efficiency: 88,
+    compliance_score: 91,
+  },
+  period: { startDate: '2026-08-08T00:00:00.000Z', endDate: '2026-09-07T00:00:00.000Z' },
 };
 
 const liveMetrics: LiveMetrics = {
   active_users: 17,
+  concurrent_sessions: 9,
   api_requests_per_minute: 52,
   error_rate: 1.2,
   resource_usage: { cpu: 30, memory: 44, storage: 58 },

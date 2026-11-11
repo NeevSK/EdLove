@@ -1,9 +1,9 @@
 import i18n from '@repo/core/logic/i18n/config';
-import type { IStorage } from '@repo/core/logic/ports/storage';
+import type { KeyValueStorage } from '@repo/core/logic/ports/storage';
 
 const LANGUAGE_STORAGE_KEY = 'gurudevi-user-language';
 
-let _storage: IStorage | null = null;
+let _storage: KeyValueStorage | null = null;
 
 /**
  * LanguageUtils
@@ -15,7 +15,7 @@ export const LanguageUtils = {
    * Inject storage implementation.
    * Usually called in a native provider or top-level bridge.
    */
-  setStorage(storage: IStorage) {
+  setStorage(storage: KeyValueStorage) {
     _storage = storage;
   },
 

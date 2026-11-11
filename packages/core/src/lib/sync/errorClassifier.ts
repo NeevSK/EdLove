@@ -1,4 +1,4 @@
-export type ErrorCategory = 'TRANSIENT' | 'PERMANENT' | 'CONFLICT' | 'AUTH_EXPIRED';
+export type SyncFailureClass = 'TRANSIENT' | 'PERMANENT' | 'CONFLICT' | 'AUTH_EXPIRED';
 
 /**
  * classifyError
@@ -6,7 +6,7 @@ export type ErrorCategory = 'TRANSIENT' | 'PERMANENT' | 'CONFLICT' | 'AUTH_EXPIR
  * Standardized mapping of PostgreSQL and HTTP error codes and messages to
  * retry strategies.
  */
-export function classifyError(error: any): ErrorCategory {
+export function classifyError(error: any): SyncFailureClass {
   const msg = error.message?.toLowerCase() || '';
   const code = String(error.code || error.status || '');
 

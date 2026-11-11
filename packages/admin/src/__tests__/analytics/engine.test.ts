@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { multiTenantAnalyticsEngine } from '../../analytics/engine';
-import type { CustomReportConfig, EducationSector, MetricDefinition } from '../../analytics/types';
+import type { CustomReportConfig, EducationSector, MetricDefinition } from '@repo/core/types/Analytics';
 
 // Mock Supabase
 vi.mock('@repo/core/adapters/supabaseClient', () => ({

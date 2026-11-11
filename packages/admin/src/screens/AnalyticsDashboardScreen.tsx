@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView } from 'react-native';
-import { multiTenantAnalyticsAPI } from '@repo/analytics';
+import { multiTenantAnalyticsAPI } from '@repo/admin/analytics/api';
 import { type LiveMetrics, type TenantMetrics } from '@repo/core/types/Analytics';
 import { AppHeader } from '@repo/ui/components/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
