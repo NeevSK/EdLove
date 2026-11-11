@@ -111,7 +111,8 @@ export default function TabsLayout() {
 function TabsLayoutContent() {
   const pathname = usePathname();
   // The shell is dressed by the chosen world, like every screen inside it.
-  const wt = useWorld().tokens;
+  const wornWorld = useWorld();
+  const wt = wornWorld.tokens;
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const shell = useMemo(
@@ -492,7 +493,12 @@ function TabsLayoutContent() {
   return (
     <View style={{ flex: 1 }}>
       {/* A phone on its side gives the status bar's row back to the world, like a game. */}
-      <StatusBar hidden={hud} animated />
+      {/* The clock and battery follow the world's mode (sunlight turns a night world light). */}
+      <StatusBar
+        hidden={hud}
+        animated
+        barStyle={wornWorld.mode === 'dark' ? 'light-content' : 'dark-content'}
+      />
       {shellChoice.variant === 'native' ? (
         nativeTabs
       ) : (
