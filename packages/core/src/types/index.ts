@@ -19,11 +19,8 @@ export type {
 } from './Actor';
 export type { PaginatedResponse, PaginationParams } from './API';
 export type { Assignment } from './Assignment';
-export type {
-  AttendanceRecord,
-  AttendanceStatus,
-  StudentAttendance,
-} from './Attendance';
+export type { AttendanceRecord } from './Attendance';
+export type { AttendanceStatus, StudentAttendance } from '../logic/schemas/attendance.schema';
 export type { AuthorityTier, Capacity } from './Authority';
 export type { Classroom, ClassroomStudent, StudentAcademicRecord } from './Classroom';
 export type { ClassroomNote } from './ClassroomNote';
@@ -150,7 +147,8 @@ export type {
 export type { PrivacyLevel, SocialLink, SocialPlatform } from './Social';
 export type { StaffAttendance, StaffAttendanceStatus } from './StaffAttendance';
 export type { LeaveStatus, LeaveType, StaffLeave } from './StaffLeave';
-export type { BulkStudent, Student } from './Student';
+export type { BulkStudent } from './Student';
+export type { Student } from '../logic/schemas/student.schema';
 export type { Task } from './Task';
 export type { TeacherNote } from './TeacherNote';
 export type {

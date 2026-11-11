@@ -14,11 +14,6 @@ export const ClassroomSchema = makeModelSchema('Classroom');
 export const AssignmentSchema = makeModelSchema('Assignment');
 
 /**
- * LessonSchema - A unit of instruction.
- */
-export const LessonSchema = makeModelSchema('Lesson');
-
-/**
  * LearningReflectionSchema - A guided reflection written in classroom context.
  * Shares the thought-record shape (pre/post mood, traps, evidence, reframe)
  * and adds classroom/assignment context. Distinct row type from ThoughtRecord
@@ -176,7 +171,6 @@ export const ClassroomLegacyRecordSchema = z.object({
 
 export type Classroom = z.infer<typeof ClassroomSchema>;
 export type Assignment = z.infer<typeof AssignmentSchema>;
-export type Lesson = z.infer<typeof LessonSchema>;
 export type LearningReflection = z.infer<typeof LearningReflectionSchema>;
 export type StudentAssignment = z.infer<typeof StudentAssignmentSchema>;
 export type AssignmentSubmission = z.infer<typeof AssignmentSubmissionSchema>;

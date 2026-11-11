@@ -312,11 +312,62 @@ Cross-cutting signals:
 | `packages/ui/src/utils/richTextSegmenter.ts` | 2026-08-30 | Update workspace configuration and dependencies | 2026-08-30 | 66 | — |
 | `packages/ui/src/components/workspace/WebCanvasZoneColumn.tsx` | 2026-09-01 | feat(ui): update visual components, mascot assets, screen wr | 2026-09-09 | 6 | — |
 
+## Why the duplicates exist
+
+Not chance: the repo has been reorganised several times, and **each move was made by copying, not moving**. The new home got the importers; the old file stayed, and from then on the two were edited apart. The same thing happened to whole modules, not only types. Evidence:
+
+- **19 Feb, package split** (`914df632c`, "complete modularization of gurudevi-mobile into shared packages"). In one commit `apps/gurudevi-mobile/src/types/Community.ts` was moved to `packages/core/src/types/Community.ts` *and* a 362-line `packages/community/src/types/Community.ts` was created; mobile's Wellbeing types went to `packages/self` the same way. (The earlier tables date core's file 30 Mar because git lost the rename in a later snapshot; the split is when both were born.) The mobile originals of validators, LanguageUtils, i18n config, ErrorMessageDemo and the school setup steps are still in the app with no importers.
+- **Mar–Apr, lifts into core and ui** ("complete global sync", "pre-recovery snapshot", "Healed core package architectural alignment"). GPACalculator and ActivityPulseContext were copied from analytics into core; CommunityPresence ended up in self, community and ui; QRShareButton in scanner-kit and ui. On 22 Apr the zod schemas in `logic/schemas/` were added *beside* the hand-written `types/*.ts`, which were never retired.
+- **Sep, lib/ → monitoring/** ("Refine Error Handling"): `lib/monitoring/{sentry,posthog}.ts` copied to `monitoring/`; the `lib/` copies have no importers.
+- **Oct–Nov, web workbench promotion.** Components promoted out of `components/workbench/` (the documented prototyping area) by copy: QuickAccessRail, TaskStrip, WorkspaceRouteTabs, CircadianClockDial. This is still happening.
+
+Why copying rather than moving: AGENTS.md's Deletion Veto forbids deleting working code without sign-off and asks for the "minimal additive seam". A move contains a deletion, so the safe path for an agent was to add the new file and leave the old one. Nothing in the rules says a move is not a deletion. Commit authors include Copilot, Codex and Claude as well as Naveen; the pattern is the same in all of them.
+
+Which copy is live: in almost every pair the **newer** copy has the importers and the older one has none, which matches copy-then-repoint. The exceptions, where both copies are imported and have drifted, are the real merge work: GPACalculator (analytics, core), CommunityPresence (community, self, ui), institutionalQrParser (scanner-kit, core), QRCodeGenerator (two folders in ui), QRShareButton (scanner-kit, ui), useCommunityPresence (community, self), the workbench promotions, supabaseAuthStorage (lib, native), site.ts (two web apps).
+
+| Similarity | Older copy (first seen, importers) | Newer copy (first seen, importers) | Commit that made the newer one |
+|---|---|---|---|
+| 1.0 | `apps/gurudevi-mobile/src/components/school/StepBasicInfo.tsx` (2026-02-19, 0) | `packages/admin/src/components/school/StepBasicInfo.tsx` (2026-03-30, 0) | new features and enhancements |
+| 1.0 | `packages/self/src/components/CommunityPresence.web.tsx` (2026-03-09, 0) | `packages/community/src/components/CommunityPresence.web.tsx` (2026-03-30, 1) | WIP: pre-recovery snapshot (stash0=667d991cdeb0 |
+| 1.0 | `packages/core/src/lib/monitoring/sentry.ts` (2026-02-19, 0) | `packages/core/src/monitoring/sentry.ts` (2026-09-01, 2) | Refine Error Handling & Teacher Dashboard UX |
+| 1.0 | `packages/scanner-kit/src/qr/institutionalQrParser.ts` (2026-10-17, 1) | `packages/core/src/logic/utils/institutionalQrParser.ts` (2026-10-20, 2) | feat(packages): synchronize domain packages, co |
+| 1.0 | `packages/ui/src/components/QRCodeGenerator.tsx` (2026-03-30, 1) | `packages/ui/src/qr/QRCodeGenerator.tsx` (2026-11-06, 3) | feat(scanner): extract scanner-kit, fix tsconfi |
+| 1.0 | `apps/gurudevi-web/app/(sanctuary)/components/workbench/QuickAccessRail.tsx` (2026-10-20, 2) | `apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx` (2026-11-06, 3) | WIP |
+| 1.0 | `apps/gurudevi-web/app/(sanctuary)/components/workbench/TaskStrip.tsx` (2026-09-20, 1) | `apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx` (2026-11-06, 5) | feat: commit workspace changes across sanctuary |
+| 1.0 | `apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkspaceRouteTabs.tsx` (2026-10-20, 0) | `apps/gurudevi-web/app/(sanctuary)/components/WorkspaceRouteTabs.tsx` (2026-11-06, 1) | WIP |
+| 0.99 | `apps/gurudevi-mobile/src/utils/validators.ts` (2026-02-06, 0) | `packages/core/src/logic/utils/validators.ts` (2026-03-20, 2) | Add comprehensive input validation with error d |
+| 0.99 | `packages/ui/src/components/web/Time/CircadianClockDial.tsx` (2026-11-06, 2) | `apps/gurudevi-web/app/(sanctuary)/components/workbench/CircadianClockDial.tsx` (2026-11-06, 1) | feat(mobile): Arrive journey on the v1 API |
+| 0.98 | `packages/analytics/src/engine/GPACalculator.ts` (2026-03-25, 5) | `packages/core/src/logic/grading/GPACalculator.ts` (2026-04-27, 3) | chore: complete global sync for all remaining p |
+| 0.98 | `packages/core/src/lib/monitoring/posthog.ts` (2026-02-19, 0) | `packages/core/src/monitoring/posthog.ts` (2026-09-01, 2) | Refine Error Handling & Teacher Dashboard UX |
+| 0.98 | `apps/gurudevi-marketingWeb/src/pages/journal/feed.xml.ts` (2026-09-01, 0) | `apps/edlove-web/src/pages/journal/feed.xml.ts` (2026-10-17, 0) | feat(web-apps): add author & journal content co |
+| 0.95 | `packages/community/src/components/CommunityPresence.web.tsx` (2026-03-30, 1) | `packages/ui/src/components/social/CommunityPresence.web.tsx` (2026-04-29, 3) | Add all remaining web component overrides: Brea |
+| 0.95 | `packages/self/src/components/CommunityPresence.web.tsx` (2026-03-09, 0) | `packages/ui/src/components/social/CommunityPresence.web.tsx` (2026-04-29, 3) | Add all remaining web component overrides: Brea |
+| 0.95 | `apps/gurudevi-marketingWeb/src/lib/site.ts` (2026-04-18, 4) | `apps/gurudevi-web/lib/site.ts` (2026-10-06, 3) | chore: update web apps SEO content and architec |
+| 0.94 | `packages/core/src/lib/supabaseAuthStorage.ts` (2026-04-17, 2) | `packages/core/src/native/supabaseAuthStorage.ts` (2026-04-22, 1) | chore: stabilize core and ui packages with zero |
+| 0.9 | `apps/gurudevi-mobile/src/components/school/StepLocation.tsx` (2026-02-19, 0) | `packages/admin/src/components/school/StepLocation.tsx` (2026-03-30, 0) | WIP: pre-recovery snapshot (stash0=667d991cdeb0 |
+| 0.9 | `packages/analytics/src/context/ActivityPulseContext.tsx` (2026-03-25, 2) | `packages/core/src/logic/experience/ActivityPulseContext.tsx` (2026-03-25, 2) | chore: sync all remaining package updates and s |
+| 0.89 | `apps/gurudevi-mobile/src/components/school/StepDemographics.tsx` (2026-02-19, 0) | `packages/admin/src/components/school/StepDemographics.tsx` (2026-03-30, 0) | new features and enhancements |
+| 0.87 | `apps/gurudevi-mobile/src/utils/LanguageUtils.ts` (2026-02-23, 0) | `packages/core/src/logic/utils/LanguageUtils.ts` (2026-03-30, 3) | chore: Senior Dev Audit - Security hardening, i |
+| 0.83 | `apps/edlove-web/src/pages/feed.xml.ts` (2026-10-17, 0) | `apps/edlove-web/src/pages/journal/feed.xml.ts` (2026-10-17, 0) | feat(web-apps): add author & journal content co |
+| 0.82 | `apps/gurudevi-mobile/src/screens/ErrorMessageDemo.tsx` (2026-02-04, 0) | `packages/ui/src/screens/ErrorMessageDemo.tsx` (2026-03-30, 1) | Add demo screen and fix opacity comment clarity |
+| 0.82 | `apps/gurudevi-marketingWeb/src/pages/journal/feed.xml.ts` (2026-09-01, 0) | `apps/edlove-web/src/pages/feed.xml.ts` (2026-10-17, 0) | feat(edlove-web): initialize astro web app conf |
+| 0.78 | `apps/gurudevi-mobile/src/i18n/config.ts` (2026-02-03, 2) | `packages/core/src/logic/i18n/config.ts` (2026-03-30, 4) | WIP: pre-recovery snapshot (stash0=667d991cdeb0 |
+| 0.77 | `packages/core/src/adapters/supabase/profileRepository.ts` (2026-05-06, 1) | `packages/core/src/adapters/zenstack/profileRepository.ts` (2026-05-06, 0) | test checkpoint |
+| 0.73 | `packages/community/src/hooks/useCommunityPresence.ts` (2026-03-30, 4) | `packages/self/src/hooks/useCommunityPresence.ts` (2026-03-30, 2) | WIP: pre-recovery snapshot (stash0=667d991cdeb0 |
+| 0.72 | `packages/scanner-kit/src/qr/QRShareButton.tsx` (2026-02-25, 2) | `packages/ui/src/qr/QRShareButton.tsx` (2026-03-30, 1) |   Changes to be committed:  	modified:   .npmrc |
+| 0.7 | `packages/community/src/types/Community.ts` (2026-02-19, 2) | `packages/core/src/types/Community.ts` (2026-03-30, 2) | Add comprehensive types and APIs for community/ |
+| 0.68 | `packages/core/src/adapters/powersync/forms.adapter.ts` (2026-05-20, 2) | `packages/core/src/adapters/supabase/forms.adapter.ts` (2026-05-20, 1) | feat(powersync): secure offline-first local dat |
+| 0.66 | `apps/gurudevi-mobile/app/(modal)/_layout.tsx` (2026-06-08, 0) | `apps/gurudevi-mobile/app/(tabs)/self/_layout.tsx` (2026-09-06, 0) | feat(mobile): update layouts, entry shell, erro |
+| 0.65 | `apps/gurudevi-web/app/api/og/route.ts` (2026-10-20, 0) | `apps/gurudevi-web/app/badge.svg/route.ts` (2026-10-20, 0) | WIP |
+| 0.61 | `packages/self/src/components/CommunityPresence.tsx` (2026-02-06, 0) | `packages/ui/src/components/social/CommunityPresence.tsx` (2026-04-29, 3) | WIP: pre-recovery snapshot (stash0=667d991cdeb0 |
+
+Proposed fix to the cause (needs Neev's yes, since it changes AGENTS.md): add to the Deletion Veto that **moving code to its new home, re-pointing every importer and removing the old file in the same change is a move, not a deletion**, and needs no sign-off when behaviour is unchanged and the type-check and test baselines hold. `scripts/move-modules.mjs` and `scripts/move-exports.mjs` do exactly that.
+
 ## Duplicate contracts: which copy came first
 
 The 90 contract names defined more than once, grouped by the files that share them. Order matters: in several cases the copy outside core is the original and core's is the later hoist, so "keep core's" is not automatically right.
 
-- `packages/community/src/types/Community.ts` (19 Feb, the package split) predates `packages/core/src/types/Community.ts` (30 Mar, pre-recovery snapshot); 23 of their 25 shared names are identical.
+- `packages/community/src/types/Community.ts` and core's `types/Community.ts` were both born in the 19 Feb split (core's moved from the app, community's was a new copy); 23 of their 25 shared names are identical.
 - Hand-written `packages/core/src/types/*.ts` files mostly date from February; the matching `logic/schemas/*.schema.ts` files first appear on 22 Apr ("Healed core package architectural alignment") and 6 May. The schemas were added beside the types, and the types were never retired.
 
 | Names | Identical | Differ | Files (first seen → last change) |
