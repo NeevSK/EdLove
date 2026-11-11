@@ -29,8 +29,10 @@ import { worldName } from '@repo/ui/theme';
 import { useWorld, WorldEnter } from '@repo/ui/theme/native';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ComfortPresets } from '@/components/comfort/ComfortPresets';
 import { PreferredNameEntry } from '@/components/PreferredNameEntry';
 import { RoleCardGrid } from '@/components/RoleCardGrid';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
@@ -38,7 +40,7 @@ import { v1Client } from '@/lib/v1Client';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
-type Step = 'language' | 'name' | 'role' | 'world';
+type Step = 'language' | 'comfort' | 'name' | 'role' | 'world';
 
 /** Each language named in itself, so a person who reads only that one still finds it. */
 const LANGUAGES = [
@@ -124,11 +126,10 @@ export default function OnboardingRoute() {
     <ErrorBoundary name="OnboardingRoute">
       <View style={styles.root}>
         <SafeAreaView style={styles.safeArea}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            style={styles.container}
-          >
-            <ScrollView
+          {/* The focused field scrolls clear of the keyboard and its typing bar. */}
+          <View style={styles.container}>
+            <KeyboardAwareScrollView
+              bottomOffset={64}
               contentContainerStyle={styles.scrollContent}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
@@ -157,6 +158,32 @@ export default function OnboardingRoute() {
                           label="Return to welcome"
                           variant="secondary"
                           onPress={() => router.replace('/welcome')}
+                        />
+                        <Button
+                          label="Next →"
+                          variant="primary"
+                          onPress={() => setStep('comfort')}
+                        />
+                      </View>
+                    </View>
+                  ) : step === 'comfort' ? (
+                    // Asked once, early, with big previews: an older teacher never hunts for it.
+                    <View style={styles.stepContainer}>
+                      <View style={styles.header}>
+                        <Text kind="title" align="center" tone="ink">
+                          How do you like to see things?
+                        </Text>
+                        <Text kind="body" tone="soft" align="center" style={styles.subline}>
+                          Tap the one that is easiest for you. It changes at once, and you can tune
+                          it later in Reading and comfort.
+                        </Text>
+                      </View>
+                      <ComfortPresets />
+                      <View style={styles.actionRow}>
+                        <Button
+                          label="← Back"
+                          variant="secondary"
+                          onPress={() => setStep('language')}
                         />
                         <Button label="Next →" variant="primary" onPress={() => setStep('name')} />
                       </View>
@@ -201,7 +228,7 @@ export default function OnboardingRoute() {
                         <Button
                           label="← Back"
                           variant="secondary"
-                          onPress={() => setStep('language')}
+                          onPress={() => setStep('comfort')}
                         />
                         {!detectedName || isEditingCustomName ? (
                           <Button
@@ -281,8 +308,8 @@ export default function OnboardingRoute() {
                   )}
                 </Surface>
               </WorldEnter>
-            </ScrollView>
-          </KeyboardAvoidingView>
+            </KeyboardAwareScrollView>
+          </View>
         </SafeAreaView>
       </View>
     </ErrorBoundary>

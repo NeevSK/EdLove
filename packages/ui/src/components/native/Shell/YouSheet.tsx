@@ -131,7 +131,7 @@ export function YouSheet({
             note="Your phone's own limits are always kept"
           />
           {reading ? (
-            <LinkRow label="Reading" detail={reading.detail} onPress={go(reading.onPress)} />
+            <LinkRow label="Reading and comfort" detail={reading.detail} onPress={go(reading.onPress)} />
           ) : null}
           {companions ? (
             <LinkRow

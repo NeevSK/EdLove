@@ -7,6 +7,7 @@ import { getTextOnBackground } from '@repo/ui/utils/colorUtils';
 import { VariableContextProvider } from 'nativewind';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
+import { useComfort } from './ComfortPreferences';
 import { useEnvironment } from './EnvironmentContext';
 
 type CircadianContextType = {
@@ -20,7 +21,18 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
   const phase = enableLivingTheme ? temporalPhase : isDark ? 'night' : 'morning';
 
   // The phone's contrast and transparency settings reach every world component.
-  const access = useSystemAccess();
+  // The person's own comfort joins them: control size, a simpler look, contrast always raised.
+  const system = useSystemAccess();
+  const comfort = useComfort();
+  const access = useMemo(
+    () => ({
+      ...system,
+      contrast: comfort.contrast === 'more' ? ('more' as const) : system.contrast,
+      size: comfort.size,
+      simple: comfort.simple,
+    }),
+    [system, comfort.contrast, comfort.size, comfort.simple],
+  );
   const world = useMemo(
     () => resolveWorld(worldId, phase, isDark ? 'dark' : 'light', access),
     [worldId, phase, isDark, access],

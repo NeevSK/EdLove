@@ -606,7 +606,18 @@ export interface WorldAccess {
   contrast: 'standard' | 'more';
   /** `reduced`: no glows or see-through veils; solid layers instead. */
   transparency: 'standard' | 'reduced';
+  /**
+   * The person's comfort (not the system's): how big controls and their spacing are. `large`
+   * for older eyes and less steady hands, `compact` for people who want more on one screen.
+   * Text size is the reading setting's job; this scales the things you touch and the air
+   * between them. Left out means `standard`.
+   */
+  size?: ComfortSize;
+  /** A simpler look: plain surfaces, no ornaments or textures, clear edges. */
+  simple?: boolean;
 }
+
+export type ComfortSize = 'compact' | 'standard' | 'large';
 
 export interface ResolvedWorld {
   id: WorldId;

@@ -32,6 +32,7 @@ import {
   Text,
   TextField,
   useFloorPresence,
+  useKeypadSpace,
   useShellLayout,
   useStage,
   useStagePreview,
@@ -69,7 +70,9 @@ import { router } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { type ComponentType, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ComfortPresets } from '@/components/comfort/ComfortPresets';
 
 type SceneWeather = NonNullable<StagePreview['weather']>;
 type BarLayout = 'floating' | 'docked' | 'rail';
@@ -130,6 +133,7 @@ export function WorldShowcaseScreen() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const shell = useShellLayout();
+  const keypadSpace = useKeypadSpace();
   const hud = shell.stance === 'hud';
   const [hold, setHold] = useState<'free' | 'upright' | 'sideways'>('free');
   const { worldId, setWorld } = useThemeContextOptional();
@@ -146,6 +150,7 @@ export function WorldShowcaseScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signal, setSignal] = useState(true);
   const [name, setName] = useState('');
+  const [marks, setMarks] = useState('');
   const [progress, setProgress] = useState(0.4);
 
   // The person's own world comes back on leave unless they keep this one.
@@ -257,15 +262,16 @@ export function WorldShowcaseScreen() {
         />
       </View>
 
-      <ScrollView
+      <KeyboardAwareScrollView
+        bottomOffset={64}
         style={styles.scroll}
         contentContainerStyle={[
           styles.content,
           {
-            paddingLeft: railWidth + 18,
-            paddingRight: 18 + insets.right,
-            paddingBottom: barSpace + 24,
-            maxWidth: railWidth + (hud ? 800 : 720),
+            paddingLeft: railWidth + 18 + keypadSpace.left,
+            paddingRight: 18 + insets.right + keypadSpace.right,
+            paddingBottom: barSpace + 24 + keypadSpace.bottom,
+            maxWidth: railWidth + (hud ? 800 : 720) + keypadSpace.left + keypadSpace.right,
           },
         ]}
       >
@@ -438,6 +444,31 @@ export function WorldShowcaseScreen() {
           />
         </Surface>
 
+        <Group
+          label="Typing"
+          footer="Marks use the app's own keypad: a flat pad upright, a side panel by your chosen hand when the phone is on its side. The name uses the phone's keyboard, with the world's typing bar on top."
+        >
+          <View style={styles.pad}>
+            <TextField
+              label="Marks out of 100"
+              hint="Our keypad"
+              keypad="decimal"
+              maxLength={5}
+              value={marks}
+              onChangeText={setMarks}
+            />
+          </View>
+        </Group>
+
+        <Group
+          label="How you like to see things"
+          footer="Text and controls together, for every age."
+        >
+          <View style={styles.pad}>
+            <ComfortPresets columns={shell.width >= 600 ? 2 : 1} />
+          </View>
+        </Group>
+
         <Group label="Rows and marks">
           <Row label="Today's lesson" detail="Mathematics" onPress={() => undefined} />
           <Row label="Reading" detail="Size and spacing" onPress={() => router.push('/reading')} />
@@ -459,7 +490,7 @@ export function WorldShowcaseScreen() {
           <Button label="Keep this look" variant="primary" onPress={keep} />
           <Button label="Leave as it was" variant="secondary" onPress={() => router.back()} />
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <View
         pointerEvents="box-none"

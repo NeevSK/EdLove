@@ -10,11 +10,13 @@ import {
   Text,
   useFloorPresence,
   useRoomScroll,
+  useKeypadSpace,
   useShellLayout,
 } from '@repo/ui/components/native';
 import type { BadgeTone } from '@repo/ui/theme';
 import type { ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function RoomPage({
@@ -34,15 +36,18 @@ export function RoomPage({
   const insets = useSafeAreaInsets();
   // Width, height and the cutouts on both sides: the column holds its reading width either way up.
   const layout = useShellLayout();
+  // The focused field scrolls clear of the keyboard and its typing bar, or of our keypad.
+  const pad = useKeypadSpace();
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
+      bottomOffset={64}
       {...scroll}
       style={{ flex: 1, backgroundColor: 'transparent' }}
       contentContainerStyle={{
-        paddingLeft: layout.gutter + layout.edges.left,
-        paddingRight: layout.gutter + layout.edges.right,
+        paddingLeft: layout.gutter + layout.edges.left + pad.left,
+        paddingRight: layout.gutter + layout.edges.right + pad.right,
         paddingTop: layout.rhythm.top,
-        paddingBottom: insets.bottom + (layout.tabs === 'rail' ? 96 : 120),
+        paddingBottom: insets.bottom + (layout.tabs === 'rail' ? 96 : 120) + pad.bottom,
         gap: layout.rhythm.gap,
         width: '100%',
         maxWidth: layout.readable,
@@ -63,7 +68,7 @@ export function RoomPage({
         ) : null}
       </Stack>
       {children}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

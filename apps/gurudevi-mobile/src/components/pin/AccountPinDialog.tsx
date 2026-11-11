@@ -120,6 +120,8 @@ export function AccountPinDialog({
       value={value}
       onChangeText={set}
       secureTextEntry
+      // Our own keypad: big keys, by the chosen hand when the phone is on its side.
+      keypad="number"
       keyboardType="number-pad"
       autoComplete="off"
       maxLength={8}

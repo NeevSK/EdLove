@@ -10,12 +10,14 @@
 import { buildRecipes } from './build';
 import { alpha, legible, mix } from './color';
 import type {
+  ComfortSize,
   Phase,
   ResolvedWorld,
   WorldAccess,
   WorldDefinition,
   WorldId,
   WorldMode,
+  WorldRecipes,
   WorldTokens,
 } from './types';
 import { DEFAULT_WORLD, isWorldId, WORLDS } from './worlds';
@@ -65,6 +67,44 @@ function moreContrast(t: WorldTokens): WorldTokens {
   };
 }
 
+/** How much bigger or smaller the things you touch, and the air between them, become. */
+export const COMFORT_SCALE: Readonly<Record<ComfortSize, number>> = {
+  compact: 0.88,
+  standard: 1,
+  large: 1.22,
+};
+
+/** Keys whose numbers are sizes of touchable things or spacing (never type, radii or lines). */
+const COMFORT_KEYS = new Set([
+  'height',
+  'minHeight',
+  'padding',
+  'paddingX',
+  'paddingY',
+  'gap',
+  'indent',
+]);
+/** Numbers under these are left alone wherever they sit. */
+const COMFORT_SKIP = new Set(['text', 'radius', 'fontSize', 'lineHeight', 'shadow', 'glow']);
+
+function scaleTree(value: unknown, f: number, sizing: boolean): unknown {
+  if (typeof value === 'number') return sizing ? Math.round(value * f * 2) / 2 : value;
+  if (Array.isArray(value) || value === null || typeof value !== 'object') return value;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    out[k] = COMFORT_SKIP.has(k) ? v : scaleTree(v, f, sizing || COMFORT_KEYS.has(k));
+  }
+  return out;
+}
+
+/**
+ * Scales every control height, padding and gap in the recipes by `f`; type is left to the
+ * reading settings. Pure: the recipes passed in are not changed.
+ */
+export function scaleRecipes(recipes: WorldRecipes, f: number): WorldRecipes {
+  return scaleTree(recipes, f, false) as WorldRecipes;
+}
+
 export function resolveWorld(
   world: WorldId | WorldDefinition,
   phase: Phase = 'morning',
@@ -73,7 +113,9 @@ export function resolveWorld(
 ): ResolvedWorld {
   const definition =
     typeof world === 'string' ? WORLDS[isWorldId(world) ? world : DEFAULT_WORLD] : world;
-  const key = `${definition.id}:${phase}:${mode}:${access.contrast}:${access.transparency}`;
+  const size = access.size ?? 'standard';
+  const simple = access.simple === true;
+  const key = `${definition.id}:${phase}:${mode}:${access.contrast}:${access.transparency}:${size}:${simple}`;
   const cached = typeof world === 'string' ? cache.get(key) : undefined;
   if (cached) return cached;
 
@@ -83,11 +125,27 @@ export function resolveWorld(
   const tokens = more ? moreContrast(phased) : phased;
   const style = {
     ...definition.style,
-    ...(more ? { lineWeight: Math.max(1, definition.style.lineWeight) } : null),
-    ...(solid ? { material: { ...definition.style.material, light: 'none' as const } } : null),
+    ...(more || simple ? { lineWeight: Math.max(1, definition.style.lineWeight) } : null),
+    ...(solid || simple
+      ? {
+          material: {
+            ...definition.style.material,
+            light: 'none' as const,
+            ...(simple ? { grain: 0 } : null),
+          },
+        }
+      : null),
+    // Simpler: the world keeps its colours, faces and corners, and drops its ornaments.
+    ...(simple
+      ? {
+          ornament: 'hairline' as const,
+          boundary: { dense: 'margin' as const, calm: 'margin' as const },
+        }
+      : null),
   };
   const built = buildRecipes(tokens, style, mode);
-  const refined = definition.refine ? definition.refine(built, tokens, mode) : built;
+  const shaped = definition.refine ? definition.refine(built, tokens, mode) : built;
+  const refined = size === 'standard' ? shaped : scaleRecipes(shaped, COMFORT_SCALE[size]);
   // Reduced transparency: the veils that let a screen or photo show through go solid.
   const recipes = solid
     ? {

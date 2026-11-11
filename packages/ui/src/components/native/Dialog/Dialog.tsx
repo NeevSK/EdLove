@@ -5,6 +5,7 @@ import { useWorld } from '../../../theme/native/WorldContext';
 import { InnerFrame, surfaceStyle } from '../Surface/Surface';
 import { Text } from '../Text/Text';
 import { Scrim } from './Scrim';
+import { KeypadHost, useKeypadSpace } from '../Keyboard/Keypad';
 
 export type DialogProps = DialogContract;
 
@@ -26,6 +27,8 @@ export function Dialog({
   const panel = useWorld().recipes.overlay.panel;
   const { animates } = useWorldMotion();
   const dismiss = dismissable ? onClose : undefined;
+  // A dialog sits above the app, so it carries its own keypad and moves aside for it.
+  const pad = useKeypadSpace();
 
   return (
     <Modal
@@ -35,7 +38,12 @@ export function Dialog({
       animationType={animates ? 'fade' : 'none'}
       onRequestClose={() => dismiss?.()}
     >
-      <View style={styles.center}>
+      <View
+        style={[
+          styles.center,
+          { paddingBottom: pad.bottom, paddingLeft: pad.left, paddingRight: pad.right },
+        ]}
+      >
         <Scrim onPress={dismiss} />
         <View
           role="dialog"
@@ -57,6 +65,7 @@ export function Dialog({
           {actions ? <View style={styles.actions}>{actions}</View> : null}
         </View>
       </View>
+      <KeypadHost />
     </Modal>
   );
 }

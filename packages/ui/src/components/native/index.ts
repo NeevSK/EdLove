@@ -214,3 +214,18 @@ export {
   ThemeSwitcher,
   type ThemeSwitcherProps,
 } from './ThemeSwitcher/ThemeSwitcher';
+export {
+  closeKeypad,
+  type KeypadTarget,
+  pressKey,
+  type TypingFocus,
+  useKeypadTarget,
+  useTypingFocus,
+} from './Keyboard/focus';
+export {
+  KEYPAD_FLAT_HEIGHT,
+  KEYPAD_SIDE_WIDTH,
+  KeypadHost,
+  useKeypadSpace,
+} from './Keyboard/Keypad';
+export { TypingBar } from './Keyboard/TypingBar';

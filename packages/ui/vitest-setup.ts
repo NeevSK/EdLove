@@ -51,6 +51,27 @@ vi.mock('react-native-worklets', () => ({
 
 vi.mock('react-native-skia', () => ({}));
 vi.mock('@sentry/react-native', () => ({ init: vi.fn(), captureException: vi.fn() }));
+// The keyboard library binds native views at import; tests get plain stand-ins for what the kit uses.
+vi.mock('react-native-keyboard-controller', async () => {
+  const RN = await import('react-native');
+  const pass = ({ children }: { children?: unknown }) => children ?? null;
+  const Toolbar = Object.assign(pass, {
+    Prev: () => null,
+    Next: () => null,
+    Done: () => null,
+    Content: pass,
+    Background: pass,
+    Group: pass,
+  });
+  return {
+    KeyboardProvider: pass,
+    KeyboardToolbar: Toolbar,
+    KeyboardAwareScrollView: RN.ScrollView,
+    KeyboardAvoidingView: RN.View,
+    KeyboardStickyView: RN.View,
+    useKeyboardState: () => ({ isVisible: false, height: 0 }),
+  };
+});
 
 vi.mock('react-native-external-keyboard', () => {
   const React = require('react');

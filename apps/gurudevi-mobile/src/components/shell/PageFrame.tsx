@@ -3,13 +3,19 @@
  * header under the status bar with back, and a readable column that centres on a tablet.
  */
 
-import { AppHeader, useFloorPresence, useShellLayout } from '@repo/ui/components/native';
+import {
+  AppHeader,
+  useFloorPresence,
+  useKeypadSpace,
+  useShellLayout,
+} from '@repo/ui/components/native';
 import { ChevronLeft } from '@repo/ui/icons/native';
 import type { KitIconProps } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
 import { router } from 'expo-router';
 import type { ComponentType, ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function PageFrame({
@@ -25,6 +31,8 @@ export function PageFrame({
   const insets = useSafeAreaInsets();
   // Width, height and the cutouts on both sides: the column holds its reading width either way up.
   const layout = useShellLayout();
+  // The focused field scrolls clear of the keyboard and its typing bar, or of our keypad.
+  const pad = useKeypadSpace();
   const t = useWorld().tokens;
   return (
     <View style={{ flex: 1 }}>
@@ -49,12 +57,13 @@ export function PageFrame({
           icons={{ back: ChevronLeft as ComponentType<KitIconProps> }}
         />
       </View>
-      <ScrollView
+      <KeyboardAwareScrollView
+        bottomOffset={64}
         contentContainerStyle={{
-          paddingLeft: layout.gutter + insets.left,
-          paddingRight: layout.gutter + insets.right,
+          paddingLeft: layout.gutter + insets.left + pad.left,
+          paddingRight: layout.gutter + insets.right + pad.right,
           paddingTop: layout.rhythm.top + 2,
-          paddingBottom: insets.bottom + 40,
+          paddingBottom: insets.bottom + 40 + pad.bottom,
           gap: layout.rhythm.gap,
           width: '100%',
           maxWidth: layout.readable,
@@ -62,7 +71,7 @@ export function PageFrame({
         }}
       >
         {children}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }

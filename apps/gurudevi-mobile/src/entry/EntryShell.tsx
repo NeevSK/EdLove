@@ -9,7 +9,9 @@ import { inMemoryHealthAdapter } from '@repo/self';
 import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import {
+  KeypadHost,
   registerFloorPictures,
+  TypingBar,
   toast,
   ToastHost,
   WorldMomentHost,
@@ -31,6 +33,7 @@ import { Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   handoffNativeSplashAfterCommit,
@@ -154,76 +157,86 @@ export function EntryShell() {
     >
       <ErrorBoundary name="EntryShell">
         <SafeAreaProvider>
-          <QueryClientProvider client={queryClient}>
-            <GlobalProvider readLocalGuestId={readLocalGuestId}>
-              <EnvironmentProvider>
-                <FidelityProvider>
-                  <GurudeviVerger>
-                    <OptionalStartupServices phase="public-ready" />
-                    <WorldFonts />
-                    <PersonalPreferences />
-                    <CircadianProvider>
-                      <PortalProvider>
-                        <ToastProvider delegate={toWorldToast}>
-                          <ExternalLinkProvider>
-                            <DeepLinkProvider>
-                              <AuthQueryCacheBoundary />
-                              <FABProvider>
-                                <MascotProvider config={fireflyMascotConfig}>
-                                  <LayoutLoopSentinel name="RootShell" style={styles.root}>
-                                    {/* One floor under every screen: the world draws it, verger sets how richly. */}
-                                    <WorldStage>
-                                      <AppVersionGateOverlay />
-                                      <GuestPersistenceNotice />
-                                      <GuestConversionBoundary />
-                                      <PasswordRecoveryBoundary />
-                                      <SessionRouteGate appServices={<AuthenticatedAppServices />}>
-                                        <Stack
-                                          screenOptions={{
-                                            headerShown: false,
-                                            contentStyle: { backgroundColor: 'transparent' },
-                                          }}
+          {/* One keyboard model for the app: fields stay in view, the typing bar rides on top. */}
+          <KeyboardProvider>
+            <QueryClientProvider client={queryClient}>
+              <GlobalProvider readLocalGuestId={readLocalGuestId}>
+                <EnvironmentProvider>
+                  <FidelityProvider>
+                    <GurudeviVerger>
+                      <OptionalStartupServices phase="public-ready" />
+                      <WorldFonts />
+                      <PersonalPreferences />
+                      <CircadianProvider>
+                        <PortalProvider>
+                          <ToastProvider delegate={toWorldToast}>
+                            <ExternalLinkProvider>
+                              <DeepLinkProvider>
+                                <AuthQueryCacheBoundary />
+                                <FABProvider>
+                                  <MascotProvider config={fireflyMascotConfig}>
+                                    <LayoutLoopSentinel name="RootShell" style={styles.root}>
+                                      {/* One floor under every screen: the world draws it, verger sets how richly. */}
+                                      <WorldStage>
+                                        <AppVersionGateOverlay />
+                                        <GuestPersistenceNotice />
+                                        <GuestConversionBoundary />
+                                        <PasswordRecoveryBoundary />
+                                        <SessionRouteGate
+                                          appServices={<AuthenticatedAppServices />}
                                         >
-                                          <Stack.Screen name="index" />
-                                          <Stack.Screen name="welcome" />
-                                          <Stack.Screen name="auth" />
-                                          <Stack.Screen name="account-recovery" />
-                                          <Stack.Screen name="onboarding" />
-                                          <Stack.Screen name="public-form/[slug]" />
-                                          <Stack.Screen name="verger-lab" />
-                                          <Stack.Screen name="verger-diagnostics" />
-                                          <Stack.Screen name="(tabs)" />
-                                          <Stack.Screen
-                                            name="(modal)"
-                                            options={{ presentation: 'modal' }}
-                                          />
-                                        </Stack>
-                                      </SessionRouteGate>
-                                      <SanctuaryPulseOverlay
-                                        visible={isBreathingOpen}
-                                        onDismiss={() => setBreathingOpen(false)}
-                                        isPlayfulMode={true}
-                                        onSessionComplete={(seconds) => {
-                                          void inMemoryHealthAdapter.recordMindfulSession(seconds);
-                                          sensoryFeedback.emit('success');
-                                        }}
-                                      />
-                                      <WorldMomentHost />
-                                      <ToastHost bottomOffset={120} />
-                                    </WorldStage>
-                                  </LayoutLoopSentinel>
-                                </MascotProvider>
-                              </FABProvider>
-                            </DeepLinkProvider>
-                          </ExternalLinkProvider>
-                        </ToastProvider>
-                      </PortalProvider>
-                    </CircadianProvider>
-                  </GurudeviVerger>
-                </FidelityProvider>
-              </EnvironmentProvider>
-            </GlobalProvider>
-          </QueryClientProvider>
+                                          <Stack
+                                            screenOptions={{
+                                              headerShown: false,
+                                              contentStyle: { backgroundColor: 'transparent' },
+                                            }}
+                                          >
+                                            <Stack.Screen name="index" />
+                                            <Stack.Screen name="welcome" />
+                                            <Stack.Screen name="auth" />
+                                            <Stack.Screen name="account-recovery" />
+                                            <Stack.Screen name="onboarding" />
+                                            <Stack.Screen name="public-form/[slug]" />
+                                            <Stack.Screen name="verger-lab" />
+                                            <Stack.Screen name="verger-diagnostics" />
+                                            <Stack.Screen name="(tabs)" />
+                                            <Stack.Screen
+                                              name="(modal)"
+                                              options={{ presentation: 'modal' }}
+                                            />
+                                          </Stack>
+                                        </SessionRouteGate>
+                                        <SanctuaryPulseOverlay
+                                          visible={isBreathingOpen}
+                                          onDismiss={() => setBreathingOpen(false)}
+                                          isPlayfulMode={true}
+                                          onSessionComplete={(seconds) => {
+                                            void inMemoryHealthAdapter.recordMindfulSession(
+                                              seconds,
+                                            );
+                                            sensoryFeedback.emit('success');
+                                          }}
+                                        />
+                                        <WorldMomentHost />
+                                        <ToastHost bottomOffset={120} />
+                                        {/* Typing: our keypad for numbers, and the bar above the phone's keyboard. */}
+                                        <KeypadHost />
+                                        <TypingBar />
+                                      </WorldStage>
+                                    </LayoutLoopSentinel>
+                                  </MascotProvider>
+                                </FABProvider>
+                              </DeepLinkProvider>
+                            </ExternalLinkProvider>
+                          </ToastProvider>
+                        </PortalProvider>
+                      </CircadianProvider>
+                    </GurudeviVerger>
+                  </FidelityProvider>
+                </EnvironmentProvider>
+              </GlobalProvider>
+            </QueryClientProvider>
+          </KeyboardProvider>
         </SafeAreaProvider>
       </ErrorBoundary>
     </GestureHandlerRootView>

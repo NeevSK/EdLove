@@ -1,15 +1,31 @@
 /**
+ * Reading and comfort: how the app is set for this person, from a young learner to an older
+ * teacher. Presets set words and controls together in one tap; below them, control size, a
+ * simpler look, contrast and the keypad's hand can each be tuned.
+ *
  * Reading: how every word in the app is set for this person. Size, weight, letter spacing and line
  * spacing apply at once to the kit's text, in the world's own faces, and a sample shows the
  * result. Fonts: what is on the phone, and whether new ones may download on mobile data.
  */
 
-import { Button, Group, Row, Slider, Surface, SwitchRow, Text } from '@repo/ui/components/native';
+import {
+  Button,
+  Group,
+  Row,
+  SegmentedControl,
+  Slider,
+  Surface,
+  SwitchRow,
+  Text,
+  useShellLayout,
+} from '@repo/ui/components/native';
+import { updateComfort, useComfort } from '@repo/ui/context/ComfortPreferences';
 import { resetReading, updateReading, useReading } from '@repo/ui/context/ReadingPreferences';
 import { worldName } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
 import { View } from 'react-native';
 import { useFontsOnMobileData } from '@/boot/fontDownloads';
+import { ComfortPresets } from '@/components/comfort/ComfortPresets';
 import { PageFrame } from '@/components/shell/PageFrame';
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
@@ -18,9 +34,55 @@ export function ReadingScreen() {
   const reading = useReading();
   const world = useWorld();
   const [onMobileData, setOnMobileData] = useFontsOnMobileData();
+  const comfort = useComfort();
+  const shell = useShellLayout();
 
   return (
-    <PageFrame title="Reading" eyebrow="You">
+    <PageFrame title="Reading and comfort" eyebrow="You">
+      <Group
+        label="How you like to see things"
+        footer="Sets words and controls together. Everything below can still be tuned."
+      >
+        <View style={{ paddingVertical: 8 }}>
+          <ComfortPresets columns={shell.width >= 600 ? 2 : 1} />
+        </View>
+      </Group>
+
+      <Group label="Comfort">
+        <View style={{ gap: 14, paddingVertical: 8 }}>
+          <SegmentedControl
+            label="Buttons and spacing"
+            value={comfort.size}
+            onChange={(size) => updateComfort({ size })}
+            options={[
+              { value: 'compact', label: 'Compact' },
+              { value: 'standard', label: 'Standard' },
+              { value: 'large', label: 'Large' },
+            ]}
+          />
+          <SegmentedControl
+            label="Number keypad, on its side"
+            value={comfort.hand}
+            onChange={(hand) => updateComfort({ hand })}
+            options={[
+              { value: 'left', label: 'Left hand' },
+              { value: 'right', label: 'Right hand' },
+            ]}
+          />
+        </View>
+        <SwitchRow
+          label="Simpler look"
+          hint="Plain surfaces, no ornaments, clear edges and a still floor"
+          value={comfort.simple}
+          onChange={(simple) => updateComfort({ simple })}
+        />
+        <SwitchRow
+          label="Always more contrast"
+          hint="Stronger words and edges, even if the phone's own setting is off"
+          value={comfort.contrast === 'more'}
+          onChange={(on) => updateComfort({ contrast: on ? 'more' : 'system' })}
+        />
+      </Group>
       <Surface tone="raised" style={{ gap: 10, padding: 18 }}>
         <Text kind="label">Sample, in {worldName(world.id)}</Text>
         <Text kind="title">Good morning. Today's lesson is ready.</Text>
