@@ -65,7 +65,7 @@ only measures the longest chain and says nothing about what a file is allowed to
 | **1 Ports** | Interfaces and Effect service tags: what the outside world must provide | Tier 0 | A port states a need. It holds no logic, or callers end up importing a port to reach a function |
 | **2 Domain** | Pure decisions and calculations | Tiers 0 and 2 | Pure code takes data, not services. A domain file importing a port is either orchestrating I/O (so it isn't domain) or reaching for logic that sits in the wrong file |
 | **3 Adapters** | Real I/O implementing ports (Supabase, PowerSync, storage, drivers, crypto) | Tiers 0–3 | The only place untrusted data is decoded. Never reads application state; anything it needs from the session is passed in or comes through a port |
-| **C Composition root** | Where adapters are bound to ports (`effect/AppRuntime.ts`, `effect/Layers.ts`) | Tiers 0–3 | The single place that knows which adapter backs which port, so nothing else has to |
+| **C Composition root** | Where adapters are bound to ports: `effect/Layers.ts` (async Effect ports, adapters loaded on first use), `effect/AppRuntime.ts` (the runtime and `callPort`), `effect/bindings.ts` (what state needs synchronously: persist storage, subscriptions, session scope, event bus, breadcrumbs) | Tiers 0–3 and C | The single place that knows which adapter backs which port, so nothing else has to |
 | **4 State** | Zustand stores and their slices, state machines | Tiers 0, 1, 2 and the runtime | Holds already-validated snapshots. Reaches I/O only through ports run on the runtime. A store imports its own slices, never another store |
 | **5 Application hooks** | What screens call; composes state and domain | Tier 0 types, Tiers 2, 4 and 5 | Hooks compose hooks. No ports, adapters or schema parsing on render |
 | **6 Presentation** | Components | Tier 0 types, Tiers 5 and 6 | Screens ask hooks; they never read stores or domain files directly |
@@ -77,6 +77,14 @@ Also enforced:
 - **No pass-through files.** A file that only re-exports or renames is a false chain. The exception is an entry point a package declares in `package.json` `exports`.
 - **Outside packages per tier.** For example, Tiers 0–2 may not use React, Zustand, XState, Supabase, PowerSync, MMKV or Drizzle.
 - **A file's folder states its tier.** A file whose folder doesn't is either `UNPLACED` (a finding) or has an entry in `PLACEMENTS` with its proper home, which is a move still to make.
+
+### How state reaches the outside world
+
+1. **Asynchronous work goes through a port.** The port is an Effect service tag in Tier 1, for example `EntitlementPort` or `PermissionSnapshotPort`. `effect/Layers.ts` binds it to its adapter with a dynamic `import()`, so the adapter's database and session chain doesn't load with every module that imports the runtime. State calls it with `callPort(Port, (port) => port.method(...))` from `effect/AppRuntime.ts`, and a rejection keeps the adapter's own error.
+2. **Synchronous needs come from `effect/bindings.ts`.** Zustand persist storage, a subscription that returns its unsubscribe, the current session scope: state needs these synchronously, and Effect may not run at import time, so they are plain values bound once to their adapters.
+3. **Checking happens in the adapter.** Anything read back from storage or the network is untrusted. The adapter decodes it, and state gets typed data or a verdict (for example `missing`, `rejected` with a reason, or `valid`).
+
+Done this way: the entitlement store and query, the feature-flag store, the permission-decision store, and the perspective and auth stores' storage, event bus and breadcrumbs.
 
 ## 3. The three violations found on 2026-11-01
 

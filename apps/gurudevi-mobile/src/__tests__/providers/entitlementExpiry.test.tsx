@@ -1,8 +1,8 @@
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import {
   ENTITLEMENT_SNAPSHOT_MAX_AGE_MS,
   entitlementQueryKey,
-  useEntitlementQuery,
-} from '@repo/core/hooks/useEntitlementQuery';
+} from '@repo/core/store/queries/entitlementQuery';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';

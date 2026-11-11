@@ -1,8 +1,8 @@
 {
-  "totalFiles": 77,
-  "totalEdges": 145,
+  "totalFiles": 69,
+  "totalEdges": 135,
   "cycles": [],
-  "maxLayer": 14,
+  "maxLayer": 13,
   "layerBreakdown": [
     {
       "layer": 0,
@@ -44,7 +44,7 @@
         },
         {
           "path": "packages/core/src/logic/ports/entitlement.port.ts",
-          "loc": 53,
+          "loc": 60,
           "functions": [],
           "types": [
             {
@@ -556,6 +556,145 @@
           "imports": []
         },
         {
+          "path": "packages/core/src/lib/storage.ts",
+          "loc": 40,
+          "functions": [
+            {
+              "name": "buildPartitionedKey",
+              "isExported": true,
+              "params": "options: PartitionKeyOptions"
+            }
+          ],
+          "types": [],
+          "interfaces": [
+            {
+              "name": "PartitionKeyOptions",
+              "isExported": true
+            }
+          ],
+          "constants": [
+            {
+              "name": "StorageKeys",
+              "isExported": true
+            },
+            {
+              "name": "tenant",
+              "isExported": false
+            },
+            {
+              "name": "user",
+              "isExported": false
+            },
+            {
+              "name": "entity",
+              "isExported": false
+            },
+            {
+              "name": "version",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "fn: buildPartitionedKey",
+            "interface: PartitionKeyOptions",
+            "const: StorageKeys"
+          ],
+          "imports": []
+        },
+        {
+          "path": "packages/core/src/logic/interfaces/network.port.ts",
+          "loc": 25,
+          "functions": [],
+          "types": [
+            {
+              "name": "NetworkStatus",
+              "isExported": true
+            },
+            {
+              "name": "NetworkSource",
+              "isExported": true
+            }
+          ],
+          "interfaces": [
+            {
+              "name": "NetworkConnectionMetadata",
+              "isExported": true
+            },
+            {
+              "name": "NetworkSnapshot",
+              "isExported": true
+            },
+            {
+              "name": "INetwork",
+              "isExported": true
+            }
+          ],
+          "constants": [],
+          "exports": [
+            "interface: NetworkConnectionMetadata",
+            "interface: NetworkSnapshot",
+            "interface: INetwork",
+            "type: NetworkStatus",
+            "type: NetworkSource"
+          ],
+          "imports": []
+        },
+        {
+          "path": "packages/core/src/logic/registry/citizenship.ts",
+          "loc": 54,
+          "functions": [
+            {
+              "name": "meetsCitizenship",
+              "isExported": true,
+              "params": "userCitizenship: CitizenshipLevel,\n  required: CitizenshipLevel,"
+            },
+            {
+              "name": "citizenshipName",
+              "isExported": true,
+              "params": "level: CitizenshipLevel"
+            }
+          ],
+          "types": [
+            {
+              "name": "CitizenshipLevel",
+              "isExported": true
+            },
+            {
+              "name": "CitizenshipName",
+              "isExported": true
+            }
+          ],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "CITIZENSHIP",
+              "isExported": true
+            },
+            {
+              "name": "entry",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "fn: meetsCitizenship",
+            "fn: citizenshipName",
+            "type: CitizenshipLevel",
+            "type: CitizenshipName",
+            "const: CITIZENSHIP"
+          ],
+          "imports": []
+        },
+        {
+          "path": "packages/core/src/monitoring/index.ts",
+          "loc": 12,
+          "functions": [],
+          "types": [],
+          "interfaces": [],
+          "constants": [],
+          "exports": [],
+          "imports": []
+        },
+        {
           "path": "packages/core/src/lib/accountScope.ts",
           "loc": 27,
           "functions": [
@@ -650,52 +789,6 @@
             "fn: getGuestScope",
             "fn: guestStorageKey",
             "fn: isGuestUserId"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/lib/storage.ts",
-          "loc": 40,
-          "functions": [
-            {
-              "name": "buildPartitionedKey",
-              "isExported": true,
-              "params": "options: PartitionKeyOptions"
-            }
-          ],
-          "types": [],
-          "interfaces": [
-            {
-              "name": "PartitionKeyOptions",
-              "isExported": true
-            }
-          ],
-          "constants": [
-            {
-              "name": "StorageKeys",
-              "isExported": true
-            },
-            {
-              "name": "tenant",
-              "isExported": false
-            },
-            {
-              "name": "user",
-              "isExported": false
-            },
-            {
-              "name": "entity",
-              "isExported": false
-            },
-            {
-              "name": "version",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "fn: buildPartitionedKey",
-            "interface: PartitionKeyOptions",
-            "const: StorageKeys"
           ],
           "imports": []
         },
@@ -845,808 +938,40 @@
           "imports": []
         },
         {
-          "path": "packages/core/src/monitoring/index.ts",
-          "loc": 12,
-          "functions": [],
-          "types": [],
-          "interfaces": [],
-          "constants": [],
-          "exports": [],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
-          "loc": 125,
-          "functions": [],
-          "types": [],
-          "interfaces": [
-            {
-              "name": "ManagedPowerSyncDatabase",
-              "isExported": true
-            },
-            {
-              "name": "PowerSyncRuntimeOwnership",
-              "isExported": true
-            }
-          ],
-          "constants": [
-            {
-              "name": "database",
-              "isExported": false
-            },
-            {
-              "name": "current",
-              "isExported": false
-            },
-            {
-              "name": "next",
-              "isExported": false
-            },
-            {
-              "name": "current",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "interface: ManagedPowerSyncDatabase",
-            "interface: PowerSyncRuntimeOwnership"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/adapters/powersync/powersync-shim.ts",
-          "loc": 81,
+          "path": "packages/core/src/lib/sync/eventBus.ts",
+          "loc": 169,
           "functions": [],
           "types": [
             {
-              "name": "CrudEntry",
+              "name": "SovereignEvent",
               "isExported": true
             },
             {
-              "name": "PowerSyncCredentials",
+              "name": "SovereignEventPayload",
               "isExported": true
+            },
+            {
+              "name": "Listener",
+              "isExported": false
             }
           ],
           "interfaces": [
             {
-              "name": "CommonPowerSyncDatabase",
-              "isExported": true
-            },
-            {
-              "name": "PowerSyncBackendConnector",
+              "name": "SovereignEventMap",
               "isExported": true
             }
           ],
           "constants": [
             {
-              "name": "column",
+              "name": "sovereignBus",
               "isExported": true
             }
           ],
           "exports": [
-            "interface: CommonPowerSyncDatabase",
-            "interface: PowerSyncBackendConnector",
-            "type: CrudEntry",
-            "type: PowerSyncCredentials",
-            "const: column"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/adapters/powersync/schema.ts",
-          "loc": 700,
-          "functions": [
-            {
-              "name": "isLocalOnlyTable",
-              "isExported": true,
-              "params": "table: string"
-            }
-          ],
-          "types": [
-            {
-              "name": "Attendance",
-              "isExported": true
-            },
-            {
-              "name": "InsertAttendance",
-              "isExported": true
-            },
-            {
-              "name": "Bond",
-              "isExported": true
-            },
-            {
-              "name": "InsertBond",
-              "isExported": true
-            },
-            {
-              "name": "ClassroomStudent",
-              "isExported": true
-            },
-            {
-              "name": "InsertClassroomStudent",
-              "isExported": true
-            },
-            {
-              "name": "SchoolMembership",
-              "isExported": true
-            },
-            {
-              "name": "InsertSchoolMembership",
-              "isExported": true
-            },
-            {
-              "name": "Student",
-              "isExported": true
-            },
-            {
-              "name": "InsertStudent",
-              "isExported": true
-            },
-            {
-              "name": "Classroom",
-              "isExported": true
-            },
-            {
-              "name": "InsertClassroom",
-              "isExported": true
-            },
-            {
-              "name": "MoodLog",
-              "isExported": true
-            },
-            {
-              "name": "InsertMoodLog",
-              "isExported": true
-            },
-            {
-              "name": "ThoughtRecord",
-              "isExported": true
-            },
-            {
-              "name": "InsertThoughtRecord",
-              "isExported": true
-            },
-            {
-              "name": "School",
-              "isExported": true
-            },
-            {
-              "name": "InsertSchool",
-              "isExported": true
-            },
-            {
-              "name": "CedarPolicy",
-              "isExported": true
-            },
-            {
-              "name": "InsertCedarPolicy",
-              "isExported": true
-            },
-            {
-              "name": "DrizzleFormTemplate",
-              "isExported": true
-            },
-            {
-              "name": "InsertDrizzleFormTemplate",
-              "isExported": true
-            },
-            {
-              "name": "DrizzleFormResponse",
-              "isExported": true
-            },
-            {
-              "name": "InsertDrizzleFormResponse",
-              "isExported": true
-            },
-            {
-              "name": "PermissionSnapshot",
-              "isExported": true
-            },
-            {
-              "name": "InsertPermissionSnapshot",
-              "isExported": true
-            },
-            {
-              "name": "PricingManifest",
-              "isExported": true
-            },
-            {
-              "name": "InsertPricingManifest",
-              "isExported": true
-            },
-            {
-              "name": "UserEntitlementGrant",
-              "isExported": true
-            },
-            {
-              "name": "InsertUserEntitlementGrant",
-              "isExported": true
-            },
-            {
-              "name": "UserPreference",
-              "isExported": true
-            },
-            {
-              "name": "InsertUserPreference",
-              "isExported": true
-            },
-            {
-              "name": "PolicyVersion",
-              "isExported": true
-            },
-            {
-              "name": "InsertPolicyVersion",
-              "isExported": true
-            },
-            {
-              "name": "TuitionInstitute",
-              "isExported": true
-            },
-            {
-              "name": "InsertTuitionInstitute",
-              "isExported": true
-            },
-            {
-              "name": "TuitionBatch",
-              "isExported": true
-            },
-            {
-              "name": "InsertTuitionBatch",
-              "isExported": true
-            },
-            {
-              "name": "GuardianBond",
-              "isExported": true
-            },
-            {
-              "name": "InsertGuardianBond",
-              "isExported": true
-            },
-            {
-              "name": "JoyMoment",
-              "isExported": true
-            },
-            {
-              "name": "InsertJoyMoment",
-              "isExported": true
-            },
-            {
-              "name": "GratitudeGlimmer",
-              "isExported": true
-            },
-            {
-              "name": "InsertGratitudeGlimmer",
-              "isExported": true
-            },
-            {
-              "name": "SleepLog",
-              "isExported": true
-            },
-            {
-              "name": "InsertSleepLog",
-              "isExported": true
-            },
-            {
-              "name": "TimetablePeriod",
-              "isExported": true
-            },
-            {
-              "name": "InsertTimetablePeriod",
-              "isExported": true
-            },
-            {
-              "name": "DailyPrepItem",
-              "isExported": true
-            },
-            {
-              "name": "InsertDailyPrepItem",
-              "isExported": true
-            },
-            {
-              "name": "PersonalReminder",
-              "isExported": true
-            },
-            {
-              "name": "InsertPersonalReminder",
-              "isExported": true
-            },
-            {
-              "name": "TodoList",
-              "isExported": true
-            },
-            {
-              "name": "InsertTodoList",
-              "isExported": true
-            },
-            {
-              "name": "Todo",
-              "isExported": true
-            },
-            {
-              "name": "InsertTodo",
-              "isExported": true
-            },
-            {
-              "name": "JurisdictionNode",
-              "isExported": true
-            },
-            {
-              "name": "InsertJurisdictionNode",
-              "isExported": true
-            }
-          ],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "pricingManifest",
-              "isExported": true
-            },
-            {
-              "name": "userEntitlementGrants",
-              "isExported": true
-            },
-            {
-              "name": "userPreferences",
-              "isExported": true
-            },
-            {
-              "name": "bonds",
-              "isExported": true
-            },
-            {
-              "name": "classroomStudents",
-              "isExported": true
-            },
-            {
-              "name": "schoolMemberships",
-              "isExported": true
-            },
-            {
-              "name": "attendance",
-              "isExported": true
-            },
-            {
-              "name": "students",
-              "isExported": true
-            },
-            {
-              "name": "classrooms",
-              "isExported": true
-            },
-            {
-              "name": "moodLogs",
-              "isExported": true
-            },
-            {
-              "name": "thoughtRecords",
-              "isExported": true
-            },
-            {
-              "name": "learningReflections",
-              "isExported": true
-            },
-            {
-              "name": "jurisdictionNodes",
-              "isExported": true
-            },
-            {
-              "name": "schools",
-              "isExported": true
-            },
-            {
-              "name": "cedarPolicies",
-              "isExported": true
-            },
-            {
-              "name": "permissionSnapshots",
-              "isExported": true
-            },
-            {
-              "name": "policyVersion",
-              "isExported": true
-            },
-            {
-              "name": "formTemplates",
-              "isExported": true
-            },
-            {
-              "name": "formResponses",
-              "isExported": true
-            },
-            {
-              "name": "tuitionInstitutes",
-              "isExported": true
-            },
-            {
-              "name": "tuitionBatches",
-              "isExported": true
-            },
-            {
-              "name": "guardianBonds",
-              "isExported": true
-            },
-            {
-              "name": "joyMoments",
-              "isExported": true
-            },
-            {
-              "name": "gratitudeGlimmers",
-              "isExported": true
-            },
-            {
-              "name": "sleepLogs",
-              "isExported": true
-            },
-            {
-              "name": "timetablePeriods",
-              "isExported": true
-            },
-            {
-              "name": "dailyPrepItems",
-              "isExported": true
-            },
-            {
-              "name": "personalReminders",
-              "isExported": true
-            },
-            {
-              "name": "lists",
-              "isExported": true
-            },
-            {
-              "name": "todos",
-              "isExported": true
-            },
-            {
-              "name": "AppSchema",
-              "isExported": true
-            },
-            {
-              "name": "LOCAL_ONLY_TABLES",
-              "isExported": true
-            }
-          ],
-          "exports": [
-            "fn: isLocalOnlyTable",
-            "type: Attendance",
-            "type: InsertAttendance",
-            "type: Bond",
-            "type: InsertBond",
-            "type: ClassroomStudent",
-            "type: InsertClassroomStudent",
-            "type: SchoolMembership",
-            "type: InsertSchoolMembership",
-            "type: Student",
-            "type: InsertStudent",
-            "type: Classroom",
-            "type: InsertClassroom",
-            "type: MoodLog",
-            "type: InsertMoodLog",
-            "type: ThoughtRecord",
-            "type: InsertThoughtRecord",
-            "type: School",
-            "type: InsertSchool",
-            "type: CedarPolicy",
-            "type: InsertCedarPolicy",
-            "type: DrizzleFormTemplate",
-            "type: InsertDrizzleFormTemplate",
-            "type: DrizzleFormResponse",
-            "type: InsertDrizzleFormResponse",
-            "type: PermissionSnapshot",
-            "type: InsertPermissionSnapshot",
-            "type: PricingManifest",
-            "type: InsertPricingManifest",
-            "type: UserEntitlementGrant",
-            "type: InsertUserEntitlementGrant",
-            "type: UserPreference",
-            "type: InsertUserPreference",
-            "type: PolicyVersion",
-            "type: InsertPolicyVersion",
-            "type: TuitionInstitute",
-            "type: InsertTuitionInstitute",
-            "type: TuitionBatch",
-            "type: InsertTuitionBatch",
-            "type: GuardianBond",
-            "type: InsertGuardianBond",
-            "type: JoyMoment",
-            "type: InsertJoyMoment",
-            "type: GratitudeGlimmer",
-            "type: InsertGratitudeGlimmer",
-            "type: SleepLog",
-            "type: InsertSleepLog",
-            "type: TimetablePeriod",
-            "type: InsertTimetablePeriod",
-            "type: DailyPrepItem",
-            "type: InsertDailyPrepItem",
-            "type: PersonalReminder",
-            "type: InsertPersonalReminder",
-            "type: TodoList",
-            "type: InsertTodoList",
-            "type: Todo",
-            "type: InsertTodo",
-            "type: JurisdictionNode",
-            "type: InsertJurisdictionNode",
-            "const: pricingManifest",
-            "const: userEntitlementGrants",
-            "const: userPreferences",
-            "const: bonds",
-            "const: classroomStudents",
-            "const: schoolMemberships",
-            "const: attendance",
-            "const: students",
-            "const: classrooms",
-            "const: moodLogs",
-            "const: thoughtRecords",
-            "const: learningReflections",
-            "const: jurisdictionNodes",
-            "const: schools",
-            "const: cedarPolicies",
-            "const: permissionSnapshots",
-            "const: policyVersion",
-            "const: formTemplates",
-            "const: formResponses",
-            "const: tuitionInstitutes",
-            "const: tuitionBatches",
-            "const: guardianBonds",
-            "const: joyMoments",
-            "const: gratitudeGlimmers",
-            "const: sleepLogs",
-            "const: timetablePeriods",
-            "const: dailyPrepItems",
-            "const: personalReminders",
-            "const: lists",
-            "const: todos",
-            "const: AppSchema",
-            "const: LOCAL_ONLY_TABLES"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/logic/ports/authz.port.ts",
-          "loc": 42,
-          "functions": [],
-          "types": [],
-          "interfaces": [
-            {
-              "name": "AuthorizationRequest",
-              "isExported": true
-            },
-            {
-              "name": "AuthorizationDecision",
-              "isExported": true
-            },
-            {
-              "name": "TokenContext",
-              "isExported": true
-            },
-            {
-              "name": "CapabilityToken",
-              "isExported": true
-            },
-            {
-              "name": "TokenValidation",
-              "isExported": true
-            },
-            {
-              "name": "IAuthorizationPort",
-              "isExported": true
-            }
-          ],
-          "constants": [],
-          "exports": [
-            "interface: AuthorizationRequest",
-            "interface: AuthorizationDecision",
-            "interface: TokenContext",
-            "interface: CapabilityToken",
-            "interface: TokenValidation",
-            "interface: IAuthorizationPort"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/logic/permissions/signature.ts",
-          "loc": 123,
-          "functions": [
-            {
-              "name": "decodeBase64",
-              "isExported": false,
-              "params": "value: string"
-            },
-            {
-              "name": "verifySnapshotSignature",
-              "isExported": true,
-              "params": "snapshot: {\n  userId: string;\n  activeBondId: string;\n  activeEntityId: string;\n  activeEntityType: string;\n  schoolId: string | null;\n  policyVersion: string;\n  generatedAt: string;\n  expiresAt: string;\n  permissions: string;\n  temporalHints: string | null;\n  signature: string;\n}"
-            }
-          ],
-          "types": [],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "binary",
-              "isExported": false
-            },
-            {
-              "name": "payload",
-              "isExported": false
-            },
-            {
-              "name": "publicKey",
-              "isExported": false
-            },
-            {
-              "name": "enc",
-              "isExported": false
-            },
-            {
-              "name": "messageData",
-              "isExported": false
-            },
-            {
-              "name": "signatureBytes",
-              "isExported": false
-            },
-            {
-              "name": "importedKey",
-              "isExported": false
-            },
-            {
-              "name": "valid",
-              "isExported": false
-            },
-            {
-              "name": "resourceNames",
-              "isExported": false
-            },
-            {
-              "name": "actions",
-              "isExported": false
-            },
-            {
-              "name": "recovered",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "fn: verifySnapshotSignature"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/lib/security/transportSecurity.ts",
-          "loc": 71,
-          "functions": [
-            {
-              "name": "isPrivateIpv4",
-              "isExported": false,
-              "params": "hostname: string"
-            },
-            {
-              "name": "isLocalDevelopmentHost",
-              "isExported": false,
-              "params": "hostname: string"
-            },
-            {
-              "name": "assertSecureApiUrl",
-              "isExported": true,
-              "params": "input: string | URL"
-            },
-            {
-              "name": "secureApiFetch",
-              "isExported": true,
-              "params": "input: RequestInfo | URL,\n  init?: RequestInit,"
-            }
-          ],
-          "types": [],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "DEVELOPMENT_ENVIRONMENTS",
-              "isExported": false
-            },
-            {
-              "name": "octets",
-              "isExported": false
-            },
-            {
-              "name": "host",
-              "isExported": false
-            },
-            {
-              "name": "nodeEnvironment",
-              "isExported": false
-            },
-            {
-              "name": "requestUrl",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "fn: assertSecureApiUrl",
-            "fn: secureApiFetch"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/logic/registry/citizenship.ts",
-          "loc": 54,
-          "functions": [
-            {
-              "name": "meetsCitizenship",
-              "isExported": true,
-              "params": "userCitizenship: CitizenshipLevel,\n  required: CitizenshipLevel,"
-            },
-            {
-              "name": "citizenshipName",
-              "isExported": true,
-              "params": "level: CitizenshipLevel"
-            }
-          ],
-          "types": [
-            {
-              "name": "CitizenshipLevel",
-              "isExported": true
-            },
-            {
-              "name": "CitizenshipName",
-              "isExported": true
-            }
-          ],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "CITIZENSHIP",
-              "isExported": true
-            },
-            {
-              "name": "entry",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "fn: meetsCitizenship",
-            "fn: citizenshipName",
-            "type: CitizenshipLevel",
-            "type: CitizenshipName",
-            "const: CITIZENSHIP"
-          ],
-          "imports": []
-        },
-        {
-          "path": "packages/core/src/logic/interfaces/network.port.ts",
-          "loc": 25,
-          "functions": [],
-          "types": [
-            {
-              "name": "NetworkStatus",
-              "isExported": true
-            },
-            {
-              "name": "NetworkSource",
-              "isExported": true
-            }
-          ],
-          "interfaces": [
-            {
-              "name": "NetworkConnectionMetadata",
-              "isExported": true
-            },
-            {
-              "name": "NetworkSnapshot",
-              "isExported": true
-            },
-            {
-              "name": "INetwork",
-              "isExported": true
-            }
-          ],
-          "constants": [],
-          "exports": [
-            "interface: NetworkConnectionMetadata",
-            "interface: NetworkSnapshot",
-            "interface: INetwork",
-            "type: NetworkStatus",
-            "type: NetworkSource"
+            "interface: SovereignEventMap",
+            "type: SovereignEvent",
+            "type: SovereignEventPayload",
+            "const: sovereignBus"
           ],
           "imports": []
         },
@@ -1692,40 +1017,25 @@
           "imports": []
         },
         {
-          "path": "packages/core/src/lib/sync/eventBus.ts",
-          "loc": 169,
+          "path": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
+          "loc": 29,
           "functions": [],
           "types": [
             {
-              "name": "SovereignEvent",
+              "name": "PermissionSnapshotRead",
               "isExported": true
-            },
-            {
-              "name": "SovereignEventPayload",
-              "isExported": true
-            },
-            {
-              "name": "Listener",
-              "isExported": false
             }
           ],
           "interfaces": [
             {
-              "name": "SovereignEventMap",
+              "name": "IPermissionSnapshotPort",
               "isExported": true
             }
           ],
-          "constants": [
-            {
-              "name": "sovereignBus",
-              "isExported": true
-            }
-          ],
+          "constants": [],
           "exports": [
-            "interface: SovereignEventMap",
-            "type: SovereignEvent",
-            "type: SovereignEventPayload",
-            "const: sovereignBus"
+            "interface: IPermissionSnapshotPort",
+            "type: PermissionSnapshotRead"
           ],
           "imports": []
         },
@@ -2169,311 +1479,41 @@
           ]
         },
         {
-          "path": "packages/core/src/lib/scopedStateStorage.ts",
-          "loc": 69,
-          "functions": [
-            {
-              "name": "currentOwner",
-              "isExported": false,
-              "params": ""
-            },
-            {
-              "name": "storageKey",
-              "isExported": false,
-              "params": "name: string, owner: Owner"
-            },
-            {
-              "name": "createScopedStateStorage",
-              "isExported": true,
-              "params": ""
-            },
-            {
-              "name": "sameOwner",
-              "isExported": false,
-              "params": "owner: Owner"
-            }
-          ],
-          "types": [
-            {
-              "name": "Owner",
-              "isExported": false
-            }
-          ],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "accountId",
-              "isExported": false
-            },
-            {
-              "name": "owner",
-              "isExported": false
-            },
-            {
-              "name": "value",
-              "isExported": false
-            },
-            {
-              "name": "owner",
-              "isExported": false
-            },
-            {
-              "name": "owner",
-              "isExported": false
-            },
-            {
-              "name": "current",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "fn: createScopedStateStorage"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/lib/accountScope",
-              "canonical": "packages/core/src/lib/accountScope.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "getActiveAccountId",
-                "getAccountScopeRevision",
-                "scopeStorageKey"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/native/guestScope",
-              "canonical": "packages/core/src/native/guestScope.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "getGuestScope",
-                "getGuestScopeRevision",
-                "guestStorageKey"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/lib/storage",
-              "canonical": "packages/core/src/lib/storage.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "storage"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
-          "path": "packages/core/src/lib/devicePreferences.ts",
-          "loc": 46,
-          "functions": [
-            {
-              "name": "isDeviceThemeMode",
-              "isExported": true,
-              "params": "value: unknown"
-            },
-            {
-              "name": "migrateDeviceTheme",
-              "isExported": false,
-              "params": ""
-            },
-            {
-              "name": "ensureDeviceThemePreference",
-              "isExported": true,
-              "params": ""
-            }
-          ],
-          "types": [
-            {
-              "name": "DeviceThemeMode",
-              "isExported": true
-            }
-          ],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "DEVICE_THEME_MODE_KEY",
-              "isExported": true
-            },
-            {
-              "name": "legacy",
-              "isExported": false
-            },
-            {
-              "name": "state",
-              "isExported": false
-            },
-            {
-              "name": "mode",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "fn: isDeviceThemeMode",
-            "fn: ensureDeviceThemePreference",
-            "type: DeviceThemeMode",
-            "const: DEVICE_THEME_MODE_KEY"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/lib/storage",
-              "canonical": "packages/core/src/lib/storage.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "storage"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
-          "path": "packages/core/src/types/API.ts",
-          "loc": 42,
-          "functions": [],
-          "types": [],
-          "interfaces": [
-            {
-              "name": "PaginationParams",
-              "isExported": true
-            },
-            {
-              "name": "PaginatedResponse",
-              "isExported": true
-            }
-          ],
-          "constants": [
-            {
-              "name": "normalizedCode",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "interface: PaginationParams",
-            "interface: PaginatedResponse"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/types/Errors",
-              "canonical": "packages/core/src/types/Errors.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "SovereignError"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
-          "path": "packages/core/src/adapters/powersync/databaseRegistry.ts",
-          "loc": 66,
+          "path": "packages/core/src/platform/drivers/networkMonitor.ts",
+          "loc": 70,
           "functions": [],
           "types": [],
           "interfaces": [],
           "constants": [
             {
-              "name": "secured",
+              "name": "adapter",
               "isExported": false
             },
             {
-              "name": "database",
+              "name": "unsubscribe",
               "isExported": false
+            },
+            {
+              "name": "next",
+              "isExported": false
+            },
+            {
+              "name": "networkMonitor",
+              "isExported": true
             }
           ],
-          "exports": [],
+          "exports": [
+            "const: networkMonitor"
+          ],
           "imports": [
             {
-              "source": "./singleActivePowerSyncRuntime",
-              "canonical": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
+              "source": "@repo/core/logic/interfaces/network.port",
+              "canonical": "packages/core/src/logic/interfaces/network.port.ts",
               "isExternal": false,
               "isTypeOnly": true,
               "symbols": [
-                "ManagedPowerSyncDatabase",
-                "PowerSyncRuntimeOwnership"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
-          "path": "packages/core/src/logic/runtimeRegistry.ts",
-          "loc": 118,
-          "functions": [],
-          "types": [],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "coreRuntime",
-              "isExported": true
-            }
-          ],
-          "exports": [
-            "const: coreRuntime"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/types/runtime",
-              "canonical": "packages/core/src/types/runtime.ts",
-              "isExternal": false,
-              "isTypeOnly": true,
-              "symbols": [
-                "CoreRuntimeEnvironment"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
-          "path": "packages/core/src/lib/authStorage.ts",
-          "loc": 36,
-          "functions": [],
-          "types": [],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "AUTH_STORAGE_PREFIX",
-              "isExported": false
-            },
-            {
-              "name": "supabaseAuthStorage",
-              "isExported": true
-            },
-            {
-              "name": "storageKey",
-              "isExported": false
-            },
-            {
-              "name": "syncVal",
-              "isExported": false
-            },
-            {
-              "name": "asyncVal",
-              "isExported": false
-            },
-            {
-              "name": "storageKey",
-              "isExported": false
-            },
-            {
-              "name": "storageKey",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "const: supabaseAuthStorage"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/lib/storage",
-              "canonical": "packages/core/src/lib/storage.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "storage"
+                "INetwork",
+                "NetworkSnapshot"
               ],
               "exists": true
             }
@@ -2681,41 +1721,243 @@
           ]
         },
         {
-          "path": "packages/core/src/platform/drivers/networkMonitor.ts",
-          "loc": 70,
+          "path": "packages/core/src/lib/scopedStateStorage.ts",
+          "loc": 69,
+          "functions": [
+            {
+              "name": "currentOwner",
+              "isExported": false,
+              "params": ""
+            },
+            {
+              "name": "storageKey",
+              "isExported": false,
+              "params": "name: string, owner: Owner"
+            },
+            {
+              "name": "createScopedStateStorage",
+              "isExported": true,
+              "params": ""
+            },
+            {
+              "name": "sameOwner",
+              "isExported": false,
+              "params": "owner: Owner"
+            }
+          ],
+          "types": [
+            {
+              "name": "Owner",
+              "isExported": false
+            }
+          ],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "accountId",
+              "isExported": false
+            },
+            {
+              "name": "owner",
+              "isExported": false
+            },
+            {
+              "name": "value",
+              "isExported": false
+            },
+            {
+              "name": "owner",
+              "isExported": false
+            },
+            {
+              "name": "owner",
+              "isExported": false
+            },
+            {
+              "name": "current",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "fn: createScopedStateStorage"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/lib/accountScope",
+              "canonical": "packages/core/src/lib/accountScope.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "getActiveAccountId",
+                "getAccountScopeRevision",
+                "scopeStorageKey"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/native/guestScope",
+              "canonical": "packages/core/src/native/guestScope.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "getGuestScope",
+                "getGuestScopeRevision",
+                "guestStorageKey"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/lib/storage",
+              "canonical": "packages/core/src/lib/storage.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "storage"
+              ],
+              "exists": true
+            }
+          ]
+        },
+        {
+          "path": "packages/core/src/lib/devicePreferences.ts",
+          "loc": 46,
+          "functions": [
+            {
+              "name": "isDeviceThemeMode",
+              "isExported": true,
+              "params": "value: unknown"
+            },
+            {
+              "name": "migrateDeviceTheme",
+              "isExported": false,
+              "params": ""
+            },
+            {
+              "name": "ensureDeviceThemePreference",
+              "isExported": true,
+              "params": ""
+            }
+          ],
+          "types": [
+            {
+              "name": "DeviceThemeMode",
+              "isExported": true
+            }
+          ],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "DEVICE_THEME_MODE_KEY",
+              "isExported": true
+            },
+            {
+              "name": "legacy",
+              "isExported": false
+            },
+            {
+              "name": "state",
+              "isExported": false
+            },
+            {
+              "name": "mode",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "fn: isDeviceThemeMode",
+            "fn: ensureDeviceThemePreference",
+            "type: DeviceThemeMode",
+            "const: DEVICE_THEME_MODE_KEY"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/lib/storage",
+              "canonical": "packages/core/src/lib/storage.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "storage"
+              ],
+              "exists": true
+            }
+          ]
+        },
+        {
+          "path": "packages/core/src/types/API.ts",
+          "loc": 42,
+          "functions": [],
+          "types": [],
+          "interfaces": [
+            {
+              "name": "PaginationParams",
+              "isExported": true
+            },
+            {
+              "name": "PaginatedResponse",
+              "isExported": true
+            }
+          ],
+          "constants": [
+            {
+              "name": "normalizedCode",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "interface: PaginationParams",
+            "interface: PaginatedResponse"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/types/Errors",
+              "canonical": "packages/core/src/types/Errors.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "SovereignError"
+              ],
+              "exists": true
+            }
+          ]
+        },
+        {
+          "path": "packages/core/src/effect/Layers.ts",
+          "loc": 44,
           "functions": [],
           "types": [],
           "interfaces": [],
           "constants": [
             {
-              "name": "adapter",
-              "isExported": false
+              "name": "EntitlementLive",
+              "isExported": true
             },
             {
-              "name": "unsubscribe",
-              "isExported": false
-            },
-            {
-              "name": "next",
-              "isExported": false
-            },
-            {
-              "name": "networkMonitor",
+              "name": "PermissionSnapshotLive",
               "isExported": true
             }
           ],
           "exports": [
-            "const: networkMonitor"
+            "const: EntitlementLive",
+            "const: PermissionSnapshotLive"
           ],
           "imports": [
             {
-              "source": "@repo/core/logic/interfaces/network.port",
-              "canonical": "packages/core/src/logic/interfaces/network.port.ts",
+              "source": "@repo/core/logic/ports/entitlement.port",
+              "canonical": "packages/core/src/logic/ports/entitlement.port.ts",
               "isExternal": false,
-              "isTypeOnly": true,
+              "isTypeOnly": false,
               "symbols": [
-                "INetwork",
-                "NetworkSnapshot"
+                "EntitlementPort"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/ports/permissionSnapshot.port",
+              "canonical": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "PermissionSnapshotPort"
               ],
               "exists": true
             }
@@ -3066,170 +2308,6 @@
           ]
         },
         {
-          "path": "packages/core/src/lib/experienceState.ts",
-          "loc": 83,
-          "functions": [],
-          "types": [],
-          "interfaces": [
-            {
-              "name": "DemoIntent",
-              "isExported": true
-            },
-            {
-              "name": "ExperienceState",
-              "isExported": false
-            }
-          ],
-          "constants": [
-            {
-              "name": "useExperienceState",
-              "isExported": true
-            },
-            {
-              "name": "scoped",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "interface: DemoIntent",
-            "const: useExperienceState"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/lib/scopedStateStorage",
-              "canonical": "packages/core/src/lib/scopedStateStorage.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "createScopedStateStorage"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
-          "path": "packages/core/src/lib/storageWrapper.ts",
-          "loc": 37,
-          "functions": [
-            {
-              "name": "observePersistenceFailure",
-              "isExported": false,
-              "params": "operation: 'write' | 'remove',\n  result: Promise<void>,"
-            }
-          ],
-          "types": [],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "value",
-              "isExported": false
-            }
-          ],
-          "exports": [],
-          "imports": [
-            {
-              "source": "@repo/core/lib/storage",
-              "canonical": "packages/core/src/lib/storage.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "storage"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/lib/devicePreferences",
-              "canonical": "packages/core/src/lib/devicePreferences.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "ensureDeviceThemePreference"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
-          "path": "packages/core/src/adapters/supabaseClient.ts",
-          "loc": 89,
-          "functions": [
-            {
-              "name": "getExpoPublicRuntime",
-              "isExported": false,
-              "params": ""
-            },
-            {
-              "name": "urlStringFromInput",
-              "isExported": false,
-              "params": "url: Parameters<typeof fetch>[0]"
-            },
-            {
-              "name": "sanitizeSupabaseUrl",
-              "isExported": false,
-              "params": "url: Parameters<typeof fetch>[0]"
-            }
-          ],
-          "types": [
-            {
-              "name": "PublicRuntimeConfig",
-              "isExported": false
-            }
-          ],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "Constants",
-              "isExported": false
-            },
-            {
-              "name": "publicRuntime",
-              "isExported": false
-            },
-            {
-              "name": "urlStr",
-              "isExported": false
-            },
-            {
-              "name": "urlObj",
-              "isExported": false
-            },
-            {
-              "name": "sanitizedUrl",
-              "isExported": false
-            },
-            {
-              "name": "supabaseClient",
-              "isExported": true
-            }
-          ],
-          "exports": [
-            "const: supabaseClient"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/lib/authStorage",
-              "canonical": "packages/core/src/lib/authStorage.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "supabaseAuthStorage"
-              ],
-              "exists": true
-            },
-            {
-              "source": "../lib/security/transportSecurity",
-              "canonical": "packages/core/src/lib/security/transportSecurity.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "assertSecureApiUrl",
-                "secureApiFetch"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
           "path": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
           "loc": 350,
           "functions": [
@@ -3385,8 +2463,164 @@
           ]
         },
         {
+          "path": "packages/core/src/lib/experienceState.ts",
+          "loc": 83,
+          "functions": [],
+          "types": [],
+          "interfaces": [
+            {
+              "name": "DemoIntent",
+              "isExported": true
+            },
+            {
+              "name": "ExperienceState",
+              "isExported": false
+            }
+          ],
+          "constants": [
+            {
+              "name": "useExperienceState",
+              "isExported": true
+            },
+            {
+              "name": "scoped",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "interface: DemoIntent",
+            "const: useExperienceState"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/lib/scopedStateStorage",
+              "canonical": "packages/core/src/lib/scopedStateStorage.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "createScopedStateStorage"
+              ],
+              "exists": true
+            }
+          ]
+        },
+        {
+          "path": "packages/core/src/lib/storageWrapper.ts",
+          "loc": 37,
+          "functions": [
+            {
+              "name": "observePersistenceFailure",
+              "isExported": false,
+              "params": "operation: 'write' | 'remove',\n  result: Promise<void>,"
+            }
+          ],
+          "types": [],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "value",
+              "isExported": false
+            }
+          ],
+          "exports": [],
+          "imports": [
+            {
+              "source": "@repo/core/lib/storage",
+              "canonical": "packages/core/src/lib/storage.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "storage"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/lib/devicePreferences",
+              "canonical": "packages/core/src/lib/devicePreferences.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "ensureDeviceThemePreference"
+              ],
+              "exists": true
+            }
+          ]
+        },
+        {
+          "path": "packages/core/src/effect/AppRuntime.ts",
+          "loc": 50,
+          "functions": [],
+          "types": [
+            {
+              "name": "Context",
+              "isExported": false
+            },
+            {
+              "name": "AppServices",
+              "isExported": true
+            }
+          ],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "REPORTED_LEVELS",
+              "isExported": false
+            },
+            {
+              "name": "telemetryLogger",
+              "isExported": true
+            },
+            {
+              "name": "text",
+              "isExported": false
+            },
+            {
+              "name": "TelemetryLoggerLayer",
+              "isExported": true
+            },
+            {
+              "name": "AppLayer",
+              "isExported": true
+            },
+            {
+              "name": "appRuntime",
+              "isExported": true
+            }
+          ],
+          "exports": [
+            "type: AppServices",
+            "const: telemetryLogger",
+            "const: TelemetryLoggerLayer",
+            "const: AppLayer",
+            "const: appRuntime"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/monitoring",
+              "canonical": "packages/core/src/monitoring/index.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "logBreadcrumb"
+              ],
+              "exists": true
+            },
+            {
+              "source": "./Layers",
+              "canonical": "packages/core/src/effect/Layers.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "EntitlementLive",
+                "PermissionSnapshotLive"
+              ],
+              "exists": true
+            }
+          ]
+        },
+        {
           "path": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
-          "loc": 171,
+          "loc": 180,
           "functions": [
             {
               "name": "meetsPricingTier",
@@ -3678,6 +2912,39 @@
           ]
         },
         {
+          "path": "packages/core/src/logic/ports/featureRollout.port.ts",
+          "loc": 20,
+          "functions": [],
+          "types": [],
+          "interfaces": [
+            {
+              "name": "FeatureRolloutSnapshot",
+              "isExported": true
+            },
+            {
+              "name": "IFeatureRolloutPort",
+              "isExported": true
+            }
+          ],
+          "constants": [],
+          "exports": [
+            "interface: FeatureRolloutSnapshot",
+            "interface: IFeatureRolloutPort"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/logic/schemas/user.schema",
+              "canonical": "packages/core/src/logic/schemas/user.schema.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "UserContext"
+              ],
+              "exists": true
+            }
+          ]
+        },
+        {
           "path": "packages/core/src/native/localGuestSession.ts",
           "loc": 96,
           "functions": [
@@ -3788,39 +3055,6 @@
               "isTypeOnly": false,
               "symbols": [
                 "setGuestScope"
-              ],
-              "exists": true
-            }
-          ]
-        },
-        {
-          "path": "packages/core/src/logic/ports/featureRollout.port.ts",
-          "loc": 20,
-          "functions": [],
-          "types": [],
-          "interfaces": [
-            {
-              "name": "FeatureRolloutSnapshot",
-              "isExported": true
-            },
-            {
-              "name": "IFeatureRolloutPort",
-              "isExported": true
-            }
-          ],
-          "constants": [],
-          "exports": [
-            "interface: FeatureRolloutSnapshot",
-            "interface: IFeatureRolloutPort"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/logic/schemas/user.schema",
-              "canonical": "packages/core/src/logic/schemas/user.schema.ts",
-              "isExternal": false,
-              "isTypeOnly": true,
-              "symbols": [
-                "UserContext"
               ],
               "exists": true
             }
@@ -4032,68 +3266,43 @@
           ]
         },
         {
-          "path": "packages/core/src/lib/featureRolloutSnapshot.ts",
-          "loc": 43,
-          "functions": [
-            {
-              "name": "normalizeFeatureRolloutSnapshot",
-              "isExported": true,
-              "params": "snapshot: FeatureRolloutSnapshot,\n  now = Date.now("
-            },
-            {
-              "name": "toBoolean",
-              "isExported": false,
-              "params": "value: boolean | string"
-            },
-            {
-              "name": "projectFeatureFlags",
-              "isExported": true,
-              "params": "overrides: Record<string, boolean | string>"
-            }
-          ],
-          "types": [
-            {
-              "name": "FeatureFlags",
-              "isExported": false
-            }
-          ],
+          "path": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
+          "loc": 34,
+          "functions": [],
+          "types": [],
           "interfaces": [],
           "constants": [
             {
-              "name": "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
+              "name": "SavedRollout",
+              "isExported": false
+            },
+            {
+              "name": "featureRolloutCache",
               "isExported": true
             },
             {
-              "name": "refreshedAt",
+              "name": "raw",
               "isExported": false
             },
             {
-              "name": "stale",
-              "isExported": false
-            },
-            {
-              "name": "flags",
-              "isExported": false
-            },
-            {
-              "name": "metadata",
-              "isExported": false
-            },
-            {
-              "name": "result",
-              "isExported": false
-            },
-            {
-              "name": "value",
+              "name": "saved",
               "isExported": false
             }
           ],
           "exports": [
-            "fn: normalizeFeatureRolloutSnapshot",
-            "fn: projectFeatureFlags",
-            "const: FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS"
+            "const: featureRolloutCache"
           ],
           "imports": [
+            {
+              "source": "@repo/core/lib/storage",
+              "canonical": "packages/core/src/lib/storage.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "storage"
+              ],
+              "exists": true
+            },
             {
               "source": "@repo/core/logic/ports/featureRollout.port",
               "canonical": "packages/core/src/logic/ports/featureRollout.port.ts",
@@ -4101,27 +3310,6 @@
               "isTypeOnly": true,
               "symbols": [
                 "FeatureRolloutSnapshot"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/registry/featureLifecycleManifest",
-              "canonical": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "FEATURE_FLAG_MANIFEST"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/store/types/featureFlags",
-              "canonical": "packages/core/src/store/types/featureFlags.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "DEFAULT_FEATURE_FLAGS",
-                "FeatureFlags"
               ],
               "exists": true
             }
@@ -4244,6 +3432,102 @@
               "isTypeOnly": false,
               "symbols": [
                 "trackProductEvent"
+              ],
+              "exists": true
+            }
+          ]
+        },
+        {
+          "path": "packages/core/src/lib/featureRolloutSnapshot.ts",
+          "loc": 43,
+          "functions": [
+            {
+              "name": "normalizeFeatureRolloutSnapshot",
+              "isExported": true,
+              "params": "snapshot: FeatureRolloutSnapshot,\n  now = Date.now("
+            },
+            {
+              "name": "toBoolean",
+              "isExported": false,
+              "params": "value: boolean | string"
+            },
+            {
+              "name": "projectFeatureFlags",
+              "isExported": true,
+              "params": "overrides: Record<string, boolean | string>"
+            }
+          ],
+          "types": [
+            {
+              "name": "FeatureFlags",
+              "isExported": false
+            }
+          ],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
+              "isExported": true
+            },
+            {
+              "name": "refreshedAt",
+              "isExported": false
+            },
+            {
+              "name": "stale",
+              "isExported": false
+            },
+            {
+              "name": "flags",
+              "isExported": false
+            },
+            {
+              "name": "metadata",
+              "isExported": false
+            },
+            {
+              "name": "result",
+              "isExported": false
+            },
+            {
+              "name": "value",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "fn: normalizeFeatureRolloutSnapshot",
+            "fn: projectFeatureFlags",
+            "const: FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/logic/ports/featureRollout.port",
+              "canonical": "packages/core/src/logic/ports/featureRollout.port.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "FeatureRolloutSnapshot"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/registry/featureLifecycleManifest",
+              "canonical": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "FEATURE_FLAG_MANIFEST"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/store/types/featureFlags",
+              "canonical": "packages/core/src/store/types/featureFlags.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "DEFAULT_FEATURE_FLAGS",
+                "FeatureFlags"
               ],
               "exists": true
             }
@@ -4549,190 +3833,6 @@
               "exists": true
             }
           ]
-        },
-        {
-          "path": "packages/core/src/store/useFeatureStore.ts",
-          "loc": 126,
-          "functions": [
-            {
-              "name": "clear",
-              "isExported": false,
-              "params": ""
-            },
-            {
-              "name": "isCurrent",
-              "isExported": false,
-              "params": ""
-            },
-            {
-              "name": "publish",
-              "isExported": false,
-              "params": "snapshot: FeatureRolloutSnapshot"
-            },
-            {
-              "name": "accept",
-              "isExported": false,
-              "params": "snapshot: FeatureRolloutSnapshot"
-            }
-          ],
-          "types": [
-            {
-              "name": "FeatureFlags",
-              "isExported": false
-            }
-          ],
-          "interfaces": [
-            {
-              "name": "FeatureState",
-              "isExported": false
-            }
-          ],
-          "constants": [
-            {
-              "name": "SavedRollout",
-              "isExported": false
-            },
-            {
-              "name": "useFeatureStore",
-              "isExported": true
-            },
-            {
-              "name": "owner",
-              "isExported": false
-            },
-            {
-              "name": "accountRevision",
-              "isExported": false
-            },
-            {
-              "name": "guestRevision",
-              "isExported": false
-            },
-            {
-              "name": "fingerprint",
-              "isExported": false
-            },
-            {
-              "name": "key",
-              "isExported": false
-            },
-            {
-              "name": "normalized",
-              "isExported": false
-            },
-            {
-              "name": "signature",
-              "isExported": false
-            },
-            {
-              "name": "unsubscribe",
-              "isExported": false
-            },
-            {
-              "name": "saved",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "const: useFeatureStore"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/lib/accountScope",
-              "canonical": "packages/core/src/lib/accountScope.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "getAccountScopeRevision",
-                "scopeStorageKey"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/lib/featureRolloutSnapshot",
-              "canonical": "packages/core/src/lib/featureRolloutSnapshot.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
-                "normalizeFeatureRolloutSnapshot",
-                "projectFeatureFlags"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/lib/storage",
-              "canonical": "packages/core/src/lib/storage.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "storage"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter",
-              "canonical": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "growthBookFeatureRolloutAdapter as featureFlags"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/ports/featureRollout.port",
-              "canonical": "packages/core/src/logic/ports/featureRollout.port.ts",
-              "isExternal": false,
-              "isTypeOnly": true,
-              "symbols": [
-                "FeatureRolloutSnapshot"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/schemas/user.schema",
-              "canonical": "packages/core/src/logic/schemas/user.schema.ts",
-              "isExternal": false,
-              "isTypeOnly": true,
-              "symbols": [
-                "UserContext"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/monitoring/breadcrumbs",
-              "canonical": "packages/core/src/monitoring/breadcrumbs.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "leaveBreadcrumb"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/native/guestScope",
-              "canonical": "packages/core/src/native/guestScope.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "getGuestScopeRevision",
-                "guestStorageKey"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/store/types/featureFlags",
-              "canonical": "packages/core/src/store/types/featureFlags.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "DEFAULT_FEATURE_FLAGS",
-                "FeatureFlags"
-              ],
-              "exists": true
-            }
-          ]
         }
       ]
     },
@@ -4866,7 +3966,149 @@
               "exists": true
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "layer": 7,
+      "files": [
+        {
+          "path": "packages/core/src/effect/bindings.ts",
+          "loc": 53,
+          "functions": [],
+          "types": [],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "sessionScope",
+              "isExported": true
+            },
+            {
+              "name": "eventBus",
+              "isExported": true
+            },
+            {
+              "name": "authProfile",
+              "isExported": true
+            }
+          ],
+          "exports": [
+            "const: sessionScope",
+            "const: eventBus",
+            "const: authProfile"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/adapters/feature-rollout/featureRolloutCache.adapter",
+              "canonical": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "featureRolloutCache as rolloutCache"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter",
+              "canonical": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "growthBookFeatureRolloutAdapter"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/lib/accountScope",
+              "canonical": "packages/core/src/lib/accountScope.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "getAccountScopeRevision",
+                "scopeStorageKey"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/lib/authProfileStorage",
+              "canonical": "packages/core/src/lib/authProfileStorage.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "authProfileStorage",
+                "restoreIdentityProfile"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/lib/storageWrapper",
+              "canonical": "packages/core/src/lib/storageWrapper.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "SafeZustandStorage"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/lib/sync/eventBus",
+              "canonical": "packages/core/src/lib/sync/eventBus.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "sovereignBus"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/ports/featureRollout.port",
+              "canonical": "packages/core/src/logic/ports/featureRollout.port.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "FeatureRolloutSnapshot",
+                "IFeatureRolloutPort"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/monitoring/breadcrumbs",
+              "canonical": "packages/core/src/monitoring/breadcrumbs.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "leaveBreadcrumb"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/native/guestScope",
+              "canonical": "packages/core/src/native/guestScope.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "getGuestScopeRevision",
+                "guestStorageKey"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/native/localGuestSession",
+              "canonical": "packages/core/src/native/localGuestSession.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "isLocalGuestSessionId"
+              ],
+              "exists": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 8,
+      "files": [
         {
           "path": "packages/core/src/store/slices/auth.slice.ts",
           "loc": 21,
@@ -4884,12 +4126,12 @@
           ],
           "imports": [
             {
-              "source": "@repo/core/monitoring",
-              "canonical": "packages/core/src/monitoring/index.ts",
+              "source": "@repo/core/effect/bindings",
+              "canonical": "packages/core/src/effect/bindings.ts",
               "isExternal": false,
               "isTypeOnly": false,
               "symbols": [
-                "leaveBreadcrumb"
+                "breadcrumb as leaveBreadcrumb"
               ],
               "exists": true
             },
@@ -4904,400 +4146,10 @@
               "exists": true
             }
           ]
-        }
-      ]
-    },
-    {
-      "layer": 7,
-      "files": [
-        {
-          "path": "packages/core/src/store/useAuthStore.ts",
-          "loc": 28,
-          "functions": [],
-          "types": [
-            {
-              "name": "AuthSlice",
-              "isExported": false
-            }
-          ],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "useAuthStore",
-              "isExported": true
-            }
-          ],
-          "exports": [
-            "const: useAuthStore"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/lib/authProfileStorage",
-              "canonical": "packages/core/src/lib/authProfileStorage.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "authProfileStorage",
-                "restoreIdentityProfile"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/store/slices/auth.slice",
-              "canonical": "packages/core/src/store/slices/auth.slice.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "AuthSlice",
-                "createAuthSlice"
-              ],
-              "exists": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "layer": 8,
-      "files": [
-        {
-          "path": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-          "loc": 194,
-          "functions": [
-            {
-              "name": "registerPermissionValidator",
-              "isExported": true,
-              "params": "validator: ((params: any"
-            },
-            {
-              "name": "setActiveCapabilityToken",
-              "isExported": true,
-              "params": "token: CapabilityToken | null"
-            },
-            {
-              "name": "registerPolicyVersionHash",
-              "isExported": true,
-              "params": "hash: string | null"
-            },
-            {
-              "name": "registerOperationContext",
-              "isExported": true,
-              "params": "context: string | null"
-            },
-            {
-              "name": "resetSecureDrizzleState",
-              "isExported": true,
-              "params": ""
-            },
-            {
-              "name": "isTokenValid",
-              "isExported": false,
-              "params": "token: CapabilityToken"
-            },
-            {
-              "name": "extractResourceId",
-              "isExported": false,
-              "params": "builder: any, action: string"
-            },
-            {
-              "name": "createSecureDrizzleProxy",
-              "isExported": true,
-              "params": "db: any"
-            },
-            {
-              "name": "secureCallback",
-              "isExported": false,
-              "params": "tx: any"
-            }
-          ],
-          "types": [],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "sqlInfo",
-              "isExported": false
-            },
-            {
-              "name": "match",
-              "isExported": false
-            },
-            {
-              "name": "placeholder",
-              "isExported": false
-            },
-            {
-              "name": "idx",
-              "isExported": false
-            },
-            {
-              "name": "before",
-              "isExported": false
-            },
-            {
-              "name": "qCount",
-              "isExported": false
-            },
-            {
-              "name": "paramIdx",
-              "isExported": false
-            },
-            {
-              "name": "originalValue",
-              "isExported": false
-            },
-            {
-              "name": "tableName",
-              "isExported": false
-            },
-            {
-              "name": "action",
-              "isExported": false
-            },
-            {
-              "name": "builder",
-              "isExported": false
-            },
-            {
-              "name": "originalBuilderValue",
-              "isExported": false
-            },
-            {
-              "name": "validation",
-              "isExported": false
-            },
-            {
-              "name": "promise",
-              "isExported": false
-            },
-            {
-              "name": "promise",
-              "isExported": false
-            },
-            {
-              "name": "state",
-              "isExported": false
-            },
-            {
-              "name": "activeBond",
-              "isExported": false
-            },
-            {
-              "name": "userContext",
-              "isExported": false
-            },
-            {
-              "name": "resourceType",
-              "isExported": false
-            },
-            {
-              "name": "promise",
-              "isExported": false
-            },
-            {
-              "name": "secureTx",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "fn: registerPermissionValidator",
-            "fn: setActiveCapabilityToken",
-            "fn: registerPolicyVersionHash",
-            "fn: registerOperationContext",
-            "fn: resetSecureDrizzleState",
-            "fn: createSecureDrizzleProxy"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/logic/permissions/bondScope",
-              "canonical": "packages/core/src/logic/permissions/bondScope.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "resolveBondScope"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/ports/authz.port",
-              "canonical": "packages/core/src/logic/ports/authz.port.ts",
-              "isExternal": false,
-              "isTypeOnly": true,
-              "symbols": [
-                "CapabilityToken"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/store/scopeSession",
-              "canonical": "packages/core/src/store/scopeSession.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "useScopeSessionStore"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/store/useAuthStore",
-              "canonical": "packages/core/src/store/useAuthStore.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "useAuthStore"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/types/Errors",
-              "canonical": "packages/core/src/types/Errors.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "ErrorCategory",
-                "SovereignError"
-              ],
-              "exists": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "layer": 9,
-      "files": [
-        {
-          "path": "packages/core/src/adapters/powersync/database.ts",
-          "loc": 122,
-          "functions": [
-            {
-              "name": "assertPowerSyncBootstrapReady",
-              "isExported": true,
-              "params": ""
-            },
-            {
-              "name": "assertBrowserPowerSyncReady",
-              "isExported": false,
-              "params": ""
-            },
-            {
-              "name": "getPowerSyncDB",
-              "isExported": true,
-              "params": ""
-            },
-            {
-              "name": "getDrizzleDB",
-              "isExported": true,
-              "params": ""
-            },
-            {
-              "name": "injectNativePowerSyncDB",
-              "isExported": true,
-              "params": "nativeDb: any,\n  nativeDrizzleDb: any,\n  ownership?: PowerSyncRuntimeOwnership,"
-            },
-            {
-              "name": "getActivePowerSyncDB",
-              "isExported": true,
-              "params": ""
-            },
-            {
-              "name": "disconnectPowerSync",
-              "isExported": true,
-              "params": "options?: { clear?: boolean }"
-            },
-            {
-              "name": "clearPowerSyncAccount",
-              "isExported": true,
-              "params": ""
-            }
-          ],
-          "types": [],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "registry",
-              "isExported": false
-            }
-          ],
-          "exports": [
-            "fn: assertPowerSyncBootstrapReady",
-            "fn: getPowerSyncDB",
-            "fn: getDrizzleDB",
-            "fn: injectNativePowerSyncDB",
-            "fn: getActivePowerSyncDB",
-            "fn: disconnectPowerSync",
-            "fn: clearPowerSyncAccount"
-          ],
-          "imports": [
-            {
-              "source": "@repo/core/adapters/powersync/databaseRegistry",
-              "canonical": "packages/core/src/adapters/powersync/databaseRegistry.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "PowerSyncDatabaseRegistry"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/adapters/powersync/powersync-shim",
-              "canonical": "packages/core/src/adapters/powersync/powersync-shim.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "PowerSyncDatabase as MockPowerSyncDatabase"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/adapters/powersync/schema",
-              "canonical": "packages/core/src/adapters/powersync/schema.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "AppSchema"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/adapters/powersync/secureDrizzleProxy",
-              "canonical": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "createSecureDrizzleProxy"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/adapters/powersync/singleActivePowerSyncRuntime",
-              "canonical": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
-              "isExternal": false,
-              "isTypeOnly": true,
-              "symbols": [
-                "PowerSyncRuntimeOwnership"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/runtimeRegistry",
-              "canonical": "packages/core/src/logic/runtimeRegistry.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "coreRuntime"
-              ],
-              "exists": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "layer": 10,
-      "files": [
+        },
         {
           "path": "packages/core/src/store/useCedarDecisionStore.ts",
-          "loc": 250,
+          "loc": 172,
           "functions": [
             {
               "name": "cancelSnapshotExpiry",
@@ -5332,27 +4184,11 @@
               "isExported": false
             },
             {
-              "name": "db",
-              "isExported": false
-            },
-            {
-              "name": "record",
-              "isExported": false
-            },
-            {
-              "name": "currentPolicyVersion",
-              "isExported": false
-            },
-            {
-              "name": "isSignatureValid",
+              "name": "read",
               "isExported": false
             },
             {
               "name": "expiresAt",
-              "isExported": false
-            },
-            {
-              "name": "rawPermissions",
               "isExported": false
             },
             {
@@ -5367,47 +4203,6 @@
           ],
           "imports": [
             {
-              "source": "@repo/core/adapters/powersync/database",
-              "canonical": "packages/core/src/adapters/powersync/database.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "getDrizzleDB"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/adapters/powersync/schema",
-              "canonical": "packages/core/src/adapters/powersync/schema.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "permissionSnapshots",
-                "policyVersion"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/permissions/signature",
-              "canonical": "packages/core/src/logic/permissions/signature.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "verifySnapshotSignature"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/native/localGuestSession",
-              "canonical": "packages/core/src/native/localGuestSession.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "isLocalGuestSessionId"
-              ],
-              "exists": true
-            },
-            {
               "source": "@repo/core/types/authorization",
               "canonical": "packages/core/src/types/authorization.ts",
               "isExternal": false,
@@ -5416,176 +4211,42 @@
                 "CedarDecision"
               ],
               "exists": true
+            },
+            {
+              "source": "@repo/core/effect/AppRuntime",
+              "canonical": "packages/core/src/effect/AppRuntime.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "callPort"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/effect/bindings",
+              "canonical": "packages/core/src/effect/bindings.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "sessionScope"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/ports/permissionSnapshot.port",
+              "canonical": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "PermissionSnapshotPort"
+              ],
+              "exists": true
             }
           ]
         },
         {
-          "path": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-          "loc": 172,
-          "functions": [
-            {
-              "name": "getUserPricingTier",
-              "isExported": false,
-              "params": "userId: string"
-            },
-            {
-              "name": "normalizeTier",
-              "isExported": false,
-              "params": "value: unknown"
-            },
-            {
-              "name": "queryManifest",
-              "isExported": false,
-              "params": "tier: string"
-            },
-            {
-              "name": "normalizeModules",
-              "isExported": false,
-              "params": "value: unknown"
-            },
-            {
-              "name": "mapGrant",
-              "isExported": false,
-              "params": "row: Record<string, unknown>,\n  scope: EntitlementScopeContext,"
-            },
-            {
-              "name": "poll",
-              "isExported": false,
-              "params": ""
-            }
-          ],
-          "types": [],
-          "interfaces": [],
-          "constants": [
-            {
-              "name": "db",
-              "isExported": false
-            },
-            {
-              "name": "rows",
-              "isExported": false
-            },
-            {
-              "name": "scopeType",
-              "isExported": false
-            },
-            {
-              "name": "now",
-              "isExported": false
-            },
-            {
-              "name": "startsAt",
-              "isExported": false
-            },
-            {
-              "name": "expiresAt",
-              "isExported": false
-            },
-            {
-              "name": "matchesBond",
-              "isExported": false
-            },
-            {
-              "name": "matchesEntity",
-              "isExported": false
-            },
-            {
-              "name": "matchesAddOn",
-              "isExported": false
-            },
-            {
-              "name": "matchesIndividual",
-              "isExported": false
-            },
-            {
-              "name": "tier",
-              "isExported": false
-            },
-            {
-              "name": "mappedScope",
-              "isExported": false
-            },
-            {
-              "name": "status",
-              "isExported": false
-            },
-            {
-              "name": "userTier",
-              "isExported": false
-            },
-            {
-              "name": "grants",
-              "isExported": false
-            },
-            {
-              "name": "individualGrant",
-              "isExported": false
-            },
-            {
-              "name": "tier",
-              "isExported": false
-            },
-            {
-              "name": "entitlements",
-              "isExported": false
-            }
-          ],
-          "exports": [],
-          "imports": [
-            {
-              "source": "@repo/core/adapters/powersync/database",
-              "canonical": "packages/core/src/adapters/powersync/database.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "getDrizzleDB"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/adapters/powersync/schema",
-              "canonical": "packages/core/src/adapters/powersync/schema.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "pricingManifest"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/adapters/supabaseClient",
-              "canonical": "packages/core/src/adapters/supabaseClient.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "supabaseClient"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/logic/ports/entitlement.port",
-              "canonical": "packages/core/src/logic/ports/entitlement.port.ts",
-              "isExternal": false,
-              "isTypeOnly": true,
-              "symbols": [
-                "EntitlementGrant",
-                "EntitlementScopeContext",
-                "EntitlementSnapshot",
-                "IEntitlementPort",
-                "SubscriptionTier"
-              ],
-              "exists": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "layer": 11,
-      "files": [
-        {
           "path": "packages/core/src/store/useEntitlementStore.ts",
-          "loc": 166,
+          "loc": 165,
           "functions": [
             {
               "name": "isEntitlementSnapshotFresh",
@@ -5598,7 +4259,24 @@
               "params": "snapshot: EntitlementSnapshot,\n  userId: string,\n  scope: EntitlementScopeContext,"
             }
           ],
-          "types": [],
+          "types": [
+            {
+              "name": "EntitlementGrant",
+              "isExported": false
+            },
+            {
+              "name": "EntitlementReadiness",
+              "isExported": false
+            },
+            {
+              "name": "EntitlementScopeContext",
+              "isExported": false
+            },
+            {
+              "name": "EntitlementSnapshot",
+              "isExported": false
+            }
+          ],
           "interfaces": [
             {
               "name": "EntitlementState",
@@ -5609,10 +4287,6 @@
             {
               "name": "ENTITLEMENT_SNAPSHOT_MAX_AGE_MS",
               "isExported": true
-            },
-            {
-              "name": "_adapter",
-              "isExported": false
             },
             {
               "name": "parsed",
@@ -5655,22 +4329,22 @@
           ],
           "imports": [
             {
-              "source": "@repo/core/adapters/supabase/supabaseEntitlement.adapter",
-              "canonical": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+              "source": "@repo/core/effect/AppRuntime",
+              "canonical": "packages/core/src/effect/AppRuntime.ts",
               "isExternal": false,
               "isTypeOnly": false,
               "symbols": [
-                "SupabaseEntitlementAdapter"
+                "callPort"
               ],
               "exists": true
             },
             {
-              "source": "@repo/core/lib/storageWrapper",
-              "canonical": "packages/core/src/lib/storageWrapper.ts",
+              "source": "@repo/core/effect/bindings",
+              "canonical": "packages/core/src/effect/bindings.ts",
               "isExternal": false,
               "isTypeOnly": false,
               "symbols": [
-                "SafeZustandStorage"
+                "persistStorage"
               ],
               "exists": true
             },
@@ -5678,20 +4352,208 @@
               "source": "@repo/core/logic/ports/entitlement.port",
               "canonical": "packages/core/src/logic/ports/entitlement.port.ts",
               "isExternal": false,
-              "isTypeOnly": true,
+              "isTypeOnly": false,
               "symbols": [
                 "EntitlementGrant",
                 "EntitlementReadiness",
                 "EntitlementScopeContext",
-                "EntitlementSnapshot"
+                "EntitlementSnapshot",
+                "EntitlementPort"
               ],
               "exists": true
             }
           ]
         },
         {
+          "path": "packages/core/src/store/useFeatureStore.ts",
+          "loc": 110,
+          "functions": [
+            {
+              "name": "clear",
+              "isExported": false,
+              "params": ""
+            },
+            {
+              "name": "isCurrent",
+              "isExported": false,
+              "params": ""
+            },
+            {
+              "name": "publish",
+              "isExported": false,
+              "params": "snapshot: FeatureRolloutSnapshot"
+            },
+            {
+              "name": "accept",
+              "isExported": false,
+              "params": "snapshot: FeatureRolloutSnapshot"
+            }
+          ],
+          "types": [
+            {
+              "name": "FeatureFlags",
+              "isExported": false
+            }
+          ],
+          "interfaces": [
+            {
+              "name": "FeatureState",
+              "isExported": false
+            }
+          ],
+          "constants": [
+            {
+              "name": "useFeatureStore",
+              "isExported": true
+            },
+            {
+              "name": "owner",
+              "isExported": false
+            },
+            {
+              "name": "scopeRevision",
+              "isExported": false
+            },
+            {
+              "name": "fingerprint",
+              "isExported": false
+            },
+            {
+              "name": "key",
+              "isExported": false
+            },
+            {
+              "name": "normalized",
+              "isExported": false
+            },
+            {
+              "name": "signature",
+              "isExported": false
+            },
+            {
+              "name": "unsubscribe",
+              "isExported": false
+            }
+          ],
+          "exports": [
+            "const: useFeatureStore"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/effect/bindings",
+              "canonical": "packages/core/src/effect/bindings.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "breadcrumb",
+                "featureRollout",
+                "featureRolloutCache",
+                "sessionScope"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/ports/featureRollout.port",
+              "canonical": "packages/core/src/logic/ports/featureRollout.port.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "FeatureRolloutSnapshot"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/logic/schemas/user.schema",
+              "canonical": "packages/core/src/logic/schemas/user.schema.ts",
+              "isExternal": false,
+              "isTypeOnly": true,
+              "symbols": [
+                "UserContext"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/lib/featureRolloutSnapshot",
+              "canonical": "packages/core/src/lib/featureRolloutSnapshot.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
+                "normalizeFeatureRolloutSnapshot",
+                "projectFeatureFlags"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/store/types/featureFlags",
+              "canonical": "packages/core/src/store/types/featureFlags.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "DEFAULT_FEATURE_FLAGS",
+                "FeatureFlags"
+              ],
+              "exists": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 9,
+      "files": [
+        {
+          "path": "packages/core/src/store/useAuthStore.ts",
+          "loc": 28,
+          "functions": [],
+          "types": [
+            {
+              "name": "AuthSlice",
+              "isExported": false
+            }
+          ],
+          "interfaces": [],
+          "constants": [
+            {
+              "name": "useAuthStore",
+              "isExported": true
+            }
+          ],
+          "exports": [
+            "const: useAuthStore"
+          ],
+          "imports": [
+            {
+              "source": "@repo/core/effect/bindings",
+              "canonical": "packages/core/src/effect/bindings.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "authProfile"
+              ],
+              "exists": true
+            },
+            {
+              "source": "@repo/core/store/slices/auth.slice",
+              "canonical": "packages/core/src/store/slices/auth.slice.ts",
+              "isExternal": false,
+              "isTypeOnly": false,
+              "symbols": [
+                "AuthSlice",
+                "createAuthSlice"
+              ],
+              "exists": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 10,
+      "files": [
+        {
           "path": "packages/core/src/store/usePerspectiveStore.ts",
-          "loc": 207,
+          "loc": 206,
           "functions": [],
           "types": [],
           "interfaces": [
@@ -5772,22 +4634,13 @@
           ],
           "imports": [
             {
-              "source": "@repo/core/lib/storageWrapper",
-              "canonical": "packages/core/src/lib/storageWrapper.ts",
+              "source": "@repo/core/effect/bindings",
+              "canonical": "packages/core/src/effect/bindings.ts",
               "isExternal": false,
               "isTypeOnly": false,
               "symbols": [
-                "SafeZustandStorage"
-              ],
-              "exists": true
-            },
-            {
-              "source": "@repo/core/lib/sync/eventBus",
-              "canonical": "packages/core/src/lib/sync/eventBus.ts",
-              "isExternal": false,
-              "isTypeOnly": false,
-              "symbols": [
-                "sovereignBus"
+                "eventBus",
+                "persistStorage"
               ],
               "exists": true
             },
@@ -5826,7 +4679,7 @@
       ]
     },
     {
-      "layer": 12,
+      "layer": 11,
       "files": [
         {
           "path": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
@@ -6054,7 +4907,7 @@
       ]
     },
     {
-      "layer": 13,
+      "layer": 12,
       "files": [
         {
           "path": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
@@ -6204,7 +5057,7 @@
       ]
     },
     {
-      "layer": 14,
+      "layer": 13,
       "files": [
         {
           "path": "packages/ui/src/components/SanctuaryGuard.tsx",
@@ -6473,18 +5326,10 @@
     },
     {
       "from": "packages/core/src/store/usePerspectiveStore.ts",
-      "to": "packages/core/src/lib/storageWrapper.ts",
+      "to": "packages/core/src/effect/bindings.ts",
       "symbols": [
-        "SafeZustandStorage"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/usePerspectiveStore.ts",
-      "to": "packages/core/src/lib/sync/eventBus.ts",
-      "symbols": [
-        "sovereignBus"
+        "eventBus",
+        "persistStorage"
       ],
       "isTypeOnly": false,
       "exists": true
@@ -6518,43 +5363,6 @@
     },
     {
       "from": "packages/core/src/store/useCedarDecisionStore.ts",
-      "to": "packages/core/src/adapters/powersync/database.ts",
-      "symbols": [
-        "getDrizzleDB"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useCedarDecisionStore.ts",
-      "to": "packages/core/src/adapters/powersync/schema.ts",
-      "symbols": [
-        "permissionSnapshots",
-        "policyVersion"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useCedarDecisionStore.ts",
-      "to": "packages/core/src/logic/permissions/signature.ts",
-      "symbols": [
-        "verifySnapshotSignature"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useCedarDecisionStore.ts",
-      "to": "packages/core/src/native/localGuestSession.ts",
-      "symbols": [
-        "isLocalGuestSessionId"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useCedarDecisionStore.ts",
       "to": "packages/core/src/types/authorization.ts",
       "symbols": [
         "CedarDecision"
@@ -6563,19 +5371,46 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/store/useEntitlementStore.ts",
-      "to": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "to": "packages/core/src/effect/AppRuntime.ts",
       "symbols": [
-        "SupabaseEntitlementAdapter"
+        "callPort"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "to": "packages/core/src/effect/bindings.ts",
+      "symbols": [
+        "sessionScope"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "to": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
+      "symbols": [
+        "PermissionSnapshotPort"
       ],
       "isTypeOnly": false,
       "exists": true
     },
     {
       "from": "packages/core/src/store/useEntitlementStore.ts",
-      "to": "packages/core/src/lib/storageWrapper.ts",
+      "to": "packages/core/src/effect/AppRuntime.ts",
       "symbols": [
-        "SafeZustandStorage"
+        "callPort"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/store/useEntitlementStore.ts",
+      "to": "packages/core/src/effect/bindings.ts",
+      "symbols": [
+        "persistStorage"
       ],
       "isTypeOnly": false,
       "exists": true
@@ -6587,9 +5422,10 @@
         "EntitlementGrant",
         "EntitlementReadiness",
         "EntitlementScopeContext",
-        "EntitlementSnapshot"
+        "EntitlementSnapshot",
+        "EntitlementPort"
       ],
-      "isTypeOnly": true,
+      "isTypeOnly": false,
       "exists": true
     },
     {
@@ -6849,29 +5685,104 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/lib/storageWrapper.ts",
-      "to": "packages/core/src/lib/storage.ts",
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
       "symbols": [
-        "storage"
+        "featureRolloutCache as rolloutCache"
       ],
       "isTypeOnly": false,
       "exists": true
     },
     {
-      "from": "packages/core/src/lib/storageWrapper.ts",
-      "to": "packages/core/src/lib/devicePreferences.ts",
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
       "symbols": [
-        "ensureDeviceThemePreference"
+        "growthBookFeatureRolloutAdapter"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/lib/accountScope.ts",
+      "symbols": [
+        "getAccountScopeRevision",
+        "scopeStorageKey"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/lib/authProfileStorage.ts",
+      "symbols": [
+        "authProfileStorage",
+        "restoreIdentityProfile"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "symbols": [
+        "SafeZustandStorage"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/lib/sync/eventBus.ts",
+      "symbols": [
+        "sovereignBus"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "symbols": [
+        "FeatureRolloutSnapshot",
+        "IFeatureRolloutPort"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/monitoring/breadcrumbs.ts",
+      "symbols": [
+        "leaveBreadcrumb"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/native/guestScope.ts",
+      "symbols": [
+        "getGuestScopeRevision",
+        "guestStorageKey"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/native/localGuestSession.ts",
+      "symbols": [
+        "isLocalGuestSessionId"
       ],
       "isTypeOnly": false,
       "exists": true
     },
     {
       "from": "packages/core/src/store/useAuthStore.ts",
-      "to": "packages/core/src/lib/authProfileStorage.ts",
+      "to": "packages/core/src/effect/bindings.ts",
       "symbols": [
-        "authProfileStorage",
-        "restoreIdentityProfile"
+        "authProfile"
       ],
       "isTypeOnly": false,
       "exists": true
@@ -6887,115 +5798,22 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/adapters/powersync/database.ts",
-      "to": "packages/core/src/adapters/powersync/databaseRegistry.ts",
+      "from": "packages/core/src/effect/AppRuntime.ts",
+      "to": "packages/core/src/monitoring/index.ts",
       "symbols": [
-        "PowerSyncDatabaseRegistry"
+        "logBreadcrumb"
       ],
       "isTypeOnly": false,
       "exists": true
     },
     {
-      "from": "packages/core/src/adapters/powersync/database.ts",
-      "to": "packages/core/src/adapters/powersync/powersync-shim.ts",
+      "from": "packages/core/src/effect/AppRuntime.ts",
+      "to": "packages/core/src/effect/Layers.ts",
       "symbols": [
-        "PowerSyncDatabase as MockPowerSyncDatabase"
+        "EntitlementLive",
+        "PermissionSnapshotLive"
       ],
       "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/powersync/database.ts",
-      "to": "packages/core/src/adapters/powersync/schema.ts",
-      "symbols": [
-        "AppSchema"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/powersync/database.ts",
-      "to": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-      "symbols": [
-        "createSecureDrizzleProxy"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/powersync/database.ts",
-      "to": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
-      "symbols": [
-        "PowerSyncRuntimeOwnership"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/powersync/database.ts",
-      "to": "packages/core/src/logic/runtimeRegistry.ts",
-      "symbols": [
-        "coreRuntime"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/native/localGuestSession.ts",
-      "to": "packages/core/src/lib/storageWrapper.ts",
-      "symbols": [
-        "SafeZustandStorage"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/native/localGuestSession.ts",
-      "to": "packages/core/src/native/guestScope.ts",
-      "symbols": [
-        "setGuestScope"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "to": "packages/core/src/adapters/powersync/database.ts",
-      "symbols": [
-        "getDrizzleDB"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "to": "packages/core/src/adapters/powersync/schema.ts",
-      "symbols": [
-        "pricingManifest"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "to": "packages/core/src/adapters/supabaseClient.ts",
-      "symbols": [
-        "supabaseClient"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "to": "packages/core/src/logic/ports/entitlement.port.ts",
-      "symbols": [
-        "EntitlementGrant",
-        "EntitlementScopeContext",
-        "EntitlementSnapshot",
-        "IEntitlementPort",
-        "SubscriptionTier"
-      ],
-      "isTypeOnly": true,
       "exists": true
     },
     {
@@ -7103,39 +5921,12 @@
     },
     {
       "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/lib/accountScope.ts",
+      "to": "packages/core/src/effect/bindings.ts",
       "symbols": [
-        "getAccountScopeRevision",
-        "scopeStorageKey"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/lib/featureRolloutSnapshot.ts",
-      "symbols": [
-        "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
-        "normalizeFeatureRolloutSnapshot",
-        "projectFeatureFlags"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/lib/storage.ts",
-      "symbols": [
-        "storage"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "symbols": [
-        "growthBookFeatureRolloutAdapter as featureFlags"
+        "breadcrumb",
+        "featureRollout",
+        "featureRolloutCache",
+        "sessionScope"
       ],
       "isTypeOnly": false,
       "exists": true
@@ -7160,19 +5951,11 @@
     },
     {
       "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/monitoring/breadcrumbs.ts",
+      "to": "packages/core/src/lib/featureRolloutSnapshot.ts",
       "symbols": [
-        "leaveBreadcrumb"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/native/guestScope.ts",
-      "symbols": [
-        "getGuestScopeRevision",
-        "guestStorageKey"
+        "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
+        "normalizeFeatureRolloutSnapshot",
+        "projectFeatureFlags"
       ],
       "isTypeOnly": false,
       "exists": true
@@ -7248,10 +6031,74 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/lib/devicePreferences.ts",
+      "from": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
       "to": "packages/core/src/lib/storage.ts",
       "symbols": [
         "storage"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "symbols": [
+        "FeatureRolloutSnapshot"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/lib/storage.ts",
+      "symbols": [
+        "storage"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
+      "symbols": [
+        "networkMonitor"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "symbols": [
+        "FeatureRolloutSnapshot",
+        "IFeatureRolloutPort"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+      "symbols": [
+        "FEATURE_FLAG_MANIFEST"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "symbols": [
+        "UserContext"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/monitoring/index.ts",
+      "symbols": [
+        "trackProductEvent"
       ],
       "isTypeOnly": false,
       "exists": true
@@ -7303,10 +6150,55 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/store/slices/auth.slice.ts",
-      "to": "packages/core/src/monitoring/index.ts",
+      "from": "packages/core/src/lib/storageWrapper.ts",
+      "to": "packages/core/src/lib/storage.ts",
       "symbols": [
-        "leaveBreadcrumb"
+        "storage"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/lib/storageWrapper.ts",
+      "to": "packages/core/src/lib/devicePreferences.ts",
+      "symbols": [
+        "ensureDeviceThemePreference"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "symbols": [
+        "UserContext"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/native/localGuestSession.ts",
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "symbols": [
+        "SafeZustandStorage"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/native/localGuestSession.ts",
+      "to": "packages/core/src/native/guestScope.ts",
+      "symbols": [
+        "setGuestScope"
+      ],
+      "isTypeOnly": false,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/store/slices/auth.slice.ts",
+      "to": "packages/core/src/effect/bindings.ts",
+      "symbols": [
+        "breadcrumb as leaveBreadcrumb"
       ],
       "isTypeOnly": false,
       "exists": true
@@ -7321,85 +6213,19 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/adapters/powersync/databaseRegistry.ts",
-      "to": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
+      "from": "packages/core/src/effect/Layers.ts",
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
       "symbols": [
-        "ManagedPowerSyncDatabase",
-        "PowerSyncRuntimeOwnership"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-      "to": "packages/core/src/logic/permissions/bondScope.ts",
-      "symbols": [
-        "resolveBondScope"
+        "EntitlementPort"
       ],
       "isTypeOnly": false,
       "exists": true
     },
     {
-      "from": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-      "to": "packages/core/src/logic/ports/authz.port.ts",
+      "from": "packages/core/src/effect/Layers.ts",
+      "to": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
       "symbols": [
-        "CapabilityToken"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-      "to": "packages/core/src/store/scopeSession.ts",
-      "symbols": [
-        "useScopeSessionStore"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-      "to": "packages/core/src/store/useAuthStore.ts",
-      "symbols": [
-        "useAuthStore"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-      "to": "packages/core/src/types/Errors.ts",
-      "symbols": [
-        "ErrorCategory",
-        "SovereignError"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/runtimeRegistry.ts",
-      "to": "packages/core/src/types/runtime.ts",
-      "symbols": [
-        "CoreRuntimeEnvironment"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabaseClient.ts",
-      "to": "packages/core/src/lib/authStorage.ts",
-      "symbols": [
-        "supabaseAuthStorage"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabaseClient.ts",
-      "to": "packages/core/src/lib/security/transportSecurity.ts",
-      "symbols": [
-        "assertSecureApiUrl",
-        "secureApiFetch"
+        "PermissionSnapshotPort"
       ],
       "isTypeOnly": false,
       "exists": true
@@ -7460,70 +6286,6 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/lib/storage.ts",
-      "symbols": [
-        "storage"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
-      "symbols": [
-        "networkMonitor"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
-      "symbols": [
-        "FeatureRolloutSnapshot",
-        "IFeatureRolloutPort"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
-      "symbols": [
-        "FEATURE_FLAG_MANIFEST"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/logic/schemas/user.schema.ts",
-      "symbols": [
-        "UserContext"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/monitoring/index.ts",
-      "symbols": [
-        "trackProductEvent"
-      ],
-      "isTypeOnly": false,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/ports/featureRollout.port.ts",
-      "to": "packages/core/src/logic/schemas/user.schema.ts",
-      "symbols": [
-        "UserContext"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
       "from": "packages/ui/src/components/SanctuaryButton.tsx",
       "to": "packages/ui/src/components/ui/button.ts",
       "symbols": [
@@ -7549,6 +6311,16 @@
       "to": "packages/ui/src/utils/haptics.ts",
       "symbols": [
         "HapticImpact"
+      ],
+      "isTypeOnly": true,
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/platform/drivers/networkMonitor.ts",
+      "to": "packages/core/src/logic/interfaces/network.port.ts",
+      "symbols": [
+        "INetwork",
+        "NetworkSnapshot"
       ],
       "isTypeOnly": true,
       "exists": true
@@ -7590,7 +6362,7 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/lib/authStorage.ts",
+      "from": "packages/core/src/lib/devicePreferences.ts",
       "to": "packages/core/src/lib/storage.ts",
       "symbols": [
         "storage"
@@ -7612,16 +6384,6 @@
       "to": "packages/core/src/logic/schemas/user.schema.ts",
       "symbols": [
         "TenantKind"
-      ],
-      "isTypeOnly": true,
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/platform/drivers/networkMonitor.ts",
-      "to": "packages/core/src/logic/interfaces/network.port.ts",
-      "symbols": [
-        "INetwork",
-        "NetworkSnapshot"
       ],
       "isTypeOnly": true,
       "exists": true

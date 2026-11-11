@@ -26,7 +26,7 @@ import {
   createEntitlementQueryOptions,
   ENTITLEMENT_SNAPSHOT_MAX_AGE_MS,
   type EntitlementIdentity,
-} from './useEntitlementQuery';
+} from '../store/queries/entitlementQuery';
 
 const entitlement = (refreshedAt = new Date().toISOString()) => ({
   pricingTier: 'PRO' as const,
@@ -80,8 +80,12 @@ describe('qualified entitlement query', () => {
     cache(identity);
     fixture.getEntitlements.mockRejectedValue(new Error('offline'));
 
-    await expect(client.fetchQuery(createEntitlementQueryOptions(wrongIdentity))).rejects.toThrow('offline');
-    expect(client.getQueryData(createEntitlementQueryOptions(wrongIdentity).queryKey)).toBeUndefined();
+    await expect(client.fetchQuery(createEntitlementQueryOptions(wrongIdentity))).rejects.toThrow(
+      'offline',
+    );
+    expect(
+      client.getQueryData(createEntitlementQueryOptions(wrongIdentity).queryKey),
+    ).toBeUndefined();
   });
 
   it.each([
@@ -91,7 +95,9 @@ describe('qualified entitlement query', () => {
     cache(identity, entitlement(timestamp));
     fixture.getEntitlements.mockRejectedValue(new Error('offline'));
 
-    await expect(client.fetchQuery(createEntitlementQueryOptions(identity))).rejects.toThrow('offline');
+    await expect(client.fetchQuery(createEntitlementQueryOptions(identity))).rejects.toThrow(
+      'offline',
+    );
     expect(client.getQueryData(createEntitlementQueryOptions(identity).queryKey)).toBeUndefined();
   });
 

@@ -1,6 +1,6 @@
 {
-  "totalNodes": 80,
-  "totalEdges": 163,
+  "totalNodes": 83,
+  "totalEdges": 169,
   "phantomEdges": [
     {
       "from": "packages/core/src/adapters/powersync/database.ts",
@@ -157,7 +157,7 @@
         "FeatureRequirement",
         "sanctuaryFeature"
       ],
-      "loc": 171
+      "loc": 180
     },
     {
       "path": "packages/core/src/logic/permissions/accessContext.ts",
@@ -335,43 +335,34 @@
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/adapters/powersync/database",
-          "resolved": "packages/core/src/adapters/powersync/database.ts",
-          "symbols": [
-            "getDrizzleDB"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/adapters/powersync/schema",
-          "resolved": "packages/core/src/adapters/powersync/schema.ts",
-          "symbols": [
-            "permissionSnapshots",
-            "policyVersion"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/logic/permissions/signature",
-          "resolved": "packages/core/src/logic/permissions/signature.ts",
-          "symbols": [
-            "verifySnapshotSignature"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/native/localGuestSession",
-          "resolved": "packages/core/src/native/localGuestSession.ts",
-          "symbols": [
-            "isLocalGuestSessionId"
-          ],
-          "exists": true
-        },
-        {
           "source": "@repo/core/types/authorization",
           "resolved": "packages/core/src/types/authorization.ts",
           "symbols": [
             "CedarDecision"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/effect/AppRuntime",
+          "resolved": "packages/core/src/effect/AppRuntime.ts",
+          "symbols": [
+            "callPort"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/effect/bindings",
+          "resolved": "packages/core/src/effect/bindings.ts",
+          "symbols": [
+            "sessionScope"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/ports/permissionSnapshot.port",
+          "resolved": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
+          "symbols": [
+            "PermissionSnapshotPort"
           ],
           "exists": true
         }
@@ -381,25 +372,18 @@
         "CedarDecisionState",
         "useCedarDecisionStore"
       ],
-      "loc": 250
+      "loc": 172
     },
     {
       "path": "packages/core/src/store/usePerspectiveStore.ts",
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/lib/storageWrapper",
-          "resolved": "packages/core/src/lib/storageWrapper.ts",
+          "source": "@repo/core/effect/bindings",
+          "resolved": "packages/core/src/effect/bindings.ts",
           "symbols": [
-            "SafeZustandStorage"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/lib/sync/eventBus",
-          "resolved": "packages/core/src/lib/sync/eventBus.ts",
-          "symbols": [
-            "sovereignBus"
+            "eventBus",
+            "persistStorage"
           ],
           "exists": true
         },
@@ -433,25 +417,25 @@
         "DEFAULT_PERSONAL_PERSPECTIVE",
         "usePerspectiveStore"
       ],
-      "loc": 207
+      "loc": 206
     },
     {
       "path": "packages/core/src/store/useEntitlementStore.ts",
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/adapters/supabase/supabaseEntitlement.adapter",
-          "resolved": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+          "source": "@repo/core/effect/AppRuntime",
+          "resolved": "packages/core/src/effect/AppRuntime.ts",
           "symbols": [
-            "SupabaseEntitlementAdapter"
+            "callPort"
           ],
           "exists": true
         },
         {
-          "source": "@repo/core/lib/storageWrapper",
-          "resolved": "packages/core/src/lib/storageWrapper.ts",
+          "source": "@repo/core/effect/bindings",
+          "resolved": "packages/core/src/effect/bindings.ts",
           "symbols": [
-            "SafeZustandStorage"
+            "persistStorage"
           ],
           "exists": true
         },
@@ -462,7 +446,8 @@
             "EntitlementGrant",
             "EntitlementReadiness",
             "EntitlementScopeContext",
-            "EntitlementSnapshot"
+            "EntitlementSnapshot",
+            "EntitlementPort"
           ],
           "exists": true
         }
@@ -473,44 +458,20 @@
         "isEntitlementSnapshotFresh",
         "useEntitlementStore"
       ],
-      "loc": 166
+      "loc": 165
     },
     {
       "path": "packages/core/src/store/useFeatureStore.ts",
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/lib/accountScope",
-          "resolved": "packages/core/src/lib/accountScope.ts",
+          "source": "@repo/core/effect/bindings",
+          "resolved": "packages/core/src/effect/bindings.ts",
           "symbols": [
-            "getAccountScopeRevision",
-            "scopeStorageKey"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/lib/featureRolloutSnapshot",
-          "resolved": "packages/core/src/lib/featureRolloutSnapshot.ts",
-          "symbols": [
-            "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
-            "normalizeFeatureRolloutSnapshot",
-            "projectFeatureFlags"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/lib/storage",
-          "resolved": "packages/core/src/lib/storage.ts",
-          "symbols": [
-            "storage"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter",
-          "resolved": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-          "symbols": [
-            "growthBookFeatureRolloutAdapter as featureFlags"
+            "breadcrumb",
+            "featureRollout",
+            "featureRolloutCache",
+            "sessionScope"
           ],
           "exists": true
         },
@@ -531,19 +492,12 @@
           "exists": true
         },
         {
-          "source": "@repo/core/monitoring/breadcrumbs",
-          "resolved": "packages/core/src/monitoring/breadcrumbs.ts",
+          "source": "@repo/core/lib/featureRolloutSnapshot",
+          "resolved": "packages/core/src/lib/featureRolloutSnapshot.ts",
           "symbols": [
-            "leaveBreadcrumb"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/native/guestScope",
-          "resolved": "packages/core/src/native/guestScope.ts",
-          "symbols": [
-            "getGuestScopeRevision",
-            "guestStorageKey"
+            "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
+            "normalizeFeatureRolloutSnapshot",
+            "projectFeatureFlags"
           ],
           "exists": true
         },
@@ -560,7 +514,7 @@
       "exports": [
         "useFeatureStore"
       ],
-      "loc": 126
+      "loc": 110
     },
     {
       "path": "packages/core/src/store/scopeSession.ts",
@@ -686,9 +640,10 @@
         "EntitlementScopeContext",
         "EntitlementRequirement",
         "EntitlementSnapshot",
-        "IEntitlementPort"
+        "IEntitlementPort",
+        "EntitlementPort"
       ],
-      "loc": 53
+      "loc": 60
     },
     {
       "path": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
@@ -1203,16 +1158,75 @@
       "loc": 50
     },
     {
-      "path": "packages/core/src/logic/permissions/signature.ts",
-      "exists": true,
-      "imports": [],
-      "exports": [],
-      "loc": 123
-    },
-    {
-      "path": "packages/core/src/native/localGuestSession.ts",
+      "path": "packages/core/src/effect/AppRuntime.ts",
       "exists": true,
       "imports": [
+        {
+          "source": "@repo/core/monitoring",
+          "resolved": "packages/core/src/monitoring/index.ts",
+          "symbols": [
+            "logBreadcrumb"
+          ],
+          "exists": true
+        },
+        {
+          "source": "./Layers",
+          "resolved": "packages/core/src/effect/Layers.ts",
+          "symbols": [
+            "EntitlementLive",
+            "PermissionSnapshotLive"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "telemetryLogger",
+        "TelemetryLoggerLayer",
+        "AppLayer",
+        "appRuntime",
+        "AppServices",
+        "callPort"
+      ],
+      "loc": 50
+    },
+    {
+      "path": "packages/core/src/effect/bindings.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/adapters/feature-rollout/featureRolloutCache.adapter",
+          "resolved": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
+          "symbols": [
+            "featureRolloutCache as rolloutCache"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter",
+          "resolved": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+          "symbols": [
+            "growthBookFeatureRolloutAdapter"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/lib/accountScope",
+          "resolved": "packages/core/src/lib/accountScope.ts",
+          "symbols": [
+            "getAccountScopeRevision",
+            "scopeStorageKey"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/lib/authProfileStorage",
+          "resolved": "packages/core/src/lib/authProfileStorage.ts",
+          "symbols": [
+            "authProfileStorage",
+            "restoreIdentityProfile"
+          ],
+          "exists": true
+        },
         {
           "source": "@repo/core/lib/storageWrapper",
           "resolved": "packages/core/src/lib/storageWrapper.ts",
@@ -1222,69 +1236,79 @@
           "exists": true
         },
         {
-          "source": "@repo/core/native/guestScope",
-          "resolved": "packages/core/src/native/guestScope.ts",
+          "source": "@repo/core/lib/sync/eventBus",
+          "resolved": "packages/core/src/lib/sync/eventBus.ts",
           "symbols": [
-            "setGuestScope"
-          ],
-          "exists": true
-        }
-      ],
-      "exports": [
-        "LocalGuestSession",
-        "LocalGuestSessionError",
-        "isLocalGuestSessionId"
-      ],
-      "loc": 96
-    },
-    {
-      "path": "packages/core/src/lib/storageWrapper.ts",
-      "exists": true,
-      "imports": [
-        {
-          "source": "@repo/core/lib/storage",
-          "resolved": "packages/core/src/lib/storage.ts",
-          "symbols": [
-            "storage"
+            "sovereignBus"
           ],
           "exists": true
         },
         {
-          "source": "@repo/core/lib/devicePreferences",
-          "resolved": "packages/core/src/lib/devicePreferences.ts",
+          "source": "@repo/core/logic/ports/featureRollout.port",
+          "resolved": "packages/core/src/logic/ports/featureRollout.port.ts",
           "symbols": [
-            "ensureDeviceThemePreference"
+            "FeatureRolloutSnapshot",
+            "IFeatureRolloutPort"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/monitoring/breadcrumbs",
+          "resolved": "packages/core/src/monitoring/breadcrumbs.ts",
+          "symbols": [
+            "leaveBreadcrumb"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/native/guestScope",
+          "resolved": "packages/core/src/native/guestScope.ts",
+          "symbols": [
+            "getGuestScopeRevision",
+            "guestStorageKey"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/native/localGuestSession",
+          "resolved": "packages/core/src/native/localGuestSession.ts",
+          "symbols": [
+            "isLocalGuestSessionId"
           ],
           "exists": true
         }
       ],
       "exports": [
-        "SafeZustandStorage"
+        "persistStorage",
+        "featureRollout",
+        "featureRolloutCache",
+        "sessionScope",
+        "breadcrumb",
+        "eventBus",
+        "authProfile"
       ],
-      "loc": 37
+      "loc": 53
     },
     {
-      "path": "packages/core/src/lib/sync/eventBus.ts",
+      "path": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
       "exists": true,
       "imports": [],
       "exports": [
-        "SovereignEventMap",
-        "SovereignEvent",
-        "SovereignEventPayload",
-        "sovereignBus"
+        "PermissionSnapshotRead",
+        "IPermissionSnapshotPort",
+        "PermissionSnapshotPort"
       ],
-      "loc": 169
+      "loc": 29
     },
     {
       "path": "packages/core/src/store/useAuthStore.ts",
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/lib/authProfileStorage",
-          "resolved": "packages/core/src/lib/authProfileStorage.ts",
+          "source": "@repo/core/effect/bindings",
+          "resolved": "packages/core/src/effect/bindings.ts",
           "symbols": [
-            "authProfileStorage",
-            "restoreIdentityProfile"
+            "authProfile"
           ],
           "exists": true
         },
@@ -1304,63 +1328,23 @@
       "loc": 28
     },
     {
-      "path": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+      "path": "packages/core/src/logic/ports/featureRollout.port.ts",
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/adapters/powersync/database",
-          "resolved": "packages/core/src/adapters/powersync/database.ts",
+          "source": "@repo/core/logic/schemas/user.schema",
+          "resolved": "packages/core/src/logic/schemas/user.schema.ts",
           "symbols": [
-            "getDrizzleDB"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/adapters/powersync/schema",
-          "resolved": "packages/core/src/adapters/powersync/schema.ts",
-          "symbols": [
-            "pricingManifest"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/adapters/supabaseClient",
-          "resolved": "packages/core/src/adapters/supabaseClient.ts",
-          "symbols": [
-            "supabaseClient"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/logic/ports/entitlement.port",
-          "resolved": "packages/core/src/logic/ports/entitlement.port.ts",
-          "symbols": [
-            "EntitlementGrant",
-            "EntitlementScopeContext",
-            "EntitlementSnapshot",
-            "IEntitlementPort",
-            "SubscriptionTier"
+            "UserContext"
           ],
           "exists": true
         }
       ],
       "exports": [
-        "SupabaseEntitlementAdapter"
+        "FeatureRolloutSnapshot",
+        "IFeatureRolloutPort"
       ],
-      "loc": 172
-    },
-    {
-      "path": "packages/core/src/lib/accountScope.ts",
-      "exists": true,
-      "imports": [],
-      "exports": [
-        "getActiveAccountId",
-        "setActiveAccountId",
-        "getAccountScopeRevision",
-        "getActiveAccountScope",
-        "scopeStorageKey"
-      ],
-      "loc": 27
+      "loc": 20
     },
     {
       "path": "packages/core/src/lib/featureRolloutSnapshot.ts",
@@ -1398,131 +1382,6 @@
         "projectFeatureFlags"
       ],
       "loc": 43
-    },
-    {
-      "path": "packages/core/src/lib/storage.ts",
-      "exists": true,
-      "imports": [],
-      "exports": [
-        "StorageKeys",
-        "PartitionKeyOptions",
-        "buildPartitionedKey"
-      ],
-      "loc": 40
-    },
-    {
-      "path": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "exists": true,
-      "imports": [
-        {
-          "source": "@repo/core/lib/storage",
-          "resolved": "packages/core/src/lib/storage.ts",
-          "symbols": [
-            "storage"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/platform/drivers/networkMonitor",
-          "resolved": "packages/core/src/platform/drivers/networkMonitor.ts",
-          "symbols": [
-            "networkMonitor"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/logic/ports/featureRollout.port",
-          "resolved": "packages/core/src/logic/ports/featureRollout.port.ts",
-          "symbols": [
-            "FeatureRolloutSnapshot",
-            "IFeatureRolloutPort"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/logic/registry/featureLifecycleManifest",
-          "resolved": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
-          "symbols": [
-            "FEATURE_FLAG_MANIFEST"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/logic/schemas/user.schema",
-          "resolved": "packages/core/src/logic/schemas/user.schema.ts",
-          "symbols": [
-            "UserContext"
-          ],
-          "exists": true
-        },
-        {
-          "source": "@repo/core/monitoring",
-          "resolved": "packages/core/src/monitoring/index.ts",
-          "symbols": [
-            "trackProductEvent"
-          ],
-          "exists": true
-        }
-      ],
-      "exports": [
-        "GrowthBookFeatureRolloutAdapter",
-        "growthBookFeatureRolloutAdapter"
-      ],
-      "loc": 235
-    },
-    {
-      "path": "packages/core/src/logic/ports/featureRollout.port.ts",
-      "exists": true,
-      "imports": [
-        {
-          "source": "@repo/core/logic/schemas/user.schema",
-          "resolved": "packages/core/src/logic/schemas/user.schema.ts",
-          "symbols": [
-            "UserContext"
-          ],
-          "exists": true
-        }
-      ],
-      "exports": [
-        "FeatureRolloutSnapshot",
-        "IFeatureRolloutPort"
-      ],
-      "loc": 20
-    },
-    {
-      "path": "packages/core/src/monitoring/breadcrumbs.ts",
-      "exists": true,
-      "imports": [
-        {
-          "source": "@repo/core/monitoring/breadcrumbs",
-          "resolved": "packages/core/src/monitoring/breadcrumbs.ts",
-          "symbols": [
-            "leaveBreadcrumb",
-            "getBreadcrumbs"
-          ],
-          "exists": true
-        }
-      ],
-      "exports": [
-        "Breadcrumb",
-        "leaveBreadcrumb",
-        "getBreadcrumbs",
-        "clearBreadcrumbs"
-      ],
-      "loc": 62
-    },
-    {
-      "path": "packages/core/src/native/guestScope.ts",
-      "exists": true,
-      "imports": [],
-      "exports": [
-        "setGuestScope",
-        "getGuestScopeRevision",
-        "getGuestScope",
-        "guestStorageKey",
-        "isGuestUserId"
-      ],
-      "loc": 38
     },
     {
       "path": "packages/core/src/constants/SriLankanSchools.ts",
@@ -2012,7 +1871,41 @@
       "loc": 42
     },
     {
-      "path": "packages/core/src/lib/devicePreferences.ts",
+      "path": "packages/core/src/monitoring/index.ts",
+      "exists": true,
+      "imports": [],
+      "exports": [],
+      "loc": 12
+    },
+    {
+      "path": "packages/core/src/effect/Layers.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/logic/ports/entitlement.port",
+          "resolved": "packages/core/src/logic/ports/entitlement.port.ts",
+          "symbols": [
+            "EntitlementPort"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/ports/permissionSnapshot.port",
+          "resolved": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
+          "symbols": [
+            "PermissionSnapshotPort"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "EntitlementLive",
+        "PermissionSnapshotLive"
+      ],
+      "loc": 44
+    },
+    {
+      "path": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
       "exists": true,
       "imports": [
         {
@@ -2022,15 +1915,93 @@
             "storage"
           ],
           "exists": true
+        },
+        {
+          "source": "@repo/core/logic/ports/featureRollout.port",
+          "resolved": "packages/core/src/logic/ports/featureRollout.port.ts",
+          "symbols": [
+            "FeatureRolloutSnapshot"
+          ],
+          "exists": true
         }
       ],
       "exports": [
-        "DEVICE_THEME_MODE_KEY",
-        "DeviceThemeMode",
-        "isDeviceThemeMode",
-        "ensureDeviceThemePreference"
+        "featureRolloutCache"
       ],
-      "loc": 46
+      "loc": 34
+    },
+    {
+      "path": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/lib/storage",
+          "resolved": "packages/core/src/lib/storage.ts",
+          "symbols": [
+            "storage"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/platform/drivers/networkMonitor",
+          "resolved": "packages/core/src/platform/drivers/networkMonitor.ts",
+          "symbols": [
+            "networkMonitor"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/ports/featureRollout.port",
+          "resolved": "packages/core/src/logic/ports/featureRollout.port.ts",
+          "symbols": [
+            "FeatureRolloutSnapshot",
+            "IFeatureRolloutPort"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/registry/featureLifecycleManifest",
+          "resolved": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+          "symbols": [
+            "FEATURE_FLAG_MANIFEST"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/logic/schemas/user.schema",
+          "resolved": "packages/core/src/logic/schemas/user.schema.ts",
+          "symbols": [
+            "UserContext"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/monitoring",
+          "resolved": "packages/core/src/monitoring/index.ts",
+          "symbols": [
+            "trackProductEvent"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "GrowthBookFeatureRolloutAdapter",
+        "growthBookFeatureRolloutAdapter"
+      ],
+      "loc": 235
+    },
+    {
+      "path": "packages/core/src/lib/accountScope.ts",
+      "exists": true,
+      "imports": [],
+      "exports": [
+        "getActiveAccountId",
+        "setActiveAccountId",
+        "getAccountScopeRevision",
+        "getActiveAccountScope",
+        "scopeStorageKey"
+      ],
+      "loc": 27
     },
     {
       "path": "packages/core/src/lib/authProfileStorage.ts",
@@ -2085,14 +2056,115 @@
       "loc": 114
     },
     {
+      "path": "packages/core/src/lib/storageWrapper.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/lib/storage",
+          "resolved": "packages/core/src/lib/storage.ts",
+          "symbols": [
+            "storage"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/lib/devicePreferences",
+          "resolved": "packages/core/src/lib/devicePreferences.ts",
+          "symbols": [
+            "ensureDeviceThemePreference"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "SafeZustandStorage"
+      ],
+      "loc": 37
+    },
+    {
+      "path": "packages/core/src/lib/sync/eventBus.ts",
+      "exists": true,
+      "imports": [],
+      "exports": [
+        "SovereignEventMap",
+        "SovereignEvent",
+        "SovereignEventPayload",
+        "sovereignBus"
+      ],
+      "loc": 169
+    },
+    {
+      "path": "packages/core/src/monitoring/breadcrumbs.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/monitoring/breadcrumbs",
+          "resolved": "packages/core/src/monitoring/breadcrumbs.ts",
+          "symbols": [
+            "leaveBreadcrumb",
+            "getBreadcrumbs"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "Breadcrumb",
+        "leaveBreadcrumb",
+        "getBreadcrumbs",
+        "clearBreadcrumbs"
+      ],
+      "loc": 62
+    },
+    {
+      "path": "packages/core/src/native/guestScope.ts",
+      "exists": true,
+      "imports": [],
+      "exports": [
+        "setGuestScope",
+        "getGuestScopeRevision",
+        "getGuestScope",
+        "guestStorageKey",
+        "isGuestUserId"
+      ],
+      "loc": 38
+    },
+    {
+      "path": "packages/core/src/native/localGuestSession.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/lib/storageWrapper",
+          "resolved": "packages/core/src/lib/storageWrapper.ts",
+          "symbols": [
+            "SafeZustandStorage"
+          ],
+          "exists": true
+        },
+        {
+          "source": "@repo/core/native/guestScope",
+          "resolved": "packages/core/src/native/guestScope.ts",
+          "symbols": [
+            "setGuestScope"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "LocalGuestSession",
+        "LocalGuestSessionError",
+        "isLocalGuestSessionId"
+      ],
+      "loc": 96
+    },
+    {
       "path": "packages/core/src/store/slices/auth.slice.ts",
       "exists": true,
       "imports": [
         {
-          "source": "@repo/core/monitoring",
-          "resolved": "packages/core/src/monitoring/index.ts",
+          "source": "@repo/core/effect/bindings",
+          "resolved": "packages/core/src/effect/bindings.ts",
           "symbols": [
-            "leaveBreadcrumb"
+            "breadcrumb as leaveBreadcrumb"
           ],
           "exists": true
         },
@@ -2110,33 +2182,6 @@
         "createAuthSlice"
       ],
       "loc": 21
-    },
-    {
-      "path": "packages/core/src/platform/drivers/networkMonitor.ts",
-      "exists": true,
-      "imports": [
-        {
-          "source": "@repo/core/logic/interfaces/network.port",
-          "resolved": "packages/core/src/logic/interfaces/network.port.ts",
-          "symbols": [
-            "INetwork",
-            "NetworkSnapshot"
-          ],
-          "exists": true
-        }
-      ],
-      "exports": [
-        "NetworkMonitor",
-        "networkMonitor"
-      ],
-      "loc": 70
-    },
-    {
-      "path": "packages/core/src/monitoring/index.ts",
-      "exists": true,
-      "imports": [],
-      "exports": [],
-      "loc": 12
     },
     {
       "path": "packages/core/src/types/User.ts",
@@ -2304,6 +2349,17 @@
       "loc": 28
     },
     {
+      "path": "packages/core/src/lib/storage.ts",
+      "exists": true,
+      "imports": [],
+      "exports": [
+        "StorageKeys",
+        "PartitionKeyOptions",
+        "buildPartitionedKey"
+      ],
+      "loc": 40
+    },
+    {
       "path": "packages/core/src/logic/ports/identity.port.ts",
       "exists": true,
       "imports": [
@@ -2368,6 +2424,26 @@
       "loc": 22
     },
     {
+      "path": "packages/core/src/platform/drivers/networkMonitor.ts",
+      "exists": true,
+      "imports": [
+        {
+          "source": "@repo/core/logic/interfaces/network.port",
+          "resolved": "packages/core/src/logic/interfaces/network.port.ts",
+          "symbols": [
+            "INetwork",
+            "NetworkSnapshot"
+          ],
+          "exists": true
+        }
+      ],
+      "exports": [
+        "NetworkMonitor",
+        "networkMonitor"
+      ],
+      "loc": 70
+    },
+    {
       "path": "packages/core/src/lib/experienceState.ts",
       "exists": true,
       "imports": [
@@ -2423,17 +2499,25 @@
       "loc": 239
     },
     {
-      "path": "packages/core/src/logic/interfaces/network.port.ts",
+      "path": "packages/core/src/lib/devicePreferences.ts",
       "exists": true,
-      "imports": [],
-      "exports": [
-        "NetworkStatus",
-        "NetworkSource",
-        "NetworkConnectionMetadata",
-        "NetworkSnapshot",
-        "INetwork"
+      "imports": [
+        {
+          "source": "@repo/core/lib/storage",
+          "resolved": "packages/core/src/lib/storage.ts",
+          "symbols": [
+            "storage"
+          ],
+          "exists": true
+        }
       ],
-      "loc": 25
+      "exports": [
+        "DEVICE_THEME_MODE_KEY",
+        "DeviceThemeMode",
+        "isDeviceThemeMode",
+        "ensureDeviceThemePreference"
+      ],
+      "loc": 46
     },
     {
       "path": "packages/core/src/types/Social.ts",
@@ -2475,6 +2559,19 @@
         "PlatformAccessContext"
       ],
       "loc": 57
+    },
+    {
+      "path": "packages/core/src/logic/interfaces/network.port.ts",
+      "exists": true,
+      "imports": [],
+      "exports": [
+        "NetworkStatus",
+        "NetworkSource",
+        "NetworkConnectionMetadata",
+        "NetworkSnapshot",
+        "INetwork"
+      ],
+      "loc": 25
     },
     {
       "path": "packages/core/src/lib/scopedStateStorage.ts",
@@ -2743,39 +2840,6 @@
     },
     {
       "from": "packages/core/src/store/useCedarDecisionStore.ts",
-      "to": "packages/core/src/adapters/powersync/database.ts",
-      "symbols": [
-        "getDrizzleDB"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useCedarDecisionStore.ts",
-      "to": "packages/core/src/adapters/powersync/schema.ts",
-      "symbols": [
-        "permissionSnapshots",
-        "policyVersion"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useCedarDecisionStore.ts",
-      "to": "packages/core/src/logic/permissions/signature.ts",
-      "symbols": [
-        "verifySnapshotSignature"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useCedarDecisionStore.ts",
-      "to": "packages/core/src/native/localGuestSession.ts",
-      "symbols": [
-        "isLocalGuestSessionId"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useCedarDecisionStore.ts",
       "to": "packages/core/src/types/authorization.ts",
       "symbols": [
         "CedarDecision"
@@ -2783,18 +2847,35 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/store/usePerspectiveStore.ts",
-      "to": "packages/core/src/lib/storageWrapper.ts",
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "to": "packages/core/src/effect/AppRuntime.ts",
       "symbols": [
-        "SafeZustandStorage"
+        "callPort"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "to": "packages/core/src/effect/bindings.ts",
+      "symbols": [
+        "sessionScope"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "to": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
+      "symbols": [
+        "PermissionSnapshotPort"
       ],
       "exists": true
     },
     {
       "from": "packages/core/src/store/usePerspectiveStore.ts",
-      "to": "packages/core/src/lib/sync/eventBus.ts",
+      "to": "packages/core/src/effect/bindings.ts",
       "symbols": [
-        "sovereignBus"
+        "eventBus",
+        "persistStorage"
       ],
       "exists": true
     },
@@ -2824,17 +2905,17 @@
     },
     {
       "from": "packages/core/src/store/useEntitlementStore.ts",
-      "to": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+      "to": "packages/core/src/effect/AppRuntime.ts",
       "symbols": [
-        "SupabaseEntitlementAdapter"
+        "callPort"
       ],
       "exists": true
     },
     {
       "from": "packages/core/src/store/useEntitlementStore.ts",
-      "to": "packages/core/src/lib/storageWrapper.ts",
+      "to": "packages/core/src/effect/bindings.ts",
       "symbols": [
-        "SafeZustandStorage"
+        "persistStorage"
       ],
       "exists": true
     },
@@ -2845,42 +2926,19 @@
         "EntitlementGrant",
         "EntitlementReadiness",
         "EntitlementScopeContext",
-        "EntitlementSnapshot"
+        "EntitlementSnapshot",
+        "EntitlementPort"
       ],
       "exists": true
     },
     {
       "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/lib/accountScope.ts",
+      "to": "packages/core/src/effect/bindings.ts",
       "symbols": [
-        "getAccountScopeRevision",
-        "scopeStorageKey"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/lib/featureRolloutSnapshot.ts",
-      "symbols": [
-        "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
-        "normalizeFeatureRolloutSnapshot",
-        "projectFeatureFlags"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/lib/storage.ts",
-      "symbols": [
-        "storage"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "symbols": [
-        "growthBookFeatureRolloutAdapter as featureFlags"
+        "breadcrumb",
+        "featureRollout",
+        "featureRolloutCache",
+        "sessionScope"
       ],
       "exists": true
     },
@@ -2902,18 +2960,11 @@
     },
     {
       "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/monitoring/breadcrumbs.ts",
+      "to": "packages/core/src/lib/featureRolloutSnapshot.ts",
       "symbols": [
-        "leaveBreadcrumb"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/store/useFeatureStore.ts",
-      "to": "packages/core/src/native/guestScope.ts",
-      "symbols": [
-        "getGuestScopeRevision",
-        "guestStorageKey"
+        "FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS",
+        "normalizeFeatureRolloutSnapshot",
+        "projectFeatureFlags"
       ],
       "exists": true
     },
@@ -3221,7 +3272,58 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/native/localGuestSession.ts",
+      "from": "packages/core/src/effect/AppRuntime.ts",
+      "to": "packages/core/src/monitoring/index.ts",
+      "symbols": [
+        "logBreadcrumb"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/AppRuntime.ts",
+      "to": "packages/core/src/effect/Layers.ts",
+      "symbols": [
+        "EntitlementLive",
+        "PermissionSnapshotLive"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
+      "symbols": [
+        "featureRolloutCache as rolloutCache"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "symbols": [
+        "growthBookFeatureRolloutAdapter"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/lib/accountScope.ts",
+      "symbols": [
+        "getAccountScopeRevision",
+        "scopeStorageKey"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/lib/authProfileStorage.ts",
+      "symbols": [
+        "authProfileStorage",
+        "restoreIdentityProfile"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
       "to": "packages/core/src/lib/storageWrapper.ts",
       "symbols": [
         "SafeZustandStorage"
@@ -3229,35 +3331,52 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/native/localGuestSession.ts",
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/lib/sync/eventBus.ts",
+      "symbols": [
+        "sovereignBus"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "symbols": [
+        "FeatureRolloutSnapshot",
+        "IFeatureRolloutPort"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/monitoring/breadcrumbs.ts",
+      "symbols": [
+        "leaveBreadcrumb"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/bindings.ts",
       "to": "packages/core/src/native/guestScope.ts",
       "symbols": [
-        "setGuestScope"
+        "getGuestScopeRevision",
+        "guestStorageKey"
       ],
       "exists": true
     },
     {
-      "from": "packages/core/src/lib/storageWrapper.ts",
-      "to": "packages/core/src/lib/storage.ts",
+      "from": "packages/core/src/effect/bindings.ts",
+      "to": "packages/core/src/native/localGuestSession.ts",
       "symbols": [
-        "storage"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/lib/storageWrapper.ts",
-      "to": "packages/core/src/lib/devicePreferences.ts",
-      "symbols": [
-        "ensureDeviceThemePreference"
+        "isLocalGuestSessionId"
       ],
       "exists": true
     },
     {
       "from": "packages/core/src/store/useAuthStore.ts",
-      "to": "packages/core/src/lib/authProfileStorage.ts",
+      "to": "packages/core/src/effect/bindings.ts",
       "symbols": [
-        "authProfileStorage",
-        "restoreIdentityProfile"
+        "authProfile"
       ],
       "exists": true
     },
@@ -3271,38 +3390,10 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "to": "packages/core/src/adapters/powersync/database.ts",
+      "from": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
       "symbols": [
-        "getDrizzleDB"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "to": "packages/core/src/adapters/powersync/schema.ts",
-      "symbols": [
-        "pricingManifest"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "to": "packages/core/src/adapters/supabaseClient.ts",
-      "symbols": [
-        "supabaseClient"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "to": "packages/core/src/logic/ports/entitlement.port.ts",
-      "symbols": [
-        "EntitlementGrant",
-        "EntitlementScopeContext",
-        "EntitlementSnapshot",
-        "IEntitlementPort",
-        "SubscriptionTier"
+        "UserContext"
       ],
       "exists": true
     },
@@ -3328,72 +3419,6 @@
       "symbols": [
         "DEFAULT_FEATURE_FLAGS",
         "FeatureFlags"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/lib/storage.ts",
-      "symbols": [
-        "storage"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
-      "symbols": [
-        "networkMonitor"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
-      "symbols": [
-        "FeatureRolloutSnapshot",
-        "IFeatureRolloutPort"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
-      "symbols": [
-        "FEATURE_FLAG_MANIFEST"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/logic/schemas/user.schema.ts",
-      "symbols": [
-        "UserContext"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "to": "packages/core/src/monitoring/index.ts",
-      "symbols": [
-        "trackProductEvent"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/logic/ports/featureRollout.port.ts",
-      "to": "packages/core/src/logic/schemas/user.schema.ts",
-      "symbols": [
-        "UserContext"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/monitoring/breadcrumbs.ts",
-      "to": "packages/core/src/monitoring/breadcrumbs.ts",
-      "symbols": [
-        "leaveBreadcrumb",
-        "getBreadcrumbs"
       ],
       "exists": true
     },
@@ -3660,10 +3685,83 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/lib/devicePreferences.ts",
+      "from": "packages/core/src/effect/Layers.ts",
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "symbols": [
+        "EntitlementPort"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/effect/Layers.ts",
+      "to": "packages/core/src/logic/ports/permissionSnapshot.port.ts",
+      "symbols": [
+        "PermissionSnapshotPort"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
       "to": "packages/core/src/lib/storage.ts",
       "symbols": [
         "storage"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts",
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "symbols": [
+        "FeatureRolloutSnapshot"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/lib/storage.ts",
+      "symbols": [
+        "storage"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
+      "symbols": [
+        "networkMonitor"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "symbols": [
+        "FeatureRolloutSnapshot",
+        "IFeatureRolloutPort"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+      "symbols": [
+        "FEATURE_FLAG_MANIFEST"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "symbols": [
+        "UserContext"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "to": "packages/core/src/monitoring/index.ts",
+      "symbols": [
+        "trackProductEvent"
       ],
       "exists": true
     },
@@ -3709,10 +3807,51 @@
       "exists": true
     },
     {
-      "from": "packages/core/src/store/slices/auth.slice.ts",
-      "to": "packages/core/src/monitoring/index.ts",
+      "from": "packages/core/src/lib/storageWrapper.ts",
+      "to": "packages/core/src/lib/storage.ts",
       "symbols": [
-        "leaveBreadcrumb"
+        "storage"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/lib/storageWrapper.ts",
+      "to": "packages/core/src/lib/devicePreferences.ts",
+      "symbols": [
+        "ensureDeviceThemePreference"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/monitoring/breadcrumbs.ts",
+      "to": "packages/core/src/monitoring/breadcrumbs.ts",
+      "symbols": [
+        "leaveBreadcrumb",
+        "getBreadcrumbs"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/native/localGuestSession.ts",
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "symbols": [
+        "SafeZustandStorage"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/native/localGuestSession.ts",
+      "to": "packages/core/src/native/guestScope.ts",
+      "symbols": [
+        "setGuestScope"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/store/slices/auth.slice.ts",
+      "to": "packages/core/src/effect/bindings.ts",
+      "symbols": [
+        "breadcrumb as leaveBreadcrumb"
       ],
       "exists": true
     },
@@ -3721,15 +3860,6 @@
       "to": "packages/core/src/types/index.ts",
       "symbols": [
         "User"
-      ],
-      "exists": true
-    },
-    {
-      "from": "packages/core/src/platform/drivers/networkMonitor.ts",
-      "to": "packages/core/src/logic/interfaces/network.port.ts",
-      "symbols": [
-        "INetwork",
-        "NetworkSnapshot"
       ],
       "exists": true
     },
@@ -3816,6 +3946,15 @@
       "exists": true
     },
     {
+      "from": "packages/core/src/platform/drivers/networkMonitor.ts",
+      "to": "packages/core/src/logic/interfaces/network.port.ts",
+      "symbols": [
+        "INetwork",
+        "NetworkSnapshot"
+      ],
+      "exists": true
+    },
+    {
       "from": "packages/core/src/lib/experienceState.ts",
       "to": "packages/core/src/lib/scopedStateStorage.ts",
       "symbols": [
@@ -3844,6 +3983,14 @@
       "to": "packages/core/src/types/User.ts",
       "symbols": [
         "User"
+      ],
+      "exists": true
+    },
+    {
+      "from": "packages/core/src/lib/devicePreferences.ts",
+      "to": "packages/core/src/lib/storage.ts",
+      "symbols": [
+        "storage"
       ],
       "exists": true
     },
@@ -3892,5 +4039,5 @@
       "exists": true
     }
   ],
-  "mermaid": "graph TD\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts[\"⭐ useSanctuaryFeature.ts<br/>(132 lines)\"]:::core\n    packages_core_src_logic_permissions_sanctuaryFeature_ts[\"⭐ sanctuaryFeature.ts<br/>(171 lines)\"]:::core\n    packages_core_src_logic_permissions_accessContext_ts[\"📄 accessContext.ts\"]:::logic\n    packages_core_src_logic_permissions_baselineCapabilities_ts[\"📄 baselineCapabilities.ts\"]:::logic\n    packages_core_src_logic_permissions_bondScope_ts[\"📄 bondScope.ts\"]:::logic\n    packages_core_src_logic_permissions_cedarEvaluator_ts[\"📄 cedarEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_localEvaluator_ts[\"📄 localEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_sovereignty_ts[\"📄 sovereignty.ts\"]:::logic\n    packages_core_src_store_useCedarDecisionStore_ts[\"🗄️ useCedarDecisionStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_usePerspectiveStore_ts[\"🗄️ usePerspectiveStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_useEntitlementStore_ts[\"🗄️ useEntitlementStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_useFeatureStore_ts[\"🗄️ useFeatureStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_scopeSession_ts[\"🗄️ scopeSession.ts<br/>(Store)\"]:::store\n    packages_core_src_types_Identity_ts[\"🏷️ Identity.ts<br/>(Types)\"]:::type\n    packages_core_src_types_Perspective_ts[\"🏷️ Perspective.ts<br/>(Types)\"]:::type\n    packages_core_src_types_authorization_ts[\"🏷️ authorization.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_registry_citizenship_ts[\"📄 citizenship.ts\"]:::logic\n    packages_core_src_logic_ports_entitlement_port_ts[\"📄 entitlement.port.ts\"]:::logic\n    packages_core_src_logic_permissions_hooks_useAuthority_ts[\"📄 useAuthority.ts\"]:::logic\n    packages_core_src_logic_registry_featureLifecycleManifest_ts[\"📄 featureLifecycleManifest.ts\"]:::logic\n    packages_core_src_logic_schemas_capacity_schema_ts[\"📄 capacity.schema.ts\"]:::logic\n    packages_core_src_logic_schemas_user_schema_ts[\"📄 user.schema.ts\"]:::logic\n    packages_core_src_store_types_featureFlags_ts[\"🗄️ featureFlags.ts<br/>(Store)\"]:::store\n    packages_core_src_logic_permissions_entitlement_ts[\"📄 entitlement.ts\"]:::logic\n    packages_core_src_adapters_powersync_database_ts[\"📄 database.ts\"]:::logic\n    packages_core_src_adapters_powersync_schema_ts[\"📄 schema.ts\"]:::logic\n    packages_core_src_native_deviceTrust_ts[\"📄 deviceTrust.ts\"]:::logic\n    packages_core_src_lib_security_deviceTrust_ts[\"📄 deviceTrust.ts\"]:::logic\n    packages_core_src_logic_auth_identityState_ts[\"📄 identityState.ts\"]:::logic\n    packages_core_src_logic_permissions_cedarClientEvaluator_ts[\"📄 cedarClientEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_localResourceAttributes_ts[\"📄 localResourceAttributes.ts\"]:::logic\n    packages_core_src_logic_permissions_signature_ts[\"📄 signature.ts\"]:::logic\n    packages_core_src_native_localGuestSession_ts[\"📄 localGuestSession.ts\"]:::logic\n    packages_core_src_lib_storageWrapper_ts[\"📄 storageWrapper.ts\"]:::logic\n    packages_core_src_lib_sync_eventBus_ts[\"📄 eventBus.ts\"]:::logic\n    packages_core_src_store_useAuthStore_ts[\"🗄️ useAuthStore.ts<br/>(Store)\"]:::store\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts[\"📄 supabaseEntitlement.adapter.ts\"]:::logic\n    packages_core_src_lib_accountScope_ts[\"📄 accountScope.ts\"]:::logic\n    packages_core_src_lib_featureRolloutSnapshot_ts[\"📄 featureRolloutSnapshot.ts\"]:::logic\n    packages_core_src_lib_storage_ts[\"📄 storage.ts\"]:::logic\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts[\"📄 growthBookFeatureRollout.adapter.ts\"]:::logic\n    packages_core_src_logic_ports_featureRollout_port_ts[\"📄 featureRollout.port.ts\"]:::logic\n    packages_core_src_monitoring_breadcrumbs_ts[\"📄 breadcrumbs.ts\"]:::logic\n    packages_core_src_native_guestScope_ts[\"📄 guestScope.ts\"]:::logic\n    packages_core_src_constants_SriLankanSchools_ts[\"📄 SriLankanSchools.ts\"]:::logic\n    packages_core_src_types_CivicRole_ts[\"🏷️ CivicRole.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_permissions_authority_ts[\"📄 authority.ts\"]:::logic\n    packages_core_src_logic_registry_domainEntry_ts[\"📄 domainEntry.ts\"]:::logic\n    packages_core_src_logic_schemas_identity_schema_ts[\"📄 identity.schema.ts\"]:::logic\n    packages_core_src_powersync_ts[\"❌ powersync.ts<br/>(PHANTOM/DEAD)\"]:::dead\n    packages_core_src_adapters_powersync_databaseRegistry_ts[\"📄 databaseRegistry.ts\"]:::logic\n    packages_core_src_adapters_powersync_powersync_shim_ts[\"📄 powersync-shim.ts\"]:::logic\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts[\"📄 secureDrizzleProxy.ts\"]:::logic\n    packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts[\"📄 singleActivePowerSyncRuntime.ts\"]:::logic\n    packages_core_src_logic_runtimeRegistry_ts[\"📄 runtimeRegistry.ts\"]:::logic\n    packages_core_src_adapters_supabaseClient_ts[\"📄 supabaseClient.ts\"]:::logic\n    packages_core_src_adapters_supabaseIdentity_adapter_ts[\"📄 supabaseIdentity.adapter.ts\"]:::logic\n    packages_core_src_types_API_ts[\"🏷️ API.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_devicePreferences_ts[\"📄 devicePreferences.ts\"]:::logic\n    packages_core_src_lib_authProfileStorage_ts[\"📄 authProfileStorage.ts\"]:::logic\n    packages_core_src_store_slices_auth_slice_ts[\"🗄️ auth.slice.ts<br/>(Store)\"]:::store\n    packages_core_src_platform_drivers_networkMonitor_ts[\"📄 networkMonitor.ts\"]:::logic\n    packages_core_src_monitoring_index_ts[\"📄 index.ts\"]:::logic\n    packages_core_src_types_User_ts[\"🏷️ User.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_utils_edloveUuidV8_ts[\"📄 edloveUuidV8.ts\"]:::logic\n    packages_core_src_logic_ports_authz_port_ts[\"📄 authz.port.ts\"]:::logic\n    packages_core_src_types_Errors_ts[\"🏷️ Errors.ts<br/>(Types)\"]:::type\n    packages_core_src_types_runtime_ts[\"🏷️ runtime.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_authStorage_ts[\"📄 authStorage.ts\"]:::logic\n    packages_core_src_lib_security_transportSecurity_ts[\"📄 transportSecurity.ts\"]:::logic\n    packages_core_src_adapters_supabase_sessionContinuity_ts[\"📄 sessionContinuity.ts\"]:::logic\n    packages_core_src_logic_ports_identity_port_ts[\"📄 identity.port.ts\"]:::logic\n    packages_core_src_logic_schemas_profileUpdate_schema_ts[\"📄 profileUpdate.schema.ts\"]:::logic\n    packages_core_src_utils_effect_ts[\"📄 effect.ts\"]:::logic\n    packages_core_src_lib_experienceState_ts[\"📄 experienceState.ts\"]:::logic\n    packages_core_src_types_index_ts[\"🏷️ index.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_interfaces_network_port_ts[\"📄 network.port.ts\"]:::logic\n    packages_core_src_types_Social_ts[\"🏷️ Social.ts<br/>(Types)\"]:::type\n    packages_core_src_types_Tenancy_ts[\"🏷️ Tenancy.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_scopedStateStorage_ts[\"📄 scopedStateStorage.ts\"]:::logic\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"useAuthority\"| packages_core_src_logic_permissions_hooks_useAuthority_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"CITIZENSHIP, FeatureRequirement...\"| packages_core_src_logic_permissions_sanctuaryFeature_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"resolveFeatureFlagClass, resolveFeatureFlagValue\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Bond, CitizenshipTier\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"FeatureAccessContext, isFeatureAccessContextReady\"| packages_core_src_logic_permissions_accessContext_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"isBaselineReadCapability, isOnDeviceSelfCapability\"| packages_core_src_logic_permissions_baselineCapabilities_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"meetsSubscriptionTier, resolveScopedEntitlement\"| packages_core_src_logic_permissions_entitlement_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"EntitlementScope, EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"CITIZENSHIP, CitizenshipLevel...\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_permissions_accessContext_ts -->|\"EntitlementReadiness, EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_accessContext_ts -->|\"CitizenshipLevel\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_permissions_baselineCapabilities_ts -->|\"Action\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"getDrizzleDB, registerPermissionValidator\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"cedarPolicies\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"deviceTrustAPI\"| packages_core_src_native_deviceTrust_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"DeviceTrustEngine\"| packages_core_src_lib_security_deviceTrust_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"isAnonymousIdentity\"| packages_core_src_logic_auth_identityState_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"evaluateShape2\"| packages_core_src_logic_permissions_cedarClientEvaluator_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"getLocalResourceAttributes\"| packages_core_src_logic_permissions_localResourceAttributes_ts\n    packages_core_src_logic_permissions_sovereignty_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"permissionSnapshots, policyVersion\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"verifySnapshotSignature\"| packages_core_src_logic_permissions_signature_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"isLocalGuestSessionId\"| packages_core_src_native_localGuestSession_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"CedarDecision\"| packages_core_src_types_authorization_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"sovereignBus\"| packages_core_src_lib_sync_eventBus_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"useCedarDecisionStore\"| packages_core_src_store_useCedarDecisionStore_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"SupabaseEntitlementAdapter\"| packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"EntitlementGrant, EntitlementReadiness...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"getAccountScopeRevision, scopeStorageKey\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS, normalizeFeatureRolloutSnapshot...\"| packages_core_src_lib_featureRolloutSnapshot_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"growthBookFeatureRolloutAdapter as featureFlags\"| packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"leaveBreadcrumb\"| packages_core_src_monitoring_breadcrumbs_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"getGuestScopeRevision, guestStorageKey\"| packages_core_src_native_guestScope_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"DEFAULT_FEATURE_FLAGS, FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_store_scopeSession_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_store_scopeSession_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_types_Perspective_ts -->|\"SchoolType\"| packages_core_src_constants_SriLankanSchools_ts\n    packages_core_src_types_Perspective_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_types_Perspective_ts -->|\"CivicRoleId\"| packages_core_src_types_CivicRole_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"decide, EntitlementInputs...\"| packages_core_src_logic_permissions_authority_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useScopeSessionStore\"| packages_core_src_store_scopeSession_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useCedarDecisionStore\"| packages_core_src_store_useCedarDecisionStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useEntitlementStore\"| packages_core_src_store_useEntitlementStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useFeatureStore\"| packages_core_src_store_useFeatureStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"usePerspectiveStore\"| packages_core_src_store_usePerspectiveStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"Action, CedarDecision...\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_registry_featureLifecycleManifest_ts -->|\"FeatureFlagClass, FeatureFlagClassSchema...\"| packages_core_src_logic_registry_domainEntry_ts\n    packages_core_src_logic_registry_featureLifecycleManifest_ts -->|\"DEFAULT_FEATURE_FLAGS\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_schemas_user_schema_ts -->|\"BondSchema, CapacitySchema...\"| packages_core_src_logic_schemas_identity_schema_ts\n    packages_core_src_logic_permissions_entitlement_ts -->|\"EntitlementRequirement, EntitlementScope...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_adapters_powersync_database_ts -.->|❌ getPowerSyncDB, getDrizzleDB| packages_core_src_powersync_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncDatabaseRegistry\"| packages_core_src_adapters_powersync_databaseRegistry_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncDatabase as MockPowerSyncDatabase\"| packages_core_src_adapters_powersync_powersync_shim_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"AppSchema\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"createSecureDrizzleProxy\"| packages_core_src_adapters_powersync_secureDrizzleProxy_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncRuntimeOwnership\"| packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"coreRuntime\"| packages_core_src_logic_runtimeRegistry_ts\n    packages_core_src_native_deviceTrust_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_native_deviceTrust_ts -->|\"supabaseIdentityAdapter as identity\"| packages_core_src_adapters_supabaseIdentity_adapter_ts\n    packages_core_src_native_deviceTrust_ts -->|\"Identity as ActiveCitizen\"| packages_core_src_types_Identity_ts\n    packages_core_src_native_deviceTrust_ts -->|\"coreRuntime\"| packages_core_src_logic_runtimeRegistry_ts\n    packages_core_src_native_deviceTrust_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_lib_security_deviceTrust_ts -->|\"deviceTrustAPI\"| packages_core_src_native_deviceTrust_ts\n    packages_core_src_logic_permissions_localResourceAttributes_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_logic_permissions_localResourceAttributes_ts -->|\"classrooms, schools\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_native_localGuestSession_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_native_localGuestSession_ts -->|\"setGuestScope\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_storageWrapper_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_lib_storageWrapper_ts -->|\"ensureDeviceThemePreference\"| packages_core_src_lib_devicePreferences_ts\n    packages_core_src_store_useAuthStore_ts -->|\"authProfileStorage, restoreIdentityProfile\"| packages_core_src_lib_authProfileStorage_ts\n    packages_core_src_store_useAuthStore_ts -->|\"AuthSlice, createAuthSlice\"| packages_core_src_store_slices_auth_slice_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"pricingManifest\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabase_supabaseEntitlement_adapter_ts -->|\"EntitlementGrant, EntitlementScopeContext...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"FEATURE_FLAG_MANIFEST\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"DEFAULT_FEATURE_FLAGS, FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"networkMonitor\"| packages_core_src_platform_drivers_networkMonitor_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"FeatureRolloutSnapshot, IFeatureRolloutPort\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"FEATURE_FLAG_MANIFEST\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"trackProductEvent\"| packages_core_src_monitoring_index_ts\n    packages_core_src_logic_ports_featureRollout_port_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_monitoring_breadcrumbs_ts -->|\"leaveBreadcrumb, getBreadcrumbs\"| packages_core_src_monitoring_breadcrumbs_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"resolveBondScope\"| packages_core_src_logic_permissions_bondScope_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"resolveScopedEntitlement\"| packages_core_src_logic_permissions_entitlement_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Capacity, CapacitySchema\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"TenantKind, UserContext...\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"CedarDecision\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Bond, resolveBondCitizenship\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_logic_registry_domainEntry_ts -->|\"CITIZENSHIP\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_schemas_identity_schema_ts -->|\"isEdloveAccountId\"| packages_core_src_logic_utils_edloveUuidV8_ts\n    packages_core_src_adapters_powersync_databaseRegistry_ts -->|\"ManagedPowerSyncDatabase, PowerSyncRuntimeOwnership\"| packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"resolveBondScope\"| packages_core_src_logic_permissions_bondScope_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"CapabilityToken\"| packages_core_src_logic_ports_authz_port_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"useScopeSessionStore\"| packages_core_src_store_scopeSession_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"ErrorCategory, SovereignError\"| packages_core_src_types_Errors_ts\n    packages_core_src_logic_runtimeRegistry_ts -->|\"CoreRuntimeEnvironment\"| packages_core_src_types_runtime_ts\n    packages_core_src_adapters_supabaseClient_ts -->|\"supabaseAuthStorage\"| packages_core_src_lib_authStorage_ts\n    packages_core_src_adapters_supabaseClient_ts -->|\"assertSecureApiUrl, secureApiFetch\"| packages_core_src_lib_security_transportSecurity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"assertSupabaseSessionContinuity, readSupabaseSession...\"| packages_core_src_adapters_supabase_sessionContinuity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"IIdentityPort\"| packages_core_src_logic_ports_identity_port_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"CanonicalAccountIdSchema\"| packages_core_src_logic_schemas_identity_schema_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"CompleteProfileSchema, ProfileCompletionDetails...\"| packages_core_src_logic_schemas_profileUpdate_schema_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"Bond, Capacity...\"| packages_core_src_types_Identity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"strictRetryPolicy\"| packages_core_src_utils_effect_ts\n    packages_core_src_types_API_ts -->|\"SovereignError\"| packages_core_src_types_Errors_ts\n    packages_core_src_lib_devicePreferences_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"scopeStorageKey\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"useExperienceState\"| packages_core_src_lib_experienceState_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"guestStorageKey, isGuestUserId\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"User\"| packages_core_src_types_index_ts\n    packages_core_src_store_slices_auth_slice_ts -->|\"leaveBreadcrumb\"| packages_core_src_monitoring_index_ts\n    packages_core_src_store_slices_auth_slice_ts -->|\"User\"| packages_core_src_types_index_ts\n    packages_core_src_platform_drivers_networkMonitor_ts -->|\"INetwork, NetworkSnapshot\"| packages_core_src_logic_interfaces_network_port_ts\n    packages_core_src_types_User_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_types_User_ts -->|\"SocialLink\"| packages_core_src_types_Social_ts\n    packages_core_src_types_User_ts -->|\"TenantKind\"| packages_core_src_types_Tenancy_ts\n    packages_core_src_lib_authStorage_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_supabase_sessionContinuity_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabase_sessionContinuity_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"Identity\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"ProfileCompletionDetails\"| packages_core_src_logic_schemas_profileUpdate_schema_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"Bond, Capacity...\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_lib_experienceState_ts -->|\"createScopedStateStorage\"| packages_core_src_lib_scopedStateStorage_ts\n    packages_core_src_types_index_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_types_index_ts -->|\"DeviceMetadata\"| packages_core_src_types_runtime_ts\n    packages_core_src_types_index_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_types_Tenancy_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_types_Tenancy_ts -->|\"TenantKind\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"getActiveAccountId, getAccountScopeRevision...\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"getGuestScope, getGuestScopeRevision...\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n\n    classDef core fill:#dbeafe,stroke:#2563eb,stroke-width:3px,color:#1e3a8a;\n    classDef store fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;\n    classDef type fill:#e0e7ff,stroke:#6366f1,stroke-width:1px,color:#312e81;\n    classDef logic fill:#f3f4f6,stroke:#9ca3af,stroke-width:1px,color:#1f2937;\n    classDef dead fill:#fee2e2,stroke:#ef4444,stroke-width:2px,stroke-dasharray: 5 5,color:#991b1b;\n"
+  "mermaid": "graph TD\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts[\"⭐ useSanctuaryFeature.ts<br/>(132 lines)\"]:::core\n    packages_core_src_logic_permissions_sanctuaryFeature_ts[\"⭐ sanctuaryFeature.ts<br/>(180 lines)\"]:::core\n    packages_core_src_logic_permissions_accessContext_ts[\"📄 accessContext.ts\"]:::logic\n    packages_core_src_logic_permissions_baselineCapabilities_ts[\"📄 baselineCapabilities.ts\"]:::logic\n    packages_core_src_logic_permissions_bondScope_ts[\"📄 bondScope.ts\"]:::logic\n    packages_core_src_logic_permissions_cedarEvaluator_ts[\"📄 cedarEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_localEvaluator_ts[\"📄 localEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_sovereignty_ts[\"📄 sovereignty.ts\"]:::logic\n    packages_core_src_store_useCedarDecisionStore_ts[\"🗄️ useCedarDecisionStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_usePerspectiveStore_ts[\"🗄️ usePerspectiveStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_useEntitlementStore_ts[\"🗄️ useEntitlementStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_useFeatureStore_ts[\"🗄️ useFeatureStore.ts<br/>(Store)\"]:::store\n    packages_core_src_store_scopeSession_ts[\"🗄️ scopeSession.ts<br/>(Store)\"]:::store\n    packages_core_src_types_Identity_ts[\"🏷️ Identity.ts<br/>(Types)\"]:::type\n    packages_core_src_types_Perspective_ts[\"🏷️ Perspective.ts<br/>(Types)\"]:::type\n    packages_core_src_types_authorization_ts[\"🏷️ authorization.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_registry_citizenship_ts[\"📄 citizenship.ts\"]:::logic\n    packages_core_src_logic_ports_entitlement_port_ts[\"📄 entitlement.port.ts\"]:::logic\n    packages_core_src_logic_permissions_hooks_useAuthority_ts[\"📄 useAuthority.ts\"]:::logic\n    packages_core_src_logic_registry_featureLifecycleManifest_ts[\"📄 featureLifecycleManifest.ts\"]:::logic\n    packages_core_src_logic_schemas_capacity_schema_ts[\"📄 capacity.schema.ts\"]:::logic\n    packages_core_src_logic_schemas_user_schema_ts[\"📄 user.schema.ts\"]:::logic\n    packages_core_src_store_types_featureFlags_ts[\"🗄️ featureFlags.ts<br/>(Store)\"]:::store\n    packages_core_src_logic_permissions_entitlement_ts[\"📄 entitlement.ts\"]:::logic\n    packages_core_src_adapters_powersync_database_ts[\"📄 database.ts\"]:::logic\n    packages_core_src_adapters_powersync_schema_ts[\"📄 schema.ts\"]:::logic\n    packages_core_src_native_deviceTrust_ts[\"📄 deviceTrust.ts\"]:::logic\n    packages_core_src_lib_security_deviceTrust_ts[\"📄 deviceTrust.ts\"]:::logic\n    packages_core_src_logic_auth_identityState_ts[\"📄 identityState.ts\"]:::logic\n    packages_core_src_logic_permissions_cedarClientEvaluator_ts[\"📄 cedarClientEvaluator.ts\"]:::logic\n    packages_core_src_logic_permissions_localResourceAttributes_ts[\"📄 localResourceAttributes.ts\"]:::logic\n    packages_core_src_effect_AppRuntime_ts[\"📄 AppRuntime.ts\"]:::logic\n    packages_core_src_effect_bindings_ts[\"📄 bindings.ts\"]:::logic\n    packages_core_src_logic_ports_permissionSnapshot_port_ts[\"📄 permissionSnapshot.port.ts\"]:::logic\n    packages_core_src_store_useAuthStore_ts[\"🗄️ useAuthStore.ts<br/>(Store)\"]:::store\n    packages_core_src_logic_ports_featureRollout_port_ts[\"📄 featureRollout.port.ts\"]:::logic\n    packages_core_src_lib_featureRolloutSnapshot_ts[\"📄 featureRolloutSnapshot.ts\"]:::logic\n    packages_core_src_constants_SriLankanSchools_ts[\"📄 SriLankanSchools.ts\"]:::logic\n    packages_core_src_types_CivicRole_ts[\"🏷️ CivicRole.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_permissions_authority_ts[\"📄 authority.ts\"]:::logic\n    packages_core_src_logic_registry_domainEntry_ts[\"📄 domainEntry.ts\"]:::logic\n    packages_core_src_logic_schemas_identity_schema_ts[\"📄 identity.schema.ts\"]:::logic\n    packages_core_src_powersync_ts[\"❌ powersync.ts<br/>(PHANTOM/DEAD)\"]:::dead\n    packages_core_src_adapters_powersync_databaseRegistry_ts[\"📄 databaseRegistry.ts\"]:::logic\n    packages_core_src_adapters_powersync_powersync_shim_ts[\"📄 powersync-shim.ts\"]:::logic\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts[\"📄 secureDrizzleProxy.ts\"]:::logic\n    packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts[\"📄 singleActivePowerSyncRuntime.ts\"]:::logic\n    packages_core_src_logic_runtimeRegistry_ts[\"📄 runtimeRegistry.ts\"]:::logic\n    packages_core_src_adapters_supabaseClient_ts[\"📄 supabaseClient.ts\"]:::logic\n    packages_core_src_adapters_supabaseIdentity_adapter_ts[\"📄 supabaseIdentity.adapter.ts\"]:::logic\n    packages_core_src_types_API_ts[\"🏷️ API.ts<br/>(Types)\"]:::type\n    packages_core_src_monitoring_index_ts[\"📄 index.ts\"]:::logic\n    packages_core_src_effect_Layers_ts[\"📄 Layers.ts\"]:::logic\n    packages_core_src_adapters_feature_rollout_featureRolloutCache_adapter_ts[\"📄 featureRolloutCache.adapter.ts\"]:::logic\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts[\"📄 growthBookFeatureRollout.adapter.ts\"]:::logic\n    packages_core_src_lib_accountScope_ts[\"📄 accountScope.ts\"]:::logic\n    packages_core_src_lib_authProfileStorage_ts[\"📄 authProfileStorage.ts\"]:::logic\n    packages_core_src_lib_storageWrapper_ts[\"📄 storageWrapper.ts\"]:::logic\n    packages_core_src_lib_sync_eventBus_ts[\"📄 eventBus.ts\"]:::logic\n    packages_core_src_monitoring_breadcrumbs_ts[\"📄 breadcrumbs.ts\"]:::logic\n    packages_core_src_native_guestScope_ts[\"📄 guestScope.ts\"]:::logic\n    packages_core_src_native_localGuestSession_ts[\"📄 localGuestSession.ts\"]:::logic\n    packages_core_src_store_slices_auth_slice_ts[\"🗄️ auth.slice.ts<br/>(Store)\"]:::store\n    packages_core_src_types_User_ts[\"🏷️ User.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_utils_edloveUuidV8_ts[\"📄 edloveUuidV8.ts\"]:::logic\n    packages_core_src_logic_ports_authz_port_ts[\"📄 authz.port.ts\"]:::logic\n    packages_core_src_types_Errors_ts[\"🏷️ Errors.ts<br/>(Types)\"]:::type\n    packages_core_src_types_runtime_ts[\"🏷️ runtime.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_authStorage_ts[\"📄 authStorage.ts\"]:::logic\n    packages_core_src_lib_security_transportSecurity_ts[\"📄 transportSecurity.ts\"]:::logic\n    packages_core_src_adapters_supabase_sessionContinuity_ts[\"📄 sessionContinuity.ts\"]:::logic\n    packages_core_src_lib_storage_ts[\"📄 storage.ts\"]:::logic\n    packages_core_src_logic_ports_identity_port_ts[\"📄 identity.port.ts\"]:::logic\n    packages_core_src_logic_schemas_profileUpdate_schema_ts[\"📄 profileUpdate.schema.ts\"]:::logic\n    packages_core_src_utils_effect_ts[\"📄 effect.ts\"]:::logic\n    packages_core_src_platform_drivers_networkMonitor_ts[\"📄 networkMonitor.ts\"]:::logic\n    packages_core_src_lib_experienceState_ts[\"📄 experienceState.ts\"]:::logic\n    packages_core_src_types_index_ts[\"🏷️ index.ts<br/>(Types)\"]:::type\n    packages_core_src_lib_devicePreferences_ts[\"📄 devicePreferences.ts\"]:::logic\n    packages_core_src_types_Social_ts[\"🏷️ Social.ts<br/>(Types)\"]:::type\n    packages_core_src_types_Tenancy_ts[\"🏷️ Tenancy.ts<br/>(Types)\"]:::type\n    packages_core_src_logic_interfaces_network_port_ts[\"📄 network.port.ts\"]:::logic\n    packages_core_src_lib_scopedStateStorage_ts[\"📄 scopedStateStorage.ts\"]:::logic\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"useAuthority\"| packages_core_src_logic_permissions_hooks_useAuthority_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"CITIZENSHIP, FeatureRequirement...\"| packages_core_src_logic_permissions_sanctuaryFeature_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"resolveFeatureFlagClass, resolveFeatureFlagValue\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_hooks_useSanctuaryFeature_ts -->|\"Bond, CitizenshipTier\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"FeatureAccessContext, isFeatureAccessContextReady\"| packages_core_src_logic_permissions_accessContext_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"isBaselineReadCapability, isOnDeviceSelfCapability\"| packages_core_src_logic_permissions_baselineCapabilities_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"meetsSubscriptionTier, resolveScopedEntitlement\"| packages_core_src_logic_permissions_entitlement_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"EntitlementScope, EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_sanctuaryFeature_ts -->|\"CITIZENSHIP, CitizenshipLevel...\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_permissions_accessContext_ts -->|\"EntitlementReadiness, EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_accessContext_ts -->|\"CitizenshipLevel\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_permissions_baselineCapabilities_ts -->|\"Action\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"getDrizzleDB, registerPermissionValidator\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"cedarPolicies\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"deviceTrustAPI\"| packages_core_src_native_deviceTrust_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"DeviceTrustEngine\"| packages_core_src_lib_security_deviceTrust_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"isAnonymousIdentity\"| packages_core_src_logic_auth_identityState_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"evaluateShape2\"| packages_core_src_logic_permissions_cedarClientEvaluator_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"Action, Subject\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_localEvaluator_ts -->|\"getLocalResourceAttributes\"| packages_core_src_logic_permissions_localResourceAttributes_ts\n    packages_core_src_logic_permissions_sovereignty_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"CedarDecision\"| packages_core_src_types_authorization_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"callPort\"| packages_core_src_effect_AppRuntime_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"sessionScope\"| packages_core_src_effect_bindings_ts\n    packages_core_src_store_useCedarDecisionStore_ts -->|\"PermissionSnapshotPort\"| packages_core_src_logic_ports_permissionSnapshot_port_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"eventBus, persistStorage\"| packages_core_src_effect_bindings_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"useCedarDecisionStore\"| packages_core_src_store_useCedarDecisionStore_ts\n    packages_core_src_store_usePerspectiveStore_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"callPort\"| packages_core_src_effect_AppRuntime_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"persistStorage\"| packages_core_src_effect_bindings_ts\n    packages_core_src_store_useEntitlementStore_ts -->|\"EntitlementGrant, EntitlementReadiness...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"breadcrumb, featureRollout...\"| packages_core_src_effect_bindings_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS, normalizeFeatureRolloutSnapshot...\"| packages_core_src_lib_featureRolloutSnapshot_ts\n    packages_core_src_store_useFeatureStore_ts -->|\"DEFAULT_FEATURE_FLAGS, FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_store_scopeSession_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_store_scopeSession_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_types_Perspective_ts -->|\"SchoolType\"| packages_core_src_constants_SriLankanSchools_ts\n    packages_core_src_types_Perspective_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_types_Perspective_ts -->|\"CivicRoleId\"| packages_core_src_types_CivicRole_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"decide, EntitlementInputs...\"| packages_core_src_logic_permissions_authority_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useScopeSessionStore\"| packages_core_src_store_scopeSession_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useCedarDecisionStore\"| packages_core_src_store_useCedarDecisionStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useEntitlementStore\"| packages_core_src_store_useEntitlementStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"useFeatureStore\"| packages_core_src_store_useFeatureStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"usePerspectiveStore\"| packages_core_src_store_usePerspectiveStore_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"Action, CedarDecision...\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_hooks_useAuthority_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_registry_featureLifecycleManifest_ts -->|\"FeatureFlagClass, FeatureFlagClassSchema...\"| packages_core_src_logic_registry_domainEntry_ts\n    packages_core_src_logic_registry_featureLifecycleManifest_ts -->|\"DEFAULT_FEATURE_FLAGS\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_schemas_user_schema_ts -->|\"BondSchema, CapacitySchema...\"| packages_core_src_logic_schemas_identity_schema_ts\n    packages_core_src_logic_permissions_entitlement_ts -->|\"EntitlementRequirement, EntitlementScope...\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_adapters_powersync_database_ts -.->|❌ getPowerSyncDB, getDrizzleDB| packages_core_src_powersync_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncDatabaseRegistry\"| packages_core_src_adapters_powersync_databaseRegistry_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncDatabase as MockPowerSyncDatabase\"| packages_core_src_adapters_powersync_powersync_shim_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"AppSchema\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"createSecureDrizzleProxy\"| packages_core_src_adapters_powersync_secureDrizzleProxy_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"PowerSyncRuntimeOwnership\"| packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts\n    packages_core_src_adapters_powersync_database_ts -->|\"coreRuntime\"| packages_core_src_logic_runtimeRegistry_ts\n    packages_core_src_native_deviceTrust_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_native_deviceTrust_ts -->|\"supabaseIdentityAdapter as identity\"| packages_core_src_adapters_supabaseIdentity_adapter_ts\n    packages_core_src_native_deviceTrust_ts -->|\"Identity as ActiveCitizen\"| packages_core_src_types_Identity_ts\n    packages_core_src_native_deviceTrust_ts -->|\"coreRuntime\"| packages_core_src_logic_runtimeRegistry_ts\n    packages_core_src_native_deviceTrust_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_lib_security_deviceTrust_ts -->|\"deviceTrustAPI\"| packages_core_src_native_deviceTrust_ts\n    packages_core_src_logic_permissions_localResourceAttributes_ts -->|\"getDrizzleDB\"| packages_core_src_adapters_powersync_database_ts\n    packages_core_src_logic_permissions_localResourceAttributes_ts -->|\"classrooms, schools\"| packages_core_src_adapters_powersync_schema_ts\n    packages_core_src_effect_AppRuntime_ts -->|\"logBreadcrumb\"| packages_core_src_monitoring_index_ts\n    packages_core_src_effect_AppRuntime_ts -->|\"EntitlementLive, PermissionSnapshotLive\"| packages_core_src_effect_Layers_ts\n    packages_core_src_effect_bindings_ts -->|\"featureRolloutCache as rolloutCache\"| packages_core_src_adapters_feature_rollout_featureRolloutCache_adapter_ts\n    packages_core_src_effect_bindings_ts -->|\"growthBookFeatureRolloutAdapter\"| packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts\n    packages_core_src_effect_bindings_ts -->|\"getAccountScopeRevision, scopeStorageKey\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_effect_bindings_ts -->|\"authProfileStorage, restoreIdentityProfile\"| packages_core_src_lib_authProfileStorage_ts\n    packages_core_src_effect_bindings_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_effect_bindings_ts -->|\"sovereignBus\"| packages_core_src_lib_sync_eventBus_ts\n    packages_core_src_effect_bindings_ts -->|\"FeatureRolloutSnapshot, IFeatureRolloutPort\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_effect_bindings_ts -->|\"leaveBreadcrumb\"| packages_core_src_monitoring_breadcrumbs_ts\n    packages_core_src_effect_bindings_ts -->|\"getGuestScopeRevision, guestStorageKey\"| packages_core_src_native_guestScope_ts\n    packages_core_src_effect_bindings_ts -->|\"isLocalGuestSessionId\"| packages_core_src_native_localGuestSession_ts\n    packages_core_src_store_useAuthStore_ts -->|\"authProfile\"| packages_core_src_effect_bindings_ts\n    packages_core_src_store_useAuthStore_ts -->|\"AuthSlice, createAuthSlice\"| packages_core_src_store_slices_auth_slice_ts\n    packages_core_src_logic_ports_featureRollout_port_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"FEATURE_FLAG_MANIFEST\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_lib_featureRolloutSnapshot_ts -->|\"DEFAULT_FEATURE_FLAGS, FeatureFlags\"| packages_core_src_store_types_featureFlags_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"resolveBondScope\"| packages_core_src_logic_permissions_bondScope_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"resolveScopedEntitlement\"| packages_core_src_logic_permissions_entitlement_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"EntitlementSnapshot\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Capacity, CapacitySchema\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"TenantKind, UserContext...\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"CedarDecision\"| packages_core_src_types_authorization_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"Bond, resolveBondCitizenship\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"SanctuaryPerspective\"| packages_core_src_types_Perspective_ts\n    packages_core_src_logic_permissions_authority_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_logic_registry_domainEntry_ts -->|\"CITIZENSHIP\"| packages_core_src_logic_registry_citizenship_ts\n    packages_core_src_logic_schemas_identity_schema_ts -->|\"isEdloveAccountId\"| packages_core_src_logic_utils_edloveUuidV8_ts\n    packages_core_src_adapters_powersync_databaseRegistry_ts -->|\"ManagedPowerSyncDatabase, PowerSyncRuntimeOwnership\"| packages_core_src_adapters_powersync_singleActivePowerSyncRuntime_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"resolveBondScope\"| packages_core_src_logic_permissions_bondScope_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"CapabilityToken\"| packages_core_src_logic_ports_authz_port_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"useScopeSessionStore\"| packages_core_src_store_scopeSession_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"useAuthStore\"| packages_core_src_store_useAuthStore_ts\n    packages_core_src_adapters_powersync_secureDrizzleProxy_ts -->|\"ErrorCategory, SovereignError\"| packages_core_src_types_Errors_ts\n    packages_core_src_logic_runtimeRegistry_ts -->|\"CoreRuntimeEnvironment\"| packages_core_src_types_runtime_ts\n    packages_core_src_adapters_supabaseClient_ts -->|\"supabaseAuthStorage\"| packages_core_src_lib_authStorage_ts\n    packages_core_src_adapters_supabaseClient_ts -->|\"assertSecureApiUrl, secureApiFetch\"| packages_core_src_lib_security_transportSecurity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"assertSupabaseSessionContinuity, readSupabaseSession...\"| packages_core_src_adapters_supabase_sessionContinuity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"IIdentityPort\"| packages_core_src_logic_ports_identity_port_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"CanonicalAccountIdSchema\"| packages_core_src_logic_schemas_identity_schema_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"CompleteProfileSchema, ProfileCompletionDetails...\"| packages_core_src_logic_schemas_profileUpdate_schema_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"Bond, Capacity...\"| packages_core_src_types_Identity_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_adapters_supabaseIdentity_adapter_ts -->|\"strictRetryPolicy\"| packages_core_src_utils_effect_ts\n    packages_core_src_types_API_ts -->|\"SovereignError\"| packages_core_src_types_Errors_ts\n    packages_core_src_effect_Layers_ts -->|\"EntitlementPort\"| packages_core_src_logic_ports_entitlement_port_ts\n    packages_core_src_effect_Layers_ts -->|\"PermissionSnapshotPort\"| packages_core_src_logic_ports_permissionSnapshot_port_ts\n    packages_core_src_adapters_feature_rollout_featureRolloutCache_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_feature_rollout_featureRolloutCache_adapter_ts -->|\"FeatureRolloutSnapshot\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"networkMonitor\"| packages_core_src_platform_drivers_networkMonitor_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"FeatureRolloutSnapshot, IFeatureRolloutPort\"| packages_core_src_logic_ports_featureRollout_port_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"FEATURE_FLAG_MANIFEST\"| packages_core_src_logic_registry_featureLifecycleManifest_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"UserContext\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_adapters_feature_rollout_growthBookFeatureRollout_adapter_ts -->|\"trackProductEvent\"| packages_core_src_monitoring_index_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"scopeStorageKey\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"useExperienceState\"| packages_core_src_lib_experienceState_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"guestStorageKey, isGuestUserId\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_authProfileStorage_ts -->|\"User\"| packages_core_src_types_index_ts\n    packages_core_src_lib_storageWrapper_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_lib_storageWrapper_ts -->|\"ensureDeviceThemePreference\"| packages_core_src_lib_devicePreferences_ts\n    packages_core_src_monitoring_breadcrumbs_ts -->|\"leaveBreadcrumb, getBreadcrumbs\"| packages_core_src_monitoring_breadcrumbs_ts\n    packages_core_src_native_localGuestSession_ts -->|\"SafeZustandStorage\"| packages_core_src_lib_storageWrapper_ts\n    packages_core_src_native_localGuestSession_ts -->|\"setGuestScope\"| packages_core_src_native_guestScope_ts\n    packages_core_src_store_slices_auth_slice_ts -->|\"breadcrumb as leaveBreadcrumb\"| packages_core_src_effect_bindings_ts\n    packages_core_src_store_slices_auth_slice_ts -->|\"User\"| packages_core_src_types_index_ts\n    packages_core_src_types_User_ts -->|\"Bond\"| packages_core_src_types_Identity_ts\n    packages_core_src_types_User_ts -->|\"SocialLink\"| packages_core_src_types_Social_ts\n    packages_core_src_types_User_ts -->|\"TenantKind\"| packages_core_src_types_Tenancy_ts\n    packages_core_src_lib_authStorage_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_adapters_supabase_sessionContinuity_ts -->|\"supabaseClient\"| packages_core_src_adapters_supabaseClient_ts\n    packages_core_src_adapters_supabase_sessionContinuity_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"Identity\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"ProfileCompletionDetails\"| packages_core_src_logic_schemas_profileUpdate_schema_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"Bond, Capacity...\"| packages_core_src_types_Identity_ts\n    packages_core_src_logic_ports_identity_port_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_platform_drivers_networkMonitor_ts -->|\"INetwork, NetworkSnapshot\"| packages_core_src_logic_interfaces_network_port_ts\n    packages_core_src_lib_experienceState_ts -->|\"createScopedStateStorage\"| packages_core_src_lib_scopedStateStorage_ts\n    packages_core_src_types_index_ts -->|\"APIError\"| packages_core_src_types_API_ts\n    packages_core_src_types_index_ts -->|\"DeviceMetadata\"| packages_core_src_types_runtime_ts\n    packages_core_src_types_index_ts -->|\"User\"| packages_core_src_types_User_ts\n    packages_core_src_lib_devicePreferences_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n    packages_core_src_types_Tenancy_ts -->|\"Capacity\"| packages_core_src_logic_schemas_capacity_schema_ts\n    packages_core_src_types_Tenancy_ts -->|\"TenantKind\"| packages_core_src_logic_schemas_user_schema_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"getActiveAccountId, getAccountScopeRevision...\"| packages_core_src_lib_accountScope_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"getGuestScope, getGuestScopeRevision...\"| packages_core_src_native_guestScope_ts\n    packages_core_src_lib_scopedStateStorage_ts -->|\"storage\"| packages_core_src_lib_storage_ts\n\n    classDef core fill:#dbeafe,stroke:#2563eb,stroke-width:3px,color:#1e3a8a;\n    classDef store fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;\n    classDef type fill:#e0e7ff,stroke:#6366f1,stroke-width:1px,color:#312e81;\n    classDef logic fill:#f3f4f6,stroke:#9ca3af,stroke-width:1px,color:#1f2937;\n    classDef dead fill:#fee2e2,stroke:#ef4444,stroke-width:2px,stroke-dasharray: 5 5,color:#991b1b;\n"
 }

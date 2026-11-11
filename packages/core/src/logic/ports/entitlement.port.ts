@@ -1,3 +1,5 @@
+import { Context } from 'effect';
+
 export type EntitlementReadiness =
   | 'unknown'
   | 'loading'
@@ -50,3 +52,8 @@ export interface IEntitlementPort {
     scope?: EntitlementScopeContext,
   ): () => void;
 }
+
+/** The entitlement source, as a service the composition root binds (effect/Layers.ts). */
+export class EntitlementPort extends Context.Service<EntitlementPort, IEntitlementPort>()(
+  'app/EntitlementPort',
+) {}

@@ -120,10 +120,10 @@ function parse(file) {
         /^export\s+(default\s+)?\w+;?$/.test(s),
     ) &&
     statements.some((s) => s.startsWith('export'));
-  // Schema decoding only; JSON.parse is deserialisation, not validation.
+  // Schema decoding only; JSON.parse and Date.parse aren't validation.
   const parses = [
     ...code.matchAll(
-      /(?<!JSON)\.(safeParse|parse|safeParseAsync|parseAsync)\(|Schema\.decodeUnknown\w*\(/g,
+      /(?<!JSON|Date)\.(safeParse|parse|safeParseAsync|parseAsync)\(|Schema\.decodeUnknown\w*\(/g,
     ),
   ].length;
   return { imports, passThrough, parses };

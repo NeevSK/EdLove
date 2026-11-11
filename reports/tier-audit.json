@@ -1,24 +1,23 @@
 {
   "summary": {
     "scope": "sanctuary-feature tree (reports/topological-layer-analysis.json)",
-    "files": 76,
+    "files": 68,
     "tiers": {
       "T0": 17,
       "T1": 4,
-      "T2": 12,
-      "T3": 23,
-      "C": 0,
+      "T2": 10,
+      "T3": 14,
+      "C": 3,
       "T4": 8,
       "T5": 2,
       "T6": 10,
       "UNPLACED": 0
     },
     "findings": {
-      "parse-above-boundary": 6,
-      "tier-import": 18,
-      "misplaced": 13,
-      "forbidden-package": 1,
-      "upward-import": 3
+      "parse-above-boundary": 3,
+      "tier-import": 4,
+      "misplaced": 10,
+      "upward-import": 1
     }
   },
   "findings": [
@@ -40,22 +39,6 @@
       "rule": "tier-import",
       "file": "packages/core/src/store/usePerspectiveStore.ts",
       "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/usePerspectiveStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/sync/eventBus.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/usePerspectiveStore.ts",
-      "tier": "T4",
       "to": "packages/core/src/store/useAuthStore.ts",
       "toTier": "T4",
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
@@ -69,135 +52,10 @@
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
-      "rule": "misplaced",
-      "file": "packages/core/src/lib/storageWrapper.ts",
-      "tier": "T3",
-      "reason": "Zustand persist storage over the storage adapter; belongs in packages/core/src/adapters/storage/"
-    },
-    {
-      "rule": "misplaced",
-      "file": "packages/core/src/lib/sync/eventBus.ts",
-      "tier": "T3",
-      "reason": "In-process pub/sub runtime; belongs in packages/core/src/adapters/events/"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useAuthStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/authProfileStorage.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useCedarDecisionStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/adapters/powersync/database.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useCedarDecisionStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/adapters/powersync/schema.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useCedarDecisionStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/logic/permissions/signature.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useCedarDecisionStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/native/localGuestSession.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "forbidden-package",
-      "file": "packages/core/src/store/useCedarDecisionStore.ts",
-      "tier": "T4",
-      "to": "drizzle-orm",
-      "reason": "Tier 4: State may not use drizzle-orm"
-    },
-    {
-      "rule": "misplaced",
-      "file": "packages/core/src/logic/permissions/signature.ts",
-      "tier": "T3",
-      "reason": "Verifies signatures with the platform WebCrypto API, which is I/O; belongs in packages/core/src/platform/drivers/cryptoVault"
-    },
-    {
-      "rule": "parse-above-boundary",
-      "file": "packages/core/src/store/useEntitlementStore.ts",
-      "tier": "T4",
-      "reason": "1 schema parse call(s); decode at the adapter and pass typed data up"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useEntitlementStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useEntitlementStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
       "rule": "parse-above-boundary",
       "file": "packages/core/src/logic/permissions/authority.ts",
       "tier": "T2",
       "reason": "2 schema parse call(s); decode at the adapter and pass typed data up"
-    },
-    {
-      "rule": "parse-above-boundary",
-      "file": "packages/core/src/store/useFeatureStore.ts",
-      "tier": "T4",
-      "reason": "2 schema parse call(s); decode at the adapter and pass typed data up"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useFeatureStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storage.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useFeatureStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useFeatureStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/monitoring/breadcrumbs.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useFeatureStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/native/guestScope.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
       "rule": "parse-above-boundary",
@@ -207,15 +65,9 @@
     },
     {
       "rule": "misplaced",
-      "file": "packages/core/src/lib/storage.ts",
+      "file": "packages/core/src/lib/accountScope.ts",
       "tier": "T3",
-      "reason": "Wraps the platform storage driver; belongs in packages/core/src/adapters/storage/"
-    },
-    {
-      "rule": "misplaced",
-      "file": "packages/core/src/lib/devicePreferences.ts",
-      "tier": "T3",
-      "reason": "Device preference records in storage; belongs in packages/core/src/adapters/storage/"
+      "reason": "The session register: active account and a revision for dropping stale work (with native/guestScope.ts); belongs in packages/core/src/adapters/session/"
     },
     {
       "rule": "misplaced",
@@ -232,34 +84,16 @@
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/slices/auth.slice.ts",
-      "tier": "T4",
-      "to": "packages/core/src/monitoring/index.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+      "rule": "misplaced",
+      "file": "packages/core/src/lib/storageWrapper.ts",
       "tier": "T3",
-      "to": "packages/core/src/store/scopeSession.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-      "tier": "T3",
-      "to": "packages/core/src/store/useAuthStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
+      "reason": "Zustand persist storage over the storage adapter; belongs in packages/core/src/adapters/storage/"
     },
     {
       "rule": "misplaced",
-      "file": "packages/core/src/lib/accountScope.ts",
-      "tier": "T2",
-      "reason": "Pure derivation of account-scoped keys, no imports; belongs in packages/core/src/logic/accounts/"
+      "file": "packages/core/src/lib/sync/eventBus.ts",
+      "tier": "T3",
+      "reason": "In-process pub/sub runtime; belongs in packages/core/src/adapters/events/"
     },
     {
       "rule": "misplaced",
@@ -268,16 +102,16 @@
       "reason": "Pure: turns a rollout port result into a flag snapshot; belongs in packages/core/src/logic/registry/"
     },
     {
-      "rule": "parse-above-boundary",
-      "file": "packages/core/src/lib/featureRolloutSnapshot.ts",
-      "tier": "T2",
-      "reason": "1 schema parse call(s); decode at the adapter and pass typed data up"
-    },
-    {
       "rule": "misplaced",
       "file": "packages/core/src/logic/utils/edloveUuidV8.ts",
       "tier": "T0",
       "reason": "The account ID format check that identity.schema.ts is built on; a contract primitive; belongs in packages/core/src/logic/schemas/"
+    },
+    {
+      "rule": "misplaced",
+      "file": "packages/core/src/lib/storage.ts",
+      "tier": "T3",
+      "reason": "Wraps the platform storage driver; belongs in packages/core/src/adapters/storage/"
     },
     {
       "rule": "misplaced",
@@ -295,15 +129,9 @@
     },
     {
       "rule": "misplaced",
-      "file": "packages/core/src/lib/authStorage.ts",
+      "file": "packages/core/src/lib/devicePreferences.ts",
       "tier": "T3",
-      "reason": "Reads and writes auth records in storage; belongs in packages/core/src/adapters/storage/"
-    },
-    {
-      "rule": "misplaced",
-      "file": "packages/core/src/lib/security/transportSecurity.ts",
-      "tier": "T3",
-      "reason": "Guards and performs network fetches; belongs in packages/core/src/platform/drivers/"
+      "reason": "Device preference records in storage; belongs in packages/core/src/adapters/storage/"
     },
     {
       "rule": "misplaced",
@@ -332,17 +160,13 @@
     "packages/ui/src/components/prompts/SignupPrompt.tsx": "T6",
     "packages/ui/src/components/prompts/UpgradePrompt.tsx": "T6",
     "packages/core/src/store/usePerspectiveStore.ts": "T4",
-    "packages/core/src/lib/storageWrapper.ts": "T3",
-    "packages/core/src/lib/sync/eventBus.ts": "T3",
+    "packages/core/src/effect/bindings.ts": "C",
     "packages/core/src/store/useAuthStore.ts": "T4",
     "packages/core/src/store/useCedarDecisionStore.ts": "T4",
     "packages/core/src/types/Perspective.ts": "T0",
-    "packages/core/src/adapters/powersync/database.ts": "T3",
-    "packages/core/src/adapters/powersync/schema.ts": "T3",
-    "packages/core/src/logic/permissions/signature.ts": "T3",
-    "packages/core/src/native/localGuestSession.ts": "T3",
+    "packages/core/src/effect/AppRuntime.ts": "C",
+    "packages/core/src/logic/ports/permissionSnapshot.port.ts": "T1",
     "packages/core/src/store/useEntitlementStore.ts": "T4",
-    "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts": "T3",
     "packages/core/src/constants/SriLankanSchools.ts": "T0",
     "packages/core/src/types/CivicRole.ts": "T0",
     "packages/core/src/logic/permissions/authority.ts": "T2",
@@ -352,42 +176,38 @@
     "packages/core/src/logic/schemas/identity.schema.ts": "T0",
     "packages/ui/src/components/PositiveInvitation.tsx": "T6",
     "packages/ui/src/icons.ts": "T6",
-    "packages/core/src/lib/storage.ts": "T3",
-    "packages/core/src/lib/devicePreferences.ts": "T3",
-    "packages/core/src/lib/authProfileStorage.ts": "T3",
-    "packages/core/src/store/slices/auth.slice.ts": "T4",
-    "packages/core/src/adapters/powersync/databaseRegistry.ts": "T3",
-    "packages/core/src/adapters/powersync/powersync-shim.ts": "T3",
-    "packages/core/src/adapters/powersync/secureDrizzleProxy.ts": "T3",
-    "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts": "T3",
-    "packages/core/src/logic/runtimeRegistry.ts": "T2",
-    "packages/core/src/native/guestScope.ts": "T3",
-    "packages/core/src/adapters/supabaseClient.ts": "T3",
-    "packages/core/src/logic/permissions/bondScope.ts": "T2",
-    "packages/core/src/types/User.ts": "T0",
-    "packages/core/src/lib/accountScope.ts": "T2",
-    "packages/core/src/lib/featureRolloutSnapshot.ts": "T2",
+    "packages/core/src/adapters/feature-rollout/featureRolloutCache.adapter.ts": "T3",
     "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts": "T3",
+    "packages/core/src/lib/accountScope.ts": "T3",
+    "packages/core/src/lib/authProfileStorage.ts": "T3",
+    "packages/core/src/lib/storageWrapper.ts": "T3",
+    "packages/core/src/lib/sync/eventBus.ts": "T3",
     "packages/core/src/logic/ports/featureRollout.port.ts": "T1",
     "packages/core/src/monitoring/breadcrumbs.ts": "T3",
+    "packages/core/src/native/guestScope.ts": "T3",
+    "packages/core/src/native/localGuestSession.ts": "T3",
+    "packages/core/src/store/slices/auth.slice.ts": "T4",
+    "packages/core/src/monitoring/index.ts": "T3",
+    "packages/core/src/effect/Layers.ts": "C",
+    "packages/core/src/logic/permissions/bondScope.ts": "T2",
+    "packages/core/src/types/User.ts": "T0",
+    "packages/core/src/lib/featureRolloutSnapshot.ts": "T2",
     "packages/core/src/logic/utils/edloveUuidV8.ts": "T0",
     "packages/ui/src/components/SanctuaryButton.tsx": "T6",
     "packages/ui/src/primitives.ts": "T6",
     "packages/ui/src/utils/haptics.ts": "T6",
+    "packages/core/src/lib/storage.ts": "T3",
+    "packages/core/src/platform/drivers/networkMonitor.ts": "T3",
     "packages/core/src/lib/experienceState.ts": "T4",
     "packages/core/src/types/index.ts": "T0",
-    "packages/core/src/monitoring/index.ts": "T3",
-    "packages/core/src/logic/ports/authz.port.ts": "T1",
-    "packages/core/src/types/Errors.ts": "T0",
-    "packages/core/src/types/runtime.ts": "T0",
-    "packages/core/src/lib/authStorage.ts": "T3",
-    "packages/core/src/lib/security/transportSecurity.ts": "T3",
+    "packages/core/src/lib/devicePreferences.ts": "T3",
     "packages/core/src/types/Social.ts": "T0",
     "packages/core/src/types/Tenancy.ts": "T0",
-    "packages/core/src/platform/drivers/networkMonitor.ts": "T3",
     "packages/ui/src/utils/classNames.ts": "T6",
+    "packages/core/src/logic/interfaces/network.port.ts": "T1",
     "packages/core/src/lib/scopedStateStorage.ts": "T3",
     "packages/core/src/types/API.ts": "T0",
-    "packages/core/src/logic/interfaces/network.port.ts": "T1"
+    "packages/core/src/types/runtime.ts": "T0",
+    "packages/core/src/types/Errors.ts": "T0"
   }
 }

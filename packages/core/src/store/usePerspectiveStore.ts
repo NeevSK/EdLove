@@ -1,5 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { eventBus, persistStorage } from '@repo/core/effect/bindings';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
@@ -155,7 +154,7 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
           useCedarDecisionStore.getState().clearDecisions();
 
           // 2. Emit perspective transition event over Sovereign Event Bus for cache flushing
-          sovereignBus.emit('perspective:transition_started' as any, {
+          eventBus.emit('perspective:transition_started' as any, {
             from: previousPerspective,
             to: targetPerspective,
           });
@@ -176,7 +175,7 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
             await useCedarDecisionStore.getState().loadDecisions(userId, targetScopeId);
           }
 
-          sovereignBus.emit('perspective:transition_completed' as any, {
+          eventBus.emit('perspective:transition_completed' as any, {
             activePerspective: targetPerspective,
           });
         } catch (error) {
@@ -196,7 +195,7 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
     }),
     {
       name: 'gurudevi-perspective-storage',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
       partialize: (state) => ({
         activePerspective: state.activePerspective,
         availablePerspectives: state.availablePerspectives,
