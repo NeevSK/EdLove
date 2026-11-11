@@ -1,14 +1,12 @@
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
+import { useAuthority } from '@repo/core/logic/permissions/authority';
 import { isBaselineReadCapability } from '@repo/core/logic/permissions/baselineCapabilities';
 import {
   type FeaturePresentation,
   resolveFeaturePresentation,
 } from '@repo/core/logic/permissions/featurePresentation';
-import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
-import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
-import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import type { DomainFeature } from '@repo/core/types/Workspace';
 import { useMemo } from 'react';
 
@@ -22,9 +20,7 @@ export interface FeatureGatingResult {
 export function useFeatureRegistry(
   registry: Record<string, DomainFeature>,
 ): Record<string, FeatureGatingResult> {
-  const { context } = useSanctuaryFeature();
-  const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
-  const getDecision = useCedarDecisionStore((s) => s.getDecision);
+  const { context, cedarSnapshotLoaded, getDecision, flags } = useAuthority();
   const entitlement = useEntitlementQuery(
     context.userId,
     {
@@ -35,7 +31,6 @@ export function useFeatureRegistry(
     Boolean(context.userId && !context.isLocalOnly),
   );
   const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } = entitlement;
-  const flags = useFeatureStore((s) => s.flags);
 
   return useMemo(() => {
     return Object.fromEntries(

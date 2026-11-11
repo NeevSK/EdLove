@@ -76,12 +76,15 @@ function countDataTaggedErrors() {
   return runRgCount('Data\\.TaggedError\\(');
 }
 
-// Authority belongs to one read over the signed snapshot, not to client stores.
+// Authority has one reader: packages/core/src/logic/permissions/authority.ts, over the signed
+// snapshot. Feature flags (useFeatureStore) are rollout state, not authority, so they aren't counted.
 function countAuthorityStoreReads() {
-  return runRgCount(
-    '\\b(useCedarDecisionStore|useEntitlementStore|useFeatureStore|usePerspectiveStore)\\b',
-    ['-g', '!packages/core/src/store/**'],
-  );
+  return runRgCount('\\b(useCedarDecisionStore|useEntitlementStore|usePerspectiveStore)\\b', [
+    '-g',
+    '!packages/core/src/store/**',
+    '-g',
+    '!packages/core/src/logic/permissions/authority.ts',
+  ]);
 }
 
 // Machines are declared with setup({ schemas }) so their context and events are checked.

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Bond } from '@repo/core/types/Identity';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const testState = {
   user: null as any,
@@ -35,16 +35,16 @@ vi.mock('react', () => ({
 }));
 
 vi.mock('@repo/core/store/useAuthStore', () => ({
-  useAuthStore: Object.assign(
-    (selector: (s: any) => any) => selector({ user: testState.user }),
-    { getState: () => ({ user: testState.user }) },
-  ),
+  useAuthStore: Object.assign((selector: (s: any) => any) => selector({ user: testState.user }), {
+    getState: () => ({ user: testState.user }),
+  }),
 }));
 
 vi.mock('@repo/core/store/scopeSession', () => ({
-  useScopeSessionStore: {
-    getState: () => ({ snapshot: testState.scopeSnapshot }),
-  },
+  useScopeSessionStore: Object.assign(
+    (selector: (s: any) => any) => selector({ snapshot: testState.scopeSnapshot }),
+    { getState: () => ({ snapshot: testState.scopeSnapshot }) },
+  ),
 }));
 
 vi.mock('@repo/core/store/usePerspectiveStore', () => ({
@@ -110,9 +110,8 @@ vi.mock('@repo/core/store/useFeatureStore', () => ({
   ),
 }));
 
-
-import { useSanctuaryFeature } from '../hooks/useSanctuaryFeature';
 import { CITIZENSHIP } from '@repo/core/logic/permissions/sanctuaryFeature';
+import { useSanctuaryFeature } from '../hooks/useSanctuaryFeature';
 
 describe('usePermissions and useSanctuaryFeature hooks', () => {
   const mockTeacherBond: Bond = {
