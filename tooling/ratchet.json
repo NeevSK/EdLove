@@ -2,7 +2,7 @@
   "anyInSrc": 2065,
   "tsIgnore": 1,
   "lintSuppressions": 53,
-  "supabaseFromSites": 533,
+  "supabaseFromSites": 277,
   "sourceFilesOver800Loc": 36,
   "rootScripts": 129,
   "legacyCoreApiImports": 80,
@@ -21,5 +21,6 @@
     "PRACTICE_STALE": 0,
     "PRACTICE_NO_CONSUMER": 2,
     "CHANNEL_UNPROVEN": 6
-  }
+  },
+  "directRpcAndRealtimeSites": 32
 }

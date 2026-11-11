@@ -81,7 +81,9 @@ and unresolved product decisions honestly.
 Every capability is declared in `apps/sanctuary-api/src/modules/catalog.ts` and has a card;
 `pnpm --filter @repo/sanctuary-api audit:conformance` compares card, contract, router, docs,
 tagged evidence (`capabilityTag()`) and callers, and fails if a gap count rises. New code never
-imports the frozen pre-v1 `@repo/core/api/*` (ratchet `legacyCoreApiImports`). Bedrock first:
+imports the frozen pre-v1 `@repo/core/api/*` (ratchet `legacyCoreApiImports`). Clients get no
+new direct database paths until the v1 API covers them (owner, 2026-11-11): `.from()`, `.rpc()` and
+realtime call sites are frozen (ratchets `supabaseFromSites`, `directRpcAndRealtimeSites`). Bedrock first:
 dependencies at the newest release in their own channel, and a tool's output is grounding only
 once its recall is measured ([plan](apps/sanctuary-api/docs/implementation/2026-11-08-capability-conformance-plan.md)).
 

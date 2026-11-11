@@ -72,6 +72,12 @@ function countFromSites() {
   return runRgCount('(?:\\.from\\([`\'"]|(?:supabase|supabaseClient|client|db)\\.from\\()');
 }
 
+// Clients calling database functions or realtime directly, outside the v1 API. Frozen with the
+// .from() sites (owner, 2026-11-11): no new direct database paths until the API covers them.
+function countDirectRpcAndRealtimeSites() {
+  return runRgCount('\\.rpc\\(|\\.channel\\(', { extraArgs: ['-g', '!apps/sanctuary-api/**'] });
+}
+
 // Imports of the frozen pre-v1 API in packages/core/src/api from outside it. New code goes to
 // api/v1 and the module folders; this may only fall. See the capability conformance plan.
 function countLegacyCoreApiImports() {
@@ -120,6 +126,7 @@ function measureMetrics() {
     tsIgnore: countTsIgnore(),
     lintSuppressions: countLintSuppressions(),
     supabaseFromSites: countFromSites(),
+    directRpcAndRealtimeSites: countDirectRpcAndRealtimeSites(),
     sourceFilesOver800Loc: countFilesOver800Loc(),
     rootScripts: countRootScripts(),
     legacyCoreApiImports: countLegacyCoreApiImports(),
@@ -152,6 +159,7 @@ function main() {
     tsIgnore: '@ts-ignore / @ts-nocheck in src',
     lintSuppressions: 'eslint-disable / biome-ignore suppressions',
     supabaseFromSites: 'Direct .from() database call sites',
+    directRpcAndRealtimeSites: 'Direct .rpc() / realtime call sites',
     sourceFilesOver800Loc: 'Source files > 800 LOC',
     rootScripts: 'Root package.json scripts',
     legacyCoreApiImports: 'Imports of frozen pre-v1 core API',
