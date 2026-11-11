@@ -40,6 +40,8 @@ const fileSet = new Set(files);
 
 /** Workspace package name -> source root, from each package.json. */
 const packageRoots = new Map();
+/** [specifier pattern, file pattern] from package.json `exports`; `*` matches one or more segments. */
+const packageExports = [];
 for (const dir of ['packages', 'apps']) {
   for (const name of dirsIn(dir)) {
     const manifest = path.join(ROOT, dir, name, 'package.json');
@@ -47,9 +49,19 @@ for (const dir of ['packages', 'apps']) {
     const pkg = JSON.parse(fs.readFileSync(manifest, 'utf8'));
     const src = fs.existsSync(path.join(ROOT, dir, name, 'src')) ? `${dir}/${name}/src` : `${dir}/${name}`;
     if (pkg.name) packageRoots.set(pkg.name, src);
+    if (pkg.name && pkg.exports && typeof pkg.exports === 'object') {
+      // Subpath -> file, so `@repo/core/web-auth` finds src/webAuth.ts the way bundlers do.
+      const pick = (v) => (typeof v === 'string' ? v : v && (v['react-native'] ?? v.import ?? v.default ?? v.types));
+      for (const [sub, target] of Object.entries(pkg.exports)) {
+        const t = pick(target);
+        if (typeof t === 'string') packageExports.push([pkg.name + sub.slice(1), path.posix.join(dir, name, t)]);
+      }
+    }
   }
 }
 
+// Bundlers pick a platform file for a bare specifier; count the import against each variant.
+const EXTS = ['', '.ts', '.tsx', '/index.ts', '/index.tsx', '.native.ts', '.native.tsx', '.web.ts', '.web.tsx', '.ios.tsx', '.android.tsx', '/index.native.ts', '/index.web.ts'];
 function resolve(spec, from) {
   let base = null;
   if (spec.startsWith('.')) base = path.relative(ROOT, path.resolve(ROOT, path.dirname(from), spec));
@@ -57,18 +69,32 @@ function resolve(spec, from) {
     const app = from.split('/').slice(0, 2).join('/');
     for (const prefix of [`${app}/src/`, `${app}/`]) {
       const candidate = prefix + spec.slice(2);
-      for (const ext of ['', '.ts', '.tsx', '/index.ts', '/index.tsx']) if (fileSet.has(candidate + ext)) return candidate + ext;
+      for (const ext of EXTS) if (fileSet.has(candidate + ext)) return candidate + ext;
     }
     return null;
   } else {
-    for (const [name, src] of packageRoots) {
+    for (const [pattern, target] of packageExports) {
+      if (!pattern.includes('*')) {
+        if (spec === pattern) base = target.replace(/\.(tsx?|mjs|js)$/, '');
+      } else {
+        const [pre, post] = pattern.split('*');
+        if (spec.startsWith(pre) && spec.endsWith(post) && spec.length > pre.length + post.length) {
+          base = target.replace('*', spec.slice(pre.length, spec.length - post.length)).replace(/\.(tsx?|mjs|js)$/, '');
+        }
+      }
+      if (base) break;
+    }
+    if (!base) for (const [name, src] of packageRoots) {
       if (spec === name) base = `${src}/index`;
       else if (spec.startsWith(`${name}/`)) base = `${src}/${spec.slice(name.length + 1)}`;
     }
   }
   if (!base) return null;
   base = base.replace(/\\/g, '/');
-  for (const ext of ['', '.ts', '.tsx', '/index.ts', '/index.tsx']) if (fileSet.has(base + ext)) return base + ext;
+  for (const ext of EXTS) if (fileSet.has(base + ext)) return base + ext;
+  // ESM source written for Node: `./x.js` names ./x.ts.
+  const js = base.match(/^(.*)\.(m?)jsx?$/);
+  if (js) for (const ext of ['.ts', '.tsx', '.mts']) if (fileSet.has(js[1] + ext)) return js[1] + ext;
   return null;
 }
 
@@ -170,7 +196,15 @@ function shape({ c }) {
 
 const analysed = new Map(files.map((f) => [f, analyse(f)]));
 const importers = new Map(files.map((f) => [f, { prod: 0, tests: 0 }]));
-for (const [f, a] of analysed) for (const i of a.imports) if (i.target && importers.has(i.target)) importers.get(i.target).prod += 1;
+/** A module and its platform variants (Foo.tsx, Foo.native.tsx, Foo.web.tsx ...) share importers. */
+const variantsOf = (target) => {
+  const stem = target.replace(/(\.(native|web|ios|android))?\.tsx?$/, '');
+  return EXTS.slice(1, 3).concat(EXTS.slice(5, 11)).map((e) => stem + e).filter((v) => fileSet.has(v));
+};
+const credit = (target, key) => {
+  for (const v of new Set([target, ...variantsOf(target)])) if (importers.has(v)) importers.get(v)[key] += 1;
+};
+for (const [f, a] of analysed) for (const i of a.imports) if (i.target) credit(i.target, 'prod');
 // Importers from tests count separately: a file only tests use is still a ghost to the product.
 for (const root of roots) {
   const testFiles = [];
@@ -187,7 +221,7 @@ for (const root of roots) {
     const rel = path.relative(ROOT, t).replace(/\\/g, '/');
     for (const m of fs.readFileSync(t, 'utf8').matchAll(/(?:from|import\(|vi\.mock\()\s*['"]([^'"]+)['"]/g)) {
       const target = resolve(m[1], rel);
-      if (target && importers.has(target)) importers.get(target).tests += 1;
+      if (target) credit(target, 'tests');
     }
   }
 }
