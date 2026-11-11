@@ -74,13 +74,13 @@ when its card is written and admitted there.
 | Domain | Draft subdomains | Owns | Key rule |
 | --- | --- | --- | --- |
 | Wellbeing | mood and energy, journals and thought records, reflection, practice and goals | Person-owned facts | No institution sees these by default. Any school signal is aggregate and consented |
-| Learning (LMS) | classrooms, lessons and materials, assignments and submissions, assessments and quizzes, grading, notes | Grades, submissions, classroom membership | Grades are corrected, never edited in place |
+| Learning (LMS) | classrooms, teaching relations ([card](domains/learning/relations.md)), lessons and materials, assignments and submissions, assessments and quizzes, grading, notes | Grades, submissions, classroom membership | Grades are corrected, never edited in place |
 | Institution operations (ERP) | schools and academic structure, enrolment, timetables, attendance, staff and workforce, welfare, inventory, events and forms, fees and accounting, tutoring institutes | Institutional records | Records outlive the people's bonds to the institution |
 | Family and guardianship | guardian verification, guardian access | Guardian bonds | Guardian access ends or changes when the child comes of age |
 | Community and messaging | groups, posts and reactions, conversations, notices, moderation and safety | Posts, conversations, notices | Minors are present, so moderation is part of the domain, not an add-on |
 | Library and commons | resources, collections, authoring and review, media, reading and scanning tools, public commons | Resources and their editorial state | Public, institution-only and private resources are different visibility, not different systems |
 | Journey and profile | profile, life record, achievements and milestones, careers and portfolio, transitions | The life record | What a person earned stays with them when a bond ends |
-| Rewards | points, badges, streaks, milestones | An append-only ledger | Earned in many domains, shown in Profile, never edited by the domain that displays it |
+| Rewards (gratitude and growth) | gratitude (Thuthimal), growth shown back | An append-only ledger of gratitude | No points, badges or streaks (decided 2026-11-11, see the [feature cards](https://claude.ai/artifact/7Cs6uq8houty5o3eRsa7SW)). Shown in Profile, never edited by the domain that displays it |
 | AI and agents | assistance inside domains, agent runs, proposals awaiting approval, delegation grants, agent memory | Agent runs, proposals, grants, memory | An agent never has more authority than the person who delegated to it |
 
 Open questions the domain design must settle: whether attendance belongs to Learning
