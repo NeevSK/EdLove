@@ -1,4 +1,4 @@
-import type { ChatMessage } from '@repo/community/types';
+import type { ChatMessage } from '@repo/core/types/Community';
 import { useQuerySnapshotHydration } from '@repo/core/hooks/useQuerySnapshotHydration';
 import { getAccountScopeRevision, getActiveAccountId } from '@repo/core/lib/accountScope';
 import { storage } from '@repo/core/lib/storage';

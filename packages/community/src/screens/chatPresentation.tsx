@@ -1,6 +1,6 @@
 import { useDraft } from '@repo/ui/context/Drafts';
 import type { useChatOutbox } from '@repo/community/hooks/useChatOutbox';
-import type { ChatMessage } from '@repo/community/types';
+import type { ChatMessage } from '@repo/core/types/Community';
 import { WaitingSign } from '@repo/ui/components/native';
 import { ChatComposer } from '@repo/ui/components/ChatComposer';
 import { ErrorState } from '@repo/ui/components/native';

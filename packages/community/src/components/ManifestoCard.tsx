@@ -3,7 +3,7 @@ import { LivingGlow } from '@repo/ui/components/LivingGlow';
 import { Surface } from '@repo/ui/components/native';
 import { Heart, ShieldCheck, Star, Target } from '@repo/ui/icons';
 import Animated, { LinearTransition } from 'react-native-reanimated';
-import type { SanctuaryManifesto } from '@repo/community/types';
+import type { SanctuaryManifesto } from '@repo/core/types/Community';
 
 interface ManifestoCardProps extends SanctuaryManifesto {
   onEndorse?: (id: string) => void;
