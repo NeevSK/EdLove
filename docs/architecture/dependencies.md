@@ -117,6 +117,7 @@ Dev tools, not shipped. How to use them: [system model](model/README.md).
 | --- | --- | --- |
 | `likec4`, `@likec4/mcp` | root devDependencies (exact pins) | C4 model as code; `validate` checks it; the MCP server lets agents query it |
 | `syft` | winget binary on the developer machine | CycloneDX bill of materials from `pnpm-lock.yaml` |
+| `squawk-cli` | root devDependency (exact pin) | Migration safety lint. History has 1,423 findings in 209 of 222 files; gate new migrations only |
 | PowerSync CLI | `pnpm dlx powersync@<version>` | Instance status, config diff, deploy |
 | `k6` | not installed (installer needs administrator approval) | Load and latency, the morning burst |
 

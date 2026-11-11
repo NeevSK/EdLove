@@ -223,6 +223,7 @@
     "promptfoo": "^0.125.1",
     "react-native-devtools": "^0.0.1",
     "size-limit": "^14.3.0",
+    "squawk-cli": "2.72.0",
     "supabase": "^2.122.1",
     "syncpack": "^15.3.3",
     "tsx": "^4.23.15",
