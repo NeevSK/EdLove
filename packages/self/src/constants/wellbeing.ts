@@ -1,4 +1,4 @@
-import type { MoodLog } from '@repo/self/types';
+import type { MoodLog } from '@repo/core/types/Wellbeing';
 
 /** Human-readable labels for mood_score 1-5 (index 0 is unused placeholder). */
 export const MOOD_LABELS = ['', 'Depleted', 'Low', 'Steady', 'Energised', 'Vibrant'] as const;

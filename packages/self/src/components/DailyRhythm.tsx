@@ -6,7 +6,7 @@
 
 import { useIsGuest } from '@repo/core/hooks';
 import { useTimetable } from '@repo/self/hooks/useTimetable';
-import type { Period } from '@repo/self/types';
+import type { Period } from '@repo/core/types/Wellbeing';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import { EmptyState , WorldSkeleton } from '@repo/ui/components/native';
 import {

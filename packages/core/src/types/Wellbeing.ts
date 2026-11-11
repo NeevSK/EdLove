@@ -1,3 +1,5 @@
+// Moved from packages/self/src/types/Wellbeing.ts (2026-11-11): @repo/core owns every contract.
+
 /**
  * Types for progressive wellbeing features
  * Aligned with teacher sanctuary philosophy
@@ -52,20 +54,6 @@ export interface DailyPrepItem {
   item_text: string;
   prep_date: string; // ISO date
   is_completed: boolean;
-  created_at: string;
-}
-
-export interface UserPreferences {
-  id: string;
-  user_id: string;
-  favorite_features: string[]; // Feature IDs shown on home row
-  hidden_features: string[];
-  morning_check_time: string; // HH:mm:ss
-  afternoon_check_time: string;
-  evening_wind_down_time: string;
-  enable_contextual_prompts: boolean;
-  enable_usage_tracking: boolean;
-  updated_at: string;
   created_at: string;
 }
 

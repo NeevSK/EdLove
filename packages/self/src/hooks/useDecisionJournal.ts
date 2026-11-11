@@ -3,7 +3,7 @@ import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createDecisionLog, fetchDecisionLogs } from '@repo/self/data/selfFeature.data';
-import type { DecisionLog } from '@repo/self/types';
+import type { DecisionLog } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const DECISION_journal_CACHE_KEY = 'gurudevi-decision-journal-cache';

@@ -5,7 +5,7 @@
  */
 
 import { MOOD_COLORS, MOOD_LABELS, MOOD_OPTIONS } from '@repo/self/constants/wellbeing';
-import type { MoodLog } from '@repo/self/types/Wellbeing';
+import type { MoodLog } from '@repo/core/types/Wellbeing';
 import { WaitingSign } from '@repo/ui/components/native';
 import { History, MessageSquare, Plus, X } from '@repo/ui/icons';
 import { useWorld } from '@repo/ui/theme/native';

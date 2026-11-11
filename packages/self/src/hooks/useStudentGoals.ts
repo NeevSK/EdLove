@@ -7,7 +7,7 @@ import {
   fetchStudentGoalsForView,
   updateStudentGoal,
 } from '@repo/self/data/selfFeature.data';
-import type { Goal } from '@repo/self/types';
+import type { Goal } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const GOALS_CACHE_KEY = 'gurudevi-student-goals-cache';

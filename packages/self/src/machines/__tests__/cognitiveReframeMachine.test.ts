@@ -5,7 +5,7 @@ import {
   restoreReframeDraftSnapshot,
   saveReframeDraftSnapshot,
 } from '@repo/self/machines/cognitiveReframeMachine';
-import type { ThoughtRecord } from '@repo/self/types';
+import type { ThoughtRecord } from '@repo/core/types/reflection';
 import { describe, expect, it, vi } from 'vitest';
 import { createActor } from 'xstate';
 

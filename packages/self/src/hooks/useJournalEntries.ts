@@ -3,7 +3,7 @@ import { GuestStorage } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useAuthStore } from '@repo/core/store';
 import { createJournalEntry, fetchJournalEntries } from '@repo/self/data/selfFeature.data';
-import type { JournalEntry } from '@repo/self/types';
+import type { JournalEntry } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const JOURNAL_ENTRIES_CACHE_KEY = 'gurudevi-journal-entries-cache';

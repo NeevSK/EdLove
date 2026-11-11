@@ -1,18 +1,6 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import type {
-  CommunityProfile,
-  ProfileHistoryEntry,
-  ProfileJourneyEvent,
-  ProfileJourneyReadOptions,
-  ProfileJourneySnapshot,
-  ProfileRepository,
-  ProfileTemporalReadOptions,
-  PulseMetrics,
-  UserGrowthState,
-  UserPreferences,
-  UserRewardsSnapshot,
-  WhisperedMomentSnapshot,
-} from '@repo/core/logic/ports/profile.port';
+import type { CommunityProfile, ProfileHistoryEntry, ProfileJourneyEvent, ProfileJourneyReadOptions, ProfileJourneySnapshot, ProfileRepository, ProfileTemporalReadOptions, PulseMetrics, UserGrowthState, UserRewardsSnapshot, WhisperedMomentSnapshot } from '@repo/core/logic/ports/profile.port';
+import type { UserPreferences } from '@repo/core/types/UserPreferences';
 import type { IFileStoragePort } from '@repo/core/logic/ports/storage.port';
 import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';

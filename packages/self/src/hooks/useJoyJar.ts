@@ -3,7 +3,7 @@ import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createJoyMoment, fetchJoyMoments } from '@repo/self/data/selfFeature.data';
-import type { JoyMoment } from '@repo/self/types';
+import type { JoyMoment } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const JOY_CACHE_KEY = 'gurudevi-joy-cache';

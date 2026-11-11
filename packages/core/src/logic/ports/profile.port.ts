@@ -1,3 +1,4 @@
+import type { UserPreferences } from '@repo/core/types/UserPreferences';
 import type { TemporalScale } from '@repo/core/types/Temporal';
 import type { SocialLink, User } from '@repo/core/types';
 import type { UserGrowthState } from '@repo/schema/contracts';
@@ -66,29 +67,6 @@ export interface ProfileJourneySnapshot {
   whispered_moments: WhisperedMomentSnapshot[];
 }
 
-export interface UserPreferences {
-  id: string;
-  user_id: string;
-  favorite_features: string[];
-  hidden_features: string[];
-  notification_settings: {
-    channels: {
-      push: boolean;
-      email: boolean;
-      in_app: boolean;
-    };
-    categories: Record<string, { push: boolean; email: boolean }>;
-    quiet_hours: {
-      enabled: boolean;
-      start: string;
-      end: string;
-    };
-  } | null;
-  enable_contextual_prompts: boolean;
-  enable_usage_tracking: boolean;
-  updated_at: string;
-  created_at: string;
-}
 
 export interface ProfileJourneyEvent {
   id: string;

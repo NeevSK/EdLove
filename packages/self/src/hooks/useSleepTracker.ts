@@ -3,7 +3,7 @@ import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createSleepLog, fetchSleepLogs } from '@repo/self/data/selfFeature.data';
-import type { SleepLog } from '@repo/self/types';
+import type { SleepLog } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const SLEEP_CACHE_KEY = 'gurudevi-sleep-cache';

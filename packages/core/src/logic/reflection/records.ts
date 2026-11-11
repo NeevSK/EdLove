@@ -8,7 +8,7 @@
  * here once. Mirror of the `mood_logs` pattern.
  */
 import { thoughtRecords } from '@repo/core/adapters/powersync/schema';
-import type { ThoughtRecord as WireThoughtRecord } from '@repo/core/logic/schemas/self.schema';
+import type { ThoughtRecordRow as WireThoughtRecord } from '@repo/core/logic/schemas/self.schema';
 import { desc, eq } from 'drizzle-orm';
 import { deriveReframeOutcome } from './reframe';
 import type { ReframeFollowUp, ReframeOutcome, ThoughtEmotion, ThoughtRecord } from '../../types/reflection';

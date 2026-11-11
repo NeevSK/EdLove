@@ -11,7 +11,6 @@ export * from '@repo/self/hooks';
 export { useWisdom } from '@repo/self/hooks/useWisdom';
 export * from '@repo/self/screens';
 export { default } from '@repo/self/screens/SelfScreen';
-export * from '@repo/self/types';
 export * from './types/healthPort';
 export { InMemoryHealthAdapter, inMemoryHealthAdapter } from './lib/health/InMemoryHealthAdapter';
 export * from '@repo/self/views';

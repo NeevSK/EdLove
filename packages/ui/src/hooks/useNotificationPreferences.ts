@@ -1,5 +1,5 @@
 import { supabaseProfileRepository } from '@repo/core/adapters/supabase/profileRepository';
-import type { UserPreferences } from '@repo/core/logic';
+import type { UserPreferences } from '@repo/core/types/UserPreferences';
 import { useAuthStore } from '@repo/core/store';
 import { useCallback, useEffect, useState } from 'react';
 

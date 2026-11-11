@@ -3,7 +3,7 @@ import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createGratitudeEntry, fetchGratitudeEntries } from '@repo/self/data/selfFeature.data';
-import type { GratitudeEntry } from '@repo/self/types';
+import type { GratitudeEntry } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const GRATITUDE_CACHE_KEY = 'gurudevi-gratitude-cache';
