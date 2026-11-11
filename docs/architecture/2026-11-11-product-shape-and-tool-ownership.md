@@ -204,10 +204,10 @@ release-age guard, owner holds).
 | effect | 4.1.2 | 4.1.4 | **Updated** to 4.1.4 (exempt from the age guard) |
 | zustand | 5.0.16 | 5.1.0 | **Updated**. Type change only: `persist.rehydrate()` always returns a Promise, and storage may return any thenable. All callers already await it |
 | @tanstack/react-query, query-core, react-query-devtools | 5.106.1 | 5.107.1 | **Updated** together |
-| hono (in `@repo/core`) | 4.13.16 | 4.13.18 | Wait: released 11 Nov, inside the 24-hour guard. The API stays on 5.0.0-rc.1 |
+| hono | API 5.0.0-rc.1; `@repo/core` 4.13.16 | 5.0.0-rc.1 is the newest v5 | Core moves to 5.0.0-rc.1 once its retired `api/handlers` are removed (owner sign-off). Hono 5 types `c.req.json()` as `unknown`, which exposes 44 unvalidated body reads in those unreachable handlers. Hono 4 stays only inside dev tools that declare it themselves (MCP SDK, ZenStack CLI, promptfoo) |
 | @powersync/* | 2.4.0 | 2.4.1 | Hold: owner decision, moves with the sync work |
 | xstate | 6.0.0-alpha.70 | 6.0.0-beta.2 | Move with `@xstate/effect` 1.0.0-beta.1 (which requires xstate `^6.0.0-beta.2`), exact pins, in step 4. Both released 11 Nov, so not before 12 Nov |
-| @orpc/* | 2.0.0-beta.46 | 2.0.0-beta.50 | Move together with the API suite green (step 6) |
+| @orpc/* | 2.0.0-beta.46 | 2.0.0-beta.50 | **Updated** together (released 9 Nov, clears the guard). API 119/119, typecheck and build clean; core type errors unchanged (55) |
 | react-native-skia (aliased as `@shopify/react-native-skia`) | 3.9.1 | 3.10.0 | Hold until it can be tried on a phone (native) |
 | @op-engineering/op-sqlite | 17.2.0 | 19.0.5 | Hold: two majors, native; decide with encryption (6.4) |
 | react-native, expo, reanimated, gesture-handler, mmkv, flash-list, drizzle-orm, zod, cedar-wasm, vitest | current | current | Nothing to do |
