@@ -12,7 +12,7 @@ const TABS = [
     sf: 'books.vertical',
     md: 'local_library',
   },
-  { name: 'workspace', title: 'Classroom', sf: 'graduationcap', md: 'school' },
+  { name: 'workspace', title: 'Workspace', sf: 'graduationcap', md: 'school' },
   { name: 'self', title: 'Self', sf: 'heart', md: 'favorite' },
   { name: 'community', title: 'Community', sf: 'person.2', md: 'group' },
   { name: 'profile', title: 'Profile', sf: 'person', md: 'person' },

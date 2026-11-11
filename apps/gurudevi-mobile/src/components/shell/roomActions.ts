@@ -62,11 +62,11 @@ export interface CommonActions {
 }
 
 /**
- * English fallbacks. The work room's real name follows the person's role (Classroom, School,
+ * English fallbacks. The work room's real name follows the person's capacity (Classroom, School,
  * Learning, Family; see `workspaceRoomNameOf`), so screens pass `roomName` when they know it.
  */
 export const ROOM_NAMES: Readonly<Record<Room, string>> = {
-  workspace: 'Classroom',
+  workspace: 'Workspace',
   self: 'Self',
   library: 'Library',
   community: 'Community',

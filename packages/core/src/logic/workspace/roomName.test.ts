@@ -1,65 +1,34 @@
 import { describe, expect, it } from 'vitest';
-import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import { workspaceRoomNameOf } from '@repo/core/logic/workspace/roomName';
 
+const nameOf = (capacity: string | null, commercial = false) =>
+  workspaceRoomNameOf({ capacity, commercial }).fallback;
+
 describe('workspaceRoomNameOf', () => {
-  it('names the room for the role, never "Workspace"', () => {
-    expect(
-      workspaceRoomNameOf({
-        perspectiveKind: 'institutional',
-        capacity: 'teacher',
-      }).fallback,
-    ).toBe('Classroom');
-    expect(
-      workspaceRoomNameOf({
-        perspectiveKind: 'institutional',
-        capacity: 'principal',
-      }).fallback,
-    ).toBe('School');
-    expect(
-      workspaceRoomNameOf({
-        perspectiveKind: 'institutional',
-        capacity: 'student',
-      }).fallback,
-    ).toBe('Learning');
-    expect(
-      workspaceRoomNameOf({
-        perspectiveKind: 'institutional',
-        capacity: 'sectionHead',
-      }).fallback,
-    ).toBe('Section');
-    expect(
-      workspaceRoomNameOf({
-        perspectiveKind: 'institutional',
-        capacity: 'gradeHead',
-      }).fallback,
-    ).toBe('Grade');
-    expect(
-      workspaceRoomNameOf({
-        perspectiveKind: 'institutional',
-        capacity: 'founder',
-      }).fallback,
-    ).toBe('Platform');
-    expect(workspaceRoomNameOf({ perspectiveKind: 'guardian', capacity: 'teacher' }).fallback).toBe(
-      'Family',
-    );
-    expect(workspaceRoomNameOf({ perspectiveKind: 'commercial' }).fallback).toBe('Class');
-    expect(workspaceRoomNameOf({ perspectiveKind: 'personal' }).fallback).toBe('Studio');
-    expect(
-      workspaceRoomNameOf({
-        perspectiveKind: 'personal',
-        studioType: 'learner',
-      }).fallback,
-    ).toBe('Learning');
+  it('names the room for the capacity in the active bond', () => {
+    expect(nameOf('teacher')).toBe('Classroom');
+    expect(nameOf('principal')).toBe('School');
+    expect(nameOf('assistantPrincipal')).toBe('School');
+    expect(nameOf('student')).toBe('Learning');
+    expect(nameOf('guardian')).toBe('Family');
+    expect(nameOf('parent')).toBe('Family');
+    expect(nameOf('sectionHead')).toBe('Section');
+    expect(nameOf('gradeHead')).toBe('Grade');
+    expect(nameOf('founder')).toBe('Platform');
   });
 
-  it('gives every capacity a room name and falls back to Classroom', () => {
-    for (const capacity of CapacitySchema.options) {
-      const name = workspaceRoomNameOf({ capacity });
-      expect(name.key.startsWith('tabs.')).toBe(true);
-      expect(name.fallback).not.toBe('Workspace');
-    }
-    expect(workspaceRoomNameOf({ capacity: 'unknown' }).fallback).toBe('Classroom');
-    expect(workspaceRoomNameOf({}).fallback).toBe('Classroom');
+  it('keeps the name when only the entity kind changes', () => {
+    expect(nameOf('teacher', true)).toBe(nameOf('teacher'));
+    expect(nameOf('lead_tutor', true)).toBe('Classroom');
+    expect(nameOf('paper_marker', true)).toBe('Classroom');
+    expect(nameOf('founder', true)).toBe('Institute');
+  });
+
+  it('calls any other capacity a Workspace', () => {
+    expect(nameOf('librarian')).toBe('Workspace');
+    expect(nameOf('nurse')).toBe('Workspace');
+    expect(nameOf('member')).toBe('Workspace');
+    expect(nameOf('constructor')).toBe('Workspace');
+    expect(nameOf(null)).toBe('Workspace');
   });
 });

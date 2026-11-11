@@ -225,7 +225,8 @@
     "school": "School",
     "learning": "Learning",
     "family": "Family",
-    "studio": "Studio"
+    "institute": "Institute",
+    "workspace": "Workspace"
   },
   "self": {
     "goodMorning": "Good Morning!",

@@ -288,11 +288,8 @@
     "community": "ප්‍රජාව",
     "library": "පුස්තකාලය",
     "profile": "ගිණුම",
-    "class": "පන්තිය",
-    "platform": "වේදිකාව",
-    "learning": "ඉගෙනුම",
-    "family": "පවුල",
-    "studio": "මගේ මැදිරිය"
+    "class": "Class",
+    "platform": "Platform"
   },
   "self": {
     "goodMorning": "සුභ උදෑසනක්!",

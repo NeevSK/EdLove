@@ -216,12 +216,17 @@ function TabsLayoutContent() {
   const perspectiveKind = activePerspective.kind;
   // The work room wears the person's role where they stand: Classroom, School, Learning, Family.
   const workspaceRoom = workspaceRoomNameOf({
-    perspectiveKind,
     capacity:
       activePerspective.kind === 'institutional'
         ? activePerspective.capacity
-        : (context.activeBond?.capacity ?? context.primaryCapacity),
-    studioType: activePerspective.kind === 'personal' ? activePerspective.studioType : null,
+        : activePerspective.kind === 'commercial'
+          ? activePerspective.role
+          : activePerspective.kind === 'guardian'
+            ? 'guardian'
+            : (context.activeBond?.capacity ??
+              activePerspective.civicRole ??
+              context.primaryCapacity),
+    commercial: activePerspective.kind === 'commercial',
   });
   const roomLabels = useMemo(
     () =>

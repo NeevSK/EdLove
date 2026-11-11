@@ -1,12 +1,13 @@
-import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
-import type { PerspectiveKind } from '@repo/core/types/Perspective';
-
 /**
- * The work room is never called "Workspace" on screen. It is named for the person's role in
- * the place they are standing: a teacher's room is their Classroom, a principal's is the School,
- * a student's is Learning, a guardian's is Family. The names follow the older mobile tab labels
- * (principal School, founder Platform, section head Section, grade head Grade) and the web's
- * role workspace registry (student Learning, guardian Family).
+ * The work room is named for the person's capacity in the bond they are acting through:
+ * a teacher's room is their Classroom, a principal's is the School, a student's is Learning,
+ * a guardian's is Family. The kind of entity behind the bond (personal, institutional,
+ * commercial) is a separate axis and never changes the name: a teacher's personal bond and a
+ * tutor's batch are both a Classroom. A capacity without a name of its own is "Workspace".
+ *
+ * The names follow the older mobile tab labels (principal School, founder Platform, section
+ * head Section, grade head Grade) and the web's role workspace registry (student Learning,
+ * guardian Family).
  *
  * `key` is the `tabs.*` i18n key; `fallback` is the English word when a language lacks it.
  */
@@ -15,26 +16,26 @@ export interface WorkspaceRoomName {
   fallback: string;
 }
 
-const CLASSROOM: WorkspaceRoomName = {
-  key: 'tabs.classroom',
-  fallback: 'Classroom',
-};
-const SCHOOL: WorkspaceRoomName = { key: 'tabs.school', fallback: 'School' };
-const LEARNING: WorkspaceRoomName = {
-  key: 'tabs.learning',
-  fallback: 'Learning',
-};
-const FAMILY: WorkspaceRoomName = { key: 'tabs.family', fallback: 'Family' };
-const PLATFORM: WorkspaceRoomName = {
-  key: 'tabs.platform',
-  fallback: 'Platform',
-};
-const SECTION: WorkspaceRoomName = { key: 'tabs.section', fallback: 'Section' };
-const GRADE: WorkspaceRoomName = { key: 'tabs.grade', fallback: 'Grade' };
-const CLASS: WorkspaceRoomName = { key: 'tabs.class', fallback: 'Class' };
-const STUDIO: WorkspaceRoomName = { key: 'tabs.studio', fallback: 'Studio' };
+const name = (key: string, fallback: string): WorkspaceRoomName => ({
+  key: `tabs.${key}`,
+  fallback,
+});
 
-const BY_CAPACITY: Record<Capacity, WorkspaceRoomName> = {
+const CLASSROOM = name('classroom', 'Classroom');
+const SCHOOL = name('school', 'School');
+const LEARNING = name('learning', 'Learning');
+const FAMILY = name('family', 'Family');
+const PLATFORM = name('platform', 'Platform');
+const SECTION = name('section', 'Section');
+const GRADE = name('grade', 'Grade');
+const INSTITUTE = name('institute', 'Institute');
+export const WORKSPACE_ROOM_FALLBACK = name('workspace', 'Workspace');
+
+/**
+ * Institutional and personal capacities (`CapacitySchema`) and the commercial batch roles
+ * (`CommercialPerspective.role`). Anything not listed is a Workspace.
+ */
+const BY_CAPACITY: Readonly<Record<string, WorkspaceRoomName>> = {
   teacher: CLASSROOM,
   gradeHead: GRADE,
   sectionHead: SECTION,
@@ -45,30 +46,32 @@ const BY_CAPACITY: Record<Capacity, WorkspaceRoomName> = {
   guardian: FAMILY,
   founder: PLATFORM,
   coFounder: PLATFORM,
-  director: PLATFORM,
   admin: PLATFORM,
   developer: PLATFORM,
   systemEngineer: PLATFORM,
-  // Staff who are not teaching still work in the school.
-  librarian: SCHOOL,
-  nurse: SCHOOL,
-  member: SCHOOL,
+  // Commercial batch roles: tutors and markers work in a class.
+  lead_tutor: CLASSROOM,
+  assistant_tutor: CLASSROOM,
+  paper_marker: CLASSROOM,
+};
+
+/** In a commercial bond, `founder` owns a tuition institute, not the platform. */
+const COMMERCIAL: Readonly<Record<string, WorkspaceRoomName>> = {
+  founder: INSTITUTE,
 };
 
 export function workspaceRoomNameOf({
-  perspectiveKind,
   capacity,
-  studioType,
+  commercial = false,
 }: {
-  perspectiveKind?: PerspectiveKind | null;
+  /** The active bond's capacity (or the commercial batch role). */
   capacity?: string | null;
-  /** A personal perspective's kind of studio. A learner's own room is Learning. */
-  studioType?: 'general' | 'educator' | 'learner' | null;
+  /** The bond is with a commercial entity (a tuition institute or batch). */
+  commercial?: boolean;
 }): WorkspaceRoomName {
-  if (perspectiveKind === 'guardian') return FAMILY;
-  // A tuition batch is a class the tutor runs, not a school they belong to.
-  if (perspectiveKind === 'commercial') return CLASS;
-  if (perspectiveKind === 'personal') return studioType === 'learner' ? LEARNING : STUDIO;
-  if (capacity && capacity in BY_CAPACITY) return BY_CAPACITY[capacity as Capacity];
-  return CLASSROOM;
+  if (!capacity) return WORKSPACE_ROOM_FALLBACK;
+  const named =
+    (commercial && Object.hasOwn(COMMERCIAL, capacity) ? COMMERCIAL[capacity] : undefined) ??
+    (Object.hasOwn(BY_CAPACITY, capacity) ? BY_CAPACITY[capacity] : undefined);
+  return named ?? WORKSPACE_ROOM_FALLBACK;
 }
