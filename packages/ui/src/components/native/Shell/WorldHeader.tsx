@@ -22,6 +22,7 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { alpha } from '../../../theme/color';
 import type { HeaderAction, KitIconProps } from '../../../theme/contracts';
+import type { ConnectionStatus } from './connectionStatus';
 import { useWorld } from '../../../theme/native/WorldContext';
 import { AppHeader, HeaderAvatar } from './AppHeader';
 
@@ -60,6 +61,8 @@ export interface WorldHeaderProps {
   bare?: boolean;
   /** The rail carries the photo, help and bell (a phone on its side). */
   hud?: boolean;
+  /** The connection, said on the header's top line while it matters (offline, sending). */
+  status?: ConnectionStatus;
 }
 
 export function WorldHeader({
@@ -79,6 +82,7 @@ export function WorldHeader({
   icons,
   bare = false,
   hud = false,
+  status,
 }: WorldHeaderProps) {
   const world = useWorld();
   const insets = useSafeAreaInsets();
@@ -164,6 +168,8 @@ export function WorldHeader({
         }
         ruled={inside}
         icons={icons}
+        // Sideways, the rail says it under the photo.
+        status={status && !hud ? { tone: status.tone, label: status.label } : undefined}
       />
       {below}
     </View>

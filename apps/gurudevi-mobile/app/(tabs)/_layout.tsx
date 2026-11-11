@@ -7,6 +7,8 @@ import {
 import { createSupabaseTuitionBatchRepository } from '@repo/core/adapters/supabase/tuitionBatchRepository';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { useScopedNotifications } from '@repo/core/hooks';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { showToast } from '@repo/core/lib/feedback';
 import {
   isLocalOnlyIdentity,
@@ -22,6 +24,7 @@ import { BreathGuide } from '@repo/self/wellbeing';
 import { ActiveSubTabStrip } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import {
+  connectionStatusOf,
   Sheet,
   Text as WText,
   useFloorPresence,
@@ -121,6 +124,15 @@ function TabsLayoutContent() {
   useSnapshotRefresh();
   const isLocalGuest = isLocalOnlyIdentity(user);
   const { unreadCount } = useScopedNotifications(isLocalGuest ? null : userId);
+  // Offline is ordinary here: say it quietly on the header (or the sideways rail), with what is kept.
+  const network = useOfflineStatus().status;
+  const queued = useMutationQueue((s) => s.queue.length);
+  const failed = useMutationQueue((s) => s.deadLetterQueue.length);
+  const syncing = useMutationQueue((s) => s.isSyncing);
+  const connection = useMemo(
+    () => connectionStatusOf({ network, queued, syncing, failed }),
+    [network, queued, syncing, failed],
+  );
 
   const displayName = user?.display_name?.split(' ')[0] || user?.email || 'Gurudevi';
   const isBreathingOpen = useUIStore((state) => state.isBreathingOpen);
@@ -386,6 +398,7 @@ function TabsLayoutContent() {
         }
         below={chromeShown ? subTabs : null}
         hud={hud}
+        status={connection}
       />
     );
   };
@@ -417,6 +430,7 @@ function TabsLayoutContent() {
             badgeLabel: unreadCount > 0 ? `${unreadCount} unread` : undefined,
           },
         ],
+        status: connection,
       }
     : undefined;
 

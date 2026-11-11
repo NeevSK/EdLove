@@ -157,6 +157,11 @@ export {
 } from './Shell/WorldTabBar';
 export { useShellLayout } from './Shell/useShellLayout';
 export {
+  type ConnectionStatus,
+  type ConnectionTone,
+  connectionStatusOf,
+} from './Shell/connectionStatus';
+export {
   type AssistantChoice,
   type HeaderLayoutChoice,
   type TabBarLayoutChoice,

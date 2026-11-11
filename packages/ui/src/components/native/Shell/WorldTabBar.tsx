@@ -38,6 +38,7 @@ import { usePressMotion, useWorldMotion } from '../../../theme/native/motion';
 import { radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { fitRadius, type RoomMark, roomMarkOf } from '../../../theme/shellMarks';
+import type { ConnectionStatus } from './connectionStatus';
 import { HeaderActionButton, HeaderAvatar } from './AppHeader';
 
 export interface WorldTabItem {
@@ -71,9 +72,34 @@ export interface RailHud {
   person: { name: string; src?: string; label: string; onPress: () => void };
   /** Help and notifications, in the header's own order. */
   actions: readonly HeaderAction[];
+  /** The connection while it matters, as a dot and one short word under the photo. */
+  status?: ConnectionStatus;
 }
 
 const RAIL_WIDTH = 88;
+
+/** Offline or sending, on the sideways rail: a dot and one word, the full line for screen readers. */
+function RailStatus({ status }: { status: ConnectionStatus }) {
+  const { world, language } = useWorldContext();
+  const t = world.tokens;
+  const dot = status.tone === 'offline' ? t.inkFaint : status.tone === 'attention' ? t.danger : t.lamp;
+  return (
+    <View
+      accessible
+      accessibilityLabel={status.label}
+      accessibilityLiveRegion="polite"
+      style={styles.railStatus}
+    >
+      <View style={[styles.railStatusDot, { backgroundColor: dot }]} />
+      <RNText
+        numberOfLines={1}
+        style={[typeStyle(world.recipes.text.caption, language, world, 10.5), { color: t.inkSoft }]}
+      >
+        {status.short}
+      </RNText>
+    </View>
+  );
+}
 const WELL_W = 56;
 const WELL_H = 32;
 
@@ -294,6 +320,7 @@ function Bar({ items, layout, insets, label = 'Rooms', hud, side = 'left' }: Wor
         {hud ? (
           <View style={styles.hudLead}>
             <HeaderAvatar {...hud.person} />
+            {hud.status ? <RailStatus status={hud.status} /> : null}
           </View>
         ) : null}
         {short ? (
@@ -410,7 +437,9 @@ const styles = StyleSheet.create({
   roomsShort: { alignItems: 'center', gap: 2 },
   roomsScroll: { flexGrow: 0, flexShrink: 1, alignSelf: 'stretch' },
   roomsScrollContent: { flexGrow: 1, justifyContent: 'center' },
-  hudLead: { paddingBottom: 4 },
+  hudLead: { paddingBottom: 4, alignItems: 'center', gap: 4 },
+  railStatus: { flexDirection: 'row', alignItems: 'center', gap: 4, maxWidth: 80 },
+  railStatusDot: { width: 6, height: 6, borderRadius: 3 },
   // Two round wells side by side fit the rail's width; a third wraps.
   hudTail: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 4 },
 });
