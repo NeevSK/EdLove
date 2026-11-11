@@ -1,13 +1,7 @@
 import { usePermissions } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import { annotationsAPI } from '@repo/library/api/annotations';
-import type {
-  AnnotationColor,
-  Bookmark as BookmarkType,
-  ReadingProgress,
-  TextHighlight,
-  TextNote,
-} from '@repo/library/types';
+import type { AnnotationColor, Bookmark as BookmarkType, ReadingProgress, TextHighlight, TextNote } from '@repo/core/types/Library';
 import { WaitingSign } from '@repo/ui/components/native';
 import {
   ArrowLeft,

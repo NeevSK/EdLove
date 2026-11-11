@@ -1,4 +1,4 @@
-import type { LibraryResource } from '@repo/library/types';
+import type { LibraryResource } from '@repo/core/types/Library';
 import { Play } from '@repo/ui/icons';
 import {
   Box,

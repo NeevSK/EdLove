@@ -1,4 +1,4 @@
-import type { LibraryResource, ResourceFilters } from '@repo/library/types';
+import type { LibraryResource, ResourceFilters } from '@repo/core/types/Library';
 
 export type ResourcePageClient = {
   getResources: (filters: ResourceFilters) => Promise<LibraryResource[]>;

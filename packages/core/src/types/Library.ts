@@ -1,19 +1,15 @@
-// ============================================================================
-// LIBRARY RESOURCE TYPES
-// ============================================================================
 import type { TemporalScale } from '@repo/core/types/Temporal';
-import type {
-  BaseResource,
-  Capacity,
-  LayoutResult,
-  LinkRelationship,
-  ResourceFormat,
-  ResourceType,
-} from '@repo/core/types';
+import type { Capacity } from '@repo/core/types/Authority';
+import type { BaseResource, ResourceFormat, ResourceType } from '@repo/core/types/Resource';
+import type { LayoutResult, LinkRelationship } from '@repo/core/types/topology';
 
-export type { LayoutResult, ResourceFormat, ResourceType }; // Re-export for package consumers
+/** Library domain contracts. Database rows are in logic/schemas/library.schema.ts (`*Row`). */
+
+ // Re-export for package consumers
 export type ResourceDifficulty = 'beginner' | 'intermediate' | 'advanced';
+
 export type ResourceLanguage = 'english' | 'sinhala' | 'tamil';
+
 export type ResourceVisibility =
   | 'private'
   | 'class'
@@ -22,6 +18,7 @@ export type ResourceVisibility =
   | 'public'
   | 'shared'
   | 'personal';
+
 export interface LibraryResource extends BaseResource {
   // Categorization
   subjects: string[];
@@ -72,6 +69,7 @@ export interface LibraryResource extends BaseResource {
   last_checked_at?: string;
   fail_count?: number;
 }
+
 export interface LibraryCollection {
   id: string;
   name: string;
@@ -102,6 +100,7 @@ export interface LibraryCollection {
   created_at: string;
   updated_at: string;
 }
+
 export interface ResourceFilters {
   type?: ResourceType;
   subject?: string; // Kept for filtering compat, maps to 'subjects'
@@ -123,6 +122,7 @@ export interface ResourceFilters {
   viewDate?: string;
   viewScale?: TemporalScale;
 }
+
 export interface CollectionFilters {
   subject?: string;
   grades?: number[];
@@ -137,6 +137,7 @@ export interface CollectionFilters {
   only_virtual?: boolean;
   exclude_virtual?: boolean;
 }
+
 export interface CreateResourceInput {
   title: string;
   description: string;
@@ -168,6 +169,7 @@ export interface CreateResourceInput {
   description_ta?: string;
   description_en?: string;
 }
+
 export interface CreateCollectionInput {
   name: string;
   description: string;
@@ -180,6 +182,7 @@ export interface CreateCollectionInput {
   grades: number[];
   estimated_duration?: string;
 }
+
 // ============================================================================
 // UI CONSTANTS (Library First Protocol)
 // ============================================================================
@@ -221,6 +224,7 @@ export const LIBRARY_UI_CATEGORIES = [
     ta: '\u0B95\u0BB1\u0BCD\u0BAA\u0BBF\u0BA4\u0BCD\u0BA4\u0BB2\u0BCD \u0BAE\u0BC1\u0BB1\u0BC8',
   },
 ];
+
 export interface KnowledgeNode {
   id: string;
   label: string;
@@ -257,6 +261,7 @@ export interface KnowledgeNode {
   fx?: number | null;
   fy?: number | null;
 }
+
 export interface KnowledgeLink {
   source: string | KnowledgeNode;
   target: string | KnowledgeNode;
@@ -264,15 +269,7 @@ export interface KnowledgeLink {
   relationship?: NodeRelationship | 'path' | 'topic_association';
   isPathway?: boolean;
 }
-export interface KnowledgeTopology {
-  nodes: KnowledgeNode[];
-  links: KnowledgeLink[];
-  supportedPerspectives?: ('astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti')[];
-  context?: {
-    focusRegion?: string;
-    zoomLevel?: number;
-  };
-}
+
 // ============================================================================
 // READER ANNOTATIONS (P2)
 // ============================================================================
@@ -435,6 +432,7 @@ export interface LibraryEdge {
   is_verified: boolean;
   created_at: string;
 }
+
 export interface LibraryTag {
   id: string;
   name_si?: string;
@@ -442,6 +440,7 @@ export interface LibraryTag {
   name_en: string;
   category?: string;
 }
+
 export interface UserJourney {
   id: string;
   user_id: string;
