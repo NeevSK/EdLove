@@ -4,7 +4,8 @@
  * - rich and middle: the still picture on one canvas (records once a minute), the front layers,
  *   particles and shader on a second canvas that alone redraws, at the stage's frame rate.
  * - floor: the still picture without its finest layers, plus two or three soft overlays moved by
- *   CSS animations on the UI thread (no frame loop, no redraw). Still alive, almost free.
+ *   CSS animations on the UI thread (no frame loop, no redraw). Still alive, almost free. Where a
+ *   baked picture of the world at this phase is registered, it is shown instead (no canvas).
  * - bare, or a world whose floor is plain (Classic): no canvas; the ground, tinted by the hour.
  *
  * Over it, veils of the world's ground ease in and out with the screen's presence (full, band,
@@ -12,6 +13,7 @@
  */
 
 import { useVergerSnapshot } from '@repo/verger-react';
+import { Image } from 'expo-image';
 import { useEffect, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -27,6 +29,7 @@ import { ArtLife } from './ArtLife';
 import { ArtStill, layerShows } from './ArtStill';
 import { CompanionOnFloor } from './CompanionOnFloor';
 import { FloorOverlays } from './FloorOverlays';
+import { floorPictureFor } from './floorPictures';
 import { useStagePreview } from './StagePreview';
 
 export interface WorldFloorProps {
@@ -103,6 +106,7 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
   const quietStyle = useAnimatedStyle(() => ({ opacity: quiet.get() }));
 
   const ground = world.tokens.ground;
+  const picture = !plain && stage.tier === 'floor' ? floorPictureFor(world.id, scene.phase) : null;
   const sun: [number, number] = [
     width * scene.celestial.x,
     height * 0.58 * (1 - scene.celestial.lift * 0.92) + 10,
@@ -116,7 +120,28 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
       importantForAccessibility="no-hide-descendants"
       style={StyleSheet.absoluteFill}
     >
-      {plain ? null : art ? (
+      {picture && art ? (
+        <>
+          <Image
+            source={picture}
+            style={{ width, height }}
+            contentFit="cover"
+            transition={stage.transition === 'none' ? 0 : 600}
+            cachePolicy="memory"
+          />
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundImage: `linear-gradient(to bottom, ${alpha(ground, 0.08)} 0%, ${alpha(ground, 0.08)} 28%, ${alpha(ground, 0.5)} 45%, ${alpha(ground, 0.62)} 100%)`,
+              },
+            ]}
+          />
+          {stage.overlays && presence !== 'quiet' ? (
+            <FloorOverlays overlays={art.overlays} />
+          ) : null}
+        </>
+      ) : plain ? null : art ? (
         <>
           <Canvas style={{ width, height }}>
             <ArtStill layers={still} tier={stage.tier} />
