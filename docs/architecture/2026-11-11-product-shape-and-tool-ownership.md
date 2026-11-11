@@ -105,9 +105,10 @@ clients already exist, and use Effect inside. Don't run both.
 
 ## 4. Errors: one taxonomy
 
-Today there are three systems that don't connect: `types/Errors.ts` (tiers and RFC 9457
-problem details), `lib/errors.ts`, and the Effect `Data.TaggedError` classes in
-`effect/Errors.ts`. Next to them sit 21 plain `extends Error` classes and the four
+Before 11 Nov there were three systems that didn't connect: `types/Errors.ts` (tiers and RFC 9457
+problem details), `lib/errors.ts` (a second `SovereignError`), and the Effect `Data.TaggedError` classes in
+`effect/Errors.ts`. The tagged classes are now `Schema.TaggedError`. The two `SovereignError` classes
+remain, counted by the `plainErrorSubclasses` ratchet. Next to them sit 21 plain `extends Error` classes and the four
 foundation codes on the v1 contract. The target has three kinds of failure and one path
 to the person.
 
@@ -174,6 +175,17 @@ replaces are marked as replaced. Steps 2 to 4 are guarded by four ceilings in
 | `dataTaggedErrors` (`Data.TaggedError`, not serializable) | 23 | 0; expected failures use `Schema.TaggedError` |
 | `authorityStoreReads` (decision, entitlement, flag and perspective stores read outside `store/`) | 57 | 0 |
 | `machinesWithoutSetup` (`= createMachine(`) | 14 | 0 |
+| `directEffectRuns` (`Effect.run*` outside the app runtime) | 43 | 0, except synchronous pipelines that move to `appRuntime.runSync` |
+
+Status on 11 Nov 2026 (evening):
+
+- **Step 2 done.**
+  - All 23 tagged errors in `@repo/core` are `Schema.TaggedError`.
+  - The feedback path is `packages/core/src/lib/failureFeedback.ts`: a complete record over the error union, plus a test that finds any tag without an entry.
+  - The runtime is `packages/core/src/effect/AppRuntime.ts`.
+  - `dataTaggedErrors` 23 -> 0.
+- **Step 3 done.** `packages/core/src/logic/permissions/authority.ts` is the one reader, and `authorityStoreReads` went 57 -> 8. The metric no longer counts feature flags, which are rollout state rather than authority.
+- **Open: core's 52 type errors.** All are in the pre-v1 client under `packages/core/src/api`. Part of it imports modules removed in the reset; part is live (`identity.ts`, used by device trust, the gateway and privacy, and reached from web through `thuthimal` and `client`). Retiring it needs per-file decisions with Gates 1 and 5 of [road to v1](road-to-v1.md).
 
 1. **Versions.** Patch and minor updates now; prereleases moved together; native majors
    held until they can be tried on a phone (section 8). Done for Effect, zustand and
