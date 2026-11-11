@@ -514,7 +514,9 @@ function TabsLayoutContent() {
         animated
         barStyle={wornWorld.mode === 'dark' ? 'light-content' : 'dark-content'}
       />
-      {shellChoice.variant === 'native' ? (
+      {/* The system tab bar is a bottom bar only: sideways (the HUD) and on tablets, where the
+          rooms belong in a side rail, both variants use the world's rail. */}
+      {shellChoice.variant === 'native' && layout.tabs !== 'rail' ? (
         nativeTabs
       ) : (
         <Tabs
