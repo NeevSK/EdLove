@@ -82,6 +82,8 @@ function Action({ action }: { action: HeaderAction }) {
           style={[styles.count, { backgroundColor: fill, borderColor: t.ground }]}
         >
           <RNText
+            // A count in a small mark grows a little with large text, then the mark grows.
+            maxFontSizeMultiplier={1.3}
             style={[
               typeStyle(world.recipes.text.label, language, world, 10),
               { color: ink, textTransform: 'none' },
@@ -335,7 +337,7 @@ const styles = StyleSheet.create({
     top: 4,
     right: 2,
     minWidth: 18,
-    height: 18,
+    minHeight: 18,
     paddingHorizontal: 4,
     borderRadius: 9,
     borderWidth: 1.5,
