@@ -431,14 +431,14 @@
     "react-native-keychain": "^10.0.0",
     "react-native-mmkv": "4.3.2",
     "react-native-url-polyfill": "^4.0.0",
-    "zustand": "^5.0.16"
+    "zustand": "^5.1.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/types-shim": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@supabase/supabase-js": "^2.119.0",
-    "@tanstack/react-query": "^5.106.1",
+    "@tanstack/react-query": "^5.107.1",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@vitest/ui": "^5.1.0",
@@ -450,7 +450,7 @@
     "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "5.1.0",
-    "zustand": "^5.0.16"
+    "zustand": "^5.1.0"
   },
   "dependencies": {
     "@cedar-policy/cedar-wasm": "4.14.0",
@@ -471,13 +471,13 @@
     "@sentry/browser": "10.78.0",
     "@supabase/postgrest-js": "2.119.0",
     "@supabase/supabase-js": "^2.119.0",
-    "@tanstack/react-query": "^5.106.1",
+    "@tanstack/react-query": "^5.107.1",
     "@xstate/effect": "1.0.0-alpha.12",
     "@zenstackhq/server": "3.10.1",
     "@zenstackhq/zod": "3.10.1",
     "date-fns": "^4.4.0",
     "drizzle-orm": "0.45.4",
-    "effect": "^4.1.2",
+    "effect": "^4.1.4",
     "fast-json-patch": "^3.1.1",
     "hono": "^4.13.16",
     "i18next": "^26.7.1",

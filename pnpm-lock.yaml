@@ -371,11 +371,11 @@ importers:
         specifier: 4.3.4
         version: 4.3.4
       '@tanstack/query-core':
-        specifier: ^5.106.1
-        version: 5.106.1
+        specifier: ^5.107.1
+        version: 5.107.1
       '@tanstack/react-query-devtools':
-        specifier: ^5.106.1
-        version: 5.106.1(@tanstack/react-query@5.106.1(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@tanstack/react-query@5.107.1(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)
       '@testing-library/react-native':
         specifier: 14.1.0
         version: 14.1.0(@types/jest@30.0.0)(@types/react@19.3.0)(jest@30.5.2(@types/babel__core@7.20.5)(@types/node@26.6.6)(supports-color@10.2.2)(ts-node@10.9.2(@swc/core@1.16.1(@swc/helpers@0.5.23))(@types/node@26.6.6)(typescript@7.1.0-beta)))(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))(react@19.3.1)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.1))
@@ -799,8 +799,8 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       '@tanstack/react-store':
         specifier: ^0.11.2
         version: 0.11.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
@@ -844,8 +844,8 @@ importers:
         specifier: 0.45.4
         version: 0.45.4(2877033c8fb9f3feacabf28a96e88918)
       effect:
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: ^4.1.4
+        version: 4.1.4
       expo:
         specifier: ~58.0.23
         version: 58.0.23(08b6b8a1231c66137f250504e710d604)
@@ -1237,8 +1237,8 @@ importers:
         specifier: 4.6.7
         version: 4.6.7
       zustand:
-        specifier: ^5.0.16
-        version: 5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(@types/react@19.3.0)(react@19.3.1))
+        specifier: ^5.1.0
+        version: 5.1.0(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(@types/react@19.3.0)(react@19.3.1))
     devDependencies:
       '@babel/runtime':
         specifier: ^7.29.13
@@ -1400,8 +1400,8 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       lucide-react:
         specifier: ^1.69.0
         version: 1.69.0(@types/react@19.3.0)(react@19.3.1)
@@ -1494,8 +1494,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/policies
       effect:
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: ^4.1.4
+        version: 4.1.4
       hono:
         specifier: 5.0.0-rc.1
         version: 5.0.0-rc.1
@@ -1598,14 +1598,14 @@ importers:
         specifier: workspace:*
         version: link:../ui
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
       effect:
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: ^4.1.4
+        version: 4.1.4
       expo-clipboard:
         specifier: ~58.0.4
         version: 58.0.4(@types/react@19.3.0)(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))(react@19.3.1)
@@ -1683,8 +1683,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(@opentelemetry/api@1.9.1)(@tanstack/ai@1.2.0(@opentelemetry/api@1.9.1)(zod@4.6.7))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(zod@4.6.7)
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       expo-router:
         specifier: ~58.0.30
         version: 58.0.30(ec80bf2d098263f60df08dc51a8c7b4a)
@@ -1735,8 +1735,8 @@ importers:
         specifier: workspace:*
         version: link:../ui
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       posthog-js:
         specifier: ^1.446.1
         version: 1.446.1(@types/react@19.3.0)(react@19.3.1)
@@ -1817,14 +1817,14 @@ importers:
         specifier: workspace:*
         version: link:../ui
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
       effect:
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: ^4.1.4
+        version: 4.1.4
       expo-clipboard:
         specifier: ~58.0.4
         version: 58.0.4(@types/react@19.3.0)(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))(react@19.3.1)
@@ -1911,8 +1911,8 @@ importers:
         specifier: '*'
         version: 2.119.0(@opentelemetry/api@1.9.1)
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -1973,7 +1973,7 @@ importers:
         version: 2.0.0
       '@intuitui-labs/form-builder-engine':
         specifier: ^0.3.0
-        version: 0.3.0(effect@4.1.2)
+        version: 0.3.0(effect@4.1.4)
       '@orpc/client':
         specifier: 2.0.0-beta.46
         version: 2.0.0-beta.46
@@ -1985,7 +1985,7 @@ importers:
         version: 2.0.0-beta.46(crossws@0.3.5)(fastify@5.11.3)
       '@orpc/tanstack-query':
         specifier: 2.0.0-beta.46
-        version: 2.0.0-beta.46(@tanstack/query-core@5.106.1)(crossws@0.3.5)(fastify@5.11.3)
+        version: 2.0.0-beta.46(@tanstack/query-core@5.107.1)(crossws@0.3.5)(fastify@5.11.3)
       '@powersync/common':
         specifier: 2.5.0
         version: 2.5.0
@@ -2029,11 +2029,11 @@ importers:
         specifier: '*'
         version: 2.119.0(@opentelemetry/api@1.9.1)
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       '@xstate/effect':
         specifier: 1.0.0-alpha.12
-        version: 1.0.0-alpha.12(@oxlint/plugins@1.90.0)(effect@4.1.2)(xstate@6.0.0-alpha.70)
+        version: 1.0.0-alpha.12(@oxlint/plugins@1.90.0)(effect@4.1.4)(xstate@6.0.0-alpha.70)
       '@zenstackhq/server':
         specifier: 3.10.1
         version: 3.10.1(@types/pg@8.23.1)(better-sqlite3@12.9.0)(express@5.3.0(supports-color@10.2.2))(fastify-plugin@5.1.0)(fastify@5.11.3)(h3@1.15.11)(hono@4.13.16)(next@16.4.5(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@opentelemetry/api@1.9.1)(@playwright/test@1.64.1)(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)(sass@1.100.0))(pg@8.23.1(@types/pg@8.23.1))(zod@4.6.7)
@@ -2047,8 +2047,8 @@ importers:
         specifier: 0.45.4
         version: 0.45.4(a887f8a02b2eae5a3525e1a111954106)
       effect:
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: ^4.1.4
+        version: 4.1.4
       expo-background-task:
         specifier: ~58.0.12
         version: 58.0.12(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))
@@ -2180,8 +2180,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/jsdom@21.1.7)(@types/node@26.6.6)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0)(jsdom@26.1.0(supports-color@10.2.2))(msw@2.15.0(@types/node@26.6.6)(typescript@7.1.0-beta))(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.100.0)(terser@5.49.2)(tsx@4.23.15)(yaml@2.9.1))
       zustand:
-        specifier: ^5.0.16
-        version: 5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(@types/react@19.3.0)(react@19.3.1))
+        specifier: ^5.1.0
+        version: 5.1.0(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(@types/react@19.3.0)(react@19.3.1))
 
   packages/database:
     dependencies:
@@ -2340,7 +2340,7 @@ importers:
     dependencies:
       '@intuitui-labs/form-builder-engine':
         specifier: ^0.3.0
-        version: 0.3.0(effect@4.1.2)
+        version: 0.3.0(effect@4.1.4)
       '@repo/ui':
         specifier: workspace:*
         version: link:../ui
@@ -2400,8 +2400,8 @@ importers:
         specifier: '*'
         version: 2.119.0(@opentelemetry/api@1.9.1)
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       d3-force:
         specifier: ^3.0.1
         version: 3.0.1
@@ -2479,8 +2479,8 @@ importers:
         specifier: workspace:*
         version: link:../ui
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       '@zip.js/zip.js':
         specifier: ^2.24.0
         version: 2.24.0
@@ -2772,8 +2772,8 @@ importers:
         specifier: workspace:*
         version: link:../ui
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       expo-clipboard:
         specifier: ~58.0.4
         version: 58.0.4(@types/react@19.3.0)(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))(react@19.3.1)
@@ -2845,8 +2845,8 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       effect:
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: ^4.1.4
+        version: 4.1.4
       expo-brightness:
         specifier: ~58.0.2
         version: 58.0.2(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))
@@ -2991,8 +2991,8 @@ importers:
         specifier: workspace:*
         version: link:../ui
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -3000,8 +3000,8 @@ importers:
         specifier: 0.45.4
         version: 0.45.4(a887f8a02b2eae5a3525e1a111954106)
       effect:
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: ^4.1.4
+        version: 4.1.4
       expo-audio:
         specifier: ~58.0.11
         version: 58.0.11(6fc7714710998fa9cdb7b7429fcdcdd4)
@@ -3039,8 +3039,8 @@ importers:
         specifier: 4.6.7
         version: 4.6.7
       zustand:
-        specifier: ^5.0.16
-        version: 5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(@types/react@19.3.0)(react@19.3.1))
+        specifier: ^5.1.0
+        version: 5.1.0(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(@types/react@19.3.0)(react@19.3.1))
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:^
@@ -3120,8 +3120,8 @@ importers:
         specifier: workspace:*
         version: link:../verger-react
       '@tanstack/react-query':
-        specifier: ^5.106.1
-        version: 5.106.1(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       '@tanstack/react-table':
         specifier: ^9.3.1
         version: 9.3.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
@@ -3138,8 +3138,8 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0
       effect:
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: ^4.1.4
+        version: 4.1.4
       expo-auth-session:
         specifier: ~58.0.17
         version: 58.0.17(@types/babel__core@7.20.5)(@types/react@19.3.0)(expo@58.0.23)(react-native@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@react-native-community/cli@20.0.1(supports-color@10.2.2)(typescript@7.1.0-beta))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(supports-color@10.2.2))(@types/babel__core@7.20.5)(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2))(react@19.3.1)(supports-color@10.2.2)(typescript@7.1.0-beta)
@@ -12413,11 +12413,11 @@ packages:
     resolution: {integrity: sha512-ROZj19aPPGYebeRPhFZNRlqNaR2e4vkcLbgiXfbi5uJu8WiW/etsYmkcAcoSQRGOwGZbbioWRX7xssewDRVRhw==}
     engines: {node: '>=20'}
 
-  '@tanstack/query-core@5.106.1':
-    resolution: {integrity: sha512-erYv/UACddcdgjOL2ixmFdK6tO/AVBeUcTCOtX2N51yZpDQ2U7KJ+xgB/bCNfsF3uoCDTqGHEEbDiFsIO9YUmQ==}
+  '@tanstack/query-core@5.107.1':
+    resolution: {integrity: sha512-PSyAik11oQBEVOiVy5hjZWHmoUqOXqK1WYy4v55mcxozEfKaQgpUMsgnXhWjuESzSht8JfzqMS1m6M/9CpNgvg==}
 
-  '@tanstack/query-devtools@5.106.1':
-    resolution: {integrity: sha512-SEDgVRKVTGS4mjhylu3pjIIy9waf7r6se64yoe99hFZUAumbEsuzjVz896wJMvAWGZmxjfIDPrjBad4Gri20fg==}
+  '@tanstack/query-devtools@5.107.1':
+    resolution: {integrity: sha512-cZvgIPNvsh57mM3yTTwuL2GUMmMp5XR+3k5r2UJDyStmPYCqSwZf8z7OulgA4X8vISziAG5PoykbQ1q+2zemdA==}
 
   '@tanstack/react-pacer@0.24.1':
     resolution: {integrity: sha512-VjztEJmrNtLVdRrRaIsqx/+uX5qLHLp57dk19gVC/wLEu8ykU9twq6SKzhHSsajDEpNMauo7+bsFWAgjd+7Uiw==}
@@ -12433,10 +12433,10 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@tanstack/react-query-devtools@5.106.1':
-    resolution: {integrity: sha512-onUerFS3Ig/g+hcT08Dlb+p+rDORlBHyZCGj1mqJC7dgA5wZyw/XAdhdPFqDFRcZfPNwIJRBkuAL6BZzHacO7A==}
+  '@tanstack/react-query-devtools@5.107.1':
+    resolution: {integrity: sha512-A3q9X3iOxtlz1jU/ou7t9CFvNHT84rTMofS1YEkFcBalvwotZ/RJKPDsX1NsQVl10J8XwN0OYMSfdjgIElt0sg==}
     peerDependencies:
-      '@tanstack/react-query': ^5.106.1
+      '@tanstack/react-query': ^5.107.1
       '@types/react': ^19.3.0
       '@types/tanstack__react-query': '*'
       react: 19.3.1
@@ -12446,8 +12446,8 @@ packages:
       '@types/tanstack__react-query':
         optional: true
 
-  '@tanstack/react-query@5.106.1':
-    resolution: {integrity: sha512-ORDvJG/DSfmlFL9lQ8GDkE0VjtQbLeRDY7BL8xjKkQFGLfjFGfNWNuteWgPqA2gPJgLLuWfQ7IX0FlsHCJriyg==}
+  '@tanstack/react-query@5.107.1':
+    resolution: {integrity: sha512-udCOOLp3ZAheUrIHLCe+ZZge6nr2ZUrGMSWcCuXsjY1Bf2JeeE09oxst97PILiCY6N8xo/7bIo3Hvz13zh06FA==}
     peerDependencies:
       '@types/react': ^19.3.0
       react: 19.3.1
@@ -16189,8 +16189,8 @@ packages:
   effect@3.21.0:
     resolution: {integrity: sha512-PPN80qRokCd1f015IANNhrwOnLO7GrrMQfk4/lnZRE/8j7UPWrNNjPV0uBrZutI/nHzernbW+J0hdqQysHiSnQ==}
 
-  effect@4.1.2:
-    resolution: {integrity: sha512-d3Oah1WyKxFLFh19yWheS5IXIVaITzxZ71JkE1rkUozq/6EcJSU5nPk5bF2QrSygZ3SQoiNQB8TsxFriyMeMaQ==}
+  effect@4.1.4:
+    resolution: {integrity: sha512-Tgrv/9FN+TZYyOn8XSli+fVqAfwDrDAkiX5Uu9vztINb675VTQdhD0gWI5Kzvhlh9QqzjZvw72iugqw5pwoghQ==}
 
   ejs@3.1.10:
     resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
@@ -26204,8 +26204,8 @@ packages:
   zod@4.6.7:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
-  zustand@5.0.16:
-    resolution: {integrity: sha512-Uv7e327ihlCfayfja3hDc0M64Upev1LWBKpRobdK4NyovDDPeeX4imWXc/wzC1yc6fkYPoAY/ncKVPAs2jrtQw==}
+  zustand@5.1.0:
+    resolution: {integrity: sha512-ciJZlP48M1PTQbVQq81CGVFxHTLpZNrFjKqwjtCU34AWuXTZT/jrF3p9+fI84Cf1eSCMLapxqBy/SNTfwOBuqA==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@types/immer': '*'
@@ -31230,12 +31230,12 @@ snapshots:
     dependencies:
       zod: 4.6.7
 
-  '@intuitui-labs/form-builder-engine@0.3.0(effect@4.1.2)':
+  '@intuitui-labs/form-builder-engine@0.3.0(effect@4.1.4)':
     dependencies:
       '@tanstack/form-core': 0.42.1
       zod: 4.6.7
     optionalDependencies:
-      effect: 4.1.2
+      effect: 4.1.4
 
   '@intuitui-labs/lk-edu-geo@1.0.1': {}
 
@@ -33544,13 +33544,13 @@ snapshots:
       radash: 12.1.1
       type-fest: 5.10.0
 
-  '@orpc/tanstack-query@2.0.0-beta.46(@tanstack/query-core@5.106.1)(crossws@0.3.5)(fastify@5.11.3)':
+  '@orpc/tanstack-query@2.0.0-beta.46(@tanstack/query-core@5.107.1)(crossws@0.3.5)(fastify@5.11.3)':
     dependencies:
       '@orpc/client': 2.0.0-beta.46
       '@orpc/contract': 2.0.0-beta.46
       '@orpc/openapi': 2.0.0-beta.46(crossws@0.3.5)(fastify@5.11.3)
       '@orpc/shared': 2.0.0-beta.46
-      '@tanstack/query-core': 5.106.1
+      '@tanstack/query-core': 5.107.1
     transitivePeerDependencies:
       - '@scalar/api-reference'
       - '@types/crossws'
@@ -36219,16 +36219,16 @@ snapshots:
       '@tanstack/devtools-event-client': 0.5.1
       '@tanstack/store': 0.11.2
 
-  '@tanstack/query-core@5.106.1': {}
+  '@tanstack/query-core@5.107.1': {}
 
-  '@tanstack/query-devtools@5.106.1(csstype@3.2.3)':
+  '@tanstack/query-devtools@5.107.1(csstype@3.2.3)':
     dependencies:
       '@kobalte/core': 0.13.14(solid-js@1.9.17)
       '@solid-primitives/keyed': 1.5.3(solid-js@1.9.17)
       '@solid-primitives/resize-observer': 2.2.0(solid-js@1.9.17)
       '@solid-primitives/storage': 1.3.11(solid-js@1.9.17)
       '@tanstack/match-sorter-utils': 9.2.6
-      '@tanstack/query-core': 5.106.1
+      '@tanstack/query-core': 5.107.1
       '@tanstack/solid-virtual': 3.13.53(solid-js@1.9.17)
       clsx: 2.1.1
       goober: 2.1.19(csstype@3.2.3)
@@ -36251,10 +36251,10 @@ snapshots:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0(@types/react@19.3.0)
 
-  '@tanstack/react-query-devtools@5.106.1(@tanstack/react-query@5.106.1(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)':
+  '@tanstack/react-query-devtools@5.107.1(@tanstack/react-query@5.107.1(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)':
     dependencies:
-      '@tanstack/query-devtools': 5.106.1(csstype@3.2.3)
-      '@tanstack/react-query': 5.106.1(@types/react@19.3.0)(react@19.3.1)
+      '@tanstack/query-devtools': 5.107.1(csstype@3.2.3)
+      '@tanstack/react-query': 5.107.1(@types/react@19.3.0)(react@19.3.1)
       react: 19.3.1
     optionalDependencies:
       '@types/react': 19.3.0
@@ -36264,9 +36264,9 @@ snapshots:
       - '@types/solid-js'
       - csstype
 
-  '@tanstack/react-query@5.106.1(@types/react@19.3.0)(react@19.3.1)':
+  '@tanstack/react-query@5.107.1(@types/react@19.3.0)(react@19.3.1)':
     dependencies:
-      '@tanstack/query-core': 5.106.1
+      '@tanstack/query-core': 5.107.1
       react: 19.3.1
     optionalDependencies:
       '@types/react': 19.3.0
@@ -38042,9 +38042,9 @@ snapshots:
 
   '@xmldom/xmldom@0.9.10': {}
 
-  '@xstate/effect@1.0.0-alpha.12(@oxlint/plugins@1.90.0)(effect@4.1.2)(xstate@6.0.0-alpha.70)':
+  '@xstate/effect@1.0.0-alpha.12(@oxlint/plugins@1.90.0)(effect@4.1.4)(xstate@6.0.0-alpha.70)':
     dependencies:
-      effect: 4.1.2
+      effect: 4.1.4
       xstate: 6.0.0-alpha.70
     optionalDependencies:
       '@oxlint/plugins': 1.90.0
@@ -40678,7 +40678,7 @@ snapshots:
       '@standard-schema/spec': 1.1.0
       fast-check: 3.23.2
 
-  effect@4.1.2: {}
+  effect@4.1.4: {}
 
   ejs@3.1.10:
     dependencies:
@@ -52612,7 +52612,7 @@ snapshots:
 
   zod@4.6.7: {}
 
-  zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(@types/react@19.3.0)(react@19.3.1)):
+  zustand@5.1.0(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(@types/react@19.3.0)(react@19.3.1)):
     optionalDependencies:
       '@types/react': 19.3.0
       react: 19.3.1

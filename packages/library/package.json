@@ -96,7 +96,7 @@
     "@repo/core": "workspace:*",
     "@repo/graphics": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.106.1",
+    "@tanstack/react-query": "^5.107.1",
     "@zip.js/zip.js": "^2.24.0",
     "d3": "^7.9.2",
     "expo-image-manipulator": "~58.0.16",

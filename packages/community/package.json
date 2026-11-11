@@ -74,7 +74,7 @@
     "@repo/ui": "workspace:*",
     "@supabase/postgrest-js": "2.119.0",
     "@supabase/supabase-js": "^2.119.0",
-    "@tanstack/react-query": "^5.106.1",
+    "@tanstack/react-query": "^5.107.1",
     "date-fns": "^4.4.0",
     "expo-clipboard": "~58.0.4",
     "expo-image-picker": "~58.0.10",

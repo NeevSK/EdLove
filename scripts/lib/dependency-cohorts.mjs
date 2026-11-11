@@ -168,9 +168,9 @@ export const DEPENDENCY_COHORTS = {
     governance: 'MONOREPO_UNIVERSAL',
     guidance: 'Universal query client and cache singleton across mobile and web.',
     packages: {
-      '@tanstack/react-query': '^5.106.1',
-      '@tanstack/query-core': '^5.106.1',
-      'zustand': '^5.0.16',
+      '@tanstack/react-query': '^5.107.1',
+      '@tanstack/query-core': '^5.107.1',
+      'zustand': '^5.1.0',
     },
   },
 
