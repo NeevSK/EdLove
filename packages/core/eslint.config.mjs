@@ -10,6 +10,9 @@ export default [
       'vitest.config.ts',
       'scratch/**',
       'dist/**',
+      // Retired pre-v1 API file, excluded from tsconfig.json, so typed lint can't parse it.
+      // Leaves with the rest of the retired API in Gate 1 (docs/architecture/road-to-v1.md).
+      'src/api/attendance-v1.orpc.contract.ts',
     ],
   },
   ...config,
