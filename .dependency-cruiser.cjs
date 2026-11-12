@@ -165,7 +165,7 @@ module.exports = {
       comment:
         'Apps and domain packages must not import the database or the generated schema directly. Use @repo/core/types or @repo/core/logic/schemas: core owns the contracts, so an upstream schema change is absorbed in one place.',
       from: {
-        path: '^(apps/|packages/(?!core|database|types-shim))',
+        path: '^(apps/|packages/(?!core|database|schema|types-shim))',
         pathNot: ['\\.test\\.ts$', '^apps/sanctuary-api/'],
       },
       to: {

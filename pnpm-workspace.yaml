@@ -130,6 +130,7 @@ overrides:
   "@zenstackhq/sdk>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@zenstackhq/orm>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@repo/schema>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "dependency-cruiser>typescript": "npm:@typescript/typescript6@^6.0.2"
   typescript: '7.1.0-beta'
   '@zenstackhq/cli': '3.10.1'
   '@zenstackhq/orm': '3.10.1'
@@ -275,3 +276,11 @@ allowBuilds:
   unrs-resolver: true
   vd-tool: true
   workerd: true
+
+# dependency-cruiser imports `typescript` without declaring it, and needs the classic compiler API
+# (TypeScript 7 has none until 7.1's API is stable). Give it the same TypeScript 6 copy the
+# ESLint and ZenStack toolchains use (see overrides above). Tools only: the repo still builds on 7.
+packageExtensions:
+  dependency-cruiser:
+    dependencies:
+      typescript: "npm:@typescript/typescript6@^6.0.2"
