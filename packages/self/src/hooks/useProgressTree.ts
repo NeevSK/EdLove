@@ -1,72 +1,49 @@
-import { useAuthStore } from '@repo/core/store';
-import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { fetchInteractionCountForView } from '@repo/self/data/selfInsights.data';
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 const PROGRESS_TREE_CACHE_KEY = 'gurudevi-progtree-cache';
 
+/**
+ * Cache-then-network: the count stored on the device shows at once, the live count replaces it
+ * when the device is online, and the live count is saved for next time. TanStack Query pauses the
+ * live read while offline (its online manager), so the stored count simply stays.
+ */
 export function useProgressTree(userId?: string) {
-  const { isOnline } = useOfflineStatus();
   const viewDate = useTemporalStore((s) => s.viewDate);
   const isPastView = useTemporalStore((s) => s.isPastView);
-  const [interactionCount, setInteractionCount] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const storageKey = `${PROGRESS_TREE_CACHE_KEY}-${userId}-${viewDate}`;
+  const queryKey = ['self', 'progressTree', userId, viewDate, isPastView] as const;
+  const enabled = Boolean(userId);
 
-  // Load from local cache on mount
-  useEffect(() => {
-    if (!userId) {
-      setIsLoading(false);
-      return;
-    }
-    const loadCache = async () => {
-      try {
-        const cached = await SafeZustandStorage.getItem(
-          `${PROGRESS_TREE_CACHE_KEY}-${userId}-${viewDate}`,
-        );
-        if (cached !== null) {
-          setInteractionCount(Number(cached));
-        }
-      } catch (e) {
-        console.warn('Failed to load progress tree cache', e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadCache();
-  }, [userId, viewDate]);
+  const stored = useQuery({
+    queryKey: [...queryKey, 'device'],
+    queryFn: async () => {
+      const value = await SafeZustandStorage.getItem(storageKey);
+      return value === null ? null : Number(value);
+    },
+    enabled,
+    networkMode: 'always',
+    staleTime: Number.POSITIVE_INFINITY,
+  });
 
-  // Sync / Refresh function
-  const refreshData = useCallback(async () => {
-    if (!userId || !isOnline) return;
-    setError(null);
-    try {
-      const count = await fetchInteractionCountForView(userId, {
-        viewDate,
-        isPastView,
-      });
-      setInteractionCount(count);
-      // Persist to local cache
-      await SafeZustandStorage.setItem(
-        `${PROGRESS_TREE_CACHE_KEY}-${userId}-${viewDate}`,
-        String(count),
-      );
-    } catch (e) {
-      console.error('Failed to sync progress tree interactions', e);
-      setError('Progress could not be refreshed.');
-    }
-  }, [userId, isOnline, viewDate, isPastView]);
-
-  useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+  const live = useQuery({
+    queryKey,
+    queryFn: async () => {
+      if (!userId) throw new Error('useProgressTree: the live read needs a user.');
+      const count = await fetchInteractionCountForView(userId, { viewDate, isPastView });
+      await SafeZustandStorage.setItem(storageKey, String(count));
+      return count;
+    },
+    enabled,
+    placeholderData: stored.data ?? undefined,
+  });
 
   return {
-    interactionCount,
-    isLoading,
-    error,
-    refreshData,
+    interactionCount: live.data ?? stored.data ?? 0,
+    isLoading: enabled && stored.isPending && live.isPending,
+    error: live.isError ? 'Progress could not be refreshed.' : null,
+    refreshData: live.refetch,
   };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { fetchInteractionCountForView } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './progress-tree.module.css';
 
@@ -8,6 +8,8 @@ interface ProgressTreeProps {
   userId?: string;
   onClose?: () => void;
 }
+
+const FALLBACK_INTERACTION_COUNT = 12;
 
 const GROWTH_STAGES = [
   {
@@ -55,31 +57,19 @@ const GROWTH_STAGES = [
 ] as const;
 
 export function ProgressTree({ userId }: ProgressTreeProps) {
-  const [interactionCount, setInteractionCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const viewDate = new Date().toISOString().slice(0, 10);
   const isPastView = false;
-
-  useEffect(() => {
-    if (!userId) {
-      setIsLoading(false);
-      return;
-    }
-
-    const fetch = async () => {
-      try {
-        const count = await fetchInteractionCountForView(userId);
-        setInteractionCount(count);
-      } catch {
-        setInteractionCount(12); // Fallback to graceful default
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void fetch();
-  }, [userId, viewDate, isPastView]);
-
+  const { data, isError } = useQuery({
+    queryKey: ['self', 'progressTree', userId],
+    queryFn: () => {
+      if (!userId) throw new Error('ProgressTree: the count needs a user.');
+      return fetchInteractionCountForView(userId);
+    },
+    enabled: Boolean(userId),
+  });
+  // Kept from before: a failed read shows a fixed count rather than zero. It is not the
+  // person's real progress (flagged in the client runtime plan, step 6).
+  const interactionCount = data ?? (isError ? FALLBACK_INTERACTION_COUNT : 0);
   const currentStage =
     [...GROWTH_STAGES].reverse().find((s) => interactionCount >= s.minInteractions) ??
     GROWTH_STAGES[0];

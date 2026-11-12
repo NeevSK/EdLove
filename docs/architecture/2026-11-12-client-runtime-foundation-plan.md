@@ -244,6 +244,27 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
     `handleComplete`): a hand-rolled `submitting` flag, `try/catch` and `console.warn` around
     `v1Client.identity.createInitialBond`. Its toast copy is better than the generic message, so
     convert it with its own message (see L7, the copy that is still owed).
+- **Step 6 (effects → queries), in progress.** Patterns used, all on TanStack Query 5.107
+  (current):
+  - **Local query:** data kept on the device, read through a query keyed by the record
+    (`initialData` for a synchronous read, `staleTime: Infinity`, `networkMode: 'always'`) and
+    written by a mutation that saves, `setQueryData`s and queues in the outbox. Used for chat
+    and climate sensing.
+  - **Cache-then-network:** a device query, plus a live query that takes it as
+    `placeholderData`; TanStack's online manager pauses the live read while offline. Used for the
+    progress tree in `packages/self`.
+  - **Writes as `useMutation`:** `isPending` replaces hand-rolled `isSubmitting` and
+    `isProcessing` flags. Used in the academic and tuition domain hooks.
+  - **Converted:** `useCommunityChat`, `useClimateSensing`, `useAcademicDomain`,
+    `useTuitionDomain`, `useStudentGrades`, `useProgressTree` (self), and web's `ProgressTree`.
+    Ratchet: effects that set state 151 → 143, hand-rolled loading flags 52 → 49.
+  - **Found on the way:**
+    - `packages/self` `useProgressTree` imports `@repo/self/data/selfInsights.data`, a module
+      that has never existed, so that hook fails on import (it did before too).
+    - Web's `ProgressTree` shows a fixed count (12) when the read fails, which is not the person's
+      real progress. It's kept as it was and named `FALLBACK_INTERACTION_COUNT`; that copy and
+      behaviour is Neev's decision.
+    - The `lib/sync/*` hook copies in web are unwired and left in place.
 - **Production.** Offline-first cache, prefetch on intent (L9 tells L5 where the user is going),
   invalidation rules owned by L4 outcomes.
 - **Enterprise.** Tenant isolation proven by tests.

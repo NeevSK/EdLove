@@ -47197,7 +47197,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 26,
+    "prod": 25,
     "tests": 5
    },
    "imports": [
@@ -48099,7 +48099,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 42,
+    "prod": 40,
     "tests": 1
    },
    "imports": [
@@ -67089,7 +67089,7 @@
     {
      "to": "packages/self/src/hooks/useStudentGrades.ts",
      "typeOnly": false,
-     "toShape": "contract+logic",
+     "toShape": "contract",
      "toTier": null
     },
     {
@@ -69649,7 +69649,7 @@
     {
      "to": "packages/self/src/hooks/useStudentGrades.ts",
      "typeOnly": false,
-     "toShape": "contract+logic",
+     "toShape": "contract",
      "toTier": null
     },
     {
@@ -70421,7 +70421,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "contract+logic",
-   "lines": 73,
+   "lines": 50,
    "counts": {
     "types": 0,
     "consts": 1,
@@ -70429,7 +70429,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 65,
+    "functionLines": 44,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -70447,18 +70447,6 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/store/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/offline/useOfflineStatus.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T5"
-    },
-    {
      "to": "packages/core/src/logic/index.ts",
      "typeOnly": false,
      "toShape": "barrel",
@@ -70473,7 +70461,7 @@
    ],
    "outside": [
     "@repo/self",
-    "react"
+    "@tanstack/react-query"
    ]
   },
   {
@@ -70766,8 +70754,8 @@
    "file": "packages/self/src/hooks/useStudentGrades.ts",
    "package": "packages/self",
    "folderTier": null,
-   "shape": "contract+logic",
-   "lines": 61,
+   "shape": "contract",
+   "lines": 39,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -70775,7 +70763,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 47,
+    "functionLines": 26,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -70794,12 +70782,6 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/store/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    },
-    {
      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
@@ -70807,7 +70789,7 @@
     }
    ],
    "outside": [
-    "react"
+    "@tanstack/react-query"
    ]
   },
   {
@@ -71447,7 +71429,7 @@
     {
      "to": "packages/self/src/hooks/useStudentGrades.ts",
      "typeOnly": false,
-     "toShape": "contract+logic",
+     "toShape": "contract",
      "toTier": null
     },
     {
@@ -140814,15 +140796,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 122,
+   "lines": 112,
    "counts": {
     "types": 1,
-    "consts": 1,
+    "consts": 2,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 67,
+    "functionLines": 55,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -140847,7 +140829,7 @@
     }
    ],
    "outside": [
-    "react"
+    "@tanstack/react-query"
    ]
   },
   {
