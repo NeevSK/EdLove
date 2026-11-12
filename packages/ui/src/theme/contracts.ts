@@ -620,6 +620,29 @@ export interface IconButtonContract {
   size?: ButtonSize;
 }
 
+/** Where a move sends a piece among the pieces drawn beside it. */
+export type MoveBy = -1 | 1 | 'first' | 'last';
+
+/**
+ * Up and down beside a piece the person is arranging. Drag stays an extra:
+ * every move can be made with these two buttons, a keyboard or a screen
+ * reader's adjust gesture, and the new place is spoken after it lands.
+ */
+export interface MoveControlContract {
+  /** The piece's name, already translated ("Notes"). */
+  label: string;
+  /** Its place among the pieces shown beside it, from 1. */
+  place: number;
+  total: number;
+  onMove: (by: MoveBy) => void;
+  /** Translated words. Defaults are English. */
+  words?: {
+    up?: (label: string) => string;
+    down?: (label: string) => string;
+    place?: (label: string, place: number, total: number) => string;
+  };
+}
+
 export interface LinkContract {
   label: string;
 }

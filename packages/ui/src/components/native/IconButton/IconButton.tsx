@@ -8,12 +8,13 @@ import {
 import Animated from 'react-native-reanimated';
 import type { IconButtonContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
+import { useFocusRing } from '../../../theme/native/focus';
 import { usePressMotion } from '../../../theme/native/motion';
 import { edgeStyle, radiusStyle } from '../../../theme/native/style';
 import { useWorld } from '../../../theme/native/WorldContext';
 import { type HapticImpact, hapticImpact } from '../../../utils/haptics';
 import { Tooltip } from '../Tooltip/Tooltip';
-import { useFocusRing } from '../../../theme/native/focus';
+import { TOUCH_MIN } from '../touch';
 
 export interface IconButtonProps
   extends IconButtonContract,
@@ -46,7 +47,7 @@ export function IconButton({
   const feedback = useFeedback();
   const press = usePressMotion();
   const v = recipe.variants[variant];
-  const side = Math.max(44, recipe.sizes[size].height);
+  const side = Math.max(TOUCH_MIN, recipe.sizes[size].height);
   const bare = v.form === 'text';
   const fill = typeof v.fill === 'string' ? v.fill : v.fill ? v.fill.from : undefined;
 

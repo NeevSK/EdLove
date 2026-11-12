@@ -43,6 +43,7 @@ export { Dialog, type DialogProps } from './Dialog/Dialog';
 export { Group, type GroupProps } from './Group/Group';
 export { Icon, type IconProps } from './Icon/Icon';
 export { IconButton, type IconButtonProps } from './IconButton/IconButton';
+export { MoveControl, type MoveControlProps } from './Move/MoveControl';
 export { Launcher, type LauncherProps } from './Launcher/Launcher';
 export { Grid, type GridProps } from './Layout/Grid';
 export { Inline, type InlineProps, Stack, type StackProps } from './Layout/Layout';
