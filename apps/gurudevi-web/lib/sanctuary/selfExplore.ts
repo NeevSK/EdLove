@@ -15,7 +15,8 @@ import { parseWorkbenchSnapshot } from '@/lib/workbench/storage';
 import { createExploreStorage } from '../explore';
 import type { ExploreStorage } from '../explore/types';
 import type { BurnedJournalEntry } from './selfJournal';
-import { MOOD_CHOICES, type MoodLog, type MoodValue } from './selfWellbeing';
+import { MOOD_CHOICES } from './selfWellbeing';
+import { type MoodLog, type MoodValue } from '@repo/core/types/Wellbeing';
 
 const exploreIdentity = createPersistenceIdentity({
   experience: 'explore',

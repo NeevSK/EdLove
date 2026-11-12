@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import type { CommunityPost } from '../../../../lib/community/posts-contract';
+import type { CommunityPostView } from '@repo/core/types/communityView';
 import styles from '../community.module.css';
 
 interface WebPostComposerProps {
   groupId: string;
   groupName: string;
   authorRole?: string | null;
-  onPostCreated: (post: CommunityPost) => void;
+  onPostCreated: (post: CommunityPostView) => void;
   disabled?: boolean;
 }
 
@@ -58,7 +58,7 @@ export function WebPostComposer({
 
     setIsSubmitting(true);
     try {
-      const newPost: CommunityPost = {
+      const newPost: CommunityPostView = {
         id: `post-${Date.now()}`,
         groupId,
         authorId: 'current-user',

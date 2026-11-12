@@ -1,4 +1,4 @@
-export type JournalEntry = {
+export type EditorialJournalEntry = {
   slug: string;
   title: string;
   subtitle: string;
@@ -45,7 +45,7 @@ export const authors: ReadonlyArray<Author> = [
   },
 ];
 
-export const journalEntries: ReadonlyArray<JournalEntry> = [
+export const journalEntries: ReadonlyArray<EditorialJournalEntry> = [
   {
     slug: 'why-gurudevi-begins-with-care',
     title: 'Why Gurudevi Begins with Care',

@@ -27,14 +27,14 @@ export const ReliefQuerySchema = Schema.Struct({
 export type ReliefQuery = typeof ReliefQuerySchema.Type;
 
 /**
- * Classroom Row Schema for Attendance Audits
+ * A classroom as attendance audits name it: id and name only.
  */
-export const ClassroomRowSchema = Schema.Struct({
+export const ClassroomRefSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
 });
 
-export type ClassroomRow = typeof ClassroomRowSchema.Type;
+export type ClassroomRef = typeof ClassroomRefSchema.Type;
 
 // ─── Typed Agent Domain Errors ───────────────────────────────────────
 

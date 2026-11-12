@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n';
-import type { JournalEntry } from '../content';
+import type { EditorialJournalEntry } from '../content';
 
-export function JournalClient({ entries }: { readonly entries: JournalEntry[] }) {
+export function JournalClient({ entries }: { readonly entries: EditorialJournalEntry[] }) {
   const { t, locale } = useTranslation();
 
   return (

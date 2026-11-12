@@ -1,4 +1,4 @@
-import type { JournalEntry } from '../app/(marketing)/(editorial)/content';
+import type { EditorialJournalEntry } from '../app/(marketing)/(editorial)/content';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '../app/seo';
 
 /**
@@ -52,7 +52,7 @@ export function generateWebSiteJsonLd() {
   };
 }
 
-export function generateArticleJsonLd(entry: JournalEntry, canonicalUrl: string) {
+export function generateArticleJsonLd(entry: EditorialJournalEntry, canonicalUrl: string) {
   const publishIso = `${entry.publishDate}T00:00:00Z`;
   return {
     '@context': 'https://schema.org',

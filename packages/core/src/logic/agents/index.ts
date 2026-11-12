@@ -1,5 +1,5 @@
 import { runEffect } from '@repo/core/effect';
-import type { ClassroomRow, CoordinationGap } from '../schemas/agentContracts.schema';
+import type { ClassroomRef, CoordinationGap } from '../schemas/agentContracts.schema';
 import { checkSectionReliefGapsEffect, detectAttendanceGapsEffect } from './reliefAgent';
 
 export * from '../schemas/agentContracts.schema';
@@ -22,7 +22,7 @@ export async function runReliefAudit(
  * Suitable for React components, background sync jobs, and external clients.
  */
 export async function runAttendanceAudit(
-  classrooms: ClassroomRow[],
+  classrooms: ClassroomRef[],
   today: string,
 ): Promise<CoordinationGap[]> {
   return runEffect(detectAttendanceGapsEffect(classrooms, today), 'ATTENDANCE_AUDIT_FAILED');

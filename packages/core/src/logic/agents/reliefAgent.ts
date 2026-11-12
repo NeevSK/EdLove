@@ -6,7 +6,7 @@ import {
   AgentDomainError,
   AgentSchemaError,
   AgentTimeoutError,
-  type ClassroomRow,
+  type ClassroomRef,
   type CoordinationGap,
   CoordinationGapSchema,
 } from '../schemas/agentContracts.schema';
@@ -151,7 +151,7 @@ export function checkSectionReliefGapsEffect(
  * 3. Returns validated CoordinationGap records.
  */
 export function detectAttendanceGapsEffect(
-  classrooms: ClassroomRow[],
+  classrooms: ClassroomRef[],
   today: string,
   clientOverride?: SupabaseQueryClient,
 ): Effect.Effect<CoordinationGap[], AgentDomainError, never> {

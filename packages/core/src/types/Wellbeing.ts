@@ -99,12 +99,17 @@ export interface FeatureMetadata {
   description: string;
 }
 
+/** The moods a person can log. Labels and emoji belong to each app's UI. */
+export type MoodValue = 'sad' | 'frustrated' | 'anxious' | 'calm' | 'curious' | 'joyful';
+
+/** A logged mood, as stored: mood and note may be empty. */
 export interface MoodLog {
   id: string;
   user_id: string;
-  mood_score: number; // 1-5 scale
-  mood?: 'joyful' | 'calm' | 'curious' | 'anxious' | 'frustrated' | 'sad';
-  note?: string;
+  /** 1-5. */
+  mood_score: number;
+  mood?: MoodValue | null;
+  note?: string | null;
   created_at: string;
 }
 

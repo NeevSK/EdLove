@@ -1,23 +1,7 @@
-export type CommunityGroup = Readonly<{
-  id: string;
-  name: string;
-  description: string | null;
-  memberCount: number;
-}>;
+import type { CommunityGroupsResult, CommunityGroupView } from '@repo/core/types/communityView';
 
-export type CommunityGroupsResult =
-  | Readonly<{ kind: 'ready'; groups: readonly CommunityGroup[]; hasMore: boolean }>
-  | Readonly<{ kind: 'denied' }>
-  | Readonly<{ kind: 'unavailable' }>;
 
-export type CommunityGroupsQuery = Readonly<{
-  limit: number;
-  offset: number;
-  search?: string;
-}>;
 
-export const COMMUNITY_GROUP_PAGE_SIZE = 30;
-export const COMMUNITY_GROUP_MAX_PAGE_SIZE = 50;
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -25,9 +9,9 @@ function asRecord(value: unknown): Record<string, unknown> | null {
     : null;
 }
 
-export function parseCommunityGroups(value: unknown): readonly CommunityGroup[] | null {
+export function parseCommunityGroups(value: unknown): readonly CommunityGroupView[] | null {
   if (!Array.isArray(value)) return null;
-  const groups: CommunityGroup[] = [];
+  const groups: CommunityGroupView[] = [];
   for (const valueItem of value) {
     const item = asRecord(valueItem);
     if (!item || typeof item.id !== 'string' || typeof item.name !== 'string') return null;

@@ -1,8 +1,8 @@
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import '@repo/core/api/community';
-import type { CommunityGroup } from '../../../lib/community/groups-contract';
+import type { CommunityGroupView } from '@repo/core/types/communityView';
 
-export function getExploreCommunityGroups(): readonly CommunityGroup[] {
+export function getExploreCommunityGroups(): readonly CommunityGroupView[] {
   const samples = getSandboxSamples<any[]>(
     'community',
     'getGroups',
@@ -17,5 +17,5 @@ export function getExploreCommunityGroups(): readonly CommunityGroup[] {
   }));
 }
 
-export const EXPLORE_COMMUNITY_GROUPS: readonly CommunityGroup[] = getExploreCommunityGroups();
+export const EXPLORE_COMMUNITY_GROUPS: readonly CommunityGroupView[] = getExploreCommunityGroups();
 

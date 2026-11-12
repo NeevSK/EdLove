@@ -72,13 +72,13 @@ export default function TeacherSelfView() {
       id: log.id,
       label: new Date(log.created_at).toLocaleDateString(undefined, { weekday: 'short' }),
       value: log.mood_score * 20,
-      detail: log.mood,
+      detail: log.mood ?? undefined,
     }));
   const moodHistoryEntries: DerivedHistoryEntry[] = moodHistory.slice(0, 10).map((log) => ({
     id: log.id,
     title: log.mood ? `${log.mood} mood` : 'Mood check-in',
     timestamp: new Date(log.created_at).toLocaleDateString(),
-    description: log.note,
+    description: log.note ?? undefined,
     kind: 'reflection',
   }));
 

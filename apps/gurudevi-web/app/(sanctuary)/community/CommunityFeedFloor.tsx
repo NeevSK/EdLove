@@ -4,12 +4,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useCommunityCanvas } from '../../../lib/canvas/useCommunityCanvas';
-import {
-  COMMUNITY_GROUP_PAGE_SIZE,
-  type CommunityGroup,
-  type CommunityGroupsResult,
-  parseCommunityGroupsResult,
-} from '../../../lib/community/groups-contract';
+import { parseCommunityGroupsResult } from '../../../lib/community/groups-contract';
+import { COMMUNITY_GROUP_PAGE_SIZE, type CommunityGroupView, type CommunityGroupsResult } from '@repo/core/types/communityView';
 import { getExploreSampleAnnouncements } from '../../../lib/community/announcements-contract';
 import {
   getExploreCapacityMeta,
@@ -642,7 +638,7 @@ function CommunityGroupCard({
   group,
   onSelect,
 }: Readonly<{
-  group: CommunityGroup;
+  group: CommunityGroupView;
   onSelect?: () => void;
 }>) {
   return (

@@ -1,3 +1,4 @@
+import type { MoodLog, MoodValue } from '@repo/core/types/Wellbeing';
 import { requestAccountSelfProcedure } from './selfApiClient';
 
 export const MOOD_CHOICES = [
@@ -7,18 +8,7 @@ export const MOOD_CHOICES = [
   { emoji: '🧘', label: 'Calm', score: 4, value: 'calm' },
   { emoji: '🧐', label: 'Curious', score: 4, value: 'curious' },
   { emoji: '✨', label: 'Joyful', score: 5, value: 'joyful' },
-] as const;
-
-export type MoodValue = (typeof MOOD_CHOICES)[number]['value'];
-
-export type MoodLog = Readonly<{
-  id: string;
-  user_id: string;
-  mood_score: number;
-  mood: string | null;
-  note: string | null;
-  created_at: string;
-}>;
+] as const satisfies ReadonlyArray<{ emoji: string; label: string; score: number; value: MoodValue }>;
 
 function isMoodLog(value: unknown): value is MoodLog {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
@@ -27,8 +17,8 @@ function isMoodLog(value: unknown): value is MoodLog {
     typeof entry.id === 'string' &&
     typeof entry.user_id === 'string' &&
     typeof entry.mood_score === 'number' &&
-    (typeof entry.mood === 'string' || entry.mood === null) &&
-    (typeof entry.note === 'string' || entry.note === null) &&
+    (entry.mood === null || entry.mood === undefined || MOOD_CHOICES.some((c) => c.value === entry.mood)) &&
+    (typeof entry.note === 'string' || entry.note === null || entry.note === undefined) &&
     typeof entry.created_at === 'string'
   );
 }

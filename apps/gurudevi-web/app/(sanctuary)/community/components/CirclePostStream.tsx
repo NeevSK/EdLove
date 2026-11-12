@@ -2,15 +2,16 @@
 
 import Link from 'next/link';
 import React, { useMemo, useState } from 'react';
-import type { CommunityGroup } from '../../../../lib/community/groups-contract';
-import { type CommunityPost, getExploreSamplePosts } from '../../../../lib/community/posts-contract';
+import type { CommunityGroupView } from '@repo/core/types/communityView';
+import { getExploreSamplePosts } from '../../../../lib/community/posts-contract';
+import { type CommunityPostView } from '@repo/core/types/communityView';
 import styles from '../community.module.css';
 import { CommentDrawer } from './CommentDrawer';
 import { WebPostComposer } from './WebPostComposer';
 
 interface CirclePostStreamProps {
-  selectedGroup?: CommunityGroup | null;
-  initialPosts?: readonly CommunityPost[];
+  selectedGroup?: CommunityGroupView | null;
+  initialPosts?: readonly CommunityPostView[];
   authorRole?: string | null;
   mode?: 'account' | 'explore';
   onExploreGroups?: () => void;
@@ -45,10 +46,10 @@ export function CirclePostStream({
     return getExploreSamplePosts(selectedGroup?.id);
   }, [initialPosts, selectedGroup?.id]);
 
-  const [posts, setPosts] = useState<readonly CommunityPost[]>(defaultPosts);
-  const [activeDiscussionPost, setActiveDiscussionPost] = useState<CommunityPost | null>(null);
+  const [posts, setPosts] = useState<readonly CommunityPostView[]>(defaultPosts);
+  const [activeDiscussionPost, setActiveDiscussionPost] = useState<CommunityPostView | null>(null);
 
-  const handlePostCreated = (newPost: CommunityPost) => {
+  const handlePostCreated = (newPost: CommunityPostView) => {
     setPosts((prev) => [newPost, ...prev]);
   };
 

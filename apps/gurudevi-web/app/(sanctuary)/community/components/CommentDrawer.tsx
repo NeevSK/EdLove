@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import type { CommunityComment } from '../../../../lib/community/comments-contract';
 import { createCommunityComment, loadCommunityComments } from '../../../../lib/community/comments';
-import type { CommunityPost } from '../../../../lib/community/posts-contract';
+import type { CommunityPostView } from '@repo/core/types/communityView';
 import styles from '../community.module.css';
 
 interface CommentDrawerProps {
-  post: CommunityPost;
+  post: CommunityPostView;
   onClose: () => void;
   onCommentAdded?: () => void;
   authorRole?: string | null;

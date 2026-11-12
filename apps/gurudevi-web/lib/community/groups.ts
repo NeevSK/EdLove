@@ -2,11 +2,8 @@ import { createORPCClient } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import { SOVEREIGN_API_PUBLIC_URL, SOVEREIGN_ORPC_URL } from '@repo/core/api/base';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
-import {
-  type CommunityGroupsQuery,
-  type CommunityGroupsResult,
-  parseCommunityGroups,
-} from './groups-contract';
+import { parseCommunityGroups } from './groups-contract';
+import { type CommunityGroupsQuery, type CommunityGroupsResult } from '@repo/core/types/communityView';
 
 type CommunityClient = {
   community: {
@@ -16,11 +13,7 @@ type CommunityClient = {
   };
 };
 
-export type {
-  CommunityGroup,
-  CommunityGroupsQuery,
-  CommunityGroupsResult,
-} from './groups-contract';
+export type { CommunityGroupView, CommunityGroupsQuery, CommunityGroupsResult } from '@repo/core/types/communityView';
 
 type CommunityGroupsLoadOptions = Readonly<{
   query?: CommunityGroupsQuery;

@@ -2,7 +2,8 @@
 
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AccountSafeTrySelfPracticeAdapter } from '../../../../lib/sanctuary/selfExplore';
-import { MOOD_CHOICES, type MoodLog, type MoodValue } from '../../../../lib/sanctuary/selfWellbeing';
+import { MOOD_CHOICES } from '../../../../lib/sanctuary/selfWellbeing';
+import { type MoodLog, type MoodValue } from '@repo/core/types/Wellbeing';
 import styles from '../self-floor.module.css';
 import { ScrollArea } from '@repo/ui/components/web';
 import { BreathGuide } from './BreathGuide';
