@@ -210,14 +210,56 @@ Each step is baseline for its layer, gated by the ratchet, then committed:
 
 Then production level, layer by layer, in the same order.
 
-## 4. Decisions for Neev
+## 4. Policies, not choices
 
-| # | Decision | When |
+Neev's rule (2026-11-12): where the right answer isn't known yet, don't commit to one. Make it a
+**policy**: a typed value with a default, declared once, read by the mechanism, and changeable
+without touching call sites. The mechanism is built once and must work under every allowed value.
+
+| Policy | Allowed values | Default until decided | Read by |
+| --- | --- | --- | --- |
+| `outbox.backend` | `mutationQueue`, `workspaceOutbox`, `provisionalCommands`, `unified` | today's backend for each caller | L4: one outbox port; the three queues become backends behind it, so no queued item has to migrate until the policy says `unified` |
+| `conflict[entityKind]` | `serverWins`, `clientWins`, `merge`, `ask` | `serverWins` | L4 healing loop; an unknown kind falls back to the default |
+| `presentation[step][sizeClass]` | `push`, `sheet(detents)`, `panel`, `modal`, `replace` | `push` on phone, `panel` on tablet and web | L9 navigator adapter; a flow step can override |
+| `retry[errorKind]` | an Effect `Schedule` | the current `defaultRetryPolicy` | L3 |
+
+Policies live in core, in one module per layer, and are covered by tests that run the mechanism
+under each value.
+
+## 5. Journeys: two catalogs, kept separate
+
+- **PJC** (`packages/core/src/flows/pjc`, [guide](product-journey-catalog.md)) is the **product
+  spec**: feature → intent → journey → steps and transitions, each transition with its action and
+  feedback, plus bindings to authorities (state, failure, offline, auth). It's the requirement
+  and traceability layer, and it stays the authoring source. Neev has local changes there, so this
+  plan doesn't edit it.
+- **FlowDAG** (`packages/core/src/flows/<domain>/*.flow.ts`) is the **runtime** description the
+  navigator reads (L9). The PJC guide keeps the two separate on purpose.
+- **The link.** A runtime flow step carries the PJC step ID it implements, and an outcome mapping
+  (L7) carries the PJC transition ID whose feedback it renders. A check can then report PJC
+  transitions with no runtime implementation, and runtime steps with no spec.
+
+## 6. School creation: what is real (2026-11-12)
+
+| Piece | What it does | Wired? |
 | --- | --- | --- |
-| 1 | Merging the three write queues: which persisted store wins, and how existing queued items migrate | Before step 5 |
-| 2 | Conflict policy per entity type (server wins, merge, ask) | Before step 5 |
-| 3 | `useSchoolCreation` or `schoolProvisioningMachine` | Before step 7 |
-| 4 | Presentation per device class (does a tablet get panels, or sheets everywhere?) | Before step 9 |
+| `core/hooks/useSchoolCreation.ts` (since 2026-02) | The wizard **draft**: five steps (basic info, location, demographics, hierarchy), held in `useReducer` and persisted to device storage through two effects. No submit. | No: only re-exported from barrels |
+| `classroom/machines/schoolProvisioningMachine.ts` (since 2026-10-28) | The **submission**: details → verify the handle → provision on the backend (create the school, the founder bond, an optional community group, via Effect) → activated or error | No: only the barrel and its own test |
+| `admin/components/school/Step*.tsx` and `gurudevi-mobile/src/components/school/Step*.tsx` | The four step UIs, in two copies | No importers |
+| `admin/components/school/CreateSchoolModal.tsx`, `app/school-creation.tsx`, `SchoolCreationScreen.tsx` | The screens that used the hook and the old API | Deleted in `308aa4f35` (2026-11-06, the Arrive journey). Arrive's rule: a caller of retired API moves to v1 or is removed. Backup: `backup/wip-snapshot-20261106` |
+| v1 API | Has `identity.createInitialBond`; **no school-creation procedure** | — |
+| PJC `journey:founder.charter_school_hub` | Outcome: the school row, its community group and a claim token. Its binding still points at the deleted modal | Spec only |
 
-Settled: Zod (generated from ZModel) is the single source of truth for data shapes. Not building yet.
-The API is Neev's.
+They are not parallel. They are the two halves of one journey: the hook is the draft, the machine
+is the submission. Nothing can create a school today, by design, until v1 has the procedure. What
+emerges, for Neev to confirm when the journey is rebuilt:
+
+- the **draft** becomes a persisted store slice (versioned, like the other 17), replacing the
+  reducer-plus-effects persistence, which is anti-pattern 7 in the state doc;
+- the **submission** stays a machine. It passes the admission test: several dependent server writes,
+  partial failure and a defined error state. It moves to `setup()` and its writes go through the L4
+  outbox, with the idempotency key from creation;
+- the **steps** become one copy, as flow steps (L9) linked to the PJC journey;
+- the server call waits for the v1 procedure (API side, Neev's).
+
+Nothing is deleted or rewritten until then: both files stay as they are.
