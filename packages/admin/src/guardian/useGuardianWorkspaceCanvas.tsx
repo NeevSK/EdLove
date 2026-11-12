@@ -512,9 +512,9 @@ export function useGuardianWorkspaceCanvasSurfaces({
                       ? student.grades.latest.slice(0, 2)
                       : []
                     ).map((grade) => (
-                      <View className="flex-row items-center"
+                      <View
                         key={`${student.studentId}-${grade.subject}-${grade.date}`}
-                        className="items-center justify-between"
+                        className="flex-row items-center justify-between"
                       >
                         <Text className="text-[12px] text-phaseText-secondary">
                           {grade.subject}

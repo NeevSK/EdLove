@@ -6,3 +6,4 @@ export * from './lint';
 export * from './patterns';
 export * from './space';
 export * from './types';
+export * from './arrange';
