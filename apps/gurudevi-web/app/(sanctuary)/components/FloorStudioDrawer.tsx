@@ -17,6 +17,12 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {
+  GROUND_NOTE_TEXT,
+  GROUND_OPTIONS,
+  type GroundNote,
+  groundControls,
+} from '@repo/core/logic/workspace/groundPlan';
 import type {
   FloorWallpaperConfig,
   GroundScope,
@@ -60,6 +66,8 @@ export interface FloorStudioDrawerProps {
   currentPreset: WorkspaceAppearancePreset;
   currentMotion: WorkspaceAppearanceMotion;
   currentAtmosphere: FloorAtmosphereKind;
+  /** Why the drawn floor differs from the choices (from the floor engine's plan). */
+  groundNotes?: readonly GroundNote[];
   wallpaperConfig?: FloorWallpaperConfig | null;
   activeWallpaper?: WorkspaceWallpaper | null;
   furnitureItems: readonly FurnitureDefinition[];
@@ -85,6 +93,13 @@ export interface FloorStudioDrawerProps {
   /** This room gives up its own look and follows the world again. */
   onFollowWorld?: () => void;
 }
+
+const GROUND_ICONS: Record<SceneGroundMode, string> = {
+  live: '🌅',
+  still: '🌄',
+  image: '🖼️',
+  quiet: '⚪',
+};
 
 const ROOM_NAMES: Record<string, string> = {
   self: 'Self',
@@ -203,6 +218,7 @@ export function FloorStudioDrawer({
   currentGroundMode = 'live',
   currentPreset,
   currentAtmosphere,
+  groundNotes = [],
   wallpaperConfig,
   activeWallpaper,
   furnitureItems,
@@ -269,6 +285,13 @@ export function FloorStudioDrawer({
   if (!isOpen) return null;
 
   const currentMode = wallpaperConfig?.mode ?? (activeWallpaper ? 'single' : 'off');
+  // Which settings mean something for this look: the floor engine decides, same as the phone.
+  const controls = groundControls({
+    preset: currentPreset,
+    motion: 'off',
+    groundMode: currentGroundMode,
+    wallpaperConfig,
+  });
   const currentInterval = wallpaperConfig?.slideshowIntervalSeconds ?? 300;
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -453,55 +476,36 @@ export function FloorStudioDrawer({
                 </section>
               ) : null}
 
-              {/* Scene Ground Mode Section */}
+              {/* Ground: the four ways a floor can stand */}
               <section className={styles.section}>
-                <span className={styles.sectionTitle}>Scene Ground Mode</span>
+                <span className={styles.sectionTitle}>Ground</span>
                 <div className={styles.gridFour}>
-                  <button
-                    className={`${styles.pillButton} ${
-                      currentGroundMode === 'live' ? styles.pillButtonActive : ''
-                    }`}
-                    onClick={() => onSelectGroundMode?.('live')}
-                    type="button"
-                  >
-                    <span>🌅</span> Live Sky
-                  </button>
-                  <button
-                    className={`${styles.pillButton} ${
-                      currentGroundMode === 'still' ? styles.pillButtonActive : ''
-                    }`}
-                    onClick={() => {
-                      onSelectGroundMode?.('still');
-                    }}
-                    type="button"
-                  >
-                    <span>🌄</span> Still Sky
-                  </button>
-                  <button
-                    className={`${styles.pillButton} ${
-                      currentGroundMode === 'image' ? styles.pillButtonActive : ''
-                    }`}
-                    onClick={() => onSelectGroundMode?.('image')}
-                    type="button"
-                  >
-                    <span>🖼️</span> Photo
-                  </button>
-                  <button
-                    className={`${styles.pillButton} ${
-                      currentGroundMode === 'quiet' ? styles.pillButtonActive : ''
-                    }`}
-                    onClick={() => {
-                      onSelectGroundMode?.('quiet');
-                    }}
-                    type="button"
-                  >
-                    <span>⚪</span> Quiet
-                  </button>
+                  {GROUND_OPTIONS.ground.map((option) => (
+                    <button
+                      aria-pressed={currentGroundMode === option.id}
+                      className={`${styles.pillButton} ${
+                        currentGroundMode === option.id ? styles.pillButtonActive : ''
+                      }`}
+                      key={option.id}
+                      onClick={() => onSelectGroundMode?.(option.id)}
+                      title={option.hint}
+                      type="button"
+                    >
+                      <span aria-hidden="true">{GROUND_ICONS[option.id]}</span> {option.label}
+                    </button>
+                  ))}
                 </div>
+                {groundNotes
+                  .filter((note) => note !== 'texture-paused')
+                  .map((note) => (
+                    <p className={styles.drawerSubtitle} key={note} role="status">
+                      {GROUND_NOTE_TEXT[note]}
+                    </p>
+                  ))}
               </section>
 
-              {/* Photographic Wallpapers (when in image mode) */}
-              {currentGroundMode === 'image' ? (
+              {/* Photo settings: only mean something when the ground is a photo */}
+              {controls.photoPicker ? (
                 <>
                   <section className={styles.section}>
                     <div className={styles.sectionHeader}>
@@ -629,21 +633,17 @@ export function FloorStudioDrawer({
                       </button>
                     </div>
 
-                    {currentMode === 'slideshow' ? (
+                    {controls.cadence ? (
                       <div style={{ marginTop: '0.4rem' }}>
                         <span className={styles.sectionTitle}>Slideshow Cadence</span>
                         <div className={styles.gridThree} style={{ marginTop: '0.35rem' }}>
-                          {[
-                            { sec: 180, label: '3 min' },
-                            { sec: 300, label: '5 min' },
-                            { sec: 900, label: '15 min' },
-                          ].map((cadence) => (
+                          {GROUND_OPTIONS.cadence.map((cadence) => (
                             <button
                               className={`${styles.pillButton} ${
-                                currentInterval === cadence.sec ? styles.pillButtonActive : ''
+                                currentInterval === cadence.id ? styles.pillButtonActive : ''
                               }`}
-                              key={cadence.sec}
-                              onClick={() => handleIntervalChange(cadence.sec)}
+                              key={cadence.id}
+                              onClick={() => handleIntervalChange(cadence.id)}
                               type="button"
                             >
                               {cadence.label}
@@ -656,85 +656,83 @@ export function FloorStudioDrawer({
                 </>
               ) : null}
 
-              {/* Background Color Wash Palette */}
-              <section className={styles.section}>
-                <span className={styles.sectionTitle}>Diurnal Color Wash</span>
-                <div className={styles.gridTwo}>
-                  {[
-                    { id: 'default', label: '☀️ Sandstone' },
-                    { id: 'dawn', label: '🌅 Dawn Coral' },
-                    { id: 'garden', label: '🌿 Verdant' },
-                    { id: 'night', label: '🌌 Night Twilight' },
-                    { id: 'none', label: '⚪ Off (Clear)' },
-                  ].map((preset) => (
-                    <button
-                      className={`${styles.pillButton} ${
-                        currentPreset === preset.id ? styles.pillButtonActive : ''
-                      }`}
-                      key={preset.id}
-                      onClick={() => onSelectPreset(preset.id as WorkspaceAppearancePreset)}
-                      type="button"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
-
-                {currentGroundMode === 'image' ? (
-                  <div className={styles.colorMixer} style={{ marginTop: '0.5rem' }}>
-                    <input
-                      aria-label="Custom color wash picker"
-                      className={styles.colorInput}
-                      onChange={(e) => {
-                        setCustomHex(e.target.value);
-                        if (onUpdateWallpaperConfig) {
-                          onUpdateWallpaperConfig({
-                            ...wallpaperConfig,
-                            mode: currentMode,
-                            activeId:
-                              activeWallpaper?.publicId ?? wallpaperConfig?.activeId ?? null,
-                            items: wallpaperConfig?.items ?? [
-                              ...getBackdropsForWorld(currentWorld),
-                              ...customWallpapers,
-                            ],
-                            slideshowIntervalSeconds: currentInterval,
-                            customWashColor: e.target.value,
-                          });
-                        }
-                      }}
-                      type="color"
-                      value={customHex}
-                    />
-                    <span className={styles.colorHexText}>{customHex}</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft, #706b63)' }}>
-                      Photo tint (kept light enough to read)
-                    </span>
+              {/* Photo tint: a light wash over the photo (it cannot show on a sky or paper) */}
+              {controls.tint ? (
+                <section className={styles.section}>
+                  <span className={styles.sectionTitle}>Photo tint</span>
+                  <div className={styles.gridTwo}>
+                    {GROUND_OPTIONS.tint.map((preset) => (
+                      <button
+                        className={`${styles.pillButton} ${
+                          currentPreset === preset.id ? styles.pillButtonActive : ''
+                        }`}
+                        key={preset.id}
+                        aria-pressed={currentPreset === preset.id}
+                        onClick={() => onSelectPreset(preset.id)}
+                        type="button"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
                   </div>
-                ) : null}
-              </section>
 
-              {/* Atmospheric Shaders */}
+                  {currentPreset !== 'none' ? (
+                    <div className={styles.colorMixer} style={{ marginTop: '0.5rem' }}>
+                      <input
+                        aria-label="Custom color wash picker"
+                        className={styles.colorInput}
+                        onChange={(e) => {
+                          setCustomHex(e.target.value);
+                          if (onUpdateWallpaperConfig) {
+                            onUpdateWallpaperConfig({
+                              ...wallpaperConfig,
+                              mode: currentMode,
+                              activeId:
+                                activeWallpaper?.publicId ?? wallpaperConfig?.activeId ?? null,
+                              items: wallpaperConfig?.items ?? [
+                                ...getBackdropsForWorld(currentWorld),
+                                ...customWallpapers,
+                              ],
+                              slideshowIntervalSeconds: currentInterval,
+                              customWashColor: e.target.value,
+                            });
+                          }
+                        }}
+                        type="color"
+                        value={customHex}
+                      />
+                      <span className={styles.colorHexText}>{customHex}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft, #706b63)' }}>
+                        Your own colour (kept light enough to read)
+                      </span>
+                    </div>
+                  ) : null}
+                </section>
+              ) : null}
+
+              {/* Texture laid over the ground */}
               <section className={styles.section}>
-                <span className={styles.sectionTitle}>Tactile Shader FX</span>
+                <span className={styles.sectionTitle}>Texture</span>
                 <div className={styles.gridTwo}>
-                  {[
-                    { id: 'none', label: 'Plain' },
-                    { id: 'washi-grain', label: 'Washi Paper' },
-                    { id: 'aurora-mesh', label: 'Aurora Mesh' },
-                    { id: 'celestial-embers', label: 'Embers' },
-                  ].map((fx) => (
+                  {GROUND_OPTIONS.texture.map((fx) => (
                     <button
                       className={`${styles.pillButton} ${
                         currentAtmosphere === fx.id ? styles.pillButtonActive : ''
                       }`}
                       key={fx.id}
-                      onClick={() => onSelectAtmosphere(fx.id as FloorAtmosphereKind)}
+                      aria-pressed={currentAtmosphere === fx.id}
+                      onClick={() => onSelectAtmosphere(fx.id)}
                       type="button"
                     >
                       {fx.label}
                     </button>
                   ))}
                 </div>
+                {groundNotes.includes('texture-paused') ? (
+                  <p className={styles.drawerSubtitle} role="status">
+                    {GROUND_NOTE_TEXT['texture-paused']}
+                  </p>
+                ) : null}
               </section>
             </>
           ) : (

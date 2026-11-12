@@ -29,6 +29,23 @@ export {
   writeGround,
 } from '@repo/core/logic/workspace/ground';
 export {
+  DEFAULT_TEXTURE,
+  GROUND_NOTE_TEXT,
+  GROUND_OPTIONS,
+  type GroundAllowance,
+  type GroundControls,
+  type GroundNote,
+  type GroundPlan,
+  type GroundSurface,
+  type GroundTexture,
+  type GroundTint,
+  groundAllowanceOf,
+  groundControls,
+  isGroundTexture,
+  NOTHING_ALLOWED,
+  planGround,
+} from '@repo/core/logic/workspace/groundPlan';
+export {
   buildWorkspaceLayoutStorageKey,
   choosePreferredWorkspaceLayout,
   resolveWorkspaceLayoutTarget,

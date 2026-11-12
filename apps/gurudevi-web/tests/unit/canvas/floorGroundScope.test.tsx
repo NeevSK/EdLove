@@ -61,7 +61,7 @@ describe('one world look, rooms follow it, "just this room or every room?"', () 
     render(<Room domain="self" />);
     await openStudio('self');
     await tap(/Just Self/);
-    await tap(/Still Sky/);
+    await tap(/Still sky/i);
     expect(floor('self').dataset.groundMode).toBe('still');
     expect(floor('self').dataset.groundSource).toBe('room');
     cleanup();
@@ -82,7 +82,7 @@ describe('one world look, rooms follow it, "just this room or every room?"', () 
     await openStudio('self');
     await tap(/Photo/);
     expect(floor('self').dataset.groundMode).toBe('image');
-    await tap(/Live Sky/);
+    await tap(/Live sky/i);
     expect(floor('self').dataset.groundMode).toBe('live');
     await tap(/Photo/);
     expect(floor('self').dataset.groundMode).toBe('image');

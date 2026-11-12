@@ -62,20 +62,9 @@ const PROFILE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
 
 const SECTION_LABELS: Record<ProfileSection, { label: string; icon: string }> = {
   identity: { label: 'Identity', icon: '👤' },
-  settings: { label: 'Atmosphere & Motion', icon: '✨' },
+  settings: { label: 'Floor looks', icon: '✨' },
   security: { label: 'Security & Data', icon: '🛡️' },
 };
-
-const PRESET_OPTIONS: readonly {
-  id: WorkspaceAppearance['preset'];
-  label: string;
-  description: string;
-}[] = [
-  { id: 'default', label: 'Default', description: 'Warm sandstone' },
-  { id: 'dawn', label: 'Dawn', description: 'Sunrise coral' },
-  { id: 'garden', label: 'Garden', description: 'Fresh pine' },
-  { id: 'night', label: 'Night', description: 'Deep cosmic' },
-];
 
 export function ProfileFloor({
   accountId,
@@ -1520,46 +1509,13 @@ export function ProfileFloor({
                     className={styles.atmosphereSettings}
                     aria-label="Atmosphere and motion settings"
                   >
-                    <h2>Workspace Atmosphere</h2>
-                    <p>Choose the ambient tone and particle backdrop for your sanctuary floors.</p>
-
-                    <div className={styles.presetGrid}>
-                      {PRESET_OPTIONS.map((preset) => (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          className={`${styles.presetButton} ${canvas.appearance.preset === preset.id ? styles.presetButtonActive : ''}`}
-                          onClick={() =>
-                            void canvas.setAppearance({
-                              ...canvas.appearance,
-                              preset: preset.id,
-                            })
-                          }
-                        >
-                          <span>{preset.label}</span>
-                          <small>{preset.description}</small>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className={styles.motionRow}>
-                      <div>
-                        <strong>Particle Motion</strong>
-                        <p>Ambient floating particles responding to the selected preset.</p>
-                      </div>
-                      <button
-                        type="button"
-                        className={`${styles.motionToggle} ${canvas.appearance.motion === 'subtle' ? styles.motionToggleActive : ''}`}
-                        onClick={() =>
-                          void canvas.setAppearance({
-                            ...canvas.appearance,
-                            motion: canvas.appearance.motion === 'subtle' ? 'off' : 'subtle',
-                          })
-                        }
-                      >
-                        {canvas.appearance.motion === 'subtle' ? 'Motion: On' : 'Motion: Off'}
-                      </button>
-                    </div>
+                    <h2>Floor looks</h2>
+                    <p>
+                      The ground, photo, tint and texture of your floors are set in Floor Studio:
+                      the settings button at the top of any floor. You choose there whether a change
+                      is for every room or just that one. Movement follows your device and your
+                      Visual detail setting.
+                    </p>
                   </section>
                 )}
 

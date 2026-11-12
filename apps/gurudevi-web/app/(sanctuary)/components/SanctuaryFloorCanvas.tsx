@@ -9,6 +9,11 @@ import {
   wallpaperPatch,
   writeGround,
 } from '@repo/core/logic/workspace/ground';
+import {
+  groundAllowanceOf,
+  NOTHING_ALLOWED,
+  planGround,
+} from '@repo/core/logic/workspace/groundPlan';
 import type { GroundScope, SceneGroundMode, WorkspaceAppearance } from '@repo/core/types';
 import { isWorldId, WORLDS, washLimitOf } from '@repo/ui/theme';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -19,6 +24,7 @@ import {
 } from '../../../lib/canvas/appearanceConstants';
 import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
 import { useFloorSlideshow } from '../../../lib/canvas/useFloorSlideshow';
+import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import floorStyles from '../self/self-floor.module.css';
 import { FloorAtmosphere, type FloorAtmosphereKind } from './FloorAtmosphere';
@@ -254,25 +260,33 @@ export function SanctuaryFloorCanvas({
     }
   }, [domain]);
 
+  // The floor engine's one plan for this look on this device (shared with the phone).
+  const view = useGurudeviView();
+  const allowance = useMemo(
+    () => (view ? groundAllowanceOf(view.experience, view.reading) : NOTHING_ALLOWED),
+    [view],
+  );
+  const worldPhotos = getBackdropsForWorld(activeWorld);
+  const plan = planGround(activeAppearance, worldPhotos, allowance, legacyAtmosphere);
   const atmosphere: FloorAtmosphereKind = isAtmosphere(activeAppearance.atmosphere)
     ? activeAppearance.atmosphere
     : legacyAtmosphere;
 
   const { activeWallpaper, nextWallpaper, isCrossFading } = useFloorSlideshow(
-    activeAppearance.wallpaperConfig,
-    activeAppearance.wallpaper,
+    plan.slideshow
+      ? {
+          mode: 'slideshow',
+          items: plan.slideshow.items,
+          slideshowIntervalSeconds: plan.slideshow.seconds,
+          activeId: plan.slideshow.startId,
+        }
+      : null,
+    plan.photo,
   );
-
-  const isImageGround = groundMode === 'image';
-  const effectiveWallpaper = isImageGround
-    ? (activeWallpaper ??
-      (dataMode === 'explore'
-        ? EXPLORE_DEFAULT_APPEARANCE.wallpaper
-        : (getBackdropsForWorld(activeWorld)[0] ?? null)))
-    : null;
+  const drawnPhoto = plan.surface === 'photo' ? (activeWallpaper ?? plan.photo) : null;
 
   // A custom tint shows through a photo; the world caps how strong it may be so words stay readable.
-  const customWash = activeAppearance.wallpaperConfig?.customWashColor;
+  const customWash = plan.tint?.color ?? null;
   const worldTokens =
     WORLDS[isWorldId(activeWorld) ? activeWorld : 'sanctuary'].palette[resolvedMode];
   const washAlpha = useMemo(
@@ -280,7 +294,7 @@ export function SanctuaryFloorCanvas({
     [customWash, worldTokens],
   );
   const customWashStyle =
-    customWash && washAlpha > 0 && activeAppearance.preset !== 'none' && isImageGround
+    customWash && washAlpha > 0
       ? {
           backgroundImage: `radial-gradient(circle at 88% 6%, ${customWash}${alphaHex(washAlpha)}, transparent 30rem), radial-gradient(circle at 10% 90%, ${customWash}${alphaHex(washAlpha * 0.6)}, transparent 32rem)`,
         }
@@ -295,9 +309,10 @@ export function SanctuaryFloorCanvas({
       data-domain={domain}
       data-ground-mode={groundMode}
       data-ground-source={resolvedGround.source}
-      data-has-wallpaper={Boolean(effectiveWallpaper?.url)}
+      data-ground-drawn={plan.surface}
+      data-has-wallpaper={drawnPhoto !== null}
       data-mode={dataMode}
-      data-motion={activeAppearance.motion}
+      data-motion={plan.breathe ? 'subtle' : 'off'}
       data-world={activeWorld}
       style={customWashStyle}
     >
@@ -305,10 +320,10 @@ export function SanctuaryFloorCanvas({
         customScene={customScene}
         customSvg={customSvg}
         fixed
-        groundMode={groundMode}
+        groundMode={SURFACE_TO_MODE[plan.surface]}
         isCrossFading={isCrossFading}
-        nextWallpaper={nextWallpaper}
-        pure={activeAppearance.preset === 'none'}
+        nextWallpaper={plan.surface === 'photo' ? nextWallpaper : null}
+        pure={plan.pure}
         room={
           domain === 'workspace'
             ? 'classroom'
@@ -316,14 +331,11 @@ export function SanctuaryFloorCanvas({
               ? domain
               : 'self'
         }
-        wallpaper={effectiveWallpaper}
+        wallpaper={drawnPhoto}
         worldId={activeWorld}
       />
 
-      <FloorAtmosphere
-        kind={atmosphere}
-        preset={activeAppearance.preset === 'none' ? 'default' : activeAppearance.preset}
-      />
+      <FloorAtmosphere kind={plan.texture} preset={plan.tint?.preset ?? 'default'} />
 
       {/* Unified Floor Reception Bar (Idea 2 Dual-Anchor Horizon Split) */}
       <FloorReception
@@ -374,6 +386,7 @@ export function SanctuaryFloorCanvas({
       <FloorStudioDrawer
         activeWallpaper={activeWallpaper}
         currentAtmosphere={atmosphere}
+        groundNotes={plan.notes}
         currentGroundMode={groundMode}
         currentMotion={activeAppearance.motion}
         currentPreset={activeAppearance.preset}
@@ -411,6 +424,13 @@ export function SanctuaryFloorCanvas({
     </article>
   );
 }
+
+const SURFACE_TO_MODE = {
+  live: 'live',
+  still: 'still',
+  photo: 'image',
+  paper: 'quiet',
+} as const satisfies Record<string, SceneGroundMode>;
 
 function isAtmosphere(value: unknown): value is FloorAtmosphereKind {
   return (
