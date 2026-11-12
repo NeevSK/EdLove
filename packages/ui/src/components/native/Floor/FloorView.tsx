@@ -1,10 +1,10 @@
-import type { FloorNode, FloorTree, PatternId } from '@repo/core/logic/floor';
+import type { FloorNode, FloorTree } from '@repo/core/logic/floor';
 import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button } from '../Button/Button';
-import { Grid } from '../Layout/Grid';
 import { Stack } from '../Layout/Layout';
 import { Text } from '../Text/Text';
+import { PatternBody, type PatternWords } from './patterns';
 
 export interface FloorViewProps {
   tree: FloorTree;
@@ -14,12 +14,11 @@ export interface FloorViewProps {
   onSeeAll?: (groupId: string) => void;
   /** Translated "See all" words; default English. */
   seeAllLabel?: (group: string, count: number) => string;
+  /** Translated words patterns print (day bands, step place). */
+  words?: Partial<PatternWords>;
   /** Show the floor's own scroll; off when a screen already scrolls. */
   scroll?: boolean;
 }
-
-const ROW: ReadonlySet<PatternId> = new Set(['shelf', 'circle-rail', 'chip-rail']);
-const GRID: ReadonlySet<PatternId> = new Set(['tile-grid', 'mixed-tiles', 'pinboard']);
 
 const defaultSeeAll = (group: string, count: number) => `See all ${count} in ${group}`;
 
@@ -34,35 +33,19 @@ export function FloorView({
   renderPiece,
   onSeeAll,
   seeAllLabel = defaultSeeAll,
+  words,
   scroll = true,
 }: FloorViewProps) {
   const group = (g: FloorNode) => {
     const shown = g.children.filter((c) => c.placement !== 'folded');
     const folded = g.children.length - shown.length;
     const pattern = g.pattern ?? 'stream';
-    const pieces = shown.map((p) => (
-      <View key={p.id} style={GRID.has(pattern) || ROW.has(pattern) ? null : styles.full}>
-        {renderPiece(p)}
-      </View>
-    ));
     return (
       <Stack key={g.id} gap="inside" accessibilityLabel={g.label}>
         <Text kind="label" tone="soft" accessibilityRole="header">
           {g.label}
         </Text>
-        {ROW.has(pattern) ? (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.row}
-          >
-            {pieces}
-          </ScrollView>
-        ) : GRID.has(pattern) ? (
-          <Grid min="sm">{pieces}</Grid>
-        ) : (
-          <Stack gap="between">{pieces}</Stack>
-        )}
+        <PatternBody pattern={pattern} pieces={shown} renderPiece={renderPiece} words={words} />
         {folded > 0 ? (
           <Button
             variant="quiet"
