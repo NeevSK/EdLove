@@ -305,6 +305,43 @@ that throw raw `Error`, catch-and-log blocks, hand-rolled loading flags, direct 
 toasts and haptics). Then any agent can do the conversions safely, a few files at a time, without a
 decision from Neev, and the count shows the progress.
 
+## 2b. Pacer: where each capability goes (2026-11-12)
+
+`@tanstack/react-pacer` 0.24.1 (2026-10-05) is the latest release, so the gap is capability,
+not version. Each utility has one job in this plan, and none duplicates the retry engine:
+
+| Pacer utility | Job here | Step |
+| --- | --- | --- |
+| `AsyncQueuer` (concurrency, priority, `started`/stop, `onSettled`) | Drains the outbox: one entity at a time, in order; paused while offline or signed out; each item settles into an outcome | 5 |
+| `AsyncRateLimiter` | Client-side limit per procedure for the synchronized morning load (10,000 schools), honouring `RateLimitedError.retryAfterMs` | 4 |
+| `AsyncBatcher` | Batches telemetry, breadcrumbs and sync-event invalidations (it replaces `useBatchedAction`'s plain batcher) | 4, 5 |
+| `AsyncDebouncer` / `useAsyncDebouncedCallback` | Search and lookups that call the server, cancelling stale calls | 6 |
+| `Throttler`, `Debouncer` | Already used: invalidation bursts, resize, dev errors | done |
+| State selectors (`useDebouncer(fn, opts, selector)`) | `isPending` and `isExecuting` for the UI, replacing hand-rolled loading flags | 6 |
+| `PacerProvider` | Shared defaults in each app root | 4 |
+| `@tanstack/react-pacer-devtools` 0.9.1 | Dev-only inspection; `key` on every pacer | later |
+| `AsyncRetryer` | **Not used.** Retry has one engine, Effect `Schedule` with `worthRetrying`; a second engine would split the policy | — |
+
+## 2c. fate (fate.technology), assessed 2026-11-12
+
+fate is Christoph Nakazawa's data client: views composed per component, a normalized cache, data
+masking, and Async React. 2.0 adds GraphQL, client state, offline mutations queued with
+idempotency keys, and IndexedDB persistence. Its starter (`vp create fate`) deploys to Cloudflare
+with Void.
+
+**Not adopted.** It speaks native HTTP, tRPC and GraphQL, not oRPC; React Native isn't covered;
+its offline layer is IndexedDB, while ours is PowerSync's SQLite on device. Swapping would replace
+L2 to L5 on both apps for a web-first tool.
+
+**Borrowed ideas.**
+- **Views and data masking:** a component declares the fields it needs, and the screen fetches
+  them together. That is the L9 flow-step `prefetch` plus per-component `queryOptions`.
+- **Offline mutations with idempotency keys and optimistic rollback:** the L4 outbox, step 5.
+- **Memo fields:** derived data shared across views, as store selectors.
+
+**Already aligned.** Vite+ bundles Oxlint and Oxfmt; our lint already runs on Oxlint. Where the
+API is deployed (Void, Cloudflare) is the API side, Neev's.
+
 ## 3. Order of work
 
 Each step is baseline for its layer, gated by the ratchet, then committed:
