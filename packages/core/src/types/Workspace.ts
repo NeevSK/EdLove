@@ -133,47 +133,6 @@ export interface DomainFeature extends DomainEntry {
   defaultZone?: string;
 }
 
-export type WorkspaceRolePersona =
-  | 'founder'
-  | 'principal'
-  | 'assistantPrincipal'
-  | 'sectionHead'
-  | 'gradeHead'
-  | 'teacher'
-  | 'student'
-  | 'guardian'
-  | 'parent'
-  | 'developer';
-
-export type FeatureLifecycleStage = 'day_0_onboarding' | 'daily_circadian' | 'mastery_governance';
-
-export interface ScreenSequenceStep {
-  step: number;
-  screenId: string;
-  route: string;
-  title: string;
-  purpose: 'on_ramp' | 'primary_action' | 'sub_detail' | 'feedback_completion';
-  fallbackRoute?: string;
-}
-
-export interface SensoryFeedbackProfile {
-  tutiiMode: 'guiding' | 'celebrating' | 'resting' | 'somatic_calm' | 'alert';
-  tutiiRole?: 'guide' | 'companion' | 'sentinel';
-  haptic: 'light' | 'medium' | 'success' | 'warning' | 'selection';
-  soundChime?: 'arrival' | 'celebration' | 'pulse' | 'subtle_tap';
-  scaffoldDismissalKey?: string;
-  scaffoldThreshold?: number;
-}
-
-export interface FeatureJourneySpec {
-  featureId: string;
-  targetPersonas: WorkspaceRolePersona[];
-  stage: FeatureLifecycleStage;
-  entryRoute: string;
-  sequence: ScreenSequenceStep[];
-  feedback: SensoryFeedbackProfile;
-}
-
 export interface ResolvedWorkspaceSurface<
   TSurfaceId extends string = string,
   TCapabilityKey extends string = string,

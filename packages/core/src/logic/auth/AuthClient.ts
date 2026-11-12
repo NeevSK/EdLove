@@ -1,15 +1,6 @@
 import { deviceTrustAPI } from '@repo/core/native/deviceTrust';
-import type {
-  AccountDeletionRequest,
-  AccountLifecycleStatus,
-  AuthChangeEvent,
-  AuthSession,
-  AuthUser,
-  IAuthPort,
-  PasswordChangeConfirmation,
-  PhoneOtpRequest,
-  PhoneOtpVerification,
-} from '@repo/core/logic/ports/auth.port';
+import type { AccountDeletionRequest, AccountLifecycleStatus, AuthChangeEvent, IAuthPort, PasswordChangeConfirmation, PhoneOtpRequest, PhoneOtpVerification } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession, AuthUser } from '@repo/core/types/authSession';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
 import { trackProductEvent } from '@repo/core/monitoring';

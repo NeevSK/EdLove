@@ -6,7 +6,7 @@ import {
   isResolvedAuthSubjectCurrent,
   useAuth,
 } from '@repo/core/logic';
-import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { setGuestScope } from '@repo/core/native/guestScope';
 import { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
 import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';

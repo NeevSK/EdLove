@@ -19,7 +19,7 @@ import {
   completeAccountLifecycleCommand,
 } from '@repo/core/logic/accountLifecycle';
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
-import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { rehydrateScopedStores, resetScopedStores } from '@repo/core/store/resetScopedStores';
 import { APIError } from '@repo/core/types/API';
 import { Effect, Queue } from 'effect';

@@ -4,7 +4,7 @@ import {
   getSessionIdentityMode,
   isResolvedAuthSubjectCurrent,
 } from '@repo/core/logic/auth/identityState';
-import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 
 /**
  * A device account becomes durable only when the authenticated Supabase

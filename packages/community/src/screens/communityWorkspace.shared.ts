@@ -5,7 +5,8 @@ import type {
   WorkspaceRuntimePlatform,
   WorkspaceSurfaceDefinition,
 } from '@repo/core/types';
-import type { CommunityGroup, CommunityPost, DirectConversation, SanctuaryManifesto } from '@repo/core/types/Community';
+import type { CommunityGroup, CommunityPost, DirectConversation } from '@repo/core/types/Community';
+import type { SanctuaryManifesto } from '@repo/core/types/Growth';
 
 export type CommunityWorkspaceMode = 'feed' | 'circles' | 'messages' | 'announcements';
 

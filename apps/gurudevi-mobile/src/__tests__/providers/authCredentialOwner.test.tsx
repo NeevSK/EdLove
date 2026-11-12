@@ -1,4 +1,5 @@
-import type { AuthChangeEvent, AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthChangeEvent } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

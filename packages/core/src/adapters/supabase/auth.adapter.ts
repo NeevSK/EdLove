@@ -1,13 +1,8 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { requestPhoneOtp, verifyPhoneOtp } from '@repo/core/lib/security/phoneAuth';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
-import type {
-  AuthChangeEvent,
-  AuthMfaFactor,
-  AuthSession,
-  AuthUser,
-  IAuthPort,
-} from '@repo/core/logic/ports/auth.port';
+import type { AuthChangeEvent, AuthMfaFactor, IAuthPort } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession, AuthUser } from '@repo/core/types/authSession';
 import { APIError } from '@repo/core/types/API';
 
 export class SupabaseAuthAdapter implements IAuthPort {

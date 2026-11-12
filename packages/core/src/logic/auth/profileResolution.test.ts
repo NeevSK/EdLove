@@ -1,4 +1,4 @@
-import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { describe, expect, it, vi } from 'vitest';
 
 import { resolveAuthProfile } from './profileResolution';

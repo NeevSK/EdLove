@@ -1,9 +1,5 @@
-import type {
-  AuthSession,
-  AuthUser,
-  PhoneOtpRequest,
-  PhoneOtpVerification,
-} from '@repo/core/logic/ports/auth.port';
+import type { PhoneOtpRequest, PhoneOtpVerification } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession, AuthUser } from '@repo/core/types/authSession';
 import { APIError } from '@repo/core/types/API';
 import type { SupabaseClient } from '@supabase/supabase-js';
 

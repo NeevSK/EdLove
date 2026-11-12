@@ -6,25 +6,7 @@ export interface AnnouncementWithAuthor extends Announcement {
   author_name?: string;
   author_avatar?: string;
 }
-
-export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
 export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
-
-export interface SanctuaryManifesto {
-  id: string;
-  school_id: string;
-  creator_id: string;
-  title: string;
-  content: string;
-  vibe: ManifestoVibe;
-  status: ManifestoStatus;
-  target_date?: Date;
-  metadata: Record<string, any>;
-  created_at: Date;
-  updated_at: Date;
-  endorsement_count?: number;
-  has_endorsed?: boolean;
-}
 
 export interface PollOption {
   id: string;

@@ -82,18 +82,6 @@ export interface User extends ProfileStats {
 }
 
 /**
- * Auth Session (from Supabase)
- */
-export interface AuthSession {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  expires_at?: number;
-  token_type: string;
-  user: User;
-}
-
-/**
  * Sign Up Data
  * Data required to create a new user account
  */

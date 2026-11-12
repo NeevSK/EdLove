@@ -1,6 +1,7 @@
 import { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
 import type { IdentityAvailability } from '@repo/core/logic/auth/identityState';
-import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import type React from 'react';
 import { createContext, type ReactNode, useContext } from 'react';
 

@@ -14,7 +14,8 @@ import {
 import { resolveAuthProfile } from '@repo/core/logic/auth/profileResolution';
 import { supabaseIdentityAdapter as identity } from '@repo/core/adapters/supabaseIdentity.adapter';
 import { supabaseRealtimeAdapter as realtime } from '@repo/core/adapters/realtime/supabase.adapter';
-import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { clearAuthSubject, identifyAuthSubject, initSentry } from '@repo/core/monitoring';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import {

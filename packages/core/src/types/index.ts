@@ -76,7 +76,6 @@ export type { Bond, Perspective } from '../logic/schemas/identity.schema';
 export type {
   FieldAnalytics,
   InstitutionalAsset,
-  InventoryCategory,
   InventoryCondition,
   InventoryItem,
   InventoryRequest,
@@ -163,17 +162,10 @@ export type {
   TenantContext,
 } from './Tenancy';
 export type { ThuthimalGift } from './Thuthimal';
-export type {
-  GraphLink,
-  GraphNode,
-  KnowledgeTopology,
-  LayoutResult,
-  LinkRelationship,
-  MappingTopologyZod,
-  PerspectiveId,
-  PulseMetricsZod,
-} from './topology';
-export type { AuthSession, LoginData, ProfileStats, SignUpData, User } from './User';
+export type { GraphLink, GraphNode, KnowledgeTopology, LayoutResult, LinkRelationship, PerspectiveId } from './topology';
+export type { MappingTopologyZod, PulseMetricsZod } from '../logic/schemas/dashboard.schema';
+export type { LoginData, ProfileStats, SignUpData, User } from './User';
+export type { AuthSession } from './authSession';
 export type {
   PerspectiveRenderer,
   PerspectiveViewProps,
@@ -193,33 +185,8 @@ export type {
   WorkbenchTaskLocalStatePolicy,
   WorkbenchTaskResource,
 } from './Workbench';
-export type {
-  DomainFeature,
-  FeatureJourneySpec,
-  FeatureLifecycleStage,
-  FloorWallpaperConfig,
-  ResolvedWorkspaceSurface,
-  SceneGroundMode,
-  ScreenSequenceStep,
-  SensoryFeedbackProfile,
-  WallpaperPlaybackMode,
-  WorkspaceAppearance,
-  WorkspaceAppearanceMotion,
-  WorkspaceAppearancePreset,
-  WorkspaceLayout,
-  WorkspaceOwnerPackage,
-  WorkspaceRendererConfig,
-  WorkspaceRendererMode,
-  WorkspaceRendererPlatform,
-  WorkspaceRolePersona,
-  WorkspaceRuntimePlatform,
-  WorkspaceSurfaceDefinition,
-  WorkspaceSwitcherDestination,
-  WorkspaceSwitcherTarget,
-  WorkspaceSwitcherTargetId,
-  WorkspaceWallpaper,
-  WorkspaceZoneId,
-} from './Workspace';
+export type { DomainFeature, FloorWallpaperConfig, ResolvedWorkspaceSurface, SceneGroundMode, WallpaperPlaybackMode, WorkspaceAppearance, WorkspaceAppearanceMotion, WorkspaceAppearancePreset, WorkspaceLayout, WorkspaceOwnerPackage, WorkspaceRendererConfig, WorkspaceRendererMode, WorkspaceRendererPlatform, WorkspaceRuntimePlatform, WorkspaceSurfaceDefinition, WorkspaceSwitcherDestination, WorkspaceSwitcherTarget, WorkspaceSwitcherTargetId, WorkspaceWallpaper, WorkspaceZoneId } from './Workspace';
+export type { FeatureJourneySpec, FeatureLifecycleStage, ScreenSequenceStep, SensoryFeedbackProfile, WorkspaceRolePersona } from './domainEntry';
 export { APIError };
 
 // Base types
