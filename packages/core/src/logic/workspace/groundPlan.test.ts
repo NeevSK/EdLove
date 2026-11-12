@@ -9,8 +9,10 @@ import { describe, expect, it } from 'vitest';
 import {
   GROUND_OPTIONS,
   type GroundAllowance,
+  type GroundStage,
   type GroundTexture,
   groundControls,
+  groundPolicyOf,
   NOTHING_ALLOWED,
   planGround,
 } from './groundPlan';
@@ -144,6 +146,77 @@ describe('every combination of floor settings gives a plan that can be drawn', (
       expect(plan.asked).toBe(planGround(look, [B], allow).asked);
       expect(plan.photo).toEqual(planGround(look, [B], allow).photo);
     }
+  });
+
+  describe('ground policy (the person and verger decide, no screen hardcodes it)', () => {
+    const allow = { photos: true, ambient: true, blur: true, subtleMotion: true };
+    const stages: GroundStage[] = ['room', 'screen', 'focus'];
+    const sky: WorkspaceAppearance = { preset: 'default', motion: 'off', groundMode: 'live' };
+
+    it('balanced (the default) with an unknown or capable device: rooms and screens full, focus calm', () => {
+      for (const experience of [
+        null,
+        { quality: 'full' as const },
+        { quality: 'reduced' as const },
+      ]) {
+        const policy = groundPolicyOf({ experience });
+        expect(policy.liveliness).toBe('balanced');
+        expect(policy.strength).toEqual({ room: 'full', screen: 'full', focus: 'calm' });
+        expect(policy.reason).toBe('chosen');
+      }
+    });
+
+    it('verger only calms: an essential device calms every screen but the rooms, whatever was chosen', () => {
+      for (const liveliness of ['lively', 'balanced'] as const) {
+        const policy = groundPolicyOf({ liveliness, experience: { quality: 'essential' } });
+        expect(policy.strength).toEqual({ room: 'full', screen: 'calm', focus: 'calm' });
+        expect(policy.reason).toBe('device-essential');
+        expect(planGround(sky, [], allow, undefined, 'screen', policy).surface).toBe('still');
+        expect(planGround(sky, [], allow, undefined, 'room', policy).surface).toBe('live');
+      }
+      expect(
+        groundPolicyOf({ liveliness: 'calm', experience: { quality: 'essential' } }).reason,
+      ).toBe('chosen');
+    });
+
+    it('calm calms rooms too', () => {
+      const policy = groundPolicyOf({ liveliness: 'calm' });
+      for (const stage of stages) {
+        const plan = planGround(sky, [], allow, undefined, stage, policy);
+        expect(plan.surface).toBe('still');
+        // A calm room keeps no veil (its cards carry the words); other screens keep the reading veil.
+        expect(plan.veil).toBe(stage === 'room' ? 0 : 0.65);
+      }
+    });
+
+    it('lively keeps the full ground everywhere, but never thins the reading veil', () => {
+      const policy = groundPolicyOf({ liveliness: 'lively' });
+      const focus = planGround(sky, [], allow, undefined, 'focus', policy);
+      expect(focus.surface).toBe('live');
+      expect(focus.veil).toBe(0.65);
+      expect(planGround(sky, [], allow, undefined, 'screen', policy).veil).toBe(0.45);
+    });
+
+    it('the device allowance still applies under every choice', () => {
+      for (const liveliness of ['lively', 'balanced', 'calm'] as const) {
+        const plan = planGround(
+          {
+            preset: 'default',
+            motion: 'off',
+            groundMode: 'image',
+            wallpaper: A,
+            atmosphere: 'celestial-embers',
+          },
+          [],
+          NOTHING_ALLOWED,
+          undefined,
+          'room',
+          groundPolicyOf({ liveliness }),
+        );
+        expect(plan.surface).toBe('paper');
+        expect(plan.texture).toBe('none');
+      }
+    });
   });
 
   it('photos paused by the device fall back to paper and say why', () => {

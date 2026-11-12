@@ -8,6 +8,15 @@ import type { FidelityPreference } from '@repo/core/verger';
 import React, { useEffect, useState } from 'react';
 import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { useWebFidelity, writeWebFidelity } from '../../../lib/runtime/webFidelity';
+import {
+  useWebGroundLiveliness,
+  writeWebGroundLiveliness,
+} from '../../../lib/runtime/webGroundLiveliness';
+import { useGroundPolicy } from '../../../lib/runtime/useGroundPolicy';
+import {
+  type GroundLiveliness,
+  isGroundLiveliness,
+} from '@repo/core/logic/workspace/groundPlan';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import {
   getClientConsentStatus,
@@ -40,6 +49,8 @@ export function SettingsFloor({
   const [savedNotification, setSavedNotification] = useState<string | null>(null);
   const [navigationLayout, setNavigationLayout] = useState<'horizontal' | 'side'>('horizontal');
   const fidelity = useWebFidelity();
+  const groundLiveliness = useWebGroundLiveliness();
+  const groundPolicy = useGroundPolicy();
 
   // Sensory & Notification preferences (aligned with mobile AppSettingsScreen.shared)
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -158,6 +169,7 @@ export function SettingsFloor({
             }
             if (typeof s.soundEnabled === 'boolean') setSoundEnabled(s.soundEnabled);
             if (typeof s.quietMode === 'boolean') setQuietMode(s.quietMode);
+            if (isGroundLiveliness(s.groundLiveliness)) writeWebGroundLiveliness(s.groundLiveliness);
             if (typeof s.pushNotifications === 'boolean') setPushNotifications(s.pushNotifications);
             if (typeof s.dailyReflections === 'boolean') setDailyReflections(s.dailyReflections);
             if (typeof s.communityAlerts === 'boolean') setCommunityAlerts(s.communityAlerts);
@@ -204,6 +216,11 @@ export function SettingsFloor({
     localStorage.setItem('gurudevi_motion_preset', newMotion);
     void syncPreferenceToCloud({ motion: newMotion });
     triggerSavedNotice('Motion preference updated to ' + newMotion);
+  };
+
+  const handleGroundLivelinessChange = (next: GroundLiveliness) => {
+    writeWebGroundLiveliness(next);
+    void syncPreferenceToCloud({ groundLiveliness: next });
   };
 
   const handleFidelityChange = (next: FidelityPreference) => {
@@ -500,6 +517,47 @@ export function SettingsFloor({
               </span>
             </button>
           </div>
+        </section>
+
+        {/* World behind screens: the ground policy's one person-owned input (Comfort.ground on the phone) */}
+        <section className={styles.settingSection} data-testid="ground-liveliness-setting">
+          <h2 className={styles.sectionTitle}>
+            <span>🌄</span>
+            <span>World Behind Screens</span>
+          </h2>
+          <p className={styles.sectionDescription}>
+            How much of your world shows behind every screen. Words always stay readable, and a
+            device that is saving power may calm it further.
+          </p>
+
+          <div className={styles.optionsGrid} role="radiogroup" aria-label="World behind screens">
+            {(
+              [
+                ['lively', 'Lively', 'The full world behind every screen, reading ones too'],
+                ['balanced', 'Balanced', 'Full in rooms and screens, calmer where you read or work'],
+                ['calm', 'Calm', 'A still, fainter world everywhere, rooms included'],
+              ] as const
+            ).map(([id, label, sub]) => (
+              <button
+                aria-checked={groundLiveliness === id}
+                className={styles.optionCard}
+                data-selected={groundLiveliness === id}
+                key={id}
+                onClick={() => handleGroundLivelinessChange(id)}
+                role="radio"
+                type="button"
+              >
+                <span className={styles.optionLabel}>{label}</span>
+                <span className={styles.optionSub}>{sub}</span>
+              </button>
+            ))}
+          </div>
+          {groundPolicy.reason === 'device-essential' ? (
+            <p className={styles.sectionDescription} role="status">
+              This device is saving power right now, so screens show the calmer world for the
+              moment.
+            </p>
+          ) : null}
         </section>
 
         {/* Language & Regional Scripts */}

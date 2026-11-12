@@ -102,16 +102,41 @@ export interface GroundPlan {
 export type GroundStage = 'room' | 'screen' | 'focus';
 export type GroundStrength = 'full' | 'calm';
 
-/** The dial: how strong the ground is on each kind of screen. Change it here, for every app. */
-export const GROUND_STAGE_DEFAULTS: Readonly<Record<GroundStage, GroundStrength>> = {
-  room: 'full',
-  screen: 'full',
-  focus: 'calm',
+/**
+ * The person's own say on how lively the ground is (a Visual setting; on the phone it is
+ * `Comfort.ground`). `balanced` is the default table below; `lively` keeps the full ground on
+ * every screen; `calm` asks for the quieter ground everywhere, rooms included. Verger can only
+ * calm it further, never liven it.
+ */
+export type GroundLiveliness = 'lively' | 'balanced' | 'calm';
+export const GROUND_LIVELINESS_CHOICES: readonly GroundLiveliness[] = [
+  'lively',
+  'balanced',
+  'calm',
+];
+export const DEFAULT_GROUND_LIVELINESS: GroundLiveliness = 'balanced';
+
+export function isGroundLiveliness(value: unknown): value is GroundLiveliness {
+  return value === 'lively' || value === 'balanced' || value === 'calm';
+}
+
+/** The table: how strong the ground is per kind of screen, for each choice. Change it here. */
+export const GROUND_LIVELINESS_DIALS: Readonly<
+  Record<GroundLiveliness, Readonly<Record<GroundStage, GroundStrength>>>
+> = {
+  lively: { room: 'full', screen: 'full', focus: 'full' },
+  balanced: { room: 'full', screen: 'full', focus: 'calm' },
+  calm: { room: 'calm', screen: 'calm', focus: 'calm' },
 };
+
+/** The balanced row, kept by name for callers that read it. */
+export const GROUND_STAGE_DEFAULTS: Readonly<Record<GroundStage, GroundStrength>> =
+  GROUND_LIVELINESS_DIALS.balanced;
 
 /**
  * The paper veil per kind of screen. Rooms are built from cards and keep the full scene; other
- * screens put more words straight on the floor; reading and work screens most of all.
+ * screens put more words straight on the floor; reading and work screens most of all. This is a
+ * readability floor (the world's limit), so no choice lowers it.
  */
 export const GROUND_VEIL_DEFAULTS: Readonly<Record<GroundStage, number>> = {
   room: 0,
@@ -119,12 +144,53 @@ export const GROUND_VEIL_DEFAULTS: Readonly<Record<GroundStage, number>> = {
   focus: 0.65,
 };
 
-function veilFor(stage: GroundStage): number {
-  return GROUND_VEIL_DEFAULTS[stage];
+/** Why the policy came out as it did, so a settings screen can say so. */
+export type GroundPolicyReason = 'chosen' | 'device-essential';
+
+/** How loud the ground is on each kind of screen. Both apps ask `groundPolicyOf`; nothing else. */
+export interface GroundPolicy {
+  readonly liveliness: GroundLiveliness;
+  readonly strength: Readonly<Record<GroundStage, GroundStrength>>;
+  readonly veil: Readonly<Record<GroundStage, number>>;
+  readonly reason: GroundPolicyReason;
+}
+
+export const DEFAULT_GROUND_POLICY: GroundPolicy = {
+  liveliness: DEFAULT_GROUND_LIVELINESS,
+  strength: GROUND_LIVELINESS_DIALS[DEFAULT_GROUND_LIVELINESS],
+  veil: GROUND_VEIL_DEFAULTS,
+  reason: 'chosen',
+};
+
+/**
+ * The one ground policy: the person's choice picks a row of the table, then verger may only calm
+ * it. A device verger has put at essential quality (safe mode, a power cut, "Lighter" detail on a
+ * struggling device) gets the calm ground on every screen but the rooms; rooms already lose their
+ * costly parts through the allowance. Unknown verger (server, first paint) changes nothing. The
+ * veil is the world's readability floor, so no choice thins it.
+ */
+export function groundPolicyOf(input: {
+  liveliness?: GroundLiveliness | null;
+  experience?: Pick<GurudeviExperience, 'quality'> | null;
+}): GroundPolicy {
+  const liveliness = input.liveliness ?? DEFAULT_GROUND_LIVELINESS;
+  const chosen = GROUND_LIVELINESS_DIALS[liveliness];
+  if (
+    input.experience?.quality === 'essential' &&
+    (chosen.screen !== 'calm' || chosen.focus !== 'calm')
+  ) {
+    return {
+      liveliness,
+      strength: { ...chosen, screen: 'calm', focus: 'calm' },
+      veil: GROUND_VEIL_DEFAULTS,
+      reason: 'device-essential',
+    };
+  }
+  return { liveliness, strength: chosen, veil: GROUND_VEIL_DEFAULTS, reason: 'chosen' };
 }
 
 /** The same world, quieter: no moving sky, no slideshow, no animated texture, a fainter photo. */
-export function calmPlan(plan: GroundPlan): GroundPlan {
+export function calmPlan(plan: GroundPlan, veil: number = GROUND_VEIL_DEFAULTS.focus): GroundPlan {
   return {
     ...plan,
     surface: plan.surface === 'live' ? 'still' : plan.surface,
@@ -132,7 +198,7 @@ export function calmPlan(plan: GroundPlan): GroundPlan {
     texture: plan.texture === 'none' ? 'none' : 'washi-grain',
     breathe: false,
     dim: plan.surface === 'photo',
-    veil: plan.surface === 'paper' ? 0 : Math.max(plan.veil, GROUND_VEIL_DEFAULTS.focus),
+    veil: plan.surface === 'paper' ? 0 : Math.max(plan.veil, veil),
   };
 }
 
@@ -165,7 +231,7 @@ export function planGround(
   allow: GroundAllowance,
   legacyTexture?: GroundTexture,
   stage: GroundStage = 'room',
-  dial: Readonly<Record<GroundStage, GroundStrength>> = GROUND_STAGE_DEFAULTS,
+  policy: GroundPolicy = DEFAULT_GROUND_POLICY,
 ): GroundPlan {
   const notes: GroundNote[] = [];
   const asked: SceneGroundMode = look.groundMode ?? (look.wallpaper ? 'image' : 'live');
@@ -225,10 +291,12 @@ export function planGround(
     breathe: onPhoto && allow.subtleMotion,
     dim: false,
     // Paper needs no veil: it is the world's paper already.
-    veil: surface === 'paper' ? 0 : veilFor(stage),
+    veil: surface === 'paper' ? 0 : policy.veil[stage],
     notes,
   };
-  return dial[stage] === 'calm' ? calmPlan(plan) : plan;
+  if (policy.strength[stage] !== 'calm') return plan;
+  // A calm room keeps its own veil (none); other screens take at least the reading veil.
+  return calmPlan(plan, stage === 'room' ? policy.veil.room : policy.veil.focus);
 }
 
 /** Which Floor Studio settings mean something for this look. Same answer on web and phone. */

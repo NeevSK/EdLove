@@ -116,13 +116,20 @@
    ========================================================================= */
 
 @media (max-width: 48rem) {
-  .deckRoot[data-collapsed="true"] {
-    margin-bottom: calc(-1 * (var(--deck-h1, 0px) + var(--deck-h2, 0px) + var(--deck-h4, 0px)));
+  /* The room tabs leave the header and sit at the foot of the screen, like the phone app. */
+  .layer3,
+  .deckRoot[data-collapsed="true"] .layer3 {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    transform: none;
+    box-shadow: 0 -6px 20px -8px color-mix(in srgb, var(--w-ink) 18%, transparent);
   }
 
-  .deckRoot[data-collapsed="true"] .layer3 {
-    transform: translate3d(0, 0, 0);
-    box-shadow: none;
+  .deckRoot[data-collapsed="true"] {
+    margin-bottom: calc(-1 * (var(--deck-h1, 0px) + var(--deck-h2, 0px) + var(--deck-h4, 0px)));
   }
 
   .deckRoot[data-collapsed="true"] .layer4 {

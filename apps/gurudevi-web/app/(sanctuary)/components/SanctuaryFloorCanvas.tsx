@@ -19,6 +19,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { getBackdropsForWorld, groundDefaultsFor } from '../../../lib/canvas/appearanceConstants';
 import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
 import { THIS_BROWSER, useWorldLook, worldLookStore } from '../../../lib/canvas/worldLookStore';
+import { useGroundPolicy } from '../../../lib/runtime/useGroundPolicy';
 import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import floorStyles from '../self/self-floor.module.css';
@@ -254,7 +255,15 @@ export function SanctuaryFloorCanvas({
     [view],
   );
   const worldPhotos = getBackdropsForWorld(activeWorld);
-  const plan = planGround(activeAppearance, worldPhotos, allowance, legacyAtmosphere);
+  const groundPolicy = useGroundPolicy();
+  const plan = planGround(
+    activeAppearance,
+    worldPhotos,
+    allowance,
+    legacyAtmosphere,
+    'room',
+    groundPolicy,
+  );
   const atmosphere: FloorAtmosphereKind = isAtmosphere(activeAppearance.atmosphere)
     ? activeAppearance.atmosphere
     : legacyAtmosphere;

@@ -80,4 +80,22 @@ describe('every screen stands on the world ground, drawn once by the shell', () 
     expect(groundStageOf('/library')).toBe('room');
     expect(groundStageOf('/library/map')).toBe('screen');
   });
+
+  it('how strong the ground is comes from the policy, not the route', () => {
+    pathname = '/self';
+    window.localStorage.setItem('gurudevi_ground_liveliness', 'calm');
+    render(<WorldBackdrop />);
+    const backdrop = screen.getByTestId('world-backdrop');
+    expect(backdrop.dataset.groundStage).toBe('room');
+    expect(backdrop.dataset.groundLiveliness).toBe('calm');
+    expect(backdrop.dataset.groundStrength).toBe('calm');
+  });
+
+  it('with no choice saved, the balanced row applies', () => {
+    pathname = '/library/reader/abc';
+    render(<WorldBackdrop />);
+    const backdrop = screen.getByTestId('world-backdrop');
+    expect(backdrop.dataset.groundLiveliness).toBe('balanced');
+    expect(backdrop.dataset.groundStrength).toBe('calm');
+  });
 });
