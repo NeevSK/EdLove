@@ -28,6 +28,22 @@ export const KIT_FLOOR_FIT = {
   },
   iconButton: { level: 'part', min: { h: 44, w: 44 }, interactive: true, cost: cost(2) },
   moveControl: { level: 'part', min: { h: 44, w: 88 }, interactive: true, cost: cost(5) },
+  splitButton: { level: 'part', min: { h: 44, w: 112 }, interactive: true, cost: cost(5) },
+  contextMenu: { level: 'part', min: { h: 0 }, interactive: true, cost: cost(2) },
+  taskToolbar: { level: 'piece', min: { h: 44, w: 96 }, interactive: true, cost: cost(10) },
+  autocomplete: {
+    level: 'piece',
+    min: { h: 48, w: 160 },
+    preferred: { h: 48 },
+    interactive: true,
+    cost: cost(8),
+  },
+  miniChart: {
+    level: 'part',
+    min: { h: 20, w: 48 },
+    preferred: { h: 28, w: 96 },
+    cost: cost(2, 1),
+  },
   chip: {
     level: 'part',
     min: { h: 32, w: 48 },
