@@ -1,13 +1,13 @@
 {
   "summary": {
     "scope": "packages/core/src",
-    "files": 768,
+    "files": 769,
     "tiers": {
       "T0": 131,
       "T1": 34,
       "T2": 183,
       "T3": 136,
-      "C": 3,
+      "C": 4,
       "T4": 30,
       "T5": 48,
       "T6": 6,
@@ -16,7 +16,7 @@
     "findings": {
       "upward-import": 43,
       "pass-through": 2,
-      "tier-import": 88,
+      "tier-import": 64,
       "parse-above-boundary": 3,
       "imports-retired": 1
     }
@@ -349,14 +349,6 @@
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/lib/experienceState.store.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/scopedStateStorage.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
       "rule": "upward-import",
       "file": "packages/core/src/lib/failureFeedback.ts",
       "tier": "T2",
@@ -427,30 +419,6 @@
       "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
       "toTier": "T3",
       "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/lib/sync/mutationQueue.store.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/accountScope.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/lib/sync/mutationQueue.store.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
       "rule": "parse-above-boundary",
@@ -595,22 +563,6 @@
       "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/lib/sync/versionGating.store.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/lib/sync/versionGating.store.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
       "rule": "upward-import",
       "file": "packages/core/src/logic/agents/index.ts",
       "tier": "T2",
@@ -633,14 +585,6 @@
       "to": "packages/core/src/store/useAuthStore.ts",
       "toTier": "T4",
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/deeplink/pendingIntent.store.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
       "rule": "upward-import",
@@ -732,14 +676,6 @@
       "file": "packages/core/src/logic/workspace/layoutSync.ts",
       "tier": "T2",
       "reason": "3 schema parse call(s); decode at the adapter and pass typed data up"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/workspace/provisionalWorkspace.store.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
       "rule": "upward-import",
@@ -839,22 +775,6 @@
       "rule": "tier-import",
       "file": "packages/core/src/store/resetScopedStores.ts",
       "tier": "T4",
-      "to": "packages/core/src/lib/scopedStateStorage.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/resetScopedStores.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/resetScopedStores.ts",
-      "tier": "T4",
       "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
       "toTier": "T4",
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
@@ -919,30 +839,6 @@
       "rule": "tier-import",
       "file": "packages/core/src/store/scopeSessionCoordinator.ts",
       "tier": "T4",
-      "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/scopeSessionCoordinator.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/accountScope.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/scopeSessionCoordinator.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storage.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/scopeSessionCoordinator.ts",
-      "tier": "T4",
       "to": "packages/core/src/store/scopeSession.ts",
       "toTier": "T4",
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
@@ -953,46 +849,6 @@
       "tier": "T4",
       "to": "packages/core/src/store/useCedarDecisionStore.ts",
       "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useActiveSubTabsStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/scopedStateStorage.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useConflictStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useConflictStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useConsentStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useDraftsStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
@@ -1009,54 +865,6 @@
       "tier": "T4",
       "to": "packages/core/src/store/useCedarDecisionStore.ts",
       "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useSensoryStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useTenantStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useUIStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/scopedStateStorage.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useUIStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/accountScope.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useUIStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/native/guestScope.ts",
-      "toTier": "T3",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/useUIStore.ts",
-      "tier": "T4",
-      "to": "packages/core/src/lib/storage.adapter.ts",
-      "toTier": "T3",
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
@@ -1385,6 +1193,7 @@
     "packages/core/src/effect/Layers.ts": "C",
     "packages/core/src/effect/Runtime.ts": "T2",
     "packages/core/src/effect/Schedules.ts": "T2",
+    "packages/core/src/effect/bindings/state.ts": "C",
     "packages/core/src/effect/bindings.ts": "C",
     "packages/core/src/effect/index.ts": "T2",
     "packages/core/src/efficiency/hermesDeviceShield.ts": "T2",

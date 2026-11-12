@@ -1,6 +1,5 @@
+import { eventBus, scopedState } from '@repo/core/effect/bindings/state';
 import { useExperienceState } from '@repo/core/lib/experienceState.store';
-import { withScopedStateWritesPaused } from '@repo/core/lib/scopedStateStorage.adapter';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
@@ -50,8 +49,8 @@ const activeSubTabsScopedDefaults = {
 };
 
 export const resetScopedStores = () => {
-  sovereignBus.emit('feedback:clear', {});
-  withScopedStateWritesPaused(() => {
+  eventBus.emit('feedback:clear', {});
+  scopedState.pauseWrites(() => {
     useScopeSessionStore.getState().clear();
     useCedarDecisionStore.getState().clearDecisions();
     useAuthStore.setState(authScopedDefaults);

@@ -1,9 +1,5 @@
-import {
-  breadcrumb,
-  featureRollout,
-  featureRolloutCache,
-  sessionScope,
-} from '@repo/core/effect/bindings';
+import { breadcrumb, featureRollout, featureRolloutCache } from '@repo/core/effect/bindings';
+import { sessionScope } from '@repo/core/effect/bindings/state';
 import {
   FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS,
   normalizeFeatureRolloutSnapshot,

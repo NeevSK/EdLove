@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import type { MutationOutcome } from '@repo/core/types/mutationQueue';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -74,7 +74,7 @@ export const useMutationAuditLog = create<MutationAuditLogState>()(
     }),
     {
       name: 'gurudevi-mutation-audit-log',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
     },
   ),
 );

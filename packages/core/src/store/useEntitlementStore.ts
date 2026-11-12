@@ -1,5 +1,5 @@
 import { callPort } from '@repo/core/effect/AppRuntime';
-import { persistStorage } from '@repo/core/effect/bindings';
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import {
   type EntitlementGrant,
   EntitlementPort,

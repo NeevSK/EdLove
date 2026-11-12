@@ -240,3 +240,9 @@ web remains online-only with normal request/reconnect error handling.
 - New rule: a parse marked `// contract-check: <why>` checks data the code owns and isn't counted. That covers an authored manifest or catalog, the function's own output, or a codec the caller supplies. 15 sites are marked, each with its reason.
 - Still open, and real: `lib/sync/replayPolicy.ts` decodes queued variables, and `logic/workspace/layoutSession.ts` (a stored intent) and `layoutSync.ts` (the appearance JSON column) decode stored data. Each needs its storage or repository adapter to hand up typed values.
 - Core findings went from 153 to 137 and parse-above-boundary from 15 to 3. The tier-import ceiling went from 150 to 134. G0 is unchanged apart from community 63 → 62. G1: the core failing set is unchanged.
+
+### Batch 4: stores reach the device through the composition root
+
+- New `effect/bindings/state.ts` (C) holds what state needs synchronously: `persistStorage`, `scopedState` (`createStorage`, `pauseWrites`), `deviceStorage`, `sessionScope` (account and guest identity, revisions, keys) and `eventBus`. It is separate from `bindings.ts` for two reasons: a store must not load the feature-rollout SDK, and `bindings.ts → authProfileStorage → experienceState.store` would form an import cycle. Zustand's `createJSONStorage` reads storage eagerly, so a cycle would quietly switch persistence off.
+- 15 stores (store/*, lib/sync/*.store, pendingIntent, provisionalWorkspace, experienceState) no longer import adapters. Behaviour is the same, because the bindings are the same objects and functions.
+- Core findings went from 137 to 113, and the tier-import ceiling from 134 to 110. G0: no change in any package or app. G1: core and the mobile, web, admin, self, ui and community suites fail exactly the same files as HEAD.

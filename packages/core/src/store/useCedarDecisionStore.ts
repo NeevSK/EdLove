@@ -14,7 +14,7 @@
  */
 
 import { callPort } from '@repo/core/effect/AppRuntime';
-import { sessionScope } from '@repo/core/effect/bindings';
+import { sessionScope } from '@repo/core/effect/bindings/state';
 import { PermissionSnapshotPort } from '@repo/core/logic/ports/permissionSnapshot.port';
 import type { CedarDecision } from '@repo/core/types/authorization';
 import { cedarActionFor } from '@repo/policies/authorizationRegistry';

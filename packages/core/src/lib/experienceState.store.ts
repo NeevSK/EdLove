@@ -1,4 +1,4 @@
-import { createScopedStateStorage } from '@repo/core/lib/scopedStateStorage.adapter';
+import { scopedState } from '@repo/core/effect/bindings/state';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -41,7 +41,7 @@ export const useExperienceState = create<ExperienceState>()(
       version: 1,
       skipHydration: true,
       storage: createJSONStorage(() => {
-        const scoped = createScopedStateStorage();
+        const scoped = scopedState.createStorage();
         return {
           getItem: (name: string) => scoped.getItem(name),
           removeItem: (name: string) => scoped.removeItem(name),

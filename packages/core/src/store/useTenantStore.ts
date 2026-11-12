@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import { createTenantSlice, type TenantSlice } from '@repo/core/store/slices/tenant.slice';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -13,7 +13,7 @@ export const useTenantStore = create<TenantSlice>()(
     }),
     {
       name: 'gurudevi-tenant-storage',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
       partialize: (state) => ({
         schoolType: state.schoolType,
         realClassCount: state.realClassCount,

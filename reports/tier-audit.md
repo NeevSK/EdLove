@@ -1,6 +1,6 @@
 # Tier audit: packages/core/src
 
-768 files. Rules: tooling/architecture-tiers.mjs.
+769 files. Rules: tooling/architecture-tiers.mjs.
 
 | Tier | Files |
 | --- | --- |
@@ -8,7 +8,7 @@
 | Tier 1: Ports | 34 |
 | Tier 2: Domain | 183 |
 | Tier 3: Adapters | 136 |
-| Composition root | 3 |
+| Composition root | 4 |
 | Tier 4: State | 30 |
 | Tier 5: Application hooks | 48 |
 | Tier 6: Presentation | 6 |
@@ -64,7 +64,7 @@
 - `core/adapters/powersync/powersync-react-shim.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
 - `core/native/webSentryAdapter.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
 
-## tier-import (88)
+## tier-import (64)
 
 - `core/hooks/useAuthLifecycle.ts` (Tier 5: Application hooks) → `core/accounts/authenticatedAccountCapture.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useAuthLifecycle.ts` (Tier 5: Application hooks) → `core/accounts/deviceAccounts.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
@@ -94,11 +94,7 @@
 - `core/hooks/useStorageString.ts` (Tier 5: Application hooks) → `core/lib/storage.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useStudentGoals.ts` (Tier 5: Application hooks) → `core/adapters/supabase/uiExperienceRepository.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useTemporalHeatmap.ts` (Tier 5: Application hooks) → `core/adapters/supabase/uiExperienceRepository.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
-- `core/lib/experienceState.store.ts` (Tier 4: State) → `core/lib/scopedStateStorage.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/lib/sync/hooks/useSyncStatus.ts` (Tier 5: Application hooks) → `core/lib/sync/eventBus.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
-- `core/lib/sync/mutationAuditLog.store.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/lib/sync/mutationQueue.store.ts` (Tier 4: State) → `core/lib/accountScope.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/lib/sync/mutationQueue.store.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/feedback.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/errorClassifier.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/eventBus.adapter.ts` (Tier 3: Adapters): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
@@ -114,10 +110,6 @@
 - `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/store/useConflictStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
-- `core/lib/sync/versionGating.store.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/lib/sync/versionGating.store.ts` (Tier 4: State) → `core/lib/sync/eventBus.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/logic/deeplink/pendingIntent.store.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/logic/workspace/provisionalWorkspace.store.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/offline/useOfflineStatus.ts` (Tier 5: Application hooks) → `core/adapters/subscribeToNetwork.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/offline/useOfflineStatus.ts` (Tier 5: Application hooks) → `core/platform/drivers/networkMonitor.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/providers/AssetsProvider.tsx` (Tier 6: Presentation) → `core/lib/storage.adapter.ts` (Tier 3: Adapters): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
@@ -126,8 +118,6 @@
 - `core/providers/CapabilityHydrationProvider.tsx` (Tier 6: Presentation) → `core/store/scopeSession.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/providers/CapabilityHydrationProvider.tsx` (Tier 6: Presentation) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/lib/experienceState.store.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/resetScopedStores.ts` (Tier 4: State) → `core/lib/scopedStateStorage.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/resetScopedStores.ts` (Tier 4: State) → `core/lib/sync/eventBus.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/lib/sync/mutationQueue.store.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/store/scopeSession.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/store/useActiveSubTabsStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
@@ -136,24 +126,10 @@
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/store/useFeatureStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/store/useTenantStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/store/useUIStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/scopeSessionCoordinator.ts` (Tier 4: State) → `core/lib/sync/eventBus.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/scopeSessionCoordinator.ts` (Tier 4: State) → `core/lib/accountScope.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/scopeSessionCoordinator.ts` (Tier 4: State) → `core/lib/storage.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/scopeSessionCoordinator.ts` (Tier 4: State) → `core/store/scopeSession.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/scopeSessionCoordinator.ts` (Tier 4: State) → `core/store/useCedarDecisionStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useActiveSubTabsStore.ts` (Tier 4: State) → `core/lib/scopedStateStorage.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useConflictStore.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useConflictStore.ts` (Tier 4: State) → `core/lib/sync/eventBus.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useConsentStore.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useDraftsStore.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/usePerspectiveStore.ts` (Tier 4: State) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/usePerspectiveStore.ts` (Tier 4: State) → `core/store/useCedarDecisionStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useSensoryStore.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useTenantStore.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useUIStore.ts` (Tier 4: State) → `core/lib/scopedStateStorage.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useUIStore.ts` (Tier 4: State) → `core/lib/accountScope.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useUIStore.ts` (Tier 4: State) → `core/native/guestScope.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/useUIStore.ts` (Tier 4: State) → `core/lib/storage.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 
 ## parse-above-boundary (3)
 

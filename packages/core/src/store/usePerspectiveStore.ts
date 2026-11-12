@@ -1,4 +1,4 @@
-import { eventBus, persistStorage } from '@repo/core/effect/bindings';
+import { eventBus, persistStorage } from '@repo/core/effect/bindings/state';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';

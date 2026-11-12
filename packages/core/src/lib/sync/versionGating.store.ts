@@ -1,5 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
+import { eventBus, persistStorage } from '@repo/core/effect/bindings/state';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -93,7 +92,7 @@ export const useVersionGatingStore = create<VersionGatingState>()(
           isBlocked,
         });
 
-        sovereignBus.emit('app:version_gated', {
+        eventBus.emit('app:version_gated', {
           status: severity === 'HARD_BLOCK' || severity === 'SOFT_NUDGE' ? severity : 'UP_TO_DATE',
           currentVersion: current,
           minSupportedVersion: manifest.minSupportedVersion,
@@ -107,7 +106,7 @@ export const useVersionGatingStore = create<VersionGatingState>()(
     }),
     {
       name: 'gurudevi-version-gating',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
     },
   ),
 );

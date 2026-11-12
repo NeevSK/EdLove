@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -33,7 +33,7 @@ export const useSensoryStore = create<SensoryPreferencesState>()(
     }),
     {
       name: 'gurudevi_sensory_preferences_v1',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
     },
   ),
 );

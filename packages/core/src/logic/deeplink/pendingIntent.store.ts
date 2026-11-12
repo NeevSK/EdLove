@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -103,7 +103,7 @@ export const usePendingIntentStore = create<PendingIntentStoreState>()(
     }),
     {
       name: PENDING_INTENT_STORAGE_KEY,
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
       partialize: (state) => ({ pendingIntent: state.pendingIntent }),
     },
   ),

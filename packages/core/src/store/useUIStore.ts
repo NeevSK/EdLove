@@ -1,14 +1,4 @@
-import { createScopedStateStorage } from '@repo/core/lib/scopedStateStorage.adapter';
-import {
-  getActiveAccountId,
-  getAccountScopeRevision,
-} from '@repo/core/lib/accountScope.adapter';
-import {
-  getGuestScope,
-  getGuestScopeRevision,
-  isGuestUserId,
-} from '@repo/core/native/guestScope';
-import { storage } from '@repo/core/lib/storage.adapter';
+import { deviceStorage, scopedState, sessionScope } from '@repo/core/effect/bindings/state';
 import { createUISlice, type UISlice } from '@repo/core/store/slices/ui.slice';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -23,7 +13,7 @@ export const useUIStore = create<UISlice>()(
     }),
     {
       name: 'gurudevi-ui-storage',
-      storage: createJSONStorage(() => createScopedStateStorage()),
+      storage: createJSONStorage(() => scopedState.createStorage()),
       partialize: (state) => ({
         dismissedSampleIds: state.dismissedSampleIds,
         deskItems: state.deskItems,
@@ -35,25 +25,25 @@ export const useUIStore = create<UISlice>()(
 
 /** Move only legacy dismissals whose adjacent Auth record proves the owner. */
 export async function migrateLegacyDismissalsForCurrentOwner(): Promise<void> {
-  const accountId = getActiveAccountId();
-  const ownerId = accountId ?? getGuestScope();
-  const ownerRevision = accountId ? getAccountScopeRevision() : getGuestScopeRevision();
+  const accountId = sessionScope.activeAccountId();
+  const ownerId = accountId ?? sessionScope.guestScope();
+  const ownerRevision = accountId ? sessionScope.accountRevision() : sessionScope.guestRevision();
   try {
-    const raw = await storage.getStringAsync('gurudevi-auth-storage');
+    const raw = await deviceStorage.getStringAsync('gurudevi-auth-storage');
     if (!raw) return;
     const decoded: unknown = JSON.parse(raw);
     if (!isRecord(decoded) || !isRecord(decoded.state)) return;
     const legacyState = decoded.state;
     if (!isRecord(legacyState.user) || legacyState.user.id !== ownerId) return;
-    if (!accountId && !isGuestUserId(ownerId)) return;
+    if (!accountId && !sessionScope.isGuest(ownerId)) return;
     if (!Array.isArray(legacyState.dismissedSampleIds)) return;
     const migratedIds = legacyState.dismissedSampleIds.filter(
       (id): id is string => typeof id === 'string' && id.length > 0,
     );
-    if (getActiveAccountId() !== accountId) return;
-    if (!accountId && getGuestScope() !== ownerId) return;
+    if (sessionScope.activeAccountId() !== accountId) return;
+    if (!accountId && sessionScope.guestScope() !== ownerId) return;
     if (
-      (accountId ? getAccountScopeRevision() : getGuestScopeRevision()) !== ownerRevision
+      (accountId ? sessionScope.accountRevision() : sessionScope.guestRevision()) !== ownerRevision
     ) return;
     if (migratedIds.length === 0) return;
     useUIStore.setState((state) => ({

@@ -1,5 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
+import { eventBus, persistStorage } from '@repo/core/effect/bindings/state';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -51,7 +50,7 @@ export const useConflictStore = create<ConflictStore>()(
         }));
 
         // Notify the bus so useSyncStatus and any UI subscriber reacts
-        sovereignBus.emit('conflict:detected', {
+        eventBus.emit('conflict:detected', {
           mutationId: conflict.id,
           scope: conflict.scope,
           name: conflict.name,
@@ -75,7 +74,7 @@ export const useConflictStore = create<ConflictStore>()(
         }));
 
         // Notify the bus so useSyncStatus updates the conflictCount
-        sovereignBus.emit('conflict:resolved', { mutationId: id });
+        eventBus.emit('conflict:resolved', { mutationId: id });
       },
 
       clearConflicts: () => {
@@ -88,7 +87,7 @@ export const useConflictStore = create<ConflictStore>()(
     }),
     {
       name: 'gurudevi-conflict-store',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
       // Only persist active conflicts — resolved are nice to have but not critical
       partialize: (state) => ({
         activeConflicts: state.activeConflicts,

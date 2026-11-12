@@ -3,7 +3,7 @@
  * read through EntitlementPort. The hook that screens use is hooks/useEntitlementQuery.ts.
  */
 import { callPort } from '@repo/core/effect/AppRuntime';
-import { persistStorage } from '@repo/core/effect/bindings';
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import { abortableQueryRead } from '@repo/core/lib/clientStateFoundation';
 import {
   type EntitlementGrant,

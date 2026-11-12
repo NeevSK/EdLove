@@ -1,5 +1,5 @@
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import type { CreateTuitionBatchInput } from '@repo/core/adapters/supabase/tuitionBatchRepository';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import type { GuardianIdentity } from '@repo/core/logic/schemas/guardian.schema';
 import { v7 as uuidv7 } from 'uuid';
 import type { CommercialPerspective, GuardianBondPerspective } from '@repo/core/types/Perspective';
@@ -254,7 +254,7 @@ export const useProvisionalWorkspaceQueue = create<ProvisionalWorkspaceQueueStat
     }),
     {
       name: 'gurudevi-provisional-workspace-queue',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
       version: 2,
       migrate: (persisted: unknown) => {
         const state = persisted as { commands?: Array<Record<string, unknown>> };

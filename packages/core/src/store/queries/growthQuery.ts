@@ -2,7 +2,8 @@
  * Growth as server state (Tier 4): the query key, the read and its offline snapshot. The hook that
  * screens use is hooks/useGrowthQuery.ts. Decoding happens in the adapter behind `growthView`.
  */
-import { growthView, sessionScope } from '@repo/core/effect/bindings';
+import { growthView } from '@repo/core/effect/bindings';
+import { sessionScope } from '@repo/core/effect/bindings/state';
 import type { GrowthView, SavedGrowth } from '@repo/core/logic/schemas/growth.schema';
 
 export const growthQueryKey = (principalId: string | null) => ['growth-state', principalId] as const;

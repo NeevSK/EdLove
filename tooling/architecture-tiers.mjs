@@ -68,6 +68,7 @@ export const FOLDER_RULES = [
   ['packages/core/src/effect/AppRuntime.ts', 'C'],
   ['packages/core/src/effect/Layers.ts', 'C'],
   ['packages/core/src/effect/bindings.ts', 'C'],
+  ['packages/core/src/effect/bindings/', 'C'],
   ['packages/core/src/adapters/', 'T3'],
   ['packages/core/src/platform/drivers/', 'T3'],
   ['packages/core/src/native/', 'T3'],

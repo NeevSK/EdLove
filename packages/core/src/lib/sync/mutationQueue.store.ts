@@ -1,5 +1,4 @@
-import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { persistStorage, sessionScope } from '@repo/core/effect/bindings/state';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { CURRENT_OUTBOX_SCHEMA_VERSION } from '@repo/core/lib/sync/outboxMigration';
 import { assertMutationCommandTransition } from '@repo/core/types/mutationCommand';
@@ -42,7 +41,7 @@ const persistedQueueInitializer = persist<MutationQueueState>(
     isSyncing: false,
 
     addToQueue: async (mutation) => {
-      const userId = mutation.userId ?? getActiveAccountId() ?? undefined;
+      const userId = mutation.userId ?? sessionScope.activeAccountId() ?? undefined;
       await ensureOutboxHydrated();
       const acknowledgePendingSnapshot = async (acknowledgement: unknown): Promise<void> => {
         const snapshotIds = new Set(
@@ -267,7 +266,7 @@ const persistedQueueInitializer = persist<MutationQueueState>(
   }),
   {
     name: 'gurudevi-mutation-queue',
-    storage: createJSONStorage(() => SafeZustandStorage),
+    storage: createJSONStorage(() => persistStorage),
     partialize: (state) => ({ ...state, isSyncing: false }),
     merge: (persisted, current) => ({
       ...current,

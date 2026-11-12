@@ -1,4 +1,4 @@
-import { createScopedStateStorage } from '@repo/core/lib/scopedStateStorage.adapter';
+import { scopedState } from '@repo/core/effect/bindings/state';
 import {
   closeWorkbenchTask,
   createDomainWorkbenchState,
@@ -451,7 +451,7 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
     }),
     {
       name: 'gurudevi-active-subtabs-storage',
-      storage: createJSONStorage(() => createScopedStateStorage()),
+      storage: createJSONStorage(() => scopedState.createStorage()),
       version: 2,
       migrate: migrateActiveSubTabsStateForV2,
       // Preferences saved before a field existed get its default, not undefined.

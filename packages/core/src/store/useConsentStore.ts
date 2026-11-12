@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -19,7 +19,7 @@ export const useConsentStore = create<ConsentState>()(
     }),
     {
       name: 'gurudevi-pdpa-consent-storage',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => persistStorage),
       partialize: (state) => ({
         hasDecidedConsent: state.hasDecidedConsent,
         analyticsConsentGranted: state.analyticsConsentGranted,
