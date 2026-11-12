@@ -181,7 +181,7 @@ export {
   getTransactionRange,
   type TemporalRange,
 } from '@repo/core/logic/utils/temporalUtils';
-export { v4, v7, v7 as uuidv7 } from '@repo/core/logic/utils/uuid';
+export { v4, v7, v7 as uuidv7 } from 'uuid';
 export {
   invalidateResilience,
   type ResilienceOptions,
@@ -298,7 +298,16 @@ export type {
 export { cryptoVault } from '@repo/core/logic';
 export * from '@repo/core/logic/agents';
 export { GPACalculator } from '@repo/core/logic/grading/GPACalculator';
-export * from '@repo/core/logic/permissions';
+export * from '@repo/core/logic/permissions/accessContext';
+export * from '@repo/core/logic/permissions/authority';
+export * from '@repo/core/logic/permissions/bondScope';
+export * from '@repo/core/logic/permissions/featurePresentation';
+export * from '@repo/core/logic/permissions/hooks/useAuthority';
+export * from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
+export * from '@repo/core/logic/permissions/localEvaluator.adapter';
+export * from '@repo/core/logic/permissions/sanctuaryFeature';
+export * from '@repo/core/logic/permissions/sovereignty';
+export * from '@repo/core/types/cedarEvaluationContext';
 export {
   AcademicCycleLeadershipAssignmentSchema,
   AcademicCycleLeadershipAssignmentStatusSchema,
@@ -399,5 +408,5 @@ export type {
   QueuedMutation,
   QueuedMutationDispatchResult,
 } from '@repo/core/types/mutationQueue';
-export { type UseWebTodosReturn, useWebTodos, type WebTodo } from './adapters/supabase/todosHook';
+export { type UseWebTodosReturn, useWebTodos, type WebTodo } from './adapters/supabase/webTodos.react';
 export { z };

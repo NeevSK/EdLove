@@ -4,11 +4,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import {
-  GLOBAL_COMPARATIVE_SYSTEMS,
-  SRI_LANKA_DISTRICTS,
-  SRI_LANKA_PROVINCES,
-} from '@repo/core/spatial';
+import { GLOBAL_COMPARATIVE_SYSTEMS } from '@repo/core/spatial/globalComparative';
+import { SRI_LANKA_DISTRICTS, SRI_LANKA_PROVINCES } from '@repo/core/spatial/districtCentroids';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';

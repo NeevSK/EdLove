@@ -10,8 +10,8 @@
   "authorityStoreReads": 8,
   "machinesWithoutSetup": 14,
   "directEffectRuns": 43,
-  "tierImportViolations": 161,
+  "tierImportViolations": 150,
   "unplacedFiles": 0,
-  "passThroughFiles": 30,
+  "passThroughFiles": 2,
   "tierContentViolations": 0
 }

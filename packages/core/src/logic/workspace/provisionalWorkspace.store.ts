@@ -1,7 +1,7 @@
 import type { CreateTuitionBatchInput } from '@repo/core/adapters/supabase/tuitionBatchRepository';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import type { GuardianIdentity } from '@repo/core/logic/schemas/guardian.schema';
-import { uuidv7 } from '@repo/core/logic/utils/uuid';
+import { v7 as uuidv7 } from 'uuid';
 import type { CommercialPerspective, GuardianBondPerspective } from '@repo/core/types/Perspective';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';

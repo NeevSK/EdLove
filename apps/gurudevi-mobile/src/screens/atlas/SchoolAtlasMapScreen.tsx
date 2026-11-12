@@ -4,17 +4,11 @@
 // Fully database-backed via Supabase PostGIS spatial engine — NO HARDCODED SCHOOL DATA.
 
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import {
-  type DistrictSpatialSummary,
-  fetchSpatialSchoolsFromSupabase,
-  findNearestSchools,
-  GLOBAL_COMPARATIVE_COUNTRIES,
-  type GlobalCountrySpatialSummary,
-  haversineDistanceKm,
-  recordSchoolGatePingInSupabase,
-  type SchoolMapPoint,
-  SRI_LANKA_DISTRICTS,
-} from '@repo/core/spatial';
+import { type DistrictSpatialSummary, type GlobalCountrySpatialSummary, type SchoolMapPoint } from '@repo/core/types/spatial';
+import { fetchSpatialSchoolsFromSupabase, recordSchoolGatePingInSupabase } from '@repo/core/spatial/spatial.adapter';
+import { findNearestSchools, haversineDistanceKm } from '@repo/core/spatial/geoMath';
+import { GLOBAL_COMPARATIVE_COUNTRIES } from '@repo/core/spatial/globalComparative';
+import { SRI_LANKA_DISTRICTS } from '@repo/core/spatial/districtCentroids';
 import { UnifiedMapView, type UnifiedMapViewRef } from '@repo/ui/components/maps/UnifiedMapView';
 import { UnifiedMarker } from '@repo/ui/components/maps/UnifiedMarker';
 import {

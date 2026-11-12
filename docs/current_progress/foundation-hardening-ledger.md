@@ -221,3 +221,13 @@ web remains online-only with normal request/reconnect error handling.
 - `PLACEMENTS` is now empty, because the names carry the tier.
 - Core findings went from 242 to 192. forbidden-package went from 21 to 3: the remaining three are React hooks in `adapters/`. `tierImportViolations` ceiling 199 → 161.
 - G0: all package and app tsc counts are identical to HEAD. G1: the 22 failing core test files are the same as the baseline.
+
+### Batch 2: pass-throughs retired, adapter React bindings named
+
+- 28 pass-through files in core were removed after every importer was pointed at the module that declares each name. This is a move, not a deletion: `@repo/core` and `@repo/core/logic` export the same 720 names as before, checked with the type checker against HEAD. The 11 domain `index.ts` files, `logic/domains/index`, `logic/store-slices/*`, `logic/permissions/index`, `logic/entities`, `logic/experience`, `logic/forms/{analytics,dynamic-loader,form-engine}`, `logic/utils/uuid`, `flows/pjc.ts`, `lib/monitoring/index`, `educational/index`, `spatial/index` and `thresholds/index` were removed. New tool: `scripts/inline-barrels.mjs` (flattens `export *` in files that stay, re-points named imports via `move-exports.mjs` and its new `source`/`pkg:` support, and removes a pass-through only when nothing resolves to it).
+- Two remain on purpose. `native/webSentryAdapter.ts` is a Metro platform switch, not a barrel. `adapters/powersync/powersync-react-shim.ts` is unwired, so it is left with the other ghosts.
+- `@repo/community` now declares `uuid` directly. It used to borrow it through core's `logic/utils/uuid` shim.
+- `package.json` exports lost 4 entries that already pointed at missing files at HEAD (`./zen`, `./logic/classroomResolver`, `./adapters/supabase/educational`, `./forms/form-manager`). The only importer is `packages/ui/src/svelte/SvelteForm.svelte` (a ghost), which was already broken.
+- The React hooks over PowerSync and Supabase are now `*.react.ts` (`liveQueries.react.ts`, `todos.react.ts`, `webTodos.react.ts`). `REACT_BINDING` lets a Tier 3 file use React, and nothing else, when it is a vendor's reactive binding.
+- Core findings went from 192 to 153. Ratchet: tier-import 161 → 150, pass-through 30 → 2.
+- G0 is lower or the same everywhere. ui 46 → 32 and community 72 → 63, because names that used to be ambiguous now resolve. One check now surfaces a real, pre-existing bug: community's `CreateGroupModal` passes `name`, which `EntityDefinition` doesn't have. Earlier the import didn't resolve, so the error was hidden. G1: the core failing set is unchanged. The PJC catalog binding was repointed from `flows/pjc.ts` to `flows/pjc/hierarchy.ts`.

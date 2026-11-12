@@ -48,7 +48,7 @@
             "integrationPoints": [
               "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx",
               "packages/admin/src/screens/FounderDashboard.tsx",
-              "packages/core/src/adapters/powersync/todosHook.ts",
+              "packages/core/src/adapters/powersync/todos.react.ts",
               "packages/ui/src/components/native/Todo/SwipeableTodoRow.tsx",
               "packages/ui/src/components/native/Todo/TodoView.tsx"
             ]
@@ -153,7 +153,7 @@
               "id": "binding:founder.todos_hook",
               "title": "PowerSync Todos Hook",
               "category": "data",
-              "reference": "packages/core/src/adapters/powersync/todosHook.ts",
+              "reference": "packages/core/src/adapters/powersync/todos.react.ts",
               "status": "implemented",
               "note": "Local SQLite reactive query via useLiveQuery.",
               "links": []

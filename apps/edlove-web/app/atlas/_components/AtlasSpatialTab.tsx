@@ -1,12 +1,8 @@
 'use client';
 
-import {
-  type DistrictSpatialSummary,
-  GLOBAL_COMPARATIVE_SYSTEMS,
-  type GlobalCountrySpatialSummary,
-  SRI_LANKA_DISTRICTS,
-  SRI_LANKA_PROVINCES,
-} from '@repo/core/spatial';
+import { type DistrictSpatialSummary, type GlobalCountrySpatialSummary } from '@repo/core/types/spatial';
+import { GLOBAL_COMPARATIVE_SYSTEMS } from '@repo/core/spatial/globalComparative';
+import { SRI_LANKA_DISTRICTS, SRI_LANKA_PROVINCES } from '@repo/core/spatial/districtCentroids';
 import Link from 'next/link';
 import React from 'react';
 

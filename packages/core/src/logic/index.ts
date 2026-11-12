@@ -83,10 +83,22 @@ export {
   pendingIntentStore,
   usePendingIntentStore,
 } from '@repo/core/logic/deeplink/pendingIntent.store';
-export * from '@repo/core/logic/domains';
-export * from '@repo/core/logic/entities';
+export type * from '@repo/core/logic/ports/attendanceProjection.port';
+export type * from '@repo/core/logic/ports/classroomNotes.port';
+export type * from '@repo/core/logic/ports/educational.port';
+export type * from '@repo/core/logic/ports/founder.port';
+export type * from '@repo/core/logic/ports/gradingProjection.port';
+export * from '@repo/core/logic/domains/guardian/gradeVisibility';
+export type * from '@repo/core/logic/ports/guardian.port';
+export type * from '@repo/core/logic/ports/principalWorkspace.port';
+export * from '@repo/core/logic/domains/profile/onboarding';
+export type * from '@repo/core/logic/ports/profile.port';
+export * from '@repo/core/logic/domains/social/composer.reducer';
+export type * from '@repo/core/logic/ports/teacherInsights.port';
+export type * from '@repo/core/logic/ports/workspaceLayout.port';
+export * from '@repo/core/types/entityProtocol';
 export * from '@repo/core/logic/events/bus';
-export * from '@repo/core/logic/experience';
+export * from '@repo/core/logic/experience/mode';
 // Experience Logic (Moved from legacy context)
 export * from '@repo/core/logic/experience/ActivityPulseContext';
 export * from '@repo/core/logic/forms';
@@ -133,7 +145,9 @@ export * from '@repo/core/logic/registry/featureLifecyclePolicy';
 export * from '@repo/core/logic/registry/useDomainFeature';
 export * from '@repo/core/logic/runtimeRegistry';
 export * from '@repo/core/logic/schemas';
-export * from '@repo/core/logic/store-slices';
+export * from '@repo/core/store/slices/auth.slice';
+export * from '@repo/core/store/slices/tenant.slice';
+export * from '@repo/core/store/slices/ui.slice';
 export * from '@repo/core/logic/utils';
 export * from '@repo/core/logic/workspace/index';
 export { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';

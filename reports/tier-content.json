@@ -10754,12 +10754,6 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/logic/utils/uuid.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
      "to": "packages/core/src/store/useTemporalStore.ts",
      "typeOnly": false,
      "toShape": "runtime",
@@ -10773,6 +10767,7 @@
     }
    ],
    "outside": [
+    "uuid",
     "@tanstack/react-query",
     "react"
    ]
@@ -12797,7 +12792,92 @@
    ]
   },
   {
-   "file": "packages/core/src/adapters/powersync/hooks.ts",
+   "file": "packages/core/src/adapters/powersync/index.ts",
+   "package": "packages/core",
+   "folderTier": "T3",
+   "shape": "barrel",
+   "lines": 49,
+   "counts": {
+    "types": 0,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 9,
+    "jsx": false
+   },
+   "exports": [],
+   "unions": [],
+   "importers": {
+    "prod": 4,
+    "tests": 2
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/powersync/connectionLifecycle.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/database.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/liveQueries.react.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/todos.react.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/schema.ts",
+     "typeOnly": true,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/schema.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/syncData.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/forms.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/adapters/powersync/liveQueries.react.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -12854,91 +12934,6 @@
     "drizzle-orm",
     "react"
    ]
-  },
-  {
-   "file": "packages/core/src/adapters/powersync/index.ts",
-   "package": "packages/core",
-   "folderTier": "T3",
-   "shape": "barrel",
-   "lines": 49,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 9,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 4,
-    "tests": 2
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/adapters/powersync/connectionLifecycle.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/database.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/hooks.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/todosHook.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/schema.ts",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/schema.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/syncData.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/forms.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    }
-   ],
-   "outside": []
   },
   {
    "file": "packages/core/src/adapters/powersync/permissionSnapshot.adapter.ts",
@@ -13350,7 +13345,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/adapters/powersync/todosHook.ts",
+   "file": "packages/core/src/adapters/powersync/todos.react.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -14212,49 +14207,6 @@
    ]
   },
   {
-   "file": "packages/core/src/adapters/supabase/todosHook.ts",
-   "package": "packages/core",
-   "folderTier": "T3",
-   "shape": "runtime",
-   "lines": 286,
-   "counts": {
-    "types": 2,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 8,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 252,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "WebTodo",
-    "UseWebTodosReturn",
-    "useWebTodos"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/adapters/supabaseClient.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    }
-   ],
-   "outside": [
-    "react"
-   ]
-  },
-  {
    "file": "packages/core/src/adapters/supabase/tuitionBatchRepository.ts",
    "package": "packages/core",
    "folderTier": "T3",
@@ -14359,6 +14311,49 @@
     }
    ],
    "outside": []
+  },
+  {
+   "file": "packages/core/src/adapters/supabase/webTodos.react.ts",
+   "package": "packages/core",
+   "folderTier": "T3",
+   "shape": "runtime",
+   "lines": 286,
+   "counts": {
+    "types": 2,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 8,
+    "schemas": 0,
+    "functions": 2,
+    "functionLines": 252,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "WebTodo",
+    "UseWebTodosReturn",
+    "useWebTodos"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/supabaseClient.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    }
+   ],
+   "outside": [
+    "react"
+   ]
   },
   {
    "file": "packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
@@ -26566,43 +26561,6 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/educational/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 5,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/educational/thresholdCascade.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/core/src/educational/thresholdCascade.ts",
    "package": "packages/core",
    "folderTier": "T2",
@@ -26634,7 +26592,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -27891,8 +27849,8 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
-    "tests": 3
+    "prod": 1,
+    "tests": 4
    },
    "imports": [],
    "outside": [
@@ -27925,62 +27883,13 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
-    "tests": 2
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/flows/pjc/hierarchy.ts",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T2"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/flows/pjc.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 4,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 3,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
     "prod": 0,
-    "tests": 1
+    "tests": 3
    },
    "imports": [
     {
      "to": "packages/core/src/flows/pjc/hierarchy.ts",
      "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/flows/pjc/hierarchy.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/flows/pjc/hierarchyQuery.ts",
-     "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T2"
     }
@@ -30498,7 +30407,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "barrel",
-   "lines": 404,
+   "lines": 413,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -30511,7 +30420,7 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 123,
+    "reexports": 132,
     "jsx": false
    },
    "exports": [],
@@ -30753,12 +30662,6 @@
      "to": "packages/core/src/logic/utils/temporalUtils.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/utils/uuid.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
      "toTier": "T2"
     },
     {
@@ -31080,10 +30983,64 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/permissions/index.ts",
+     "to": "packages/core/src/logic/permissions/accessContext.ts",
      "typeOnly": false,
-     "toShape": "barrel",
+     "toShape": "contract",
      "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/permissions/authority.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/permissions/bondScope.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/permissions/featurePresentation.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T5"
+    },
+    {
+     "to": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T5"
+    },
+    {
+     "to": "packages/core/src/logic/permissions/localEvaluator.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/permissions/sovereignty.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/types/cedarEvaluationContext.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
     },
     {
      "to": "packages/core/src/logic/schemas/academic-lifecycle.schema.ts",
@@ -31212,13 +31169,14 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/adapters/supabase/todosHook.ts",
+     "to": "packages/core/src/adapters/supabase/webTodos.react.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     }
    ],
    "outside": [
+    "uuid",
     "zod",
     "@intuitui-labs/form-builder-engine"
    ]
@@ -32604,43 +32562,6 @@
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T0"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/lib/monitoring/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/monitoring/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T3"
     }
    ],
    "outside": []
@@ -35679,43 +35600,6 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/domains/attendanceProjection/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/ports/attendanceProjection.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/core/src/logic/domains/audit/ports.ts",
    "package": "packages/core",
    "folderTier": "T2",
@@ -35746,154 +35630,6 @@
     "tests": 0
    },
    "imports": [],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/classroomNotes/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/ports/classroomNotes.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/educational/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/ports/educational.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/founder/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/ports/founder.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/gradingProjection/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/ports/gradingProjection.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
    "outside": []
   },
   {
@@ -35971,226 +35707,6 @@
     "tests": 1
    },
    "imports": [],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/guardian/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 3,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 2,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/domains/guardian/gradeVisibility.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/ports/guardian.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 12,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 11,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/domains/attendanceProjection/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/classroomNotes/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/educational/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/founder/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/gradingProjection/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/guardian/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/principalWorkspace/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/profile/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/social/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/teacherInsights/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/domains/workspaceLayout/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/principalWorkspace/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/ports/principalWorkspace.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/profile/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 3,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 2,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/domains/profile/onboarding.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/ports/profile.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
    "outside": []
   },
   {
@@ -36277,43 +35793,6 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/domains/social/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/domains/social/composer.reducer.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/core/src/logic/domains/teacher/ports.ts",
    "package": "packages/core",
    "folderTier": "T2",
@@ -36346,117 +35825,6 @@
     {
      "to": "packages/core/src/types/index.ts",
      "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/teacherInsights/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/ports/teacherInsights.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/domains/workspaceLayout/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/ports/workspaceLayout.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/entities/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/types/entityProtocol.ts",
-     "typeOnly": false,
      "toShape": "contract",
      "toTier": "T0"
     }
@@ -36803,43 +36171,6 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/experience/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/experience/mode.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/core/src/logic/experience/mode.ts",
    "package": "packages/core",
    "folderTier": "T2",
@@ -36880,102 +36211,6 @@
    },
    "imports": [],
    "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/forms/analytics.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "@intuitui-labs/form-builder-engine"
-   ]
-  },
-  {
-   "file": "packages/core/src/logic/forms/dynamic-loader.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "@intuitui-labs/form-builder-engine"
-   ]
-  },
-  {
-   "file": "packages/core/src/logic/forms/form-engine.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "@intuitui-labs/form-builder-engine"
-   ]
   },
   {
    "file": "packages/core/src/logic/forms/index.ts",
@@ -37207,7 +36442,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "barrel",
-   "lines": 182,
+   "lines": 196,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -37220,7 +36455,7 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 69,
+    "reexports": 83,
     "jsx": false
    },
    "exports": [],
@@ -37375,16 +36610,88 @@
      "toTier": "T4"
     },
     {
-     "to": "packages/core/src/logic/domains/index.ts",
+     "to": "packages/core/src/logic/ports/attendanceProjection.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/ports/classroomNotes.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/ports/educational.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/ports/founder.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/ports/gradingProjection.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/domains/guardian/gradeVisibility.ts",
      "typeOnly": false,
-     "toShape": "barrel",
+     "toShape": "contract+logic",
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/entities/index.ts",
+     "to": "packages/core/src/logic/ports/guardian.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/ports/principalWorkspace.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/domains/profile/onboarding.ts",
      "typeOnly": false,
-     "toShape": "barrel",
+     "toShape": "contract+logic",
      "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/ports/profile.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/domains/social/composer.reducer.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/ports/teacherInsights.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/logic/ports/workspaceLayout.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/types/entityProtocol.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
     },
     {
      "to": "packages/core/src/logic/events/bus.ts",
@@ -37393,9 +36700,9 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/experience/index.ts",
+     "to": "packages/core/src/logic/experience/mode.ts",
      "typeOnly": false,
-     "toShape": "barrel",
+     "toShape": "contract+logic",
      "toTier": "T2"
     },
     {
@@ -37519,10 +36826,22 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/logic/store-slices/index.ts",
+     "to": "packages/core/src/store/slices/auth.slice.ts",
      "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
+     "toShape": "contract",
+     "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/store/slices/tenant.slice.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/store/slices/ui.slice.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/utils/index.ts",
@@ -39637,97 +38956,6 @@
    "outside": [
     "react"
    ]
-  },
-  {
-   "file": "packages/core/src/logic/permissions/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 11,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 10,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/permissions/accessContext.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/permissions/authority.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/permissions/bondScope.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/permissions/featurePresentation.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/permissions/hooks/useAuthority.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/permissions/localEvaluator.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/permissions/sovereignty.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/types/cedarEvaluationContext.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": []
   },
   {
    "file": "packages/core/src/logic/permissions/localEvaluator.adapter.native.ts",
@@ -44005,166 +43233,6 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/store-slices/auth.slice.ts",
-   "package": "packages/core",
-   "folderTier": "T4",
-   "shape": "barrel",
-   "lines": 15,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/store/slices/auth.slice.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T4"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/store-slices/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 4,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 3,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/store-slices/auth.slice.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/logic/store-slices/tenant.slice.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/logic/store-slices/ui.slice.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/store-slices/tenant.slice.ts",
-   "package": "packages/core",
-   "folderTier": "T4",
-   "shape": "barrel",
-   "lines": 15,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/store/slices/tenant.slice.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T4"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/store-slices/ui.slice.ts",
-   "package": "packages/core",
-   "folderTier": "T4",
-   "shape": "barrel",
-   "lines": 15,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/store/slices/ui.slice.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T4"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/core/src/logic/utils/LanguageUtils.ts",
    "package": "packages/core",
    "folderTier": "T2",
@@ -44488,19 +43556,15 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/utils/uuid.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
      "to": "packages/core/src/logic/utils/validators.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
      "toTier": "T2"
     }
    ],
-   "outside": []
+   "outside": [
+    "uuid"
+   ]
   },
   {
    "file": "packages/core/src/logic/utils/institutionalQrParser.ts",
@@ -44621,38 +43685,6 @@
    ],
    "outside": [
     "date-fns"
-   ]
-  },
-  {
-   "file": "packages/core/src/logic/utils/uuid.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 2,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 6,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "uuid"
    ]
   },
   {
@@ -45192,12 +44224,6 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/utils/uuid.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
      "to": "packages/core/src/logic/workspace/layoutIntent.ts",
      "typeOnly": false,
      "toShape": "contract",
@@ -45228,7 +44254,9 @@
      "toTier": "T0"
     }
    ],
-   "outside": []
+   "outside": [
+    "uuid"
+   ]
   },
   {
    "file": "packages/core/src/logic/workspace/layoutSync.ts",
@@ -45346,19 +44374,15 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/logic/utils/uuid.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
      "to": "packages/core/src/logic/workspace/layoutPatch.ts",
      "typeOnly": true,
      "toShape": "contract+logic",
      "toTier": "T2"
     }
    ],
-   "outside": []
+   "outside": [
+    "uuid"
+   ]
   },
   {
    "file": "packages/core/src/logic/workspace/provisionalWorkspace.store.ts",
@@ -45414,12 +44438,6 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/logic/utils/uuid.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
      "to": "packages/core/src/types/Perspective.ts",
      "typeOnly": true,
      "toShape": "contract",
@@ -45427,6 +44445,7 @@
     }
    ],
    "outside": [
+    "uuid",
     "zustand"
    ]
   },
@@ -45748,7 +44767,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 21,
+    "prod": 20,
     "tests": 15
    },
    "imports": [
@@ -48295,7 +47314,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 3,
     "tests": 1
    },
    "imports": [
@@ -48379,80 +47398,13 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
     {
      "to": "packages/core/src/types/spatial.ts",
      "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/spatial/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 10,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 6,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/spatial/districtCentroids.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/spatial/geoMath.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/spatial/globalComparative.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/spatial/sampleSchools.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/spatial/spatial.adapter.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/types/spatial.ts",
-     "typeOnly": false,
      "toShape": "contract",
      "toTier": "T0"
     }
@@ -48485,7 +47437,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -49960,49 +48912,6 @@
    ]
   },
   {
-   "file": "packages/core/src/thresholds/index.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "barrel",
-   "lines": 6,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 2,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/thresholds/thresholdEvaluator.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/types/thresholds.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/core/src/thresholds/thresholdEvaluator.ts",
    "package": "packages/core",
    "folderTier": "T2",
@@ -50032,7 +48941,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 1
    },
    "imports": [
@@ -53716,7 +52625,7 @@
     }
    ],
    "importers": {
-    "prod": 6,
+    "prod": 7,
     "tests": 1
    },
    "imports": [],
@@ -53782,7 +52691,7 @@
     }
    ],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 1
    },
    "imports": [],
@@ -119063,7 +117972,7 @@
    "package": "apps/edlove-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 1305,
+   "lines": 1302,
    "counts": {
     "types": 5,
     "consts": 1,
@@ -119096,9 +118005,15 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/spatial/index.ts",
+     "to": "packages/core/src/spatial/globalComparative.ts",
      "typeOnly": false,
-     "toShape": "barrel",
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/spatial/districtCentroids.ts",
+     "typeOnly": false,
+     "toShape": "contract",
      "toTier": "T2"
     }
    ],
@@ -119713,7 +118628,7 @@
    "package": "apps/edlove-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 596,
+   "lines": 592,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -119740,9 +118655,21 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/spatial/index.ts",
+     "to": "packages/core/src/types/spatial.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/spatial/globalComparative.ts",
      "typeOnly": false,
-     "toShape": "barrel",
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/spatial/districtCentroids.ts",
+     "typeOnly": false,
+     "toShape": "contract",
      "toTier": "T2"
     }
    ],
@@ -131658,7 +130585,7 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 1013,
+   "lines": 1007,
    "counts": {
     "types": 3,
     "consts": 1,
@@ -131699,9 +130626,33 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/spatial/index.ts",
+     "to": "packages/core/src/types/spatial.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/spatial/spatial.adapter.ts",
      "typeOnly": false,
-     "toShape": "barrel",
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/spatial/geoMath.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/spatial/globalComparative.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/spatial/districtCentroids.ts",
+     "typeOnly": false,
+     "toShape": "contract",
      "toTier": "T2"
     },
     {
@@ -139595,7 +138546,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/supabase/todosHook.ts",
+     "to": "packages/core/src/adapters/supabase/webTodos.react.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"

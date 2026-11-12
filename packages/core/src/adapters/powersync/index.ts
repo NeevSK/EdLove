@@ -22,8 +22,8 @@ export {
   usePowerSyncQuery,
   usePowerSyncStatus,
   useStudentsInClassroom,
-} from '@repo/core/adapters/powersync/hooks';
-export { useTodos, type UseTodosReturn } from '@repo/core/adapters/powersync/todosHook';
+} from '@repo/core/adapters/powersync/liveQueries.react';
+export { useTodos, type UseTodosReturn } from '@repo/core/adapters/powersync/todos.react';
 export type {
   Attendance,
   Classroom,

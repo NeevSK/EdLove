@@ -1,9 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import {
-  inspectHierarchyJourney as inspectPublicJourney,
-  validateHierarchy as validatePublicHierarchy,
-} from '@repo/core/flows/pjc';
+import { inspectHierarchyJourney as inspectPublicJourney } from '@repo/core/flows/pjc/hierarchyQuery';
+import { validateHierarchy as validatePublicHierarchy } from '@repo/core/flows/pjc/hierarchy';
 import { describe, expect, it } from 'vitest';
 import { loadCatalogFile } from './catalogLoader';
 import { validateHierarchy } from './hierarchy';

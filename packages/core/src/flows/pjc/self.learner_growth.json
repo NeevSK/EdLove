@@ -42,7 +42,7 @@
               "packages/self/src/components/TomorrowPrep.tsx",
               "packages/ui/src/components/native/Todo/TodoView.tsx",
               "packages/ui/src/components/native/Todo/SwipeableTodoRow.tsx",
-              "packages/core/src/adapters/powersync/todosHook.ts"
+              "packages/core/src/adapters/powersync/todos.react.ts"
             ]
           },
           "steps": [

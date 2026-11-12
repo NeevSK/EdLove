@@ -151,7 +151,7 @@
               "title": "Platform-neutral PJC entry point",
               "category": "tool",
               "status": "implemented",
-              "reference": "packages/core/src/flows/pjc.ts",
+              "reference": "packages/core/src/flows/pjc/hierarchy.ts",
               "note": "Exposes schema validation and journey projection; filesystem loading remains separate.",
               "links": ["feature:pjc.catalog"]
             },

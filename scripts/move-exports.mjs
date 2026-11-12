@@ -13,6 +13,9 @@
  * `export { ... } from`. The moved names become a new declaration of the same kind (import or
  * export, type-only or not) whose specifier is written in the original style. Default and
  * namespace imports are reported, not rewritten.
+ *
+ * Optional per entry: `"source": "v7"` when the name is an alias of a differently named export of
+ * `to` (written `v7 as uuidv7`); `to` may be `pkg:<specifier>` for an outside package.
  */
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -63,6 +66,7 @@ function resolve(spec, from) {
   return null;
 }
 function spell(styleSpec, importer, target) {
+  if (target.startsWith('pkg:')) return target.slice(4);
   const bare = (p) => p.replace(/\/index\.tsx?$/, '').replace(/\.tsx?$/, '');
   // Relative only within one package or app; across them, the package name.
   const home = (f) => f.split('/').slice(0, 2).join('/');
@@ -76,9 +80,11 @@ function spell(styleSpec, importer, target) {
 }
 
 const byFrom = new Map();
+const aliasOf = new Map();
 for (const r of renames) {
   if (!byFrom.has(r.from)) byFrom.set(r.from, new Map());
   byFrom.get(r.from).set(r.name, r.to);
+  if (r.source && r.source !== r.name) (aliasOf.get(r.from) ?? aliasOf.set(r.from, new Map()).get(r.from)).set(r.name, r.source);
 }
 
 let edits = 0;
@@ -111,7 +117,10 @@ for (const file of files) {
       if (!to) keep.push(el.getText(sf));
       else {
         if (!out.has(to)) out.set(to, []);
-        out.get(to).push(el.getText(sf));
+        const source = aliasOf.get(target)?.get(original);
+        const local = el.name.text;
+        const typePrefix = el.isTypeOnly ? 'type ' : '';
+        out.get(to).push(source ? `${typePrefix}${source} as ${local}` : el.getText(sf));
       }
     }
     if (!out.size) continue;

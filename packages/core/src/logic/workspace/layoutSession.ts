@@ -1,5 +1,5 @@
 import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-import { uuidv7 } from '@repo/core/logic/utils/uuid';
+import { v7 as uuidv7 } from 'uuid';
 import {
   type WorkspaceLayoutIntent,
   WorkspaceLayoutIntentSchema,

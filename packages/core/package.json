@@ -29,11 +29,6 @@
       "import": "./src/logic/index.ts",
       "default": "./src/logic/index.ts"
     },
-    "./logic/classroomResolver": {
-      "types": "./src/logic/classroomResolver.ts",
-      "import": "./src/logic/classroomResolver.ts",
-      "default": "./src/logic/classroomResolver.ts"
-    },
     "./logic/omnichannel": {
       "types": "./src/logic/omnichannel/index.ts",
       "import": "./src/logic/omnichannel/index.ts",
@@ -119,11 +114,6 @@
       "import": "./src/logic/reflection/*.ts",
       "default": "./src/logic/reflection/*.ts"
     },
-    "./zen": {
-      "types": "./src/logic/generated/index.ts",
-      "import": "./src/logic/generated/index.ts",
-      "default": "./src/logic/generated/index.ts"
-    },
     "./native": {
       "types": "./src/native/index.ts",
       "import": "./src/native/index.ts",
@@ -187,11 +177,6 @@
       "types": "./src/adapters/*.ts",
       "import": "./src/adapters/*.ts",
       "default": "./src/adapters/*.ts"
-    },
-    "./adapters/supabase/educational": {
-      "types": "./src/adapters/supabase/educational/index.ts",
-      "import": "./src/adapters/supabase/educational/index.ts",
-      "default": "./src/adapters/supabase/educational/index.ts"
     },
     "./effect/schedules": {
       "types": "./src/effect/Schedules.ts",
@@ -259,9 +244,9 @@
       "default": "./src/lib/sync/index.ts"
     },
     "./todos": {
-      "types": "./src/adapters/supabase/todosHook.ts",
-      "import": "./src/adapters/supabase/todosHook.ts",
-      "default": "./src/adapters/supabase/todosHook.ts"
+      "types": "./src/adapters/supabase/webTodos.react.ts",
+      "import": "./src/adapters/supabase/webTodos.react.ts",
+      "default": "./src/adapters/supabase/webTodos.react.ts"
     },
     "./powersync": {
       "types": "./src/adapters/powersync/index.ts",
@@ -347,11 +332,6 @@
       "types": "./src/logic/forms/*.ts",
       "import": "./src/logic/forms/*.ts",
       "default": "./src/logic/forms/*.ts"
-    },
-    "./forms/form-manager": {
-      "types": "./src/logic/forms/form-manager.ts",
-      "import": "./src/logic/forms/form-manager.ts",
-      "default": "./src/logic/forms/form-manager.ts"
     },
     "./logic/entities/*": {
       "types": "./src/logic/entities/*.ts",

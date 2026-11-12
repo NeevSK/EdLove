@@ -13,6 +13,7 @@ import path from 'node:path';
 import {
   ALLOWED,
   FORBIDDEN_PACKAGES,
+  REACT_BINDING,
   PARSE_ALLOWED_IN,
   PLACEMENTS,
   TIERS,
@@ -158,7 +159,9 @@ for (const file of files) {
         tier !== 'UNPLACED' &&
         !imp.typeOnly
       ) {
-        const banned = (FORBIDDEN_PACKAGES[tier] ?? []).find((re) => re.test(imp.spec));
+        const banned = (FORBIDDEN_PACKAGES[tier] ?? []).find(
+          (re) => re.test(imp.spec) && !(tier === 'T3' && REACT_BINDING.test(file) && /react/.test(String(re))),
+        );
         if (banned)
           add('forbidden-package', file, {
             to: imp.spec,

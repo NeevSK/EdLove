@@ -1,19 +1,19 @@
 # Tier audit: packages/core/src
 
-792 files. Rules: tooling/architecture-tiers.mjs.
+764 files. Rules: tooling/architecture-tiers.mjs.
 
 | Tier | Files |
 | --- | --- |
 | Tier 0: Contracts | 130 |
 | Tier 1: Ports | 34 |
-| Tier 2: Domain | 209 |
+| Tier 2: Domain | 184 |
 | Tier 3: Adapters | 133 |
 | Composition root | 3 |
-| Tier 4: State | 32 |
+| Tier 4: State | 29 |
 | Tier 5: Application hooks | 48 |
 | Tier 6: Presentation | 6 |
 
-## upward-import (51)
+## upward-import (43)
 
 - `core/accounts/accountTransition.adapter.ts` (Tier 3: Adapters) → `core/lib/sync/mutationQueue.store.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/accounts/deviceAccounts.adapter.ts` (Tier 3: Adapters) → `core/lib/experienceState.store.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
@@ -31,7 +31,6 @@
 - `core/lib/failureFeedback.ts` (Tier 2: Domain) → `core/monitoring/index.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/lib/failureFeedback.ts` (Tier 2: Domain) → `core/native/guestStorage.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/lib/feedback.ts` (Tier 2: Domain) → `core/lib/sync/eventBus.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
-- `core/lib/monitoring/index.ts` (Tier 2: Domain) → `core/monitoring/index.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/lib/monitoring/sentry.ts` (Tier 2: Domain) → `core/platform/drivers/telemetrySink.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/lib/sync/deviceSecurityIntents.ts` (Tier 2: Domain) → `core/lib/sync/mutationAuditLog.store.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/lib/sync/deviceSecurityIntents.ts` (Tier 2: Domain) → `core/lib/sync/mutationQueue.store.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
@@ -44,22 +43,15 @@
 - `core/logic/modes/demo.ts` (Tier 2: Domain) → `core/lib/experienceState.store.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/modes/demo.ts` (Tier 2: Domain) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/modes/sandboxMode.ts` (Tier 2: Domain) → `core/lib/experienceState.store.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/permissions/index.ts` (Tier 2: Domain) → `core/logic/permissions/hooks/useAuthority.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/permissions/index.ts` (Tier 2: Domain) → `core/logic/permissions/hooks/useSanctuaryFeature.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/permissions/index.ts` (Tier 2: Domain) → `core/logic/permissions/localEvaluator.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/permissions/snapshotRefresh.adapter.ts` (Tier 3: Adapters) → `core/store/scopeSession.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/logic/permissions/snapshotRefresh.adapter.ts` (Tier 3: Adapters) → `core/store/scopeSessionCoordinator.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/logic/permissions/snapshotRefresh.adapter.ts` (Tier 3: Adapters) → `core/store/useCedarDecisionStore.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
-- `core/logic/store-slices/index.ts` (Tier 2: Domain) → `core/logic/store-slices/auth.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/store-slices/index.ts` (Tier 2: Domain) → `core/logic/store-slices/tenant.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/store-slices/index.ts` (Tier 2: Domain) → `core/logic/store-slices/ui.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/utils/LanguageUtils.ts` (Tier 2: Domain) → `core/logic/i18n/i18n.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/utils/temporalUtils.ts` (Tier 2: Domain) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/workspace/index.ts` (Tier 2: Domain) → `core/logic/workspace/provisionalWorkspace.store.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/scopeSession.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/scopeSessionCoordinator.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
-- `core/spatial/index.ts` (Tier 2: Domain) → `core/spatial/spatial.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/lib/sync/mutationQueue.store.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/platform/drivers/networkMonitor.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
@@ -67,44 +59,10 @@
 - `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/store/useConflictStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 
-## forbidden-package (3)
-
-- `core/adapters/powersync/hooks.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
-- `core/adapters/powersync/todosHook.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
-- `core/adapters/supabase/todosHook.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
-
-## pass-through (30)
+## pass-through (2)
 
 - `core/adapters/powersync/powersync-react-shim.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
-- `core/educational/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/flows/pjc.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/lib/monitoring/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/attendanceProjection/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/classroomNotes/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/educational/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/founder/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/gradingProjection/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/guardian/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/principalWorkspace/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/profile/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/social/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/teacherInsights/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/workspaceLayout/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/entities/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/experience/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/forms/analytics.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/forms/dynamic-loader.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/forms/form-engine.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/permissions/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/store-slices/auth.slice.ts` (Tier 4: State): Only re-exports or renames; import the source instead
-- `core/logic/store-slices/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/store-slices/tenant.slice.ts` (Tier 4: State): Only re-exports or renames; import the source instead
-- `core/logic/store-slices/ui.slice.ts` (Tier 4: State): Only re-exports or renames; import the source instead
-- `core/logic/utils/uuid.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
 - `core/native/webSentryAdapter.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
-- `core/spatial/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/thresholds/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
 
 ## parse-above-boundary (15)
 

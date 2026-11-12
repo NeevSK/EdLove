@@ -42,6 +42,12 @@ export const FORBIDDEN_PACKAGES = {
   T6: [/supabase/, /powersync/, /mmkv/, /drizzle/, /^zustand/],
 };
 
+/**
+ * A vendor's React binding over an adapter (PowerSync's useQuery, a live Supabase channel): the
+ * adapter's reactive face. Named `*.react.ts`, it is still Tier 3 and may use React, nothing else changes.
+ */
+export const REACT_BINDING = /\.react\.tsx?$/;
+
 /** Untrusted input is decoded once, at the boundary (adapters); tiers above receive typed data. */
 export const PARSE_ALLOWED_IN = ['T0', 'T3', 'C'];
 

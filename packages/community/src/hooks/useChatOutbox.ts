@@ -9,7 +9,7 @@ import {
   type ChatSendCommand,
   ChatSendCommandSchema,
 } from '@repo/core/logic/schemas/chat-command.schema';
-import { uuidv7 } from '@repo/core/logic/utils/uuid';
+import { v7 as uuidv7 } from 'uuid';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import { useMutation } from '@tanstack/react-query';
