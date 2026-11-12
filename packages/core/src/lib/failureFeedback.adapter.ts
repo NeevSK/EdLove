@@ -3,6 +3,7 @@ import type {
   ConflictError,
   DatabaseQueryError,
   ForbiddenError,
+  GuestStorageError,
   NetworkError,
   NotFoundError,
   RateLimitedError,
@@ -33,7 +34,6 @@ import type {
 } from '@repo/core/logic/schemas/agentContracts.schema';
 import { diagnoseFailure, type FailureDiagnosis } from '@repo/core/logic/failure/classifyFailure';
 import { captureException } from '@repo/core/monitoring';
-import type { GuestStorageError } from '@repo/core/native/guestStorage';
 import i18next from 'i18next';
 
 /**

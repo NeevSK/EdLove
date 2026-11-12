@@ -240,3 +240,15 @@ export function diagnoseFailure(error: unknown, operation?: string): FailureDiag
   }
   return { kind: 'Defect', code: null, retry: 'never', agentHint: 'LOG_AND_ESCALATE', operation: operation ?? null };
 }
+
+/**
+ * Delay before retry `attempt` (0-based): the server's `retryAfterMs` for a rate limit when it
+ * gives one, otherwise exponential backoff with full jitter, capped at 30 s, so a fleet of
+ * devices reconnecting after an outage doesn't retry in lockstep.
+ */
+export function retryDelayMs(attempt: number, error?: unknown, random: () => number = Math.random): number {
+  const kind = error === undefined ? null : classifyFailure(error);
+  if (kind?._tag === 'RateLimitedError' && kind.retryAfterMs !== undefined) return kind.retryAfterMs;
+  const ceiling = Math.min(30_000, 1_000 * 2 ** attempt);
+  return Math.floor(random() * ceiling);
+}

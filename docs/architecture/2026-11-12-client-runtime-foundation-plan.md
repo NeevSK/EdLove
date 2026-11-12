@@ -140,6 +140,25 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
 - **Baseline.** Every read is a `queryOptions` factory or a live query; effects only for external
   systems (state doc, rule 7). Query keys are scoped by account, so switching accounts never shows
   another account's data. The ratchet counts the effects down to 0.
+- **Done (2026-11-12): one QueryClient policy.** `effect/bindings/queryClient.ts`
+  (`queryClientConfig`) gives both apps the same retry, backoff and feedback. Each app keeps its
+  platform settings:
+  - **Retry by kind.** A query retries at most twice, and only for transient kinds and defects. The
+    old `retry: 2` also retried sign-out, forbidden and validation errors. Mutations aren't retried
+    here; offline writes go through the outbox.
+  - **Backoff.** `retryDelayMs`: full jitter capped at 30 s, or the server's `retryAfterMs`.
+    Workspace sync uses the same function.
+  - **Feedback.** A failed mutation goes to `presentFailure` unless its caller handles it (its own
+    `onError`, or `meta: { feedback: 'silent' }`). A failed query toasts only when it was a
+    background refresh over data already on screen. Query and mutation `meta` is typed through
+    TanStack's `Register`.
+  - **Web had no toast host:** `showToast` reached nothing there. `FeedbackToasts` in the
+    sanctuary layout now forwards core's `feedback:toast` into the kit's `ToastHost`.
+  - **Moved.** `GuestStorageError` now lives in `effect/Errors.ts`. Its type import made web's
+    type check load React Native's globals.
+  - **Still to do.** Per-domain `queryOptions` and `mutationOptions` on the v1 client; the
+    outcome type; account-scoped keys or a cache cleared on account switch (web has
+    `AuthQueryCacheBoundary`; mobile is unchecked).
 - **Production.** Offline-first cache, prefetch on intent (L9 tells L5 where the user is going),
   invalidation rules owned by L4 outcomes.
 - **Enterprise.** Tenant isolation proven by tests.

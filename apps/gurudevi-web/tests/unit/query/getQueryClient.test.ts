@@ -46,7 +46,12 @@ describe('getQueryClient', () => {
 
     expect(defaultQueries?.staleTime).toBe(5 * 60 * 1000);
     expect(defaultQueries?.gcTime).toBe(10 * 60 * 1000);
-    expect(defaultQueries?.retry).toBe(2);
+    // Retry is decided by failure kind (core queryClientConfig): two retries for transient
+    // failures, none for ones retrying can't fix. It replaced a flat `retry: 2`.
+    const retry = defaultQueries?.retry as (count: number, error: unknown) => boolean;
+    expect(retry(0, { status: 503 })).toBe(true);
+    expect(retry(2, { status: 503 })).toBe(false);
+    expect(retry(0, { status: 403 })).toBe(false);
     expect(defaultQueries?.networkMode).toBe('offlineFirst');
     expect(defaultMutations?.networkMode).toBe('offlineFirst');
   });

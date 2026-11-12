@@ -26310,7 +26310,7 @@
    "package": "packages/core",
    "folderTier": "T0",
    "shape": "contract",
-   "lines": 127,
+   "lines": 141,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -26320,7 +26320,7 @@
     "functions": 0,
     "functionLines": 0,
     "classes": 0,
-    "errorClasses": 13,
+    "errorClasses": 14,
     "mutable": 0,
     "sideEffects": 0,
     "reexports": 0,
@@ -26339,11 +26339,12 @@
     "ConflictError",
     "ValidationError",
     "RateLimitedError",
-    "UnavailableError"
+    "UnavailableError",
+    "GuestStorageError"
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 5,
     "tests": 2
    },
    "imports": [],
@@ -27068,6 +27069,61 @@
     }
    ],
    "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/queryClient.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract+logic",
+   "lines": 78,
+   "counts": {
+    "types": 2,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 3,
+    "functionLines": 40,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "FeedbackMode",
+    "MAX_QUERY_RETRIES",
+    "shouldRetryQuery",
+    "queryClientConfig"
+   ],
+   "unions": [
+    {
+     "name": "FeedbackMode",
+     "union": "'auto'|'silent'"
+    }
+   ],
+   "importers": {
+    "prod": 2,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/failureFeedback.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    }
+   ],
+   "outside": [
+    "@tanstack/react-query"
+   ]
   },
   {
    "file": "packages/core/src/effect/bindings/state.ts",
@@ -32103,7 +32159,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract+logic",
-   "lines": 223,
+   "lines": 230,
    "counts": {
     "types": 4,
     "consts": 6,
@@ -32111,7 +32167,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 5,
-    "functionLines": 45,
+    "functionLines": 51,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -32137,8 +32193,8 @@
     }
    ],
    "importers": {
-    "prod": 1,
-    "tests": 1
+    "prod": 2,
+    "tests": 2
    },
    "imports": [
     {
@@ -32178,15 +32234,15 @@
      "toTier": "T0"
     },
     {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
      "to": "packages/core/src/monitoring/index.ts",
      "typeOnly": false,
      "toShape": "barrel",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/native/guestStorage.ts",
-     "typeOnly": true,
-     "toShape": "runtime",
      "toTier": "T3"
     }
    ],
@@ -32325,7 +32381,7 @@
    "unions": [],
    "importers": {
     "prod": 8,
-    "tests": 2
+    "tests": 3
    },
    "imports": [
     {
@@ -33921,7 +33977,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 9,
+    "prod": 10,
     "tests": 9
    },
    "imports": [],
@@ -36474,15 +36530,15 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 169,
+   "lines": 255,
    "counts": {
-    "types": 3,
-    "consts": 6,
+    "types": 5,
+    "consts": 7,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
-    "functions": 6,
-    "functionLines": 83,
+    "functions": 9,
+    "functionLines": 127,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -36496,16 +36552,25 @@
     "classifyFailure",
     "RetryRule",
     "RETRY_POLICY",
-    "isRetryable"
+    "isRetryable",
+    "AgentHint",
+    "AGENT_HINT",
+    "FailureDiagnosis",
+    "diagnoseFailure",
+    "retryDelayMs"
    ],
    "unions": [
     {
      "name": "RetryRule",
      "union": "'backoff'|'never'|'serverPaced'"
+    },
+    {
+     "name": "AgentHint",
+     "union": "'BACK_OFF'|'CHECK_CAPABILITY'|'CHECK_ID_OR_DELETION'|'CHECK_INPUT_AGAINST_CONTRACT'|'CHECK_LOCAL_SCHEMA'|'LOG_AND_ESCALATE'|'READ_TAG'|'REFETCH_AND_REBASE'|'REFRESH_SESSION'|'RETRY_ON_CONNECT'|'RETRY_WITH_BACKOFF'|'WAIT_FOR_REPLAY'"
     }
    ],
    "importers": {
-    "prod": 4,
+    "prod": 6,
     "tests": 1
    },
    "imports": [
@@ -44963,15 +45028,15 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 16,
+   "lines": 15,
    "counts": {
     "types": 0,
     "consts": 0,
     "constructs": 0,
-    "ambient": 1,
+    "ambient": 0,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 17,
+    "functionLines": 16,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -45982,7 +46047,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
-   "lines": 357,
+   "lines": 350,
    "counts": {
     "types": 4,
     "consts": 2,
@@ -45992,14 +46057,13 @@
     "functions": 22,
     "functionLines": 306,
     "classes": 0,
-    "errorClasses": 1,
+    "errorClasses": 0,
     "mutable": 1,
     "sideEffects": 0,
     "reexports": 0,
     "jsx": false
    },
    "exports": [
-    "GuestStorageError",
     "GuestTimetablePeriod",
     "GuestMoodLog",
     "GuestJournalEntry",
@@ -46022,10 +46086,16 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 5,
     "tests": 3
    },
    "imports": [
+    {
+     "to": "packages/core/src/effect/Errors.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
     {
      "to": "packages/core/src/native/guestLease.ts",
      "typeOnly": false,
@@ -98339,7 +98409,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 48,
+    "prod": 49,
     "tests": 26
    },
    "imports": [
@@ -124671,7 +124741,7 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 32,
+   "lines": 33,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -124696,6 +124766,12 @@
     "tests": 3
    },
    "imports": [
+    {
+     "to": "packages/core/src/effect/bindings/queryClient.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "C"
+    },
     {
      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
      "typeOnly": false,
@@ -132999,6 +133075,53 @@
    ]
   },
   {
+   "file": "apps/gurudevi-web/app/(sanctuary)/components/FeedbackToasts.tsx",
+   "package": "apps/gurudevi-web",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 24,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 17,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 1,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "FeedbackToasts"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/ui/src/components/web/index.ts",
+     "typeOnly": false,
+     "toShape": "barrel",
+     "toTier": "T6"
+    }
+   ],
+   "outside": [
+    "react"
+   ]
+  },
+  {
    "file": "apps/gurudevi-web/app/(sanctuary)/components/FloorAtmosphere.tsx",
    "package": "apps/gurudevi-web",
    "folderTier": null,
@@ -137003,7 +137126,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 70,
+   "lines": 73,
    "counts": {
     "types": 0,
     "consts": 1,
@@ -137011,7 +137134,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 49,
+    "functionLines": 51,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -137049,6 +137172,12 @@
     },
     {
      "to": "apps/gurudevi-web/app/(sanctuary)/auth/AuthProvider.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/components/FeedbackToasts.tsx",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
@@ -148759,7 +148888,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 69,
+   "lines": 71,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -148767,7 +148896,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 51,
+    "functionLines": 52,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 1,
@@ -148791,6 +148920,12 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/queryClient.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/platform/drivers/networkMonitor.ts",

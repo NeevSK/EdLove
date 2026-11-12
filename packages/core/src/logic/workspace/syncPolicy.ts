@@ -1,4 +1,4 @@
-import { classifyFailure, isRetryable } from '@repo/core/logic/failure/classifyFailure';
+import { classifyFailure, isRetryable, retryDelayMs } from '@repo/core/logic/failure/classifyFailure';
 /** Transient workspace sync failures are retried; unrecognised ones (defects) are not. */
 export function isRetryableWorkspaceSyncError(error: unknown): boolean {
   const kind = classifyFailure(error);
@@ -10,6 +10,5 @@ export function shouldRetryWorkspaceSync(failureCount: number, error: unknown): 
 }
 
 export function workspaceSyncRetryDelay(attemptIndex: number): number {
-  const ceiling = Math.min(30_000, 1_000 * 2 ** attemptIndex);
-  return Math.floor(Math.random() * ceiling);
+  return retryDelayMs(attemptIndex);
 }

@@ -317,3 +317,10 @@ web remains online-only with normal request/reconnect error handling.
 - New kinds in `effect/Errors.ts`; `logic/failure/classifyFailure.ts` with `RETRY_POLICY`. Outbox, workspace-sync and API retry decisions re-pointed to it. The error normalizer reads HTTP status from the kind (oRPC v2 has no `status`).
 - Behaviour, compared over 70 inputs: only fixes (oRPC 429 and 5xx now retried in workspace sync; 422 and Zod now permanent in the outbox; `statusCode` read). Unrecognised failures keep each caller's old default.
 - G0: core 50, web 1, mobile 17, unchanged. G1: core now fails 20 files (was 22); `syncPolicy` and `errorNormalizer` fixed. Ratchet: `catchAndLogOnly` 165 (new).
+
+### Client runtime L5/L7: one QueryClient policy, web toast host
+
+- `queryClientConfig` (core composition root): retry by failure kind, jittered backoff, and failure feedback through the cache `onError` hooks (stays out when the caller handles it). Both apps adopt it and keep their own settings; the flat `retry: 2` is gone.
+- Web had no listener for `feedback:toast`; `FeedbackToasts` bridges it to the kit's `ToastHost`.
+- `GuestStorageError` moved to `effect/Errors.ts`; its type import pulled React Native globals into web's type check (3 `Timeout` errors).
+- G0: core 50, web 1, mobile 17, unchanged. G1: core 20 failing (unchanged); web and mobile unchanged. `getQueryClient.test.ts` now asserts the retry contract instead of `retry: 2`. New: `queryClient.test.ts` (7), `FeedbackToasts.test.tsx` (2, G3 jsdom).

@@ -5,6 +5,7 @@ import { classifyGurudeviHost } from '@/lib/host-routing';
 import { QueryProvider } from '@/lib/query/QueryProvider';
 import { GurudeviWebVerger } from '@/lib/runtime/GurudeviWebVerger';
 import { AuthProvider } from './auth/AuthProvider';
+import { FeedbackToasts } from './components/FeedbackToasts';
 import { SkipLink } from './components/SkipLink';
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default async function SanctuaryLayout({ children }: Readonly<{ children:
         <QueryProvider>
           <SkipLink />
           {children}
+          <FeedbackToasts />
         </QueryProvider>
       </GurudeviWebVerger>
     );
@@ -62,6 +64,7 @@ export default async function SanctuaryLayout({ children }: Readonly<{ children:
         <QueryProvider>
           <SkipLink />
           {children}
+          <FeedbackToasts />
         </QueryProvider>
       </AuthProvider>
     </GurudeviWebVerger>

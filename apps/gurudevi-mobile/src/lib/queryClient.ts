@@ -1,3 +1,4 @@
+import { queryClientConfig } from '@repo/core/effect/bindings/queryClient';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { focusManager, onlineManager, QueryClient } from '@tanstack/react-query';
 import { AppState, Platform } from 'react-native';
@@ -21,11 +22,11 @@ onlineManager.setEventListener((setOnline) => {
   return unsubscribe;
 });
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
+// Retry, backoff and failure feedback come from core, the same on every platform.
+export const queryClient = new QueryClient(
+  queryClientConfig({
     queries: {
-      retry: 2,
       staleTime: 1000 * 60 * 5, // 5 minutes
     },
-  },
-});
+  }),
+);

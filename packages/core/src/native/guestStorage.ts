@@ -1,7 +1,8 @@
+import { GuestStorageError } from '@repo/core/effect/Errors';
 import { registerGuestLeaseDataKey } from '@repo/core/native/guestLease';
 import { getGuestScope, guestStorageKey } from '@repo/core/native/guestScope';
 import { SafeZustandStorage } from '@repo/core/native/storageWrapper';
-import { Effect, Schema } from 'effect';
+import { Effect } from 'effect';
 
 // Keys for MMKV storage
 const GUEST_TIMETABLE_KEY = () => guestStorageKey('timetable');
@@ -10,14 +11,6 @@ const GUEST_JOURNAL_ENTRIES_KEY = () => guestStorageKey('journal-entries');
 const GUEST_CLASSROOM_DATA_KEY = () => guestStorageKey('classroom-data');
 const GUEST_STUDENTS_KEY = () => guestStorageKey('students');
 
-export class GuestStorageError extends Schema.TaggedError<GuestStorageError>()(
-  'GuestStorageError',
-  {
-    operation: Schema.Literals(['read', 'write', 'parse', 'remove']),
-    key: Schema.String,
-    cause: Schema.Defect(),
-  },
-) {}
 
 let localIdCounter = 0;
 const createLocalId = () => {

@@ -124,3 +124,17 @@ export class UnavailableError extends Schema.TaggedError<UnavailableError>()('Un
   message: Schema.optional(Schema.String),
   cause: Schema.optional(Schema.Defect()),
 }) {}
+
+/**
+ * Guest data on the device couldn't be read, written, parsed or removed. Declared here, not in
+ * native/guestStorage.ts, so platform-neutral code (the feedback table, web) can name it without
+ * loading native storage.
+ */
+export class GuestStorageError extends Schema.TaggedError<GuestStorageError>()(
+  'GuestStorageError',
+  {
+    operation: Schema.Literals(['read', 'write', 'parse', 'remove']),
+    key: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
