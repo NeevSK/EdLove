@@ -20,5 +20,6 @@
   "reactCompilerRuleHits": 187,
   "unparseableFiles": 5,
   "referenceOnlyDrift": 0,
-  "catchAndLogOnly": 165
+  "catchAndLogOnly": 165,
+  "handRolledPacing": 3
 }

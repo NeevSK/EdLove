@@ -27,7 +27,12 @@ export {
 } from './Errors';
 export { normalizeError, reportBestEffort, runForkBestEffort, runToPromise } from './Runtime';
 // ─── 1. Canonical Schedules ──────────────────────────────────────────
-export { defaultRetryPolicy, retryPolicy, strictRetryPolicy } from './Schedules';
+export {
+  defaultRetryPolicy,
+  retryPolicy,
+  retryTransient,
+  strictRetryPolicy,
+} from './Schedules';
 
 /**
  * Shared Promise-to-Effect adapter for fallible I/O.

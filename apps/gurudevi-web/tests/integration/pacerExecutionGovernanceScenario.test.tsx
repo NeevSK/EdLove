@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useBatchedAction, useDebouncedValue, useThrottledInvalidate } from '@/lib/pacer/usePacer';
+import { useBatchedAction, useDebouncedValue, useThrottledInvalidate } from '@repo/core/hooks/usePacer';
 
 /**
  * G2 Scenario Contract: TanStack Pacer Timing & Execution Governance

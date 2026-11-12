@@ -252,3 +252,14 @@ export function retryDelayMs(attempt: number, error?: unknown, random: () => num
   const ceiling = Math.min(30_000, 1_000 * 2 ** attempt);
   return Math.floor(random() * ceiling);
 }
+
+/**
+ * The retry predicate every retry path shares (queries, Effect workflows, API calls,
+ * idempotent mutations): transient kinds are retried, kinds retrying can't fix are not, and
+ * unrecognised failures (defects) are retried as they always were. Workspace sync is the one
+ * stricter caller: it doesn't retry defects (`isRetryableWorkspaceSyncError`).
+ */
+export function worthRetrying(error: unknown): boolean {
+  const kind = classifyFailure(error);
+  return kind === null || isRetryable(kind);
+}

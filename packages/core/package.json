@@ -451,6 +451,7 @@
     "@sentry/browser": "10.78.0",
     "@supabase/postgrest-js": "2.119.0",
     "@supabase/supabase-js": "^2.119.0",
+    "@tanstack/react-pacer": "^0.24.1",
     "@tanstack/react-query": "^5.107.1",
     "@xstate/effect": "1.0.0-beta.1",
     "@zenstackhq/zod": "3.10.1",

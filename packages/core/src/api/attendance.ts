@@ -2,7 +2,7 @@ import { readLocalFirst, writeLocalFirst } from '@repo/core/api/dataGateway';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 import { APIError } from '@repo/core/types/API';
-import { defaultRetryPolicy } from '@repo/core/utils/effect';
+import { defaultRetryPolicy, retryTransient } from '@repo/core/utils/effect';
 import { Duration, Effect, pipe, Schema } from 'effect';
 
 class AttendanceHttpError extends Schema.TaggedError<AttendanceHttpError>()('AttendanceHttpError', {
@@ -20,7 +20,7 @@ function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, AttendanceHttpErro
           status: String((e as any)?.status ?? '0'),
         }),
     }),
-    Effect.retry(defaultRetryPolicy),
+    Effect.retry(retryTransient(defaultRetryPolicy)),
     Effect.timeout(Duration.seconds(15)),
     Effect.catchTag('TimeoutError', () =>
       Effect.fail(

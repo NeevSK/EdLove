@@ -17,7 +17,7 @@ import type { Identity } from '@repo/core/types/Identity';
 import type { Bond, Perspective } from '@repo/core/logic/schemas/identity.schema';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import type { User } from '@repo/core/types/User';
-import { strictRetryPolicy } from '@repo/core/utils/effect';
+import { retryTransient, strictRetryPolicy } from '@repo/core/utils/effect';
 import { Duration, Effect, pipe, Schema } from 'effect';
 
 // ─── Effect helpers ──────────────────────────────────────────────
@@ -26,6 +26,8 @@ export class SupabaseQueryError extends Schema.TaggedError<SupabaseQueryError>()
   'SupabaseQueryError',
   {
     message: Schema.String,
+    /** PostgREST or Postgres code (`42501`, `PGRST116`), so the failure classifier can read it. */
+    code: Schema.optional(Schema.String),
   },
 ) {}
 
@@ -39,10 +41,15 @@ function supabaseCall<T>(
     }),
     Effect.flatMap(({ data, error }) =>
       error
-        ? Effect.fail(new SupabaseQueryError({ message: error.message ?? String(error) }))
+        ? Effect.fail(
+            new SupabaseQueryError({
+              message: error.message ?? String(error),
+              code: typeof error.code === 'string' ? error.code : undefined,
+            }),
+          )
         : Effect.succeed(data as T),
     ),
-    Effect.retry(strictRetryPolicy),
+    Effect.retry(retryTransient(strictRetryPolicy)),
     Effect.timeout(Duration.seconds(15)),
     Effect.catchTag('TimeoutError', () =>
       Effect.fail(new SupabaseQueryError({ message: 'Supabase query timed out' })),

@@ -20,7 +20,7 @@ import type {
   updateQuietHoursInputSchema,
 } from '@repo/core/api/planBridge.orpc.contract';
 import { APIError } from '@repo/core/types/API';
-import { defaultRetryPolicy } from '@repo/core/utils/effect';
+import { defaultRetryPolicy, retryTransient } from '@repo/core/utils/effect';
 import { Duration, Effect, pipe, Schema } from 'effect';
 import type { z } from 'zod';
 
@@ -50,7 +50,7 @@ function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, PlanBridgeHttpErro
           data: typeof e?.data === 'object' && e?.data !== null ? e.data : undefined,
         }),
     }),
-    Effect.retry(defaultRetryPolicy),
+    Effect.retry(retryTransient(defaultRetryPolicy)),
     Effect.timeout(Duration.seconds(15)),
     Effect.catchTag('TimeoutError', () =>
       Effect.fail(

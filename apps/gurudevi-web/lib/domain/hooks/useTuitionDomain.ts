@@ -4,7 +4,7 @@ import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
-import { useDebouncedValue, useThrottledInvalidate } from '../../pacer/usePacer';
+import { useDebouncedValue, useThrottledInvalidate } from '@repo/core/hooks/usePacer';
 import {
   DEFAULT_CANONICAL_BATCHES,
   tuitionAdapter,

@@ -199,6 +199,19 @@ function countCatchAndLogOnly() {
   }
 }
 
+// Files that hand-roll debounce or throttle with setTimeout; use @repo/core/hooks/usePacer or
+// TanStack Pacer's Debouncer/Throttler instead.
+function countHandRolledPacing() {
+  const base = ['-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', ...RG_REFERENCE_ARGS];
+  try {
+    const named = execFileSync('rg', ['-l', '-i', 'debounce|throttle', 'packages', 'apps', ...base], { cwd: REPO_ROOT, encoding: 'utf8' })
+      .split('\n').filter(Boolean);
+    return named.filter((file) => /setTimeout\(/.test(readFileSync(resolve(REPO_ROOT, file), "utf8"))).length;
+  } catch (error) {
+    return error.status === 1 ? 0 : Number.POSITIVE_INFINITY;
+  }
+}
+
 function countTierContentViolations() {
   try {
     const out = execSync('node scripts/audit-tier-content.mjs --summary-json', { cwd: REPO_ROOT, encoding: 'utf8' });
@@ -264,6 +277,7 @@ function measureMetrics() {
     unparseableFiles: reactCount(['parse-error']),
     referenceOnlyDrift: countReferenceOnlyDrift(),
     catchAndLogOnly: countCatchAndLogOnly(),
+    handRolledPacing: countHandRolledPacing(),
   };
 }
 
@@ -311,6 +325,7 @@ function main() {
     unparseableFiles: 'Parse errors (oxlint)',
     referenceOnlyDrift: 'Live .web list out of date',
     catchAndLogOnly: 'catch blocks that only log',
+    handRolledPacing: 'Hand-rolled debounce/throttle files',
   };
 
   console.log('----------------------------------------------------------------------');

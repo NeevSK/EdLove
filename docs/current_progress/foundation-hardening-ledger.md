@@ -331,3 +331,9 @@ web remains online-only with normal request/reconnect error handling.
 - Mobile kept the previous account's query cache after an account switch; `bindQueryCacheToAccount` (core coordinator, subscribing to the scope session) now disposes it. G2 scenario test, 3 cases.
 - The outcome type moves to step 5 (the outbox), where it has producers.
 - G0: unchanged (core 50, web 1, mobile 17). G1: core 20 failing (unchanged); mobile unchanged.
+
+### Client runtime L3 step 3: one retry predicate, Pacer in core
+
+- `worthRetrying` shared by Effect (`retryTransient`), queries, API, `executeMutation$` and `withIdempotency`. The five `Effect.retry(policy)` sites no longer retry sign-out, forbidden or validation. `SupabaseQueryError` keeps the Postgres code.
+- Pacer hooks moved from web to `@repo/core/hooks/usePacer` (core gains `@tanstack/react-pacer` ^0.24.1, the version both apps already use; 3-line lockfile change). Mobile's unused copy is gone; the demo re-pointed. `useResponsiveRenderer` and `devErrorPipeline` use Pacer.
+- Ratchet: `handRolledPacing` 3 (new). G0 unchanged (50/1/17). G1: core 20 failing, web and mobile unchanged. New: `retryTransient.test.ts` (4).

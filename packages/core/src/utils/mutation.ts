@@ -1,4 +1,5 @@
 import { OfflineMutationError } from '@repo/core/effect/Errors';
+import { worthRetrying } from '@repo/core/logic/failure/classifyFailure';
 import { Duration, Effect, Schedule } from 'effect';
 
 export { OfflineMutationError };
@@ -26,7 +27,8 @@ export function executeMutation$<T>(options: {
     Effect.retry({
       schedule: Schedule.exponential(Duration.seconds(1)),
       times: options.retryCount ?? 3,
-      while: (error) => !(error instanceof OfflineMutationError),
+      // Offline is never retried here (RETRY_POLICY); the outbox replays it on reconnect.
+      while: worthRetrying,
     }),
   );
 }

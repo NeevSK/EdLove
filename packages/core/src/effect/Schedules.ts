@@ -10,6 +10,7 @@
  * Import:
  *   import { defaultRetryPolicy, strictRetryPolicy, retryPolicy } from '@repo/core/utils/effect';
  */
+import { worthRetrying } from '@repo/core/logic/failure/classifyFailure';
 import { Duration, Schedule } from 'effect';
 
 /**
@@ -36,4 +37,15 @@ export const strictRetryPolicy = Schedule.max([
  */
 export function retryPolicy(maxRetries: number = 3) {
   return Schedule.max([Schedule.exponential(Duration.millis(200)), Schedule.recurs(maxRetries)]);
+}
+
+/**
+ * `Effect.retry` options that retry only what is worth retrying (`worthRetrying`): a failure
+ * retrying can't fix (signed out, forbidden, invalid, conflict, offline) fails at once instead
+ * of running the whole schedule. `Effect.retry(policy)` alone retries every failure.
+ *
+ *   effect.pipe(Effect.retry(retryTransient(strictRetryPolicy)))
+ */
+export function retryTransient<S>(schedule: S) {
+  return { schedule, while: worthRetrying } as const;
 }

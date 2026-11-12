@@ -114,9 +114,24 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
     replaces the unused `guide` and `agentHint` fields of the old `lib/errors.ts`, which stays
     until its one importer moves.
   - **Ratchet.** `catchAndLogOnly` has a ceiling of 165.
-  - **Still to do.** `presentFailure` still has no callers; queries and mutations will call it
-    (step 2). Four retry paths remain: Effect `Schedules`, the oRPC client's `retryDelay`,
-    device-security reads, and `idempotency.ts` with `utils/mutation.ts`.
+  - **Step 3 done (2026-11-12).** Every retry path shares one predicate, `worthRetrying`:
+    transient kinds retry, kinds retrying can't fix don't, and unrecognised failures retry as
+    before. The paths that read it:
+    - **Effect:** `retryTransient(schedule)` in `effect/Schedules.ts` gives `Effect.retry` options.
+      The five `Effect.retry(policy)` sites (Supabase identity, the relief agent ×2, attendance,
+      plan bridge) used to retry every failure, sign-out and forbidden included.
+    - **Queries:** `shouldRetryQuery`.
+    - **API:** `shouldRetryAPIRequest`.
+    - **Mutations:** `executeMutation$`.
+    - **Idempotent writes:** `withIdempotency`.
+    - **Supabase codes.** `SupabaseQueryError` now carries the Postgres code, so `42501` reads as
+      forbidden.
+    - **Pacer.** The hooks moved to core (`@repo/core/hooks/usePacer`), replacing two diverged app
+      copies (mobile's hand-rolled `useDebouncedValue` is gone). The core resize hook and mobile's
+      dev-error pipeline use Pacer; the resize hook's timer used to leak on unmount. Ratchet:
+      `handRolledPacing` 3 (edlove-web, Verger's frame sampler, the Pacer demo screen).
+    - **Not changed.** Device security has no retry of its own (it queues through the mutation
+      queue). The pre-v1 oRPC client's transport retry is retired code and is left as it is.
 - **Production.** Jitter, caps, circuit breaking per endpoint, retry budgets.
 - **Enterprise.** Error budgets and SLOs; chaos tests for each kind.
 

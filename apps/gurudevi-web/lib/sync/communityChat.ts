@@ -4,7 +4,7 @@ import { storage } from '@repo/core/lib/storage.adapter';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
 import { useCallback, useEffect, useState } from 'react';
-import { useThrottledInvalidate } from '../pacer/usePacer';
+import { useThrottledInvalidate } from '@repo/core/hooks/usePacer';
 
 export interface ChatMessage {
   id: string;

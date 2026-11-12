@@ -1,5 +1,5 @@
 import { presentFailure } from '@repo/core/lib/failureFeedback.adapter';
-import { classifyFailure, isRetryable, retryDelayMs } from '@repo/core/logic/failure/classifyFailure';
+import { retryDelayMs, worthRetrying } from '@repo/core/logic/failure/classifyFailure';
 import {
   type DefaultOptions,
   MutationCache,
@@ -38,9 +38,7 @@ declare module '@tanstack/react-query' {
 export const MAX_QUERY_RETRIES = 2;
 
 export function shouldRetryQuery(failureCount: number, error: unknown): boolean {
-  if (failureCount >= MAX_QUERY_RETRIES) return false;
-  const kind = classifyFailure(error);
-  return kind === null || isRetryable(kind);
+  return failureCount < MAX_QUERY_RETRIES && worthRetrying(error);
 }
 
 /** `['attendance', 'save']` → `attendance.save`; `['v1', ['identity', 'entry'], {…}]` → `v1.identity.entry`. */

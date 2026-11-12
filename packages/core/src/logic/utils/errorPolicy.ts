@@ -1,4 +1,4 @@
-import { classifyFailure, isRetryable } from '@repo/core/logic/failure/classifyFailure';
+import { worthRetrying } from '@repo/core/logic/failure/classifyFailure';
 
 /** HTTP transport status takes precedence over a custom application's error code. */
 export function getAPIErrorStatus(error: unknown): number | undefined {
@@ -14,6 +14,5 @@ export function getAPIErrorStatus(error: unknown): number | undefined {
 
 /** Unrecognised failures (defects) are retried, as before; known kinds follow RETRY_POLICY. */
 export function shouldRetryAPIRequest(error: unknown): boolean {
-  const kind = classifyFailure(error);
-  return kind === null || isRetryable(kind);
+  return worthRetrying(error);
 }

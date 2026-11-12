@@ -1,5 +1,5 @@
 import { supabaseClient as defaultClient } from '@repo/core/adapters/supabaseClient';
-import { strictRetryPolicy } from '@repo/core/effect/Schedules';
+import { retryTransient, strictRetryPolicy } from '@repo/core/effect/Schedules';
 import { Duration, Effect, pipe, Schema } from 'effect';
 import {
   AgentDatabaseError,
@@ -129,7 +129,7 @@ export function checkSectionReliefGapsEffect(
           operation: 'checkSectionReliefGaps',
         }),
     }),
-    Effect.retry(strictRetryPolicy),
+    Effect.retry(retryTransient(strictRetryPolicy)),
     Effect.timeout(Duration.seconds(10)),
     Effect.catchTag('TimeoutError', () =>
       Effect.fail(
@@ -198,7 +198,7 @@ export function detectAttendanceGapsEffect(
           operation: 'detectAttendanceGaps',
         }),
     }),
-    Effect.retry(strictRetryPolicy),
+    Effect.retry(retryTransient(strictRetryPolicy)),
     Effect.timeout(Duration.seconds(10)),
     Effect.catchTag('TimeoutError', () =>
       Effect.fail(

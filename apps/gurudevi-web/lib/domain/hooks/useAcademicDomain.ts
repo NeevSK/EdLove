@@ -3,7 +3,7 @@
 import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
-import { useDebouncedValue, useThrottledInvalidate } from '../../pacer/usePacer';
+import { useDebouncedValue, useThrottledInvalidate } from '@repo/core/hooks/usePacer';
 import {
   academicAdapter,
   DEFAULT_CANONICAL_ASSIGNMENTS,

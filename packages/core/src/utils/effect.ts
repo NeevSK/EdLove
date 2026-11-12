@@ -17,5 +17,6 @@ export {
 export {
   defaultRetryPolicy,
   retryPolicy,
+  retryTransient,
   strictRetryPolicy,
 } from '../effect/Schedules';

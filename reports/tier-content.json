@@ -14240,7 +14240,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
-   "lines": 313,
+   "lines": 320,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -14248,7 +14248,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 33,
+    "functionLines": 38,
     "classes": 1,
     "errorClasses": 1,
     "mutable": 0,
@@ -14264,7 +14264,7 @@
    "unions": [],
    "importers": {
     "prod": 8,
-    "tests": 0
+    "tests": 1
    },
    "imports": [
     {
@@ -26392,7 +26392,7 @@
    "unions": [],
    "importers": {
     "prod": 5,
-    "tests": 2
+    "tests": 3
    },
    "imports": [],
    "outside": [
@@ -26515,15 +26515,15 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 40,
+   "lines": 52,
    "counts": {
     "types": 0,
     "consts": 0,
     "constructs": 2,
     "ambient": 0,
     "schemas": 0,
-    "functions": 1,
-    "functionLines": 9,
+    "functions": 2,
+    "functionLines": 21,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -26534,14 +26534,22 @@
    "exports": [
     "defaultRetryPolicy",
     "strictRetryPolicy",
-    "retryPolicy"
+    "retryPolicy",
+    "retryTransient"
    ],
    "unions": [],
    "importers": {
     "prod": 3,
-    "tests": 0
+    "tests": 1
    },
-   "imports": [],
+   "imports": [
+    {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    }
+   ],
    "outside": [
     "effect"
    ]
@@ -27122,7 +27130,7 @@
    "package": "packages/core",
    "folderTier": "C",
    "shape": "contract+logic",
-   "lines": 82,
+   "lines": 80,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -27130,7 +27138,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 43,
+    "functionLines": 41,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -27322,7 +27330,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 93,
+   "lines": 98,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -29914,6 +29922,44 @@
     }
    ],
    "outside": []
+  },
+  {
+   "file": "packages/core/src/hooks/usePacer.ts",
+   "package": "packages/core",
+   "folderTier": "T5",
+   "shape": "runtime",
+   "lines": 68,
+   "counts": {
+    "types": 0,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 3,
+    "functionLines": 55,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 1,
+    "jsx": false
+   },
+   "exports": [
+    "useThrottledInvalidate",
+    "useDebouncedValue",
+    "useBatchedAction"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 8,
+    "tests": 2
+   },
+   "imports": [],
+   "outside": [
+    "@tanstack/react-pacer",
+    "@tanstack/react-query",
+    "react"
+   ]
   },
   {
    "file": "packages/core/src/hooks/usePendingActions.ts",
@@ -32530,7 +32576,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 292,
+   "lines": 293,
    "counts": {
     "types": 3,
     "consts": 1,
@@ -32558,7 +32604,14 @@
     "prod": 1,
     "tests": 1
    },
-   "imports": [],
+   "imports": [
+    {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    }
+   ],
    "outside": [
     "@orpc/client"
    ]
@@ -36577,15 +36630,15 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 255,
+   "lines": 266,
    "counts": {
     "types": 5,
     "consts": 7,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
-    "functions": 9,
-    "functionLines": 127,
+    "functions": 10,
+    "functionLines": 139,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -36604,7 +36657,8 @@
     "AGENT_HINT",
     "FailureDiagnosis",
     "diagnoseFailure",
-    "retryDelayMs"
+    "retryDelayMs",
+    "worthRetrying"
    ],
    "unions": [
     {
@@ -36617,8 +36671,8 @@
     }
    ],
    "importers": {
-    "prod": 6,
-    "tests": 1
+    "prod": 9,
+    "tests": 2
    },
    "imports": [
     {
@@ -43961,7 +44015,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 20,
+   "lines": 19,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -43969,7 +44023,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 20,
+    "functionLines": 19,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -47286,15 +47340,15 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 52,
+   "lines": 37,
    "counts": {
     "types": 0,
     "consts": 0,
     "constructs": 0,
     "ambient": 2,
     "schemas": 0,
-    "functions": 2,
-    "functionLines": 50,
+    "functions": 1,
+    "functionLines": 33,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -47312,6 +47366,7 @@
    },
    "imports": [],
    "outside": [
+    "@tanstack/react-pacer",
     "react",
     "react-native"
    ]
@@ -53325,7 +53380,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "barrel",
-   "lines": 22,
+   "lines": 23,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -53405,7 +53460,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 33,
+   "lines": 35,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -53413,7 +53468,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 29,
+    "functionLines": 30,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -53435,6 +53490,12 @@
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
     }
    ],
    "outside": [
@@ -123648,43 +123709,6 @@
    ]
   },
   {
-   "file": "apps/gurudevi-mobile/src/hooks/usePacer.ts",
-   "package": "apps/gurudevi-mobile",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 47,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 45,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "useThrottledInvalidate",
-    "useDebouncedValue"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "@tanstack/react-pacer",
-    "@tanstack/react-query",
-    "react"
-   ]
-  },
-  {
    "file": "apps/gurudevi-mobile/src/hooks/usePremiumStatus.ts",
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
@@ -124266,18 +124290,18 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 112,
+   "lines": 108,
    "counts": {
     "types": 2,
-    "consts": 1,
-    "constructs": 0,
+    "consts": 0,
+    "constructs": 1,
     "ambient": 2,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 78,
+    "functionLines": 72,
     "classes": 0,
     "errorClasses": 0,
-    "mutable": 2,
+    "mutable": 1,
     "sideEffects": 0,
     "reexports": 0,
     "jsx": false
@@ -124294,6 +124318,7 @@
    },
    "imports": [],
    "outside": [
+    "@tanstack/react-pacer",
     "react-native"
    ]
   },
@@ -126295,10 +126320,10 @@
    },
    "imports": [
     {
-     "to": "apps/gurudevi-mobile/src/hooks/usePacer.ts",
+     "to": "packages/core/src/hooks/usePacer.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": null
+     "toTier": "T5"
     }
    ],
    "outside": [
@@ -147227,10 +147252,10 @@
      "toTier": "T3"
     },
     {
-     "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
+     "to": "packages/core/src/hooks/usePacer.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": null
+     "toTier": "T5"
     },
     {
      "to": "apps/gurudevi-web/lib/domain/adapters/academic/academic.adapter.ts",
@@ -147294,10 +147319,10 @@
      "toTier": "T0"
     },
     {
-     "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
+     "to": "packages/core/src/hooks/usePacer.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": null
+     "toTier": "T5"
     },
     {
      "to": "apps/gurudevi-web/lib/domain/adapters/tuition/tuition.adapter.ts",
@@ -148242,10 +148267,10 @@
      "toTier": "T3"
     },
     {
-     "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
+     "to": "packages/core/src/hooks/usePacer.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": null
+     "toTier": "T5"
     }
    ],
    "outside": [
@@ -148317,10 +148342,10 @@
      "toTier": "T3"
     },
     {
-     "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
+     "to": "packages/core/src/hooks/usePacer.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": null
+     "toTier": "T5"
     }
    ],
    "outside": [
@@ -148760,44 +148785,6 @@
    },
    "imports": [],
    "outside": []
-  },
-  {
-   "file": "apps/gurudevi-web/lib/pacer/usePacer.ts",
-   "package": "apps/gurudevi-web",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 63,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 3,
-    "functionLines": 55,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [
-    "useThrottledInvalidate",
-    "useDebouncedValue",
-    "useBatchedAction"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 7,
-    "tests": 2
-   },
-   "imports": [],
-   "outside": [
-    "@tanstack/react-pacer",
-    "@tanstack/react-query",
-    "react"
-   ]
   },
   {
    "file": "apps/gurudevi-web/lib/privacy/consent.ts",
@@ -151010,10 +150997,10 @@
      "toTier": "T3"
     },
     {
-     "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
+     "to": "packages/core/src/hooks/usePacer.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": null
+     "toTier": "T5"
     }
    ],
    "outside": [
@@ -151075,10 +151062,10 @@
      "toTier": "T3"
     },
     {
-     "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
+     "to": "packages/core/src/hooks/usePacer.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": null
+     "toTier": "T5"
     }
    ],
    "outside": [
@@ -151137,10 +151124,10 @@
      "toTier": "T3"
     },
     {
-     "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
+     "to": "packages/core/src/hooks/usePacer.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": null
+     "toTier": "T5"
     }
    ],
    "outside": [

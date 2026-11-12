@@ -1,3 +1,8 @@
+/**
+ * Pacing hooks shared by both apps, on TanStack Pacer: throttled query invalidation for bursts of
+ * sync events, debounced values for search and filters, and batched actions. Use these instead
+ * of hand-rolled setTimeout debounce or throttle.
+ */
 import {
   useAsyncThrottledCallback,
   useBatchedCallback,
