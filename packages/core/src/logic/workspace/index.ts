@@ -13,6 +13,44 @@ export {
   WORKSPACE_CANVAS_ZONES,
 } from '@repo/core/logic/workspace/canvas';
 export {
+  appearanceForSync,
+  followWorldGround,
+  type GroundSource,
+  type GroundWrite,
+  groundModePatch,
+  isDeviceOnlyWallpaper,
+  mergeSavedGround,
+  type ResolvedGround,
+  resolveRoomGround,
+  roomHasOwnGround,
+  WORLD_GROUND_ID,
+  wallpaperConfigPatch,
+  wallpaperPatch,
+  writeGround,
+} from '@repo/core/logic/workspace/ground';
+export {
+  calmPlan,
+  DEFAULT_TEXTURE,
+  GROUND_NOTE_TEXT,
+  GROUND_OPTIONS,
+  GROUND_STAGE_DEFAULTS,
+  GROUND_VEIL_DEFAULTS,
+  type GroundAllowance,
+  type GroundControls,
+  type GroundNote,
+  type GroundPlan,
+  type GroundStage,
+  type GroundStrength,
+  type GroundSurface,
+  type GroundTexture,
+  type GroundTint,
+  groundAllowanceOf,
+  groundControls,
+  isGroundTexture,
+  NOTHING_ALLOWED,
+  planGround,
+} from '@repo/core/logic/workspace/groundPlan';
+export {
   buildWorkspaceLayoutStorageKey,
   choosePreferredWorkspaceLayout,
   resolveWorkspaceLayoutTarget,
@@ -31,8 +69,8 @@ export {
   createWorkspaceRendererConfig,
   resolveWorkspaceRendererPlatform,
 } from '@repo/core/logic/workspace/renderer';
-export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
 export {
   type WorkspaceRoomName,
   workspaceRoomNameOf,
 } from '@repo/core/logic/workspace/roomName';
+export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';

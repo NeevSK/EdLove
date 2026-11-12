@@ -1,5 +1,8 @@
 'use client';
 
+import { ActionFab, FabMenu, LivingGround, ScrollArea } from '@repo/ui/components/web';
+import { Sparkles } from '@repo/ui/icons/web';
+import type { FabAction } from '@repo/ui/theme';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -34,24 +37,17 @@ import {
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
 import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatureRegistry';
-import {
-  ActionFab,
-  FabMenu,
-  LivingGround,
-  ScrollArea,
-} from '@repo/ui/components/web';
-import type { FabAction } from '@repo/ui/theme';
-import { Sparkles } from '@repo/ui/icons/web';
 import { CapacityPerspectiveSwitcher } from './CapacityPerspectiveSwitcher';
 import { CommandPalette } from './CommandPalette';
-import { TutiiSidePanel } from './TutiiSidePanel';
 import { DiurnalThemeToggle } from './DiurnalThemeToggle';
 import { ExamLockdownBanner } from './ExamLockdownBanner';
 import { LayeredDeckHeader } from './LayeredDeckHeader';
 import { SanctuaryNavIcon } from './SanctuaryNavIcon';
 import { SyncStatusPill } from './SyncStatusPill';
-import { WorkspaceScopeSwitcher } from './WorkspaceScopeSwitcher';
+import { TutiiSidePanel } from './TutiiSidePanel';
 import { WorkspaceRouteTabs } from './WorkspaceRouteTabs';
+import { WorkspaceScopeSwitcher } from './WorkspaceScopeSwitcher';
+import { WorldBackdrop } from './WorldBackdrop';
 
 type SanctuaryShellProps = Readonly<{
   children: ReactNode;
@@ -441,11 +437,13 @@ export function SanctuaryShell({
   return (
     <LivingGround
       atmosphere="canopy"
-      dither
+      // The world's ground (WorldBackdrop) is the texture now; the old paper filter would sit on it.
+      dither={false}
       className={styles.shell}
       data-sidebar={menuIsCollapsed ? 'collapsed' : 'expanded'}
       data-navigation-layout={navigationLayout}
     >
+      <WorldBackdrop isExplore={isExploreMode} />
       <a className={styles.skipLink} href="#sanctuary-main">
         Skip to content
       </a>
@@ -765,7 +763,9 @@ export function SanctuaryShell({
                   {quickAccessNotice}
                 </p>
               ) : null}
-              <WorkbenchScopeProvider scope={workspaceUsageScope}>{children}</WorkbenchScopeProvider>
+              <WorkbenchScopeProvider scope={workspaceUsageScope}>
+                {children}
+              </WorkbenchScopeProvider>
             </div>
           </ScrollArea>
         </main>

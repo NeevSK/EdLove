@@ -13,6 +13,7 @@ import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
+import { DateTimeCombo, Dialog } from '@repo/ui/components/web';
 import { useQuery } from '@tanstack/react-query';
 import { Volume2, VolumeX } from 'lucide-react';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -26,13 +27,12 @@ import {
 } from '../../../lib/sanctuary/audioSanctuary';
 import { createAccountSafeTrySelfPracticeAdapter } from '../../../lib/sanctuary/selfExplore';
 import { burnJournal, loadBurnedJournalHistory } from '../../../lib/sanctuary/selfJournal';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import type { FloorAtmosphereKind } from '../components/FloorAtmosphere';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { DateTimeCombo } from '@repo/ui/components/web';
-import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import { BROWSER_SELF_FEATURES } from './browserFeatureRegistry';
 import { DailyContentCard } from './components/DailyContentCard';
@@ -45,7 +45,6 @@ import { FireJournal, initialScreen, type ScreenState } from './components/FireJ
 import { GratitudeGlimmers } from './components/GratitudeGlimmers';
 import { JoyJar } from './components/JoyJar';
 import { MoodLotusModal } from './components/MoodLotusModal';
-import { Dialog } from '@repo/ui/components/web';
 import { MyGradesView } from './components/MyGradesView';
 import { ProgressTree } from './components/ProgressTree';
 import { PulseDashboard } from './components/PulseDashboard';
@@ -160,7 +159,9 @@ export function SelfFloor({
   const workbench = useDomainWorkbench('self', { usageScope: quickAccessScope });
   const [showOverview, setShowOverview] = useState(true);
   const [showSadhanaModal, setShowSadhanaModal] = useState(false);
-  const [activeModalFeature, setActiveModalFeature] = useState<SelfFeatureManifestItem | null>(null);
+  const [activeModalFeature, setActiveModalFeature] = useState<SelfFeatureManifestItem | null>(
+    null,
+  );
   const [audioMuted, setAudioMuted] = useState(false);
 
   useEffect(() => {
@@ -205,8 +206,7 @@ export function SelfFloor({
   const exploreCapacity = useExploreCapacity();
   const primaryRole =
     initialCapacity ?? (accountId === 'explore-guest' ? exploreCapacity : undefined);
-  const isExplore =
-    accountId === 'explore-guest' || accountId === 'explore' || initialPracticing;
+  const isExplore = accountId === 'explore-guest' || accountId === 'explore' || initialPracticing;
   const practiceAdapter = useMemo(
     () =>
       accountId
@@ -555,6 +555,8 @@ export function SelfFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      storedAppearance={canvas.storedAppearance}
+      accountId={accountId}
       className={
         canvas.phase === 'morning'
           ? styles.diurnalDawn
@@ -608,7 +610,9 @@ export function SelfFloor({
             focusedTaskKey={workbench.state.focusedTaskKey}
             onCloseTask={closeTask}
             onFocusTask={focusTask}
-            onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
+            onReorderTask={(taskKey, destinationIndex) =>
+              workbench.reorder(taskKey, destinationIndex)
+            }
             onOpenOverview={() => {
               setShowOverview(true);
               requestAnimationFrame(() =>
@@ -627,7 +631,9 @@ export function SelfFloor({
             quickAccessUsage={quickAccess.usage}
             quickAccessPinLimit={quickAccess.pinLimit}
             onOpenQuickAccessItem={(item) => {
-              const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === item.id);
+              const feature = SELF_FEATURE_MANIFEST.all.find(
+                (candidate) => candidate.id === item.id,
+              );
               if (feature) openQuickAccessFeature(feature);
             }}
             onToggleQuickAccessPin={quickAccess.togglePin}
@@ -695,7 +701,8 @@ export function SelfFloor({
               }
             >
               <div style={{ marginTop: '0.5rem', width: '100%' }}>
-                {activeModalFeature.id === 'mood_lotus' || activeModalFeature.id === 'breath_guide' ? (
+                {activeModalFeature.id === 'mood_lotus' ||
+                activeModalFeature.id === 'breath_guide' ? (
                   <MoodLotusModal
                     embedded
                     initialTab={activeModalFeature.id === 'breath_guide' ? 'breath' : 'mood'}
@@ -706,7 +713,10 @@ export function SelfFloor({
                     practiceAdapter={practiceAdapter}
                   />
                 ) : activeModalFeature.id === 'daily_pulse' ? (
-                  <PulseDashboard userId={accountId ?? 'guest-explorer'} onClose={() => setActiveModalFeature(null)} />
+                  <PulseDashboard
+                    userId={accountId ?? 'guest-explorer'}
+                    onClose={() => setActiveModalFeature(null)}
+                  />
                 ) : activeModalFeature.id === 'gratitude_glimmers' ? (
                   <GratitudeGlimmers userId={accountId ?? 'guest-explorer'} />
                 ) : activeModalFeature.id === 'joy_jar' ? (

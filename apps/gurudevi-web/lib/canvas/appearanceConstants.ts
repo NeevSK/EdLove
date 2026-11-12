@@ -123,3 +123,24 @@ export const EXPLORE_DEFAULT_APPEARANCE: WorkspaceAppearance = {
     customWashColor: '#d4843a',
   },
 };
+
+/** Whether this world has photos of its own (others borrow Sanctuary's until theirs are made). */
+export function hasOwnBackdrops(worldId: string): boolean {
+  return (WORLD_BACKDROPS[worldId]?.length ?? 0) > 0;
+}
+
+/**
+ * The look a world starts with, before anyone changes it: the world's own first photo stands
+ * ready for Photo (explore starts on its slideshow of the same world's photos).
+ */
+export function groundDefaultsFor(worldId: string, isExplore: boolean): WorkspaceAppearance {
+  const base = isExplore ? EXPLORE_DEFAULT_APPEARANCE : DEFAULT_APPEARANCE;
+  const photos = getBackdropsForWorld(worldId);
+  return {
+    ...base,
+    wallpaper: photos[0] ?? null,
+    wallpaperConfig: base.wallpaperConfig
+      ? { ...base.wallpaperConfig, items: [...photos], activeId: photos[0]?.publicId ?? null }
+      : base.wallpaperConfig,
+  };
+}

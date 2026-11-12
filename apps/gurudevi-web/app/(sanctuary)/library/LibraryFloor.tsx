@@ -11,9 +11,9 @@ import {
   Grid,
   Inline,
   Notice,
+  SearchField,
   SegmentedControl,
   Stack,
-  SearchField,
 } from '@repo/ui/components/web';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -34,10 +34,10 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import styles from './library.module.css';
 
@@ -121,8 +121,7 @@ export function LibraryFloor({
   displayName: string;
   mode?: LibraryFloorMode;
 }>) {
-  const isGuestMode =
-    mode === 'explore' || accountId === 'explore-guest' || accountId === 'guest';
+  const isGuestMode = mode === 'explore' || accountId === 'explore-guest' || accountId === 'guest';
   const canvas = useLibraryCanvas({
     accountId,
     enableRemoteSync: mode === 'account' && Boolean(accountId) && !isGuestMode,
@@ -270,7 +269,9 @@ export function LibraryFloor({
         setResources(parseBrowserLibraryResources(next));
         setStatus('ready');
         if (!data.session?.access_token) {
-          setNotice('Viewing Public Educational Commons • Sign in to access your school\'s private archive');
+          setNotice(
+            "Viewing Public Educational Commons • Sign in to access your school's private archive",
+          );
         }
       } catch {
         if (seq !== searchSeqRef.current) return;
@@ -324,7 +325,7 @@ export function LibraryFloor({
           status: 'ready' as const,
           notice: data.session?.access_token
             ? null
-            : 'Viewing Public Educational Commons • Sign in to access your school\'s private archive',
+            : "Viewing Public Educational Commons • Sign in to access your school's private archive",
         };
       } catch {
         return {
@@ -399,6 +400,8 @@ export function LibraryFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      storedAppearance={canvas.storedAppearance}
+      accountId={accountId}
       domain="library"
       furnitureItems={LIBRARY_FURNITURE_ITEMS}
       groupOrder={
@@ -474,7 +477,11 @@ export function LibraryFloor({
                           onClick={() => canvas.togglePin(category)}
                           type="button"
                         >
-                          {isPinned ? <Pin size={16} aria-hidden /> : <PinOff size={16} aria-hidden />}
+                          {isPinned ? (
+                            <Pin size={16} aria-hidden />
+                          ) : (
+                            <PinOff size={16} aria-hidden />
+                          )}
                         </button>
                       </div>
                     </li>
@@ -495,7 +502,9 @@ export function LibraryFloor({
               <div className={styles.sectionHeading}>
                 <p className={styles.eyebrow}>Browse</p>
                 <h2 id="resource-catalog-title">Resource catalog</h2>
-                <p>Search verified educational materials made available across the Sanctuary Commons.</p>
+                <p>
+                  Search verified educational materials made available across the Sanctuary Commons.
+                </p>
               </div>
 
               {/* Canonical SearchField */}
@@ -567,9 +576,7 @@ export function LibraryFloor({
               </div>
 
               {/* Status and Notices */}
-              {notice ? (
-                <Notice tone="neutral" message={notice} />
-              ) : null}
+              {notice ? <Notice tone="neutral" message={notice} /> : null}
 
               {status === 'loading' ? (
                 <p className={styles.state} role="status">
@@ -773,7 +780,11 @@ export function LibraryFloor({
                     icon={isVideo ? Video : BookOpen}
                     href={targetHref}
                   />
-                  <Inline gap="inside" className={styles.cardActionsInline} style={{ marginTop: '0.75rem' }}>
+                  <Inline
+                    gap="inside"
+                    className={styles.cardActionsInline}
+                    style={{ marginTop: '0.75rem' }}
+                  >
                     <Button
                       size="sm"
                       variant="secondary"
@@ -888,11 +899,7 @@ export function LibraryFloor({
                         meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
                         shape="tile"
                         icon={isVideo ? Video : BookOpen}
-                        href={
-                          isVideo
-                            ? `/library/video/${res.id}`
-                            : `/library/reader/${res.id}`
-                        }
+                        href={isVideo ? `/library/video/${res.id}` : `/library/reader/${res.id}`}
                       />
                     </div>
                   );
