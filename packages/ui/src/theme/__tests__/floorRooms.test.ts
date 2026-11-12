@@ -6,6 +6,8 @@ import {
   printFloor,
   ROOM_PLANS,
   roomFloorInput,
+  roomSurfaceDefinitions,
+  workRoomPlanOf,
 } from '@repo/core/logic/floor';
 import { describe, expect, it } from 'vitest';
 import { floorFitOf, KIT_FLOOR_FIT, type KitPiece } from '../floorFit';
@@ -102,5 +104,24 @@ describe('work room floors', { tags: ['unit', 'a11y'] }, () => {
       ['timetable', 'notes', 'question-bank', 'messages'].includes(id),
     );
     expect(tools[0]).toBe('timetable');
+  });
+
+  it('tutors and markers get the Classroom plan; unknown capacities get none', () => {
+    expect(workRoomPlanOf('tutor')?.id).toBe('workspace:teacher');
+    expect(workRoomPlanOf('marker')?.id).toBe('workspace:teacher');
+    expect(workRoomPlanOf('platform_staff')).toBeUndefined();
+    expect(workRoomPlanOf(undefined)).toBeUndefined();
+  });
+
+  it('every planned feature becomes a saved-layout surface in its default area', () => {
+    const plan = ROOM_PLANS['workspace:guardian']!;
+    const defs = roomSurfaceDefinitions(plan, 'workspace@bond-1');
+    expect(defs.map((d) => d.surfaceId)).toEqual(plan.surfaces.map((x) => x.id));
+    expect(defs.every((d) => d.workspaceId === 'workspace@bond-1')).toBe(true);
+    for (const kit of new Set(
+      Object.values(ROOM_PLANS).flatMap((p) => p.surfaces.map((x) => x.kit)),
+    )) {
+      expect(kit in KIT_FLOOR_FIT, kit).toBe(true);
+    }
   });
 });

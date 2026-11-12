@@ -216,3 +216,37 @@ export function roomFloorInput({
     config,
   };
 }
+
+/** Plan id for a capacity's work room, when there is one. */
+export function workRoomPlanOf(capacity: string | null | undefined): RoomPlan | undefined {
+  const key = (
+    {
+      teacher: 'teacher',
+      tutor: 'teacher',
+      marker: 'teacher',
+      student: 'student',
+      guardian: 'guardian',
+      principal: 'principal',
+    } as Record<string, string>
+  )[capacity ?? ''];
+  return key ? ROOM_PLANS[`workspace:${key}`] : undefined;
+}
+
+/**
+ * The plan's features as layout-sync surfaces, so the person's saved order,
+ * pins and hidden pieces apply to them like any workspace surface.
+ */
+export function roomSurfaceDefinitions(plan: RoomPlan, workspaceId: string) {
+  return plan.surfaces.map((x, i) => ({
+    surfaceId: x.id,
+    workspaceId,
+    capabilityKey: x.id,
+    ownerPackage: 'core' as const,
+    defaultZone: x.area,
+    defaultOrder: i,
+    title: x.label,
+    groupId: x.group,
+    mobileSupport: true,
+    webSupport: true,
+  }));
+}

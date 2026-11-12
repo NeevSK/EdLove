@@ -1,10 +1,12 @@
-import { View } from 'react-native';
 import { usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
+import { workRoomPlanOf } from '@repo/core/logic/floor';
 import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
 import { Redirect } from 'expo-router';
+import { View } from 'react-native';
+import { WorkFloor } from '@/components/workspace/WorkFloor';
 import { resolveWorkspaceRoute } from '@/lib/workspace/routeResolution';
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -87,6 +89,18 @@ export default function WorkspaceDispatcher() {
           params: { batchId: routeResolution.target.perspectiveId || 'active' },
         }}
       />
+    );
+  }
+
+  // Opt-in: the floor engine draws the role's work room. Off by default, so
+  // the room below stays exactly as it was until it is switched on.
+  const workPlan =
+    process.env.EXPO_PUBLIC_WORK_FLOOR === '1'
+      ? workRoomPlanOf(context.activeBond?.capacity ?? context.primaryCapacity)
+      : undefined;
+  if (workPlan) {
+    return (
+      <WorkFloor plan={workPlan} userId={context.userId} perspectiveId={activePerspective.id} />
     );
   }
 
