@@ -11,6 +11,7 @@
 export { buildRecipes } from './build';
 export * from './color';
 export * from './contracts';
+export * from './floorFit';
 export {
   boxShadowCss,
   paintCss,
