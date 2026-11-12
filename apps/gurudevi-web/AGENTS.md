@@ -11,6 +11,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # Gurudevi web rules
 
 - `gurudevi.app` is the public marketing origin (`app/(marketing)`); `sanctuary.gurudevi.app` is the authenticated workspace origin (`app/(sanctuary)`); `explore.gurudevi.app` is the guest exploration showroom.
+- **Moving to Vite + TanStack Router** ([decision](../../docs/decisions/2026-11-12-web-stack-astro-vite.md)). The client build lives in `spa/` (`pnpm build:explore`); copy `spa/routes/self.tsx` for a new route. Public pages move to `apps/gurudevi-public` (Astro). Don't add new `next/*` imports: `node scripts/check-web-stack.mjs` only lets their count go down, and Explore must never contact the backend.
 - In local development, test surfaces via `http://localhost:3000`, `http://sanctuary.localhost:3000`, and `http://explore.localhost:3000` (RFC 6761) without modifying system hosts files.
 - Keep public routes under `app/(marketing)` and protected product routes under `app/(sanctuary)`.
 - Build web UI with semantic HTML and browser-native behavior. Do not import React Native UI components or React Native Web into this app.

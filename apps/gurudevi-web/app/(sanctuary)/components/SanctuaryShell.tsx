@@ -466,7 +466,8 @@ export function SanctuaryShell({
                   🪷
                 </span>
               </button>
-              <SyncStatusPill />
+              {/* Explore has no account and nothing to sync, and must never contact the backend. */}
+              {isExploreMode ? null : <SyncStatusPill />}
             </div>
 
             <div className={styles.headerControls}>
