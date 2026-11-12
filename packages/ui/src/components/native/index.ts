@@ -45,6 +45,8 @@ export { Icon, type IconProps } from './Icon/Icon';
 export { IconButton, type IconButtonProps } from './IconButton/IconButton';
 export { MoveControl, type MoveControlProps } from './Move/MoveControl';
 export { Launcher, type LauncherProps } from './Launcher/Launcher';
+export { FloorInspector, type FloorInspectorProps } from './Floor/FloorInspector';
+export { FloorView, type FloorViewProps } from './Floor/FloorView';
 export { Grid, type GridProps } from './Layout/Grid';
 export { Inline, type InlineProps, Stack, type StackProps } from './Layout/Layout';
 export { useContainerWidth } from './Layout/useContainerWidth';

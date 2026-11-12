@@ -389,6 +389,7 @@ export function layoutFloor(input: FloorInput): FloorTree {
 
   return {
     room: input.room,
+    arrangement: floorPattern,
     widthClass,
     orientation,
     tier,

@@ -196,6 +196,8 @@ export interface FloorNode {
 
 export interface FloorTree {
   room: string;
+  /** Areas one under another (a scrolling stack) or side by side (a board). */
+  arrangement: 'stack' | 'board';
   widthClass: WidthClass;
   orientation: Orientation;
   tier: DensityTier;
