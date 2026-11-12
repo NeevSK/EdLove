@@ -123,3 +123,8 @@ export const EXPLORE_DEFAULT_APPEARANCE: WorkspaceAppearance = {
     customWashColor: '#d4843a',
   },
 };
+
+/** Whether this world has photos of its own (others borrow Sanctuary's until theirs are made). */
+export function hasOwnBackdrops(worldId: string): boolean {
+  return (WORLD_BACKDROPS[worldId]?.length ?? 0) > 0;
+}

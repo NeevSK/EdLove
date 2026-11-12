@@ -201,6 +201,7 @@ export type {
   FeatureJourneySpec,
   FeatureLifecycleStage,
   FloorWallpaperConfig,
+  GroundScope,
   ResolvedWorkspaceSurface,
   SceneGroundMode,
   ScreenSequenceStep,
@@ -229,10 +230,10 @@ export { APIError };
 export type DeviceInfo = DeviceMetadata & { uniqueId: string };
 export type AppConfig = { env: string; apiHost: string };
 export type AppContext = { user?: User; schoolId?: string };
+export * from './CivicRole';
 export * from './EducationalEconomics';
 export * from './FlowDAG';
 export * from './Growth';
 export type { AppNotification, NotificationStatus } from './notifications';
 export * from './Perspective';
-export * from './CivicRole';
 export * from './PreferredName';

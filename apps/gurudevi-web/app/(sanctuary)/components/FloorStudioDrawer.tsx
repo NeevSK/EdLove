@@ -1,39 +1,44 @@
 'use client';
 
-import type {
-  FloorWallpaperConfig,
-  SceneGroundMode,
-  WorkspaceAppearanceMotion,
-  WorkspaceAppearancePreset,
-  WorkspaceWallpaper,
-} from '@repo/core/types';
-import { WORLD_IDS, WORLDS, type WorldId } from '@repo/ui/theme';
-import { WorldPicker } from '@repo/ui/components/web';
-import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { getBackdropsForWorld, PRESET_WALLPAPERS } from '../../../lib/canvas/appearanceConstants';
 import {
-  deleteCustomWallpaper,
-  loadCustomWallpapers,
-  saveCustomWallpaper,
-} from '../../../lib/storage/wallpaperIndexedDb';
-import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
   useSortable,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import type {
+  FloorWallpaperConfig,
+  GroundScope,
+  SceneGroundMode,
+  WorkspaceAppearanceMotion,
+  WorkspaceAppearancePreset,
+  WorkspaceWallpaper,
+} from '@repo/core/types';
+import { WorldPicker } from '@repo/ui/components/web';
+import { WORLD_IDS, WORLDS, type WorldId } from '@repo/ui/theme';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import {
+  getBackdropsForWorld,
+  hasOwnBackdrops,
+  PRESET_WALLPAPERS,
+} from '../../../lib/canvas/appearanceConstants';
+import {
+  deleteCustomWallpaper,
+  loadCustomWallpapers,
+  saveCustomWallpaper,
+} from '../../../lib/storage/wallpaperIndexedDb';
 import type { FloorAtmosphereKind } from './FloorAtmosphere';
 import styles from './floor-studio.module.css';
 
@@ -72,7 +77,24 @@ export interface FloorStudioDrawerProps {
   onResetFloorDefaults: () => void;
   isArrangeMode?: boolean;
   onToggleArrange?: () => void;
+  /** Whether a change to the look is for every room (the world's look) or just this room. */
+  scope?: GroundScope;
+  onChangeScope?: (scope: GroundScope) => void;
+  /** This room keeps its own look instead of the world's. */
+  roomHasOwnLook?: boolean;
+  /** This room gives up its own look and follows the world again. */
+  onFollowWorld?: () => void;
 }
+
+const ROOM_NAMES: Record<string, string> = {
+  self: 'Self',
+  community: 'Community',
+  library: 'Library',
+  workspace: 'Work room',
+  profile: 'Profile',
+  settings: 'Settings',
+  notifications: 'Notifications',
+};
 
 interface SortableFurnitureItemProps {
   item: FurnitureDefinition;
@@ -197,7 +219,12 @@ export function FloorStudioDrawer({
   onResetFloorDefaults,
   isArrangeMode = false,
   onToggleArrange,
+  scope = 'world',
+  onChangeScope,
+  roomHasOwnLook = false,
+  onFollowWorld,
 }: Readonly<FloorStudioDrawerProps>) {
+  const roomName = ROOM_NAMES[floorDomain] ?? 'This room';
   const dndContextId = React.useId();
   const [activeTab, setActiveTab] = useState<'atmosphere' | 'furniture'>(initialTab);
   const [customWallpapers, setCustomWallpapers] = useState<WorkspaceWallpaper[]>([]);
@@ -276,7 +303,8 @@ export function FloorStudioDrawer({
   function toggleSlideshowMode() {
     if (!onUpdateWallpaperConfig) return;
     const nextMode = currentMode === 'slideshow' ? 'single' : 'slideshow';
-    const allAvailable = [...PRESET_WALLPAPERS, ...customWallpapers];
+    // A slideshow plays this world's photos and the uploads, not every world's.
+    const allAvailable = [...getBackdropsForWorld(currentWorld), ...customWallpapers];
     onUpdateWallpaperConfig({
       mode: nextMode,
       activeId: activeWallpaper?.publicId ?? allAvailable[0]?.publicId ?? null,
@@ -291,7 +319,7 @@ export function FloorStudioDrawer({
     onUpdateWallpaperConfig({
       mode: currentMode,
       activeId: activeWallpaper?.publicId ?? null,
-      items: wallpaperConfig?.items ?? [...PRESET_WALLPAPERS, ...customWallpapers],
+      items: wallpaperConfig?.items ?? [...getBackdropsForWorld(currentWorld), ...customWallpapers],
       slideshowIntervalSeconds: seconds,
       customWashColor: customHex,
     });
@@ -367,7 +395,7 @@ export function FloorStudioDrawer({
               {/* Cultural World Section */}
               <section className={styles.section}>
                 <div className={styles.sectionHeader}>
-                  <span className={styles.sectionTitle}>Cultural World</span>
+                  <span className={styles.sectionTitle}>Cultural World (every room)</span>
                   <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
                     {WORLDS[currentWorld as keyof typeof WORLDS]?.names.en ?? 'Kele'}
                   </span>
@@ -380,6 +408,51 @@ export function FloorStudioDrawer({
                 />
               </section>
 
+              {/* Every room or just this one: asked before any change to the look */}
+              {onChangeScope ? (
+                <section className={styles.section} data-testid="look-scope">
+                  <span className={styles.sectionTitle} id="look-scope-title">
+                    Change the look of
+                  </span>
+                  <div
+                    aria-labelledby="look-scope-title"
+                    className={styles.gridTwo}
+                    role="radiogroup"
+                  >
+                    <button
+                      aria-checked={scope === 'world'}
+                      className={`${styles.pillButton} ${scope === 'world' ? styles.pillButtonActive : ''}`}
+                      onClick={() => onChangeScope('world')}
+                      role="radio"
+                      type="button"
+                    >
+                      Every room
+                    </button>
+                    <button
+                      aria-checked={scope === 'room'}
+                      className={`${styles.pillButton} ${scope === 'room' ? styles.pillButtonActive : ''}`}
+                      onClick={() => onChangeScope('room')}
+                      role="radio"
+                      type="button"
+                    >
+                      Just {roomName}
+                    </button>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--ink-soft)' }}>
+                    {scope === 'world'
+                      ? roomHasOwnLook
+                        ? `Changes here go to every room, and ${roomName} will follow the world's look again.`
+                        : 'Every room follows one look. Changes here go to all of them.'
+                      : `Changes here stay in ${roomName}. Other rooms keep the world's look.`}
+                  </p>
+                  {roomHasOwnLook && onFollowWorld ? (
+                    <button className={styles.resetBtn} onClick={onFollowWorld} type="button">
+                      Use the world's look in {roomName}
+                    </button>
+                  ) : null}
+                </section>
+              ) : null}
+
               {/* Scene Ground Mode Section */}
               <section className={styles.section}>
                 <span className={styles.sectionTitle}>Scene Ground Mode</span>
@@ -388,10 +461,7 @@ export function FloorStudioDrawer({
                     className={`${styles.pillButton} ${
                       currentGroundMode === 'live' ? styles.pillButtonActive : ''
                     }`}
-                    onClick={() => {
-                      onSelectGroundMode?.('live');
-                      onSelectWallpaper(null);
-                    }}
+                    onClick={() => onSelectGroundMode?.('live')}
                     type="button"
                   >
                     <span>🌅</span> Live Sky
@@ -411,13 +481,7 @@ export function FloorStudioDrawer({
                     className={`${styles.pillButton} ${
                       currentGroundMode === 'image' ? styles.pillButtonActive : ''
                     }`}
-                    onClick={() => {
-                      onSelectGroundMode?.('image');
-                      const backdrops = getBackdropsForWorld(currentWorld);
-                      if (!activeWallpaper && backdrops.length > 0) {
-                        onSelectWallpaper(backdrops[0] ?? null);
-                      }
-                    }}
+                    onClick={() => onSelectGroundMode?.('image')}
                     type="button"
                   >
                     <span>🖼️</span> Photo
@@ -441,14 +505,18 @@ export function FloorStudioDrawer({
                 <>
                   <section className={styles.section}>
                     <div className={styles.sectionHeader}>
-                      <span className={styles.sectionTitle}>World Photo Gallery</span>
+                      <span className={styles.sectionTitle}>
+                        {hasOwnBackdrops(currentWorld)
+                          ? 'World Photo Gallery'
+                          : 'Photos (this world has none yet; showing Sanctuary)'}
+                      </span>
                       {activeWallpaper ? (
                         <button
                           className={styles.resetBtn}
                           onClick={() => onSelectWallpaper(null)}
                           type="button"
                         >
-                          Clear Wallpaper
+                          Back to living sky
                         </button>
                       ) : null}
                     </div>
@@ -463,6 +531,13 @@ export function FloorStudioDrawer({
                           }`}
                           key={preset.publicId}
                           onClick={() => onSelectWallpaper(preset)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              onSelectWallpaper(preset);
+                            }
+                          }}
+                          aria-pressed={activeWallpaper?.publicId === preset.publicId}
                           role="button"
                           style={{ backgroundImage: `url("${preset.url}")` }}
                           tabIndex={0}
@@ -480,6 +555,14 @@ export function FloorStudioDrawer({
                           }`}
                           key={custom.publicId}
                           onClick={() => onSelectWallpaper(custom)}
+                          onKeyDown={(e) => {
+                            if (e.target !== e.currentTarget) return;
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              onSelectWallpaper(custom);
+                            }
+                          }}
+                          aria-pressed={activeWallpaper?.publicId === custom.publicId}
                           role="button"
                           style={{ backgroundImage: `url("${custom.url}")` }}
                           tabIndex={0}
@@ -597,32 +680,37 @@ export function FloorStudioDrawer({
                   ))}
                 </div>
 
-                <div className={styles.colorMixer} style={{ marginTop: '0.5rem' }}>
-                  <input
-                    aria-label="Custom color wash picker"
-                    className={styles.colorInput}
-                    onChange={(e) => {
-                      setCustomHex(e.target.value);
-                      if (onUpdateWallpaperConfig) {
-                        onUpdateWallpaperConfig({
-                          mode: currentMode,
-                          items: wallpaperConfig?.items ?? [
-                            ...PRESET_WALLPAPERS,
-                            ...customWallpapers,
-                          ],
-                          slideshowIntervalSeconds: currentInterval,
-                          customWashColor: e.target.value,
-                        });
-                      }
-                    }}
-                    type="color"
-                    value={customHex}
-                  />
-                  <span className={styles.colorHexText}>{customHex}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft, #706b63)' }}>
-                    Custom tint
-                  </span>
-                </div>
+                {currentGroundMode === 'image' ? (
+                  <div className={styles.colorMixer} style={{ marginTop: '0.5rem' }}>
+                    <input
+                      aria-label="Custom color wash picker"
+                      className={styles.colorInput}
+                      onChange={(e) => {
+                        setCustomHex(e.target.value);
+                        if (onUpdateWallpaperConfig) {
+                          onUpdateWallpaperConfig({
+                            ...wallpaperConfig,
+                            mode: currentMode,
+                            activeId:
+                              activeWallpaper?.publicId ?? wallpaperConfig?.activeId ?? null,
+                            items: wallpaperConfig?.items ?? [
+                              ...getBackdropsForWorld(currentWorld),
+                              ...customWallpapers,
+                            ],
+                            slideshowIntervalSeconds: currentInterval,
+                            customWashColor: e.target.value,
+                          });
+                        }
+                      }}
+                      type="color"
+                      value={customHex}
+                    />
+                    <span className={styles.colorHexText}>{customHex}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft, #706b63)' }}>
+                      Photo tint (kept light enough to read)
+                    </span>
+                  </div>
+                ) : null}
               </section>
 
               {/* Atmospheric Shaders */}
@@ -665,11 +753,17 @@ export function FloorStudioDrawer({
                     type="button"
                     className={`${styles.pillButton} ${isArrangeMode ? styles.pillButtonActive : ''}`}
                     onClick={onToggleArrange}
-                    aria-label={isArrangeMode ? 'Exit floor arranging mode' : 'Arrange floor sections with drag and drop'}
+                    aria-label={
+                      isArrangeMode
+                        ? 'Exit floor arranging mode'
+                        : 'Arrange floor sections with drag and drop'
+                    }
                     aria-pressed={isArrangeMode}
                   >
                     <span>{isArrangeMode ? '✓' : '⇅'}</span>
-                    <span>{isArrangeMode ? 'Done Canvas Arranging' : 'Arrange In-Place on Canvas'}</span>
+                    <span>
+                      {isArrangeMode ? 'Done Canvas Arranging' : 'Arrange In-Place on Canvas'}
+                    </span>
                   </button>
                 </div>
               ) : null}

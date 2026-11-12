@@ -92,6 +92,7 @@ export function useCommunityCanvas({
     pinnedSurfaces,
     togglePin,
     appearance: appearanceHook.appearance,
+    storedAppearance: appearanceHook.stored,
     setAppearance: appearanceHook.setAppearance,
     resetAppearance: appearanceHook.resetAppearance,
     status: appearanceHook.status,

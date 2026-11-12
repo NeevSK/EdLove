@@ -4,6 +4,7 @@ import { resolvePracticeAvailability } from '@repo/core/logic/registry/capabilit
 import { resolveTemporalCoordinates, resolveTemporalIntent } from '@repo/core/logic/workbench';
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
+import { DateTimeCombo } from '@repo/ui/components/web';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -14,6 +15,7 @@ import {
 } from '../../../lib/domain/hooks/useWorkspaceDomain';
 import { setExploreCapacity, useExploreCapacity } from '../../../lib/explore/exploreCapacity';
 import { setDevPreviewCapacity } from '../../../lib/sanctuary/devPreviewCapacity';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import {
@@ -40,8 +42,6 @@ import { LivingCard } from '../components/LivingCard';
 import { MorningSituationalBrief } from '../components/MorningSituationalBrief';
 import { RoleLensSwitcher, type WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { DateTimeCombo } from '@repo/ui/components/web';
-import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import { TeacherWorkspaceFloor } from './TeacherWorkspaceFloor';
 import styles from './workspace.module.css';
@@ -128,7 +128,9 @@ export function WorkspaceFloor({
 }: WorkspaceFloorProps) {
   const router = useRouter();
   const exploreCapacity = useExploreCapacity();
-  const normalizedCapacity = (mode === 'explore' && !isDevPreview ? exploreCapacity : capacity)?.toLowerCase();
+  const normalizedCapacity = (
+    mode === 'explore' && !isDevPreview ? exploreCapacity : capacity
+  )?.toLowerCase();
   const defaultRole: WorkspaceRoleFilter =
     normalizedCapacity === 'student'
       ? 'student'
@@ -753,6 +755,8 @@ export function WorkspaceFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      storedAppearance={canvas.storedAppearance}
+      accountId={subjectId}
       domain="workspace"
       furnitureItems={WORKSPACE_FURNITURE_ITEMS}
       groupOrder={[...canvas.groupOrder]}
@@ -891,7 +895,10 @@ export function WorkspaceFloor({
                       name: c.name,
                       subject: c.subject ?? 'Mathematics & Science',
                       room: 'Hall ' + (i + 1),
-                      studentCount: activeStudents.length > 0 && classroom?.id === c.id ? activeStudents.length : 30,
+                      studentCount:
+                        activeStudents.length > 0 && classroom?.id === c.id
+                          ? activeStudents.length
+                          : 30,
                     }))
                   : undefined
               }
@@ -908,251 +915,256 @@ export function WorkspaceFloor({
             />
           ) : (
             <>
-
-          <LivingCard
-            className={styles.overview}
-            variant={
-              effectiveRole === 'student'
-                ? 'lotus'
-                : effectiveRole === 'principal'
-                  ? 'glass'
-                  : 'vellum'
-            }
-            elevation="floating"
-            style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
-          >
-            {effectiveRole === 'principal' ? (
-              <MorningSituationalBrief schoolId={scope?.entityId ?? 'default-school'} />
-            ) : null}
-
-            <div>
-              <p className={styles.eyebrow}>{posture.eyebrow}</p>
-              <h2 id="workspace-overview-title">{posture.title}</h2>
-              <p>{posture.description}</p>
-            </div>
-
-            {effectiveRole === 'principal' &&
-            coordinates.intent !== 'plan' ? (
-              <>
-                {accountReadState === 'loading' && mode === 'account' ? (
-                  <p className={styles.loading} role="status">
-                    Checking the selected classroom scope…
-                  </p>
+              <LivingCard
+                className={styles.overview}
+                variant={
+                  effectiveRole === 'student'
+                    ? 'lotus'
+                    : effectiveRole === 'principal'
+                      ? 'glass'
+                      : 'vellum'
+                }
+                elevation="floating"
+                style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
+              >
+                {effectiveRole === 'principal' ? (
+                  <MorningSituationalBrief schoolId={scope?.entityId ?? 'default-school'} />
                 ) : null}
-                {accountReadState === 'ready' ? (
-                  <div className={styles.summary} aria-label="Attendance summary">
-                    <span>
-                      <strong>{visibleClassrooms.length}</strong> classrooms
-                    </span>
-                    <span>
-                      <strong>{activeStudents.length}</strong> students in this roster
-                    </span>
-                    {mode === 'explore' ? (
-                      <span className={styles.localTag}>Local demo data</span>
+
+                <div>
+                  <p className={styles.eyebrow}>{posture.eyebrow}</p>
+                  <h2 id="workspace-overview-title">{posture.title}</h2>
+                  <p>{posture.description}</p>
+                </div>
+
+                {effectiveRole === 'principal' && coordinates.intent !== 'plan' ? (
+                  <>
+                    {accountReadState === 'loading' && mode === 'account' ? (
+                      <p className={styles.loading} role="status">
+                        Checking the selected classroom scope…
+                      </p>
+                    ) : null}
+                    {accountReadState === 'ready' ? (
+                      <div className={styles.summary} aria-label="Attendance summary">
+                        <span>
+                          <strong>{visibleClassrooms.length}</strong> classrooms
+                        </span>
+                        <span>
+                          <strong>{activeStudents.length}</strong> students in this roster
+                        </span>
+                        {mode === 'explore' ? (
+                          <span className={styles.localTag}>Local demo data</span>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </>
+                ) : null}
+
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  {effectiveRole === 'student' ? (
+                    <>
+                      <Link href="/self/attendance" className={styles.primary}>
+                        {posture.actionText}
+                      </Link>
+                      <Link href="/workspace/timetable" className={styles.secondary}>
+                        View timetable
+                      </Link>
+                      <Link href="/self" className={styles.secondary}>
+                        Quiet journal
+                      </Link>
+                    </>
+                  ) : effectiveRole === 'guardian' ? (
+                    <>
+                      <Link href="/workspace" className={styles.primary}>
+                        {posture.actionText}
+                      </Link>
+                      <Link href="/community" className={styles.secondary}>
+                        Community dialogues
+                      </Link>
+                      <Link href="/library" className={styles.secondary}>
+                        Family guides
+                      </Link>
+                    </>
+                  ) : effectiveRole === 'principal' && coordinates.intent === 'plan' ? (
+                    <>
+                      <Link href="/workspace/events" className={styles.primary}>
+                        {posture.actionText}
+                      </Link>
+                      <Link href="/workspace/school" className={styles.secondary}>
+                        School profile
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        className={styles.primary}
+                        disabled={
+                          mode === 'account' &&
+                          (accountReadState !== 'ready' ||
+                            (!practiceMode && visibleClassrooms.length === 0))
+                        }
+                        onClick={openAttendance}
+                        type="button"
+                      >
+                        {accountReadState === 'loading' && mode === 'account'
+                          ? 'Loading workspace…'
+                          : posture.actionText}
+                      </button>
+                      {mode === 'account' &&
+                      !practiceMode &&
+                      subjectId &&
+                      practiceAvailability.available ? (
+                        <button
+                          className={styles.secondary}
+                          onClick={() => {
+                            latestLoadRef.current += 1;
+                            setPracticeMode(true);
+                            setOverview(false);
+                            const result = workbench.open(attendanceTask);
+                            if (result.kind === 'at-capacity') {
+                              setPracticeMode(false);
+                              setOverview(true);
+                              setError(
+                                'Close another Workspace task before opening daily attendance practice.',
+                              );
+                            }
+                          }}
+                          type="button"
+                        >
+                          Try attendance safely
+                        </button>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+
+                {mode === 'account' &&
+                accountReadState === 'ready' &&
+                visibleClassrooms.length === 0 &&
+                effectiveRole === 'principal' ? (
+                  <div className={styles.muted} role="status">
+                    <p>
+                      <strong>Your classroom workspace is ready to begin.</strong>
+                    </p>
+                    <p>
+                      Ask your school administrator to connect your account to a school and assign
+                      your classrooms. Once connected, your classrooms and attendance will appear
+                      here.
+                    </p>
+                    {practiceAvailability.available ? (
+                      <p>You can use the safely labelled attendance practice while you wait.</p>
                     ) : null}
                   </div>
                 ) : null}
-              </>
-            ) : null}
+              </LivingCard>
 
-            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              {effectiveRole === 'student' ? (
-                <>
-                  <Link href="/self/attendance" className={styles.primary}>
-                    {posture.actionText}
-                  </Link>
-                  <Link href="/workspace/timetable" className={styles.secondary}>
-                    View timetable
-                  </Link>
-                  <Link href="/self" className={styles.secondary}>
-                    Quiet journal
-                  </Link>
-                </>
-              ) : effectiveRole === 'guardian' ? (
-                <>
-                  <Link href="/workspace" className={styles.primary}>
-                    {posture.actionText}
-                  </Link>
-                  <Link href="/community" className={styles.secondary}>
-                    Community dialogues
-                  </Link>
-                  <Link href="/library" className={styles.secondary}>
-                    Family guides
-                  </Link>
-                </>
-              ) : effectiveRole === 'principal' && coordinates.intent === 'plan' ? (
-                <>
-                  <Link href="/workspace/events" className={styles.primary}>
-                    {posture.actionText}
-                  </Link>
-                  <Link href="/workspace/school" className={styles.secondary}>
-                    School profile
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <button
-                    className={styles.primary}
-                    disabled={
-                      mode === 'account' &&
-                      (accountReadState !== 'ready' || (!practiceMode && visibleClassrooms.length === 0))
-                    }
-                    onClick={openAttendance}
-                    type="button"
-                  >
-                    {accountReadState === 'loading' && mode === 'account'
-                      ? 'Loading workspace…'
-                      : posture.actionText}
-                  </button>
-                  {mode === 'account' &&
-                  !practiceMode &&
-                  subjectId &&
-                  practiceAvailability.available ? (
-                    <button
-                      className={styles.secondary}
-                      onClick={() => {
-                        latestLoadRef.current += 1;
-                        setPracticeMode(true);
-                        setOverview(false);
-                        const result = workbench.open(attendanceTask);
-                        if (result.kind === 'at-capacity') {
-                          setPracticeMode(false);
-                          setOverview(true);
-                          setError(
-                            'Close another Workspace task before opening daily attendance practice.',
-                          );
-                        }
-                      }}
-                      type="button"
+              <section
+                aria-labelledby="workspace-catalog-title"
+                className={styles.workspaceCatalog}
+              >
+                <p className={styles.eyebrow}>Workspace tools</p>
+                <h2 id="workspace-catalog-title">
+                  {activeRole === 'all'
+                    ? 'All workspace operations'
+                    : activeRole === 'common'
+                      ? 'Universal tools'
+                      : `${activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} tools`}
+                </h2>
+                <div className={styles.workspaceGrid}>
+                  {filterWorkspaceFeatures(WORKSPACE_FEATURES, activeRole).map((feature) => (
+                    <LivingCard
+                      as="article"
+                      className={styles.workspaceCard}
+                      key={feature.id}
+                      variant="vellum"
+                      elevation="floating"
                     >
-                      Try attendance safely
-                    </button>
-                  ) : null}
-                </>
-              )}
-            </div>
-
-            {mode === 'account' &&
-            accountReadState === 'ready' &&
-            visibleClassrooms.length === 0 &&
-            effectiveRole === 'principal' ? (
-              <div className={styles.muted} role="status">
-                <p><strong>Your classroom workspace is ready to begin.</strong></p>
-                <p>
-                  Ask your school administrator to connect your account to a school and assign your
-                  classrooms. Once connected, your classrooms and attendance will appear here.
-                </p>
-                {practiceAvailability.available ? (
-                  <p>You can use the safely labelled attendance practice while you wait.</p>
-                ) : null}
-              </div>
-            ) : null}
-          </LivingCard>
-
-          <section aria-labelledby="workspace-catalog-title" className={styles.workspaceCatalog}>
-            <p className={styles.eyebrow}>Workspace tools</p>
-            <h2 id="workspace-catalog-title">
-              {activeRole === 'all'
-                ? 'All workspace operations'
-                : activeRole === 'common'
-                  ? 'Universal tools'
-                  : `${activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} tools`}
-            </h2>
-            <div className={styles.workspaceGrid}>
-              {filterWorkspaceFeatures(WORKSPACE_FEATURES, activeRole).map((feature) => (
-                <LivingCard
-                  as="article"
-                  className={styles.workspaceCard}
-                  key={feature.id}
-                  variant="vellum"
-                  elevation="floating"
+                      <div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginBottom: '0.5rem',
+                          }}
+                        >
+                          <span style={{ fontSize: '1.75rem' }} aria-hidden="true">
+                            {feature.symbol}
+                          </span>
+                          <span className={styles.roleTag}>
+                            {feature.isCommon ? 'Common' : feature.roles.join(' · ')}
+                          </span>
+                        </div>
+                        <h3
+                          style={{
+                            margin: '0.35rem 0',
+                            fontFamily: 'Georgia, serif',
+                            fontSize: '1.2rem',
+                          }}
+                        >
+                          {feature.label}
+                        </h3>
+                        <p
+                          style={{
+                            margin: 0,
+                            color: 'var(--ink-soft)',
+                            fontSize: '0.88rem',
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {feature.description}
+                        </p>
+                      </div>
+                      <div style={{ marginTop: '1rem' }}>
+                        <button
+                          type="button"
+                          className={styles.catalogOpenButton}
+                          onClick={() => openWorkspaceFeature(feature)}
+                        >
+                          {feature.id === 'attendance' ? 'Open attendance →' : 'Open tool →'}
+                        </button>
+                      </div>
+                    </LivingCard>
+                  ))}
+                </div>
+              </section>
+              {visibleClassrooms.length > 0 ? (
+                <section
+                  aria-labelledby="workspace-classrooms-title"
+                  className={styles.classroomHomeSection}
                 >
-                  <div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: '0.5rem',
-                      }}
-                    >
-                      <span style={{ fontSize: '1.75rem' }} aria-hidden="true">
-                        {feature.symbol}
-                      </span>
-                      <span className={styles.roleTag}>
-                        {feature.isCommon ? 'Common' : feature.roles.join(' · ')}
-                      </span>
-                    </div>
-                    <h3
-                      style={{
-                        margin: '0.35rem 0',
-                        fontFamily: 'Georgia, serif',
-                        fontSize: '1.2rem',
-                      }}
-                    >
-                      {feature.label}
-                    </h3>
-                    <p
-                      style={{
-                        margin: 0,
-                        color: 'var(--ink-soft)',
-                        fontSize: '0.88rem',
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {feature.description}
-                    </p>
-                  </div>
-                  <div style={{ marginTop: '1rem' }}>
-                    <button
-                      type="button"
-                      className={styles.catalogOpenButton}
-                      onClick={() => openWorkspaceFeature(feature)}
-                    >
-                      {feature.id === 'attendance' ? 'Open attendance →' : 'Open tool →'}
-                    </button>
-                  </div>
-                </LivingCard>
-              ))}
-            </div>
-          </section>
-          {visibleClassrooms.length > 0 ? (
-            <section
-              aria-labelledby="workspace-classrooms-title"
-              className={styles.classroomHomeSection}
-            >
-              <p className={styles.eyebrow}>Coordination</p>
-              <h2 id="workspace-classrooms-title">Classrooms</h2>
-              <ul className={styles.classroomHomeList}>
-                {visibleClassrooms.map((item) => {
-                  const isPinned = canvas.pinnedIds.includes(item.id);
-                  return (
-                    <li key={item.id}>
-                      <button
-                        className={styles.classroomOpenButton}
-                        type="button"
-                        onClick={() => {
-                          selectedClassroomRef.current = item;
-                          setClassroom(item);
-                          openAttendance();
-                        }}
-                      >
-                        {item.name}
-                      </button>
-                      <button
-                        type="button"
-                        aria-label={isPinned ? `Unpin ${item.name}` : `Pin ${item.name}`}
-                        aria-pressed={isPinned}
-                        onClick={() => canvas.togglePin(item.id)}
-                      >
-                        {isPinned ? '📌' : '＋'}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ) : null}
+                  <p className={styles.eyebrow}>Coordination</p>
+                  <h2 id="workspace-classrooms-title">Classrooms</h2>
+                  <ul className={styles.classroomHomeList}>
+                    {visibleClassrooms.map((item) => {
+                      const isPinned = canvas.pinnedIds.includes(item.id);
+                      return (
+                        <li key={item.id}>
+                          <button
+                            className={styles.classroomOpenButton}
+                            type="button"
+                            onClick={() => {
+                              selectedClassroomRef.current = item;
+                              setClassroom(item);
+                              openAttendance();
+                            }}
+                          >
+                            {item.name}
+                          </button>
+                          <button
+                            type="button"
+                            aria-label={isPinned ? `Unpin ${item.name}` : `Pin ${item.name}`}
+                            aria-pressed={isPinned}
+                            onClick={() => canvas.togglePin(item.id)}
+                          >
+                            {isPinned ? '📌' : '＋'}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              ) : null}
             </>
           )}
         </div>

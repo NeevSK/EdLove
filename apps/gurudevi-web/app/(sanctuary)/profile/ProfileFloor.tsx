@@ -4,14 +4,14 @@ import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { WorkspaceAppearance } from '@repo/core/types';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { type ProfileSection, useProfileCanvas } from '../../../lib/canvas/useProfileCanvas';
 import { getExploreCapacityMeta, useExploreCapacity } from '../../../lib/explore/exploreCapacity';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { AccountSignOut } from '../components/AccountSignOut';
 import { CapacityPerspectiveSwitcher } from '../components/CapacityPerspectiveSwitcher';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { timeGreeting } from '../../../lib/timeGreeting';
 import { AccountDeletionControl } from './AccountDeletionControl';
 import { CreateAccountGuidanceModal } from './CreateAccountGuidanceModal';
 import styles from './profile.module.css';
@@ -450,6 +450,8 @@ export function ProfileFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      storedAppearance={canvas.storedAppearance}
+      accountId={accountId}
       domain="profile"
       furnitureItems={PROFILE_FURNITURE_ITEMS}
       setAppearance={canvas.setAppearance}
@@ -635,7 +637,10 @@ export function ProfileFloor({
                         href={
                           isExplore
                             ? resolveSurfaceUrl('explore', '/')
-                            : resolveSurfaceUrl('public', `/profile/public/${username || accountId}`)
+                            : resolveSurfaceUrl(
+                                'public',
+                                `/profile/public/${username || accountId}`,
+                              )
                         }
                         target="_blank"
                         rel="noreferrer"
@@ -1526,8 +1531,8 @@ export function ProfileFloor({
                           className={`${styles.presetButton} ${canvas.appearance.preset === preset.id ? styles.presetButtonActive : ''}`}
                           onClick={() =>
                             void canvas.setAppearance({
+                              ...canvas.appearance,
                               preset: preset.id,
-                              motion: canvas.appearance.motion,
                             })
                           }
                         >
@@ -1547,7 +1552,7 @@ export function ProfileFloor({
                         className={`${styles.motionToggle} ${canvas.appearance.motion === 'subtle' ? styles.motionToggleActive : ''}`}
                         onClick={() =>
                           void canvas.setAppearance({
-                            preset: canvas.appearance.preset,
+                            ...canvas.appearance,
                             motion: canvas.appearance.motion === 'subtle' ? 'off' : 'subtle',
                           })
                         }
@@ -1620,7 +1625,14 @@ export function ProfileFloor({
                           currentAccountId={accountId}
                           currentDisplayName={displayName}
                         />
-                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', margin: '14px 0' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '12px',
+                            alignItems: 'center',
+                            margin: '14px 0',
+                          }}
+                        >
                           <AccountSignOut />
                         </div>
                         <AccountDeletionControl />
