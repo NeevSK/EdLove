@@ -81,6 +81,8 @@ and unresolved product decisions honestly.
 
 **Architecture mental model (read first):** [`docs/architecture/2026-11-12-architecture-mental-model.md`](docs/architecture/2026-11-12-architecture-mental-model.md) explains the whole model in one place: modules versus layers, why each layer exists, the decisions and their costs, a scorecard and the known unverified risks. It also says how the other architecture documents relate. For state, effects, hooks, `useReducer` versus XState, and which library capabilities to use, follow [`docs/architecture/2026-11-12-state-effects-hooks-and-capabilities.md`](docs/architecture/2026-11-12-state-effects-hooks-and-capabilities.md).
 
+**Client runtime plan:** [`docs/architecture/2026-11-12-client-runtime-foundation-plan.md`](docs/architecture/2026-11-12-client-runtime-foundation-plan.md) is the whole client picture, from contracts (Zod is the source of truth) through transport, errors, retry, outbox, queries, feedback, motion and journeys, at baseline, production and enterprise level, with the order of work. Build from the bottom layer up.
+
 **`*.web.ts(x)` outside `apps/gurudevi-web` are reference only.** The web app is `apps/gurudevi-web`. Lint, type checks, tests and the audits skip them, except the live files in `tooling/live-web-files.json` (shared code imports those by name). Don't build on a reference file. If you add or remove an import of a `.web` file, run `node scripts/check-reference-only.mjs`; the ratchet fails while the list is out of date.
 
 **Platform structure (read before any API, package or screen design):**
