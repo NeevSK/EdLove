@@ -13,13 +13,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
-// The same world styles and brand variables the Next root layout writes into <head>.
+// Brand variables and every world's rules, written once when the app starts.
 const style = document.createElement('style');
 style.id = 'gd-worlds';
 style.textContent = `:root{${sharedTokenCss}}\n${worldsCss()}`;
 document.head.append(style);
-const html = document.documentElement;
-html.dataset.world = localStorage.getItem('gurudevi_world') ?? DEFAULT_WORLD;
+
+function savedWorld(): string | null {
+  try {
+    return localStorage.getItem('gurudevi_world');
+  } catch {
+    // Storage can be blocked (private mode, embedded browsers); the default world still renders.
+    return null;
+  }
+}
+document.documentElement.dataset.world = savedWorld() ?? DEFAULT_WORLD;
 
 const container = document.getElementById('app');
 if (!container) throw new Error('#app is missing from index.html');

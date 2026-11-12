@@ -114,6 +114,9 @@
     "./global.css": {
       "default": "./src/global.css"
     },
+    "./theme/web/base.css": {
+      "default": "./src/theme/web/base.css"
+    },
     "./components/native": {
       "types": "./src/components/native/index.ts",
       "import": "./src/components/native/index.ts",

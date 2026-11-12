@@ -1,25 +1,53 @@
 ---
 import { Picture } from 'astro:assets';
 import { LAUNCH } from '@repo/core/site';
-// Transitional path: the photo still lives in the Next app's public folder.
-import heroPhoto from '../../../../gurudevi-web/public/hero-teacher-editorial.png';
+// Also served as-is at /hero-teacher-editorial.png, the site's social preview image.
+import heroPhoto from '../../../public/hero-teacher-editorial.png';
 import PublicLayout from '../../layouts/PublicLayout.astro';
 import Roadmap from '../../components/Roadmap.astro';
 import { surfaceUrl, translator, type SupportedLocale } from '../../site';
 
 // One file per language, built at deploy time: `/`, `/si`, `/ta`.
 export function getStaticPaths() {
-  return [{ params: { locale: undefined } }, { params: { locale: 'si' } }, { params: { locale: 'ta' } }];
+  return [
+    { params: { locale: undefined } },
+    { params: { locale: 'si' } },
+    { params: { locale: 'ta' } },
+  ];
 }
 const locale = (Astro.params.locale ?? 'en') as SupportedLocale;
 const t = translator(locale);
 const platform = surfaceUrl('explore', '/self');
 
 const workspaces = [
-  ['w1', '01', 'Teachers & Students', 'Classroom Sanctuary', 'Lesson preparation, reflection, and teaching—grounded in pedagogical care.'],
-  ['w2', '02', 'School Leaders', 'School Coordination', 'Institutional patterns and resource stewardship without surveillance.'],
-  ['w3', '03', 'Families & Guardians', 'Family Space', 'A transparent bridge between school and home with mutual respect.'],
-  ['w4', '04', 'Young Learners', 'Learning Studio', 'A quiet space for self-directed practice, learning commons, and agency.'],
+  [
+    'w1',
+    '01',
+    'Teachers & Students',
+    'Classroom Sanctuary',
+    'Lesson preparation, reflection, and teaching—grounded in pedagogical care.',
+  ],
+  [
+    'w2',
+    '02',
+    'School Leaders',
+    'School Coordination',
+    'Institutional patterns and resource stewardship without surveillance.',
+  ],
+  [
+    'w3',
+    '03',
+    'Families & Guardians',
+    'Family Space',
+    'A transparent bridge between school and home with mutual respect.',
+  ],
+  [
+    'w4',
+    '04',
+    'Young Learners',
+    'Learning Studio',
+    'A quiet space for self-directed practice, learning commons, and agency.',
+  ],
 ].map(([id, number, roleLabel, name, body]) => ({
   number: t(`workspaces.${id}.number`, number),
   roleLabel: t(`workspaces.${id}.roleLabel`, roleLabel),

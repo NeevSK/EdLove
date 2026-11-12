@@ -5,13 +5,9 @@ import {
   SUPPORT_CONTACT_CHANNELS,
   SUPPORT_FAQS,
   SURFACE_COMPARISON,
-} from '../../app/(marketing)/(support)/supportData';
-import { metadata } from '../../app/(marketing)/(support)/support/page';
-import {
-  GRATITUDE_EMAIL,
-  INSTITUTIONAL_EMAIL,
-  SUPPORT_EMAIL,
-} from '../../app/seo';
+} from '../../app/(sanctuary)/(support)/supportData';
+import { metadata } from '../../app/(sanctuary)/(support)/support/page';
+import { CONTACT_EMAILS } from '@repo/core/site';
 import {
   EXPLORE_GURUDEVI_HOST,
   PUBLIC_GURUDEVI_HOST,
@@ -152,15 +148,15 @@ describe('Support Hub & Functionality Guide Suite', () => {
   });
 
   describe('Contact Channels & SLA Alignment', () => {
-    it('configures canonical support, institutional, and gratitude channels with official .lk domain', () => {
-      expect(SUPPORT_EMAIL).toBe('support@gurudevi.lk');
-      expect(INSTITUTIONAL_EMAIL).toBe('institutional@gurudevi.lk');
-      expect(GRATITUDE_EMAIL).toBe('gratitude@gurudevi.lk');
+    it('configures canonical support, institutional, and gratitude channels on the official gurudevi.app domain', () => {
+      expect(CONTACT_EMAILS.support).toBe('support@gurudevi.app');
+      expect(CONTACT_EMAILS.institutional).toBe('institutional@gurudevi.app');
+      expect(CONTACT_EMAILS.gratitude).toBe('gratitude@gurudevi.app');
 
       const emails = SUPPORT_CONTACT_CHANNELS.map((c) => c.email);
-      expect(emails).toContain('support@gurudevi.lk');
-      expect(emails).toContain('institutional@gurudevi.lk');
-      expect(emails).toContain('gratitude@gurudevi.lk');
+      expect(emails).toContain('support@gurudevi.app');
+      expect(emails).toContain('institutional@gurudevi.app');
+      expect(emails).toContain('gratitude@gurudevi.app');
 
       for (const channel of SUPPORT_CONTACT_CHANNELS) {
         expect(channel.name).toBeTruthy();

@@ -244,3 +244,58 @@ export function canonicalUrl(pathname: string) {
 export function defaultOgImage(pathname = '/') {
   return absoluteUrl('/hero-teacher-editorial.png');
 }
+
+/** Paths that belong to signed-in or private product surfaces; never crawled. */
+export const PRIVATE_SANCTUARY_PATHS = [
+  '/api/',
+  '/auth/',
+  '/self/',
+  '/workspace/',
+  '/library/',
+  '/community/',
+  '/claim/',
+  '/profile/',
+  '/settings/',
+  '/onboarding/',
+  '/recovery/',
+  '/reset-password/',
+] as const;
+
+export interface CrawlerRule {
+  userAgent: string | readonly string[];
+  allow?: string | readonly string[];
+  disallow?: string | readonly string[];
+}
+
+/** One crawler policy for every Gurudevi site: open public pages, shield the product. */
+export const CRAWLER_RULES: readonly CrawlerRule[] = [
+  // Standard search engine & web discovery crawlers
+  {
+    userAgent: '*',
+    allow: '/',
+    disallow: [...PRIVATE_SANCTUARY_PATHS],
+  },
+  // Search and Citation bots (Google, Bing, Apple Intelligence, DuckDuckGo)
+  {
+    userAgent: ['Googlebot', 'Bingbot', 'Applebot', 'DuckDuckBot'],
+    allow: '/',
+    disallow: [...PRIVATE_SANCTUARY_PATHS],
+  },
+  // AI Search & Answer Engine citation bots (ChatGPT Search, Perplexity, Claude Search)
+  {
+    userAgent: ['OAI-SearchBot', 'PerplexityBot', 'Claude-SearchBot'],
+    allow: '/',
+    disallow: [...PRIVATE_SANCTUARY_PATHS],
+  },
+  // AI Foundation Model Training bots (Allow public editorial education only, shield user app)
+  {
+    userAgent: ['GPTBot', 'ClaudeBot', 'anthropic-ai'],
+    allow: ['/about', '/faq', '/thuthimal', '/journal/', '/authors/'],
+    disallow: [...PRIVATE_SANCTUARY_PATHS, '/sign-in', '/sign-up', '/welcome'],
+  },
+  // Restrict aggressive training crawlers that ignore fair use or lack citation attribution
+  {
+    userAgent: ['Google-Extended', 'Applebot-Extended', 'CCBot'],
+    disallow: ['/'],
+  },
+];

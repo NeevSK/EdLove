@@ -10,10 +10,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Gurudevi web rules
 
-- `gurudevi.app` is the public marketing origin (`app/(marketing)`); `sanctuary.gurudevi.app` is the authenticated workspace origin (`app/(sanctuary)`); `explore.gurudevi.app` is the guest exploration showroom.
+- This app is Gurudevi itself: `sanctuary.gurudevi.app` (signed in) and `explore.gurudevi.app` (no account, local sample data, never the backend). The public site `gurudevi.app` is `apps/gurudevi-public` (Astro).
 - **Moving to Vite + TanStack Router** ([decision](../../docs/decisions/2026-11-12-web-stack-astro-vite.md)). The client build lives in `spa/` (`pnpm build:explore`); copy `spa/routes/self.tsx` for a new route. Public pages move to `apps/gurudevi-public` (Astro). Don't add new `next/*` imports: `node scripts/check-web-stack.mjs` only lets their count go down, and Explore must never contact the backend.
 - In local development, test surfaces via `http://localhost:3000`, `http://sanctuary.localhost:3000`, and `http://explore.localhost:3000` (RFC 6761) without modifying system hosts files.
-- Keep public routes under `app/(marketing)` and protected product routes under `app/(sanctuary)`.
+- Data reaches the app only through the v1 API. Never query the database from web code (`.from('table')`, `.rpc(`, storage, realtime): `node scripts/check-web-stack.mjs` counts them and the count only goes down.
 - Build web UI with semantic HTML and browser-native behavior. Do not import React Native UI components or React Native Web into this app.
 - Share only platform-neutral contracts, validation, repositories, the theme (`@repo/ui/theme`, `@repo/ui/theme/web`) and tokens with `gurudevi-mobile`. UI components come from `@repo/ui/components/web`.
 - Design from the 360-430 px browser viewport upward. Desktop enhancement must not alter the primary phone journey.

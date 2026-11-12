@@ -21,7 +21,14 @@ function toHref(href: Href): string {
   return `${href.pathname ?? ''}${query}${href.hash ? `#${href.hash}` : ''}`;
 }
 
-export default function Link({ href, replace, scroll: _scroll, prefetch: _prefetch, onClick, ...rest }: LinkProps) {
+export default function Link({
+  href,
+  replace,
+  scroll: _scroll,
+  prefetch: _prefetch,
+  onClick,
+  ...rest
+}: LinkProps) {
   const router = useRouter();
   const target = toHref(href);
   const internal = target.startsWith('/') && !target.startsWith('//');
@@ -29,7 +36,8 @@ export default function Link({ href, replace, scroll: _scroll, prefetch: _prefet
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     onClick?.(event);
     if (event.defaultPrevented || !internal) return;
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+      return;
     if (rest.target && rest.target !== '_self') return;
     event.preventDefault();
     void router.navigate({ href: target, replace });

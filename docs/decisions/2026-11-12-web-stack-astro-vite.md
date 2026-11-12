@@ -124,15 +124,30 @@ by default. On a 2G or 3G connection the difference is seconds per page.
 
 ### Order of work
 
-1. Public: move the remaining `(marketing)` pages to `apps/gurudevi-public`; point `gurudevi.app` at
-   it; retire `(marketing)` in Next.
+1. **Public site: done (12 Nov).** Every public page now lives in `apps/gurudevi-public`: home, about,
+   FAQ, thuthimal, status, intro, journal, journal entries, authors, the four legal documents, and the
+   Sinhala and Tamil sections. Also `robots.txt`, the sitemap, `llms.txt`, `llms-full.txt`,
+   `knowledge.json` and the journal RSS feed. The Next `(marketing)` routes and `app/si`, `app/ta` are
+   gone; `/support` is an app page and moved to `app/(sanctuary)/(support)`. Content pages ship no
+   JavaScript; `/status` and `/intro` are islands. `gurudevi.app` must point at this build when the
+   branch is deployed.
 2. Explore: add routes until every Explore journey runs in the Vite build; remove the backend clients
    from its bundle (the ratchet list reaches empty); point `explore.gurudevi.app` at it.
 3. Sanctuary: per journey, move server-side data loading to the v1 API through TanStack Query, the
    login gate to a client route guard (the API stays the enforcer), and add the app shell service
    worker and the outbox for the writes that need it (levels W1, W2, W4 in
    `client-state-and-web-offline-capability-canon.md`).
-4. Remove Next, the stand-ins, `proxy.ts` host routing and its cookie stripping.
+4. Remove Next, the stand-ins in `spa/next`, `proxy.ts` host routing and its cookie stripping, and
+   the codemod in `scripts/codemods`.
+
+### Where shared code lives
+
+| What | Home | Read by |
+| --- | --- | --- |
+| Site constants, contact emails, crawler rules | `@repo/core/site` | public site, app, mobile |
+| Web dictionaries and locales | `@repo/core/logic/i18n/web-*` | public site, app |
+| Fonts, Tailwind theme, worlds, script typography | `@repo/ui/theme/web/base.css` | each site's entry stylesheet |
+| Journal, localized copy, intro story | `apps/gurudevi-public/src/content` | public site only |
 
 ### What does not change
 
@@ -140,6 +155,36 @@ by default. On a 2G or 3G connection the difference is seconds per page.
 - 315 of 498 files in `apps/gurudevi-web` do not import Next and move as they are; 117 CSS modules
   work in Vite unchanged.
 - The mobile app.
+
+## Data, state and links in the web app
+
+**No database from the web, ever.** The browser reaches data only through the v1 API (oRPC v2 client
+from `@repo/core/api/v1`), and the API and Postgres stay the authority. `check-web-stack` counts direct
+database calls in web code (`.from('table')`, `.rpc(`, storage, realtime): 17 on 12 Nov, in five
+files; the number may only go down, to 0.
+
+**State follows the same model as mobile** (`2026-11-11-product-shape-and-tool-ownership.md`); only
+the storage adapters differ:
+
+| Kind of state | Tool | Web adapter |
+| --- | --- | --- |
+| Server data | TanStack Query over the oRPC client; keys include account and bond | memory, cleared on account switch |
+| Writes that must survive a drop | the outbox in `@repo/core` (idempotency key, receipt) | IndexedDB; one tab replays (Web Locks) |
+| What the person may do | one authority read over the signed snapshot | same |
+| Small shared client state | Zustand slices from `@repo/core`, versioned `persist` | `localStorage` through the storage port |
+| Long, recoverable flows | XState 6 | same |
+| One screen | React state | same |
+
+The synced SQLite replica (PowerSync) stays on mobile; the web stays at W1, W2 and W4.
+
+**Links are the state you can share.**
+- Routes are files in `spa/routes`; path params name the thing (`/library/reader/$bookId`).
+- View state someone may send (tab, filter, page, an open sheet) lives in typed search params
+  (`validateSearch` with the Zod schema), so a copied link opens the same view.
+- The host serves `index.html` for every unknown path, so a shared link or a refresh opens directly.
+- A signed-out visitor to a sanctuary link goes to sign-in with the target in the URL and returns to it.
+- Public pages carry Open Graph and JSON-LD from Astro; app pages are private and share one preview.
+- `/.well-known/` files on both domains let a link open the mobile app when it is installed.
 
 ## Router choice and agents
 
@@ -155,19 +200,28 @@ by agents.
 
 ## Found and fixed while verifying
 
-`SyncStatusPill` probed `sanctuary.gurudevi.app` every 30 seconds, including on Explore. It is no
+- Contact emails: `seo.ts` used `@gurudevi.lk` addresses while `@repo/core/site` and the 12 Sep ADR use
+  `@gurudevi.app`. `seo.ts` is gone; every page reads `CONTACT_EMAILS` from core.
+- `llms.txt` advertised `/llms-full.txt`, which did not exist; it now does, with every journal essay.
+- `next build` stopped on a test importing that missing route; the test moved with the files it tests
+  and passes.
+- `SyncStatusPill` probed `sanctuary.gurudevi.app` every 30 seconds, including on Explore. It is no
 longer rendered in Explore mode (there is nothing to sync). Verified in a 390 px Chrome page:
 no requests to the sanctuary host.
 
 ## Known follow-ups (engineering)
 
-- Fonts load from Google Fonts on every site; self-host them so pages work offline and on a
-  first visit without a third party.
+- Five brand files (mark, favicon, flag, two Tutii cutouts) are in both sites' `public/`. Once Next is
+  gone they become imports from `@repo/ui` assets.
+- Fonts load from Google Fonts on every site; self-host them so pages work offline and on a first
+  visit without a third party.
 - `worlds.css` carries every world (718 KB raw). Serve the active world, load others on change.
 - An Explore runtime check in CI (headless browser, fail on any backend request); the bundle
   ratchet cannot see a request to a URL that also appears in a link.
-- `tests/unit/seo/seoAndAgenticDiscovery.test.ts` imports a removed route and fails type-check on
-  the base branch as well; `next build` stops on it.
+- `components/intro/IntroClient.tsx` in the public site is not used by any page (it was not used in
+  Next either). Removing it needs the owner's sign-off.
+- `tests/unit/supportHub.test.ts` "serves own support page directly on explore" fails on the base
+  branch as well.
 
 ## Open product questions (the owner decides; the design keeps both open)
 

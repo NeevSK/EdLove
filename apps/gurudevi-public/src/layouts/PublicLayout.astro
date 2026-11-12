@@ -5,18 +5,31 @@ import { LivingGround } from '@repo/ui/components/web';
 import { sharedTokenCss } from '@repo/ui/theme/web';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import {
+  generateOrganizationJsonLd,
+  generateWebSiteJsonLd,
+  sanitizeJsonLd,
+} from '../lib/schema-org';
 import { localePath, type SupportedLocale } from '../site';
-// Transitional: the same stylesheet the Next app ships, so both builds render identical pages.
-// It moves here when the Next (marketing) routes retire.
-import '../../../gurudevi-web/app/styles.css';
+import '../styles/site.css';
 
 interface Props {
   locale: SupportedLocale;
   title: string;
   description: string;
   path: string;
+  /** The languages this page exists in; English-only pages list just `en`. */
+  locales?: readonly SupportedLocale[];
+  ogType?: 'website' | 'article';
 }
-const { locale, title, description, path } = Astro.props;
+const {
+  locale,
+  title,
+  description,
+  path,
+  locales = ['en', 'si', 'ta'],
+  ogType = 'website',
+} = Astro.props;
 const site = 'https://gurudevi.app';
 const canonical = new URL(localePath(locale, path), site).toString();
 
@@ -41,18 +54,22 @@ const PHASE_STARTS_DESC = JSON.stringify(
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={new URL(localePath('en', path), site).toString()} />
-    <link rel="alternate" hreflang="si" href={new URL(localePath('si', path), site).toString()} />
-    <link rel="alternate" hreflang="ta" href={new URL(localePath('ta', path), site).toString()} />
-    <link rel="alternate" hreflang="x-default" href={new URL(path, site).toString()} />
+    {locales.length > 1 &&
+      locales.map((alt) => (
+        <link rel="alternate" hreflang={alt} href={new URL(localePath(alt, path), site).toString()} />
+      ))}
+    {locales.length > 1 && <link rel="alternate" hreflang="x-default" href={new URL(path, site).toString()} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:locale" content={`${locale}_LK`} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <style set:html={`:root{${sharedTokenCss}}`}></style>
+    <script type="application/ld+json" set:html={sanitizeJsonLd(generateOrganizationJsonLd())} />
+    <script type="application/ld+json" set:html={sanitizeJsonLd(generateWebSiteJsonLd())} />
+    <slot name="head" />
     <script is:inline>
       (function () {
         try {
@@ -73,8 +90,8 @@ const PHASE_STARTS_DESC = JSON.stringify(
     </script>
   </head>
   <body class="font-serif text-ink antialiased">
-    <!-- Every world's rules as one cached file, not inlined into every page. It comes after the
-         bundled stylesheet Astro puts at the end of <head>, the same order as the Next layout. -->
+    <!-- Every world's rules as one cached file, not inlined into every page. Linked after the
+         bundled stylesheet so world rules win ties. -->
     <link rel="stylesheet" href="/worlds.css" />
     <LivingGround atmosphere="canopy" dither className="landing-shell">
       <SiteHeader locale={locale} path={path} />

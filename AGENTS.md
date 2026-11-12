@@ -30,12 +30,13 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 
 ## 1. Monorepo Map & Sacred Architectural Boundaries
 
-### The Three Apps (Know Which You're In)
+### The Apps (Know Which You're In)
 
 | App | Purpose | Framework | **Build In** |
 | :--- | :--- | :--- | :--- |
 | **`apps/gurudevi-mobile`** | **Native iOS/Android** - flagship mobile | Expo 58 (RN 0.88, New Arch) | ✅ Mobile features |
-| **`apps/gurudevi-web`** | **Unified Web Platform** - EdLove Foundation + Gurudevi Sanctuary + Research Atlas | Next.js 16 (App Router, Tailwind v4, Turbopack) | ✅ **Primary web target** |
+| **`apps/gurudevi-web`** | **Gurudevi web app** - `sanctuary.gurudevi.app` and `explore.gurudevi.app` | Vite + React + TanStack Router (`spa/`); Next.js serves the routes not yet moved ([decision](docs/decisions/2026-11-12-web-stack-astro-vite.md)) | ✅ **Web app** |
+| **`apps/gurudevi-public`** | **Public site** - `gurudevi.app`: pages, journal, legal, SEO and agent files | Astro, static; React islands only where a page is interactive | ✅ **Public pages** |
 | `apps/sanctuary-api` | Sanctuary API | Node.js/Hono | ✅ Active |
 
 ### Domain Packages (Shared Logic Only)

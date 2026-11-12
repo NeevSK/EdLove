@@ -1,9 +1,5 @@
 import { resolveSurfaceUrl } from '../surface-urls';
-import {
-  GRATITUDE_EMAIL,
-  INSTITUTIONAL_EMAIL,
-  SUPPORT_EMAIL,
-} from '../../app/seo';
+import { CONTACT_EMAILS } from '@repo/core/site';
 import type { GurudeviHost } from '../host-routing';
 
 export type SupportSurface = 'public' | 'explore' | 'sanctuary' | 'school';
@@ -115,7 +111,7 @@ export const EXPLORE_SUPPORT_CONFIG: SurfaceSupportConfig = {
   showContribution: true,
   showComparison: true,
   showAllGuidesToggle: true,
-  primaryContactEmail: SUPPORT_EMAIL,
+  primaryContactEmail: CONTACT_EMAILS.support,
 };
 
 export const SANCTUARY_SUPPORT_CONFIG: SurfaceSupportConfig = {
@@ -180,14 +176,15 @@ export const SANCTUARY_SUPPORT_CONFIG: SurfaceSupportConfig = {
   showContribution: true,
   showComparison: true,
   showAllGuidesToggle: true,
-  primaryContactEmail: SUPPORT_EMAIL,
+  primaryContactEmail: CONTACT_EMAILS.support,
 };
 
 export const PUBLIC_SUPPORT_CONFIG: SurfaceSupportConfig = {
   surface: 'public',
   badge: 'Public Care & Guidance',
   title: 'Support that makes the work lighter.',
-  subtitle: 'Unified help, feature walkthroughs, school pilot onboarding, and community co-creation.',
+  subtitle:
+    'Unified help, feature walkthroughs, school pilot onboarding, and community co-creation.',
   description:
     'Everything you need to navigate Gurudevi. Discover how the zero-credential Explore Guest House works, master the authenticated Sanctuary workspaces, connect with our care team, or contribute to open-source educational software for Sri Lanka.',
   bannerNotice: {
@@ -213,7 +210,7 @@ export const PUBLIC_SUPPORT_CONFIG: SurfaceSupportConfig = {
       description:
         'Principals and school directors: start a careful, invite-led conversation to bring sovereign local-first software to your classrooms.',
       actionLabel: 'Inquire for School',
-      actionHref: `mailto:${INSTITUTIONAL_EMAIL}?subject=School%20Pilot%20Inquiry`,
+      actionHref: `mailto:${CONTACT_EMAILS.institutional}?subject=School%20Pilot%20Inquiry`,
     },
     {
       id: 'flow-public-offline',
@@ -240,7 +237,7 @@ export const PUBLIC_SUPPORT_CONFIG: SurfaceSupportConfig = {
   showContribution: true,
   showComparison: true,
   showAllGuidesToggle: true,
-  primaryContactEmail: SUPPORT_EMAIL,
+  primaryContactEmail: CONTACT_EMAILS.support,
 };
 
 export function createSchoolSupportConfig(schoolHandle: string): SurfaceSupportConfig {
@@ -272,7 +269,8 @@ export function createSchoolSupportConfig(schoolHandle: string): SurfaceSupportC
         id: 'flow-school-attendance',
         stepNumber: '02',
         title: 'Student & Teacher Attendance',
-        description: 'Assistance for teachers recording morning registration or families checking attendance records.',
+        description:
+          'Assistance for teachers recording morning registration or families checking attendance records.',
         actionLabel: 'Attendance Guidance',
         actionHref: '#faq',
       },
@@ -280,7 +278,8 @@ export function createSchoolSupportConfig(schoolHandle: string): SurfaceSupportC
         id: 'flow-school-self',
         stepNumber: '03',
         title: 'Inner Sanctuary & Mindfulness',
-        description: 'How students and staff at this campus engage in contemplative morning breathing and private journaling.',
+        description:
+          'How students and staff at this campus engage in contemplative morning breathing and private journaling.',
         actionLabel: 'Self Care Practice ↗',
         actionHref: resolveSurfaceUrl('explore', '/self'),
         isExternal: true,
@@ -289,7 +288,8 @@ export function createSchoolSupportConfig(schoolHandle: string): SurfaceSupportC
         id: 'flow-school-contact',
         stepNumber: '04',
         title: 'Campus Leadership & Administration',
-        description: 'Contact the principal or IT coordinator of this school directly for credential issues or enrollment changes.',
+        description:
+          'Contact the principal or IT coordinator of this school directly for credential issues or enrollment changes.',
         actionLabel: 'Dispatch School Message',
         actionHref: '#contact',
       },
@@ -300,7 +300,7 @@ export function createSchoolSupportConfig(schoolHandle: string): SurfaceSupportC
     showContribution: true,
     showComparison: true,
     showAllGuidesToggle: true,
-    primaryContactEmail: INSTITUTIONAL_EMAIL,
+    primaryContactEmail: CONTACT_EMAILS.institutional,
   };
 }
 
@@ -321,4 +321,3 @@ export function getSupportConfig(
       return PUBLIC_SUPPORT_CONFIG;
   }
 }
-

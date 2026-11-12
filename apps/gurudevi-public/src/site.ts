@@ -11,10 +11,11 @@ export function localePath(locale: SupportedLocale, path = '/'): string {
 
 /** Translation bound to one locale, resolved while the page is built. */
 export function translator(locale: SupportedLocale) {
-  const t = (key: string, fallback?: string): string => {
-    const value = getTranslation(locale, key);
+  const t = (key: string, fallbackOrParams?: string | Record<string, string | number>): string => {
+    const params = typeof fallbackOrParams === 'object' ? fallbackOrParams : undefined;
+    const value = getTranslation(locale, key, params);
     // getTranslation answers a missing key with the key itself.
-    return value === key && fallback !== undefined ? fallback : value;
+    return value === key && typeof fallbackOrParams === 'string' ? fallbackOrParams : value;
   };
   return t;
 }

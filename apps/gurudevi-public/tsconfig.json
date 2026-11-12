@@ -6,6 +6,6 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true
   },
-  "include": [".astro/types.d.ts", "src/**/*", "astro.config.mjs"],
+  "include": [".astro/types.d.ts", "src/**/*", "tests/**/*", "astro.config.mjs", "vitest.config.ts"],
   "exclude": ["dist"]
 }

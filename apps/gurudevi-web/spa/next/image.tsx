@@ -11,14 +11,25 @@ export interface ImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 's
   ref?: Ref<HTMLImageElement>;
 }
 
-export default function Image({ src, fill, priority, unoptimized: _u, quality: _q, placeholder: _p, style, ...rest }: ImageProps) {
+export default function Image({
+  src,
+  fill,
+  priority,
+  unoptimized: _u,
+  quality: _q,
+  placeholder: _p,
+  style,
+  ...rest
+}: ImageProps) {
   return (
     <img
       {...rest}
       src={typeof src === 'string' ? src : src.src}
       loading={priority ? 'eager' : (rest.loading ?? 'lazy')}
       fetchPriority={priority ? 'high' : rest.fetchPriority}
-      style={fill ? { position: 'absolute', inset: 0, width: '100%', height: '100%', ...style } : style}
+      style={
+        fill ? { position: 'absolute', inset: 0, width: '100%', height: '100%', ...style } : style
+      }
     />
   );
 }
