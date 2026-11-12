@@ -10,13 +10,15 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { getBackdropsForWorld, groundDefaultsFor } from '../../../lib/canvas/appearanceConstants';
 import { useWorldLook, worldLookStore } from '../../../lib/canvas/worldLookStore';
+import { useGroundPolicy } from '../../../lib/runtime/useGroundPolicy';
 import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import { GroundLayers, sceneRoomOf } from './GroundLayers';
 
 /**
- * Screens where people read or work for long: they get a calmer version of the world's ground
- * (see `GROUND_STAGE_DEFAULTS`). Everything else stands on the full ground.
+ * Screens where people read or work for long. A route only says what kind of screen it is; how
+ * strong the ground is on each kind comes from the ground policy (`groundPolicyOf`: the person's
+ * "World behind screens" choice, then verger), never from here.
  */
 const FOCUS_ROUTES: readonly RegExp[] = [
   /^\/library\/(reader|video)\//,
@@ -44,6 +46,8 @@ export function WorldBackdrop({ isExplore = false }: Readonly<{ isExplore?: bool
   const { world } = useWorldTheme();
   const { look } = useWorldLook();
   const view = useGurudeviView();
+  const policy = useGroundPolicy();
+  const stage = groundStageOf(pathname);
 
   useEffect(() => worldLookStore.holdShellGround(), []);
 
@@ -57,14 +61,17 @@ export function WorldBackdrop({ isExplore = false }: Readonly<{ isExplore?: bool
     getBackdropsForWorld(world),
     allowance,
     undefined,
-    groundStageOf(pathname),
+    stage,
+    policy,
   );
 
   return (
     <div
       aria-hidden="true"
       data-ground-drawn={plan.surface}
-      data-ground-stage={groundStageOf(pathname)}
+      data-ground-liveliness={policy.liveliness}
+      data-ground-stage={stage}
+      data-ground-strength={policy.strength[stage]}
       data-testid="world-backdrop"
       style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}
     >
