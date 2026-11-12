@@ -85,7 +85,55 @@ export interface GroundPlan {
   texture: GroundTexture;
   /** The wash drifts slowly (photo surface only; verger's subtle motion). */
   breathe: boolean;
+  /** A calmer ground for screens where people read or work: the photo shows more faintly. */
+  dim: boolean;
+  /**
+   * How much of the world's own paper is laid over the ground (0 to 1), so words placed straight
+   * on the floor (titles, small print between cards) stay readable on a sky or a photo.
+   */
+  veil: number;
   notes: GroundNote[];
+}
+
+/**
+ * Where a ground is shown. Every screen stands on the world's ground; screens where people
+ * read or work for long (a book, a chat, a form, a kiosk) get a calmer version of it.
+ */
+export type GroundStage = 'room' | 'screen' | 'focus';
+export type GroundStrength = 'full' | 'calm';
+
+/** The dial: how strong the ground is on each kind of screen. Change it here, for every app. */
+export const GROUND_STAGE_DEFAULTS: Readonly<Record<GroundStage, GroundStrength>> = {
+  room: 'full',
+  screen: 'full',
+  focus: 'calm',
+};
+
+/**
+ * The paper veil per kind of screen. Rooms are built from cards and keep the full scene; other
+ * screens put more words straight on the floor; reading and work screens most of all.
+ */
+export const GROUND_VEIL_DEFAULTS: Readonly<Record<GroundStage, number>> = {
+  room: 0,
+  screen: 0.45,
+  focus: 0.65,
+};
+
+function veilFor(stage: GroundStage): number {
+  return GROUND_VEIL_DEFAULTS[stage];
+}
+
+/** The same world, quieter: no moving sky, no slideshow, no animated texture, a fainter photo. */
+export function calmPlan(plan: GroundPlan): GroundPlan {
+  return {
+    ...plan,
+    surface: plan.surface === 'live' ? 'still' : plan.surface,
+    slideshow: null,
+    texture: plan.texture === 'none' ? 'none' : 'washi-grain',
+    breathe: false,
+    dim: plan.surface === 'photo',
+    veil: plan.surface === 'paper' ? 0 : Math.max(plan.veil, GROUND_VEIL_DEFAULTS.focus),
+  };
 }
 
 export const DEFAULT_TEXTURE: GroundTexture = 'washi-grain';
@@ -116,6 +164,8 @@ export function planGround(
   worldPhotos: readonly WorkspaceWallpaper[],
   allow: GroundAllowance,
   legacyTexture?: GroundTexture,
+  stage: GroundStage = 'room',
+  dial: Readonly<Record<GroundStage, GroundStrength>> = GROUND_STAGE_DEFAULTS,
 ): GroundPlan {
   const notes: GroundNote[] = [];
   const asked: SceneGroundMode = look.groundMode ?? (look.wallpaper ? 'image' : 'live');
@@ -164,7 +214,7 @@ export function planGround(
   const texture = textureFor(askedTexture, allow);
   if (texture !== askedTexture) notes.push('texture-paused');
 
-  return {
+  const plan: GroundPlan = {
     asked,
     surface,
     photo,
@@ -173,8 +223,12 @@ export function planGround(
     pure,
     texture,
     breathe: onPhoto && allow.subtleMotion,
+    dim: false,
+    // Paper needs no veil: it is the world's paper already.
+    veil: surface === 'paper' ? 0 : veilFor(stage),
     notes,
   };
+  return dial[stage] === 'calm' ? calmPlan(plan) : plan;
 }
 
 /** Which Floor Studio settings mean something for this look. Same answer on web and phone. */

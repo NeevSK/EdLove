@@ -99,6 +99,8 @@ describe('every combination of floor settings gives a plan that can be drawn', (
           if (!allow.blur) expect(plan.texture, where).not.toBe('aurora-mesh');
           // What was asked is kept, so the studio still shows the person's choice.
           expect(plan.asked, where).toBe(look.groundMode ?? (look.wallpaper ? 'image' : 'live'));
+          // Rooms keep the full scene; no veil.
+          expect(plan.veil, where).toBe(0);
           // Anything turned down says why.
           if (plan.asked === 'image' && plan.surface !== 'photo')
             expect(plan.notes.length, where).toBeGreaterThan(0);
@@ -125,6 +127,22 @@ describe('every combination of floor settings gives a plan that can be drawn', (
         planGround({ preset: 'default', motion: 'off', groundMode: id }, [A], NOTHING_ALLOWED)
           .asked,
       ).toBe(id);
+    }
+  });
+
+  it('focus screens get a calmer ground of the same world, on every combination', () => {
+    const allow = { photos: true, ambient: true, blur: true, subtleMotion: true };
+    for (const look of everyLook()) {
+      const plan = planGround(look, [B], allow, undefined, 'focus');
+      expect(plan.surface).not.toBe('live');
+      expect(plan.slideshow).toBeNull();
+      expect(['none', 'washi-grain']).toContain(plan.texture);
+      expect(plan.breathe).toBe(false);
+      expect(plan.dim).toBe(plan.surface === 'photo');
+      expect(plan.veil).toBe(plan.surface === 'paper' ? 0 : 0.65);
+      // Same world: the person's choice of ground and photo is kept.
+      expect(plan.asked).toBe(planGround(look, [B], allow).asked);
+      expect(plan.photo).toEqual(planGround(look, [B], allow).photo);
     }
   });
 

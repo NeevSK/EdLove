@@ -29,6 +29,8 @@ export interface WorldGroundSurfaceProps {
   isCrossFading?: boolean;
   fixed?: boolean;
   pure?: boolean;
+  /** A calmer ground (reading and work screens): the photo shows half as strongly. */
+  dim?: boolean;
   customScene?: React.ReactNode;
   customSvg?: React.ReactNode;
   children?: React.ReactNode;
@@ -45,6 +47,7 @@ export function WorldGroundSurface({
   isCrossFading = false,
   fixed = true,
   pure = false,
+  dim = false,
   customScene,
   customSvg,
   children,
@@ -149,7 +152,7 @@ export function WorldGroundSurface({
         <SceneImageLayer
           fixed={fixed}
           isCrossFading={isCrossFading}
-          maxOpacity={photoLimit}
+          maxOpacity={dim ? photoLimit / 2 : photoLimit}
           nextWallpaper={nextWallpaper}
           pure={pure}
           wallpaper={wallpaper}

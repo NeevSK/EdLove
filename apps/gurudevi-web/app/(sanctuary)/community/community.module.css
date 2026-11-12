@@ -7,8 +7,8 @@
       circle at 86% 5%,
       color-mix(in srgb, var(--lotus) 10%, transparent),
       transparent 28rem
-    ),
-    var(--paper);
+    );
+  /* No paper underneath: the world's ground (drawn by the shell) shows through. */
 }
 
 .arrival {

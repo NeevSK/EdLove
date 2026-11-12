@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import React from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { SanctuaryFloorCanvas } from '../../../app/(sanctuary)/components/SanctuaryFloorCanvas';
+import { worldLookStore } from '../../../lib/canvas/worldLookStore';
 
 function Room({ domain }: Readonly<{ domain: string }>) {
   return (
@@ -40,6 +41,7 @@ describe('one world look, rooms follow it, "just this room or every room?"', () 
   afterEach(() => {
     cleanup();
     window.localStorage.clear();
+    worldLookStore.reset();
   });
 
   it('a change for every room shows in another room', async () => {

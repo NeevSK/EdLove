@@ -29,13 +29,18 @@ export {
   writeGround,
 } from '@repo/core/logic/workspace/ground';
 export {
+  calmPlan,
   DEFAULT_TEXTURE,
   GROUND_NOTE_TEXT,
   GROUND_OPTIONS,
+  GROUND_STAGE_DEFAULTS,
+  GROUND_VEIL_DEFAULTS,
   type GroundAllowance,
   type GroundControls,
   type GroundNote,
   type GroundPlan,
+  type GroundStage,
+  type GroundStrength,
   type GroundSurface,
   type GroundTexture,
   type GroundTint,

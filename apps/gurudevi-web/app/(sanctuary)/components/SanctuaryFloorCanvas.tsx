@@ -4,7 +4,6 @@ import {
   followWorldGround,
   groundModePatch,
   resolveRoomGround,
-  WORLD_GROUND_ID,
   wallpaperConfigPatch,
   wallpaperPatch,
   writeGround,
@@ -15,24 +14,20 @@ import {
   planGround,
 } from '@repo/core/logic/workspace/groundPlan';
 import type { GroundScope, SceneGroundMode, WorkspaceAppearance } from '@repo/core/types';
-import { isWorldId, WORLDS, washLimitOf } from '@repo/ui/theme';
+import { isWorldId } from '@repo/ui/theme';
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  DEFAULT_APPEARANCE,
-  EXPLORE_DEFAULT_APPEARANCE,
-  getBackdropsForWorld,
-} from '../../../lib/canvas/appearanceConstants';
+import { getBackdropsForWorld, groundDefaultsFor } from '../../../lib/canvas/appearanceConstants';
 import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
-import { useFloorSlideshow } from '../../../lib/canvas/useFloorSlideshow';
+import { THIS_BROWSER, useWorldLook, worldLookStore } from '../../../lib/canvas/worldLookStore';
 import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import floorStyles from '../self/self-floor.module.css';
-import { FloorAtmosphere, type FloorAtmosphereKind } from './FloorAtmosphere';
+import type { FloorAtmosphereKind } from './FloorAtmosphere';
 import { FloorErrorBoundary } from './FloorErrorBoundary';
 import { FloorReception } from './FloorReception';
 import { FloorStudioDrawer, type FurnitureDefinition } from './FloorStudioDrawer';
+import { GroundLayers, sceneRoomOf } from './GroundLayers';
 import { WorkspaceLayoutRecoveryControl } from './WorkspaceLayoutRecoveryControl';
-import { WorldGroundSurface } from './WorldGroundSurface';
 
 export type SanctuaryFloorCanvasRenderProps = {
   isModuleVisible: (id: string) => boolean;
@@ -119,7 +114,7 @@ export function SanctuaryFloorCanvas({
     if (!showPageActions) setIsStudioOpen(false);
   }, [showPageActions]);
 
-  const { world: reactiveWorld, setWorld: setReactiveWorld, resolvedMode } = useWorldTheme();
+  const { world: reactiveWorld, setWorld: setReactiveWorld } = useWorldTheme();
 
   // One look is shared by every room (the world's); a room may keep its own. Both are saved
   // looks: the world's beside the rooms', and the room's in its page's saved layout (or, for
@@ -128,24 +123,16 @@ export function SanctuaryFloorCanvas({
   // Until someone picks a photo, Photo shows the active world's own photos (the stock defaults
   // name Sanctuary's, which looked wrong in every other world).
   const activeWorld = worldId ?? reactiveWorld;
-  const groundDefaults = useMemo(() => {
-    const base = isExplore ? EXPLORE_DEFAULT_APPEARANCE : DEFAULT_APPEARANCE;
-    const photos = getBackdropsForWorld(activeWorld);
-    return {
-      ...base,
-      wallpaper: photos[0] ?? null,
-      wallpaperConfig: base.wallpaperConfig
-        ? { ...base.wallpaperConfig, items: [...photos], activeId: photos[0]?.publicId ?? null }
-        : base.wallpaperConfig,
-    };
-  }, [isExplore, activeWorld]);
-  const lookOwner = accountId ?? (isExplore ? 'explore' : 'this-browser');
-  const worldLook = useBrowserWorkspaceAppearance({
-    accountId: lookOwner,
-    workspaceId: WORLD_GROUND_ID,
-    enableRemoteSync: Boolean(accountId) && !isExplore,
-    defaultAppearance: groundDefaults,
-  });
+  const groundDefaults = useMemo(
+    () => groundDefaultsFor(activeWorld, isExplore),
+    [isExplore, activeWorld],
+  );
+  const lookOwner = accountId ?? (isExplore ? 'explore' : THIS_BROWSER);
+  // The world's look is one store for the whole app: every screen reads and changes the same one.
+  const worldLook = useWorldLook();
+  useEffect(() => {
+    worldLookStore.useOwner(lookOwner);
+  }, [lookOwner]);
   const browserRoomLook = useBrowserWorkspaceAppearance({
     accountId: lookOwner,
     workspaceId: `floor-${domain}`,
@@ -155,7 +142,7 @@ export function SanctuaryFloorCanvas({
   const pageKeepsLook = Boolean(setAppearance);
   const roomSaved = pageKeepsLook ? (storedAppearance ?? null) : browserRoomLook.stored;
   const saveRoomLook = setAppearance ?? browserRoomLook.setAppearance;
-  const resolvedGround = resolveRoomGround(groundDefaults, worldLook.stored, roomSaved);
+  const resolvedGround = resolveRoomGround(groundDefaults, worldLook.look, roomSaved);
   // Motion and wash still come from the page where it keeps them (Profile's own controls).
   const activeAppearance: WorkspaceAppearance = {
     ...resolvedGround.appearance,
@@ -174,7 +161,7 @@ export function SanctuaryFloorCanvas({
 
   const changeLook = (patch: Partial<WorkspaceAppearance>) => {
     const write = writeGround(activeAppearance, patch, scope);
-    if (write.world) void worldLook.setAppearance(write.world);
+    if (write.world) worldLookStore.set(write.world);
     if (write.room) void saveRoomLook(write.room);
   };
 
@@ -272,33 +259,10 @@ export function SanctuaryFloorCanvas({
     ? activeAppearance.atmosphere
     : legacyAtmosphere;
 
-  const { activeWallpaper, nextWallpaper, isCrossFading } = useFloorSlideshow(
-    plan.slideshow
-      ? {
-          mode: 'slideshow',
-          items: plan.slideshow.items,
-          slideshowIntervalSeconds: plan.slideshow.seconds,
-          activeId: plan.slideshow.startId,
-        }
-      : null,
-    plan.photo,
-  );
-  const drawnPhoto = plan.surface === 'photo' ? (activeWallpaper ?? plan.photo) : null;
-
-  // A custom tint shows through a photo; the world caps how strong it may be so words stay readable.
-  const customWash = plan.tint?.color ?? null;
-  const worldTokens =
-    WORLDS[isWorldId(activeWorld) ? activeWorld : 'sanctuary'].palette[resolvedMode];
-  const washAlpha = useMemo(
-    () => (customWash ? Math.min(0.15, washLimitOf(worldTokens, customWash)) : 0),
-    [customWash, worldTokens],
-  );
-  const customWashStyle =
-    customWash && washAlpha > 0
-      ? {
-          backgroundImage: `radial-gradient(circle at 88% 6%, ${customWash}${alphaHex(washAlpha)}, transparent 30rem), radial-gradient(circle at 10% 90%, ${customWash}${alphaHex(washAlpha * 0.6)}, transparent 32rem)`,
-        }
-      : undefined;
+  // The app shell already draws the world's look behind every screen; a room draws its own
+  // ground only when it keeps its own look (or when no shell is around, as in tests and labs).
+  const drawsOwnGround =
+    !worldLook.shellGround || roomHasOwnLook || Boolean(customScene || customSvg);
 
   return (
     <article
@@ -310,32 +274,21 @@ export function SanctuaryFloorCanvas({
       data-ground-mode={groundMode}
       data-ground-source={resolvedGround.source}
       data-ground-drawn={plan.surface}
-      data-has-wallpaper={drawnPhoto !== null}
+      data-ground-host={drawsOwnGround ? 'floor' : 'shell'}
+      data-has-wallpaper={plan.surface === 'photo'}
       data-mode={dataMode}
       data-motion={plan.breathe ? 'subtle' : 'off'}
       data-world={activeWorld}
-      style={customWashStyle}
     >
-      <WorldGroundSurface
-        customScene={customScene}
-        customSvg={customSvg}
-        fixed
-        groundMode={SURFACE_TO_MODE[plan.surface]}
-        isCrossFading={isCrossFading}
-        nextWallpaper={plan.surface === 'photo' ? nextWallpaper : null}
-        pure={plan.pure}
-        room={
-          domain === 'workspace'
-            ? 'classroom'
-            : domain === 'self' || domain === 'community' || domain === 'library'
-              ? domain
-              : 'self'
-        }
-        wallpaper={drawnPhoto}
-        worldId={activeWorld}
-      />
-
-      <FloorAtmosphere kind={plan.texture} preset={plan.tint?.preset ?? 'default'} />
+      {drawsOwnGround ? (
+        <GroundLayers
+          customScene={customScene}
+          customSvg={customSvg}
+          plan={plan}
+          room={sceneRoomOf(domain)}
+          worldId={activeWorld}
+        />
+      ) : null}
 
       {/* Unified Floor Reception Bar (Idea 2 Dual-Anchor Horizon Split) */}
       <FloorReception
@@ -384,7 +337,7 @@ export function SanctuaryFloorCanvas({
       </FloorErrorBoundary>
 
       <FloorStudioDrawer
-        activeWallpaper={activeWallpaper}
+        activeWallpaper={plan.photo}
         currentAtmosphere={atmosphere}
         groundNotes={plan.notes}
         currentGroundMode={groundMode}
@@ -425,13 +378,6 @@ export function SanctuaryFloorCanvas({
   );
 }
 
-const SURFACE_TO_MODE = {
-  live: 'live',
-  still: 'still',
-  photo: 'image',
-  paper: 'quiet',
-} as const satisfies Record<string, SceneGroundMode>;
-
 function isAtmosphere(value: unknown): value is FloorAtmosphereKind {
   return (
     value === 'none' ||
@@ -439,11 +385,4 @@ function isAtmosphere(value: unknown): value is FloorAtmosphereKind {
     value === 'aurora-mesh' ||
     value === 'celestial-embers'
   );
-}
-
-/** A 0 to 1 alpha as the two hex digits appended to a #RRGGBB colour. */
-function alphaHex(alpha: number): string {
-  return Math.round(Math.max(0, Math.min(1, alpha)) * 255)
-    .toString(16)
-    .padStart(2, '0');
 }
