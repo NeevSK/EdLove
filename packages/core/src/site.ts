@@ -1,4 +1,6 @@
-import { EDLOVE_URL, FOUNDER_URL, INTUITUI_URL } from './surface-urls';
+export const EDLOVE_URL = 'https://edlove.org';
+export const INTUITUI_URL = 'https://intuituilabs.studio';
+export const FOUNDER_URL = 'https://neevsk.intuituilabs.studio';
 
 export const SITE_URL = 'https://gurudevi.app';
 export const SITE_NAME = 'Gurudevi';

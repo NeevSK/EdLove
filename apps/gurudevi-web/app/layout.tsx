@@ -1,7 +1,6 @@
-import { tokens } from '@repo/ui/tokens';
 import { DEFAULT_WORLD, WORLD_IDS } from '@repo/ui/theme';
 import { PHASE_START_HOUR } from '@repo/ui/theme/scene';
-import { WorldStyles } from '@repo/ui/theme/web';
+import { sharedTokenCss, WorldStyles } from '@repo/ui/theme/web';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import type { ReactNode } from 'react';
@@ -12,20 +11,7 @@ const PHASE_STARTS_DESC = JSON.stringify(
   Object.entries(PHASE_START_HOUR).sort(([, a], [, b]) => b - a),
 );
 
-const sharedTokenCss = [
-  `--gd-primary:${tokens.colors.primary}`,
-  `--gd-secondary:${tokens.colors.secondary}`,
-  `--gd-surface-page:${tokens.semantic.surface.page}`,
-  `--gd-surface-canvas:${tokens.semantic.surface.canvas}`,
-  `--gd-text-primary:${tokens.semantic.text.primary}`,
-  `--gd-text-secondary:${tokens.semantic.text.secondary}`,
-  `--gd-text-inverse:${tokens.semantic.text.inverse}`,
-  `--gd-border-subtle:${tokens.semantic.border.subtle}`,
-  `--gd-border-focus:${tokens.semantic.border.focus}`,
-  `--gd-accent-atmospheric:${tokens.colors.accentAtmospheric}`,
-  `--gd-accent-depth:${tokens.colors.accentDepth}`,
-  `--gd-touch-target:${tokens.interaction.minTouchTarget}px`,
-].join(';');
+
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://gurudevi.app'),
@@ -67,7 +53,7 @@ import {
   isSupportedLocale,
   LOCALE_COOKIE_NAME,
   type SupportedLocale,
-} from '../lib/i18n/types';
+} from '@repo/core/logic/i18n/web-locales';
 import { LocaleProvider } from '../lib/i18n/LocaleContext';
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

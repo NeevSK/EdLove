@@ -1,7 +1,7 @@
-import type { SupportedLocale } from './types';
-import coreEn from '../../../../packages/core/src/logic/i18n/locales/en.json';
-import coreSi from '../../../../packages/core/src/logic/i18n/locales/si.json';
-import coreTa from '../../../../packages/core/src/logic/i18n/locales/ta.json';
+import type { SupportedLocale } from './web-locales';
+import coreEn from './locales/en.json';
+import coreSi from './locales/si.json';
+import coreTa from './locales/ta.json';
 
 type TranslationTree = Record<string, any>;
 

@@ -1,0 +1,4 @@
+{
+  "nextImportFiles": 183,
+  "exploreBackendClients": ["sanctuary-api", "supabase-auth", "supabase-host", "supabase-realtime"]
+}

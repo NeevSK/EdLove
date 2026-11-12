@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from '../../lib/i18n';
-import { ROADMAP_MILESTONES } from '../../lib/site';
+import { ROADMAP_MILESTONES } from '@repo/core/site';
 
 export function RoadmapSection() {
   const { t } = useTranslation();

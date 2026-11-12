@@ -9,13 +9,13 @@ import React, {
   useTransition,
   type ReactNode,
 } from 'react';
-import { getTranslation } from './dictionaries';
+import { getTranslation } from '@repo/core/logic/i18n/web-dictionaries';
 import {
   DEFAULT_LOCALE,
   LOCALE_COOKIE_NAME,
   isSupportedLocale,
   type SupportedLocale,
-} from './types';
+} from '@repo/core/logic/i18n/web-locales';
 
 interface LocaleContextValue {
   locale: SupportedLocale;

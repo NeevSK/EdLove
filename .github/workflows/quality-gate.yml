@@ -91,6 +91,9 @@ jobs:
       - name: 🔭 Observability ownership boundaries
         run: pnpm run check:observability-boundaries
 
+      - name: 🧭 Web stack ratchet (next/* imports, Explore backend clients)
+        run: node scripts/check-web-stack.mjs
+
       - name: 🧭 Sanctuary experience contract
         run: pnpm run check:sanctuary-experience
 

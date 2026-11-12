@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { EDLOVE_URL, EXTERNAL_LINK_PROPS, resolveSurfaceUrl } from '../../../lib/surface-urls';
+import { EDLOVE_URL } from '@repo/core/site';
+import { EXTERNAL_LINK_PROPS, resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { SriLankaFlag } from '../../components/SriLankaFlag';
 import { useTranslation } from '../../../lib/i18n';
 

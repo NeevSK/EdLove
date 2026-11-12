@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { resolveSurfaceUrl } from '../../lib/surface-urls';
-import { LAUNCH } from '../../lib/site';
+import { LAUNCH } from '@repo/core/site';
 import { RoadmapSection } from './RoadmapSection';
 import { useTranslation } from '../../lib/i18n';
 

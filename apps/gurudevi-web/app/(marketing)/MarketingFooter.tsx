@@ -2,14 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { SOCIAL_LINKS } from '../../lib/site';
-import {
-  EDLOVE_URL,
-  EXTERNAL_LINK_PROPS,
-  FOUNDER_URL,
-  INTUITUI_URL,
-  resolveSurfaceUrl,
-} from '../../lib/surface-urls';
+import { EDLOVE_URL, FOUNDER_URL, INTUITUI_URL, SOCIAL_LINKS } from '@repo/core/site';
+import { EXTERNAL_LINK_PROPS, resolveSurfaceUrl } from '../../lib/surface-urls';
 import { useTranslation, LANGUAGES } from '../../lib/i18n';
 import { SriLankaFlag } from '../components/SriLankaFlag';
 

@@ -1,0 +1,54 @@
+---
+import { ROADMAP_MILESTONES } from '@repo/core/site';
+import { translator, type SupportedLocale } from '../site';
+
+interface Props {
+  locale: SupportedLocale;
+}
+const t = translator(Astro.props.locale);
+---
+<section class="section section--roadmap" id="roadmap" aria-labelledby="roadmap-title">
+  <div class="section__heading">
+    <div>
+      <p class="eyebrow">{t('roadmap.eyebrow')}</p>
+      <h2 id="roadmap-title">{t('roadmap.title')}</h2>
+    </div>
+    <p>{t('roadmap.subtitle')}</p>
+  </div>
+
+  <div class="roadmap-grid">
+    {
+      ROADMAP_MILESTONES.map((m) => {
+        const y = `roadmap.y${m.year}`;
+        const deliverables = [
+          t(`${y}.d1`, m.deliverables[0]),
+          t(`${y}.d2`, m.deliverables[1]),
+          t(`${y}.d3`, m.deliverables[2]),
+        ].filter(Boolean);
+        return (
+          <article class={`roadmap-card ${m.status === 'active' ? 'roadmap-card--active' : ''}`}>
+            <div class="roadmap-card__header">
+              <span class="roadmap-card__year">{m.year}</span>
+              <span class="roadmap-card__badge">{t(`${y}.badge`, m.badge)}</span>
+            </div>
+            <div class="roadmap-card__titles">
+              <p class="roadmap-card__date">{t(`${y}.date`, m.date)}</p>
+              <h3 class="roadmap-card__phase">{t(`${y}.phase`, m.phase)}</h3>
+            </div>
+            <p class="roadmap-card__summary">{t(`${y}.summary`, m.summary)}</p>
+            <div class="roadmap-card__deliverables">
+              <ul>
+                {deliverables.map((item) => (
+                  <li>
+                    <span class="roadmap-card__check" aria-hidden="true">✦</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        );
+      })
+    }
+  </div>
+</section>
