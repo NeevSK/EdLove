@@ -10,7 +10,7 @@ import {
   resolveScene,
   type SceneRoom,
 } from '@repo/ui/theme/scene';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import { useWebFidelity } from '../../../lib/runtime/webFidelity';
 import { SceneImageLayer } from './SceneImageLayer';
@@ -100,9 +100,26 @@ export function WorldGroundSurface({
     });
   }, [groundMode, minute, worldId, effectiveGlow, room, budget, visible]);
 
+  // Compose the landscape for the surface's real size, as the native SceneBackdrop does. A fixed
+  // 1440x900 scene cropped to a portrait phone shows only its middle third, blown up.
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+  useEffect(() => {
+    const el = surfaceRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      const width = Math.round(entry.contentRect.width);
+      const height = Math.round(entry.contentRect.height);
+      if (width === 0 || height === 0) return;
+      setSize((prev) => (prev && prev.width === width && prev.height === height ? prev : { width, height }));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   const landscape = useMemo(
-    () => landscapeOf(scene.view, 1440, 900, scene.tier === 'rich'),
-    [scene.view, scene.tier],
+    () => landscapeOf(scene.view, size?.width ?? 1440, size?.height ?? 900, scene.tier === 'rich'),
+    [scene.view, scene.tier, size],
   );
 
   const colours = useMemo(
@@ -180,6 +197,7 @@ export function WorldGroundSurface({
       data-layer={groundMode === 'live' ? 'scene-live' : 'scene-still'}
       data-testid={groundMode === 'live' ? 'scene-live' : 'scene-still'}
       data-world={worldId}
+      ref={surfaceRef}
       style={{
         position: fixed ? 'fixed' : 'absolute',
         zIndex: 0,
