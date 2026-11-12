@@ -25636,15 +25636,15 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 79,
+   "lines": 116,
    "counts": {
     "types": 2,
-    "consts": 1,
+    "consts": 2,
     "constructs": 0,
     "ambient": 2,
     "schemas": 0,
-    "functions": 4,
-    "functionLines": 65,
+    "functions": 5,
+    "functionLines": 97,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -25655,6 +25655,7 @@
    "exports": [
     "API_V1_PREFIX",
     "V1ClientOptions",
+    "V1_TIMEOUT_MS",
     "createV1Link",
     "createV1Client",
     "AuthenticatedV1ClientOptions",
@@ -25664,9 +25665,15 @@
    "unions": [],
    "importers": {
     "prod": 5,
-    "tests": 6
+    "tests": 7
    },
    "imports": [
+    {
+     "to": "packages/core/src/effect/Errors.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
     {
      "to": "packages/core/src/lib/security/transportSecurity.adapter.ts",
      "typeOnly": false,
@@ -26391,7 +26398,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 6,
     "tests": 3
    },
    "imports": [],
@@ -32252,7 +32259,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract+logic",
-   "lines": 230,
+   "lines": 236,
    "counts": {
     "types": 4,
     "consts": 6,
@@ -32260,7 +32267,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 5,
-    "functionLines": 51,
+    "functionLines": 53,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -36630,15 +36637,15 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 266,
+   "lines": 307,
    "counts": {
     "types": 5,
     "consts": 7,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
-    "functions": 10,
-    "functionLines": 139,
+    "functions": 12,
+    "functionLines": 177,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -36648,6 +36655,7 @@
    },
    "exports": [
     "FailureKind",
+    "isInterruption",
     "isFailureKind",
     "classifyFailure",
     "RetryRule",
@@ -36672,7 +36680,7 @@
    ],
    "importers": {
     "prod": 9,
-    "tests": 2
+    "tests": 4
    },
    "imports": [
     {

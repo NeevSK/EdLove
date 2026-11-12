@@ -82,6 +82,7 @@ describe('G1 diagnoseFailure: the developer and agent view', () => {
       retry: 'never',
       agentHint: 'REFETCH_AND_REBASE',
       operation: 'attendance.save',
+      requestId: null,
     });
   });
 
@@ -98,5 +99,22 @@ describe('G1 diagnoseFailure: the developer and agent view', () => {
 
   it('has a hint for every kind', () => {
     expect(Object.keys(AGENT_HINT).sort()).toEqual(Object.keys(RETRY_POLICY).sort());
+  });
+});
+
+describe('G1 interruptions and request IDs', () => {
+  it('never retries cancelled work', async () => {
+    const { isInterruption, worthRetrying } = await import('./classifyFailure');
+    const abort = Object.assign(new Error('aborted'), { name: 'AbortError' });
+    const cancelled = Object.assign(new Error('cancelled'), { name: 'CancelledError' });
+    expect(isInterruption(abort)).toBe(true);
+    expect(isInterruption(cancelled)).toBe(true);
+    expect(worthRetrying(abort)).toBe(false);
+    expect(isInterruption(new Error('boom'))).toBe(false);
+  });
+
+  it("carries the server's request ID from v1 error data", () => {
+    const error = new ORPCError('SERVICE_UNAVAILABLE', { data: { requestId: 'req-123' } });
+    expect(diagnoseFailure(error)).toMatchObject({ kind: 'UnavailableError', requestId: 'req-123' });
   });
 });

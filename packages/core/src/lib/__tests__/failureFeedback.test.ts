@@ -91,6 +91,12 @@ describe('failure feedback', { tags: ['fast'] }, () => {
     expect(mocks.showToast).toHaveBeenCalledWith('Something went wrong', 'error');
   });
 
+  it('says nothing about cancelled work', () => {
+    presentFailure(Object.assign(new Error('aborted'), { name: 'AbortError' }), 'search');
+    expect(mocks.showToast).not.toHaveBeenCalled();
+    expect(mocks.captureException).not.toHaveBeenCalled();
+  });
+
   it('gives the person a message and developers a diagnosis, never mixing them', () => {
     const raw = { code: '42P01', message: 'relation "users" does not exist' };
     const { diagnosis } = presentFailure(raw, 'profile.save');
@@ -100,6 +106,7 @@ describe('failure feedback', { tags: ['fast'] }, () => {
       retry: 'never',
       agentHint: 'CHECK_LOCAL_SCHEMA',
       operation: 'profile.save',
+      requestId: null,
     });
     expect(mocks.showToast).toHaveBeenCalledWith('Something went wrong', 'error');
     const [, context] = mocks.captureException.mock.calls[0] ?? [];

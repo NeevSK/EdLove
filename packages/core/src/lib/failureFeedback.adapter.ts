@@ -32,7 +32,11 @@ import type {
   AgentSchemaError,
   AgentTimeoutError,
 } from '@repo/core/logic/schemas/agentContracts.schema';
-import { diagnoseFailure, type FailureDiagnosis } from '@repo/core/logic/failure/classifyFailure';
+import {
+  diagnoseFailure,
+  type FailureDiagnosis,
+  isInterruption,
+} from '@repo/core/logic/failure/classifyFailure';
 import { captureException } from '@repo/core/monitoring';
 import i18next from 'i18next';
 
@@ -221,6 +225,8 @@ export function presentFailure(
 ): { readonly feedback: FailureFeedback; readonly diagnosis: FailureDiagnosis } {
   const feedback = feedbackFor(error);
   const diagnosis = diagnoseFailure(error, operation);
+  // Cancelled work (the person left the screen, a newer request replaced it) says nothing.
+  if (isInterruption(error)) return { feedback, diagnosis };
   if (feedback.report) {
     captureException(error, { boundary: 'failure-feedback', remedy: feedback.remedy, ...diagnosis });
   }

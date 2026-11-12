@@ -1,6 +1,7 @@
 import { createORPCClient, ORPCError } from '@orpc/client';
 import { RPCLink, type RPCLinkOptions } from '@orpc/client/fetch';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
+import { UnavailableError } from '../../effect/Errors';
 import { assertSecureApiUrl } from '../../lib/security/transportSecurity.adapter';
 import type { AppContractClient } from './contract';
 
@@ -9,9 +10,45 @@ export const API_V1_PREFIX = '/api/v1';
 export type V1ClientOptions = Pick<
   RPCLinkOptions<Record<never, never>>,
   'origin' | 'headers' | 'fetch'
->;
+> & {
+  /** Abandon a call after this long. The server gives up at 10 s; the default leaves margin. */
+  timeoutMs?: number;
+};
 
-export function createV1Link(options: V1ClientOptions = {}) {
+export const V1_TIMEOUT_MS = 15_000;
+
+/**
+ * Runs `send` with a signal that aborts at `timeoutMs` or when the caller's own signal aborts.
+ * A timeout becomes an UnavailableError (worth retrying); the caller's own abort stays an
+ * AbortError, an interruption that is never retried or shown. Built on AbortController alone,
+ * because Hermes may lack AbortSignal.timeout and AbortSignal.any.
+ */
+async function withTimeout<T>(
+  callerSignal: AbortSignal | null | undefined,
+  timeoutMs: number,
+  send: (signal: AbortSignal) => Promise<T>,
+): Promise<T> {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  const forward = () => controller.abort();
+  if (callerSignal?.aborted) controller.abort();
+  else callerSignal?.addEventListener('abort', forward, { once: true });
+  try {
+    return await send(controller.signal);
+  } catch (error) {
+    if (timedOut) throw new UnavailableError({ code: 'CLIENT_TIMEOUT', cause: error });
+    throw error;
+  } finally {
+    clearTimeout(timer);
+    callerSignal?.removeEventListener('abort', forward);
+  }
+}
+
+export function createV1Link({ timeoutMs = V1_TIMEOUT_MS, ...options }: V1ClientOptions = {}) {
   // Injected transports must honor redirect: 'error'; response checks cannot undo a followed redirect.
   const fetch = options.fetch;
   return new RPCLink<Record<never, never>>({
@@ -23,10 +60,10 @@ export function createV1Link(options: V1ClientOptions = {}) {
           ? new URL(url, globalThis.location?.origin).href
           : url;
       assertSecureApiUrl(destination);
-      const request = { ...init, redirect: 'error' as const };
-      const response = fetch
-        ? await fetch(destination, request, context, path)
-        : await globalThis.fetch(destination, request);
+      const response = await withTimeout(init.signal, timeoutMs, (signal) => {
+        const request = { ...init, signal, redirect: 'error' as const };
+        return fetch ? fetch(destination, request, context, path) : globalThis.fetch(destination, request);
+      });
       if (
         (response.status >= 300 && response.status < 400) ||
         response.type === 'opaqueredirect' ||

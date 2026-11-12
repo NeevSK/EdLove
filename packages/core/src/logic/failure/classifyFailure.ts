@@ -84,6 +84,17 @@ const isAny = (raw: RawFailure, statuses: number[], codes: string[]) =>
 const says = (raw: RawFailure, ...phrases: string[]) =>
   phrases.some((phrase) => raw.message.includes(phrase));
 
+/**
+ * An interruption: the caller (or the person, by leaving the screen) cancelled the work. It is
+ * neither an expected failure nor a defect: it's never retried, shown or reported. Covers fetch's
+ * AbortError and TanStack Query's CancelledError.
+ */
+export function isInterruption(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const name = (error as { name?: unknown }).name;
+  return name === 'AbortError' || name === 'CancelledError';
+}
+
 export function isFailureKind(error: unknown): error is FailureKind {
   return KINDS.some((Kind) => error instanceof Kind);
 }
@@ -210,6 +221,20 @@ export interface FailureDiagnosis {
   readonly agentHint: AgentHint;
   /** Where it happened, as the caller names the operation (never a record ID). */
   readonly operation: string | null;
+  /**
+   * The server's request ID (`X-Request-ID`, also in v1 error data), to find the server's log
+   * line. In-app only: the telemetry filter drops `*_id` keys, so reports don't carry it.
+   */
+  readonly requestId: string | null;
+}
+
+function requestIdOf(error: unknown): string | null {
+  for (const candidate of [error, (error as { cause?: unknown } | null)?.cause]) {
+    if (typeof candidate !== 'object' || candidate === null) continue;
+    const data = (candidate as { data?: { requestId?: unknown } }).data;
+    if (typeof data?.requestId === 'string') return data.requestId;
+  }
+  return null;
 }
 
 function ownTag(error: unknown): string | undefined {
@@ -231,14 +256,29 @@ export function diagnoseFailure(error: unknown, operation?: string): FailureDiag
       retry: RETRY_POLICY[kind._tag],
       agentHint: AGENT_HINT[kind._tag],
       operation: operation ?? null,
+      requestId: requestIdOf(error),
     };
   }
   // A tagged error outside the classified kinds (deep links, agents, guest storage): its tag
   // already names it precisely.
   if (tag !== undefined) {
-    return { kind: tag, code: null, retry: 'never', agentHint: 'READ_TAG', operation: operation ?? null };
+    return {
+      kind: tag,
+      code: null,
+      retry: 'never',
+      agentHint: 'READ_TAG',
+      operation: operation ?? null,
+      requestId: requestIdOf(error),
+    };
   }
-  return { kind: 'Defect', code: null, retry: 'never', agentHint: 'LOG_AND_ESCALATE', operation: operation ?? null };
+  return {
+    kind: 'Defect',
+    code: null,
+    retry: 'never',
+    agentHint: 'LOG_AND_ESCALATE',
+    operation: operation ?? null,
+    requestId: requestIdOf(error),
+  };
 }
 
 /**
@@ -260,6 +300,7 @@ export function retryDelayMs(attempt: number, error?: unknown, random: () => num
  * stricter caller: it doesn't retry defects (`isRetryableWorkspaceSyncError`).
  */
 export function worthRetrying(error: unknown): boolean {
+  if (isInterruption(error)) return false;
   const kind = classifyFailure(error);
   return kind === null || isRetryable(kind);
 }

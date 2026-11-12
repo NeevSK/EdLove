@@ -74,6 +74,31 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
 - **Baseline.** One client per channel, built in the composition root; one place that attaches
   auth, idempotency and trace headers; timeouts on every call; one offline signal that every layer
   reads. No retry logic in transport; retry belongs to L3.
+- **Done (2026-11-12), grounded in what the server does:**
+  - **Timeout.** Every v1 call is abandoned after 15 s (`V1_TIMEOUT_MS`; the server's own timeout
+    is 10 s). A timeout becomes `UnavailableError` (`CLIENT_TIMEOUT`), which is worth retrying.
+    It's built on `AbortController` alone, because Hermes may lack `AbortSignal.timeout` and
+    `AbortSignal.any`. The caller's own signal still cancels.
+  - **Interruptions.** Cancelled work (`AbortError`, TanStack's `CancelledError`) is neither
+    retried nor shown nor reported (`isInterruption`).
+  - **Request ID.** The diagnosis carries the server's `requestId` from v1 error data, to find
+    the server's log line. It stays in-app: the telemetry filter drops `*_id` keys.
+  - **No new request headers.** The API's CORS allows only `Authorization` and `Content-Type`, so
+    any extra header would break every browser call at the preflight. v1 idempotency travels in
+    the input (`idempotency_key`), so no header is needed for it.
+  - **No client rate limiter.** The API already does admission control (503 with
+    `Retry-After: 1` past its in-flight limit), and the jittered backoff spreads devices out. A
+    client `AsyncRateLimiter` would reject the person's own calls; it's left out until traffic
+    shows a need.
+  - **Offline signal.** Each platform already feeds one source into TanStack's `onlineManager`
+    (mobile `networkMonitor`, web `subscribeToNetwork`). There's no short-circuit before fetch,
+    because captive portals make "offline" unreliable; the timeout bounds the wait instead.
+- **Asks for the API (Neev's side):**
+  1. Put `retryAfterMs` in error `data` beside `requestId` (the classifier already reads it), so
+     clients honour back-pressure exactly.
+  2. Allow `traceparent` in CORS if end-to-end tracing is wanted.
+  3. Decide whether `request_id` may go to telemetry (it joins a report to a server log line that
+     holds the account).
 - **Production.** Token refresh with request replay, server back-pressure (`Retry-After`) honoured,
   PowerSync connect, disconnect and account-switch as one state machine.
 - **Enterprise.** Request tracing end to end, certificate pinning where required.

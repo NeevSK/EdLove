@@ -337,3 +337,10 @@ web remains online-only with normal request/reconnect error handling.
 - `worthRetrying` shared by Effect (`retryTransient`), queries, API, `executeMutation$` and `withIdempotency`. The five `Effect.retry(policy)` sites no longer retry sign-out, forbidden or validation. `SupabaseQueryError` keeps the Postgres code.
 - Pacer hooks moved from web to `@repo/core/hooks/usePacer` (core gains `@tanstack/react-pacer` ^0.24.1, the version both apps already use; 3-line lockfile change). Mobile's unused copy is gone; the demo re-pointed. `useResponsiveRenderer` and `devErrorPipeline` use Pacer.
 - Ratchet: `handRolledPacing` 3 (new). G0 unchanged (50/1/17). G1: core 20 failing, web and mobile unchanged. New: `retryTransient.test.ts` (4).
+
+### Client runtime L2: transport timeout, interruptions, request ID
+
+- v1 link: per-call timeout (15 s, `AbortController` only, for Hermes) → `UnavailableError` `CLIENT_TIMEOUT`; the caller's abort stays an `AbortError`.
+- `isInterruption`: cancelled work is not retried, shown or reported. The diagnosis carries `requestId` (in-app only; telemetry drops `*_id`).
+- Not added: request headers (CORS allows only Authorization and Content-Type) and a client rate limiter (the server sheds load with 503 and `Retry-After`). Asks for the API recorded in the plan.
+- G0 unchanged (50/1/17). G1: core 20 failing (unchanged); web and mobile unchanged. New: `timeout.test.ts` (2); interruption and request ID cases.
