@@ -344,3 +344,11 @@ web remains online-only with normal request/reconnect error handling.
 - `isInterruption`: cancelled work is not retried, shown or reported. The diagnosis carries `requestId` (in-app only; telemetry drops `*_id`).
 - Not added: request headers (CORS allows only Authorization and Content-Type) and a client rate limiter (the server sheds load with 503 and `Retry-After`). Asks for the API recorded in the plan.
 - G0 unchanged (50/1/17). G1: core 20 failing (unchanged); web and mobile unchanged. New: `timeout.test.ts` (2); interruption and request ID cases.
+
+### Client runtime L4: one replay rule set, drain moved to its tier
+
+- One outbox (`mutationQueue.store.ts`); the other two "queues" are helpers and an unwired draft store. Plan corrected.
+- `decideReplayFailure` + `REPLAY_POLICY` (core) used by the orchestrator and both background loops. The background task used to retry expired sessions and permanent failures to the DLQ, with limit 3 against 5. An unknown mutation now stays queued in both. Toasts go through `presentFailure`.
+- Drain moved from `SyncOrchestrator.tsx` (T6) to `useOutboxReplay.ts` (T5) behind bindings; tier import violations 35 → 20 (ceiling lowered). `outbox-scheduler.native.test.tsx` fixed (its conflict-store mock ignored selectors) and passes 3/3.
+- The outbox is dormant: empty registry, the drain not mounted, the background task not registered. It waits for v1 command handlers.
+- G0 unchanged (50/1/17). G1: core 20 failing (unchanged); mobile one fewer failing file. New: `replayDecision.test.ts` (5).

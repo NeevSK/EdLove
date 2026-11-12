@@ -169,6 +169,39 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
   outbox (persisted, versioned); replays in order per entity with the L3 policy; ends in an
   outcome. The PowerSync upload connector drains the same outbox. Healing is one loop: on reconnect
   or on a `Conflict`, re-read the server state, rebase or surface the conflict.
+- **Corrected (2026-11-12): there is one outbox, not three.** `mutationQueue.store.ts` is the
+  outbox. `logic/workspace/outbox.ts` holds helpers that build entries *for* it (used only by
+  tests). `provisionalWorkspace.store.ts` is deliberately separate: drafts that can't authorise
+  anything before a server receipt, and it isn't wired. So there was nothing to merge, and the
+  "which queue survives" policy is gone.
+- **What was actually wrong, and is fixed:**
+  - **Two drains with different rules.** The foreground `SyncOrchestrator` classified failures.
+    The mobile background task (`backgroundSync.ts`, twice) didn't: it retried an expired session,
+    a forbidden or a validation failure until the dead-letter queue, and its retry limit was 3
+    against 5. Both now apply `decideReplayFailure` (`lib/sync/replayDecision.ts`):
+    - an expired session pauses (`AuthPaused`);
+    - a conflict waits for resolution (`Conflict`);
+    - a permanent failure is dead-lettered at once (`Failed`);
+    - a transient one retries with jittered backoff (`Retrying`) until `REPLAY_POLICY.maxRetries`.
+  - **An unknown mutation.** The orchestrator dead-lettered it, the background task kept it.
+    Both now keep it queued (`API_CAPABILITY_NOT_ADMITTED`).
+  - **Feedback.** Hard-coded English toasts that showed internal mutation names ("Action required:
+    patchWorkspaceLayout failed permanentely") now go through `presentFailure`: a localised
+    message for the person, the diagnosis for developers. The success toast ("Synced N pending
+    actions") is still English and needs its copy.
+  - **Tier.** The drain was written as a presentation component, and that one file held 15 of
+    the 35 counted tier violations. It moved to `lib/sync/useOutboxReplay.ts` (T5), with platform
+    pieces through bindings (`feedback`, `eventBus`, the new `effect/bindings/outbox.ts`).
+    `SyncOrchestrator` is now a two-line mount. Tier violations went from 35 to 20 (ceiling
+    lowered).
+- **Dormant by design until v1 commands exist.** `MUTATION_REGISTRY` is empty (the pre-v1 replay
+  table was retired with the old API), and neither drain is mounted or registered: no app
+  renders `SyncOrchestrator`, and nothing calls `registerBackgroundSync`. Writes queued today
+  (web's domain adapters, the PowerSync connector) wait. When a domain registers a v1 command
+  handler, mount `SyncOrchestrator` in each app and register the background task; both then follow
+  the same rules.
+- **Outcome type.** The replay decision is the outcome for queued work. The success outcomes
+  (Saved, Recovered) and the outcome-to-feedback table come with L7, where they have a consumer.
 - **Production.** Conflict resolution per entity type (server wins, merge, ask the user); replay
   after app restart proven by tests; poison-message handling.
 - **Enterprise.** Every replay traceable to a user and device; audit trail.
@@ -394,7 +427,7 @@ without touching call sites. The mechanism is built once and must work under eve
 
 | Policy | Allowed values | Default until decided | Read by |
 | --- | --- | --- | --- |
-| `outbox.backend` | `mutationQueue`, `workspaceOutbox`, `provisionalCommands`, `unified` | today's backend for each caller | L4: one outbox port; the three queues become backends behind it, so no queued item has to migrate until the policy says `unified` |
+| `REPLAY_POLICY` | `maxRetries`, `authPauseMs` | 5 retries, 5 s | L4: both outbox drains (`lib/sync/replayDecision.ts`) |
 | `conflict[entityKind]` | `serverWins`, `clientWins`, `merge`, `ask` | `serverWins` | L4 healing loop; an unknown kind falls back to the default |
 | `presentation[step][sizeClass]` | `push`, `sheet(detents)`, `panel`, `modal`, `replace` | `push` on phone, `panel` on tablet and web | L9 navigator adapter; a flow step can override |
 | `retry[errorKind]` | an Effect `Schedule` | the current `defaultRetryPolicy` | L3 |

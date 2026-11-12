@@ -10,6 +10,7 @@
  */
 
 import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import { decideReplayFailure } from '@repo/core/lib/sync/replayDecision';
 import { tryBeginReplay } from '@repo/core/lib/sync/replayAdmission';
 import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity.adapter';
 import {
@@ -20,18 +21,16 @@ import { coreRuntime, useMutationQueue } from '@repo/core/logic';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { MUTATION_REGISTRY, type QueuedMutation, sovereignBus } from '@repo/core/sync';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
+import type { MutationQueueState } from '@repo/core/types/mutationQueue';
 import { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 import { admitBackgroundWork } from '@/runtime/backgroundAdmission';
 
 export { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 
 // Configuration
+// Retry limits and backoff come from core's REPLAY_POLICY (lib/sync/replayDecision.ts).
 const SYNC_CONFIG = {
   maxBatchSize: 10,
-  maxRetries: 3,
-  baseBackoffMs: 1000,
-  maxBackoffMs: 30000,
-  jitterFactor: 0.3,
 } as const;
 
 // ─── Dead Letter Queue Storage ────────────────────────────────────────────────
@@ -115,10 +114,52 @@ export async function clearDeadLetterQueue(): Promise<void> {
 
 // ─── Exponential Backoff with Jitter ──────────────────────────────────────────
 
-function calculateBackoff(retryCount: number): number {
-  const base = SYNC_CONFIG.baseBackoffMs * Math.pow(2, retryCount);
-  const jitter = base * SYNC_CONFIG.jitterFactor * Math.random();
-  return Math.min(base + jitter, SYNC_CONFIG.maxBackoffMs);
+/**
+ * Applies the shared replay decision (core lib/sync/replayDecision.ts) to one failed item, the
+ * same rules the foreground SyncOrchestrator uses: an expired session pauses instead of spending
+ * retries, a conflict waits for resolution, and only permanent failures or exhausted retries go
+ * to the dead-letter queue.
+ */
+function settleFailedReplay(
+  item: QueuedMutation,
+  error: unknown,
+  queue: Pick<MutationQueueState, 'updateMutation' | 'moveToDeadLetter'>,
+): void {
+  const decision = decideReplayFailure(error, item.retryCount);
+  const lastError = error instanceof Error ? error.message : String(error);
+  switch (decision._tag) {
+    case 'Failed':
+      queue.updateMutation(item.id, { retryCount: decision.retryCount });
+      queue.moveToDeadLetter(item.id, lastError);
+      return;
+    case 'Conflict':
+      queue.updateMutation(item.id, {
+        retryCount: decision.retryCount,
+        commandState: 'conflict',
+        lastError,
+        lastErrorCode: 'CONFLICT',
+        lockLeaseExpiresAt: undefined,
+      });
+      return;
+    case 'AuthPaused':
+      queue.updateMutation(item.id, {
+        retryCount: decision.retryCount,
+        backoffUntil: decision.backoffUntil,
+        commandState: 'auth_paused',
+        lastError: 'AUTH_EXPIRED',
+        lastErrorCode: 'AUTH_EXPIRED',
+        lockLeaseExpiresAt: undefined,
+      });
+      return;
+    case 'Retrying':
+      queue.updateMutation(item.id, {
+        retryCount: decision.retryCount,
+        backoffUntil: decision.backoffUntil,
+        commandState: 'retry_scheduled',
+        lastError,
+        lockLeaseExpiresAt: undefined,
+      });
+  }
 }
 
 // ─── Task Definition ──────────────────────────────────────────────────────────
@@ -200,26 +241,7 @@ export async function runBackgroundSyncTask() {
         drained++;
       } catch (error) {
         failed++;
-        const retryCount = (item.retryCount || 0) + 1;
-
-        if (retryCount >= SYNC_CONFIG.maxRetries) {
-          // Move to dead letter queue
-          console.warn(
-            `[BackgroundSync] Item ${item.id} exceeded max retries, moving to dead letter queue`,
-          );
-          updateMutation(item.id, { retryCount });
-          moveToDeadLetter(item.id, String(error));
-        } else {
-          // Schedule retry with exponential backoff
-          const backoffMs = calculateBackoff(retryCount);
-          updateMutation(item.id, {
-            retryCount,
-            backoffUntil: Date.now() + backoffMs,
-            commandState: 'retry_scheduled',
-            lastError: String(error),
-            lockLeaseExpiresAt: undefined,
-          });
-        }
+        settleFailedReplay(item, error, { updateMutation, moveToDeadLetter });
       } finally {
         admission.release();
       }
@@ -350,21 +372,7 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
         drained++;
       } catch (error) {
         failed++;
-        const retryCount = (item.retryCount || 0) + 1;
-
-        if (retryCount >= SYNC_CONFIG.maxRetries) {
-          updateMutation(item.id, { retryCount });
-          moveToDeadLetter(item.id, String(error));
-        } else {
-          const backoffMs = calculateBackoff(retryCount);
-          updateMutation(item.id, {
-            retryCount,
-            backoffUntil: Date.now() + backoffMs,
-            commandState: 'retry_scheduled',
-            lastError: String(error),
-            lockLeaseExpiresAt: undefined,
-          });
-        }
+        settleFailedReplay(item, error, { updateMutation, moveToDeadLetter });
       } finally {
         admission.release();
       }

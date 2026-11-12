@@ -26398,7 +26398,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 7,
     "tests": 3
    },
    "imports": [],
@@ -26798,7 +26798,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -27133,6 +27133,51 @@
    "outside": []
   },
   {
+   "file": "packages/core/src/effect/bindings/outbox.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 12,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "outboxPlatform"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/sync/replayIdentity.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/monitoring/breadcrumbs.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/effect/bindings/queryClient.ts",
    "package": "packages/core",
    "folderTier": "C",
@@ -27217,7 +27262,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 31,
+    "prod": 32,
     "tests": 0
    },
    "imports": [
@@ -32480,7 +32525,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 8,
+    "prod": 7,
     "tests": 3
    },
    "imports": [
@@ -34042,7 +34087,7 @@
     }
    ],
    "importers": {
-    "prod": 2,
+    "prod": 3,
     "tests": 3
    },
    "imports": [
@@ -34084,7 +34129,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 9,
     "tests": 9
    },
    "imports": [],
@@ -34593,6 +34638,53 @@
    "outside": []
   },
   {
+   "file": "packages/core/src/lib/sync/replayDecision.ts",
+   "package": "packages/core",
+   "folderTier": "T2",
+   "shape": "runtime",
+   "lines": 60,
+   "counts": {
+    "types": 1,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 1,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 22,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "ReplayDecision",
+    "REPLAY_POLICY",
+    "decideReplayFailure"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/sync/errorClassifier.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/lib/sync/replayIdentity.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
@@ -34712,24 +34804,23 @@
    "package": "packages/core",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 520,
+   "lines": 14,
    "counts": {
-    "types": 2,
+    "types": 0,
     "consts": 0,
     "constructs": 0,
-    "ambient": 12,
+    "ambient": 0,
     "schemas": 0,
-    "functions": 4,
-    "functionLines": 466,
+    "functions": 1,
+    "functionLines": 11,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
+    "reexports": 1,
+    "jsx": false
    },
    "exports": [
-    "SyncOrchestratorTraceEvent",
     "SyncOrchestrator"
    ],
    "unions": [],
@@ -34739,10 +34830,75 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/feedback.adapter.ts",
+     "to": "packages/core/src/lib/sync/useOutboxReplay.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T3"
+     "toTier": "T5"
+    },
+    {
+     "to": "packages/core/src/lib/sync/useOutboxReplay.ts",
+     "typeOnly": true,
+     "toShape": "runtime",
+     "toTier": "T5"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/lib/sync/useOutboxReplay.ts",
+   "package": "packages/core",
+   "folderTier": "T5",
+   "shape": "runtime",
+   "lines": 529,
+   "counts": {
+    "types": 2,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 11,
+    "schemas": 0,
+    "functions": 4,
+    "functionLines": 470,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "OutboxReplayOptions",
+    "SyncOrchestratorTraceEvent",
+    "useOutboxReplay"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/effect/Errors.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/state.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/feedback.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/outbox.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/lib/sync/errorClassifier.ts",
@@ -34751,10 +34907,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
+     "to": "packages/core/src/lib/sync/replayDecision.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T3"
+     "toTier": "T2"
     },
     {
      "to": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
@@ -34781,12 +34937,6 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/replayIdentity.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/lib/sync/replayPolicy.coordinator.ts",
      "typeOnly": false,
      "toShape": "runtime",
@@ -34803,12 +34953,6 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/monitoring/breadcrumbs.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
     },
     {
      "to": "packages/core/src/offline/useOfflineStatus.ts",
@@ -36679,7 +36823,7 @@
     }
    ],
    "importers": {
-    "prod": 9,
+    "prod": 10,
     "tests": 4
    },
    "imports": [
@@ -52895,7 +53039,7 @@
     }
    ],
    "importers": {
-    "prod": 16,
+    "prod": 17,
     "tests": 7
    },
    "imports": [
@@ -123987,15 +124131,15 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 405,
+   "lines": 413,
    "counts": {
     "types": 0,
     "consts": 2,
     "constructs": 0,
-    "ambient": 6,
+    "ambient": 3,
     "schemas": 0,
     "functions": 14,
-    "functionLines": 378,
+    "functionLines": 387,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 1,
@@ -124026,6 +124170,12 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/lib/sync/replayDecision.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T2"
     },
     {
      "to": "packages/core/src/lib/sync/replayAdmission.ts",
@@ -124066,6 +124216,12 @@
     {
      "to": "packages/core/src/types/index.ts",
      "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/types/mutationQueue.ts",
+     "typeOnly": true,
      "toShape": "contract",
      "toTier": "T0"
     },

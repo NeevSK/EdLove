@@ -42,7 +42,11 @@ vi.mock('@repo/core/store/useAuthStore', () => {
 vi.mock('@repo/core/lib/sync/mutationAuditLog.store', () => ({
   useMutationAuditLog: () => ({ updateEntry: fixture.updateEntry }),
 }));
-vi.mock('@repo/core/store/useConflictStore', () => ({ useConflictStore: () => fixture.conflicts }));
+// The orchestrator reads the store through selectors (atomic-selector rule).
+vi.mock('@repo/core/store/useConflictStore', () => ({
+  useConflictStore: <T,>(selector?: (state: typeof fixture.conflicts) => T) =>
+    selector ? selector(fixture.conflicts) : fixture.conflicts,
+}));
 vi.mock('@repo/core/lib/sync/versionGating.store', () => ({
   useVersionGatingStore: { getState: () => ({ isBlocked: false }) },
 }));
