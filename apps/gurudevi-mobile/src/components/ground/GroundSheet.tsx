@@ -122,7 +122,11 @@ export function GroundSheet({ open, onClose, roomName, ground }: GroundSheetProp
             <Stack gap="inside">
               <Text kind="label">Change every room, or just {roomName}?</Text>
               <Button label="Every room" onPress={() => apply('world')} />
-              <Button label={`Just ${roomName}`} variant="secondary" onPress={() => apply('room')} />
+              <Button
+                label={`Just ${roomName}`}
+                variant="secondary"
+                onPress={() => apply('room')}
+              />
               <Button label="Cancel" variant="quiet" onPress={() => setPending(null)} />
             </Stack>
           ) : null}

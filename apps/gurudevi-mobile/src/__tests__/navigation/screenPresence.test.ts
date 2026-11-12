@@ -1,3 +1,4 @@
+import { groundPolicyOf } from '@repo/core/logic/workspace/groundPlan';
 import { screenPresence } from '@repo/ui/theme/scene';
 import { describe, expect, it } from 'vitest';
 import { groundStageForPath } from '@/components/shell/screenPresence';
@@ -15,10 +16,10 @@ describe('groundStageForPath', () => {
 
 describe('phone reading of the ground policy', () => {
   it('follows the person’s choice', () => {
-    expect(screenPresence('room', 'balanced')).toBe('full');
-    expect(screenPresence('screen', 'balanced')).toBe('band');
-    expect(screenPresence('focus', 'balanced')).toBe('quiet');
-    expect(screenPresence('focus', 'lively')).toBe('band');
-    expect(screenPresence('screen', 'calm')).toBe('quiet');
+    expect(screenPresence('room', groundPolicyOf({ liveliness: 'balanced' }))).toBe('full');
+    expect(screenPresence('screen', groundPolicyOf({ liveliness: 'balanced' }))).toBe('band');
+    expect(screenPresence('focus', groundPolicyOf({ liveliness: 'balanced' }))).toBe('quiet');
+    expect(screenPresence('focus', groundPolicyOf({ liveliness: 'lively' }))).toBe('band');
+    expect(screenPresence('screen', groundPolicyOf({ liveliness: 'calm' }))).toBe('quiet');
   });
 });

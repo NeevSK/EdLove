@@ -18,7 +18,7 @@ import {
 } from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
 import type { GroundPlan } from '@repo/core/logic/workspace/groundPlan';
-import { useComfort } from '../../../context/ComfortPreferences';
+import { useGroundPolicy } from '../../../context/useGroundPolicy';
 import { relativeLuminance } from '../../../theme/color';
 import { type GroundStage, screenPresence } from '../../../theme/scene/screenGround';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
@@ -88,8 +88,7 @@ export function useFloorPresence(presence: ScenePresence): void {
  * Visual settings and the phone's budget decide how much of the ground shows.
  */
 export function useScreenGround(stage: GroundStage): void {
-  const { ground } = useComfort();
-  useFloorPresence(screenPresence(stage, ground));
+  useFloorPresence(screenPresence(stage, useGroundPolicy()));
 }
 
 /** Handlers a scrolling surface passes on, so the floor's life pauses while the person scrolls. */

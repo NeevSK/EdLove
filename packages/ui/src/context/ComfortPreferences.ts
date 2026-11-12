@@ -11,7 +11,7 @@ import {
   DEFAULT_GROUND_LIVELINESS,
   type GroundLiveliness,
   isGroundLiveliness,
-} from '@repo/core/logic/workspace/groundLiveliness';
+} from '@repo/core/logic/workspace/groundPlan';
 import type { ComfortSize } from '../theme/types';
 import { getReading, type Reading } from '../theme/native/style';
 import { updateReading } from './ReadingPreferences';

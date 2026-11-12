@@ -6,7 +6,6 @@
  * the one floor at the root, so every screen stands on it.
  */
 import { WORLD_GROUND_ID, resolveRoomGround } from '@repo/core/logic/workspace/ground';
-import { groundDialOf } from '@repo/core/logic/workspace/groundLiveliness';
 import {
   type GroundStage,
   groundAllowanceOf,
@@ -16,7 +15,7 @@ import { getBackdropsForWorld } from '@repo/core/logic/workspace/worldBackdrops'
 import { useFloorLayout, useWorkspaceLayoutSync } from '@repo/core/native';
 import type { WorkspaceAppearance } from '@repo/core/types';
 import { useStageContext } from '@repo/ui/components/native';
-import { useComfort } from '@repo/ui/context/ComfortPreferences';
+import { useGroundPolicy } from '@repo/ui/context/useGroundPolicy';
 import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { useWorld } from '@repo/ui/theme/native';
 import { useVergerSnapshot } from '@repo/verger-react';
@@ -59,7 +58,7 @@ export function useRoomGround(options: RoomGroundOptions) {
   const { setGround } = useStageContext();
   const experience = useVisualCapabilities();
   const snapshot = useVergerSnapshot();
-  const { ground: liveliness } = useComfort();
+  const policy = useGroundPolicy();
   const { worldLook, roomLook } = useRoomLooks(options);
 
   const worldAppearance = worldLook.layout?.appearance ?? null;
@@ -82,7 +81,7 @@ export function useRoomGround(options: RoomGroundOptions) {
         groundAllowanceOf(experience, reading),
         undefined,
         options.stage,
-        groundDialOf(liveliness),
+        policy,
       ),
     // reading's fields are listed so a new object each render does not replan.
     [
@@ -93,7 +92,7 @@ export function useRoomGround(options: RoomGroundOptions) {
       reading.powerSaver,
       reading.visibility,
       options.stage,
-      liveliness,
+      policy,
     ],
   );
 

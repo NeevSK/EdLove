@@ -72,6 +72,7 @@ export {
 export {
   DEFAULT_GROUND_LIVELINESS,
   type GroundLiveliness,
+  type GroundPolicy,
   type GroundStage,
   quietVeilOf,
   screenPresence,

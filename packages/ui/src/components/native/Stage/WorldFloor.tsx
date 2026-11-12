@@ -24,7 +24,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import { Canvas, LinearGradient, Rect, vec } from 'react-native-skia';
 import type { GroundPlan } from '@repo/core/logic/workspace/groundPlan';
 import { photoUrlFor } from '@repo/core/logic/workspace/worldBackdrops';
-import { useComfort } from '../../../context/ComfortPreferences';
+import { useGroundPolicy } from '../../../context/useGroundPolicy';
 import { groundLimitsOf } from '../../../theme/groundLimits';
 import { GURUDEVI_APP } from '../../../utils/urls';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
@@ -118,8 +118,8 @@ export function WorldFloor({ stage, presence, scrolling, ground: plan = null }: 
   // Veils: a band veil keeps the floor visible behind the header only. Quiet (settings, forms,
   // reading) stills the floor and veils it calmly, but never hides it: every screen still stands
   // on the world's ground. A plain world (Classic) has only its ground.
-  const { ground: liveliness } = useComfort();
-  const quietTo = plainWorld ? 1 : presence === 'quiet' ? quietVeilOf(liveliness) : 0;
+  const policy = useGroundPolicy();
+  const quietTo = plainWorld ? 1 : presence === 'quiet' ? quietVeilOf(policy) : 0;
   const band = useSharedValue(presence === 'band' ? 1 : 0);
   const quiet = useSharedValue(quietTo);
   useEffect(() => {
