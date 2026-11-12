@@ -9,7 +9,8 @@ import { defineConfig } from 'vite';
  * swapped for thin stand-ins on TanStack Router. Next keeps building from `app/` until each journey
  * is accepted here.
  *
- *   vite build --mode explore     the Explore build: no account, no API, no database
+ *   vite build --mode explore     explore.gurudevi.app: no account, no API, no database
+ *   vite build                    sanctuary.gurudevi.app: signed-in people, the v1 API
  */
 export default defineConfig(({ mode }) => {
   const explore = mode === 'explore';
@@ -32,6 +33,8 @@ export default defineConfig(({ mode }) => {
         { find: /^next\/navigation$/, replacement: path.join(root, 'next/navigation.ts') },
         { find: /^next\/image$/, replacement: path.join(root, 'next/image.tsx') },
         { find: /^@\//, replacement: `${__dirname}/` },
+        // One surface per build: Explore's bundle never contains the account surface, and the reverse.
+        { find: /^#surface$/, replacement: path.join(root, explore ? 'surface/explore.tsx' : 'surface/account.tsx') },
       ],
     },
     define: {
@@ -42,7 +45,7 @@ export default defineConfig(({ mode }) => {
         explore ? '' : (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? ''),
       ),
       'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(explore ? '' : (process.env.NEXT_PUBLIC_API_URL ?? '')),
-      'import.meta.env.VITE_SURFACE': JSON.stringify(explore ? 'explore' : 'sanctuary'),
+      'process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION': JSON.stringify(process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION ?? ''),
     },
     build: {
       outDir: path.resolve(__dirname, explore ? 'dist-explore' : 'dist-sanctuary'),

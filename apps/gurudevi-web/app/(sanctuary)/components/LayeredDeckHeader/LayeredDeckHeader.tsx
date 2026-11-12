@@ -61,8 +61,14 @@ export function LayeredDeckHeader({
   const [isScrollingUp, setIsScrollingUp] = useState(false);
   const [isFocusedWithin, setIsFocusedWithin] = useState(false);
 
-  // Measure layer heights on mount, slot updates, and window resize (NOT inside scroll loop)
+  const hasBanner = Boolean(bannerSlot);
+  const hasTaskStrip = Boolean(taskStripSlot);
+
+  // Measure layer heights when a layer's box changes size (NOT inside the scroll loop). The slots
+  // are new elements on every render, so keying this on them re-measured on every render of the
+  // shell; it now re-attaches only when a layer appears or goes.
   useLayoutEffect(() => {
+    const layers = [layer1Ref, layer2Ref, layer3Ref, layer4Ref];
     const updateMetrics = () => {
       const h1 = layer1Ref.current?.offsetHeight ?? 0;
       const h2 = layer2Ref.current?.offsetHeight ?? 0;
@@ -78,10 +84,14 @@ export function LayeredDeckHeader({
     };
 
     updateMetrics();
-
-    window.addEventListener('resize', updateMetrics);
-    return () => window.removeEventListener('resize', updateMetrics);
-  }, [bannerSlot, taskStripSlot]);
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateMetrics);
+      return () => window.removeEventListener('resize', updateMetrics);
+    }
+    const observer = new ResizeObserver(updateMetrics);
+    for (const layer of layers) if (layer.current) observer.observe(layer.current);
+    return () => observer.disconnect();
+  }, [hasBanner, hasTaskStrip]);
 
   // Set dynamic CSS custom properties for hardware-accelerated transforms
   useLayoutEffect(() => {

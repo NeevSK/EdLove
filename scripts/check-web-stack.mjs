@@ -4,8 +4,9 @@
  *
  * Two ratchets in tooling/web-stack-ratchet.json, both only allowed to go down:
  *
- * 1. nextImportFiles: files in apps/gurudevi-web/app and lib importing `next/*`. Each one is a screen
- *    still tied to Next; the client build runs them through stand-ins in apps/gurudevi-web/spa/next.
+ * 1. nextImportFiles: screens and libraries in apps/gurudevi-web/app and lib importing `next/*`
+ *    (Next's own route files are not counted: they leave with Next). The client build runs them
+ *    through stand-ins in apps/gurudevi-web/spa/next.
  * 2. exploreBackendClients: backend clients found in the Explore bundle. Explore has no account, no
  *    API and no database, so the goal is an empty list. A client not on the list fails; one on the
  *    list that has gone is reported so the list can shrink.
@@ -13,8 +14,9 @@
  *    straight from web code. The web client reaches data only through the v1 API; the goal is 0.
  * 4. surfaceBranches: places a screen asks whether it is on Explore (`isExplore`, `isExploreMode`,
  *    `mode === 'explore'`, `surface === 'explore'`). Explore and sanctuary are one app; screens read
- *    the session and the surface's sources instead. Next route files (page.tsx) are not counted:
- *    they leave with Next. The goal is 0.
+ *    the session and the surface's sources instead. Next route files are not counted: they leave
+ *    with Next. Client routes are: a route handing a floor `mode` or `isExplore` is a floor still
+ *    waiting to read the session itself. The goal is 0.
  *
  *   node scripts/check-web-stack.mjs            check (builds the Explore bundle first)
  *   node scripts/check-web-stack.mjs --no-build check an existing apps/gurudevi-web/dist-explore
@@ -50,12 +52,16 @@ const NEXT_IMPORT = /from\s+['"]next(\/[a-z-]+)?['"]/;
 const SURFACE_BRANCH = /\bisExplore(Mode)?\b|\b(mode|surface) === 'explore'/g;
 const DATABASE_CALL =
   /\.from\(\s*['"`][a-z_]+['"`]\s*\)|\.rpc\(\s*['"`]|\.storage\s*\.\s*from\(|\.channel\(\s*['"`]|\.removeChannel\(/g;
+// Next's own route files (page.tsx, layout.tsx, route.ts, …) go when Next goes; what is counted is
+// the screens and libraries that still need rewriting before then.
+const NEXT_ROUTE_FILE = /^(page|layout|route|error|global-error|not-found|loading|template|default)\.tsx?$/;
 const nextImportFiles = ['app', 'lib']
   .flatMap((d) => walk(path.join(WEB, d)))
+  .filter((f) => !NEXT_ROUTE_FILE.test(path.basename(f)))
   .filter((f) => NEXT_IMPORT.test(fs.readFileSync(f, 'utf8'))).length;
 const surfaceBranches = ['app/(sanctuary)', 'lib/sanctuary', 'spa']
   .flatMap((d) => walk(path.join(WEB, d)))
-  .filter((f) => !/\.test\.tsx?$/.test(f) && path.basename(f) !== 'page.tsx')
+  .filter((f) => !/\.test\.tsx?$/.test(f) && !NEXT_ROUTE_FILE.test(path.basename(f)))
   .reduce((sum, f) => sum + (fs.readFileSync(f, 'utf8').match(SURFACE_BRANCH)?.length ?? 0), 0);
 const directDatabaseCalls = ['app', 'lib', 'spa']
   .flatMap((d) => walk(path.join(WEB, d)))

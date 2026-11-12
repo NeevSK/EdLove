@@ -7,6 +7,15 @@
 
 export type ScreenRole = 'class_teacher' | 'subject_teacher' | 'principal' | 'student' | 'guardian';
 
+/** Every screen role, for checking a role named in a link. */
+export const SCREEN_ROLE_IDS = [
+  'class_teacher',
+  'subject_teacher',
+  'principal',
+  'student',
+  'guardian',
+] as const satisfies readonly ScreenRole[];
+
 export type ScreenCategory =
   | 'attendance'
   | 'academics'

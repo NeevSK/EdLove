@@ -112,13 +112,18 @@ by default. On a 2G or 3G connection the difference is seconds per page.
    `@repo/core` (`logic/i18n/web-*`, `site.ts`) and are read by Next, Astro and Vite alike.
 4. **Gates that only go down** (`node scripts/check-web-stack.mjs`, in the quality gate; numbers in
    `tooling/web-stack-ratchet.json`):
-   - `nextImportFiles`: files in `app/` and `lib/` importing `next/*` (183 today).
+   - `nextImportFiles`: screens and libraries in `app/` and `lib/` importing `next/*`. Next's own
+     route files (`page.tsx`, `layout.tsx`, `route.ts`, ...) are not counted: they go with Next. 84 on
+     12 Nov.
    - `exploreBackendClients`: backend client code found in the Explore bundle. Target: none.
+   - `directDatabaseCalls` and `surfaceBranches`: below, under *Data* and *One app*.
 5. **A codemod does the predictable part** (`node scripts/codemods/web-migrate.mjs`, dry run by
    default; `--write --segment=explore` writes routes and never overwrites one). It sorts every page
    (explore-ready, explore-review, client-wrap, server-data, astro-static, astro-island) and lifts each
-   page's `if (isExplore)` block into a route. First run, 12 Nov: 15 Explore routes generated; all 16
-   Explore routes open in a 390 px Chrome page with no console errors and no backend requests.
+   page's signed-in floor into a route that reads the session. Second run, 12 Nov: 43 of 67 sanctuary
+   pages generated; the rest (entry flows, redirects, pages with their own data or a capacity gate)
+   were written by hand, because the codemod lifts only a page's last return and would have dropped
+   the gates and the personal-bond state in between.
 6. **Each route moves as a journey,** with browser evidence (phone-size screenshot, no console
    errors, no backend requests on Explore) before the Next route retires.
 
@@ -131,13 +136,17 @@ by default. On a 2G or 3G connection the difference is seconds per page.
    gone; `/support` is an app page and moved to `app/(sanctuary)/(support)`. Content pages ship no
    JavaScript; `/status` and `/intro` are islands. `gurudevi.app` must point at this build when the
    branch is deployed.
-2. Explore: add routes until every Explore journey runs in the Vite build; remove the backend clients
-   from its bundle (the ratchet list reaches empty); point `explore.gurudevi.app` at it.
-3. Sanctuary: per journey, move server-side data loading to the v1 API through TanStack Query, the
-   login gate to a client route guard (the API stays the enforcer), and add the app shell service
-   worker and the outbox for the writes that need it (levels W1, W2, W4 in
-   `client-state-and-web-offline-capability-canon.md`).
-4. Remove Next, the stand-ins in `spa/next`, `proxy.ts` host routing and its cookie stripping, and
+2. **Routes: done (12 Nov).** Every Explore and sanctuary page is a route in `spa/routes`, served by
+   both builds. Checked in Chrome: 52 Explore paths render or redirect as intended; on the sanctuary
+   build a signed-out visitor to any app path lands on `/welcome?returnTo=…` with the full path and
+   query, email links finish at `/auth/complete`, and `?dev=true` previews a capacity in development.
+   Next still serves these pages until the hosts point at the Vite builds.
+3. Explore: remove the backend clients from its bundle (the ratchet list reaches empty); point
+   `explore.gurudevi.app` at it.
+4. Sanctuary: per journey, move each floor's data to a `Source` answered by the v1 API, and add the
+   app shell service worker and the outbox for the writes that need it (levels W1, W2, W4 in
+   `client-state-and-web-offline-capability-canon.md`). Point `sanctuary.gurudevi.app` at it.
+5. Remove Next, the stand-ins in `spa/next`, `proxy.ts` host routing and its cookie stripping, and
    the codemod in `scripts/codemods`.
 
 ### Where shared code lives
@@ -171,13 +180,20 @@ what the surface plugs in at the root (`spa/main.tsx`):
 Rules that keep it one app:
 - A route reads `useSession()` and runs `useSuspenseQuery(sources.x())`; its loader prefetches the same
   query with `ensureQueryData`. Routes never ask which surface they are on.
-- The shell is mounted once in `spa/routes/__root.tsx`, from the session, so it stays in place while
-  people move between places.
+- Routes sit in three pathless groups. `_app` holds the places; it settles access (signed out, needs
+  onboarding, inactive, unavailable, ready) and mounts the shell once, from the session, so it stays
+  in place while people move between places. `_account` holds sign-in, recovery, onboarding and the
+  email-link routes; where accounts live elsewhere (`accountHome`: Explore) it opens the same address
+  on sanctuary. `_dev` holds labs and the kit, which are not found in a production build.
+- A floor that only some capacities may open is wrapped in `CapacityGate` with a named rule from
+  `lib/sanctuary/capacityAccess.ts`. Explore shows every floor as the visitor's persona; the API is
+  what enforces access.
 - A new kind of data gets a `Source` in `Sources`, with an Explore answer and an API answer, before a
   screen reads it.
-- `check-web-stack` counts the screens that still ask (`isExplore`, `mode === 'explore'`, ...): 132 on
-  12 Nov, mostly inside floors that pick sample data themselves. The number only goes down; each
-  floor moves its data behind a `Source`.
+- `check-web-stack` counts the screens that still ask (`isExplore`, `mode === 'explore'`, ...): 147 on
+  12 Nov. 132 are inside floors that pick sample data themselves; 15 are routes handing those floors
+  a `mode` or `isExplore` prop (until the move they sat in uncounted `page.tsx` files). The number
+  only goes down; each floor moves its data behind a `Source`, and its route stops passing the prop.
 
 ## Data, state and links in the web app
 
@@ -214,7 +230,7 @@ The synced SQLite replica (PowerSync) stays on mobile; the web stays at W1, W2 a
 TanStack Router keeps file-based routing (`spa/routes/*.tsx` generate `spa/generated/routeTree.gen.ts`)
 and types every path, param and search key, so a wrong link is a type error. It has less training
 data than Next and its API changed before v1, so weaker models may write beta-era code. Guards:
-one reference route to copy (`spa/routes/self.tsx`), typecheck in CI, and a lint ban on the old APIs
+one reference route to copy (`spa/routes/_app/notifications.tsx`), typecheck in CI, and a lint ban on the old APIs
 when the first one appears. A client app also removes the server/client boundary, the most common
 source of agent mistakes in the App Router.
 
@@ -228,6 +244,15 @@ by agents.
 - `llms.txt` advertised `/llms-full.txt`, which did not exist; it now does, with every journal essay.
 - `next build` stopped on a test importing that missing route; the test moved with the files it tests
   and passes.
+- Two infinite loops, both from earlier code, appeared once the shell stayed mounted:
+  - Opening a workspace task at the task limit changed nothing, but the workbench still announced a
+    change; every store rehydrated, re-rendered and opened the task again. The store now stays silent
+    when nothing changed (a test covers it), and `LayeredDeckHeader` measures with a `ResizeObserver`
+    instead of on every render.
+  - `<Navigate>` restarts whenever its props change, and a `returnTo` read from the location during
+    that navigation nested the destination inside itself until the tab ran out of memory. Access
+    redirects use `GoTo` (`spa/surface/navigation.tsx`), which goes once with the address the person
+    was on.
 - `SyncStatusPill` probed `sanctuary.gurudevi.app` every 30 seconds, including on Explore. It is no
 longer rendered in Explore mode (there is nothing to sync). Verified in a 390 px Chrome page:
 no requests to the sanctuary host.
@@ -249,6 +274,14 @@ no requests to the sanctuary host.
   branch as well.
 
 ## Open product questions (the owner decides; the design keeps both open)
+
+- **Which pages Explore serves.** Next served only `/welcome` and `/self` on `explore.gurudevi.app` in
+  production (everything else returned 404) to keep session-carrying server pages off the demo host.
+  The Vite Explore build has no such pages and serves every floor, following the one-app rule. If
+  some floors should stay off Explore, that is a list in one place, not a branch per page.
+- **Capacity gates in Explore.** Explore shows gated floors (tuition, kiosk, founder command, ...) to
+  every persona, as the old Explore pages did. Applying the gates to the persona is one line in
+  `CapacityGate`.
 
 - **Safe try for signed-in people:** inside sanctuary, or by sending them to Explore. Built as a data
   mode the app can switch into, either placement uses the same mechanism.

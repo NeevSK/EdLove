@@ -1,30 +1,27 @@
 #!/usr/bin/env node
 /**
- * Next -> Vite/Astro migration codemod (decision: docs/decisions/2026-11-12-web-stack-astro-vite.md).
+ * Next -> Vite codemod for the Gurudevi web app (decision: docs/decisions/2026-11-12-web-stack-astro-vite.md).
  *
- * Reads every page under apps/gurudevi-web/app and sorts it:
+ * Explore and sanctuary are one app. A Next page under app/(sanctuary) repeats a ladder (host, Explore,
+ * dev preview, signed-in entry, state screens) around one screen. The ladder now lives once in
+ * spa/routes/_app.tsx; this codemod keeps only the screen and writes it as a TanStack Router route:
  *
- *   explore-ready   app/(sanctuary) page with an `if (isExplore) { ... return <jsx> }` block that only
- *                   uses imports, literals and route params. The block becomes a TanStack Router route
- *                   in spa/routes, exactly like the hand-written spa/routes/self.tsx.
- *   explore-review  has the block, but it awaits something or uses a local the codemod cannot map.
- *   client-wrap     no explore block and no server work: can be wrapped as a route as is (later segment).
- *   server-data     reads cookies/headers or fetches on the server: needs its data moved to the v1 API.
- *   astro-static    app/(marketing) page with no 'use client': Astro can render it at build, no JS.
- *   astro-island    app/(marketing) page marked 'use client': needs a client:* island in Astro.
+ *   - the ready branch's screen (the child of <SanctuaryShell>), with `entry.*` read from useSession();
+ *   - props the Explore branch set and the ready branch did not (`isExplore={true}`, `mode="explore"`)
+ *     become `surface === 'explore'` expressions, so the same route serves both surfaces;
+ *   - route params come from Route.useParams().
  *
- *   node scripts/codemods/web-migrate.mjs                       dry run: report only, writes nothing
- *   node scripts/codemods/web-migrate.mjs --write --segment=explore   write explore-ready routes
- *   node scripts/codemods/web-migrate.mjs --json                machine-readable report
+ * A page is `ready` when all of that maps cleanly, otherwise `review` with the reason, and never guessed.
  *
- * Never overwrites an existing route file. Next keeps serving every page; nothing in app/ changes.
+ *   node scripts/codemods/web-migrate.mjs                 dry run: report only
+ *   node scripts/codemods/web-migrate.mjs --write         write every ready route (replaces generated ones)
+ *   node scripts/codemods/web-migrate.mjs --json          machine-readable report
  */
 import fs from 'node:fs';
-import path from 'node:path';
 import { createRequire } from 'node:module';
+import path from 'node:path';
 
 const ROOT = process.cwd();
-// The TypeScript 6 compiler API, loaded the way the other repo scripts do (TypeScript 7 has no JS API yet).
 const ts6 = fs
   .readdirSync(path.join(ROOT, 'node_modules/.pnpm'))
   .filter((d) => d.startsWith('@typescript+typescript6@'))
@@ -35,31 +32,34 @@ const ts = createRequire(
 )('./lib/typescript.js');
 
 const WEB = path.join(ROOT, 'apps/gurudevi-web');
-const APP = path.join(WEB, 'app');
-const ROUTES = path.join(WEB, 'spa/routes');
-const args = process.argv.slice(2);
-const WRITE = args.includes('--write');
-const JSON_OUT = args.includes('--json');
-const SEGMENT = (args.find((a) => a.startsWith('--segment=')) ?? '--segment=explore').split('=')[1];
+const SANCTUARY = path.join(WEB, 'app/(sanctuary)');
+const ROUTES = path.join(WEB, 'spa/routes/_app');
+const args = new Set(process.argv.slice(2));
 
-const GLOBALS = new Set([
-  'undefined',
-  'true',
-  'false',
-  'null',
-  'Math',
-  'Date',
-  'JSON',
-  'Number',
-  'String',
-  'Boolean',
-  'Array',
-  'Object',
-  'console',
-  'React',
+/** Pages with their own route outside the signed-in layout, or real server work: written by hand. */
+const BY_HAND = new Set([
+  'welcome', 'onboarding', 'sign-in', 'recovery', 'reset-password', 'account-recovery',
+  'invitation-welcome', 'explore-intro', 'auth/callback', 'c/$code', 'community', 'school/$id',
+  'school/$id/articles/$slug', 'support',
 ]);
-const SERVER_SIGNS =
-  /from ['"]next\/headers['"]|createServerSupabaseClient|resolveAuthorizedEntry|from ['"]server-only['"]/;
+const SESSION = {
+  'entry.activeScope.bondId': 'activeScope?.bondId',
+  'entry.activeScope.entityId': 'activeScope?.entityId',
+  'entry.activeScope.entityType': 'activeScope?.entityType',
+  'entry.activeScope.roles': 'activeScope?.roles',
+  'entry.activeScope': 'activeScope',
+  'entry.authSubjectId': 'authSubjectId',
+  'entry.displayName': 'displayName',
+  'entry.accountId': 'accountId',
+  'entry.activeCapacity': 'capacity',
+  'entry.primaryCapacity': 'primaryCapacity',
+  'entry.primaryScopeRole': 'roleLabel',
+};
+const SHELL_PROPS = new Set([
+  'displayName', 'navigationPrefix', 'activeCapacity', 'showAccountNavigation', 'isExploreMode',
+  'previewCapacity', 'isDevPreview', 'unreadNotifications',
+]);
+const GLOBALS = new Set(['undefined', 'true', 'false', 'null', 'Math', 'Date', 'JSON', 'Number', 'String', 'Boolean', 'Array', 'Object', 'React']);
 
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
@@ -69,31 +69,26 @@ function walk(dir) {
   });
 }
 
-/** URL segments of a page: route groups dropped, [x] -> $x, [...x] -> $. */
-function urlSegments(file, base) {
-  return path
-    .relative(base, path.dirname(file))
+const segmentsOf = (file) =>
+  path
+    .relative(SANCTUARY, path.dirname(file))
     .split(path.sep)
     .filter((s) => s && !/^\(.*\)$/.test(s))
     .map((s) => (/^\[\.\.\..+\]$/.test(s) ? '$' : s.replace(/^\[(.+)\]$/, '$$$1')));
-}
 
-const sanctuaryPages = walk(path.join(APP, '(sanctuary)'));
-const routeDirs = new Set(
-  sanctuaryPages.map((f) => urlSegments(f, path.join(APP, '(sanctuary)')).join('/')),
-);
+const pages = walk(SANCTUARY);
+const routeKeys = new Set(pages.map((f) => segmentsOf(f).join('/')));
 
-function routeTarget(segs) {
+function target(segs) {
   const key = segs.join('/');
-  const hasChildren = [...routeDirs].some((d) => d !== key && d.startsWith(`${key}/`));
-  if (segs.length === 0) return { file: path.join(ROUTES, 'index.tsx'), routePath: '/' };
+  const hasChildren = [...routeKeys].some((k) => k !== key && k.startsWith(`${key}/`));
   return hasChildren
     ? { file: path.join(ROUTES, ...segs, 'index.tsx'), routePath: `/${key}/` }
     : { file: path.join(ROUTES, ...segs.slice(0, -1), `${segs.at(-1)}.tsx`), routePath: `/${key}` };
 }
 
 function importsOf(sf) {
-  const map = new Map(); // local name -> { spec, kind: 'default'|'named'|'ns', imported }
+  const map = new Map();
   for (const st of sf.statements) {
     if (!ts.isImportDeclaration(st) || !st.importClause || st.importClause.isTypeOnly) continue;
     const spec = st.moduleSpecifier.text;
@@ -102,32 +97,48 @@ function importsOf(sf) {
     const nb = c.namedBindings;
     if (nb && ts.isNamespaceImport(nb)) map.set(nb.name.text, { spec, kind: 'ns' });
     if (nb && ts.isNamedImports(nb))
-      for (const el of nb.elements) {
-        if (el.isTypeOnly) continue;
-        map.set(el.name.text, { spec, kind: 'named', imported: (el.propertyName ?? el.name).text });
-      }
+      for (const el of nb.elements)
+        if (!el.isTypeOnly)
+          map.set(el.name.text, { spec, kind: 'named', imported: (el.propertyName ?? el.name).text });
   }
   return map;
 }
 
-function declaredNames(node, out = new Set()) {
-  const bind = (n) => {
-    if (ts.isIdentifier(n)) out.add(n.text);
-    else if (ts.isObjectBindingPattern(n) || ts.isArrayBindingPattern(n))
-      for (const el of n.elements) if (!ts.isOmittedExpression(el)) bind(el.name);
+const jsxTag = (n) =>
+  ts.isJsxElement(n) ? n.openingElement : ts.isJsxSelfClosingElement(n) ? n : null;
+const tagName = (n) => jsxTag(n)?.tagName.getText();
+
+/** Every <SanctuaryShell> in the page function, marked when it sits in the Explore branch. */
+function shells(fn) {
+  const out = [];
+  const visit = (n, explore) => {
+    if (ts.isIfStatement(n)) {
+      const isExplore = /^\s*isExplore(Mode)?\s*$/.test(n.expression.getText());
+      visit(n.thenStatement, explore || isExplore);
+      if (n.elseStatement) visit(n.elseStatement, explore);
+      return;
+    }
+    if ((ts.isJsxElement(n) || ts.isJsxSelfClosingElement(n)) && tagName(n) === 'SanctuaryShell') {
+      out.push({ node: n, explore });
+      return;
+    }
+    ts.forEachChild(n, (c) => visit(c, explore));
   };
-  const visit = (n) => {
-    if (ts.isVariableDeclaration(n) || ts.isParameter(n)) bind(n.name);
-    if ((ts.isFunctionDeclaration(n) || ts.isClassDeclaration(n)) && n.name) out.add(n.name.text);
-    ts.forEachChild(n, visit);
-  };
-  visit(node);
+  ts.forEachChild(fn.body, (c) => visit(c, false));
   return out;
 }
 
-/** Identifiers the block reads but does not declare. */
-function freeNames(block) {
-  const declared = declaredNames(block);
+const screenOf = (shell) =>
+  ts.isJsxElement(shell) ? shell.children.filter((c) => !(ts.isJsxText(c) && !c.text.trim())) : [];
+
+function attrs(el) {
+  const map = new Map();
+  for (const a of jsxTag(el)?.attributes.properties ?? [])
+    if (ts.isJsxAttribute(a)) map.set(a.name.getText(), a);
+  return map;
+}
+
+function freeNames(node) {
   const free = new Set();
   const visit = (n) => {
     if (ts.isIdentifier(n)) {
@@ -135,203 +146,214 @@ function freeNames(block) {
       const isKey =
         (ts.isPropertyAccessExpression(p) && p.name === n) ||
         (ts.isJsxAttribute(p) && p.name === n) ||
-        (ts.isPropertyAssignment(p) && p.name === n) ||
-        (ts.isBindingElement(p) && p.propertyName === n);
-      const isIntrinsicTag =
+        (ts.isPropertyAssignment(p) && p.name === n);
+      const intrinsic =
         (ts.isJsxOpeningElement(p) || ts.isJsxSelfClosingElement(p) || ts.isJsxClosingElement(p)) &&
         p.tagName === n &&
         /^[a-z]/.test(n.text);
-      if (!isKey && !isIntrinsicTag && !declared.has(n.text)) free.add(n.text);
-      if (ts.isShorthandPropertyAssignment(p) && !declared.has(n.text)) free.add(n.text);
+      if (!isKey && !intrinsic) free.add(n.text);
     }
     ts.forEachChild(n, visit);
   };
-  visit(block);
+  visit(node);
   return free;
 }
 
-function findExploreIf(fn) {
-  let found = null;
-  const visit = (n) => {
-    if (found) return;
-    if (ts.isIfStatement(n) && /^\s*isExplore(Mode)?\s*$/.test(n.expression.getText())) found = n;
-    else ts.forEachChild(n, visit);
-  };
-  visit(fn);
-  return found;
-}
-
-/** Locals outside the block whose value comes from the route params. */
-function paramLocals(fn, sf) {
+function paramNames(fn, sf, dynamic) {
   const names = new Set();
+  const bind = (b) => {
+    if (ts.isIdentifier(b)) names.add(b.text);
+    else if (ts.isObjectBindingPattern(b)) for (const e of b.elements) bind(e.name);
+  };
   const visit = (n) => {
-    if (
-      ts.isVariableDeclaration(n) &&
-      n.initializer &&
-      /\bparams\b|resolvedParams/i.test(n.initializer.getText(sf)) &&
-      !/searchParams/i.test(n.initializer.getText(sf))
-    )
-      for (const nm of declaredNames(n)) names.add(nm);
+    if (ts.isVariableDeclaration(n) && n.initializer) {
+      const init = n.initializer.getText(sf);
+      if (/\bparams\b|resolvedParams/.test(init) && !/searchParams/i.test(init)) bind(n.name);
+    }
     ts.forEachChild(n, visit);
   };
   visit(fn);
-  return names;
+  return new Set([...names].filter((n) => dynamic.includes(n)));
+}
+
+function analyse(file) {
+  const src = fs.readFileSync(file, 'utf8');
+  const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const segs = segmentsOf(file);
+  const t = target(segs);
+  const base = { page: path.relative(WEB, file), route: t.routePath, routeFile: path.relative(WEB, t.file) };
+  if (BY_HAND.has(segs.join('/')))
+    return { ...base, kind: 'by-hand', why: 'outside the signed-in layout, or real server work' };
+  const fn = sf.statements.find(
+    (s) =>
+      ts.isFunctionDeclaration(s) && s.modifiers?.some((m) => m.kind === ts.SyntaxKind.DefaultKeyword),
+  );
+  if (!fn?.body) return { ...base, kind: 'review', why: 'no default page function' };
+  const all = shells(fn);
+  const ready =
+    all.filter((s) => !s.explore && /\bentry\./.test(s.node.getText(sf))).at(-1) ??
+    all.filter((s) => !s.explore).at(-1) ??
+    all.at(-1);
+  if (!ready) {
+    const body = fn.body.getText(sf);
+    if (/\bredirect\(/.test(body)) return { ...base, kind: 'redirect', why: 'redirects only' };
+    const ret = fn.body.statements.at(-1);
+    const devOnly =
+      fn.body.statements.length === 2 &&
+      /process\.env\.NODE_ENV === 'production'[\s\S]*notFound\(\)/.test(fn.body.statements[0].getText(sf));
+    if ((fn.body.statements.length === 1 || devOnly) && ret && ts.isReturnStatement(ret) && ret.expression && !/\bawait\b/.test(body)) {
+      const el = ts.isParenthesizedExpression(ret.expression) ? ret.expression.expression : ret.expression;
+      if (jsxTag(el)) return plain(base, sf, el, segs, devOnly ? '_dev' : '');
+    }
+    return { ...base, kind: 'review', why: 'no shell to lift' };
+  }
+  return plan(base, sf, fn, segs, ready, all.find((s) => s.explore) ?? null, t);
+}
+
+/** A page that renders one element and never reads the entry (labs, kits): the same on every surface. */
+function plain(base, sf, el, segs, layout) {
+  const t = { ...target(segs) };
+  t.file = t.file.replace(`${path.sep}_app${path.sep}`, layout ? `${path.sep}${layout}${path.sep}` : path.sep);
+  const imports = importsOf(sf);
+  const needImports = new Map();
+  const unknown = [];
+  for (const name of freeNames(el)) {
+    if (GLOBALS.has(name)) continue;
+    if (imports.has(name)) needImports.set(name, imports.get(name));
+    else unknown.push(name);
+  }
+  if (unknown.length) return { ...base, kind: 'review', why: `uses locals: ${unknown.join(', ')}` };
+  return {
+    ...base,
+    routeFile: path.relative(WEB, t.file),
+    kind: 'ready',
+    why: '',
+    render: { text: el.getText(sf), used: new Set(), needImports, params: [], t, file: sf.fileName, layout: layout ? `/${layout}` : '' },
+  };
+}
+
+function plan(base, sf, fn, segs, ready, explore, t) {
+  const extraShell = [...attrs(ready.node).keys()].filter((a) => !SHELL_PROPS.has(a));
+  if (extraShell.length) return { ...base, kind: 'review', why: `shell props: ${extraShell.join(', ')}` };
+  const screen = screenOf(ready.node);
+  if (screen.length !== 1) return { ...base, kind: 'review', why: `${screen.length} children in the shell` };
+  const el = screen[0];
+  if (!jsxTag(el)) return { ...base, kind: 'review', why: 'the shell child is not an element' };
+  const exploreEl = explore ? screenOf(explore.node).find((c) => tagName(c) === tagName(el)) : null;
+
+  let text = el.getText(sf);
+  const used = new Set();
+  for (const [from, to] of Object.entries(SESSION))
+    if (text.includes(from)) {
+      text = text.split(from).join(to);
+      used.add(to.split(/[?.]/)[0]);
+    }
+  if (/\bentry\./.test(text)) return { ...base, kind: 'review', why: 'uses other entry fields' };
+
+  const readyAttrs = attrs(el);
+  const additions = [];
+  if (exploreEl)
+    for (const [name, a] of attrs(exploreEl)) {
+      const v = a.initializer?.getText(sf);
+      const isExploreValue = v === undefined || v === '{true}' || v === '"explore"' || v === "'explore'";
+      if (!isExploreValue) continue;
+      const surfaceValue =
+        v === '"explore"' || v === "'explore'"
+          ? `surface === 'explore' ? 'explore' : ${readyAttrs.get(name)?.initializer?.getText(sf).replace(/^\{(.*)\}$/, '$1') ?? "'account'"}`
+          : `surface === 'explore'${readyAttrs.has(name) ? ` || ${readyAttrs.get(name).initializer?.getText(sf).replace(/^\{(.*)\}$/, '$1') ?? 'true'}` : ''}`;
+      used.add('surface');
+      if (readyAttrs.has(name)) text = text.replace(readyAttrs.get(name).getText(sf), `${name}={${surfaceValue}}`);
+      else additions.push(`${name}={${surfaceValue}}`);
+    }
+  if (additions.length) text = text.replace(/^(<[A-Za-z0-9.]+)/, `$1 ${additions.join(' ')}`);
+
+  const dynamic = segs.filter((s) => s.startsWith('$') && s !== '$').map((s) => s.slice(1));
+  const fromParams = paramNames(fn, sf, dynamic);
+  const imports = importsOf(sf);
+  const sessionNames = new Set([...Object.values(SESSION).map((v) => v.split(/[?.]/)[0]), 'surface']);
+  const needImports = new Map();
+  const unknown = [];
+  const reparsed = ts.createSourceFile('x.tsx', `const x = (${text});`, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  for (const name of freeNames(reparsed.statements[0])) {
+    if (name === 'x' || GLOBALS.has(name) || sessionNames.has(name) || fromParams.has(name)) continue;
+    if (imports.has(name)) needImports.set(name, imports.get(name));
+    else unknown.push(name);
+  }
+  if (unknown.length) return { ...base, kind: 'review', why: `uses locals: ${unknown.join(', ')}` };
+  return {
+    ...base,
+    kind: 'ready',
+    why: '',
+    render: { text, used, needImports, params: [...fromParams], t, file: sf.fileName, layout: '/_app' },
+  };
 }
 
 function relSpec(spec, fromFile, toFile) {
   if (!spec.startsWith('.')) return spec;
-  const abs = path.resolve(path.dirname(fromFile), spec);
-  let r = path.relative(path.dirname(toFile), abs).split(path.sep).join('/');
+  let r = path
+    .relative(path.dirname(toFile), path.resolve(path.dirname(fromFile), spec))
+    .split(path.sep)
+    .join('/');
   if (!r.startsWith('.')) r = `./${r}`;
   return r;
 }
 
-function analyseSanctuary(file) {
-  const src = fs.readFileSync(file, 'utf8');
-  const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-  const segs = urlSegments(file, path.join(APP, '(sanctuary)'));
-  const target = routeTarget(segs);
-  const rel = path.relative(WEB, file);
-  const fn = sf.statements.find(
-    (s) =>
-      ts.isFunctionDeclaration(s) &&
-      s.modifiers?.some((m) => m.kind === ts.SyntaxKind.DefaultKeyword),
-  );
-  const base = { file: rel, route: target.routePath, routeFile: path.relative(WEB, target.file) };
-  if (!fn) return { ...base, kind: 'server-data', why: 'no default function' };
-  const ifs = findExploreIf(fn);
-  if (!ifs) {
-    const server = SERVER_SIGNS.test(src) || /\bawait\b/.test(fn.getText(sf));
-    return {
-      ...base,
-      kind: server ? 'server-data' : 'client-wrap',
-      why: server ? 'server reads or fetches' : '',
-    };
-  }
-  const block = ifs.thenStatement;
-  const blockText = block.getText(sf);
-  if (/\bawait\b/.test(blockText))
-    return { ...base, kind: 'explore-review', why: 'awaits inside the explore branch' };
-  const imports = importsOf(sf);
-  const fromParams = paramLocals(fn, sf);
-  const dynamic = segs.filter((s) => s.startsWith('$') && s !== '$').map((s) => s.slice(1));
-  const needImports = new Map();
-  const needParams = new Set();
-  const unknown = [];
-  for (const name of freeNames(block)) {
-    if (GLOBALS.has(name)) continue;
-    if (imports.has(name)) needImports.set(name, imports.get(name));
-    else if (fromParams.has(name) && dynamic.includes(name)) needParams.add(name);
-    else unknown.push(name);
-  }
-  if (unknown.length)
-    return { ...base, kind: 'explore-review', why: `uses locals: ${unknown.join(', ')}` };
-  if (fs.existsSync(target.file))
-    return { ...base, kind: 'exists', why: 'route file already written' };
-  return {
-    ...base,
-    kind: 'explore-ready',
-    why: '',
-    plan: { needImports, needParams, block, sf, target },
-  };
-}
-
-function renderRoute(file, plan) {
-  const { needImports, needParams, block, sf, target } = plan;
+function render({ text, used, needImports, params, t, file, layout }) {
+  const lines = ["import { createFileRoute } from '@tanstack/react-router';"];
   const bySpec = new Map();
   for (const [local, imp] of needImports) {
-    const spec = relSpec(imp.spec, file, target.file);
+    const spec = relSpec(imp.spec, file, t.file);
     if (!bySpec.has(spec)) bySpec.set(spec, { def: null, ns: null, named: [] });
     const e = bySpec.get(spec);
     if (imp.kind === 'default') e.def = local;
     else if (imp.kind === 'ns') e.ns = local;
     else e.named.push(imp.imported === local ? local : `${imp.imported} as ${local}`);
   }
-  const lines = ["import { createFileRoute } from '@tanstack/react-router';"];
-  for (const [spec, e] of [...bySpec].sort(([a], [b]) => a.localeCompare(b))) {
-    const parts = [];
-    if (e.def) parts.push(e.def);
-    if (e.ns) parts.push(`* as ${e.ns}`);
-    if (e.named.length) parts.push(`{ ${e.named.sort().join(', ')} }`);
+  for (const [spec, e] of bySpec) {
+    const parts = [e.def, e.ns && `* as ${e.ns}`, e.named.length && `{ ${e.named.sort().join(', ')} }`].filter(Boolean);
     lines.push(`import ${parts.join(', ')} from '${spec}';`);
   }
-  const bodyStatements = ts.isBlock(block) ? block.statements : [block];
-  const body = bodyStatements.map((s) => s.getText(sf)).join('\n');
-  const paramLine = needParams.size
-    ? `  const { ${[...needParams].join(', ')} } = Route.useParams();\n`
-    : '';
-  const pageRel = path.relative(WEB, file).split(path.sep).join('/');
+  const fields = [...used].sort();
+  if (fields.length)
+    lines.push(`import { useSession } from '${relSpec('./spa/surface/session', path.join(WEB, 'x'), t.file)}';`);
+  const name = `${
+    t.routePath
+      .split('/')
+      .filter(Boolean)
+      .map((s) => s.replace(/^\$/, '').replace(/(^|-)(\w)/g, (_, __, c) => c.toUpperCase()))
+      .join('') || 'Home'
+  }Screen`;
   return `${lines.join('\n')}
 
-// Generated by scripts/codemods/web-migrate.mjs from the explore branch of ${pageRel},
-// decided at build time instead of per request. Edit freely; the codemod never overwrites it.
-export const Route = createFileRoute('${target.routePath}')({
-  component: ExploreRoute,
+export const Route = createFileRoute('${layout}${t.routePath}')({
+  component: ${name},
 });
 
-function ExploreRoute() {
-${paramLine}${body
-  .split('\n')
-  .map((l) => `  ${l}`)
-  .join('\n')}
+function ${name}() {
+${params.length ? `  const { ${params.join(', ')} } = Route.useParams();\n` : ''}${fields.length ? `  const { ${fields.join(', ')} } = useSession();\n` : ''}  return ${text};
 }
 `;
 }
 
-function analyseMarketing(file) {
-  const src = fs.readFileSync(file, 'utf8');
-  const segs = urlSegments(file, path.join(APP, '(marketing)'));
-  const client = /^\s*['"]use client['"]/.test(src);
-  const server = SERVER_SIGNS.test(src);
-  return {
-    file: path.relative(WEB, file),
-    route: `/${segs.join('/')}`,
-    kind: server ? 'server-data' : client ? 'astro-island' : 'astro-static',
-    why: server ? 'reads cookies/headers' : '',
-  };
-}
-
-const sanctuary = sanctuaryPages.map(analyseSanctuary);
-const marketing = walk(path.join(APP, '(marketing)')).map(analyseMarketing);
-
+const report = pages.map(analyse).sort((a, b) => a.route.localeCompare(b.route));
 const written = [];
-if (WRITE && SEGMENT === 'explore') {
-  for (const r of sanctuary.filter((x) => x.kind === 'explore-ready')) {
-    const abs = path.join(WEB, r.file);
-    fs.mkdirSync(path.dirname(r.plan.target.file), { recursive: true });
-    fs.writeFileSync(r.plan.target.file, renderRoute(abs, r.plan));
+if (args.has('--write'))
+  for (const r of report.filter((x) => x.kind === 'ready')) {
+    fs.mkdirSync(path.dirname(r.render.t.file), { recursive: true });
+    fs.writeFileSync(r.render.t.file, render(r.render));
     written.push(r.routeFile);
   }
-}
 
-const strip = (r) => ({
-  file: r.file,
-  route: r.route,
-  kind: r.kind,
-  routeFile: r.routeFile,
-  why: r.why,
-});
-if (JSON_OUT) {
+const strip = ({ render: _r, ...rest }) => rest;
+if (args.has('--json')) console.log(JSON.stringify({ pages: report.map(strip), written }, null, 2));
+else {
+  const counts = report.reduce((a, r) => ((a[r.kind] = (a[r.kind] ?? 0) + 1), a), {});
   console.log(
-    JSON.stringify(
-      { sanctuary: sanctuary.map(strip), marketing: marketing.map(strip), written },
-      null,
-      2,
-    ),
-  );
-} else {
-  const count = (rows) =>
-    Object.entries(rows.reduce((a, r) => ((a[r.kind] = (a[r.kind] ?? 0) + 1), a), {}))
+    `${args.has('--write') ? 'WRITE' : 'DRY RUN'}  ${report.length} pages: ${Object.entries(counts)
       .map(([k, v]) => `${k} ${v}`)
-      .join(', ');
-  console.log(`${WRITE ? 'WRITE' : 'DRY RUN'}  segment=${SEGMENT}\n`);
-  console.log(`Sanctuary/Explore pages (${sanctuary.length}): ${count(sanctuary)}`);
-  for (const r of sanctuary.filter((x) => x.kind.startsWith('explore') || x.kind === 'exists'))
-    console.log(
-      `  ${r.kind.padEnd(15)} ${r.route.padEnd(34)} -> ${r.routeFile}${r.why ? `   (${r.why})` : ''}`,
-    );
-  console.log(`\nMarketing pages (${marketing.length}): ${count(marketing)}`);
-  for (const r of marketing) console.log(`  ${r.kind.padEnd(15)} ${r.route}`);
-  if (written.length)
-    console.log(`\nWrote ${written.length} route files:\n  ${written.join('\n  ')}`);
+      .join(', ')}\n`,
+  );
+  for (const r of report.filter((x) => x.kind !== 'ready'))
+    console.log(`  ${r.kind.padEnd(8)} ${r.route.padEnd(40)} ${r.why}`);
+  if (written.length) console.log(`\nWrote ${written.length} routes.`);
 }

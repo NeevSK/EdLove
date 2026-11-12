@@ -1,17 +1,7 @@
-import {
-  type AuthoritativeAuthorizedEntryFacts,
-  type AuthorizedEntryResult,
-  mapAuthorizedEntry,
-} from '@repo/core/web-authorized-entry';
+import { type AuthorizedEntryResult, mapAuthorizedEntry } from '@repo/core/web-authorized-entry';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import type { ServerSupabaseClient } from '../supabase/server';
-import {
-  ACTIVE_BOND_COOKIE,
-  chooseActiveScope,
-  personalCapacity,
-  readV1Entry,
-  type V1Entry,
-} from './v1Entry';
+import { ACTIVE_BOND_COOKIE, authoritativeFacts, readV1Entry } from './v1Entry';
 
 export type AuthorizedEntry = AuthorizedEntryResult | Readonly<{ kind: 'signed-out' }>;
 
@@ -29,31 +19,6 @@ function unavailable(message: string): AuthorizedEntryResult {
 async function selectedBondFromCookies(): Promise<string | undefined> {
   const { cookies } = await import('next/headers');
   return (await cookies()).get(ACTIVE_BOND_COOKIE)?.value;
-}
-
-function authoritativeFacts(
-  entry: V1Entry,
-  subject: string,
-  selectedBondId: string | undefined,
-): AuthoritativeAuthorizedEntryFacts {
-  const active = chooseActiveScope(entry.scopes, selectedBondId);
-  const primary = personalCapacity(entry.scopes) ?? active?.capacity ?? null;
-  return {
-    kind: 'active',
-    accountId: entry.accountId,
-    authSubjectId: subject,
-    displayName: entry.displayName,
-    onboardingCompleted: entry.onboardingCompleted,
-    activeCapacity: active?.capacity ?? null,
-    primaryCapacity: primary,
-    primaryScopeRole: primary,
-    activeScope: active && {
-      bondId: active.bondId,
-      entityId: active.entityId,
-      entityType: active.entityType,
-      roles: [active.capacity],
-    },
-  };
 }
 
 /**

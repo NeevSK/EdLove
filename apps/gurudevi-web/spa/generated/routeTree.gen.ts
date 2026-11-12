@@ -8,371 +8,1559 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './../routes/__root';
-import { Route as NotificationsRouteImport } from './../routes/notifications';
-import { Route as SelfRouteImport } from './../routes/self';
-import { Route as SettingsRouteImport } from './../routes/settings';
-import { Route as CommunityAnnouncementsRouteImport } from './../routes/community/announcements';
-import { Route as CommunityForestRouteImport } from './../routes/community/forest';
-import { Route as LibraryIndexRouteImport } from './../routes/library/index';
-import { Route as LibraryContributeRouteImport } from './../routes/library/contribute';
-import { Route as LibraryCuratorRouteImport } from './../routes/library/curator';
-import { Route as LibraryMapRouteImport } from './../routes/library/map';
-import { Route as LibraryToolsRouteImport } from './../routes/library/tools';
-import { Route as ProfileIndexRouteImport } from './../routes/profile/index';
-import { Route as WorkspaceIndexRouteImport } from './../routes/workspace/index';
-import { Route as CommunityChatGroupIdRouteImport } from './../routes/community/chat/$groupId';
-import { Route as LibraryCollectionsIdRouteImport } from './../routes/library/collections/$id';
-import { Route as LibraryReaderBookIdRouteImport } from './../routes/library/reader/$bookId';
-import { Route as LibraryVideoVideoIdRouteImport } from './../routes/library/video/$videoId';
+import { Route as rootRouteImport } from './../routes/__root'
+import { Route as IndexRouteImport } from './../routes/index'
+import { Route as AccountRouteImport } from './../routes/_account'
+import { Route as AppRouteImport } from './../routes/_app'
+import { Route as DevRouteImport } from './../routes/_dev'
+import { Route as ArchitectureLabRouteImport } from './../routes/architecture-lab'
+import { Route as ExploreIntroRouteImport } from './../routes/explore-intro'
+import { Route as InvitationWelcomeRouteImport } from './../routes/invitation-welcome'
+import { Route as WelcomeRouteImport } from './../routes/welcome'
+import { Route as AccountAccountRecoveryRouteImport } from './../routes/_account/account-recovery'
+import { Route as AccountOnboardingRouteImport } from './../routes/_account/onboarding'
+import { Route as AccountRecoveryRouteImport } from './../routes/_account/recovery'
+import { Route as AccountResetPasswordRouteImport } from './../routes/_account/reset-password'
+import { Route as AccountSignInRouteImport } from './../routes/_account/sign-in'
+import { Route as AppAgentLabRouteImport } from './../routes/_app/agent-lab'
+import { Route as AppAtlasRouteImport } from './../routes/_app/atlas'
+import { Route as AppIconLabRouteImport } from './../routes/_app/icon-lab'
+import { Route as AppNotificationsRouteImport } from './../routes/_app/notifications'
+import { Route as AppSelfRouteImport } from './../routes/_app/self'
+import { Route as AppSettingsRouteImport } from './../routes/_app/settings'
+import { Route as AppSupportRouteImport } from './../routes/_app/support'
+import { Route as AppVergerLabRouteImport } from './../routes/_app/verger-lab'
+import { Route as DevArchitectureRouteImport } from './../routes/_dev/architecture'
+import { Route as CCodeRouteImport } from './../routes/c/$code'
+import { Route as AccountAuthCallbackRouteImport } from './../routes/_account/auth/callback'
+import { Route as AccountAuthCompleteRouteImport } from './../routes/_account/auth/complete'
+import { Route as AppAdminAnalyticsRouteImport } from './../routes/_app/admin/analytics'
+import { Route as AppAdminDocumentsRouteImport } from './../routes/_app/admin/documents'
+import { Route as AppAdminFounderRouteImport } from './../routes/_app/admin/founder'
+import { Route as AppAdminPrincipalRouteImport } from './../routes/_app/admin/principal'
+import { Route as AppCommunityIndexRouteImport } from './../routes/_app/community/index'
+import { Route as AppCommunityAnnouncementsRouteImport } from './../routes/_app/community/announcements'
+import { Route as AppCommunityForestRouteImport } from './../routes/_app/community/forest'
+import { Route as AppLibraryIndexRouteImport } from './../routes/_app/library/index'
+import { Route as AppLibraryContributeRouteImport } from './../routes/_app/library/contribute'
+import { Route as AppLibraryCuratorRouteImport } from './../routes/_app/library/curator'
+import { Route as AppLibraryMapRouteImport } from './../routes/_app/library/map'
+import { Route as AppLibraryReviewRouteImport } from './../routes/_app/library/review'
+import { Route as AppLibraryToolsRouteImport } from './../routes/_app/library/tools'
+import { Route as AppProfileIndexRouteImport } from './../routes/_app/profile/index'
+import { Route as AppProfileSecurityRouteImport } from './../routes/_app/profile/security'
+import { Route as AppWorkspaceIndexRouteImport } from './../routes/_app/workspace/index'
+import { Route as AppWorkspaceAtlasRouteImport } from './../routes/_app/workspace/atlas'
+import { Route as AppWorkspaceAttendanceRouteImport } from './../routes/_app/workspace/attendance'
+import { Route as AppWorkspaceBadgesRouteImport } from './../routes/_app/workspace/badges'
+import { Route as AppWorkspaceClaimRouteImport } from './../routes/_app/workspace/claim'
+import { Route as AppWorkspaceClimateRouteImport } from './../routes/_app/workspace/climate'
+import { Route as AppWorkspaceEditorialRouteImport } from './../routes/_app/workspace/editorial'
+import { Route as AppWorkspaceEventsRouteImport } from './../routes/_app/workspace/events'
+import { Route as AppWorkspaceGradebookRouteImport } from './../routes/_app/workspace/gradebook'
+import { Route as AppWorkspaceGuardianRouteImport } from './../routes/_app/workspace/guardian'
+import { Route as AppWorkspaceKioskRouteImport } from './../routes/_app/workspace/kiosk'
+import { Route as AppWorkspaceNoticesRouteImport } from './../routes/_app/workspace/notices'
+import { Route as AppWorkspacePlanRouteImport } from './../routes/_app/workspace/plan'
+import { Route as AppWorkspaceSchoolRouteImport } from './../routes/_app/workspace/school'
+import { Route as AppWorkspaceSubmissionsRouteImport } from './../routes/_app/workspace/submissions'
+import { Route as AppWorkspaceTimetableRouteImport } from './../routes/_app/workspace/timetable'
+import { Route as AppWorkspaceTuitionRouteImport } from './../routes/_app/workspace/tuition'
+import { Route as AppWorkspaceWorkforceRouteImport } from './../routes/_app/workspace/workforce'
+import { Route as DevKitIndexRouteImport } from './../routes/_dev/kit/index'
+import { Route as DevKitFloorRedesignRouteImport } from './../routes/_dev/kit/floor-redesign'
+import { Route as DevKitSelfRouteImport } from './../routes/_dev/kit/self'
+import { Route as KitComponentsIndexRouteImport } from './../routes/kit/components/index'
+import { Route as KitComponentsTemporalHorizonRouteImport } from './../routes/kit/components/temporal-horizon'
+import { Route as SchoolIdIndexRouteImport } from './../routes/school/$id/index'
+import { Route as AppAdminFormsBuilderRouteImport } from './../routes/_app/admin/forms/builder'
+import { Route as AppCommunityChatGroupIdRouteImport } from './../routes/_app/community/chat/$groupId'
+import { Route as AppCommunityDmUserIdRouteImport } from './../routes/_app/community/dm/$userId'
+import { Route as AppLibraryCollectionsIdRouteImport } from './../routes/_app/library/collections/$id'
+import { Route as AppLibraryReaderBookIdRouteImport } from './../routes/_app/library/reader/$bookId'
+import { Route as AppLibraryVideoVideoIdRouteImport } from './../routes/_app/library/video/$videoId'
+import { Route as AppWorkspaceClassroomIdRouteImport } from './../routes/_app/workspace/classroom/$id'
+import { Route as SchoolIdArticlesSlugRouteImport } from './../routes/school/$id/articles/$slug'
 
-const NotificationsRoute = NotificationsRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/_account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevRoute = DevRouteImport.update({
+  id: '/_dev',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchitectureLabRoute = ArchitectureLabRouteImport.update({
+  id: '/architecture-lab',
+  path: '/architecture-lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreIntroRoute = ExploreIntroRouteImport.update({
+  id: '/explore-intro',
+  path: '/explore-intro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvitationWelcomeRoute = InvitationWelcomeRouteImport.update({
+  id: '/invitation-welcome',
+  path: '/invitation-welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountAccountRecoveryRoute = AccountAccountRecoveryRouteImport.update({
+  id: '/account-recovery',
+  path: '/account-recovery',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountOnboardingRoute = AccountOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountRecoveryRoute = AccountRecoveryRouteImport.update({
+  id: '/recovery',
+  path: '/recovery',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountResetPasswordRoute = AccountResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountSignInRoute = AccountSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AppAgentLabRoute = AppAgentLabRouteImport.update({
+  id: '/agent-lab',
+  path: '/agent-lab',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAtlasRoute = AppAtlasRouteImport.update({
+  id: '/atlas',
+  path: '/atlas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppIconLabRoute = AppIconLabRouteImport.update({
+  id: '/icon-lab',
+  path: '/icon-lab',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const SelfRoute = SelfRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSelfRoute = AppSelfRouteImport.update({
   id: '/self',
   path: '/self',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const SettingsRoute = SettingsRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSupportRoute = AppSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVergerLabRoute = AppVergerLabRouteImport.update({
+  id: '/verger-lab',
+  path: '/verger-lab',
+  getParentRoute: () => AppRoute,
+} as any)
+const DevArchitectureRoute = DevArchitectureRouteImport.update({
+  id: '/architecture',
+  path: '/architecture',
+  getParentRoute: () => DevRoute,
+} as any)
+const CCodeRoute = CCodeRouteImport.update({
+  id: '/c/$code',
+  path: '/c/$code',
   getParentRoute: () => rootRouteImport,
-} as any);
-const CommunityAnnouncementsRoute = CommunityAnnouncementsRouteImport.update({
-  id: '/community/announcements',
-  path: '/community/announcements',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const CommunityForestRoute = CommunityForestRouteImport.update({
+} as any)
+const AccountAuthCallbackRoute = AccountAuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountAuthCompleteRoute = AccountAuthCompleteRouteImport.update({
+  id: '/auth/complete',
+  path: '/auth/complete',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AppAdminAnalyticsRoute = AppAdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminDocumentsRoute = AppAdminDocumentsRouteImport.update({
+  id: '/admin/documents',
+  path: '/admin/documents',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminFounderRoute = AppAdminFounderRouteImport.update({
+  id: '/admin/founder',
+  path: '/admin/founder',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminPrincipalRoute = AppAdminPrincipalRouteImport.update({
+  id: '/admin/principal',
+  path: '/admin/principal',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommunityIndexRoute = AppCommunityIndexRouteImport.update({
+  id: '/community/',
+  path: '/community/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommunityAnnouncementsRoute =
+  AppCommunityAnnouncementsRouteImport.update({
+    id: '/community/announcements',
+    path: '/community/announcements',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppCommunityForestRoute = AppCommunityForestRouteImport.update({
   id: '/community/forest',
   path: '/community/forest',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const LibraryIndexRoute = LibraryIndexRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryIndexRoute = AppLibraryIndexRouteImport.update({
   id: '/library/',
   path: '/library/',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const LibraryContributeRoute = LibraryContributeRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryContributeRoute = AppLibraryContributeRouteImport.update({
   id: '/library/contribute',
   path: '/library/contribute',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const LibraryCuratorRoute = LibraryCuratorRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryCuratorRoute = AppLibraryCuratorRouteImport.update({
   id: '/library/curator',
   path: '/library/curator',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const LibraryMapRoute = LibraryMapRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryMapRoute = AppLibraryMapRouteImport.update({
   id: '/library/map',
   path: '/library/map',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const LibraryToolsRoute = LibraryToolsRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryReviewRoute = AppLibraryReviewRouteImport.update({
+  id: '/library/review',
+  path: '/library/review',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryToolsRoute = AppLibraryToolsRouteImport.update({
   id: '/library/tools',
   path: '/library/tools',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileIndexRoute = AppProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileSecurityRoute = AppProfileSecurityRouteImport.update({
+  id: '/profile/security',
+  path: '/profile/security',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceIndexRoute = AppWorkspaceIndexRouteImport.update({
   id: '/workspace/',
   path: '/workspace/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceAtlasRoute = AppWorkspaceAtlasRouteImport.update({
+  id: '/workspace/atlas',
+  path: '/workspace/atlas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceAttendanceRoute = AppWorkspaceAttendanceRouteImport.update({
+  id: '/workspace/attendance',
+  path: '/workspace/attendance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceBadgesRoute = AppWorkspaceBadgesRouteImport.update({
+  id: '/workspace/badges',
+  path: '/workspace/badges',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceClaimRoute = AppWorkspaceClaimRouteImport.update({
+  id: '/workspace/claim',
+  path: '/workspace/claim',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceClimateRoute = AppWorkspaceClimateRouteImport.update({
+  id: '/workspace/climate',
+  path: '/workspace/climate',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceEditorialRoute = AppWorkspaceEditorialRouteImport.update({
+  id: '/workspace/editorial',
+  path: '/workspace/editorial',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceEventsRoute = AppWorkspaceEventsRouteImport.update({
+  id: '/workspace/events',
+  path: '/workspace/events',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceGradebookRoute = AppWorkspaceGradebookRouteImport.update({
+  id: '/workspace/gradebook',
+  path: '/workspace/gradebook',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceGuardianRoute = AppWorkspaceGuardianRouteImport.update({
+  id: '/workspace/guardian',
+  path: '/workspace/guardian',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceKioskRoute = AppWorkspaceKioskRouteImport.update({
+  id: '/workspace/kiosk',
+  path: '/workspace/kiosk',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceNoticesRoute = AppWorkspaceNoticesRouteImport.update({
+  id: '/workspace/notices',
+  path: '/workspace/notices',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspacePlanRoute = AppWorkspacePlanRouteImport.update({
+  id: '/workspace/plan',
+  path: '/workspace/plan',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceSchoolRoute = AppWorkspaceSchoolRouteImport.update({
+  id: '/workspace/school',
+  path: '/workspace/school',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceSubmissionsRoute = AppWorkspaceSubmissionsRouteImport.update({
+  id: '/workspace/submissions',
+  path: '/workspace/submissions',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceTimetableRoute = AppWorkspaceTimetableRouteImport.update({
+  id: '/workspace/timetable',
+  path: '/workspace/timetable',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceTuitionRoute = AppWorkspaceTuitionRouteImport.update({
+  id: '/workspace/tuition',
+  path: '/workspace/tuition',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceWorkforceRoute = AppWorkspaceWorkforceRouteImport.update({
+  id: '/workspace/workforce',
+  path: '/workspace/workforce',
+  getParentRoute: () => AppRoute,
+} as any)
+const DevKitIndexRoute = DevKitIndexRouteImport.update({
+  id: '/kit/',
+  path: '/kit/',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevKitFloorRedesignRoute = DevKitFloorRedesignRouteImport.update({
+  id: '/kit/floor-redesign',
+  path: '/kit/floor-redesign',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevKitSelfRoute = DevKitSelfRouteImport.update({
+  id: '/kit/self',
+  path: '/kit/self',
+  getParentRoute: () => DevRoute,
+} as any)
+const KitComponentsIndexRoute = KitComponentsIndexRouteImport.update({
+  id: '/kit/components/',
+  path: '/kit/components/',
   getParentRoute: () => rootRouteImport,
-} as any);
-const CommunityChatGroupIdRoute = CommunityChatGroupIdRouteImport.update({
+} as any)
+const KitComponentsTemporalHorizonRoute =
+  KitComponentsTemporalHorizonRouteImport.update({
+    id: '/kit/components/temporal-horizon',
+    path: '/kit/components/temporal-horizon',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SchoolIdIndexRoute = SchoolIdIndexRouteImport.update({
+  id: '/school/$id/',
+  path: '/school/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppAdminFormsBuilderRoute = AppAdminFormsBuilderRouteImport.update({
+  id: '/admin/forms/builder',
+  path: '/admin/forms/builder',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommunityChatGroupIdRoute = AppCommunityChatGroupIdRouteImport.update({
   id: '/community/chat/$groupId',
   path: '/community/chat/$groupId',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const LibraryCollectionsIdRoute = LibraryCollectionsIdRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommunityDmUserIdRoute = AppCommunityDmUserIdRouteImport.update({
+  id: '/community/dm/$userId',
+  path: '/community/dm/$userId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryCollectionsIdRoute = AppLibraryCollectionsIdRouteImport.update({
   id: '/library/collections/$id',
   path: '/library/collections/$id',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const LibraryReaderBookIdRoute = LibraryReaderBookIdRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryReaderBookIdRoute = AppLibraryReaderBookIdRouteImport.update({
   id: '/library/reader/$bookId',
   path: '/library/reader/$bookId',
-  getParentRoute: () => rootRouteImport,
-} as any);
-const LibraryVideoVideoIdRoute = LibraryVideoVideoIdRouteImport.update({
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryVideoVideoIdRoute = AppLibraryVideoVideoIdRouteImport.update({
   id: '/library/video/$videoId',
   path: '/library/video/$videoId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceClassroomIdRoute = AppWorkspaceClassroomIdRouteImport.update({
+  id: '/workspace/classroom/$id',
+  path: '/workspace/classroom/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const SchoolIdArticlesSlugRoute = SchoolIdArticlesSlugRouteImport.update({
+  id: '/school/$id/articles/$slug',
+  path: '/school/$id/articles/$slug',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/notifications': typeof NotificationsRoute;
-  '/self': typeof SelfRoute;
-  '/settings': typeof SettingsRoute;
-  '/community/announcements': typeof CommunityAnnouncementsRoute;
-  '/community/forest': typeof CommunityForestRoute;
-  '/library/contribute': typeof LibraryContributeRoute;
-  '/library/curator': typeof LibraryCuratorRoute;
-  '/library/map': typeof LibraryMapRoute;
-  '/library/tools': typeof LibraryToolsRoute;
-  '/library/': typeof LibraryIndexRoute;
-  '/profile/': typeof ProfileIndexRoute;
-  '/workspace/': typeof WorkspaceIndexRoute;
-  '/community/chat/$groupId': typeof CommunityChatGroupIdRoute;
-  '/library/collections/$id': typeof LibraryCollectionsIdRoute;
-  '/library/reader/$bookId': typeof LibraryReaderBookIdRoute;
-  '/library/video/$videoId': typeof LibraryVideoVideoIdRoute;
+  '/': typeof IndexRoute
+  '/architecture-lab': typeof ArchitectureLabRoute
+  '/explore-intro': typeof ExploreIntroRoute
+  '/invitation-welcome': typeof InvitationWelcomeRoute
+  '/welcome': typeof WelcomeRoute
+  '/account-recovery': typeof AccountAccountRecoveryRoute
+  '/onboarding': typeof AccountOnboardingRoute
+  '/recovery': typeof AccountRecoveryRoute
+  '/reset-password': typeof AccountResetPasswordRoute
+  '/sign-in': typeof AccountSignInRoute
+  '/agent-lab': typeof AppAgentLabRoute
+  '/atlas': typeof AppAtlasRoute
+  '/icon-lab': typeof AppIconLabRoute
+  '/notifications': typeof AppNotificationsRoute
+  '/self': typeof AppSelfRoute
+  '/settings': typeof AppSettingsRoute
+  '/support': typeof AppSupportRoute
+  '/verger-lab': typeof AppVergerLabRoute
+  '/architecture': typeof DevArchitectureRoute
+  '/c/$code': typeof CCodeRoute
+  '/auth/callback': typeof AccountAuthCallbackRoute
+  '/auth/complete': typeof AccountAuthCompleteRoute
+  '/admin/analytics': typeof AppAdminAnalyticsRoute
+  '/admin/documents': typeof AppAdminDocumentsRoute
+  '/admin/founder': typeof AppAdminFounderRoute
+  '/admin/principal': typeof AppAdminPrincipalRoute
+  '/community/announcements': typeof AppCommunityAnnouncementsRoute
+  '/community/forest': typeof AppCommunityForestRoute
+  '/library/contribute': typeof AppLibraryContributeRoute
+  '/library/curator': typeof AppLibraryCuratorRoute
+  '/library/map': typeof AppLibraryMapRoute
+  '/library/review': typeof AppLibraryReviewRoute
+  '/library/tools': typeof AppLibraryToolsRoute
+  '/profile/security': typeof AppProfileSecurityRoute
+  '/workspace/atlas': typeof AppWorkspaceAtlasRoute
+  '/workspace/attendance': typeof AppWorkspaceAttendanceRoute
+  '/workspace/badges': typeof AppWorkspaceBadgesRoute
+  '/workspace/claim': typeof AppWorkspaceClaimRoute
+  '/workspace/climate': typeof AppWorkspaceClimateRoute
+  '/workspace/editorial': typeof AppWorkspaceEditorialRoute
+  '/workspace/events': typeof AppWorkspaceEventsRoute
+  '/workspace/gradebook': typeof AppWorkspaceGradebookRoute
+  '/workspace/guardian': typeof AppWorkspaceGuardianRoute
+  '/workspace/kiosk': typeof AppWorkspaceKioskRoute
+  '/workspace/notices': typeof AppWorkspaceNoticesRoute
+  '/workspace/plan': typeof AppWorkspacePlanRoute
+  '/workspace/school': typeof AppWorkspaceSchoolRoute
+  '/workspace/submissions': typeof AppWorkspaceSubmissionsRoute
+  '/workspace/timetable': typeof AppWorkspaceTimetableRoute
+  '/workspace/tuition': typeof AppWorkspaceTuitionRoute
+  '/workspace/workforce': typeof AppWorkspaceWorkforceRoute
+  '/kit/floor-redesign': typeof DevKitFloorRedesignRoute
+  '/kit/self': typeof DevKitSelfRoute
+  '/kit/components/temporal-horizon': typeof KitComponentsTemporalHorizonRoute
+  '/community/': typeof AppCommunityIndexRoute
+  '/library/': typeof AppLibraryIndexRoute
+  '/profile/': typeof AppProfileIndexRoute
+  '/workspace/': typeof AppWorkspaceIndexRoute
+  '/kit/': typeof DevKitIndexRoute
+  '/kit/components/': typeof KitComponentsIndexRoute
+  '/school/$id/': typeof SchoolIdIndexRoute
+  '/admin/forms/builder': typeof AppAdminFormsBuilderRoute
+  '/community/chat/$groupId': typeof AppCommunityChatGroupIdRoute
+  '/community/dm/$userId': typeof AppCommunityDmUserIdRoute
+  '/library/collections/$id': typeof AppLibraryCollectionsIdRoute
+  '/library/reader/$bookId': typeof AppLibraryReaderBookIdRoute
+  '/library/video/$videoId': typeof AppLibraryVideoVideoIdRoute
+  '/workspace/classroom/$id': typeof AppWorkspaceClassroomIdRoute
+  '/school/$id/articles/$slug': typeof SchoolIdArticlesSlugRoute
 }
 export interface FileRoutesByTo {
-  '/notifications': typeof NotificationsRoute;
-  '/self': typeof SelfRoute;
-  '/settings': typeof SettingsRoute;
-  '/community/announcements': typeof CommunityAnnouncementsRoute;
-  '/community/forest': typeof CommunityForestRoute;
-  '/library/contribute': typeof LibraryContributeRoute;
-  '/library/curator': typeof LibraryCuratorRoute;
-  '/library/map': typeof LibraryMapRoute;
-  '/library/tools': typeof LibraryToolsRoute;
-  '/library': typeof LibraryIndexRoute;
-  '/profile': typeof ProfileIndexRoute;
-  '/workspace': typeof WorkspaceIndexRoute;
-  '/community/chat/$groupId': typeof CommunityChatGroupIdRoute;
-  '/library/collections/$id': typeof LibraryCollectionsIdRoute;
-  '/library/reader/$bookId': typeof LibraryReaderBookIdRoute;
-  '/library/video/$videoId': typeof LibraryVideoVideoIdRoute;
+  '/': typeof IndexRoute
+  '/architecture-lab': typeof ArchitectureLabRoute
+  '/explore-intro': typeof ExploreIntroRoute
+  '/invitation-welcome': typeof InvitationWelcomeRoute
+  '/welcome': typeof WelcomeRoute
+  '/account-recovery': typeof AccountAccountRecoveryRoute
+  '/onboarding': typeof AccountOnboardingRoute
+  '/recovery': typeof AccountRecoveryRoute
+  '/reset-password': typeof AccountResetPasswordRoute
+  '/sign-in': typeof AccountSignInRoute
+  '/agent-lab': typeof AppAgentLabRoute
+  '/atlas': typeof AppAtlasRoute
+  '/icon-lab': typeof AppIconLabRoute
+  '/notifications': typeof AppNotificationsRoute
+  '/self': typeof AppSelfRoute
+  '/settings': typeof AppSettingsRoute
+  '/support': typeof AppSupportRoute
+  '/verger-lab': typeof AppVergerLabRoute
+  '/architecture': typeof DevArchitectureRoute
+  '/c/$code': typeof CCodeRoute
+  '/auth/callback': typeof AccountAuthCallbackRoute
+  '/auth/complete': typeof AccountAuthCompleteRoute
+  '/admin/analytics': typeof AppAdminAnalyticsRoute
+  '/admin/documents': typeof AppAdminDocumentsRoute
+  '/admin/founder': typeof AppAdminFounderRoute
+  '/admin/principal': typeof AppAdminPrincipalRoute
+  '/community/announcements': typeof AppCommunityAnnouncementsRoute
+  '/community/forest': typeof AppCommunityForestRoute
+  '/library/contribute': typeof AppLibraryContributeRoute
+  '/library/curator': typeof AppLibraryCuratorRoute
+  '/library/map': typeof AppLibraryMapRoute
+  '/library/review': typeof AppLibraryReviewRoute
+  '/library/tools': typeof AppLibraryToolsRoute
+  '/profile/security': typeof AppProfileSecurityRoute
+  '/workspace/atlas': typeof AppWorkspaceAtlasRoute
+  '/workspace/attendance': typeof AppWorkspaceAttendanceRoute
+  '/workspace/badges': typeof AppWorkspaceBadgesRoute
+  '/workspace/claim': typeof AppWorkspaceClaimRoute
+  '/workspace/climate': typeof AppWorkspaceClimateRoute
+  '/workspace/editorial': typeof AppWorkspaceEditorialRoute
+  '/workspace/events': typeof AppWorkspaceEventsRoute
+  '/workspace/gradebook': typeof AppWorkspaceGradebookRoute
+  '/workspace/guardian': typeof AppWorkspaceGuardianRoute
+  '/workspace/kiosk': typeof AppWorkspaceKioskRoute
+  '/workspace/notices': typeof AppWorkspaceNoticesRoute
+  '/workspace/plan': typeof AppWorkspacePlanRoute
+  '/workspace/school': typeof AppWorkspaceSchoolRoute
+  '/workspace/submissions': typeof AppWorkspaceSubmissionsRoute
+  '/workspace/timetable': typeof AppWorkspaceTimetableRoute
+  '/workspace/tuition': typeof AppWorkspaceTuitionRoute
+  '/workspace/workforce': typeof AppWorkspaceWorkforceRoute
+  '/kit/floor-redesign': typeof DevKitFloorRedesignRoute
+  '/kit/self': typeof DevKitSelfRoute
+  '/kit/components/temporal-horizon': typeof KitComponentsTemporalHorizonRoute
+  '/community': typeof AppCommunityIndexRoute
+  '/library': typeof AppLibraryIndexRoute
+  '/profile': typeof AppProfileIndexRoute
+  '/workspace': typeof AppWorkspaceIndexRoute
+  '/kit': typeof DevKitIndexRoute
+  '/kit/components': typeof KitComponentsIndexRoute
+  '/school/$id': typeof SchoolIdIndexRoute
+  '/admin/forms/builder': typeof AppAdminFormsBuilderRoute
+  '/community/chat/$groupId': typeof AppCommunityChatGroupIdRoute
+  '/community/dm/$userId': typeof AppCommunityDmUserIdRoute
+  '/library/collections/$id': typeof AppLibraryCollectionsIdRoute
+  '/library/reader/$bookId': typeof AppLibraryReaderBookIdRoute
+  '/library/video/$videoId': typeof AppLibraryVideoVideoIdRoute
+  '/workspace/classroom/$id': typeof AppWorkspaceClassroomIdRoute
+  '/school/$id/articles/$slug': typeof SchoolIdArticlesSlugRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  '/notifications': typeof NotificationsRoute;
-  '/self': typeof SelfRoute;
-  '/settings': typeof SettingsRoute;
-  '/community/announcements': typeof CommunityAnnouncementsRoute;
-  '/community/forest': typeof CommunityForestRoute;
-  '/library/contribute': typeof LibraryContributeRoute;
-  '/library/curator': typeof LibraryCuratorRoute;
-  '/library/map': typeof LibraryMapRoute;
-  '/library/tools': typeof LibraryToolsRoute;
-  '/library/': typeof LibraryIndexRoute;
-  '/profile/': typeof ProfileIndexRoute;
-  '/workspace/': typeof WorkspaceIndexRoute;
-  '/community/chat/$groupId': typeof CommunityChatGroupIdRoute;
-  '/library/collections/$id': typeof LibraryCollectionsIdRoute;
-  '/library/reader/$bookId': typeof LibraryReaderBookIdRoute;
-  '/library/video/$videoId': typeof LibraryVideoVideoIdRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_account': typeof AccountRouteWithChildren
+  '/_app': typeof AppRouteWithChildren
+  '/_dev': typeof DevRouteWithChildren
+  '/architecture-lab': typeof ArchitectureLabRoute
+  '/explore-intro': typeof ExploreIntroRoute
+  '/invitation-welcome': typeof InvitationWelcomeRoute
+  '/welcome': typeof WelcomeRoute
+  '/_account/account-recovery': typeof AccountAccountRecoveryRoute
+  '/_account/onboarding': typeof AccountOnboardingRoute
+  '/_account/recovery': typeof AccountRecoveryRoute
+  '/_account/reset-password': typeof AccountResetPasswordRoute
+  '/_account/sign-in': typeof AccountSignInRoute
+  '/_app/agent-lab': typeof AppAgentLabRoute
+  '/_app/atlas': typeof AppAtlasRoute
+  '/_app/icon-lab': typeof AppIconLabRoute
+  '/_app/notifications': typeof AppNotificationsRoute
+  '/_app/self': typeof AppSelfRoute
+  '/_app/settings': typeof AppSettingsRoute
+  '/_app/support': typeof AppSupportRoute
+  '/_app/verger-lab': typeof AppVergerLabRoute
+  '/_dev/architecture': typeof DevArchitectureRoute
+  '/c/$code': typeof CCodeRoute
+  '/_account/auth/callback': typeof AccountAuthCallbackRoute
+  '/_account/auth/complete': typeof AccountAuthCompleteRoute
+  '/_app/admin/analytics': typeof AppAdminAnalyticsRoute
+  '/_app/admin/documents': typeof AppAdminDocumentsRoute
+  '/_app/admin/founder': typeof AppAdminFounderRoute
+  '/_app/admin/principal': typeof AppAdminPrincipalRoute
+  '/_app/community/announcements': typeof AppCommunityAnnouncementsRoute
+  '/_app/community/forest': typeof AppCommunityForestRoute
+  '/_app/library/contribute': typeof AppLibraryContributeRoute
+  '/_app/library/curator': typeof AppLibraryCuratorRoute
+  '/_app/library/map': typeof AppLibraryMapRoute
+  '/_app/library/review': typeof AppLibraryReviewRoute
+  '/_app/library/tools': typeof AppLibraryToolsRoute
+  '/_app/profile/security': typeof AppProfileSecurityRoute
+  '/_app/workspace/atlas': typeof AppWorkspaceAtlasRoute
+  '/_app/workspace/attendance': typeof AppWorkspaceAttendanceRoute
+  '/_app/workspace/badges': typeof AppWorkspaceBadgesRoute
+  '/_app/workspace/claim': typeof AppWorkspaceClaimRoute
+  '/_app/workspace/climate': typeof AppWorkspaceClimateRoute
+  '/_app/workspace/editorial': typeof AppWorkspaceEditorialRoute
+  '/_app/workspace/events': typeof AppWorkspaceEventsRoute
+  '/_app/workspace/gradebook': typeof AppWorkspaceGradebookRoute
+  '/_app/workspace/guardian': typeof AppWorkspaceGuardianRoute
+  '/_app/workspace/kiosk': typeof AppWorkspaceKioskRoute
+  '/_app/workspace/notices': typeof AppWorkspaceNoticesRoute
+  '/_app/workspace/plan': typeof AppWorkspacePlanRoute
+  '/_app/workspace/school': typeof AppWorkspaceSchoolRoute
+  '/_app/workspace/submissions': typeof AppWorkspaceSubmissionsRoute
+  '/_app/workspace/timetable': typeof AppWorkspaceTimetableRoute
+  '/_app/workspace/tuition': typeof AppWorkspaceTuitionRoute
+  '/_app/workspace/workforce': typeof AppWorkspaceWorkforceRoute
+  '/_dev/kit/floor-redesign': typeof DevKitFloorRedesignRoute
+  '/_dev/kit/self': typeof DevKitSelfRoute
+  '/kit/components/temporal-horizon': typeof KitComponentsTemporalHorizonRoute
+  '/_app/community/': typeof AppCommunityIndexRoute
+  '/_app/library/': typeof AppLibraryIndexRoute
+  '/_app/profile/': typeof AppProfileIndexRoute
+  '/_app/workspace/': typeof AppWorkspaceIndexRoute
+  '/_dev/kit/': typeof DevKitIndexRoute
+  '/kit/components/': typeof KitComponentsIndexRoute
+  '/school/$id/': typeof SchoolIdIndexRoute
+  '/_app/admin/forms/builder': typeof AppAdminFormsBuilderRoute
+  '/_app/community/chat/$groupId': typeof AppCommunityChatGroupIdRoute
+  '/_app/community/dm/$userId': typeof AppCommunityDmUserIdRoute
+  '/_app/library/collections/$id': typeof AppLibraryCollectionsIdRoute
+  '/_app/library/reader/$bookId': typeof AppLibraryReaderBookIdRoute
+  '/_app/library/video/$videoId': typeof AppLibraryVideoVideoIdRoute
+  '/_app/workspace/classroom/$id': typeof AppWorkspaceClassroomIdRoute
+  '/school/$id/articles/$slug': typeof SchoolIdArticlesSlugRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
+    | '/architecture-lab'
+    | '/explore-intro'
+    | '/invitation-welcome'
+    | '/welcome'
+    | '/account-recovery'
+    | '/onboarding'
+    | '/recovery'
+    | '/reset-password'
+    | '/sign-in'
+    | '/agent-lab'
+    | '/atlas'
+    | '/icon-lab'
     | '/notifications'
     | '/self'
     | '/settings'
+    | '/support'
+    | '/verger-lab'
+    | '/architecture'
+    | '/c/$code'
+    | '/auth/callback'
+    | '/auth/complete'
+    | '/admin/analytics'
+    | '/admin/documents'
+    | '/admin/founder'
+    | '/admin/principal'
     | '/community/announcements'
     | '/community/forest'
     | '/library/contribute'
     | '/library/curator'
     | '/library/map'
+    | '/library/review'
     | '/library/tools'
+    | '/profile/security'
+    | '/workspace/atlas'
+    | '/workspace/attendance'
+    | '/workspace/badges'
+    | '/workspace/claim'
+    | '/workspace/climate'
+    | '/workspace/editorial'
+    | '/workspace/events'
+    | '/workspace/gradebook'
+    | '/workspace/guardian'
+    | '/workspace/kiosk'
+    | '/workspace/notices'
+    | '/workspace/plan'
+    | '/workspace/school'
+    | '/workspace/submissions'
+    | '/workspace/timetable'
+    | '/workspace/tuition'
+    | '/workspace/workforce'
+    | '/kit/floor-redesign'
+    | '/kit/self'
+    | '/kit/components/temporal-horizon'
+    | '/community/'
     | '/library/'
     | '/profile/'
     | '/workspace/'
+    | '/kit/'
+    | '/kit/components/'
+    | '/school/$id/'
+    | '/admin/forms/builder'
     | '/community/chat/$groupId'
+    | '/community/dm/$userId'
     | '/library/collections/$id'
     | '/library/reader/$bookId'
-    | '/library/video/$videoId';
-  fileRoutesByTo: FileRoutesByTo;
+    | '/library/video/$videoId'
+    | '/workspace/classroom/$id'
+    | '/school/$id/articles/$slug'
+  fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
+    | '/architecture-lab'
+    | '/explore-intro'
+    | '/invitation-welcome'
+    | '/welcome'
+    | '/account-recovery'
+    | '/onboarding'
+    | '/recovery'
+    | '/reset-password'
+    | '/sign-in'
+    | '/agent-lab'
+    | '/atlas'
+    | '/icon-lab'
     | '/notifications'
     | '/self'
     | '/settings'
+    | '/support'
+    | '/verger-lab'
+    | '/architecture'
+    | '/c/$code'
+    | '/auth/callback'
+    | '/auth/complete'
+    | '/admin/analytics'
+    | '/admin/documents'
+    | '/admin/founder'
+    | '/admin/principal'
     | '/community/announcements'
     | '/community/forest'
     | '/library/contribute'
     | '/library/curator'
     | '/library/map'
+    | '/library/review'
     | '/library/tools'
+    | '/profile/security'
+    | '/workspace/atlas'
+    | '/workspace/attendance'
+    | '/workspace/badges'
+    | '/workspace/claim'
+    | '/workspace/climate'
+    | '/workspace/editorial'
+    | '/workspace/events'
+    | '/workspace/gradebook'
+    | '/workspace/guardian'
+    | '/workspace/kiosk'
+    | '/workspace/notices'
+    | '/workspace/plan'
+    | '/workspace/school'
+    | '/workspace/submissions'
+    | '/workspace/timetable'
+    | '/workspace/tuition'
+    | '/workspace/workforce'
+    | '/kit/floor-redesign'
+    | '/kit/self'
+    | '/kit/components/temporal-horizon'
+    | '/community'
     | '/library'
     | '/profile'
     | '/workspace'
+    | '/kit'
+    | '/kit/components'
+    | '/school/$id'
+    | '/admin/forms/builder'
     | '/community/chat/$groupId'
+    | '/community/dm/$userId'
     | '/library/collections/$id'
     | '/library/reader/$bookId'
-    | '/library/video/$videoId';
+    | '/library/video/$videoId'
+    | '/workspace/classroom/$id'
+    | '/school/$id/articles/$slug'
   id:
     | '__root__'
-    | '/notifications'
-    | '/self'
-    | '/settings'
-    | '/community/announcements'
-    | '/community/forest'
-    | '/library/contribute'
-    | '/library/curator'
-    | '/library/map'
-    | '/library/tools'
-    | '/library/'
-    | '/profile/'
-    | '/workspace/'
-    | '/community/chat/$groupId'
-    | '/library/collections/$id'
-    | '/library/reader/$bookId'
-    | '/library/video/$videoId';
-  fileRoutesById: FileRoutesById;
+    | '/'
+    | '/_account'
+    | '/_app'
+    | '/_dev'
+    | '/architecture-lab'
+    | '/explore-intro'
+    | '/invitation-welcome'
+    | '/welcome'
+    | '/_account/account-recovery'
+    | '/_account/onboarding'
+    | '/_account/recovery'
+    | '/_account/reset-password'
+    | '/_account/sign-in'
+    | '/_app/agent-lab'
+    | '/_app/atlas'
+    | '/_app/icon-lab'
+    | '/_app/notifications'
+    | '/_app/self'
+    | '/_app/settings'
+    | '/_app/support'
+    | '/_app/verger-lab'
+    | '/_dev/architecture'
+    | '/c/$code'
+    | '/_account/auth/callback'
+    | '/_account/auth/complete'
+    | '/_app/admin/analytics'
+    | '/_app/admin/documents'
+    | '/_app/admin/founder'
+    | '/_app/admin/principal'
+    | '/_app/community/announcements'
+    | '/_app/community/forest'
+    | '/_app/library/contribute'
+    | '/_app/library/curator'
+    | '/_app/library/map'
+    | '/_app/library/review'
+    | '/_app/library/tools'
+    | '/_app/profile/security'
+    | '/_app/workspace/atlas'
+    | '/_app/workspace/attendance'
+    | '/_app/workspace/badges'
+    | '/_app/workspace/claim'
+    | '/_app/workspace/climate'
+    | '/_app/workspace/editorial'
+    | '/_app/workspace/events'
+    | '/_app/workspace/gradebook'
+    | '/_app/workspace/guardian'
+    | '/_app/workspace/kiosk'
+    | '/_app/workspace/notices'
+    | '/_app/workspace/plan'
+    | '/_app/workspace/school'
+    | '/_app/workspace/submissions'
+    | '/_app/workspace/timetable'
+    | '/_app/workspace/tuition'
+    | '/_app/workspace/workforce'
+    | '/_dev/kit/floor-redesign'
+    | '/_dev/kit/self'
+    | '/kit/components/temporal-horizon'
+    | '/_app/community/'
+    | '/_app/library/'
+    | '/_app/profile/'
+    | '/_app/workspace/'
+    | '/_dev/kit/'
+    | '/kit/components/'
+    | '/school/$id/'
+    | '/_app/admin/forms/builder'
+    | '/_app/community/chat/$groupId'
+    | '/_app/community/dm/$userId'
+    | '/_app/library/collections/$id'
+    | '/_app/library/reader/$bookId'
+    | '/_app/library/video/$videoId'
+    | '/_app/workspace/classroom/$id'
+    | '/school/$id/articles/$slug'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  NotificationsRoute: typeof NotificationsRoute;
-  SelfRoute: typeof SelfRoute;
-  SettingsRoute: typeof SettingsRoute;
-  CommunityAnnouncementsRoute: typeof CommunityAnnouncementsRoute;
-  CommunityForestRoute: typeof CommunityForestRoute;
-  LibraryContributeRoute: typeof LibraryContributeRoute;
-  LibraryCuratorRoute: typeof LibraryCuratorRoute;
-  LibraryMapRoute: typeof LibraryMapRoute;
-  LibraryToolsRoute: typeof LibraryToolsRoute;
-  LibraryIndexRoute: typeof LibraryIndexRoute;
-  ProfileIndexRoute: typeof ProfileIndexRoute;
-  WorkspaceIndexRoute: typeof WorkspaceIndexRoute;
-  CommunityChatGroupIdRoute: typeof CommunityChatGroupIdRoute;
-  LibraryCollectionsIdRoute: typeof LibraryCollectionsIdRoute;
-  LibraryReaderBookIdRoute: typeof LibraryReaderBookIdRoute;
-  LibraryVideoVideoIdRoute: typeof LibraryVideoVideoIdRoute;
+  IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
+  DevRoute: typeof DevRouteWithChildren
+  ArchitectureLabRoute: typeof ArchitectureLabRoute
+  ExploreIntroRoute: typeof ExploreIntroRoute
+  InvitationWelcomeRoute: typeof InvitationWelcomeRoute
+  WelcomeRoute: typeof WelcomeRoute
+  CCodeRoute: typeof CCodeRoute
+  KitComponentsTemporalHorizonRoute: typeof KitComponentsTemporalHorizonRoute
+  KitComponentsIndexRoute: typeof KitComponentsIndexRoute
+  SchoolIdIndexRoute: typeof SchoolIdIndexRoute
+  SchoolIdArticlesSlugRoute: typeof SchoolIdArticlesSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/notifications': {
-      id: '/notifications';
-      path: '/notifications';
-      fullPath: '/notifications';
-      preLoaderRoute: typeof NotificationsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/self': {
-      id: '/self';
-      path: '/self';
-      fullPath: '/self';
-      preLoaderRoute: typeof SelfRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/settings': {
-      id: '/settings';
-      path: '/settings';
-      fullPath: '/settings';
-      preLoaderRoute: typeof SettingsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/community/announcements': {
-      id: '/community/announcements';
-      path: '/community/announcements';
-      fullPath: '/community/announcements';
-      preLoaderRoute: typeof CommunityAnnouncementsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/community/forest': {
-      id: '/community/forest';
-      path: '/community/forest';
-      fullPath: '/community/forest';
-      preLoaderRoute: typeof CommunityForestRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/library/': {
-      id: '/library/';
-      path: '/library';
-      fullPath: '/library/';
-      preLoaderRoute: typeof LibraryIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/library/contribute': {
-      id: '/library/contribute';
-      path: '/library/contribute';
-      fullPath: '/library/contribute';
-      preLoaderRoute: typeof LibraryContributeRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/library/curator': {
-      id: '/library/curator';
-      path: '/library/curator';
-      fullPath: '/library/curator';
-      preLoaderRoute: typeof LibraryCuratorRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/library/map': {
-      id: '/library/map';
-      path: '/library/map';
-      fullPath: '/library/map';
-      preLoaderRoute: typeof LibraryMapRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/library/tools': {
-      id: '/library/tools';
-      path: '/library/tools';
-      fullPath: '/library/tools';
-      preLoaderRoute: typeof LibraryToolsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/profile/': {
-      id: '/profile/';
-      path: '/profile';
-      fullPath: '/profile/';
-      preLoaderRoute: typeof ProfileIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/workspace/': {
-      id: '/workspace/';
-      path: '/workspace';
-      fullPath: '/workspace/';
-      preLoaderRoute: typeof WorkspaceIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/community/chat/$groupId': {
-      id: '/community/chat/$groupId';
-      path: '/community/chat/$groupId';
-      fullPath: '/community/chat/$groupId';
-      preLoaderRoute: typeof CommunityChatGroupIdRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/library/collections/$id': {
-      id: '/library/collections/$id';
-      path: '/library/collections/$id';
-      fullPath: '/library/collections/$id';
-      preLoaderRoute: typeof LibraryCollectionsIdRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/library/reader/$bookId': {
-      id: '/library/reader/$bookId';
-      path: '/library/reader/$bookId';
-      fullPath: '/library/reader/$bookId';
-      preLoaderRoute: typeof LibraryReaderBookIdRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    '/library/video/$videoId': {
-      id: '/library/video/$videoId';
-      path: '/library/video/$videoId';
-      fullPath: '/library/video/$videoId';
-      preLoaderRoute: typeof LibraryVideoVideoIdRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_account': {
+      id: '/_account'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_dev': {
+      id: '/_dev'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DevRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/architecture-lab': {
+      id: '/architecture-lab'
+      path: '/architecture-lab'
+      fullPath: '/architecture-lab'
+      preLoaderRoute: typeof ArchitectureLabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore-intro': {
+      id: '/explore-intro'
+      path: '/explore-intro'
+      fullPath: '/explore-intro'
+      preLoaderRoute: typeof ExploreIntroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invitation-welcome': {
+      id: '/invitation-welcome'
+      path: '/invitation-welcome'
+      fullPath: '/invitation-welcome'
+      preLoaderRoute: typeof InvitationWelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_account/account-recovery': {
+      id: '/_account/account-recovery'
+      path: '/account-recovery'
+      fullPath: '/account-recovery'
+      preLoaderRoute: typeof AccountAccountRecoveryRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/_account/onboarding': {
+      id: '/_account/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AccountOnboardingRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/_account/recovery': {
+      id: '/_account/recovery'
+      path: '/recovery'
+      fullPath: '/recovery'
+      preLoaderRoute: typeof AccountRecoveryRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/_account/reset-password': {
+      id: '/_account/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AccountResetPasswordRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/_account/sign-in': {
+      id: '/_account/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof AccountSignInRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/_app/agent-lab': {
+      id: '/_app/agent-lab'
+      path: '/agent-lab'
+      fullPath: '/agent-lab'
+      preLoaderRoute: typeof AppAgentLabRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/atlas': {
+      id: '/_app/atlas'
+      path: '/atlas'
+      fullPath: '/atlas'
+      preLoaderRoute: typeof AppAtlasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/icon-lab': {
+      id: '/_app/icon-lab'
+      path: '/icon-lab'
+      fullPath: '/icon-lab'
+      preLoaderRoute: typeof AppIconLabRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/notifications': {
+      id: '/_app/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/self': {
+      id: '/_app/self'
+      path: '/self'
+      fullPath: '/self'
+      preLoaderRoute: typeof AppSelfRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/support': {
+      id: '/_app/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AppSupportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/verger-lab': {
+      id: '/_app/verger-lab'
+      path: '/verger-lab'
+      fullPath: '/verger-lab'
+      preLoaderRoute: typeof AppVergerLabRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_dev/architecture': {
+      id: '/_dev/architecture'
+      path: '/architecture'
+      fullPath: '/architecture'
+      preLoaderRoute: typeof DevArchitectureRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/c/$code': {
+      id: '/c/$code'
+      path: '/c/$code'
+      fullPath: '/c/$code'
+      preLoaderRoute: typeof CCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_account/auth/callback': {
+      id: '/_account/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AccountAuthCallbackRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/_account/auth/complete': {
+      id: '/_account/auth/complete'
+      path: '/auth/complete'
+      fullPath: '/auth/complete'
+      preLoaderRoute: typeof AccountAuthCompleteRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/_app/admin/analytics': {
+      id: '/_app/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AppAdminAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/documents': {
+      id: '/_app/admin/documents'
+      path: '/admin/documents'
+      fullPath: '/admin/documents'
+      preLoaderRoute: typeof AppAdminDocumentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/founder': {
+      id: '/_app/admin/founder'
+      path: '/admin/founder'
+      fullPath: '/admin/founder'
+      preLoaderRoute: typeof AppAdminFounderRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/principal': {
+      id: '/_app/admin/principal'
+      path: '/admin/principal'
+      fullPath: '/admin/principal'
+      preLoaderRoute: typeof AppAdminPrincipalRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/community/': {
+      id: '/_app/community/'
+      path: '/community'
+      fullPath: '/community/'
+      preLoaderRoute: typeof AppCommunityIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/community/announcements': {
+      id: '/_app/community/announcements'
+      path: '/community/announcements'
+      fullPath: '/community/announcements'
+      preLoaderRoute: typeof AppCommunityAnnouncementsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/community/forest': {
+      id: '/_app/community/forest'
+      path: '/community/forest'
+      fullPath: '/community/forest'
+      preLoaderRoute: typeof AppCommunityForestRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/': {
+      id: '/_app/library/'
+      path: '/library'
+      fullPath: '/library/'
+      preLoaderRoute: typeof AppLibraryIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/contribute': {
+      id: '/_app/library/contribute'
+      path: '/library/contribute'
+      fullPath: '/library/contribute'
+      preLoaderRoute: typeof AppLibraryContributeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/curator': {
+      id: '/_app/library/curator'
+      path: '/library/curator'
+      fullPath: '/library/curator'
+      preLoaderRoute: typeof AppLibraryCuratorRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/map': {
+      id: '/_app/library/map'
+      path: '/library/map'
+      fullPath: '/library/map'
+      preLoaderRoute: typeof AppLibraryMapRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/review': {
+      id: '/_app/library/review'
+      path: '/library/review'
+      fullPath: '/library/review'
+      preLoaderRoute: typeof AppLibraryReviewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/tools': {
+      id: '/_app/library/tools'
+      path: '/library/tools'
+      fullPath: '/library/tools'
+      preLoaderRoute: typeof AppLibraryToolsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/profile/': {
+      id: '/_app/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof AppProfileIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/profile/security': {
+      id: '/_app/profile/security'
+      path: '/profile/security'
+      fullPath: '/profile/security'
+      preLoaderRoute: typeof AppProfileSecurityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/': {
+      id: '/_app/workspace/'
+      path: '/workspace'
+      fullPath: '/workspace/'
+      preLoaderRoute: typeof AppWorkspaceIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/atlas': {
+      id: '/_app/workspace/atlas'
+      path: '/workspace/atlas'
+      fullPath: '/workspace/atlas'
+      preLoaderRoute: typeof AppWorkspaceAtlasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/attendance': {
+      id: '/_app/workspace/attendance'
+      path: '/workspace/attendance'
+      fullPath: '/workspace/attendance'
+      preLoaderRoute: typeof AppWorkspaceAttendanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/badges': {
+      id: '/_app/workspace/badges'
+      path: '/workspace/badges'
+      fullPath: '/workspace/badges'
+      preLoaderRoute: typeof AppWorkspaceBadgesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/claim': {
+      id: '/_app/workspace/claim'
+      path: '/workspace/claim'
+      fullPath: '/workspace/claim'
+      preLoaderRoute: typeof AppWorkspaceClaimRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/climate': {
+      id: '/_app/workspace/climate'
+      path: '/workspace/climate'
+      fullPath: '/workspace/climate'
+      preLoaderRoute: typeof AppWorkspaceClimateRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/editorial': {
+      id: '/_app/workspace/editorial'
+      path: '/workspace/editorial'
+      fullPath: '/workspace/editorial'
+      preLoaderRoute: typeof AppWorkspaceEditorialRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/events': {
+      id: '/_app/workspace/events'
+      path: '/workspace/events'
+      fullPath: '/workspace/events'
+      preLoaderRoute: typeof AppWorkspaceEventsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/gradebook': {
+      id: '/_app/workspace/gradebook'
+      path: '/workspace/gradebook'
+      fullPath: '/workspace/gradebook'
+      preLoaderRoute: typeof AppWorkspaceGradebookRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/guardian': {
+      id: '/_app/workspace/guardian'
+      path: '/workspace/guardian'
+      fullPath: '/workspace/guardian'
+      preLoaderRoute: typeof AppWorkspaceGuardianRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/kiosk': {
+      id: '/_app/workspace/kiosk'
+      path: '/workspace/kiosk'
+      fullPath: '/workspace/kiosk'
+      preLoaderRoute: typeof AppWorkspaceKioskRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/notices': {
+      id: '/_app/workspace/notices'
+      path: '/workspace/notices'
+      fullPath: '/workspace/notices'
+      preLoaderRoute: typeof AppWorkspaceNoticesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/plan': {
+      id: '/_app/workspace/plan'
+      path: '/workspace/plan'
+      fullPath: '/workspace/plan'
+      preLoaderRoute: typeof AppWorkspacePlanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/school': {
+      id: '/_app/workspace/school'
+      path: '/workspace/school'
+      fullPath: '/workspace/school'
+      preLoaderRoute: typeof AppWorkspaceSchoolRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/submissions': {
+      id: '/_app/workspace/submissions'
+      path: '/workspace/submissions'
+      fullPath: '/workspace/submissions'
+      preLoaderRoute: typeof AppWorkspaceSubmissionsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/timetable': {
+      id: '/_app/workspace/timetable'
+      path: '/workspace/timetable'
+      fullPath: '/workspace/timetable'
+      preLoaderRoute: typeof AppWorkspaceTimetableRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/tuition': {
+      id: '/_app/workspace/tuition'
+      path: '/workspace/tuition'
+      fullPath: '/workspace/tuition'
+      preLoaderRoute: typeof AppWorkspaceTuitionRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/workforce': {
+      id: '/_app/workspace/workforce'
+      path: '/workspace/workforce'
+      fullPath: '/workspace/workforce'
+      preLoaderRoute: typeof AppWorkspaceWorkforceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_dev/kit/': {
+      id: '/_dev/kit/'
+      path: '/kit'
+      fullPath: '/kit/'
+      preLoaderRoute: typeof DevKitIndexRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/_dev/kit/floor-redesign': {
+      id: '/_dev/kit/floor-redesign'
+      path: '/kit/floor-redesign'
+      fullPath: '/kit/floor-redesign'
+      preLoaderRoute: typeof DevKitFloorRedesignRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/_dev/kit/self': {
+      id: '/_dev/kit/self'
+      path: '/kit/self'
+      fullPath: '/kit/self'
+      preLoaderRoute: typeof DevKitSelfRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/kit/components/': {
+      id: '/kit/components/'
+      path: '/kit/components'
+      fullPath: '/kit/components/'
+      preLoaderRoute: typeof KitComponentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kit/components/temporal-horizon': {
+      id: '/kit/components/temporal-horizon'
+      path: '/kit/components/temporal-horizon'
+      fullPath: '/kit/components/temporal-horizon'
+      preLoaderRoute: typeof KitComponentsTemporalHorizonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/school/$id/': {
+      id: '/school/$id/'
+      path: '/school/$id'
+      fullPath: '/school/$id/'
+      preLoaderRoute: typeof SchoolIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/admin/forms/builder': {
+      id: '/_app/admin/forms/builder'
+      path: '/admin/forms/builder'
+      fullPath: '/admin/forms/builder'
+      preLoaderRoute: typeof AppAdminFormsBuilderRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/community/chat/$groupId': {
+      id: '/_app/community/chat/$groupId'
+      path: '/community/chat/$groupId'
+      fullPath: '/community/chat/$groupId'
+      preLoaderRoute: typeof AppCommunityChatGroupIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/community/dm/$userId': {
+      id: '/_app/community/dm/$userId'
+      path: '/community/dm/$userId'
+      fullPath: '/community/dm/$userId'
+      preLoaderRoute: typeof AppCommunityDmUserIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/collections/$id': {
+      id: '/_app/library/collections/$id'
+      path: '/library/collections/$id'
+      fullPath: '/library/collections/$id'
+      preLoaderRoute: typeof AppLibraryCollectionsIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/reader/$bookId': {
+      id: '/_app/library/reader/$bookId'
+      path: '/library/reader/$bookId'
+      fullPath: '/library/reader/$bookId'
+      preLoaderRoute: typeof AppLibraryReaderBookIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/library/video/$videoId': {
+      id: '/_app/library/video/$videoId'
+      path: '/library/video/$videoId'
+      fullPath: '/library/video/$videoId'
+      preLoaderRoute: typeof AppLibraryVideoVideoIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workspace/classroom/$id': {
+      id: '/_app/workspace/classroom/$id'
+      path: '/workspace/classroom/$id'
+      fullPath: '/workspace/classroom/$id'
+      preLoaderRoute: typeof AppWorkspaceClassroomIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/school/$id/articles/$slug': {
+      id: '/school/$id/articles/$slug'
+      path: '/school/$id/articles/$slug'
+      fullPath: '/school/$id/articles/$slug'
+      preLoaderRoute: typeof SchoolIdArticlesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AccountRouteChildren {
+  AccountAccountRecoveryRoute: typeof AccountAccountRecoveryRoute
+  AccountOnboardingRoute: typeof AccountOnboardingRoute
+  AccountRecoveryRoute: typeof AccountRecoveryRoute
+  AccountResetPasswordRoute: typeof AccountResetPasswordRoute
+  AccountSignInRoute: typeof AccountSignInRoute
+  AccountAuthCallbackRoute: typeof AccountAuthCallbackRoute
+  AccountAuthCompleteRoute: typeof AccountAuthCompleteRoute
+}
+
+const AccountRouteChildren: AccountRouteChildren = {
+  AccountAccountRecoveryRoute: AccountAccountRecoveryRoute,
+  AccountOnboardingRoute: AccountOnboardingRoute,
+  AccountRecoveryRoute: AccountRecoveryRoute,
+  AccountResetPasswordRoute: AccountResetPasswordRoute,
+  AccountSignInRoute: AccountSignInRoute,
+  AccountAuthCallbackRoute: AccountAuthCallbackRoute,
+  AccountAuthCompleteRoute: AccountAuthCompleteRoute,
+}
+
+const AccountRouteWithChildren =
+  AccountRoute._addFileChildren(AccountRouteChildren)
+
+interface AppRouteChildren {
+  AppAgentLabRoute: typeof AppAgentLabRoute
+  AppAtlasRoute: typeof AppAtlasRoute
+  AppIconLabRoute: typeof AppIconLabRoute
+  AppNotificationsRoute: typeof AppNotificationsRoute
+  AppSelfRoute: typeof AppSelfRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppSupportRoute: typeof AppSupportRoute
+  AppVergerLabRoute: typeof AppVergerLabRoute
+  AppAdminAnalyticsRoute: typeof AppAdminAnalyticsRoute
+  AppAdminDocumentsRoute: typeof AppAdminDocumentsRoute
+  AppAdminFounderRoute: typeof AppAdminFounderRoute
+  AppAdminPrincipalRoute: typeof AppAdminPrincipalRoute
+  AppCommunityAnnouncementsRoute: typeof AppCommunityAnnouncementsRoute
+  AppCommunityForestRoute: typeof AppCommunityForestRoute
+  AppLibraryContributeRoute: typeof AppLibraryContributeRoute
+  AppLibraryCuratorRoute: typeof AppLibraryCuratorRoute
+  AppLibraryMapRoute: typeof AppLibraryMapRoute
+  AppLibraryReviewRoute: typeof AppLibraryReviewRoute
+  AppLibraryToolsRoute: typeof AppLibraryToolsRoute
+  AppProfileSecurityRoute: typeof AppProfileSecurityRoute
+  AppWorkspaceAtlasRoute: typeof AppWorkspaceAtlasRoute
+  AppWorkspaceAttendanceRoute: typeof AppWorkspaceAttendanceRoute
+  AppWorkspaceBadgesRoute: typeof AppWorkspaceBadgesRoute
+  AppWorkspaceClaimRoute: typeof AppWorkspaceClaimRoute
+  AppWorkspaceClimateRoute: typeof AppWorkspaceClimateRoute
+  AppWorkspaceEditorialRoute: typeof AppWorkspaceEditorialRoute
+  AppWorkspaceEventsRoute: typeof AppWorkspaceEventsRoute
+  AppWorkspaceGradebookRoute: typeof AppWorkspaceGradebookRoute
+  AppWorkspaceGuardianRoute: typeof AppWorkspaceGuardianRoute
+  AppWorkspaceKioskRoute: typeof AppWorkspaceKioskRoute
+  AppWorkspaceNoticesRoute: typeof AppWorkspaceNoticesRoute
+  AppWorkspacePlanRoute: typeof AppWorkspacePlanRoute
+  AppWorkspaceSchoolRoute: typeof AppWorkspaceSchoolRoute
+  AppWorkspaceSubmissionsRoute: typeof AppWorkspaceSubmissionsRoute
+  AppWorkspaceTimetableRoute: typeof AppWorkspaceTimetableRoute
+  AppWorkspaceTuitionRoute: typeof AppWorkspaceTuitionRoute
+  AppWorkspaceWorkforceRoute: typeof AppWorkspaceWorkforceRoute
+  AppCommunityIndexRoute: typeof AppCommunityIndexRoute
+  AppLibraryIndexRoute: typeof AppLibraryIndexRoute
+  AppProfileIndexRoute: typeof AppProfileIndexRoute
+  AppWorkspaceIndexRoute: typeof AppWorkspaceIndexRoute
+  AppAdminFormsBuilderRoute: typeof AppAdminFormsBuilderRoute
+  AppCommunityChatGroupIdRoute: typeof AppCommunityChatGroupIdRoute
+  AppCommunityDmUserIdRoute: typeof AppCommunityDmUserIdRoute
+  AppLibraryCollectionsIdRoute: typeof AppLibraryCollectionsIdRoute
+  AppLibraryReaderBookIdRoute: typeof AppLibraryReaderBookIdRoute
+  AppLibraryVideoVideoIdRoute: typeof AppLibraryVideoVideoIdRoute
+  AppWorkspaceClassroomIdRoute: typeof AppWorkspaceClassroomIdRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAgentLabRoute: AppAgentLabRoute,
+  AppAtlasRoute: AppAtlasRoute,
+  AppIconLabRoute: AppIconLabRoute,
+  AppNotificationsRoute: AppNotificationsRoute,
+  AppSelfRoute: AppSelfRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppSupportRoute: AppSupportRoute,
+  AppVergerLabRoute: AppVergerLabRoute,
+  AppAdminAnalyticsRoute: AppAdminAnalyticsRoute,
+  AppAdminDocumentsRoute: AppAdminDocumentsRoute,
+  AppAdminFounderRoute: AppAdminFounderRoute,
+  AppAdminPrincipalRoute: AppAdminPrincipalRoute,
+  AppCommunityAnnouncementsRoute: AppCommunityAnnouncementsRoute,
+  AppCommunityForestRoute: AppCommunityForestRoute,
+  AppLibraryContributeRoute: AppLibraryContributeRoute,
+  AppLibraryCuratorRoute: AppLibraryCuratorRoute,
+  AppLibraryMapRoute: AppLibraryMapRoute,
+  AppLibraryReviewRoute: AppLibraryReviewRoute,
+  AppLibraryToolsRoute: AppLibraryToolsRoute,
+  AppProfileSecurityRoute: AppProfileSecurityRoute,
+  AppWorkspaceAtlasRoute: AppWorkspaceAtlasRoute,
+  AppWorkspaceAttendanceRoute: AppWorkspaceAttendanceRoute,
+  AppWorkspaceBadgesRoute: AppWorkspaceBadgesRoute,
+  AppWorkspaceClaimRoute: AppWorkspaceClaimRoute,
+  AppWorkspaceClimateRoute: AppWorkspaceClimateRoute,
+  AppWorkspaceEditorialRoute: AppWorkspaceEditorialRoute,
+  AppWorkspaceEventsRoute: AppWorkspaceEventsRoute,
+  AppWorkspaceGradebookRoute: AppWorkspaceGradebookRoute,
+  AppWorkspaceGuardianRoute: AppWorkspaceGuardianRoute,
+  AppWorkspaceKioskRoute: AppWorkspaceKioskRoute,
+  AppWorkspaceNoticesRoute: AppWorkspaceNoticesRoute,
+  AppWorkspacePlanRoute: AppWorkspacePlanRoute,
+  AppWorkspaceSchoolRoute: AppWorkspaceSchoolRoute,
+  AppWorkspaceSubmissionsRoute: AppWorkspaceSubmissionsRoute,
+  AppWorkspaceTimetableRoute: AppWorkspaceTimetableRoute,
+  AppWorkspaceTuitionRoute: AppWorkspaceTuitionRoute,
+  AppWorkspaceWorkforceRoute: AppWorkspaceWorkforceRoute,
+  AppCommunityIndexRoute: AppCommunityIndexRoute,
+  AppLibraryIndexRoute: AppLibraryIndexRoute,
+  AppProfileIndexRoute: AppProfileIndexRoute,
+  AppWorkspaceIndexRoute: AppWorkspaceIndexRoute,
+  AppAdminFormsBuilderRoute: AppAdminFormsBuilderRoute,
+  AppCommunityChatGroupIdRoute: AppCommunityChatGroupIdRoute,
+  AppCommunityDmUserIdRoute: AppCommunityDmUserIdRoute,
+  AppLibraryCollectionsIdRoute: AppLibraryCollectionsIdRoute,
+  AppLibraryReaderBookIdRoute: AppLibraryReaderBookIdRoute,
+  AppLibraryVideoVideoIdRoute: AppLibraryVideoVideoIdRoute,
+  AppWorkspaceClassroomIdRoute: AppWorkspaceClassroomIdRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+interface DevRouteChildren {
+  DevArchitectureRoute: typeof DevArchitectureRoute
+  DevKitFloorRedesignRoute: typeof DevKitFloorRedesignRoute
+  DevKitSelfRoute: typeof DevKitSelfRoute
+  DevKitIndexRoute: typeof DevKitIndexRoute
+}
+
+const DevRouteChildren: DevRouteChildren = {
+  DevArchitectureRoute: DevArchitectureRoute,
+  DevKitFloorRedesignRoute: DevKitFloorRedesignRoute,
+  DevKitSelfRoute: DevKitSelfRoute,
+  DevKitIndexRoute: DevKitIndexRoute,
+}
+
+const DevRouteWithChildren = DevRoute._addFileChildren(DevRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  NotificationsRoute: NotificationsRoute,
-  SelfRoute: SelfRoute,
-  SettingsRoute: SettingsRoute,
-  CommunityAnnouncementsRoute: CommunityAnnouncementsRoute,
-  CommunityForestRoute: CommunityForestRoute,
-  LibraryContributeRoute: LibraryContributeRoute,
-  LibraryCuratorRoute: LibraryCuratorRoute,
-  LibraryMapRoute: LibraryMapRoute,
-  LibraryToolsRoute: LibraryToolsRoute,
-  LibraryIndexRoute: LibraryIndexRoute,
-  ProfileIndexRoute: ProfileIndexRoute,
-  WorkspaceIndexRoute: WorkspaceIndexRoute,
-  CommunityChatGroupIdRoute: CommunityChatGroupIdRoute,
-  LibraryCollectionsIdRoute: LibraryCollectionsIdRoute,
-  LibraryReaderBookIdRoute: LibraryReaderBookIdRoute,
-  LibraryVideoVideoIdRoute: LibraryVideoVideoIdRoute,
-};
+  IndexRoute: IndexRoute,
+  AccountRoute: AccountRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
+  DevRoute: DevRouteWithChildren,
+  ArchitectureLabRoute: ArchitectureLabRoute,
+  ExploreIntroRoute: ExploreIntroRoute,
+  InvitationWelcomeRoute: InvitationWelcomeRoute,
+  WelcomeRoute: WelcomeRoute,
+  CCodeRoute: CCodeRoute,
+  KitComponentsTemporalHorizonRoute: KitComponentsTemporalHorizonRoute,
+  KitComponentsIndexRoute: KitComponentsIndexRoute,
+  SchoolIdIndexRoute: SchoolIdIndexRoute,
+  SchoolIdArticlesSlugRoute: SchoolIdArticlesSlugRoute,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
