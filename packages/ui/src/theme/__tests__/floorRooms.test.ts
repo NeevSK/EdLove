@@ -53,7 +53,7 @@ describe('work room floors', { tags: ['unit', 'a11y'] }, () => {
           expect(errors).toEqual([]);
           expect(tree.readingOrder.length).toBeGreaterThan(0);
           await expect(printFloor(tree)).toMatchFileSnapshot(
-            `./__floors__/${plan.id.replace(':', '-')}.${screen}.${detail}.txt`,
+            `./__floors__/${plan.id.replace(':', '-')}.${screen}.${detail}.floor`,
           );
         });
       }

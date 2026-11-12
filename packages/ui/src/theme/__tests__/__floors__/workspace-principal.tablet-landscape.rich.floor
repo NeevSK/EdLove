@@ -1,0 +1,15 @@
+workspace:principal: large landscape, standard, cost 104/400
+  Today 516h w3
+    Today [lamp] 516h w3
+      Staff away 56h w3
+      Today at school 140h w3
+      Approvals 280h w2
+  School 528h w1
+    School [tile-grid] 304h w1
+      School numbers 280h w1
+      Reports 140h w1
+    Sections [grouped-list] 224h w1
+      Sections 200h w1
+  Ahead 164h w1
+    Ahead [grouped-list] 164h w1
+      Term plan 140h w1
