@@ -156,9 +156,21 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
     sanctuary layout now forwards core's `feedback:toast` into the kit's `ToastHost`.
   - **Moved.** `GuestStorageError` now lives in `effect/Errors.ts`. Its type import made web's
     type check load React Native's globals.
-  - **Still to do.** Per-domain `queryOptions` and `mutationOptions` on the v1 client; the
-    outcome type; account-scoped keys or a cache cleared on account switch (web has
-    `AuthQueryCacheBoundary`; mobile is unchecked).
+  - **v1 query options, derived.** `createV1QueryUtils` in `api/v1/client.ts` (oRPC's TanStack
+    utils, with the `'v1'` key prefix) gives every procedure in your contract `queryOptions`,
+    `mutationOptions` and keys, with no hand-written factory. Mobile exports it as `v1` next to
+    `v1Client`. Web calls v1 only on the server so far, so it has no browser utils yet.
+  - **Account boundary on mobile.** It was missing: switching accounts on mobile left the previous
+    account's cached queries in memory. `accounts/queryAccountBoundary.coordinator.ts` disposes
+    them whenever the scope session's principal changes, and leaves queued writes alone. Web
+    already did this in `AuthQueryCacheBoundary`.
+  - **Outcome type: moved to step 5.** It needs real producers. Online mutations are covered by
+    the QueryClient policy; Queued, Conflict and Recovered come from the outbox, so the type lands
+    with the outbox port rather than as an unused type now.
+  - **First conversion candidate.** Mobile onboarding's first bond (`app/onboarding.tsx`
+    `handleComplete`): a hand-rolled `submitting` flag, `try/catch` and `console.warn` around
+    `v1Client.identity.createInitialBond`. Its toast copy is better than the generic message, so
+    convert it with its own message (see L7, the copy that is still owed).
 - **Production.** Offline-first cache, prefetch on intent (L9 tells L5 where the user is going),
   invalidation rules owned by L4 outcomes.
 - **Enterprise.** Tenant isolation proven by tests.

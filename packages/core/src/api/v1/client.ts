@@ -1,5 +1,6 @@
 import { createORPCClient, ORPCError } from '@orpc/client';
 import { RPCLink, type RPCLinkOptions } from '@orpc/client/fetch';
+import { createTanstackQueryUtils } from '@orpc/tanstack-query';
 import { assertSecureApiUrl } from '../../lib/security/transportSecurity.adapter';
 import type { AppContractClient } from './contract';
 
@@ -63,4 +64,15 @@ export function createAuthenticatedV1Client({
       return { authorization: `Bearer ${token}` };
     },
   });
+}
+
+/**
+ * Typed TanStack Query options for every v1 procedure, derived from the contract:
+ * `v1.identity.session.queryOptions()`, `v1.identity.createInitialBond.mutationOptions()`,
+ * `v1.identity.key()` for invalidation. A new procedure in the contract gets them with no code
+ * here. Every key starts with `'v1'`, so a whole API version can be invalidated or removed at
+ * once, and the QueryClient policy names failures by procedure (`v1.identity.createInitialBond`).
+ */
+export function createV1QueryUtils(client: AppContractClient) {
+  return createTanstackQueryUtils(client, { prefix: 'v1' });
 }

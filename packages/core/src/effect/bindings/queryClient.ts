@@ -43,8 +43,12 @@ export function shouldRetryQuery(failureCount: number, error: unknown): boolean 
   return kind === null || isRetryable(kind);
 }
 
+/** `['attendance', 'save']` → `attendance.save`; `['v1', ['identity', 'entry'], {…}]` → `v1.identity.entry`. */
 const operationOf = (key: readonly unknown[]) =>
-  key.filter((part): part is string => typeof part === 'string').join('.') || undefined;
+  key
+    .flatMap((part) => (Array.isArray(part) ? part : [part]))
+    .filter((part): part is string => typeof part === 'string')
+    .join('.') || undefined;
 
 export function queryClientConfig(defaultOptions: DefaultOptions = {}): QueryClientConfig {
   return {

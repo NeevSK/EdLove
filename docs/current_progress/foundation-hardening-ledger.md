@@ -324,3 +324,10 @@ web remains online-only with normal request/reconnect error handling.
 - Web had no listener for `feedback:toast`; `FeedbackToasts` bridges it to the kit's `ToastHost`.
 - `GuestStorageError` moved to `effect/Errors.ts`; its type import pulled React Native globals into web's type check (3 `Timeout` errors).
 - G0: core 50, web 1, mobile 17, unchanged. G1: core 20 failing (unchanged); web and mobile unchanged. `getQueryClient.test.ts` now asserts the retry contract instead of `retry: 2`. New: `queryClient.test.ts` (7), `FeedbackToasts.test.tsx` (2, G3 jsdom).
+
+### Client runtime L5: v1 query utils, mobile account boundary
+
+- `createV1QueryUtils` (oRPC TanStack utils, `'v1'` key prefix) gives typed options for every v1 procedure; mobile exports `v1`. The QueryClient policy names failures by procedure path.
+- Mobile kept the previous account's query cache after an account switch; `bindQueryCacheToAccount` (core coordinator, subscribing to the scope session) now disposes it. G2 scenario test, 3 cases.
+- The outcome type moves to step 5 (the outbox), where it has producers.
+- G0: unchanged (core 50, web 1, mobile 17). G1: core 20 failing (unchanged); mobile unchanged.

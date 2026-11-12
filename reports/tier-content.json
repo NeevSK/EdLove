@@ -25636,15 +25636,15 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 67,
+   "lines": 79,
    "counts": {
     "types": 2,
     "consts": 1,
     "constructs": 0,
     "ambient": 2,
     "schemas": 0,
-    "functions": 3,
-    "functionLines": 53,
+    "functions": 4,
+    "functionLines": 65,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -25658,12 +25658,13 @@
     "createV1Link",
     "createV1Client",
     "AuthenticatedV1ClientOptions",
-    "createAuthenticatedV1Client"
+    "createAuthenticatedV1Client",
+    "createV1QueryUtils"
    ],
    "unions": [],
    "importers": {
     "prod": 5,
-    "tests": 5
+    "tests": 6
    },
    "imports": [
     {
@@ -25680,7 +25681,8 @@
     }
    ],
    "outside": [
-    "@orpc/client"
+    "@orpc/client",
+    "@orpc/tanstack-query"
    ]
   },
   {
@@ -27120,7 +27122,7 @@
    "package": "packages/core",
    "folderTier": "C",
    "shape": "contract+logic",
-   "lines": 78,
+   "lines": 82,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -27128,7 +27130,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 40,
+    "functionLines": 43,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -124961,11 +124963,11 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 9,
+   "lines": 16,
    "counts": {
     "types": 0,
     "consts": 0,
-    "constructs": 1,
+    "constructs": 2,
     "ambient": 1,
     "schemas": 0,
     "functions": 0,
@@ -124978,7 +124980,8 @@
     "jsx": false
    },
    "exports": [
-    "v1Client"
+    "v1Client",
+    "v1"
    ],
    "unions": [],
    "importers": {

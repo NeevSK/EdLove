@@ -55,6 +55,20 @@ describe('G1 queryClientConfig: feedback', () => {
     expect(presentFailure).toHaveBeenCalledWith(error, 'attendance.save');
   });
 
+  it('names a v1 procedure by its path', async () => {
+    const qc = client();
+    const error = new ORPCError('FORBIDDEN');
+    await qc
+      .getMutationCache()
+      .build(qc, {
+        mutationKey: ['v1', ['identity', 'createInitialBond'], { type: 'mutation' }],
+        mutationFn: () => Promise.reject(error),
+      })
+      .execute(undefined)
+      .catch(() => {});
+    expect(presentFailure).toHaveBeenCalledWith(error, 'v1.identity.createInitialBond');
+  });
+
   it('stays out when the caller handles the failure', async () => {
     const qc = client();
     const reject = () => Promise.reject(new ORPCError('CONFLICT'));
