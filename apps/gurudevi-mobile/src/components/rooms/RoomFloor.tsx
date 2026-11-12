@@ -18,7 +18,7 @@ import {
 import { useFloorLayout } from '@repo/core/native';
 import {
   FloorView,
-  useFloorPresence,
+  useScreenGround,
   useRoomScroll,
   useShellLayout,
   useStage,
@@ -71,7 +71,7 @@ export function RoomFloor({
   onSeeAll,
   lead,
 }: RoomFloorProps) {
-  useFloorPresence('full');
+  useScreenGround('home');
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
   const shell = useShellLayout();

@@ -1,19 +1,29 @@
+import { GROUND_POLICY, screenPresence } from '@repo/ui/theme/scene';
 import { describe, expect, it } from 'vitest';
-import { presenceForPath } from '@/components/shell/screenPresence';
+import { screenKindForPath } from '@/components/shell/screenPresence';
 
-describe('presenceForPath', () => {
-  it('shows the ground in full on a room home', () => {
-    expect(presenceForPath('/library', { roomRoot: true })).toBe('full');
-    expect(presenceForPath('/community/', { roomRoot: true })).toBe('full');
+describe('screenKindForPath', () => {
+  it('names a room home, a page inside a room, and focused work', () => {
+    expect(screenKindForPath('/library', { roomRoot: true })).toBe('home');
+    expect(screenKindForPath('/community/', { roomRoot: true })).toBe('home');
+    expect(screenKindForPath('/library/shelf', { roomRoot: false })).toBe('inside');
+    expect(screenKindForPath('/settings', { roomRoot: true })).toBe('focus');
+    expect(screenKindForPath('/notifications/', { roomRoot: true })).toBe('focus');
+    expect(screenKindForPath('/settingsx', { roomRoot: true })).toBe('home');
   });
+});
 
-  it('shows a band inside a room', () => {
-    expect(presenceForPath('/library/shelf', { roomRoot: false })).toBe('band');
-  });
-
-  it('calms focused work even where no room claims the screen', () => {
-    expect(presenceForPath('/settings', { roomRoot: true })).toBe('quiet');
-    expect(presenceForPath('/notifications/', { roomRoot: true })).toBe('quiet');
-    expect(presenceForPath('/settingsx', { roomRoot: true })).toBe('full');
+describe('ground policy', () => {
+  it('lets the person choose how loud the ground is, and calm never shows more', () => {
+    expect(screenPresence('focus', 'balanced')).toBe('quiet');
+    expect(screenPresence('focus', 'lively')).toBe('band');
+    expect(screenPresence('home', 'calm')).toBe('band');
+    const order = { full: 0, band: 1, quiet: 2 } as const;
+    for (const kind of ['home', 'inside', 'focus'] as const) {
+      const p = GROUND_POLICY.presence;
+      expect(order[p.calm[kind]]).toBeGreaterThanOrEqual(order[p.balanced[kind]]);
+      expect(order[p.balanced[kind]]).toBeGreaterThanOrEqual(order[p.lively[kind]]);
+    }
+    expect(GROUND_POLICY.quietVeil.calm).toBeGreaterThanOrEqual(GROUND_POLICY.quietVeil.lively);
   });
 });

@@ -9,7 +9,7 @@ import {
   LanguagePicker,
   Surface,
   Text,
-  useFloorPresence,
+  useScreenGround,
 } from '@repo/ui/components/native';
 import { Mascot } from '@repo/ui/components/Mascot';
 import { useWorld } from '@repo/ui/theme/native';
@@ -66,7 +66,7 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
   const { isDark, setThemeMode } = useEnvironment();
   const world = useWorld();
   const wt = world.tokens;
-  useFloorPresence('full');
+  useScreenGround('home');
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [activeRealm, setActiveRealm] = useState<RealmId>('self');

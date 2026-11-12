@@ -61,6 +61,16 @@ export function ReadingScreen() {
             ]}
           />
           <SegmentedControl
+            label="Your world behind screens: how much of the ground shows"
+            value={comfort.ground}
+            onChange={(ground) => updateComfort({ ground })}
+            options={[
+              { value: 'lively', label: 'Lively' },
+              { value: 'balanced', label: 'Balanced' },
+              { value: 'calm', label: 'Calm' },
+            ]}
+          />
+          <SegmentedControl
             label="Your main hand: the action button and the keypad sit on its side"
             value={comfort.hand}
             onChange={(hand) => updateComfort({ hand })}

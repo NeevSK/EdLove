@@ -7,6 +7,10 @@
 
 import { storage } from '@repo/core/lib/storage';
 import { useSyncExternalStore } from 'react';
+import {
+  DEFAULT_GROUND_LIVELINESS,
+  type GroundLiveliness,
+} from '../theme/scene/screenGround';
 import type { ComfortSize } from '../theme/types';
 import { getReading, type Reading } from '../theme/native/style';
 import { updateReading } from './ReadingPreferences';
@@ -20,6 +24,8 @@ export interface Comfort {
   hand: 'right' | 'left';
   /** Outdoors in bright light: strongest inks, light palette, plain floor. A quick switch, not a preset. */
   sunlight: boolean;
+  /** How much of the world's ground shows behind screens (the ground policy reads it). */
+  ground: GroundLiveliness;
 }
 
 export const STANDARD_COMFORT: Comfort = {
@@ -28,6 +34,7 @@ export const STANDARD_COMFORT: Comfort = {
   contrast: 'system',
   hand: 'right',
   sunlight: false,
+  ground: DEFAULT_GROUND_LIVELINESS,
 };
 
 export type ComfortPresetId = 'clear' | 'standard' | 'young' | 'compact';
@@ -37,7 +44,7 @@ export interface ComfortPreset {
   label: string;
   /** Who it is for, in a few words. */
   hint: string;
-  comfort: Omit<Comfort, 'hand' | 'sunlight'>;
+  comfort: Omit<Comfort, 'hand' | 'sunlight' | 'ground'>;
   reading: Reading;
 }
 
@@ -100,6 +107,10 @@ function sanitize(v: Partial<Comfort>, base: Comfort): Comfort {
     contrast: v.contrast === 'more' || v.contrast === 'system' ? v.contrast : base.contrast,
     hand: v.hand === 'left' || v.hand === 'right' ? v.hand : base.hand,
     sunlight: typeof v.sunlight === 'boolean' ? v.sunlight : base.sunlight,
+    ground:
+      v.ground === 'lively' || v.ground === 'balanced' || v.ground === 'calm'
+        ? v.ground
+        : base.ground,
   };
 }
 

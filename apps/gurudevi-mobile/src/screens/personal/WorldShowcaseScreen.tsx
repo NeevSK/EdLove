@@ -32,7 +32,7 @@ import {
   Text,
   TwoPane,
   TextField,
-  useFloorPresence,
+  useScreenGround,
   useKeypadSpace,
   useShellLayout,
   useStage,
@@ -130,7 +130,7 @@ function greetingAt(minute: number): string {
 }
 
 export function WorldShowcaseScreen() {
-  useFloorPresence('full');
+  useScreenGround('home');
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const shell = useShellLayout();

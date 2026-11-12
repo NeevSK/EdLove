@@ -1,21 +1,18 @@
-import type { ScenePresence } from '@repo/ui/theme/scene';
+import type { ScreenKind } from '@repo/ui/theme/scene';
 
 /**
- * How loud the world's ground is behind a screen. Every screen stands on the
- * world's ground (the world or the room picks the picture); a screen only says
- * how much of it shows:
- * - full: a room's front floor, the ground in full;
- * - band: pages inside a room, the ground behind the header, veiled below;
- * - quiet: focused work (settings, notifications, forms, reading), a calm veil.
- * Comfort (sunlight, simpler look) and verger's tier calm it further on their own.
+ * What kind of screen a path is, for the ground policy (how much of the
+ * world's ground shows is decided there, by the person's Visual settings and
+ * by the phone's budget, never here). Focused work wants calm; a room's home is
+ * its front floor; everything else is a page inside a room.
  */
-const QUIET = ['/settings', '/notifications', '/reading', '/account-recovery', '/form-builder'];
+const FOCUS = ['/settings', '/notifications', '/reading', '/account-recovery', '/form-builder'];
 
-export function presenceForPath(
+export function screenKindForPath(
   pathname: string,
   { roomRoot }: { roomRoot: boolean },
-): ScenePresence {
+): ScreenKind {
   const path = pathname.replace(/\/+$/, '') || '/';
-  if (QUIET.some((q) => path === q || path.startsWith(`${q}/`))) return 'quiet';
-  return roomRoot ? 'full' : 'band';
+  if (FOCUS.some((q) => path === q || path.startsWith(`${q}/`))) return 'focus';
+  return roomRoot ? 'home' : 'inside';
 }

@@ -10,7 +10,7 @@ import {
   Notice,
   Surface,
   Text,
-  useFloorPresence,
+  useScreenGround,
   useRoomScroll,
   useShellLayout,
 } from '@repo/ui/components/native';
@@ -73,7 +73,7 @@ const PLACES = [
 ] as const;
 
 export function WorkspaceHome({ perspective, note }: { perspective?: string; note?: string }) {
-  useFloorPresence('full');
+  useScreenGround('home');
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
   const layout = useShellLayout();

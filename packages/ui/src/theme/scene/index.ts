@@ -69,3 +69,12 @@ export {
   sceneArtOf,
   WORLD_ART,
 } from './art';
+export {
+  DEFAULT_GROUND_LIVELINESS,
+  GROUND_POLICY,
+  type GroundLiveliness,
+  type GroundPolicy,
+  quietVeilOf,
+  type ScreenKind,
+  screenPresence,
+} from './screenGround';
