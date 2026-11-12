@@ -697,6 +697,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-scrollarea[data-orientation="vertical"] > .gd-scrollarea-mask-end{bottom:0;left:0;right:8px;height:2.5rem;background:linear-gradient(to top, color-mix(in srgb, var(--w-ground) 98%, transparent), transparent)}
 .gd-scrollarea > .gd-scrollarea-track{position:absolute;z-index:10;user-select:none;-webkit-user-select:none;touch-action:none;box-sizing:border-box}
 .gd-scrollarea[data-variant="native"] > .gd-scrollarea-track{display:none}
+@media (pointer:coarse){.gd-scrollarea > .gd-scrollarea-track{display:none}}
 .gd-scrollarea > .gd-scrollarea-track[data-axis="horizontal"]{left:2px;right:2px;bottom:2px;height:6px}
 .gd-scrollarea > .gd-scrollarea-track[data-axis="vertical"]{top:2px;right:2px;bottom:2px;width:6px}
 .gd-scrollarea-rail{position:absolute;inset:0;box-sizing:border-box}

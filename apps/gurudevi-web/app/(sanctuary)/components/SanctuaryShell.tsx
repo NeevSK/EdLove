@@ -598,7 +598,7 @@ export function SanctuaryShell({
           ) : null
         }
         navSlot={
-          <nav aria-label="Main navigation" className={styles.horizontalNavigation}>
+          <nav aria-label="Main navigation" className={styles.horizontalNavigation} data-placement="deck">
             {primaryItems.map((item) => (
               <NavLink emoji item={item} key={item.id} pathname={pathname} />
             ))}
@@ -771,6 +771,15 @@ export function SanctuaryShell({
           </ScrollArea>
         </main>
       </div>
+
+      {/* The same places as a bottom bar on phones. The header copy sits inside transformed layers,
+          so it cannot reach the bottom of the screen; CSS shows exactly one of the two, and the
+          hidden one (display: none) is out of the accessibility tree. */}
+      <nav aria-label="Main navigation" className={styles.horizontalNavigation} data-placement="bottom">
+        {primaryItems.map((item) => (
+          <NavLink emoji item={item} key={item.id} pathname={pathname} />
+        ))}
+      </nav>
 
       <div className={styles.fabDock}>
         <ActionFab
