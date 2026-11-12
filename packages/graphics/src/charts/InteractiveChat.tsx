@@ -42,11 +42,11 @@ export function InteractiveChat({
 
   useEffect(() => {
     // Auto-scroll to bottom when new messages arrive
-    if (scrollViewRef.current && messages.length > 0) {
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
+    if (!scrollViewRef.current || messages.length === 0) return;
+    const timer = setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+    return () => clearTimeout(timer);
   }, [messages.length]);
 
   const handleSend = () => {

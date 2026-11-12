@@ -45,11 +45,11 @@ export type AppServices = Layer.Success<typeof AppLayer>;
  */
 export function callPort<I extends AppServices, S, A>(
   port: Context.Key<I, S>,
-  use: (service: S) => PromiseLike<A>,
+  run: (service: S) => PromiseLike<A>,
 ): Promise<A> {
   return appRuntime.runPromise(
     Effect.flatMap(port, (service) =>
-      Effect.tryPromise({ try: () => use(service), catch: (e) => e }),
+      Effect.tryPromise({ try: () => run(service), catch: (e) => e }),
     ),
   );
 }

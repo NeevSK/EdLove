@@ -66,7 +66,7 @@ function clientFixture() {
       createElement(QueryClientProvider, { client }, children),
   };
 }
-function readBoth() {
+function useBoth() {
   return { banyan: useBanyanGrowth(), nature: useNaturePaths() };
 }
 beforeEach(() => {
@@ -85,7 +85,7 @@ afterEach(() => vi.restoreAllMocks());
 describe('Growth Query ownership with mounted React and substituted network/storage', () => {
   it('shares one fetch and snapshot write across both path readers', async () => {
     const mounted = clientFixture();
-    const view = renderHook(readBoth, mounted);
+    const view = renderHook(useBoth, mounted);
     await waitFor(() => expect(view.result.current.banyan.banyan.peer_mentored_count).toBe(4));
     expect(view.result.current.nature.paths.crystals_found_count).toBe(3);
     expect(fixture.getGrowth).toHaveBeenCalledTimes(1);
@@ -100,7 +100,7 @@ describe('Growth Query ownership with mounted React and substituted network/stor
     fixture.records.set(`growth-snapshot:v1:${accountA}`, saved);
     fixture.records.set('gurudevi-growth-storage', 'unowned legacy values');
     const mounted = clientFixture();
-    const view = renderHook(readBoth, mounted);
+    const view = renderHook(useBoth, mounted);
     await waitFor(() => expect(view.result.current.banyan.isLoading).toBe(false));
     expect(view.result.current.banyan.banyan.banyan_stage).toBe('sapling');
     expect(fixture.getGrowth).not.toHaveBeenCalled();
@@ -122,7 +122,7 @@ describe('Growth Query ownership with mounted React and substituted network/stor
     const remote = deferred<typeof row>();
     fixture.getGrowth.mockReturnValue(remote.promise);
     const mounted = clientFixture();
-    const view = renderHook(readBoth, mounted);
+    const view = renderHook(useBoth, mounted);
     await waitFor(() => expect(fixture.getGrowth).toHaveBeenCalledTimes(1));
     act(() => {
       fixture.state.user = { id: accountB, is_anonymous: false };
@@ -152,7 +152,7 @@ describe('Growth Query ownership with mounted React and substituted network/stor
     );
     fixture.getGrowth.mockRejectedValue(new Error('service unavailable'));
     const mounted = clientFixture();
-    const view = renderHook(readBoth, mounted);
+    const view = renderHook(useBoth, mounted);
     await waitFor(() =>
       expect(view.result.current.banyan.error?.message).toBe('service unavailable'),
     );
@@ -169,7 +169,7 @@ describe('Growth Query ownership with mounted React and substituted network/stor
     fixture.records.set(`growth-snapshot:v1:${accountA}`, original);
     fixture.getGrowth.mockResolvedValue(foreign);
     const mounted = clientFixture();
-    const view = renderHook(readBoth, mounted);
+    const view = renderHook(useBoth, mounted);
     await waitFor(() =>
       expect(view.result.current.nature.error?.message).toContain('another account'),
     );
@@ -183,7 +183,7 @@ describe('Growth Query ownership with mounted React and substituted network/stor
   it('performs no remote or account-cache work for a local-only guest', async () => {
     fixture.state.user = { id: accountA, is_anonymous: true };
     const mounted = clientFixture();
-    const view = renderHook(readBoth, mounted);
+    const view = renderHook(useBoth, mounted);
     expect(view.result.current.banyan.isLoading).toBe(false);
     expect(fixture.getGrowth).not.toHaveBeenCalled();
     expect(fixture.read).not.toHaveBeenCalled();

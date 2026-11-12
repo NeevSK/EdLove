@@ -5,7 +5,7 @@
  * the phone can afford (press scale, rich surfaces, transitions).
  */
 
-import { useIsFocused } from 'expo-router';
+import { NavigationContext } from 'expo-router/react-navigation';
 import {
   createContext,
   type ReactNode,
@@ -15,6 +15,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
 import { relativeLuminance } from '../../../theme/color';
@@ -63,13 +64,26 @@ export function useStage(): Stage {
  */
 export function useFloorPresence(presence: ScenePresence): void {
   const { setPresence } = useStageContext();
-  let focused = true;
-  try {
-    // Outside a navigator (previews, tests) the screen counts as focused.
-    focused = useIsFocused();
-  } catch {
-    focused = true;
-  }
+  // Read the navigator directly, as useIsFocused does internally, so the hook needs no try/catch:
+  // outside a navigator (previews, tests) the context is absent and the screen counts as focused.
+  const navigation = useContext(NavigationContext);
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (!navigation) return () => {};
+      const offFocus = navigation.addListener('focus', onChange);
+      const offBlur = navigation.addListener('blur', onChange);
+      return () => {
+        offFocus();
+        offBlur();
+      };
+    },
+    [navigation],
+  );
+  const focused = useSyncExternalStore(
+    subscribe,
+    () => navigation?.isFocused() ?? true,
+    () => true,
+  );
   useEffect(() => {
     if (focused) setPresence(presence);
   }, [focused, presence, setPresence]);

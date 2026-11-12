@@ -14,7 +14,7 @@ interface tutiiSpotlightOverlayProps {
   onComplete?: () => void;
 }
 
-export function tutiiSpotlightOverlay({
+export function TutiiSpotlightOverlay({
   spec,
   role,
   autoStart = true,

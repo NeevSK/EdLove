@@ -16,7 +16,7 @@ describe('AuthQueryCacheBoundary', () => {
     queryClient.setQueryData(alphaScopeKey, { name: 'Alpha' });
     queryClient.setQueryData(['legacy', 'profile'], { name: 'Legacy Alpha' });
 
-    const authSpy = vi.spyOn(AuthModule, 'useAuth').mockReturnValue({
+    const authSpy = vi.spyOn(AuthModule, 'useOptionalAuth').mockReturnValue({
       state: {
         status: 'authenticated',
         session: {

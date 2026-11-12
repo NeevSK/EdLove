@@ -13,5 +13,10 @@
   "tierImportViolations": 35,
   "unplacedFiles": 0,
   "passThroughFiles": 2,
-  "tierContentViolations": 0
+  "tierContentViolations": 0,
+  "hooksRuleViolations": 0,
+  "effectDependencyGaps": 87,
+  "effectsThatSetState": 156,
+  "reactCompilerRuleHits": 218,
+  "unparseableFiles": 10
 }

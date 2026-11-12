@@ -51,6 +51,24 @@ export function GradebookFloor({ displayName, capacity }: GradebookFloorProps) {
   }, [roster, students.length]);
 
   // If viewing as a student, render sealed personal competency record (no peer marks or edit controls)
+  // Synchronize from live academic domain submissions when available
+  useEffect(() => {
+    if (submissions && submissions.length > 0) {
+      const liveEntries: GradebookStudent[] = submissions.map((sub, idx) => ({
+        id: sub.student_id,
+        name:
+          sub.student_id
+            .replace(/^student-/, '')
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase()) || `Student ${idx + 1}`,
+        rollNumber: idx + 1,
+        marks: sub.marks ?? 75,
+        feedback: sub.feedback || 'Active academic participation',
+      }));
+      setStudents(liveEntries);
+    }
+  }, [submissions]);
+
   if (capacity?.toLowerCase() === 'student') {
     return (
       <div className={styles.container}>
@@ -138,23 +156,6 @@ export function GradebookFloor({ displayName, capacity }: GradebookFloorProps) {
     );
   }
 
-  // Synchronize from live academic domain submissions when available
-  useEffect(() => {
-    if (submissions && submissions.length > 0) {
-      const liveEntries: GradebookStudent[] = submissions.map((sub, idx) => ({
-        id: sub.student_id,
-        name:
-          sub.student_id
-            .replace(/^student-/, '')
-            .replace(/-/g, ' ')
-            .replace(/\b\w/g, (c) => c.toUpperCase()) || `Student ${idx + 1}`,
-        rollNumber: idx + 1,
-        marks: sub.marks ?? 75,
-        feedback: sub.feedback || 'Active academic participation',
-      }));
-      setStudents(liveEntries);
-    }
-  }, [submissions]);
 
   const sortedStudents = [...students].sort((a, b) => {
     if (sortBy === 'name') return a.name.localeCompare(b.name);

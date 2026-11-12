@@ -125,6 +125,51 @@ function countPassThroughFiles() {
   return tierAudit()['pass-through'] ?? 0;
 }
 
+// React rules (tooling/oxlint-react.json): hooks rules, effect dependencies, effects that
+// set state, and the React Compiler rules. One oxlint run (~3s) for all packages and apps.
+let reactLint;
+function reactLintCounts() {
+  if (!reactLint) {
+    reactLint = {};
+    let out = '';
+    try {
+      out = execFileSync('node_modules/.bin/oxlint', ['-c', 'tooling/oxlint-react.json', '-f', 'json', 'packages', 'apps'], {
+        cwd: REPO_ROOT,
+        encoding: 'utf8',
+        maxBuffer: 64 * 1024 * 1024,
+        stdio: ['ignore', 'pipe', 'ignore'],
+      });
+    } catch (error) {
+      out = error.stdout ?? '';
+    }
+    try {
+      for (const d of JSON.parse(out).diagnostics ?? []) {
+        const code = d.code ?? 'parse-error';
+        reactLint[code] = (reactLint[code] ?? 0) + 1;
+      }
+    } catch {
+      reactLint = null;
+    }
+  }
+  return reactLint;
+}
+function reactCount(codes) {
+  const counts = reactLintCounts();
+  if (!counts) return Number.POSITIVE_INFINITY;
+  return codes.reduce((n, code) => n + (counts[code] ?? 0), 0);
+}
+const REACT_COMPILER_RULES = [
+  'react(purity)',
+  'react(refs)',
+  'react(immutability)',
+  'react(globals)',
+  'react(static-components)',
+  'react(use-memo)',
+  'react(preserve-manual-memoization)',
+  'react(error-boundaries)',
+  'react(set-state-in-render)',
+];
+
 function countTierContentViolations() {
   try {
     const out = execSync('node scripts/audit-tier-content.mjs --summary-json', { cwd: REPO_ROOT, encoding: 'utf8' });
@@ -183,6 +228,11 @@ function measureMetrics() {
     unplacedFiles: countUnplacedFiles(),
     passThroughFiles: countPassThroughFiles(),
     tierContentViolations: countTierContentViolations(),
+    hooksRuleViolations: reactCount(['react-hooks(rules-of-hooks)', 'react(rules-of-hooks)']),
+    effectDependencyGaps: reactCount(['react-hooks(exhaustive-deps)', 'react(exhaustive-deps)']),
+    effectsThatSetState: reactCount(['react(set-state-in-effect)', 'react(no-deriving-state-in-effects)']),
+    reactCompilerRuleHits: reactCount(REACT_COMPILER_RULES),
+    unparseableFiles: reactCount(['parse-error']),
   };
 }
 
@@ -223,6 +273,11 @@ function main() {
     unplacedFiles: 'Files with no tier (core)',
     passThroughFiles: 'Pass-through files (core)',
     tierContentViolations: 'Tier 0/1 files holding runtime code',
+    hooksRuleViolations: 'Rules of Hooks violations',
+    effectDependencyGaps: 'Effect/memo dependency gaps',
+    effectsThatSetState: 'Effects that set or derive state',
+    reactCompilerRuleHits: 'React Compiler rule hits',
+    unparseableFiles: 'Parse errors (oxlint)',
   };
 
   console.log('----------------------------------------------------------------------');

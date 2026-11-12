@@ -145,11 +145,11 @@ export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: Comma
   });
 
   useEffect(() => {
-    if (isOpen) {
-      setQuery('');
-      setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+    if (!isOpen) return;
+    setQuery('');
+    setSelectedIndex(0);
+    const timer = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   useEffect(() => {

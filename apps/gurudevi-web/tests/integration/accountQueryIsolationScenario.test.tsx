@@ -29,7 +29,7 @@ describe('Scenario: Account Transition & Multi-Tenant Query Cache Isolation (G2 
     };
     mockAuthStatus = 'authenticated';
 
-    vi.spyOn(AuthModule, 'useAuth').mockImplementation(() => ({
+    vi.spyOn(AuthModule, 'useOptionalAuth').mockImplementation(() => ({
       state: {
         status: mockAuthStatus,
         session: mockAuthSession,

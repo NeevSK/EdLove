@@ -149,23 +149,22 @@ export function useSchool(schoolId: string): School | null {
  * per ADR-006 and ADR-012.
  */
 export function usePolicyVersion(): PolicyVersion | null {
-  if (!getActivePowerSyncDB()) return null;
-  const db = getDrizzleDB();
+  const db = getActivePowerSyncDB() ? getDrizzleDB() : null;
   // The browser runtime can be active before its Drizzle query facade is
   // ready (or can be intentionally disabled while offline). Do not let that
-  // transient state crash the application shell.
-  if (!db || typeof db.select !== 'function' || typeof db.select()?.from !== 'function') {
-    return null;
-  }
+  // transient state crash the application shell. Every hook still runs on
+  // every render, so readiness changing between renders is safe.
+  const ready =
+    !!db && typeof db.select === 'function' && typeof db.select()?.from === 'function';
   const query = useMemo(
-    () => (db && typeof db.select === 'function' ? db.select().from(policyVersion).limit(1) : null),
-    [db],
+    () => (ready && db ? db.select().from(policyVersion).limit(1) : null),
+    [db, ready],
   );
 
   const rows = useDrizzleQuery<PolicyVersion>(
     query ?? ({ execute: async () => [], toSQL: () => ({ sql: '', params: [] }) } as any),
   );
-  return rows[0] || null;
+  return ready ? rows[0] || null : null;
 }
 
 /**

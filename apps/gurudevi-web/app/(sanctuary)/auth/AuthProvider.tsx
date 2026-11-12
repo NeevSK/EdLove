@@ -77,3 +77,8 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
+
+/** The auth context, or null outside AuthProvider (for boundaries that may render without it). */
+export function useOptionalAuth() {
+  return useContext(AuthContext) ?? null;
+}

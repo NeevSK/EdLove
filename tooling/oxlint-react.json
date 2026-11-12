@@ -1,0 +1,50 @@
+{
+  "$schema": "../node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react"
+  ],
+  "categories": {
+    "correctness": "off",
+    "suspicious": "off",
+    "perf": "off",
+    "restriction": "off",
+    "style": "off",
+    "pedantic": "off",
+    "nursery": "off"
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "react/set-state-in-effect": "error",
+    "react/no-deriving-state-in-effects": "error",
+    "react/set-state-in-render": "error",
+    "react/purity": "error",
+    "react/refs": "error",
+    "react/immutability": "error",
+    "react/globals": "error",
+    "react/static-components": "error",
+    "react/use-memo": "error",
+    "react/preserve-manual-memoization": "error",
+    "react/error-boundaries": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "19.3"
+    }
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/.expo/**",
+    "**/generated/**",
+    "**/docs/**",
+    "**/temp/**",
+    "**/archive/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/__tests__/**",
+    "**/*.d.ts"
+  ]
+}
