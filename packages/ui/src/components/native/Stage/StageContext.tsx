@@ -17,6 +17,7 @@ import {
   useState,
 } from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
+import type { GroundPlan } from '@repo/core/logic/workspace/groundPlan';
 import { useComfort } from '../../../context/ComfortPreferences';
 import { relativeLuminance } from '../../../theme/color';
 import { type GroundStage, screenPresence } from '../../../theme/scene/screenGround';
@@ -33,6 +34,9 @@ export interface StageContextValue {
   scrolling: boolean;
   setPresence: (presence: ScenePresence) => void;
   setScrolling: (scrolling: boolean) => void;
+  /** The room's planned ground (core planGround): the world's look or the room's own. */
+  ground: GroundPlan | null;
+  setGround: (ground: GroundPlan | null) => void;
 }
 
 /** Outside a stage (tests, previews) the kit still knows a tier: the middle one, never moving. */
@@ -46,6 +50,8 @@ const FALLBACK: StageContextValue = {
   scrolling: false,
   setPresence: () => undefined,
   setScrolling: () => undefined,
+  ground: null,
+  setGround: () => undefined,
 };
 
 const StageContext = createContext<StageContextValue | null>(null);
@@ -117,6 +123,7 @@ export function WorldStage({ children, cap, initialPresence = 'full' }: WorldSta
   const budget = useVisualCapabilities();
   const [presence, setPresenceState] = useState<ScenePresence>(initialPresence);
   const [scrolling, setScrollingState] = useState(false);
+  const [ground, setGroundState] = useState<GroundPlan | null>(null);
   const pinned = useStagePreview().cap;
   // A simpler look keeps the floor a calm, still picture (the showcase may still pin another).
   // In sunlight the words need a plain ground behind them.
@@ -125,9 +132,10 @@ export function WorldStage({ children, cap, initialPresence = 'full' }: WorldSta
   const stage = useMemo(() => stageOf(budget, cap ?? pinned ?? calm), [budget, cap, pinned, calm]);
   const setPresence = useCallback((next: ScenePresence) => setPresenceState(next), []);
   const setScrolling = useCallback((next: boolean) => setScrollingState(next), []);
+  const setGround = useCallback((next: GroundPlan | null) => setGroundState(next), []);
   const value = useMemo(
-    () => ({ stage, presence, scrolling, setPresence, setScrolling }),
-    [stage, presence, scrolling, setPresence, setScrolling],
+    () => ({ stage, presence, scrolling, setPresence, setScrolling, ground, setGround }),
+    [stage, presence, scrolling, setPresence, setScrolling, ground, setGround],
   );
   return (
     <StageContext value={value}>
@@ -141,7 +149,7 @@ export function WorldStage({ children, cap, initialPresence = 'full' }: WorldSta
               : 'light-content'
           }
         />
-        <WorldFloor stage={stage} presence={presence} scrolling={scrolling} />
+        <WorldFloor stage={stage} presence={presence} scrolling={scrolling} ground={ground} />
         {children}
       </View>
     </StageContext>

@@ -50,6 +50,12 @@ export interface CommonActions {
     icon?: ComponentType<KitIconProps>;
     onPress: () => void;
   };
+  /** The room's ground: the world's look, or the room's own. */
+  look?: {
+    label: string;
+    icon?: ComponentType<KitIconProps>;
+    onPress: () => void;
+  };
   /**
    * Notifications, offered in the menu too on tall phones, where the header's bell is out of
    * one thumb's reach.
@@ -111,6 +117,7 @@ export function roomActions({
   if (common.ask) out.push({ key: 'ask', group: always, ...common.ask });
   if (common.more) out.push({ key: 'more', group: always, ...common.more });
   if (common.notices) out.push({ key: 'notices', group: always, ...common.notices });
+  if (common.look) out.push({ key: 'look', group: always, ...common.look });
   return out;
 }
 
