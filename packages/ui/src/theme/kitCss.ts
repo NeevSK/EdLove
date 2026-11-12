@@ -65,7 +65,9 @@ function worldPickCss(): string {
       parts.push(`${s} .gd-living-ground .gd-world-motif[data-world="${id}"]{display:inline}`);
     }
     parts.push(`.gd-living-ground[data-world="${id}"] .gd-world-motif{display:none}`);
-    parts.push(`.gd-living-ground[data-world="${id}"] .gd-world-motif[data-world="${id}"]{display:inline}`);
+    parts.push(
+      `.gd-living-ground[data-world="${id}"] .gd-world-motif[data-world="${id}"]{display:inline}`,
+    );
   }
   return parts.join('');
 }
@@ -335,7 +337,7 @@ const BASE_CSS = `
 .gd-pebble-menu-item:hover{background:color-mix(in srgb,var(--w-lamp) 16%,var(--w-ground));color:var(--w-lamp)}
 .gd-pebble-tooltip{position:absolute;bottom:calc(100% + 4px);right:0;background:var(--w-ink);color:var(--w-ground);font-size:.7rem;font-weight:500;padding:.25rem .6rem;border-radius:.45rem;white-space:nowrap;pointer-events:none;z-index:50;box-shadow:0 4px 14px color-mix(in srgb, var(--w-ink) 18%, transparent);animation:gdPebblePop .12s ease}
 .gd-pebble[data-gear="compact"],@container (max-width: 114px){.gd-pebble{padding:.8rem .4rem .7rem .4rem}.gd-pebble-emoji{font-size:1.55rem}.gd-pebble-title{font-size:.78rem}.gd-pebble-rhythm{display:none!important}.gd-pebble-sticker{width:1.65rem;height:1.65rem;padding:0 0 .15rem .15rem}.gd-pebble-glyph{font-size:.78rem;transform:translate(1px,-1px)}.gd-pebble-counter{font-size:.65rem;transform:translate(1px,-1px)}.gd-pebble-status{width:6px;height:6px;transform:translate(1px,-1px)}}
-.gd-rail{display:flex;flex-direction:column;gap:var(--gd-gap-inside,8px);min-width:0}.gd-rail-label{margin:0}
+.gd-rail{display:flex;flex-direction:column;gap:var(--gd-gap-inside,8px);min-width:0}.gd-rail-label{margin:0}.gd-rail-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .gd-rail-track{list-style:none;margin:0;padding:0 0 4px;display:flex;gap:min(0.75rem, 18px);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:0;overscroll-behavior-x:contain;scrollbar-width:thin}
 .gd-rail-item{flex:none;width:var(--gd-rail-item);scroll-snap-align:start}
 .gd-carousel{display:flex;flex-direction:column;gap:8px;min-width:0}

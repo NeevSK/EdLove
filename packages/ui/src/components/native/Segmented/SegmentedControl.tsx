@@ -10,6 +10,7 @@ import type { SegmentedContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
 import { insetRadius, radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import { slopFor } from '../touch';
 
 export interface SegmentedControlProps<V extends string = string> extends SegmentedContract<V> {
   style?: StyleProp<ViewStyle>;
@@ -61,6 +62,7 @@ export function SegmentedControl<V extends string = string>({
               feedback('select');
               onChange(option.value);
             }}
+            hitSlop={slopFor(SEGMENT_HEIGHT)}
             style={({ pressed }) => [
               styles.segment,
               radiusStyle(insetRadius(inset.radius, PAD)),
@@ -83,11 +85,14 @@ export function SegmentedControl<V extends string = string>({
   );
 }
 
+/** Drawn height of a segment; touch area grows to the platform minimum. */
+const SEGMENT_HEIGHT = 38;
+
 const styles = StyleSheet.create({
   track: { flexDirection: 'row', padding: PAD, gap: PAD },
   segment: {
     flex: 1,
-    minHeight: 38,
+    minHeight: SEGMENT_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 10,

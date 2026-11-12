@@ -137,13 +137,7 @@ export interface CardContract {
  * - `status`: Live pulse dot (ready / busy / syncing)
  * - `custom`: Arbitrary child slot
  */
-export type PebbleCornerSlotMode =
-  | 'pin'
-  | 'menu'
-  | 'counter'
-  | 'tooltip'
-  | 'status'
-  | 'custom';
+export type PebbleCornerSlotMode = 'pin' | 'menu' | 'counter' | 'tooltip' | 'status' | 'custom';
 
 export interface PebbleCornerBadgeSpec {
   mode: PebbleCornerSlotMode;
@@ -191,6 +185,11 @@ export interface RailContract<T> {
   renderItem: (item: T, index: number) => ReactNode;
   /** Width of each item. Default `md`. */
   size?: KitSize;
+  /**
+   * Opens everything in the rail as a list, so no one has to swipe sideways to
+   * reach the end ("See all"). Give it whenever the rail may hold more than fits.
+   */
+  seeAll?: { label: string; onPress: () => void };
 }
 
 /** One item per page, with buttons as well as swipes. Never moves by itself. */
@@ -1741,6 +1740,3 @@ export interface ThemeSwitcherContract {
   /** Container width threshold in px for 'auto' degradation. Default: 420. */
   threshold?: number;
 }
-
-
-

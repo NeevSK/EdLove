@@ -11,7 +11,6 @@ import type { MonthGridContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
 import { typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
-import { touchTarget } from '../../../tokens/sizes';
 import {
   formatDay,
   formatMonth,
@@ -22,6 +21,7 @@ import {
   withinRange,
 } from '../../shared/time';
 import { IconButton } from '../IconButton/IconButton';
+import { TOUCH_MIN } from '../touch';
 import { Next, Previous, useTimeWords } from './words';
 
 export interface MonthGridProps extends MonthGridContract {
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   title: { flex: 1, textAlign: 'center' },
   week: { flexDirection: 'row' },
   weekday: { textAlign: 'center' },
-  cell: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: touchTarget.min },
+  cell: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: TOUCH_MIN },
   day: {
     width: 40,
     height: 40,

@@ -16,15 +16,16 @@ import { useFeedback } from '../../../theme/native/feedback';
 import { useFocusRing } from '../../../theme/native/focus';
 import { usePressMotion } from '../../../theme/native/motion';
 import {
-  systemTextAllowance,
   edgeStyle,
   glowStyle,
   insetRadius,
   radiusStyle,
+  systemTextAllowance,
   typeStyle,
 } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { type HapticImpact, hapticImpact } from '../../../utils/haptics';
+import { slopFor, TOUCH_MIN } from '../touch';
 import { ButtonPulse } from './ButtonPulse';
 
 export interface ButtonProps extends ButtonContract, Omit<PressableProps, 'children' | 'style'> {
@@ -70,7 +71,7 @@ export function Button({
   const gradient = v.fill && typeof v.fill !== 'string' ? v.fill : null;
 
   const container: ViewStyle = isText
-    ? { minHeight: 44, paddingVertical: 4, alignSelf: fullWidth ? 'stretch' : 'flex-start' }
+    ? { minHeight: TOUCH_MIN, paddingVertical: 4, alignSelf: fullWidth ? 'stretch' : 'flex-start' }
     : {
         height: dims.height,
         paddingHorizontal: dims.paddingX,
@@ -96,7 +97,7 @@ export function Button({
         accessibilityHint={accessibilityHint}
         accessibilityState={{ disabled: isDisabled, busy: loading }}
         disabled={isDisabled}
-        hitSlop={isText ? { top: 4, bottom: 4, left: 8, right: 8 } : undefined}
+        hitSlop={isText ? { top: 4, bottom: 4, left: 8, right: 8 } : slopFor(dims.height)}
         onPressIn={(event: GestureResponderEvent) => {
           if (!isDisabled) {
             press.pressIn();

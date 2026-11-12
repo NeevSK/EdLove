@@ -1,5 +1,6 @@
 import type { ComponentRef, ReactNode, Ref } from 'react';
 import {
+  type Insets,
   Pressable,
   type PressableProps,
   Text as RNText,
@@ -16,6 +17,7 @@ import { useLivingStyle } from '../../../theme/native/motion';
 import { edgeStyle, glowStyle, radiusStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { ChipRecipe, ChipStateRecipe } from '../../../theme/types';
+import { slopFor } from '../touch';
 
 export interface ChipProps extends ChipContract, Omit<PressableProps, 'children' | 'style'> {
   style?: StyleProp<ViewStyle>;
@@ -45,6 +47,16 @@ function chipEdges(r: ChipRecipe) {
 }
 
 /** A chip's frame (padding, corners, glow) when its paint is a `ChipPaint` layer. */
+/**
+ * Touch area around a chip so the finger gets the platform minimum: the drawn
+ * height is padding plus one line of label (about 20), never less than the old 6.
+ */
+function chipSlop(r: ChipRecipe, underline: boolean): Insets {
+  const drawn = (r.paddingY + chipEdges(r).edge) * 2 + 20;
+  const v = Math.max(underline ? 10 : 6, slopFor(drawn)?.top ?? 0);
+  return underline ? { top: v, bottom: v, left: 6, right: 6 } : { top: v, bottom: v };
+}
+
 export function chipFrame(r: ChipRecipe, s: ChipStateRecipe): ViewStyle {
   const { edge, line } = chipEdges(r);
   return {
@@ -115,7 +127,7 @@ export function Chip({
           : { checked: selected, disabled: !!disabled }
       }
       disabled={disabled}
-      hitSlop={underline ? { top: 10, bottom: 10, left: 6, right: 6 } : { top: 6, bottom: 6 }}
+      hitSlop={chipSlop(r, underline)}
       onPress={(e) => {
         feedback(kind === 'button' ? 'press' : 'select');
         onPress?.(e);
