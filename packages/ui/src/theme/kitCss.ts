@@ -290,6 +290,18 @@ const BASE_CSS = `
 .gd-grid[data-max]{grid-template-columns:repeat(auto-fill,minmax(max(min(100%,var(--gd-grid-min)),calc((100% - (var(--gd-grid-max) - 1) * var(--gd-grid-gap)) / var(--gd-grid-max))),1fr))}
 .gd-icon{display:inline-flex;flex:none;line-height:0}.gd-icon[data-tone="ink"]{color:var(--w-ink)}.gd-icon[data-tone="soft"]{color:var(--w-ink-soft)}.gd-icon[data-tone="faint"]{color:var(--w-ink-faint)}.gd-icon[data-tone="lamp"]{color:var(--w-lamp-deep)}.gd-icon[data-tone="danger"]{color:var(--w-danger)}.gd-icon[data-tone="onLamp"]{color:var(--w-on-lamp)}
 .gd-move{display:inline-flex;align-items:center;gap:0}
+.gd-split{display:inline-flex;align-items:center;gap:2px}
+.gd-context{display:contents}
+.gd-toolbar{display:flex;align-items:center;gap:4px;min-width:0}.gd-toolbar-more{margin-inline-start:auto}
+.gd-autocomplete{position:relative}
+.gd-autocomplete-list{list-style:none;margin:4px 0 0;padding:0;border-top:1px solid var(--w-line)}
+.gd-autocomplete-option{display:flex;flex-direction:column;justify-content:center;min-height:44px;padding:4px 10px;cursor:pointer;color:var(--w-ink)}
+.gd-autocomplete-option[aria-selected="true"],.gd-autocomplete-option:hover{background:color-mix(in srgb, var(--w-ink) 8%, transparent)}
+.gd-autocomplete-option[aria-disabled]{opacity:.5;cursor:not-allowed}
+.gd-autocomplete-hint,.gd-autocomplete-empty{color:var(--w-ink-soft);font-size:.875em}.gd-autocomplete-empty{min-height:44px;display:flex;align-items:center;padding:0 10px}
+.gd-minichart{display:inline-block;vertical-align:middle;overflow:visible}
+.gd-minichart-line{fill:none;stroke:var(--w-ink-soft);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.gd-minichart-bar{fill:var(--w-ink-soft)}.gd-minichart-mark{fill:var(--w-lamp)}
 .gd-visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .gd-card{appearance:none;margin:0;padding:0;font:inherit;text-align:start;color:var(--w-ink);text-decoration:none;display:block;position:relative;overflow:hidden;background:var(--w-surface-raised-bg);box-shadow:var(--w-surface-raised-shadow);border:0;transition:transform var(--w-settle),filter var(--w-light-ms),box-shadow var(--w-light-ms);container-type:inline-size}
 .gd-card[data-shape="tile"]{border-radius:var(--w-card-tile-radius)}.gd-card[data-shape="wide"]{border-radius:var(--w-card-wide-radius)}.gd-card[data-shape="square"]{border-radius:var(--w-card-square-radius)}.gd-card[data-shape="pill"]{border-radius:var(--w-card-pill-radius)}
