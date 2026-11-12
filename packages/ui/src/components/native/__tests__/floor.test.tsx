@@ -21,7 +21,7 @@ const tree = (width: number, height: number) =>
   );
 
 const wrap = (node: React.ReactNode) => (
-  <WorldScope world={WORLD_IDS[0]} phase="morning" mode="light">
+  <WorldScope world={WORLD_IDS[0]!} phase="morning" mode="light">
     {node}
   </WorldScope>
 );
@@ -57,5 +57,23 @@ describe('FloorInspector', { tags: ['unit'] }, () => {
     await render(wrap(<FloorInspector tree={t} findings={lintFloor(t)} />));
     expect(screen.getByText('holds the lamp')).toBeTruthy();
     expect(screen.getByText('No findings.')).toBeTruthy();
+  });
+});
+
+describe('FloorView ground', { tags: ['unit', 'a11y'] }, () => {
+  it('draws the ground behind the floor, hidden from screen readers', async () => {
+    const t = tree(360, 700);
+    await render(
+      wrap(
+        <FloorView
+          tree={t}
+          renderPiece={(p) => <Text>{p.label}</Text>}
+          ground={<Text testID="ground">ground</Text>}
+        />,
+      ),
+    );
+    expect(screen.queryByTestId('ground')).toBeNull();
+    expect(screen.getByTestId('ground', { includeHiddenElements: true })).toBeTruthy();
+    expect(screen.getAllByRole('header').map((h) => h.props.children)).toContain('Today');
   });
 });

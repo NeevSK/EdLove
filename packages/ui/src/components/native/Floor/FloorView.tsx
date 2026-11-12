@@ -18,6 +18,12 @@ export interface FloorViewProps {
   words?: Partial<PatternWords>;
   /** Show the floor's own scroll; off when a screen already scrolls. */
   scroll?: boolean;
+  /**
+   * The room's ground, drawn behind the floor and hidden from screen readers.
+   * The screen resolves it (world look, or the room's own look within the
+   * world's limits) and passes it in; the floor never picks a look itself.
+   */
+  ground?: ReactNode;
 }
 
 const defaultSeeAll = (group: string, count: number) => `See all ${count} in ${group}`;
@@ -35,6 +41,7 @@ export function FloorView({
   seeAllLabel = defaultSeeAll,
   words,
   scroll = true,
+  ground,
 }: FloorViewProps) {
   const group = (g: FloorNode) => {
     const shown = g.children.filter((c) => c.placement !== 'folded');
@@ -77,13 +84,30 @@ export function FloorView({
       <Stack gap="section">{tree.root.children.map(area)}</Stack>
     );
 
-  if (!scroll || tree.arrangement === 'board') return body;
-  return <ScrollView contentContainerStyle={styles.stackBody}>{body}</ScrollView>;
+  const floor =
+    !scroll || tree.arrangement === 'board' ? (
+      body
+    ) : (
+      <ScrollView contentContainerStyle={styles.stackBody}>{body}</ScrollView>
+    );
+  if (!ground) return floor;
+  return (
+    <View style={styles.grounded}>
+      <View
+        style={StyleSheet.absoluteFill}
+        pointerEvents="none"
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden
+      >
+        {ground}
+      </View>
+      {floor}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  full: { alignSelf: 'stretch' },
-  row: { gap: 12, paddingRight: 16 },
+  grounded: { flex: 1 },
   board: { flex: 1, flexDirection: 'row', gap: 16 },
   column: { flex: 1 },
   columnBody: { paddingBottom: 24 },
