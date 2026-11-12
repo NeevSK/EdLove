@@ -6,6 +6,7 @@ import {
   printFloor,
   ROOM_PLANS,
   roomFloorInput,
+  roomPlanOf,
   roomSurfaceDefinitions,
   workRoomPlanOf,
 } from '@repo/core/logic/floor';
@@ -123,5 +124,12 @@ describe('work room floors', { tags: ['unit', 'a11y'] }, () => {
     )) {
       expect(kit in KIT_FLOOR_FIT, kit).toBe(true);
     }
+  });
+
+  it('every room has a plan for every capacity: Self per capacity, Community shared', () => {
+    expect(roomPlanOf('self', 'tutor')?.id).toBe('self:teacher');
+    expect(roomPlanOf('self', 'platform_staff')?.id).toBe('self:student');
+    expect(roomPlanOf('community', 'guardian')?.id).toBe('community:everyone');
+    expect(roomPlanOf('library', 'teacher')).toBeUndefined();
   });
 });

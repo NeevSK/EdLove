@@ -162,6 +162,83 @@ export const ROOM_PLANS: Record<string, RoomPlan> = {
   },
 };
 
+const PRIVATE: AreaInput = { id: 'private', label: 'Just you' };
+
+/** Self is everyone's own room; teachers and principals gain one more group. */
+function selfPlan(capacity: string): RoomPlan {
+  const work =
+    capacity === 'teacher'
+      ? [s('working', 'Working rhythm', 'work-life', 'private', 'card')]
+      : capacity === 'principal'
+        ? [s('leadership', 'Leadership focus', 'work-life', 'private', 'card')]
+        : [];
+  return {
+    id: `self:${capacity}`,
+    room: 'self',
+    capacity,
+    areas: [TODAY, PRIVATE],
+    groups: [
+      { id: 'today', label: 'Today', area: 'today', job: 'act' },
+      { id: 'grow', label: 'Growing', area: 'private', job: 'glance' },
+      { id: 'care', label: 'Care', area: 'private', job: 'glance' },
+      ...(work.length
+        ? [{ id: 'work-life', label: 'Work and you', area: 'private', job: 'glance' as const }]
+        : []),
+    ],
+    surfaces: [
+      s('pulse', 'Check in', 'today', 'today', 'card', { time: 'now', lit: true, task: true }),
+      s('journey', 'Your journey', 'grow', 'private', 'card'),
+      s('growth', 'Study goals', 'grow', 'private', 'card', { time: 'later' }),
+      s('care', 'Sleep and joy', 'care', 'private', 'card'),
+      s('reflection', 'Reflect', 'care', 'private', 'card'),
+      ...work,
+    ],
+  };
+}
+
+for (const capacity of ['student', 'teacher', 'guardian', 'principal']) {
+  ROOM_PLANS[`self:${capacity}`] = selfPlan(capacity);
+}
+
+/** Community is the same room for every capacity: the school's square. */
+ROOM_PLANS['community:everyone'] = {
+  id: 'community:everyone',
+  room: 'community',
+  capacity: 'everyone',
+  areas: [TODAY, WORK, INSTITUTION],
+  groups: [
+    { id: 'news', label: 'New for you', area: 'today', job: 'glance' },
+    { id: 'talk', label: 'Talk', area: 'work', job: 'act' },
+    { id: 'groups', label: 'Groups', area: 'work', job: 'browse' },
+    { id: 'school', label: 'School', area: 'institution', job: 'glance' },
+  ],
+  surfaces: [
+    s('feed', 'Feed', 'news', 'today', 'list', { time: 'now', lit: true }),
+    s('chats', 'Chats', 'talk', 'work', 'row', { needsAttention: true }),
+    s('direct', 'Direct messages', 'talk', 'work', 'row'),
+    s('my-groups', 'Your groups', 'groups', 'work', 'rail'),
+    s('explore', 'Find groups', 'groups', 'work', 'card'),
+    s('announcements', 'Announcements', 'school', 'institution', 'list'),
+    s('forest', 'Forest', 'school', 'institution', 'card'),
+  ],
+};
+
+/** The plan for a room as one capacity sees it, when there is one. */
+export function roomPlanOf(
+  room: string,
+  capacity: string | null | undefined,
+): RoomPlan | undefined {
+  if (room === 'workspace') return workRoomPlanOf(capacity);
+  if (room === 'community') return ROOM_PLANS['community:everyone'];
+  if (room === 'self') {
+    const key =
+      ({ tutor: 'teacher', marker: 'teacher' } as Record<string, string>)[capacity ?? ''] ??
+      capacity;
+    return ROOM_PLANS[`self:${key}`] ?? ROOM_PLANS['self:student'];
+  }
+  return undefined;
+}
+
 export interface RoomFloorOptions {
   plan: RoomPlan;
   /** SanctuaryFeature's decision per surface id; missing means available. */
@@ -206,7 +283,7 @@ export function roomFloorInput({
     layout,
   );
   return {
-    room: plan.id,
+    room: plan.room,
     areas: plan.areas,
     groups: groupsWithSavedOrder(plan.groups, layout?.groupOrder),
     pieces,

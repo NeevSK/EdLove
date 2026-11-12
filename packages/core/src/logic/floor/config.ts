@@ -49,7 +49,7 @@ export const DEFAULT_FLOOR_CONFIG: FloorConfig = {
   reorder: 'smart-areas',
   hierarchy: ['lit', 'time', 'attention', 'saved'],
   areaOrder: ['today', 'work', 'institution', 'outlook', 'private'],
-  tierByRoom: { workspace: 'dense', self: 'calm', profile: 'calm' },
+  tierByRoom: { workspace: 'dense', self: 'calm', profile: 'calm', community: 'standard' },
   ownPatterns: { lamp: true, path: true, 'day-river': true, pinboard: true, desk: true },
   weights: { time: { now: 3, later: 2, anytime: 1 }, attention: 2, pin: 1.5 },
   groupsOnFirstScreen: { calm: 3, standard: 4, dense: 5 },
