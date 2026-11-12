@@ -1,0 +1,18 @@
+library: medium landscape, standard, cost 126/400
+  Today 184h w3
+    Reading now [lamp] 184h w3
+      Carry on reading 140h w3
+      New on the shelves 200h w2 (folded)
+  Work 1108h w2 (below)
+    Shelves [grouped-list] 512h w1 (below)
+      Your collections 200h w1 (below)
+      Subjects 280h w1 (below)
+    Find [grouped-list] 228h w1 (below)
+      Search the library 56h w1 (below)
+      Library map 140h w1 (below)
+    Make [stream] 368h w2 (below)
+      Add a resource 56h w1 (below)
+      Waiting for review 280h w2 (below)
+  School 224h w1 (below)
+    From your school [stream] 224h w1 (below)
+      School shelf 200h w1 (below)

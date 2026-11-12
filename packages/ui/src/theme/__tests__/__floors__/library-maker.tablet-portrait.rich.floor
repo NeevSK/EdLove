@@ -1,0 +1,18 @@
+library: medium portrait, standard, cost 118/400
+  Today 372h w3
+    Reading now [lamp] 372h w3
+      Carry on reading 140h w3
+      New on the shelves 200h w2
+  Work 660h w2
+    Shelves [grouped-list] 220h w1
+      Your collections 200h w1
+      Subjects 280h w1 (folded)
+    Find [grouped-list] 72h w1
+      Search the library 56h w1
+      Library map 140h w1 (folded)
+    Make [stream] 368h w2
+      Add a resource 56h w1
+      Waiting for review 280h w2
+  School 224h w1 (below)
+    From your school [stream] 224h w1 (below)
+      School shelf 200h w1 (below)

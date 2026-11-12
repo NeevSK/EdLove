@@ -130,6 +130,8 @@ describe('work room floors', { tags: ['unit', 'a11y'] }, () => {
     expect(roomPlanOf('self', 'tutor')?.id).toBe('self:teacher');
     expect(roomPlanOf('self', 'platform_staff')?.id).toBe('self:student');
     expect(roomPlanOf('community', 'guardian')?.id).toBe('community:everyone');
-    expect(roomPlanOf('library', 'teacher')).toBeUndefined();
+    expect(roomPlanOf('library', 'teacher')?.id).toBe('library:maker');
+    expect(roomPlanOf('library', 'student')?.id).toBe('library:reader');
+    expect(roomPlanOf('profile', 'guardian')?.id).toBe('profile:everyone');
   });
 });

@@ -223,6 +223,73 @@ ROOM_PLANS['community:everyone'] = {
   ],
 };
 
+/**
+ * The Library is one room for everyone; people who make lessons (teachers,
+ * tutors, markers, principals) also get a "Make" group for contributing and
+ * reviewing. Reading carries on first, then shelves, then finding.
+ */
+function libraryPlan(capacity: 'reader' | 'maker'): RoomPlan {
+  const maker = capacity === 'maker';
+  return {
+    id: `library:${capacity}`,
+    room: 'library',
+    capacity,
+    areas: [TODAY, WORK, INSTITUTION],
+    groups: [
+      { id: 'reading', label: 'Reading now', area: 'today', job: 'act' },
+      { id: 'shelves', label: 'Shelves', area: 'work', job: 'browse' },
+      { id: 'find', label: 'Find', area: 'work', job: 'find' },
+      ...(maker ? [{ id: 'make', label: 'Make', area: 'work', job: 'act' as const }] : []),
+      { id: 'school-shelf', label: 'From your school', area: 'institution', job: 'glance' },
+    ],
+    surfaces: [
+      s('continue', 'Carry on reading', 'reading', 'today', 'card', { time: 'now', lit: true }),
+      s('new', 'New on the shelves', 'reading', 'today', 'rail', { time: 'later' }),
+      s('collections', 'Your collections', 'shelves', 'work', 'rail'),
+      s('subjects', 'Subjects', 'shelves', 'work', 'grid'),
+      s('search', 'Search the library', 'find', 'work', 'row', { task: true }),
+      s('map', 'Library map', 'find', 'work', 'card', { time: 'anytime' }),
+      ...(maker
+        ? [
+            s('contribute', 'Add a resource', 'make', 'work', 'row', { task: true }),
+            s('review', 'Waiting for review', 'make', 'work', 'list', { needsAttention: true }),
+          ]
+        : []),
+      s('school-shelf', 'School shelf', 'school-shelf', 'institution', 'rail'),
+    ],
+  };
+}
+
+ROOM_PLANS['library:reader'] = libraryPlan('reader');
+ROOM_PLANS['library:maker'] = libraryPlan('maker');
+
+/**
+ * Profile is who you are across every bond: the same room for everyone.
+ * The card first, then your bonds, your journey, and the account's care.
+ */
+ROOM_PLANS['profile:everyone'] = {
+  id: 'profile:everyone',
+  room: 'profile',
+  capacity: 'everyone',
+  areas: [TODAY, PRIVATE],
+  groups: [
+    { id: 'you', label: 'You', area: 'today', job: 'glance' },
+    { id: 'bonds', label: 'Your places', area: 'private', job: 'act' },
+    { id: 'journey', label: 'Journey', area: 'private', job: 'browse' },
+    { id: 'account', label: 'Account', area: 'private', job: 'find' },
+  ],
+  surfaces: [
+    s('card', 'Your card', 'you', 'today', 'card', { lit: true }),
+    s('bonds', 'Schools and roles', 'bonds', 'private', 'list'),
+    s('invite', 'Join with a code', 'bonds', 'private', 'row', { task: true }),
+    s('achievements', 'Achievements', 'journey', 'private', 'rail'),
+    s('record', 'Your record', 'journey', 'private', 'card', { time: 'anytime' }),
+    s('security', 'Sign-in and devices', 'account', 'private', 'row'),
+    s('privacy', 'Privacy', 'account', 'private', 'row'),
+    s('settings', 'Settings', 'account', 'private', 'row'),
+  ],
+};
+
 /** The plan for a room as one capacity sees it, when there is one. */
 export function roomPlanOf(
   room: string,
@@ -230,6 +297,11 @@ export function roomPlanOf(
 ): RoomPlan | undefined {
   if (room === 'workspace') return workRoomPlanOf(capacity);
   if (room === 'community') return ROOM_PLANS['community:everyone'];
+  if (room === 'profile') return ROOM_PLANS['profile:everyone'];
+  if (room === 'library') {
+    const makers = ['teacher', 'tutor', 'marker', 'principal', 'sectionHead', 'gradeHead'];
+    return ROOM_PLANS[makers.includes(capacity ?? '') ? 'library:maker' : 'library:reader'];
+  }
   if (room === 'self') {
     const key =
       ({ tutor: 'teacher', marker: 'teacher' } as Record<string, string>)[capacity ?? ''] ??
