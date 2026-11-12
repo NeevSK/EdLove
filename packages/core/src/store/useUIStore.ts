@@ -13,6 +13,8 @@ export const useUIStore = create<UISlice>()(
     }),
     {
       name: 'gurudevi-ui-storage',
+      // The shape on the device today. Bump it, with a `migrate`, when the persisted shape changes.
+      version: 0,
       storage: createJSONStorage(() => scopedState.createStorage()),
       partialize: (state) => ({
         dismissedSampleIds: state.dismissedSampleIds,
@@ -44,7 +46,8 @@ export async function migrateLegacyDismissalsForCurrentOwner(): Promise<void> {
     if (!accountId && sessionScope.guestScope() !== ownerId) return;
     if (
       (accountId ? sessionScope.accountRevision() : sessionScope.guestRevision()) !== ownerRevision
-    ) return;
+    )
+      return;
     if (migratedIds.length === 0) return;
     useUIStore.setState((state) => ({
       dismissedSampleIds: [...new Set([...state.dismissedSampleIds, ...migratedIds])],

@@ -8,7 +8,7 @@ import {
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { startPermissionSnapshotRefresh } from '../snapshotRefresh.adapter';
+import { startPermissionSnapshotRefresh } from '../snapshotRefresh.coordinator';
 
 const writes = vi.hoisted(() => ({ run: vi.fn(async (_statement: unknown) => undefined) }));
 vi.mock('@repo/core/adapters/powersync/database', () => ({

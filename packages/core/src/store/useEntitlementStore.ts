@@ -142,6 +142,8 @@ export const useEntitlementStore = create<EntitlementState>()(
     },
     {
       name: 'gurudevi-entitlement-storage',
+      // The shape on the device today. Bump it, with a `migrate`, when the persisted shape changes.
+      version: 0,
       storage: createJSONStorage(() => persistStorage),
       partialize: (state) => ({
         activeEntitlements: state.activeEntitlements,

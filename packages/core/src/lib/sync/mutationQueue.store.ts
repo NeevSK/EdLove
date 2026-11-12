@@ -266,6 +266,9 @@ const persistedQueueInitializer = persist<MutationQueueState>(
   }),
   {
     name: 'gurudevi-mutation-queue',
+    // The envelope shape on the device today. Bump it, with a `migrate`, when it changes.
+    // (Queued items carry their own CURRENT_OUTBOX_SCHEMA_VERSION; see outboxMigration.)
+    version: 0,
     storage: createJSONStorage(() => persistStorage),
     partialize: (state) => ({ ...state, isSyncing: false }),
     merge: (persisted, current) => ({

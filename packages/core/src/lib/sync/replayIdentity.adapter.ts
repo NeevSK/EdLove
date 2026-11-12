@@ -13,10 +13,7 @@ export async function isReplayPrincipalCurrent(principalId: string): Promise<boo
     const boundSubject = getRememberedAccountAuthSubject(principalId);
     if (!boundSubject || boundSubject !== session.user.id) return false;
     const currentSession = await authAPI.getAuthSession();
-    return (
-      getActiveAccountId() === principalId &&
-      currentSession?.user.id === boundSubject
-    );
+    return getActiveAccountId() === principalId && currentSession?.user.id === boundSubject;
   } catch {
     return false;
   }

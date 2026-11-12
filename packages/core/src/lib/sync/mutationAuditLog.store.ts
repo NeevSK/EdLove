@@ -74,6 +74,8 @@ export const useMutationAuditLog = create<MutationAuditLogState>()(
     }),
     {
       name: 'gurudevi-mutation-audit-log',
+      // The shape on the device today. Bump it, with a `migrate`, when the persisted shape changes.
+      version: 0,
       storage: createJSONStorage(() => persistStorage),
     },
   ),

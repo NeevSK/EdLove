@@ -97,6 +97,35 @@ their own sake.
 - Tier numbers.
 - The exact violation counts. The direction matters; the number is just a progress meter.
 
+### Coordinator: plain async function or XState machine?
+
+Use the repo's own admission test, `assessProtocolAdmission` in `lib/clientStateFoundation.ts`.
+A coordinator becomes an XState machine only when **all five** hold:
+
+1. **A meaningful guarded state graph:** named states the UI shows or reacts to (a wizard step,
+   syncing / paused / error), with transitions that may be illegal from some states.
+2. **It survives interruption:** the process must resume or recover after the app is killed,
+   backgrounded or the network drops, so its state is persisted and restored.
+3. **Guards improve safety:** the transition table prevents real mistakes (double submit,
+   finishing before a step completes).
+4. **Effect owners are named:** timers, retries, cancellation and subscriptions each belong to a
+   state.
+5. **Machine tests add evidence** that direct tests of the functions wouldn't.
+
+Otherwise it is a **plain async coordinator**: one call, ordered steps, deduplication or rollback
+inside, and nothing the UI watches between calls.
+
+| Coordinator | Form | Why |
+| --- | --- | --- |
+| `accounts/localGuestActivation.coordinator.ts` | async | One call, deduplicated per session; nothing to resume |
+| `accounts/accountTransition.coordinator.ts` | async | One ordered sequence (close replay → database → queue) |
+| `logic/permissions/snapshotRefresh.coordinator.ts` | async (long-running) | Has timers and events, but rebuilds from the current scope on every start (fails 2), and direct tests cover it (fails 5) |
+| `lib/sync/deviceSecurityIntents.coordinator.ts`, `replayPolicy.coordinator.ts` | async | Single decisions over queue state |
+| `logic/journey/roleJourney.machine.ts`, the classroom and admin wizards | XState | Persisted, resumable, user-driven steps |
+
+A coordinator's I/O goes through `effect/bindings/*` (`localDatabase`, `guestDevice`, `state`),
+never straight to an adapter or a database client.
+
 ### Who may read the database schema
 
 Only `@repo/core` may import `@repo/schema` (the generated ZModel contracts) or `@repo/database`.
@@ -141,7 +170,10 @@ values; a store is not a channel for schema information.
   parse checks).
 - **eslint-plugin-boundaries** is the other common choice. It doesn't fit here: the repo lints
   with Biome and oxlint, and typescript-eslint doesn't support TypeScript 7 yet.
-- **Zustand 5.1** (installed): stores use `persist` with `version`/`migrate`/`partialize` well.
+- **Zustand 5.1** (installed, latest stable). Baseline enforced since 2026-11-12: every persisted
+  store names its storage key and declares `version` next to it. All 17 do;
+  `store/__tests__/persistContract.test.ts` fails otherwise. The next shape change bumps the
+  version and adds a `migrate`, which may be async as of 5.1.
   The gap was components reading the whole store (`const { a, b } = useTemporalStore()`), which
   re-renders on every change. 41 such reads became atomic selectors (2026-11-12), as AGENTS.md
   requires. `useShallow` is the tool for multi-field reads where a package depends on zustand.

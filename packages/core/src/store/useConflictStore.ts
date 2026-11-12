@@ -87,6 +87,8 @@ export const useConflictStore = create<ConflictStore>()(
     }),
     {
       name: 'gurudevi-conflict-store',
+      // The shape on the device today. Bump it, with a `migrate`, when the persisted shape changes.
+      version: 0,
       storage: createJSONStorage(() => persistStorage),
       // Only persist active conflicts — resolved are nice to have but not critical
       partialize: (state) => ({

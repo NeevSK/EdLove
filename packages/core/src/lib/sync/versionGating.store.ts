@@ -106,6 +106,8 @@ export const useVersionGatingStore = create<VersionGatingState>()(
     }),
     {
       name: 'gurudevi-version-gating',
+      // The envelope shape on the device today. Bump it, with a `migrate`, when it changes.
+      version: 0,
       storage: createJSONStorage(() => persistStorage),
     },
   ),

@@ -1,4 +1,4 @@
-import { clearPowerSyncAccount, disconnectPowerSync } from '@repo/core/adapters/powersync/database';
+import { localDatabase } from '@repo/core/effect/bindings/localDatabase';
 import { closeReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import type {
@@ -11,7 +11,11 @@ function ownedByPrincipal(userId: string | undefined, principalId: string | null
   return principalId !== null && userId === principalId;
 }
 
-class LocalAccountTransitionAdapter implements AccountTransitionPort {
+/**
+ * Coordinator (one-shot, ordered): closes replay for both principals, then disconnects or clears
+ * the local database, then pauses or drops the outgoing account's queued commands.
+ */
+export const accountTransition: AccountTransitionPort = {
   async transition(request: AccountTransitionRequest): Promise<AccountTransitionOutcome> {
     if (request.disposition === 'preserve-and-quarantine' && request.clearReplicatedData)
       throw new Error('Preserving account work cannot clear its PowerSync database.');
@@ -34,9 +38,9 @@ class LocalAccountTransitionAdapter implements AccountTransitionPort {
     await Promise.all(principalsToClose.map((principalId) => closeReplayAdmission(principalId)));
 
     if (request.disposition === 'preserve-and-quarantine') {
-      await disconnectPowerSync();
+      await localDatabase.disconnect();
     } else if (request.clearReplicatedData) {
-      await clearPowerSyncAccount();
+      await localDatabase.clearAccount();
     }
 
     const state = useMutationQueue.getState();
@@ -85,7 +89,5 @@ class LocalAccountTransitionAdapter implements AccountTransitionPort {
       untouchedUnboundCommandCount: unboundCommandCount,
       replicatedDataCleared: request.clearReplicatedData,
     };
-  }
-}
-
-export const accountTransition: AccountTransitionPort = new LocalAccountTransitionAdapter();
+  },
+};

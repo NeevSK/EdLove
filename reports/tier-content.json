@@ -11508,20 +11508,20 @@
    ]
   },
   {
-   "file": "packages/core/src/accounts/accountTransition.adapter.ts",
+   "file": "packages/core/src/accounts/accountTransition.coordinator.ts",
    "package": "packages/core",
-   "folderTier": "T3",
-   "shape": "runtime",
-   "lines": 92,
+   "folderTier": "F",
+   "shape": "contract",
+   "lines": 94,
    "counts": {
     "types": 0,
-    "consts": 0,
-    "constructs": 1,
+    "consts": 1,
+    "constructs": 0,
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
     "functionLines": 5,
-    "classes": 1,
+    "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
@@ -11538,10 +11538,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/powersync/database.ts",
+     "to": "packages/core/src/effect/bindings/localDatabase.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/lib/sync/replayAdmission.ts",
@@ -11569,7 +11569,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
-   "lines": 78,
+   "lines": 81,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -11660,10 +11660,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/accountTransition.adapter.ts",
+     "to": "packages/core/src/accounts/accountTransition.coordinator.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/auth.ts",
@@ -11753,6 +11753,93 @@
    "outside": [
     "effect"
    ]
+  },
+  {
+   "file": "packages/core/src/accounts/localGuestActivation.coordinator.ts",
+   "package": "packages/core",
+   "folderTier": "F",
+   "shape": "contract+logic",
+   "lines": 73,
+   "counts": {
+    "types": 1,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 2,
+    "functionLines": 62,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "activateLocalGuestSession"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 3,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/logic/schemas/capacity.schema.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/guestDevice.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/native/guestIdentity.ts",
+     "typeOnly": true,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/native/localGuestSession.ts",
+     "typeOnly": true,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/store/scopeSession.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/store/scopeSessionCoordinator.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/store/useAuthStore.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/logic/schemas/identity.schema.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/types/User.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": []
   },
   {
    "file": "packages/core/src/adapters/MemoryStorageAdapter.ts",
@@ -12594,7 +12681,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 15,
+    "prod": 14,
     "tests": 15
    },
    "imports": [
@@ -12676,7 +12763,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 15,
+    "prod": 14,
     "tests": 15
    },
    "imports": [
@@ -12940,15 +13027,15 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
-   "lines": 53,
+   "lines": 75,
    "counts": {
-    "types": 0,
+    "types": 1,
     "consts": 1,
     "constructs": 0,
     "ambient": 1,
     "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
+    "functions": 1,
+    "functionLines": 20,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -12957,11 +13044,13 @@
     "jsx": false
    },
    "exports": [
-    "powerSyncPermissionSnapshots"
+    "powerSyncPermissionSnapshots",
+    "IssuedSnapshot",
+    "storePermissionSnapshot"
    ],
    "unions": [],
    "importers": {
-    "prod": 0,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -12988,6 +13077,12 @@
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/api/v1/contract.ts",
+     "typeOnly": true,
+     "toShape": "runtime",
+     "toTier": "T2"
     }
    ],
    "outside": [
@@ -26149,7 +26244,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 8,
     "tests": 2
    },
    "imports": [
@@ -27274,6 +27369,51 @@
    "outside": []
   },
   {
+   "file": "packages/core/src/effect/bindings/guestDevice.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 12,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "guestDevice"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/native/guestIdentity.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/native/localGuestSession.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/effect/bindings/journey.ts",
    "package": "packages/core",
    "folderTier": "C",
@@ -27314,6 +27454,51 @@
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/localDatabase.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 16,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "localDatabase"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/powersync/database.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/permissionSnapshot.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
     }
    ],
    "outside": []
@@ -27483,7 +27668,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 30,
+    "prod": 31,
     "tests": 0
    },
    "imports": [
@@ -31105,10 +31290,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/accountTransition.adapter.ts",
+     "to": "packages/core/src/accounts/accountTransition.coordinator.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
@@ -34338,7 +34523,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 9,
     "tests": 9
    },
    "imports": [],
@@ -34571,7 +34756,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 81,
+   "lines": 83,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -34619,7 +34804,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 286,
+   "lines": 289,
    "counts": {
     "types": 0,
     "consts": 1,
@@ -34851,7 +35036,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
-   "lines": 24,
+   "lines": 21,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -34859,7 +35044,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 21,
+    "functionLines": 18,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -35104,7 +35289,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 113,
+   "lines": 115,
    "counts": {
     "types": 3,
     "consts": 0,
@@ -36224,7 +36409,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 120,
+   "lines": 122,
    "counts": {
     "types": 2,
     "consts": 4,
@@ -40015,19 +40200,19 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/permissions/snapshotRefresh.adapter.ts",
+   "file": "packages/core/src/logic/permissions/snapshotRefresh.coordinator.ts",
    "package": "packages/core",
-   "folderTier": "T3",
+   "folderTier": "F",
    "shape": "runtime",
-   "lines": 108,
+   "lines": 92,
    "counts": {
-    "types": 1,
+    "types": 0,
     "consts": 3,
     "constructs": 0,
     "ambient": 1,
     "schemas": 0,
-    "functions": 2,
-    "functionLines": 95,
+    "functions": 1,
+    "functionLines": 81,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -40045,22 +40230,22 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/powersync/database.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/api/v1/contract.ts",
      "typeOnly": true,
      "toShape": "runtime",
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
+     "to": "packages/core/src/effect/bindings/localDatabase.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/state.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/store/scopeSession.ts",
@@ -40081,16 +40266,14 @@
      "toTier": "T4"
     }
    ],
-   "outside": [
-    "drizzle-orm"
-   ]
+   "outside": []
   },
   {
    "file": "packages/core/src/logic/permissions/sovereignty.ts",
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract",
-   "lines": 39,
+   "lines": 32,
    "counts": {
     "types": 0,
     "consts": 2,
@@ -46205,7 +46388,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 7,
     "tests": 8
    },
    "imports": [
@@ -46557,10 +46740,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/native/localGuestActivation.ts",
+     "to": "packages/core/src/accounts/localGuestActivation.coordinator.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T3"
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/native/localGuestOnboarding.ts",
@@ -46609,87 +46792,6 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/native/localGuestActivation.ts",
-   "package": "packages/core",
-   "folderTier": "T3",
-   "shape": "contract+logic",
-   "lines": 73,
-   "counts": {
-    "types": 1,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 60,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "activateLocalGuestSession"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 1
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/schemas/capacity.schema.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/core/src/native/guestIdentity.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/native/localGuestSession.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/store/scopeSession.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/store/scopeSessionCoordinator.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/store/useAuthStore.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/logic/schemas/identity.schema.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/core/src/types/User.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
     }
    ],
    "outside": []
@@ -46808,7 +46910,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 11,
     "tests": 4
    },
    "imports": [
@@ -48708,7 +48810,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 165,
+   "lines": 160,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -48716,7 +48818,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 4,
-    "functionLines": 129,
+    "functionLines": 125,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -48759,7 +48861,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 261,
+   "lines": 260,
    "counts": {
     "types": 2,
     "consts": 0,
@@ -48767,7 +48869,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 10,
-    "functionLines": 244,
+    "functionLines": 243,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 1,
@@ -48873,7 +48975,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "contract",
-   "lines": 27,
+   "lines": 25,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -48881,7 +48983,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 11,
+    "functionLines": 10,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -49154,7 +49256,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 99,
+   "lines": 101,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -49196,7 +49298,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 30,
+   "lines": 32,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -49237,7 +49339,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 56,
+   "lines": 58,
    "counts": {
     "types": 2,
     "consts": 0,
@@ -49280,7 +49382,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 167,
+   "lines": 169,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -49407,7 +49509,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 206,
+   "lines": 208,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -49468,7 +49570,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 40,
+   "lines": 42,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -49552,7 +49654,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 24,
+   "lines": 26,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -49599,7 +49701,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 60,
+   "lines": 63,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -49607,7 +49709,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 37,
+    "functionLines": 38,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -124115,10 +124217,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/native/localGuestActivation.ts",
+     "to": "packages/core/src/accounts/localGuestActivation.coordinator.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T3"
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/native/localGuestOnboarding.ts",
@@ -125811,10 +125913,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/permissions/snapshotRefresh.adapter.ts",
+     "to": "packages/core/src/logic/permissions/snapshotRefresh.coordinator.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T3"
+     "toTier": "F"
     },
     {
      "to": "apps/gurudevi-mobile/src/lib/v1Client.ts",
@@ -128232,10 +128334,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/native/localGuestActivation.ts",
+     "to": "packages/core/src/accounts/localGuestActivation.coordinator.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T3"
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/native/localGuestSession.ts",

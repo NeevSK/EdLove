@@ -8,7 +8,7 @@ import {
 } from '@repo/core/logic';
 import type { AuthSession } from '@repo/core/types/authSession';
 import { setGuestScope } from '@repo/core/native/guestScope';
-import { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
+import { activateLocalGuestSession } from '@repo/core/accounts/localGuestActivation.coordinator';
 import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';

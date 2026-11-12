@@ -52,10 +52,9 @@ describe('usePerspectiveStore', () => {
       schoolId: 'school-456',
     };
 
-    usePerspectiveStore.getState().setAvailablePerspectives([
-      DEFAULT_PERSONAL_PERSPECTIVE,
-      schoolPerspective,
-    ]);
+    usePerspectiveStore
+      .getState()
+      .setAvailablePerspectives([DEFAULT_PERSONAL_PERSPECTIVE, schoolPerspective]);
 
     await usePerspectiveStore.getState().switchPerspective('school-456');
 

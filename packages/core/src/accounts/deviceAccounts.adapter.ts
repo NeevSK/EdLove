@@ -1,4 +1,4 @@
-import { accountTransition } from '@repo/core/accounts/accountTransition.adapter';
+import { accountTransition } from '@repo/core/accounts/accountTransition.coordinator';
 import { authAPI } from '@repo/core/auth';
 import { deviceTrustAPI } from '@repo/core/native/deviceTrust';
 import { supabaseIdentityAdapter as identity } from '@repo/core/adapters/supabaseIdentity.adapter';

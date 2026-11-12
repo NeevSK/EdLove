@@ -1,7 +1,7 @@
 /* eslint-disable import-x/export */
 // 1. Foundation (No relative dependencies)
 
-export { accountTransition } from '@repo/core/accounts/accountTransition.adapter';
+export { accountTransition } from '@repo/core/accounts/accountTransition.coordinator';
 export {
   type DeviceAccountProfile,
   type DeviceAccountRecord,

@@ -1,22 +1,22 @@
 # Tier audit: packages/core/src
 
-785 files. Rules: tooling/architecture-tiers.mjs.
+787 files. Rules: tooling/architecture-tiers.mjs.
 
 | Tier | Files |
 | --- | --- |
 | Tier 0: Contracts | 133 |
 | Tier 1: Ports | 37 |
 | Tier 2: Domain | 172 |
-| Tier 3: Adapters | 141 |
-| Composition root | 15 |
+| Tier 3: Adapters | 138 |
+| Composition root | 17 |
 | Tier 4: State | 33 |
 | Tier 5: Application hooks | 49 |
-| Tier 5: Coordinators | 2 |
+| Tier 5: Coordinators | 5 |
 | Tier 6: Presentation | 6 |
 
-## upward-import (16)
+## upward-import (10)
 
-- `core/accounts/accountTransition.adapter.ts` (Tier 3: Adapters) → `core/lib/sync/mutationQueue.store.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
+- `core/accounts/deviceAccounts.adapter.ts` (Tier 3: Adapters) → `core/accounts/accountTransition.coordinator.ts` (Tier 5: Coordinators): Tier 3: Adapters imports Tier 5: Coordinators, which sits above it
 - `core/accounts/deviceAccounts.adapter.ts` (Tier 3: Adapters) → `core/lib/experienceState.store.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/accounts/deviceAccounts.adapter.ts` (Tier 3: Adapters) → `core/store/resetScopedStores.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/adapters/powersync/secureDrizzleProxy.ts` (Tier 3: Adapters) → `core/store/scopeSession.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
@@ -25,13 +25,14 @@
 - `core/api/v1/client.ts` (Tier 2: Domain) → `core/lib/security/transportSecurity.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/lib/authProfileStorage.adapter.ts` (Tier 3: Adapters) → `core/lib/experienceState.store.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/logic/apiInterceptor.adapter.ts` (Tier 3: Adapters) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
-- `core/logic/permissions/snapshotRefresh.adapter.ts` (Tier 3: Adapters) → `core/store/scopeSession.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
-- `core/logic/permissions/snapshotRefresh.adapter.ts` (Tier 3: Adapters) → `core/store/scopeSessionCoordinator.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
-- `core/logic/permissions/snapshotRefresh.adapter.ts` (Tier 3: Adapters) → `core/store/useCedarDecisionStore.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/logic/workspace/index.ts` (Tier 2: Domain) → `core/logic/workspace/provisionalWorkspace.store.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/scopeSession.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
-- `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/scopeSessionCoordinator.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
-- `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
+
+## parse-above-boundary (4)
+
+- `core/accounts/localGuestActivation.coordinator.ts` (Tier 5: Coordinators): 1 schema parse call(s); decode at the adapter and pass typed data up
+- `core/lib/sync/replayPolicy.coordinator.ts` (Tier 5: Coordinators): 2 schema parse call(s); decode at the adapter and pass typed data up
+- `core/logic/workspace/layoutSession.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
+- `core/logic/workspace/layoutSync.ts` (Tier 2: Domain): 3 schema parse call(s); decode at the adapter and pass typed data up
 
 ## pass-through (2)
 
@@ -61,12 +62,6 @@
 - `core/providers/CapabilityHydrationProvider.tsx` (Tier 6: Presentation) → `core/logic/auth/identityState.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/providers/CapabilityHydrationProvider.tsx` (Tier 6: Presentation) → `core/store/scopeSession.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/providers/CapabilityHydrationProvider.tsx` (Tier 6: Presentation) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
-
-## parse-above-boundary (3)
-
-- `core/lib/sync/replayPolicy.coordinator.ts` (Tier 5: Coordinators): 2 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/workspace/layoutSession.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/workspace/layoutSync.ts` (Tier 2: Domain): 3 schema parse call(s); decode at the adapter and pass typed data up
 
 ## imports-retired (1)
 

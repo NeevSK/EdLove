@@ -1,6 +1,6 @@
 import { showToast } from '@repo/core/lib/feedback.adapter';
 import { useAuth } from '@repo/core/logic';
-import { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
+import { activateLocalGuestSession } from '@repo/core/accounts/localGuestActivation.coordinator';
 import {
   completeLocalGuestOnboarding,
   createLocalGuestInitialBond,

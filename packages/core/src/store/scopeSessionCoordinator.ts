@@ -235,8 +235,7 @@ export async function commitIdentityScopeSession(input: {
     ...restoredWorkspaceHints,
   ];
   const selectedScopeBond =
-    activePerspective.kind === 'institutional' ||
-    selectedBond?.entity_type === 'PERSONAL'
+    activePerspective.kind === 'institutional' || selectedBond?.entity_type === 'PERSONAL'
       ? selectedBond
       : null;
   return transitionScopeSession({

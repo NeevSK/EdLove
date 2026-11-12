@@ -5,7 +5,8 @@ import type {
   IPermissionSnapshotPort,
   PermissionSnapshotRead,
 } from '@repo/core/logic/ports/permissionSnapshot.port';
-import { and, eq } from 'drizzle-orm';
+import type { AppContractClient } from '@repo/core/api/v1/contract';
+import { and, eq, sql } from 'drizzle-orm';
 
 /** Reads and checks the signed permission snapshot from the local PowerSync database. */
 export const powerSyncPermissionSnapshots: IPermissionSnapshotPort = {
@@ -50,3 +51,24 @@ export const powerSyncPermissionSnapshots: IPermissionSnapshotPort = {
     };
   },
 };
+
+export type IssuedSnapshot = Awaited<ReturnType<AppContractClient['authority']['refreshSnapshot']>>;
+
+/** Keeps the signed row on the device, so permissions survive a restart with no network. */
+export async function storePermissionSnapshot(issued: IssuedSnapshot): Promise<void> {
+  const db = getDrizzleDB();
+  const id = `${issued.userId}:${issued.activeBondId}`;
+  await db.transaction(async (tx) => {
+    await tx.run(sql`delete from permission_snapshots where id = ${id}`);
+    await tx.run(sql`insert into permission_snapshots
+      (id, user_id, active_bond_id, active_entity_id, active_entity_type, school_id, policy_version,
+       generated_at, expires_at, permissions, temporal_hints, signature)
+      values (${id}, ${issued.userId}, ${issued.activeBondId}, ${issued.activeEntityId},
+       ${issued.activeEntityType}, ${issued.schoolId}, ${issued.policyVersion}, ${issued.generatedAt},
+       ${issued.expiresAt}, ${JSON.stringify(issued.permissions)}, ${JSON.stringify(issued.temporalHints)},
+       ${issued.signature})`);
+    await tx.run(sql`delete from policy_version where id = 'cedar'`);
+    await tx.run(sql`insert into policy_version (id, hash, updated_at)
+      values ('cedar', ${issued.policyVersion}, ${issued.generatedAt})`);
+  });
+}

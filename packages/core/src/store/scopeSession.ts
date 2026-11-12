@@ -83,9 +83,7 @@ export function createScopeSessionSnapshot(input: {
     throw new Error('An anonymous scope cannot include shared workspace perspectives.');
   }
   if (input.activePerspective.kind === 'institutional') {
-    const schoolBond = input.availableBonds.find(
-      (bond) => bond.id === input.activePerspective.id,
-    );
+    const schoolBond = input.availableBonds.find((bond) => bond.id === input.activePerspective.id);
     if (
       !schoolBond ||
       schoolBond.entity_type !== 'SCHOOL' ||
@@ -97,9 +95,7 @@ export function createScopeSessionSnapshot(input: {
   }
   for (const perspective of input.availablePerspectives) {
     if (perspective.kind !== 'institutional') continue;
-    const schoolBond = input.availableBonds.find(
-      (bond) => bond.id === perspective.id,
-    );
+    const schoolBond = input.availableBonds.find((bond) => bond.id === perspective.id);
     if (
       !schoolBond ||
       schoolBond.entity_type !== 'SCHOOL' ||
@@ -161,4 +157,3 @@ export const useScopeSessionStore = create<ScopeSessionState>()((set) => ({
   abortTransition: () => set({ isTransitioning: false }),
   clear: () => set({ snapshot: null, isTransitioning: false }),
 }));
-

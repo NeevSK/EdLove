@@ -33,6 +33,8 @@ export const useSensoryStore = create<SensoryPreferencesState>()(
     }),
     {
       name: 'gurudevi_sensory_preferences_v1',
+      // The shape on the device today. Bump it, with a `migrate`, when the persisted shape changes.
+      version: 0,
       storage: createJSONStorage(() => persistStorage),
     },
   ),

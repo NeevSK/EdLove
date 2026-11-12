@@ -1,35 +1,35 @@
 {
   "summary": {
     "scope": "packages/core/src",
-    "files": 785,
+    "files": 787,
     "tiers": {
       "T0": 133,
       "T1": 37,
       "T2": 172,
-      "T3": 141,
-      "C": 15,
+      "T3": 138,
+      "C": 17,
       "T4": 33,
       "T5": 49,
-      "F": 2,
+      "F": 5,
       "T6": 6,
       "UNPLACED": 0
     },
     "findings": {
-      "upward-import": 16,
+      "upward-import": 10,
+      "parse-above-boundary": 4,
       "pass-through": 2,
       "tier-import": 21,
-      "parse-above-boundary": 3,
       "imports-retired": 1
     }
   },
   "findings": [
     {
       "rule": "upward-import",
-      "file": "packages/core/src/accounts/accountTransition.adapter.ts",
+      "file": "packages/core/src/accounts/deviceAccounts.adapter.ts",
       "tier": "T3",
-      "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
+      "to": "packages/core/src/accounts/accountTransition.coordinator.ts",
+      "toTier": "F",
+      "reason": "Tier 3: Adapters imports Tier 5: Coordinators, which sits above it"
     },
     {
       "rule": "upward-import",
@@ -46,6 +46,12 @@
       "to": "packages/core/src/store/resetScopedStores.ts",
       "toTier": "T4",
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
+    },
+    {
+      "rule": "parse-above-boundary",
+      "file": "packages/core/src/accounts/localGuestActivation.coordinator.ts",
+      "tier": "F",
+      "reason": "1 schema parse call(s); decode at the adapter and pass typed data up"
     },
     {
       "rule": "pass-through",
@@ -244,30 +250,6 @@
     },
     {
       "rule": "upward-import",
-      "file": "packages/core/src/logic/permissions/snapshotRefresh.adapter.ts",
-      "tier": "T3",
-      "to": "packages/core/src/store/scopeSession.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/permissions/snapshotRefresh.adapter.ts",
-      "tier": "T3",
-      "to": "packages/core/src/store/scopeSessionCoordinator.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/permissions/snapshotRefresh.adapter.ts",
-      "tier": "T3",
-      "to": "packages/core/src/store/useCedarDecisionStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
       "file": "packages/core/src/logic/workspace/index.ts",
       "tier": "T2",
       "to": "packages/core/src/logic/workspace/provisionalWorkspace.store.ts",
@@ -285,30 +267,6 @@
       "file": "packages/core/src/logic/workspace/layoutSync.ts",
       "tier": "T2",
       "reason": "3 schema parse call(s); decode at the adapter and pass typed data up"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/native/localGuestActivation.ts",
-      "tier": "T3",
-      "to": "packages/core/src/store/scopeSession.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/native/localGuestActivation.ts",
-      "tier": "T3",
-      "to": "packages/core/src/store/scopeSessionCoordinator.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/native/localGuestActivation.ts",
-      "tier": "T3",
-      "to": "packages/core/src/store/useAuthStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
     },
     {
       "rule": "pass-through",
@@ -358,9 +316,10 @@
     }
   ],
   "placement": {
-    "packages/core/src/accounts/accountTransition.adapter.ts": "T3",
+    "packages/core/src/accounts/accountTransition.coordinator.ts": "F",
     "packages/core/src/accounts/authenticatedAccountCapture.adapter.ts": "T3",
     "packages/core/src/accounts/deviceAccounts.adapter.ts": "T3",
+    "packages/core/src/accounts/localGuestActivation.coordinator.ts": "F",
     "packages/core/src/adapters/MemoryStorageAdapter.ts": "T3",
     "packages/core/src/adapters/NetworkBusAdapter.ts": "T3",
     "packages/core/src/adapters/WebCryptoAdapter.ts": "T3",
@@ -640,7 +599,9 @@
     "packages/core/src/effect/bindings/experience.ts": "C",
     "packages/core/src/effect/bindings/feedback.ts": "C",
     "packages/core/src/effect/bindings/growth.ts": "C",
+    "packages/core/src/effect/bindings/guestDevice.ts": "C",
     "packages/core/src/effect/bindings/journey.ts": "C",
+    "packages/core/src/effect/bindings/localDatabase.ts": "C",
     "packages/core/src/effect/bindings/nativeStorage.ts": "C",
     "packages/core/src/effect/bindings/network.ts": "C",
     "packages/core/src/effect/bindings/notifications.ts": "C",
@@ -861,7 +822,7 @@
     "packages/core/src/logic/permissions/localResourceAttributes.adapter.ts": "T3",
     "packages/core/src/logic/permissions/sanctuaryFeature.ts": "T2",
     "packages/core/src/logic/permissions/signature.adapter.ts": "T3",
-    "packages/core/src/logic/permissions/snapshotRefresh.adapter.ts": "T3",
+    "packages/core/src/logic/permissions/snapshotRefresh.coordinator.ts": "F",
     "packages/core/src/logic/permissions/sovereignty.ts": "T2",
     "packages/core/src/logic/ports/accountTransition.port.ts": "T1",
     "packages/core/src/logic/ports/analytics.port.ts": "T1",
@@ -989,7 +950,6 @@
     "packages/core/src/native/guestSessionCleanup.ts": "T3",
     "packages/core/src/native/guestStorage.ts": "T3",
     "packages/core/src/native/index.ts": "T3",
-    "packages/core/src/native/localGuestActivation.ts": "T3",
     "packages/core/src/native/localGuestOnboarding.ts": "T3",
     "packages/core/src/native/localGuestSession.ts": "T3",
     "packages/core/src/native/runtime.ts": "T3",

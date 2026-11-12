@@ -17,7 +17,9 @@ vi.mock('../../../adapters/powersync/database', () => ({
   registerPermissionValidator: vi.fn(),
 }));
 vi.mock('../cedarClientEvaluator', () => ({ evaluateShape2: state.evaluate }));
-vi.mock('../localResourceAttributes.adapter', () => ({ getLocalResourceAttributes: async () => ({}) }));
+vi.mock('../localResourceAttributes.adapter', () => ({
+  getLocalResourceAttributes: async () => ({}),
+}));
 vi.mock('../signature.adapter', () => ({ verifySnapshotSignature: state.verify }));
 
 import { checkLocalPermission } from '../localEvaluator.adapter.native';

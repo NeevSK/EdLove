@@ -26,7 +26,7 @@ vi.mock('@repo/core/native/localGuestSession', () => ({
   restoreLocalGuestSession: vi.fn(),
 }));
 
-import { activateLocalGuestSession } from './localGuestActivation';
+import { activateLocalGuestSession } from '../localGuestActivation.coordinator';
 
 describe('activateLocalGuestSession', () => {
   beforeEach(() => {
