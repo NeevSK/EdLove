@@ -23,13 +23,15 @@ function isMoodLog(value: unknown): value is MoodLog {
   );
 }
 
-export function loadMoodHistory(limit = 8): Promise<readonly MoodLog[]> {
-  return requestAccountSelfProcedure(
+export async function loadMoodHistory(limit = 8): Promise<readonly MoodLog[]> {
+  const entries = await requestAccountSelfProcedure(
     'getMoodHistory',
     { query: { limit } },
-    (value): value is MoodLog[] => Array.isArray(value) && value.every(isMoodLog),
+    (value): value is unknown[] => Array.isArray(value),
     'Sanctuary returned an invalid Mood Lotus response.',
   );
+  // One unreadable entry (a mood this app doesn't know) is skipped, not allowed to hide the rest.
+  return entries.filter(isMoodLog);
 }
 
 export function logMood(input: Readonly<{ mood: MoodValue; note?: string }>): Promise<MoodLog> {
