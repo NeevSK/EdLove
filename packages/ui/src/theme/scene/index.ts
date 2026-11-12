@@ -71,10 +71,8 @@ export {
 } from './art';
 export {
   DEFAULT_GROUND_LIVELINESS,
-  GROUND_POLICY,
   type GroundLiveliness,
-  type GroundPolicy,
+  type GroundStage,
   quietVeilOf,
-  type ScreenKind,
   screenPresence,
 } from './screenGround';

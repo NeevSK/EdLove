@@ -130,7 +130,7 @@ function greetingAt(minute: number): string {
 }
 
 export function WorldShowcaseScreen() {
-  useScreenGround('home');
+  useScreenGround('room');
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const shell = useShellLayout();

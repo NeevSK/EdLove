@@ -66,7 +66,7 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
   const { isDark, setThemeMode } = useEnvironment();
   const world = useWorld();
   const wt = world.tokens;
-  useScreenGround('home');
+  useScreenGround('room');
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [activeRealm, setActiveRealm] = useState<RealmId>('self');

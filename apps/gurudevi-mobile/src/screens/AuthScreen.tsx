@@ -86,7 +86,7 @@ export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: Au
   const { t } = useTranslation();
   const world = useWorld();
   const wt = world.tokens;
-  useScreenGround('home');
+  useScreenGround('room');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

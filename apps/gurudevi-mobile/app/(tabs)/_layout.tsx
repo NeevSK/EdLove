@@ -68,7 +68,7 @@ import { AssistantSheet } from '@/components/shell/AssistantSheet';
 import { RoomFab } from '@/components/shell/RoomFab';
 import { type CommonActions, ROOM_NAMES } from '@/components/shell/roomActions';
 import { ShellTabBar } from '@/components/shell/ShellTabBar';
-import { screenKindForPath } from '@/components/shell/screenPresence';
+import { groundStageForPath } from '@/components/shell/screenPresence';
 import { useShellRequests } from '@/components/shell/shellRequests';
 import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
@@ -340,7 +340,7 @@ function TabsLayoutContent() {
   }, [currentDomain, globalParams.feature, pathname]);
   // Every screen stands on the world's ground. The shell names the kind of screen; the ground
   // policy, the person's Visual settings and verger decide how much of the ground shows.
-  useScreenGround(screenKindForPath(pathname, { roomRoot: isDomainRoot }));
+  useScreenGround(groundStageForPath(pathname, { roomRoot: isDomainRoot }));
 
   const domainTabs = useActiveSubTabsStore(
     (s) => s.tabsByDomain[currentDomain] ?? EMPTY_DOMAIN_TABS,

@@ -73,7 +73,7 @@ const PLACES = [
 ] as const;
 
 export function WorkspaceHome({ perspective, note }: { perspective?: string; note?: string }) {
-  useScreenGround('home');
+  useScreenGround('room');
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
   const layout = useShellLayout();

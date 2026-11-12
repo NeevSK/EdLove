@@ -55,7 +55,7 @@ export default function OnboardingRoute() {
   const routeState = useBootstrapRouteState('/onboarding');
   const world = useWorld();
   const wt = world.tokens;
-  useScreenGround('home');
+  useScreenGround('room');
 
   const [step, setStep] = useState<Step>('language');
   const { language, setLanguage } = useLanguageOptional();

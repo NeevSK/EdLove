@@ -1,50 +1,35 @@
+import {
+  DEFAULT_GROUND_LIVELINESS,
+  type GroundLiveliness,
+  groundDialOf,
+  groundVeilOf,
+} from '@repo/core/logic/workspace/groundLiveliness';
+import type { GroundStage } from '@repo/core/logic/workspace/groundPlan';
 import type { ScenePresence } from './resolveScene';
 
+export { DEFAULT_GROUND_LIVELINESS, type GroundLiveliness, type GroundStage };
+
 /**
- * How loud the world's ground is behind each kind of screen: a policy, not a
- * per-screen choice. Every screen stands on the world's ground; a screen only
- * says what kind of screen it is, and this table, the person's own setting
- * (Comfort.ground) and the phone's budget (verger's stage tier, which can only
- * calm it further) decide how much of the ground shows.
- *
- * - home: a room's front floor, welcome and entry screens.
- * - inside: pages within a room.
- * - focus: settings, notifications, forms, reading: work that wants calm.
+ * The phone's reading of the shared ground policy (core groundPlan +
+ * groundLiveliness, the same dials web uses). A screen names its stage
+ * (room, screen, focus); the person's Lively/Balanced/Calm picks the dial; the
+ * phone floor turns that into how present it is. Verger's stage tier and comfort
+ * (sunlight, simpler look) still only calm it further.
+ * - a room at full strength shows the floor in full;
+ * - any other screen at full strength shows it behind the header (band);
+ * - calm stills the floor under a veil that never hides it completely.
  */
-export type ScreenKind = 'home' | 'inside' | 'focus';
-
-/** The person's choice, in Visual settings. */
-export type GroundLiveliness = 'lively' | 'balanced' | 'calm';
-
-export interface GroundPolicy {
-  presence: Record<GroundLiveliness, Record<ScreenKind, ScenePresence>>;
-  /** How much of the ground covers the floor on a quiet screen (1 hides it). */
-  quietVeil: Record<GroundLiveliness, number>;
-}
-
-/** The defaults. A dial, not a law: change the table, not the screens. */
-export const GROUND_POLICY: GroundPolicy = {
-  presence: {
-    lively: { home: 'full', inside: 'band', focus: 'band' },
-    balanced: { home: 'full', inside: 'band', focus: 'quiet' },
-    calm: { home: 'band', inside: 'quiet', focus: 'quiet' },
-  },
-  quietVeil: { lively: 0.85, balanced: 0.9, calm: 0.95 },
-};
-
-export const DEFAULT_GROUND_LIVELINESS: GroundLiveliness = 'balanced';
-
 export function screenPresence(
-  kind: ScreenKind,
+  stage: GroundStage,
   liveliness: GroundLiveliness = DEFAULT_GROUND_LIVELINESS,
-  policy: GroundPolicy = GROUND_POLICY,
 ): ScenePresence {
-  return policy.presence[liveliness][kind];
+  if (groundDialOf(liveliness)[stage] === 'calm') return 'quiet';
+  return stage === 'room' ? 'full' : 'band';
 }
 
-export function quietVeilOf(
-  liveliness: GroundLiveliness = DEFAULT_GROUND_LIVELINESS,
-  policy: GroundPolicy = GROUND_POLICY,
-): number {
-  return policy.quietVeil[liveliness];
+/** The phone's quiet veil: stronger than web's paper because phone words sit straight on it. */
+const PHONE_QUIET_BASE = 0.72;
+
+export function quietVeilOf(liveliness: GroundLiveliness = DEFAULT_GROUND_LIVELINESS): number {
+  return groundVeilOf('focus', liveliness, PHONE_QUIET_BASE);
 }

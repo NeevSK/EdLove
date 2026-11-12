@@ -71,7 +71,7 @@ export function RoomFloor({
   onSeeAll,
   lead,
 }: RoomFloorProps) {
-  useScreenGround('home');
+  useScreenGround('room');
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
   const shell = useShellLayout();

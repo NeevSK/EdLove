@@ -10,7 +10,8 @@ import { useSyncExternalStore } from 'react';
 import {
   DEFAULT_GROUND_LIVELINESS,
   type GroundLiveliness,
-} from '../theme/scene/screenGround';
+  isGroundLiveliness,
+} from '@repo/core/logic/workspace/groundLiveliness';
 import type { ComfortSize } from '../theme/types';
 import { getReading, type Reading } from '../theme/native/style';
 import { updateReading } from './ReadingPreferences';
@@ -107,10 +108,7 @@ function sanitize(v: Partial<Comfort>, base: Comfort): Comfort {
     contrast: v.contrast === 'more' || v.contrast === 'system' ? v.contrast : base.contrast,
     hand: v.hand === 'left' || v.hand === 'right' ? v.hand : base.hand,
     sunlight: typeof v.sunlight === 'boolean' ? v.sunlight : base.sunlight,
-    ground:
-      v.ground === 'lively' || v.ground === 'balanced' || v.ground === 'calm'
-        ? v.ground
-        : base.ground,
+    ground: isGroundLiveliness(v.ground) ? v.ground : base.ground,
   };
 }
 

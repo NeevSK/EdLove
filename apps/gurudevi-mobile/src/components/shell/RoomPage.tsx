@@ -31,7 +31,7 @@ export function RoomPage({
   mark?: { label: string; tone?: BadgeTone };
   children: ReactNode;
 }) {
-  useScreenGround('inside');
+  useScreenGround('screen');
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
   // Width, height and the cutouts on both sides: the column holds its reading width either way up.

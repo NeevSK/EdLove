@@ -43,7 +43,7 @@ export function practiceGrid(width: number, gap: number): { columns: number; car
 }
 
 export function SelfFloor() {
-  useScreenGround('home');
+  useScreenGround('room');
   const canvas = useSelfCanvas();
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
