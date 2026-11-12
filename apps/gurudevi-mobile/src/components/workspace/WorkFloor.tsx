@@ -16,7 +16,7 @@ import { type Href, useRouter } from 'expo-router';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { type PieceContext, teacherPiece } from './pieces/teacher';
+import { hasDesk, loadWorkDesk, type PieceContext, workPiece } from './pieces';
 
 /** Pieces that have their own screen today. The rest show what they know and open nothing yet. */
 const DESTINATIONS: Partial<Record<string, Href>> = {
@@ -86,11 +86,11 @@ export function WorkFloor({ plan, userId, perspectiveId }: WorkFloorProps) {
 
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const isTeacher = plan.capacity === 'teacher';
+  const capacity = hasDesk(plan.capacity) ? plan.capacity : null;
   const desk = useQuery({
-    queryKey: ['work-desk', 'teacher', deskPort.get().source],
-    queryFn: ({ signal }) => deskPort.get().teacherDesk(signal),
-    enabled: isTeacher,
+    queryKey: ['work-desk', capacity, deskPort.get().source],
+    queryFn: ({ signal }) => loadWorkDesk(deskPort.get(), capacity!, signal),
+    enabled: capacity !== null,
   });
   const ctx: PieceContext = {
     t,
@@ -107,9 +107,7 @@ export function WorkFloor({ plan, userId, perspectiveId }: WorkFloorProps) {
       <FloorView
         tree={tree}
         renderPiece={(p) =>
-          (isTeacher && desk.data ? teacherPiece(p.id, p.label, desk.data, ctx) : null) ?? (
-            <Card title={p.label} />
-          )
+          (desk.data ? workPiece(p.id, p.label, desk.data, ctx) : null) ?? <Card title={p.label} />
         }
       />
     </View>

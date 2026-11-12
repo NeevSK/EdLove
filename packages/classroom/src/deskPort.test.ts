@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { deskCounts, deskPort, nextLessonOf, sampleTeacherDesk } from './deskPort';
+import {
+  deskCounts,
+  deskPort,
+  nextLessonOf,
+  sampleGuardianDesk,
+  samplePrincipalDesk,
+  sampleStudentDesk,
+  sampleTeacherDesk,
+} from './deskPort';
 
 describe('teacher desk port', () => {
   it('answers from the samples until a server port is put in', async () => {
@@ -32,9 +40,18 @@ describe('teacher desk port', () => {
 
   it('can be swapped for another source and back', async () => {
     const empty = { ...sampleTeacherDesk(), classes: [], roll: [] };
-    deskPort.use({ source: 'server', teacherDesk: async () => empty });
+    deskPort.use({ ...deskPort.get(), source: 'server', teacherDesk: async () => empty });
     expect((await deskPort.get().teacherDesk()).classes).toEqual([]);
     deskPort.reset();
     expect(deskPort.get().source).toBe('sample');
+  });
+
+  it('shapes the student, guardian and principal desks with fractions, not percents', () => {
+    for (const g of sampleStudentDesk().goals) expect(g.progress).toBeLessThanOrEqual(1);
+    for (const c of sampleGuardianDesk().children) expect(c.attendance).toBeLessThanOrEqual(1);
+    const p = samplePrincipalDesk();
+    expect(p.numbers.attendance).toBeLessThanOrEqual(1);
+    for (const v of p.attendanceTrend) expect(v).toBeLessThanOrEqual(1);
+    expect(p.staff.present + p.staff.absent + p.staff.onLeave).toBeLessThanOrEqual(p.staff.total);
   });
 });

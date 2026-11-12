@@ -5,7 +5,18 @@ import {
   MOCK_CLASSROOM_NOTES,
   MOCK_CLASSROOMS,
   MOCK_DIRECT_CONVERSATIONS,
+  MOCK_GUARDIAN_ATTENDANCE_TIMELINE,
+  MOCK_GUARDIAN_CHILDREN,
+  MOCK_GUARDIAN_NOTICES,
   MOCK_LESSONS,
+  MOCK_LIBRARY_RESOURCES,
+  MOCK_PRINCIPAL_CURRICULUM_PROGRESS,
+  MOCK_PRINCIPAL_PENDING_LEAVES,
+  MOCK_SCHOOL_STATS,
+  MOCK_STAFF_PRESENCE,
+  MOCK_STUDENT_GOALS,
+  MOCK_STUDENT_GRADES,
+  MOCK_STUDENT_PULSE,
   MOCK_STUDENT_SUBMISSIONS,
   MOCK_STUDENTS,
 } from '@repo/core/api/mockData';
@@ -186,14 +197,6 @@ export function sampleTeacherDesk(): TeacherDesk {
   };
 }
 
-const sample: DeskPort = {
-  source: 'sample',
-  teacherDesk: (signal) => answer(sampleTeacherDesk(), signal),
-};
-
-/** Where the work room's records come from. Samples until the classroom module is admitted. */
-export const deskPort = definePort<DeskPort>(sample);
-
 /** The lesson to teach next: the first one by order in the first class. */
 export function nextLessonOf(desk: TeacherDesk): DeskLesson | null {
   const first = desk.classes[0];
@@ -212,3 +215,194 @@ export function deskCounts(desk: TeacherDesk) {
     unread: desk.conversations.reduce((n, c) => n + c.unread, 0),
   };
 }
+
+// ── Student, guardian and principal desks ───────────────────────────────
+
+export interface DeskGrade {
+  id: string;
+  title: string;
+  className: string;
+  /** Out of 100. */
+  score: number;
+  at: string;
+}
+
+export interface DeskGoal {
+  id: string;
+  text: string;
+  /** 0 to 1. */
+  progress: number;
+}
+
+export interface StudentDesk {
+  classes: readonly DeskClass[];
+  /** Work set for the student, soonest first. */
+  homework: readonly DeskAssignment[];
+  lessons: readonly DeskLesson[];
+  grades: readonly DeskGrade[];
+  goals: readonly DeskGoal[];
+  /** Library shelf size; the Library room owns the shelf itself. */
+  shelfCount: number;
+  exams: null;
+}
+
+export interface DeskChild {
+  id: string;
+  name: string;
+  grade: string;
+  /** 0 to 1. */
+  attendance: number;
+  teacher: string;
+}
+
+export interface DeskArrival {
+  id: string;
+  date: string;
+  time: string;
+  status: 'present' | 'late' | 'excused';
+}
+
+export interface DeskSchoolNote {
+  id: string;
+  title: string;
+  text: string;
+  author: string;
+  date: string;
+}
+
+export interface GuardianDesk {
+  children: readonly DeskChild[];
+  /** The first child's recent arrivals, newest first. */
+  arrivals: readonly DeskArrival[];
+  notes: readonly DeskSchoolNote[];
+  conversations: readonly DeskConversation[];
+  fees: null;
+}
+
+export interface DeskLeave {
+  id: string;
+  name: string;
+  role: string;
+  kind: string;
+  when: string;
+  cover: string;
+}
+
+export interface DeskSubjectPace {
+  grade: string;
+  subject: string;
+  /** 0 to 1. */
+  done: number;
+  pace: 'on_track' | 'lagging' | 'accelerated';
+}
+
+export interface PrincipalDesk {
+  staff: { present: number; absent: number; onLeave: number; total: number };
+  leaves: readonly DeskLeave[];
+  numbers: {
+    students: number;
+    teachers: number;
+    classes: number;
+    sections: number;
+    attendance: number;
+  };
+  /** Student attendance, oldest to newest (yesterday, today). */
+  attendanceTrend: readonly number[];
+  pace: readonly DeskSubjectPace[];
+  notices: readonly DeskNotice[];
+  todayEvents: null;
+  termPlan: null;
+}
+
+export interface WorkDeskPort extends DeskPort {
+  studentDesk(signal?: AbortSignal): Promise<StudentDesk>;
+  guardianDesk(signal?: AbortSignal): Promise<GuardianDesk>;
+  principalDesk(signal?: AbortSignal): Promise<PrincipalDesk>;
+}
+
+export function sampleStudentDesk(): StudentDesk {
+  const teacher = sampleTeacherDesk();
+  return {
+    classes: teacher.classes,
+    homework: [...teacher.assignments].sort((a, b) =>
+      (a.dueAt ?? '~').localeCompare(b.dueAt ?? '~'),
+    ),
+    lessons: teacher.lessons,
+    grades: MOCK_STUDENT_GRADES.map((g) => ({
+      id: g.id,
+      title: g.assignments.title,
+      className: g.classrooms.name,
+      score: g.grade,
+      at: g.submitted_at,
+    })),
+    goals: MOCK_STUDENT_GOALS.map((g) => ({ id: g.id, text: g.text, progress: g.progress / 100 })),
+    shelfCount: MOCK_LIBRARY_RESOURCES.length,
+    exams: null,
+  };
+}
+
+export function sampleGuardianDesk(): GuardianDesk {
+  return {
+    children: MOCK_GUARDIAN_CHILDREN.map((c) => ({
+      id: c.id,
+      name: c.name,
+      grade: c.grade,
+      attendance: c.attendanceRate / 100,
+      teacher: c.homeroomTeacher,
+    })),
+    arrivals: [...MOCK_GUARDIAN_ATTENDANCE_TIMELINE]
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .map((a) => ({ id: a.id, date: a.date, time: a.time, status: a.status })),
+    notes: MOCK_GUARDIAN_NOTICES.map((n) => ({
+      id: n.id,
+      title: n.title,
+      text: n.content,
+      author: n.author,
+      date: n.date,
+    })),
+    conversations: sampleTeacherDesk().conversations,
+    fees: null,
+  };
+}
+
+export function samplePrincipalDesk(): PrincipalDesk {
+  return {
+    staff: { ...MOCK_STAFF_PRESENCE },
+    leaves: MOCK_PRINCIPAL_PENDING_LEAVES.map((l) => ({
+      id: l.id,
+      name: l.staffName,
+      role: l.role,
+      kind: l.type,
+      when: l.duration,
+      cover: l.substitute,
+    })),
+    numbers: {
+      students: MOCK_SCHOOL_STATS.total_students,
+      teachers: MOCK_SCHOOL_STATS.total_teachers,
+      classes: MOCK_SCHOOL_STATS.total_classrooms,
+      sections: MOCK_SCHOOL_STATS.total_sections,
+      attendance: MOCK_SCHOOL_STATS.attendance_rate,
+    },
+    attendanceTrend: [MOCK_STUDENT_PULSE.yesterdayRate / 100, MOCK_STUDENT_PULSE.todayRate / 100],
+    pace: MOCK_PRINCIPAL_CURRICULUM_PROGRESS.map((p) => ({
+      grade: p.grade,
+      subject: p.subject,
+      done: p.completionPercent / 100,
+      pace: p.status,
+    })),
+    notices: sampleTeacherDesk().notices,
+    todayEvents: null,
+    termPlan: null,
+  };
+}
+
+const sample: WorkDeskPort = {
+  source: 'sample',
+  teacherDesk: (signal) => answer(sampleTeacherDesk(), signal),
+  studentDesk: (signal) => answer(sampleStudentDesk(), signal),
+  guardianDesk: (signal) => answer(sampleGuardianDesk(), signal),
+  principalDesk: (signal) => answer(samplePrincipalDesk(), signal),
+};
+
+/** Where the work room's records come from. Samples until the classroom module is admitted. */
+export const deskPort = definePort<WorkDeskPort>(sample);

@@ -1,4 +1,9 @@
-import { sampleTeacherDesk } from '@repo/classroom/deskPort';
+import {
+  sampleGuardianDesk,
+  samplePrincipalDesk,
+  sampleStudentDesk,
+  sampleTeacherDesk,
+} from '@repo/classroom/deskPort';
 import {
   type DetailTier,
   type FloorSpace,
@@ -29,9 +34,14 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { teacherPiece } from '@/components/workspace/pieces/teacher';
+import { type WorkDesk, workPiece } from '@/components/workspace/pieces';
 
-const SAMPLE_DESK = sampleTeacherDesk();
+const SAMPLE_DESKS: Record<string, WorkDesk> = {
+  teacher: { capacity: 'teacher', desk: sampleTeacherDesk() },
+  student: { capacity: 'student', desk: sampleStudentDesk() },
+  guardian: { capacity: 'guardian', desk: sampleGuardianDesk() },
+  principal: { capacity: 'principal', desk: samplePrincipalDesk() },
+};
 
 const CHROME: FloorSpace['chrome'] = [
   { id: 'status', height: 24, giveWayRank: 0, essential: true },
@@ -145,8 +155,8 @@ export function FloorLab() {
               <FloorView
                 tree={tree}
                 renderPiece={(p) =>
-                  (plan === 'teacher'
-                    ? teacherPiece(p.id, p.label, SAMPLE_DESK, {
+                  (SAMPLE_DESKS[plan]
+                    ? workPiece(p.id, p.label, SAMPLE_DESKS[plan]!, {
                         t,
                         locale: i18n.language || 'en',
                         canOpen: () => false,

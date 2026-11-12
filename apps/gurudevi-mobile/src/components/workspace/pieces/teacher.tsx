@@ -4,29 +4,13 @@ import {
   nextLessonOf,
   type TeacherDesk,
 } from '@repo/classroom/deskPort';
-import { Divider, Row, Stack, Text } from '@repo/ui/components/native';
+import { Row, Stack, Text } from '@repo/ui/components/native';
 import type { TFunction } from 'i18next';
 import type { ReactNode } from 'react';
-import { View } from 'react-native';
+import { dueText, type PieceContext, rows } from './common';
 import { PieceFrame } from './PieceFrame';
 
-export interface PieceContext {
-  t: TFunction;
-  /** The person's language, for dates. */
-  locale: string;
-  /** Opens a piece's own screen when it has one. */
-  open?: (pieceId: string) => void;
-  /** Whether a piece has a screen to open yet. */
-  canOpen: (pieceId: string) => boolean;
-}
-
-const MAX_ROWS = 3;
-
-export function dueText(iso: string | null, locale: string, now = Date.now()): string | null {
-  if (!iso) return null;
-  const days = Math.round((new Date(iso).getTime() - now) / 86_400_000);
-  return new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(days, 'day');
-}
+export { dueText, type PieceContext } from './common';
 
 function rollLine(r: DeskRoll, t: TFunction): string {
   if (!r.taken) return t('work.roll.notTaken', 'Not taken yet');
@@ -35,19 +19,6 @@ function rollLine(r: DeskRoll, t: TFunction): string {
   if (r.absent) parts.push(t('work.roll.absent', '{{n}} absent', { n: r.absent }));
   if (r.excused) parts.push(t('work.roll.excused', '{{n}} excused', { n: r.excused }));
   return parts.join(', ');
-}
-
-function rows<T>(items: readonly T[], draw: (item: T) => ReactNode, key: (item: T) => string) {
-  return (
-    <View>
-      {items.slice(0, MAX_ROWS).map((it, i) => (
-        <View key={key(it)}>
-          {i > 0 ? <Divider /> : null}
-          {draw(it)}
-        </View>
-      ))}
-    </View>
-  );
 }
 
 /**

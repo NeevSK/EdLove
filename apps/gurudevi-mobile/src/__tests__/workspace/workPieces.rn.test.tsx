@@ -1,7 +1,13 @@
-import { sampleTeacherDesk } from '@repo/classroom/deskPort';
+import {
+  sampleGuardianDesk,
+  samplePrincipalDesk,
+  sampleStudentDesk,
+  sampleTeacherDesk,
+} from '@repo/classroom/deskPort';
 import { ROOM_PLANS } from '@repo/core/logic/floor';
 import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
+import { type WorkDesk, workPiece } from '@/components/workspace/pieces';
 import type { PieceFrameProps } from '@/components/workspace/pieces/PieceFrame';
 import { dueText, type PieceContext, teacherPiece } from '@/components/workspace/pieces/teacher';
 
@@ -65,4 +71,23 @@ describe('teacher work-room pieces', () => {
   it('returns nothing for a piece it does not know, so the floor falls back', () => {
     expect(teacherPiece('unknown', 'Unknown', desk, ctx())).toBeNull();
   });
+});
+
+describe('every work room has a real piece for each place on its floor', () => {
+  const desks: WorkDesk[] = [
+    { capacity: 'teacher', desk: sampleTeacherDesk() },
+    { capacity: 'student', desk: sampleStudentDesk() },
+    { capacity: 'guardian', desk: sampleGuardianDesk() },
+    { capacity: 'principal', desk: samplePrincipalDesk() },
+  ];
+  for (const work of desks) {
+    it(work.capacity, () => {
+      const plan = ROOM_PLANS[`workspace:${work.capacity}`]!;
+      for (const s of plan.surfaces) {
+        const piece = workPiece(s.id, s.label, work, ctx());
+        expect(piece, s.id).not.toBeNull();
+        expect(frame(piece).title).toBe(s.label);
+      }
+    });
+  }
 });
