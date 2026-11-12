@@ -166,6 +166,7 @@ export const PjcHierarchySchema = z.strictObject({
 export type PjcHierarchy = z.infer<typeof PjcHierarchySchema>;
 
 export function validateHierarchy(input: unknown) {
+  // contract-check: checks an authored PJC hierarchy and reports what is wrong
   const parsed = PjcHierarchySchema.safeParse(input);
   if (!parsed.success)
     return {

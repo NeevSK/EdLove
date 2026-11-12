@@ -261,6 +261,7 @@ export class WorkspaceLayoutSession {
   private persist(): Promise<void> {
     const layout = this.snapshot.layout;
     const intent = this.remoteEnabled
+      // contract-check: checks the intent this session is about to persist
       ? WorkspaceLayoutIntentSchema.parse({
           version: 2,
           ...this.identity,

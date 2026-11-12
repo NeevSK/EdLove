@@ -121,12 +121,15 @@ function parse(file) {
         /^export\s+(default\s+)?\w+;?$/.test(s),
     ) &&
     statements.some((s) => s.startsWith('export'));
-  // Schema decoding only; JSON.parse and Date.parse aren't validation.
-  const parses = [
-    ...code.matchAll(
-      /(?<!JSON|Date)\.(safeParse|parse|safeParseAsync|parseAsync)\(|Schema\.decodeUnknown\w*\(/g,
-    ),
-  ].length;
+  // Schema decoding only; JSON.parse and Date.parse aren't validation. A parse marked
+  // `// contract-check: <why>` on its line or the line above checks data this code owns (an authored
+  // manifest, its own output, a caller-supplied codec), not untrusted input, and isn't counted.
+  const lines = source.split('\n');
+  const parses = lines.filter((line, i) => {
+    if (/^\s*(\/\/|\*|\/\*)/.test(line)) return false;
+    if (!/(?<!JSON|Date)\.(safeParse|parse|safeParseAsync|parseAsync)\(|Schema\.decodeUnknown\w*\(/.test(line)) return false;
+    return !/contract-check:\s*\S/.test(line) && !/contract-check:\s*\S/.test(lines[i - 1] ?? '');
+  }).length;
   return { imports, passThrough, parses };
 }
 

@@ -1,15 +1,15 @@
 # Tier audit: packages/core/src
 
-764 files. Rules: tooling/architecture-tiers.mjs.
+768 files. Rules: tooling/architecture-tiers.mjs.
 
 | Tier | Files |
 | --- | --- |
-| Tier 0: Contracts | 130 |
+| Tier 0: Contracts | 131 |
 | Tier 1: Ports | 34 |
-| Tier 2: Domain | 184 |
-| Tier 3: Adapters | 133 |
+| Tier 2: Domain | 183 |
+| Tier 3: Adapters | 136 |
 | Composition root | 3 |
-| Tier 4: State | 29 |
+| Tier 4: State | 30 |
 | Tier 5: Application hooks | 48 |
 | Tier 6: Presentation | 6 |
 
@@ -64,25 +64,7 @@
 - `core/adapters/powersync/powersync-react-shim.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
 - `core/native/webSentryAdapter.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
 
-## parse-above-boundary (15)
-
-- `core/flows/journeyPilot.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
-- `core/flows/pjc/catalogLoader.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
-- `core/flows/pjc/hierarchy.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
-- `core/hooks/useGrowthQuery.ts` (Tier 5: Application hooks): 2 schema parse call(s); decode at the adapter and pass typed data up
-- `core/lib/catalogPracticeRuntime.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
-- `core/lib/practiceDocumentLifecycle.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
-- `core/lib/sync/replayPolicy.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/journey/roleJourney.machine.ts` (Tier 4: State): 1 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/permissions/authority.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/permissions/cedarClientEvaluator.ts` (Tier 2: Domain): 3 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/registry/appCatalog.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/registry/featureLifecycleManifest.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/workspace/layoutPatch.ts` (Tier 2: Domain): 5 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/workspace/layoutSession.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
-- `core/logic/workspace/layoutSync.ts` (Tier 2: Domain): 3 schema parse call(s); decode at the adapter and pass typed data up
-
-## tier-import (92)
+## tier-import (88)
 
 - `core/hooks/useAuthLifecycle.ts` (Tier 5: Application hooks) → `core/accounts/authenticatedAccountCapture.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useAuthLifecycle.ts` (Tier 5: Application hooks) → `core/accounts/deviceAccounts.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
@@ -96,9 +78,6 @@
 - `core/hooks/useDeviceAccounts.ts` (Tier 5: Application hooks) → `core/accounts/deviceAccounts.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useDeviceSecurity.ts` (Tier 5: Application hooks) → `core/adapters/supabaseDeviceSecurity.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useGroupCreation.ts` (Tier 5: Application hooks) → `core/lib/storage.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
-- `core/hooks/useGrowthQuery.ts` (Tier 5: Application hooks) → `core/lib/accountScope.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
-- `core/hooks/useGrowthQuery.ts` (Tier 5: Application hooks) → `core/lib/storage.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
-- `core/hooks/useGrowthQuery.ts` (Tier 5: Application hooks) → `core/adapters/supabase/growth.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useJourneyHistory.ts` (Tier 5: Application hooks) → `core/adapters/supabase/uiExperienceRepository.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useLocalFirstQuery.ts` (Tier 5: Application hooks) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useManualSnapshot.ts` (Tier 5: Application hooks) → `core/adapters/supabase/uiExperienceRepository.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
@@ -138,7 +117,6 @@
 - `core/lib/sync/versionGating.store.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/lib/sync/versionGating.store.ts` (Tier 4: State) → `core/lib/sync/eventBus.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/logic/deeplink/pendingIntent.store.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/logic/journey/roleJourney.machine.ts` (Tier 4: State) → `core/lib/storage.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/logic/workspace/provisionalWorkspace.store.ts` (Tier 4: State) → `core/lib/storageWrapper.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/offline/useOfflineStatus.ts` (Tier 5: Application hooks) → `core/adapters/subscribeToNetwork.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/offline/useOfflineStatus.ts` (Tier 5: Application hooks) → `core/platform/drivers/networkMonitor.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
@@ -176,6 +154,12 @@
 - `core/store/useUIStore.ts` (Tier 4: State) → `core/lib/accountScope.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/useUIStore.ts` (Tier 4: State) → `core/native/guestScope.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/useUIStore.ts` (Tier 4: State) → `core/lib/storage.adapter.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
+
+## parse-above-boundary (3)
+
+- `core/lib/sync/replayPolicy.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
+- `core/logic/workspace/layoutSession.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
+- `core/logic/workspace/layoutSync.ts` (Tier 2: Domain): 3 schema parse call(s); decode at the adapter and pass typed data up
 
 ## imports-retired (1)
 

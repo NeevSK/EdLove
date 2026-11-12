@@ -99,6 +99,12 @@ export const NAME_RULES = [
   [/\.tsx$/, 'T6'],
 ];
 
+/**
+ * Folders that say only "domain" in general: a file's name (`*.adapter.ts`, `*.store.ts` ...) decides
+ * its tier there, and a plain name is Tier 2.
+ */
+const GENERIC_FOLDERS = ['packages/core/src/logic/', 'packages/core/src/flows/'];
+
 /** Packages whose untiered files default to Tier 2 (pure logic) until their names say otherwise. */
 const DEFAULT_T2_ROOTS = ['packages/core/src/'];
 
@@ -111,7 +117,7 @@ export function tierOf(filePath) {
   if (placed) return placed.tier;
   // Explicit tier folders first: types/, logic/ports/, adapters/, store/, hooks/ mean what they say.
   for (const [rule, tier] of FOLDER_RULES) {
-    if (rule === 'packages/core/src/logic/') continue;
+    if (GENERIC_FOLDERS.includes(rule)) continue;
     if (typeof rule === 'string' ? filePath.startsWith(rule) : rule.test(filePath)) return tier;
   }
   if (/(__tests__|__mocks__)\/|\.(test|spec)\.tsx?$|\.d\.ts$/.test(filePath)) return 'UNPLACED';

@@ -3,7 +3,7 @@ import path from 'node:path';
 import {
   findUnregisteredFeatureModules,
   loadCatalogFile,
-} from '../packages/core/src/flows/pjc/catalogLoader';
+} from '@repo/core/flows/pjc/catalogLoader.adapter';
 import { type PjcHierarchy, validateHierarchy } from '../packages/core/src/flows/pjc/hierarchy';
 import { inspectHierarchyJourney } from '../packages/core/src/flows/pjc/hierarchyQuery';
 

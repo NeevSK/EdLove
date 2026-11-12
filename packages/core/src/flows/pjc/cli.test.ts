@@ -3,7 +3,7 @@ import { mkdtempSync, rmdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { loadCatalogFile } from './catalogLoader';
+import { loadCatalogFile } from './catalogLoader.adapter';
 
 const root = path.resolve(process.cwd(), '../..');
 const runner = path.join(root, 'node_modules/tsx/dist/cli.mjs');

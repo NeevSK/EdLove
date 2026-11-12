@@ -1,6 +1,12 @@
 import { featureRolloutCache as rolloutCache } from '@repo/core/adapters/feature-rollout/featureRolloutCache.adapter';
 import { growthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
-import { getAccountScopeRevision, scopeStorageKey } from '@repo/core/lib/accountScope.adapter';
+import { journeySnapshotStore } from '@repo/core/adapters/storage/journeySnapshot.adapter';
+import { growthViewSource } from '@repo/core/adapters/supabase/growthView.adapter';
+import {
+  getAccountScopeRevision,
+  getActiveAccountId,
+  scopeStorageKey,
+} from '@repo/core/lib/accountScope.adapter';
 import { authProfileStorage, restoreIdentityProfile } from '@repo/core/lib/authProfileStorage.adapter';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
@@ -43,7 +49,17 @@ export const sessionScope = {
     accountId ? scopeStorageKey(name, accountId) : guestStorageKey(name),
   /** A guest session that lives only on this device, with no server-issued permissions. */
   isLocalGuest: (userId: string): boolean => isLocalGuestSessionId(userId),
+  /** The signed-in account, or null. */
+  activeAccountId: (): string | null => getActiveAccountId(),
+  /** Changes whenever the active account changes; a read that spans a change is stale. */
+  accountRevision: (): number => getAccountScopeRevision(),
 };
+
+/** Role journey snapshots on the device; one that can't be read loads as null. */
+export const journeySnapshots = journeySnapshotStore;
+
+/** The growth view and its offline snapshot, decoded at the boundary. */
+export const growthView = growthViewSource;
 
 /** Records a state change for the next error report. */
 export const breadcrumb: typeof leaveBreadcrumb = leaveBreadcrumb;

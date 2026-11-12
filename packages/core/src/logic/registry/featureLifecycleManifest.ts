@@ -215,6 +215,7 @@ export type FeatureFlagKey = keyof typeof FEATURE_FLAG_MANIFEST;
 
 export function validateFeatureFlagManifest(): void {
   Object.entries(FEATURE_FLAG_MANIFEST).forEach(([key, metadata]) => {
+    // contract-check: checks the authored flag manifest
     FeatureFlagMetadataSchema.parse(metadata);
 
     const declaredDefault = DEFAULT_FEATURE_FLAGS[key as keyof typeof DEFAULT_FEATURE_FLAGS];

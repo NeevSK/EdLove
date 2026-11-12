@@ -88,6 +88,7 @@ export function resolveAuthorityContext(inputs: AuthorityInputs): UserContext {
     activePerspective.kind === 'institutional' ? (activePerspective.schoolType ?? null) : null;
   const activeBond = resolveActiveBond(activePerspective, availableBonds, sessionActiveBond);
 
+  // contract-check: narrows a typed profile field to the closed capacity set
   const personalCapacity: Capacity = CapacitySchema.safeParse(user?.capacity).data ?? 'student';
   const bondScope = resolveBondScope(activeBond);
   const isPersonal =
@@ -147,6 +148,7 @@ export function resolveAuthorityContext(inputs: AuthorityInputs): UserContext {
     classroomId: activeBond?.entity_type === 'CLASSROOM' ? activeBond.entity_id : null,
   };
 
+  // contract-check: checks the context this function just built
   const parsed = UserContextSchema.safeParse(rawContext);
   if (!parsed.success) {
     console.warn('[authority] Schema parse warning:', parsed.error.issues);

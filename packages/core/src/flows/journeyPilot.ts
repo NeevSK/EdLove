@@ -8,6 +8,7 @@ export function inspectJourneyPilot(flowId: FlowId) {
 }
 
 export function inspectJourneyContract(flowId: string, flow: FeatureJTBDGraph) {
+  // contract-check: checks an authored flow definition and reports what is wrong
   const result = JourneyPilotSchema.safeParse(flow.journeyPilot);
   if (!result.success)
     return {

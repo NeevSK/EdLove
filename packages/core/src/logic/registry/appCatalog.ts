@@ -24,6 +24,7 @@ export type AppCatalog = Record<string, DomainEntry>;
 let _catalog: AppCatalog | null = null;
 
 function validateCatalogEntry(key: string, entry: DomainEntry): void {
+  // contract-check: checks an authored catalog entry at registration
   DomainEntrySchema.parse(entry);
 
   if (key !== entry.id) {

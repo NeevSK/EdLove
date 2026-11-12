@@ -3,7 +3,7 @@ import path from 'node:path';
 import { inspectHierarchyJourney as inspectPublicJourney } from '@repo/core/flows/pjc/hierarchyQuery';
 import { validateHierarchy as validatePublicHierarchy } from '@repo/core/flows/pjc/hierarchy';
 import { describe, expect, it } from 'vitest';
-import { loadCatalogFile } from './catalogLoader';
+import { loadCatalogFile } from './catalogLoader.adapter';
 import { validateHierarchy } from './hierarchy';
 import { inspectHierarchyJourney } from './hierarchyQuery';
 

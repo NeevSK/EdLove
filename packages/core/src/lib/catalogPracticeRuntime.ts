@@ -89,6 +89,7 @@ export function createCatalogPracticeRuntime<T extends PracticeDocument>(input: 
       for (const legacyStorageKey of legacyStorageKeys) {
         const legacy = await input.storage.getItem(legacyStorageKey);
         if (!legacy) continue;
+        // contract-check: decodes through the codec the caller supplies (dependency-inverted boundary)
         const document = input.codec.parse(legacy);
         await lifecycle.save(document);
         await input.storage.setItem(legacyDismissalKey, '1');

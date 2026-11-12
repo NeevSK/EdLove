@@ -13529,6 +13529,58 @@
    "outside": []
   },
   {
+   "file": "packages/core/src/adapters/storage/journeySnapshot.adapter.ts",
+   "package": "packages/core",
+   "folderTier": "T3",
+   "shape": "contract+logic",
+   "lines": 64,
+   "counts": {
+    "types": 0,
+    "consts": 2,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 1,
+    "functions": 4,
+    "functionLines": 43,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "SnapshotEnvelopeSchema",
+    "getJourneySnapshotStorageKey",
+    "saveJourneySnapshot",
+    "loadJourneySnapshot",
+    "dropJourneySnapshot",
+    "journeySnapshotStore"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/storage.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/types/index.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": [
+    "zod"
+   ]
+  },
+  {
    "file": "packages/core/src/adapters/storage/supabase.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
@@ -13883,6 +13935,57 @@
     {
      "to": "packages/core/src/types/Growth.ts",
      "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/adapters/supabase/growthView.adapter.ts",
+   "package": "packages/core",
+   "folderTier": "T3",
+   "shape": "runtime",
+   "lines": 40,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 1,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "growthViewSource"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/supabase/growth.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/lib/storage.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/schemas/growth.schema.ts",
+     "typeOnly": false,
      "toShape": "contract",
      "toTier": "T0"
     }
@@ -26849,10 +26952,10 @@
    "package": "packages/core",
    "folderTier": "C",
    "shape": "contract",
-   "lines": 56,
+   "lines": 72,
    "counts": {
     "types": 0,
-    "consts": 7,
+    "consts": 9,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
@@ -26870,13 +26973,15 @@
     "featureRollout",
     "featureRolloutCache",
     "sessionScope",
+    "journeySnapshots",
+    "growthView",
     "breadcrumb",
     "eventBus",
     "authProfile"
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 9,
     "tests": 0
    },
    "imports": [
@@ -26888,6 +26993,18 @@
     },
     {
      "to": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/storage/journeySnapshot.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/supabase/growthView.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -27737,7 +27854,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 88,
+   "lines": 89,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -27745,7 +27862,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 86,
+    "functionLines": 87,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -27785,9 +27902,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/flows/pjc/catalogLoader.ts",
+   "file": "packages/core/src/flows/pjc/catalogLoader.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract+logic",
    "lines": 55,
    "counts": {
@@ -27826,7 +27943,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 306,
+   "lines": 307,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -27834,7 +27951,7 @@
     "ambient": 0,
     "schemas": 10,
     "functions": 1,
-    "functionLines": 140,
+    "functionLines": 141,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -29059,15 +29176,15 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 94,
+   "lines": 44,
    "counts": {
     "types": 0,
     "consts": 0,
     "constructs": 0,
-    "ambient": 1,
-    "schemas": 2,
+    "ambient": 0,
+    "schemas": 0,
     "functions": 1,
-    "functionLines": 65,
+    "functionLines": 31,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -29091,34 +29208,22 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/accountScope.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/lib/storage.adapter.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/logic/auth/identityState.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/adapters/supabase/growth.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/offline/useOfflineStatus.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T5"
+    },
+    {
+     "to": "packages/core/src/store/queries/growthQuery.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/store/useAuthStore.ts",
@@ -29135,8 +29240,7 @@
    ],
    "outside": [
     "@tanstack/react-query",
-    "react",
-    "zod"
+    "react"
    ]
   },
   {
@@ -31253,7 +31357,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 18,
+    "prod": 17,
     "tests": 9
    },
    "imports": [],
@@ -31466,7 +31570,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 113,
+   "lines": 114,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -31474,7 +31578,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 90,
+    "functionLines": 91,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -32987,7 +33091,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 254,
+   "lines": 256,
    "counts": {
     "types": 6,
     "consts": 1,
@@ -32995,7 +33099,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 7,
-    "functionLines": 213,
+    "functionLines": 215,
     "classes": 0,
     "errorClasses": 1,
     "mutable": 0,
@@ -37145,15 +37249,15 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 199,
+   "lines": 112,
    "counts": {
-    "types": 3,
-    "consts": 1,
+    "types": 1,
+    "consts": 0,
     "constructs": 1,
     "ambient": 0,
-    "schemas": 7,
-    "functions": 4,
-    "functionLines": 70,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 32,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -37162,20 +37266,8 @@
     "jsx": false
    },
    "exports": [
-    "RoleJourneyContextSchema",
-    "RoleJourneyContext",
-    "AdvanceStepEventSchema",
-    "CompleteMilestoneEventSchema",
-    "DismissScaffoldEventSchema",
-    "ResetJourneyEventSchema",
-    "RoleJourneyEventsSchema",
-    "RoleJourneyEvents",
     "roleJourneyMachine",
     "RoleJourneyMachine",
-    "SnapshotEnvelopeSchema",
-    "getJourneySnapshotStorageKey",
-    "saveJourneySnapshot",
-    "loadJourneySnapshot",
     "createRoleJourneyActor"
    ],
    "unions": [],
@@ -37185,10 +37277,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.adapter.ts",
+     "to": "packages/core/src/effect/bindings.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/logic/schemas/roleJourney.schema.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
     },
     {
      "to": "packages/core/src/types/index.ts",
@@ -37198,8 +37296,7 @@
     }
    ],
    "outside": [
-    "xstate",
-    "zod"
+    "xstate"
    ]
   },
   {
@@ -38406,7 +38503,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 173,
+   "lines": 175,
    "counts": {
     "types": 3,
     "consts": 2,
@@ -38414,7 +38511,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 112,
+    "functionLines": 114,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -38593,7 +38690,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 155,
+   "lines": 158,
    "counts": {
     "types": 4,
     "consts": 1,
@@ -38601,7 +38698,7 @@
     "ambient": 0,
     "schemas": 1,
     "functions": 6,
-    "functionLines": 115,
+    "functionLines": 118,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 2,
@@ -40906,7 +41003,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 123,
+   "lines": 124,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -40914,7 +41011,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 7,
-    "functionLines": 105,
+    "functionLines": 106,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 1,
@@ -41025,7 +41122,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 350,
+   "lines": 351,
    "counts": {
     "types": 2,
     "consts": 3,
@@ -41033,7 +41130,7 @@
     "ambient": 0,
     "schemas": 1,
     "functions": 8,
-    "functionLines": 110,
+    "functionLines": 111,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -42086,13 +42183,13 @@
    "package": "packages/core",
    "folderTier": "T0",
    "shape": "contract",
-   "lines": 42,
+   "lines": 67,
    "counts": {
-    "types": 0,
+    "types": 2,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
-    "schemas": 6,
+    "schemas": 8,
     "functions": 0,
     "functionLines": 0,
     "classes": 0,
@@ -42108,11 +42205,15 @@
     "SanctuaryManifestoSchema",
     "ImpactRippleSchema",
     "ThuthimalGiftSchema",
-    "WhisperedMomentSchema"
+    "WhisperedMomentSchema",
+    "GrowthViewSchema",
+    "GrowthView",
+    "SavedGrowthSchema",
+    "SavedGrowth"
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 4,
     "tests": 0
    },
    "imports": [
@@ -42827,6 +42928,47 @@
    "unions": [],
    "importers": {
     "prod": 10,
+    "tests": 0
+   },
+   "imports": [],
+   "outside": [
+    "zod"
+   ]
+  },
+  {
+   "file": "packages/core/src/logic/schemas/roleJourney.schema.ts",
+   "package": "packages/core",
+   "folderTier": "T0",
+   "shape": "contract",
+   "lines": 47,
+   "counts": {
+    "types": 2,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 6,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "RoleJourneyContextSchema",
+    "RoleJourneyContext",
+    "AdvanceStepEventSchema",
+    "CompleteMilestoneEventSchema",
+    "DismissScaffoldEventSchema",
+    "ResetJourneyEventSchema",
+    "RoleJourneyEventsSchema",
+    "RoleJourneyEvents"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
     "tests": 0
    },
    "imports": [],
@@ -44120,7 +44262,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 255,
+   "lines": 260,
    "counts": {
     "types": 5,
     "consts": 0,
@@ -44128,7 +44270,7 @@
     "ambient": 0,
     "schemas": 7,
     "functions": 8,
-    "functionLines": 174,
+    "functionLines": 179,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -44191,7 +44333,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 397,
+   "lines": 398,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -47668,6 +47810,54 @@
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/store/queries/growthQuery.ts",
+   "package": "packages/core",
+   "folderTier": "T4",
+   "shape": "runtime",
+   "lines": 41,
+   "counts": {
+    "types": 0,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 4,
+    "functionLines": 32,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "growthQueryKey",
+    "growthSnapshotKey",
+    "decodeGrowthSnapshot",
+    "readGrowth"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/effect/bindings.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/logic/schemas/growth.schema.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
     }
    ],
    "outside": []
@@ -51794,7 +51984,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 141,
+    "prod": 142,
     "tests": 11
    },
    "imports": [
