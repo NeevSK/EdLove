@@ -27,7 +27,9 @@ export const ALLOWED = {
   T3: ['T0', 'T1', 'T2', 'T3'],
   C: ['T0', 'T1', 'T2', 'T3', 'C'],
   T4: ['T0', 'T1', 'T2', 'C'],
-  T5: ['T0', 'T2', 'T4', 'T5'],
+  // Hooks may use the composition root's bindings directly (owner decision, 2026-11-12): a Tier 4
+  // module is for real query or state logic, not for forwarding calls.
+  T5: ['T0', 'T2', 'T4', 'C', 'T5'],
   T6: ['T0', 'T5', 'T6'],
 };
 

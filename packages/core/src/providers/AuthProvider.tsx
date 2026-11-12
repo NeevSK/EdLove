@@ -1,23 +1,7 @@
+import { AuthContext } from '@repo/core/hooks/useAuth';
 import { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
-import type { IdentityAvailability } from '@repo/core/logic/auth/identityState';
-import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
-import type { AuthSession } from '@repo/core/types/authSession';
 import type React from 'react';
-import { createContext, type ReactNode, useContext } from 'react';
-
-interface AuthContextType {
-  session: AuthSession | null;
-  loading: boolean;
-  isProfileLoading: boolean;
-  isProfileResolving: boolean;
-  profileError: string | null;
-  identityAvailability: IdentityAvailability;
-  resolvedAuthSubjectId: string | null;
-  accountLifecycleStatus: AccountLifecycleStatus | null;
-  refreshProfile: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import type { ReactNode } from 'react';
 
 export const AuthProvider: React.FC<{
   children: ReactNode;
@@ -26,12 +10,4 @@ export const AuthProvider: React.FC<{
   const authLifecycle = useAuthLifecycle(readLocalGuestId);
 
   return <AuthContext.Provider value={authLifecycle}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

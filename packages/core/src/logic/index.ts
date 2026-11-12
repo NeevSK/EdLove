@@ -151,7 +151,7 @@ export * from '@repo/core/store/slices/ui.slice';
 export * from '@repo/core/logic/utils';
 export * from '@repo/core/logic/workspace/index';
 export { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
-export { useAuth } from '@repo/core/providers/AuthProvider';
+export { useAuth } from '@repo/core/hooks/useAuth';
 export {
   CapabilityHydrationProvider,
   useCapabilityHydration,

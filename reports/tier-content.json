@@ -14606,7 +14606,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -26973,6 +26973,172 @@
    ]
   },
   {
+   "file": "packages/core/src/effect/bindings/auth.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 21,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "authLifecycle"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/accounts/authenticatedAccountCapture.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/database.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/realtime/supabase.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/supabaseIdentity.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/monitoring/index.ts",
+     "typeOnly": false,
+     "toShape": "barrel",
+     "toTier": "T3"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/deviceRecords.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 20,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 2,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "createTenantStorage",
+    "pendingGate"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/pendingGateAction.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/lib/tenantStorage.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/interfaces/storage.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/deviceSecurity.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 6,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "deviceSecurity"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/supabaseDeviceSecurity.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/ports/deviceSecurity.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/effect/bindings/experience.ts",
    "package": "packages/core",
    "folderTier": "C",
@@ -27013,6 +27179,51 @@
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/feedback.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 9,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "feedback"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/failureFeedback.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/lib/feedback.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
     }
    ],
    "outside": []
@@ -27108,11 +27319,146 @@
    "outside": []
   },
   {
+   "file": "packages/core/src/effect/bindings/nativeStorage.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 5,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "cachedDeviceStorage"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/native/storage.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/network.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 12,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "network"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/subscribeToNetwork.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/interfaces/network.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/platform/drivers/networkMonitor.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/notifications.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 6,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "notifications"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/supabaseNotification.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/ports/notification.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/effect/bindings/state.ts",
    "package": "packages/core",
    "folderTier": "C",
    "shape": "contract",
-   "lines": 68,
+   "lines": 71,
    "counts": {
     "types": 0,
     "consts": 5,
@@ -27137,7 +27483,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 21,
+    "prod": 30,
     "tests": 0
    },
    "imports": [
@@ -28683,7 +29029,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 36,
+   "lines": 34,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -28691,7 +29037,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 32,
+    "functionLines": 30,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -28773,14 +29119,69 @@
    ]
   },
   {
+   "file": "packages/core/src/hooks/useAuth.ts",
+   "package": "packages/core",
+   "folderTier": "T5",
+   "shape": "runtime",
+   "lines": 29,
+   "counts": {
+    "types": 1,
+    "consts": 0,
+    "constructs": 1,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 7,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "AuthContextType",
+    "AuthContext",
+    "useAuth"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 6,
+    "tests": 3
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/logic/auth/identityState.ts",
+     "typeOnly": true,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/ports/auth.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
+     "to": "packages/core/src/types/authSession.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": [
+    "react"
+   ]
+  },
+  {
    "file": "packages/core/src/hooks/useAuthLifecycle.ts",
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 460,
+   "lines": 464,
    "counts": {
     "types": 0,
-    "consts": 2,
+    "consts": 4,
     "constructs": 0,
     "ambient": 2,
     "schemas": 0,
@@ -28803,34 +29204,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/authenticatedAccountCapture.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/database.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/auth.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/lib/accountScope.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/experienceState.store.ts",
@@ -28857,18 +29234,6 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/adapters/supabaseIdentity.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/realtime/supabase.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/logic/ports/auth.port.ts",
      "typeOnly": true,
      "toShape": "contract",
@@ -28879,12 +29244,6 @@
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T0"
-    },
-    {
-     "to": "packages/core/src/monitoring/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T3"
     },
     {
      "to": "packages/core/src/store/scopeSession.ts",
@@ -28909,6 +29268,18 @@
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/auth.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/state.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/accounts/authenticatedAccountCapture.adapter.ts",
@@ -28993,10 +29364,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.adapter.ts",
+     "to": "packages/core/src/effect/bindings/state.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
     }
    ],
    "outside": [
@@ -29008,10 +29379,10 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "contract+logic",
-   "lines": 156,
+   "lines": 159,
    "counts": {
     "types": 2,
-    "consts": 1,
+    "consts": 2,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
@@ -29035,9 +29406,15 @@
    "imports": [
     {
      "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
-     "typeOnly": false,
+     "typeOnly": true,
      "toShape": "runtime",
      "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/auth.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
     }
    ],
    "outside": [
@@ -29088,10 +29465,10 @@
      "toTier": "T4"
     },
     {
-     "to": "packages/core/src/adapters/supabaseDeviceSecurity.adapter.ts",
+     "to": "packages/core/src/effect/bindings/deviceSecurity.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/store/useAuthStore.ts",
@@ -29353,10 +29730,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.adapter.ts",
+     "to": "packages/core/src/effect/bindings/state.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
     }
    ],
    "outside": [
@@ -29368,7 +29745,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 44,
+   "lines": 52,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -29376,7 +29753,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 31,
+    "functionLines": 39,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -29619,10 +29996,10 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
+     "to": "packages/core/src/effect/bindings/state.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/store/useAuthStore.ts",
@@ -29912,7 +30289,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "contract+logic",
-   "lines": 49,
+   "lines": 45,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -29939,14 +30316,14 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/pendingGateAction.adapter.ts",
-     "typeOnly": true,
+     "to": "packages/core/src/effect/bindings/deviceRecords.ts",
+     "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/lib/pendingGateAction.adapter.ts",
-     "typeOnly": false,
+     "typeOnly": true,
      "toShape": "contract",
      "toTier": "T3"
     }
@@ -29960,7 +30337,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 265,
+   "lines": 259,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -29968,7 +30345,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 4,
-    "functionLines": 255,
+    "functionLines": 249,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -29986,16 +30363,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.adapter.ts",
+     "to": "packages/core/src/effect/bindings/deviceRecords.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
     },
     {
-     "to": "packages/core/src/lib/tenantStorage.adapter.ts",
+     "to": "packages/core/src/effect/bindings/state.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/logic/interfaces/storage.port.ts",
@@ -30057,10 +30434,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.adapter.ts",
+     "to": "packages/core/src/effect/bindings/state.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
     }
    ],
    "outside": [
@@ -30073,7 +30450,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 315,
+   "lines": 314,
    "counts": {
     "types": 4,
     "consts": 0,
@@ -30113,18 +30490,6 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/failureFeedback.adapter.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/lib/feedback.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/lib/sync/delta.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
@@ -30149,10 +30514,16 @@
      "toTier": "T4"
     },
     {
-     "to": "packages/core/src/platform/drivers/networkMonitor.ts",
+     "to": "packages/core/src/effect/bindings/feedback.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/effect/bindings/network.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/store/useAuthStore.ts",
@@ -30204,16 +30575,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/native/storage.ts",
+     "to": "packages/core/src/effect/bindings/nativeStorage.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
-     "to": "packages/core/src/providers/AuthProvider.tsx",
+     "to": "packages/core/src/hooks/useAuth.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T6"
+     "toTier": "T5"
     },
     {
      "to": "packages/core/src/store/useAuthStore.ts",
@@ -30231,7 +30602,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "contract+logic",
-   "lines": 64,
+   "lines": 59,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -30239,7 +30610,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 52,
+    "functionLines": 47,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -30301,10 +30672,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.adapter.ts",
+     "to": "packages/core/src/effect/bindings/state.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
     }
    ],
    "outside": [
@@ -30316,7 +30687,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "contract+logic",
-   "lines": 103,
+   "lines": 100,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -30345,10 +30716,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/supabaseDeviceSecurity.adapter.ts",
+     "to": "packages/core/src/effect/bindings/deviceSecurity.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/lib/clientStateFoundation.ts",
@@ -30391,7 +30762,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 349,
+   "lines": 350,
    "counts": {
     "types": 3,
     "consts": 3,
@@ -30399,7 +30770,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 9,
-    "functionLines": 309,
+    "functionLines": 310,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 1,
@@ -30447,10 +30818,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/adapters/supabaseNotification.adapter.ts",
+     "to": "packages/core/src/effect/bindings/notifications.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/store/scopeSession.ts",
@@ -30549,10 +30920,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.adapter.ts",
+     "to": "packages/core/src/effect/bindings/state.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T3"
+     "toTier": "C"
     }
    ],
    "outside": [
@@ -30710,7 +31081,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "barrel",
-   "lines": 417,
+   "lines": 418,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -30723,7 +31094,7 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 132,
+    "reexports": 133,
     "jsx": false
    },
    "exports": [],
@@ -30990,6 +31361,12 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T6"
+    },
+    {
+     "to": "packages/core/src/hooks/useAuth.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T5"
     },
     {
      "to": "packages/core/src/providers/CapabilityHydrationProvider.tsx",
@@ -31556,7 +31933,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 14,
+    "prod": 13,
     "tests": 9
    },
    "imports": [],
@@ -33681,7 +34058,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 69,
+    "prod": 63,
     "tests": 28
    },
    "imports": [
@@ -33720,7 +34097,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 36,
+    "prod": 35,
     "tests": 20
    },
    "imports": [
@@ -33961,7 +34338,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 11,
+    "prod": 10,
     "tests": 9
    },
    "imports": [],
@@ -34046,10 +34423,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
+     "to": "packages/core/src/effect/bindings/state.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
@@ -37159,10 +37536,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/providers/AuthProvider.tsx",
+     "to": "packages/core/src/hooks/useAuth.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T6"
+     "toTier": "T5"
     },
     {
      "to": "packages/core/src/providers/CapabilityHydrationProvider.tsx",
@@ -37367,7 +37744,7 @@
     }
    ],
    "importers": {
-    "prod": 7,
+    "prod": 8,
     "tests": 4
    },
    "imports": [],
@@ -37399,7 +37776,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 9,
+    "prod": 10,
     "tests": 1
    },
    "imports": [],
@@ -40070,7 +40447,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -40630,7 +41007,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -47030,7 +47407,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 33,
+   "lines": 32,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -47057,22 +47434,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/subscribeToNetwork.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/logic/interfaces/network.port.ts",
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T1"
     },
     {
-     "to": "packages/core/src/platform/drivers/networkMonitor.ts",
+     "to": "packages/core/src/effect/bindings/network.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract",
+     "toTier": "C"
     }
    ],
    "outside": [
@@ -47248,7 +47619,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 13,
+    "prod": 12,
     "tests": 12
    },
    "imports": [
@@ -47435,15 +47806,15 @@
    "package": "packages/core",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 38,
+   "lines": 14,
    "counts": {
-    "types": 1,
+    "types": 0,
     "consts": 0,
-    "constructs": 1,
+    "constructs": 0,
     "ambient": 0,
     "schemas": 0,
-    "functions": 2,
-    "functionLines": 12,
+    "functions": 1,
+    "functionLines": 5,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -47452,43 +47823,28 @@
     "jsx": true
    },
    "exports": [
-    "AuthProvider",
-    "useAuth"
+    "AuthProvider"
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
-    "tests": 3
+    "prod": 3,
+    "tests": 1
    },
    "imports": [
     {
-     "to": "packages/core/src/hooks/useAuthLifecycle.ts",
+     "to": "packages/core/src/hooks/useAuth.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/logic/auth/identityState.ts",
-     "typeOnly": true,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/logic/ports/auth.port.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T1"
-    },
-    {
-     "to": "packages/core/src/types/authSession.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
+     "to": "packages/core/src/hooks/useAuthLifecycle.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T5"
     }
    ],
-   "outside": [
-    "react"
-   ]
+   "outside": []
   },
   {
    "file": "packages/core/src/providers/CapabilityHydrationProvider.tsx",
@@ -47528,10 +47884,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/providers/AuthProvider.tsx",
+     "to": "packages/core/src/hooks/useAuth.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T6"
+     "toTier": "T5"
     },
     {
      "to": "packages/core/src/hooks/useEntitlementQuery.ts",
@@ -47612,7 +47968,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "barrel",
-   "lines": 6,
+   "lines": 7,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -47625,7 +47981,7 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 2,
+    "reexports": 3,
     "jsx": false
    },
    "exports": [],
@@ -47640,6 +47996,12 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T6"
+    },
+    {
+     "to": "packages/core/src/hooks/useAuth.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T5"
     },
     {
      "to": "packages/core/src/providers/CapabilityHydrationProvider.tsx",

@@ -5,7 +5,7 @@ import {
   NOTIFICATION_LIST_LIMIT,
   notificationQueryKeys,
 } from '@repo/core/lib/notificationQueryKeys';
-import { supabaseNotificationAdapter as notification } from '@repo/core/adapters/supabaseNotification.adapter';
+import { notifications as notification } from '@repo/core/effect/bindings/notifications';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { AppNotification, NotificationStatus } from '@repo/core/types';
@@ -230,7 +230,8 @@ export function useScopedNotifications(
 
   const listQuery = useQuery({
     queryKey: listKey ?? disabledListKey,
-    queryFn: () => notification.getNotifications(requestedPrincipalId as string, NOTIFICATION_LIST_LIMIT),
+    queryFn: () =>
+      notification.getNotifications(requestedPrincipalId as string, NOTIFICATION_LIST_LIMIT),
     enabled: scope !== null,
     staleTime: 60_000,
   });

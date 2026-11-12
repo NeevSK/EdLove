@@ -23,6 +23,9 @@ import type { StateStorage } from 'zustand/middleware';
  * What state (Tier 4) needs synchronously from the device, bound once to its adapters: where
  * persisted state lives, which account or guest owns it, and the in-process event bus.
  *
+ * Everything here is light and platform-neutral: every store imports it, on web and native. A
+ * binding that pulls in a platform or a heavy chain gets its own file next to this one.
+ *
  * Kept apart from ../bindings.ts so a store can import it without loading the feature-rollout SDK,
  * and so no adapter that a store's persistence touches can import its way back here.
  */

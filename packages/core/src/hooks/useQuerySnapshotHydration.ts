@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/lib/storage.adapter';
+import { deviceStorage as storage } from '@repo/core/effect/bindings/state';
 import { type QueryKey, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 

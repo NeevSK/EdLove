@@ -1,5 +1,5 @@
-import { storage } from '@repo/core/native/storage';
-import { useAuth } from '@repo/core/providers/AuthProvider';
+import { cachedDeviceStorage as storage } from '@repo/core/effect/bindings/nativeStorage';
+import { useAuth } from '@repo/core/hooks/useAuth';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCallback, useState } from 'react';
 

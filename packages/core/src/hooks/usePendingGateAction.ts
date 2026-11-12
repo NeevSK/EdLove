@@ -1,9 +1,5 @@
+import { pendingGate } from '@repo/core/effect/bindings/deviceRecords';
 import type { PendingGateAction } from '@repo/core/lib/pendingGateAction.adapter';
-import {
-  clearPendingGateAction,
-  getPendingGateAction,
-  setPendingGateAction,
-} from '@repo/core/lib/pendingGateAction.adapter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface UsePendingGateActionResult {
@@ -20,18 +16,18 @@ export function usePendingGateAction(): UsePendingGateActionResult {
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
-    const next = await getPendingGateAction();
+    const next = await pendingGate.get();
     setActionState(next);
     setIsLoading(false);
   }, []);
 
   const set = useCallback(async (next: PendingGateAction) => {
-    await setPendingGateAction(next);
+    await pendingGate.set(next);
     setActionState(next);
   }, []);
 
   const clear = useCallback(async () => {
-    await clearPendingGateAction();
+    await pendingGate.clear();
     setActionState(null);
   }, []);
 

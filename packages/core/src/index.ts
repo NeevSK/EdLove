@@ -190,7 +190,8 @@ export {
 export { useResponsiveRenderer } from '@repo/core/platform/useResponsiveRenderer';
 export { AssetsProvider } from '@repo/core/providers/AssetsProvider';
 // 3. Auth & Context
-export { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
+export { AuthProvider } from '@repo/core/providers/AuthProvider';
+export { useAuth } from '@repo/core/hooks/useAuth';
 export {
   CapabilityHydrationProvider,
   useCapabilityHydration,

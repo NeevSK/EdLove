@@ -1,8 +1,5 @@
-import { supabaseDeviceSecurityAdapter as deviceSecurity } from '@repo/core/adapters/supabaseDeviceSecurity.adapter';
-import {
-  abortableQueryRead,
-  type QueryScope,
-} from '@repo/core/lib/clientStateFoundation';
+import { deviceSecurity } from '@repo/core/effect/bindings/deviceSecurity';
+import { abortableQueryRead, type QueryScope } from '@repo/core/lib/clientStateFoundation';
 import { deviceSecurityQueryKeys } from '@repo/core/lib/deviceSecurityQueryKeys';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import type { DeviceSecuritySummary } from '@repo/core/logic/ports/deviceSecurity.port';

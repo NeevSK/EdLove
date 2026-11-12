@@ -1,5 +1,5 @@
-import { storage } from '@repo/core/lib/storage.adapter';
-import { TenantPartitionedStorageAdapter } from '@repo/core/lib/tenantStorage.adapter';
+import { createTenantStorage } from '@repo/core/effect/bindings/deviceRecords';
+import { deviceStorage as storage } from '@repo/core/effect/bindings/state';
 import type { IStorage } from '@repo/core/logic/interfaces/storage.port';
 import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import {
@@ -12,10 +12,7 @@ import {
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 import { useCallback, useMemo } from 'react';
 
-function bondForPerspective(
-  perspective: SanctuaryPerspective,
-  bonds: readonly Bond[],
-) {
+function bondForPerspective(perspective: SanctuaryPerspective, bonds: readonly Bond[]) {
   if (perspective.kind !== 'institutional') return undefined;
   return bonds.find(
     (bond) =>
@@ -191,7 +188,7 @@ export function usePerspectiveSwitch() {
     (perspectiveId?: string): IStorage => {
       const targetId = perspectiveId || activePerspective.id;
       const targetUserId = user?.id || 'anonymous';
-      return new TenantPartitionedStorageAdapter(storage, `perspective:${targetId}`, targetUserId);
+      return createTenantStorage(storage, `perspective:${targetId}`, targetUserId);
     },
     [activePerspective.id, user?.id],
   );
@@ -205,11 +202,7 @@ export function usePerspectiveSwitch() {
         getGuardianBonds?: () => Promise<SanctuaryPerspective[]>;
       },
     ) => {
-      if (
-        !userId ||
-        userId !== user?.id ||
-        useAuthStore.getState().user?.id !== userId
-      ) {
+      if (!userId || userId !== user?.id || useAuthStore.getState().user?.id !== userId) {
         throw new Error('Perspective metadata cannot be hydrated for a different account.');
       }
       if (useScopeSessionStore.getState().snapshot?.principalId !== userId) return;
@@ -228,7 +221,8 @@ export function usePerspectiveSwitch() {
       const retainedAvailability = availablePerspectives.filter(
         (perspective) =>
           perspective.kind === 'personal' ||
-          (perspective.kind === 'institutional' && bondForPerspective(perspective, availableBonds)) ||
+          (perspective.kind === 'institutional' &&
+            bondForPerspective(perspective, availableBonds)) ||
           perspective.kind === 'commercial' ||
           perspective.kind === 'guardian',
       );

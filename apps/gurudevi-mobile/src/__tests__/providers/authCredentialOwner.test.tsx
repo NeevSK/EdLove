@@ -89,7 +89,8 @@ vi.mock('react-native', () => ({
 }));
 
 import { useSanctuaryVisitor } from '@repo/core/hooks/useSanctuaryVisitor';
-import { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
+import { AuthProvider } from '@repo/core/providers/AuthProvider';
+import { useAuth } from '@repo/core/hooks/useAuth';
 
 function credential(id = 'credential-a', token = 'access-a'): AuthSession {
   return { user: { id }, access_token: token, refresh_token: 'refresh-a' };

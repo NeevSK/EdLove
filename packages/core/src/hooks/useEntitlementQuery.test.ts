@@ -90,7 +90,8 @@ describe('qualified entitlement query', () => {
 
   it.each([
     ['expired', new Date(Date.now() - ENTITLEMENT_SNAPSHOT_MAX_AGE_MS - 1).toISOString()],
-    ['future dated', new Date(Date.now() + 1_000).toISOString()],
+    // An hour ahead, so a slow module load can't turn it into a past timestamp before the case runs.
+    ['future dated', new Date(Date.now() + 60 * 60 * 1000).toISOString()],
   ])('rejects a %s persisted timestamp', async (_label, timestamp) => {
     cache(identity, entitlement(timestamp));
     fixture.getEntitlements.mockRejectedValue(new Error('offline'));

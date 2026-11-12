@@ -8,9 +8,7 @@ import type { AnyActorRef, SnapshotFrom } from 'xstate';
  * @param actor - Any running XState actor reference (v6 compatible)
  * @returns The current snapshot of the actor
  */
-export function useActorSnapshot<TActor extends AnyActorRef>(
-  actor: TActor,
-): SnapshotFrom<TActor> {
+export function useActorSnapshot<TActor extends AnyActorRef>(actor: TActor): SnapshotFrom<TActor> {
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
       const sub = actor.subscribe({

@@ -103,7 +103,8 @@ function parse(file) {
         .map((s) => s.trim())
         .filter(Boolean)
         .every((s) => s.startsWith('type '));
-    imports.push({ kind: m[1], typeOnly: Boolean(m[2]) || inline, spec: m[4] });
+    const names = [...clause.matchAll(/(?:^|[{,\s])(?:type\s+)?(?:\w+\s+as\s+)?(\w+)\s*(?=[,}]|$)/g)].map((n) => n[1]);
+    imports.push({ kind: m[1], typeOnly: Boolean(m[2]) || inline, spec: m[4], names });
   }
   const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   const statements = code
@@ -187,6 +188,13 @@ for (const file of files) {
     if (ALLOWED[tier].includes(to)) continue;
     // A store is assembled from its own slices; other stores are separate state.
     if (tier === 'T4' && to === 'T4' && target.includes('/store/slices/')) continue;
+    // A store may read another store's current value (getState, an action); subscribing to it
+    // ties their lifetimes together, so that stays a finding (owner decision, 2026-11-12).
+    if (tier === 'T4' && to === 'T4') {
+      const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
+      const subscribes = imp.names.some((n) => new RegExp(`\\b${n}\\.subscribe\\(`).test(source));
+      if (!subscribes) continue;
+    }
     const upward = TIERS[to].rank > TIERS[tier].rank;
     add(upward ? 'upward-import' : 'tier-import', file, {
       to: target,

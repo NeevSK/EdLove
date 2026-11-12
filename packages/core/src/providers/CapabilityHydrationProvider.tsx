@@ -1,5 +1,5 @@
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
-import { useAuth } from '@repo/core/providers/AuthProvider';
+import { useAuth } from '@repo/core/hooks/useAuth';
 import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';

@@ -19,15 +19,12 @@ export function getScaffoldDismissal(
   scaffoldKey: string,
   maxCompletions: number = 3,
 ): UseScaffoldDismissalResult {
-  const completionCount =
-    useUIStore.getState().scaffoldCompletions?.[scaffoldKey] ?? 0;
+  const completionCount = useUIStore.getState().scaffoldCompletions?.[scaffoldKey] ?? 0;
   return {
     isDismissed: completionCount >= maxCompletions,
     completionCount,
-    completeScaffold: () =>
-      useUIStore.getState().incrementScaffoldCompletion?.(scaffoldKey),
-    resetScaffold: () =>
-      useUIStore.getState().resetScaffoldCompletions?.(),
+    completeScaffold: () => useUIStore.getState().incrementScaffoldCompletion?.(scaffoldKey),
+    resetScaffold: () => useUIStore.getState().resetScaffoldCompletions?.(),
   };
 }
 
@@ -40,9 +37,7 @@ export function useScaffoldDismissal(
   scaffoldKey: string,
   maxCompletions: number = 3,
 ): UseScaffoldDismissalResult {
-  const completionCount = useUIStore(
-    (state) => state.scaffoldCompletions?.[scaffoldKey] ?? 0,
-  );
+  const completionCount = useUIStore((state) => state.scaffoldCompletions?.[scaffoldKey] ?? 0);
   const increment = useUIStore((state) => state.incrementScaffoldCompletion);
   const reset = useUIStore((state) => state.resetScaffoldCompletions);
 

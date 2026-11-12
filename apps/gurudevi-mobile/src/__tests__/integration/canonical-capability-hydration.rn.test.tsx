@@ -7,7 +7,7 @@ const mockFixture = vi.hoisted(() => ({
   account: '01234567-89ab-8101-8000-010203040506',
   entitlementQuery: vi.fn(() => ({ error: null, isLoading: false, refetch: vi.fn() })),
 }));
-vi.mock('@repo/core/providers/AuthProvider', () => ({
+vi.mock('@repo/core/hooks/useAuth', () => ({
   useAuth: () => ({
     loading: false,
     identityAvailability: 'active',

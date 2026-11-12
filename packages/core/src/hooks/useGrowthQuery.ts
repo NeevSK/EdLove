@@ -21,8 +21,16 @@ export function useGrowthQuery() {
   const readPolicy = useTemporalStore((state) => state.readPolicy);
   const remoteEnabled = enabled && isOnline && readPolicy === 'live';
   const key = useMemo(() => growthQueryKey(principalId), [principalId]);
-  const decode = useCallback((raw: string) => decodeGrowthSnapshot(raw, principalId), [principalId]);
-  const isHydrated = useQuerySnapshotHydration(key, growthSnapshotKey(principalId), decode, enabled);
+  const decode = useCallback(
+    (raw: string) => decodeGrowthSnapshot(raw, principalId),
+    [principalId],
+  );
+  const isHydrated = useQuerySnapshotHydration(
+    key,
+    growthSnapshotKey(principalId),
+    decode,
+    enabled,
+  );
   const query = useQuery({
     queryKey: key,
     enabled: remoteEnabled,

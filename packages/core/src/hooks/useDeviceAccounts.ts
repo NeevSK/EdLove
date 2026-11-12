@@ -1,4 +1,7 @@
-import { type DeviceAccountRecord, deviceAccounts } from '@repo/core/accounts/deviceAccounts.adapter';
+import type { DeviceAccountRecord } from '@repo/core/accounts/deviceAccounts.adapter';
+import { authLifecycle } from '@repo/core/effect/bindings/auth';
+
+const { deviceAccounts } = authLifecycle;
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 export type { DeviceAccountRecord };
