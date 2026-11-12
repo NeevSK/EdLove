@@ -415,6 +415,20 @@ The 90 contract names defined more than once, grouped by the files that share th
 | InventoryCategory (1) | 0 | 1 | `packages/core/src/types/InstitutionalERP.ts` (2026-10-17 → 2026-10-17)<br>`packages/core/src/types/Inventory.ts` (2026-02-15 → 2026-04-29) |
 | KnowledgeTopology (1) | 0 | 1 | `packages/core/src/types/topology.ts` (2026-03-25 → 2026-08-14)<br>`packages/library/src/types/Library.ts` (2026-02-19 → 2026-11-11) |
 
+## Resolution (11–12 Nov)
+
+Owner decision: **@repo/core owns every contract**; a package keeps no copy (now in AGENTS.md beside the rule that a move is not a deletion). Of the 90 duplicated contract names, 88 are resolved; the last two are edlove-web's `User`/`PaginatedResponse`, used only by its unwired API client (above).
+
+How each kind was settled:
+
+- **Package copies** (community, analytics, admin analytics and guardian, accounting, payments, library, self, graphics, profile): moved into core with `scripts/adopt-contracts.mjs`; importers re-pointed; copies removed. Where admin's version was the full one and core's a stub (analytics), admin's became core's.
+- **Database row vs domain shape with one name**: rows are `*Row` (ClassroomRow, UserRow, LedgerEntryRow, PaymentIntentRow, LibraryResourceRow, MoodLogRow, ...); domain names stay free.
+- **Hand-written twin of a validated schema**: the schema's type is the only one (Bond, Perspective, SchoolJoinRequest, StudentAcademicRecord, the workspace journey types, topology). The drift this exposed was fixed in the schema: three capacities missing from one list, GROUP bonds, bond citizenship, `activeBond` always present.
+- **Same name, different idea**: renamed for what each is — SyncFailureClass, KeyValueStorage, SnapshotSubject, ClassroomRef, EditorialJournalEntry; web read models are `*View`.
+- **Copies with no consumer**: removed (library category lists, mobile validators, an unused community port, stale ZenStack output at `packages/schema/` root, analytics' committed build output).
+
+Module copies (GPACalculator, CommunityPresence, posthog/sentry, QR components, workbench promotions) are the next pass, by the same rule.
+
 ## What happens next
 
 1. Neev reviews these tables. Nothing is retired without a yes per group.
