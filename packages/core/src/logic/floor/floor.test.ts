@@ -5,10 +5,12 @@ import {
   type FloorFit,
   type FloorInput,
   floorConfigWith,
+  floorLayoutId,
   layoutFloor,
   lintFloor,
   orderPieces,
   type PieceInput,
+  piecesFromLayout,
   printFloor,
   screenBudget,
   shareSpace,
@@ -222,6 +224,66 @@ describe('lintFloor', () => {
     const rules = lintFloor(layoutFloor({ ...input, pieces }), phone).map((f) => f.rule);
     expect(rules).toEqual(
       expect.arrayContaining(['target-size', 'task-hidden', 'tooltip-words', 'one-lit']),
+    );
+  });
+});
+
+describe('piecesFromLayout', () => {
+  const surfaces = [
+    {
+      id: 'roll',
+      label: 'Roll call',
+      group: 'daily',
+      defaultArea: 'today' as const,
+      presentation: 'available' as const,
+      fit: card,
+      task: true,
+      lit: true,
+    },
+    {
+      id: 'reports',
+      label: 'Reports',
+      group: 'daily',
+      defaultArea: 'work' as const,
+      presentation: 'locked' as const,
+      fit: card,
+      task: true,
+    },
+    {
+      id: 'secret',
+      label: 'Secret',
+      group: 'daily',
+      defaultArea: 'work' as const,
+      presentation: 'hidden' as const,
+      fit: card,
+    },
+    {
+      id: 'notes',
+      label: 'Notes',
+      group: 'daily',
+      defaultArea: 'work' as const,
+      presentation: 'available' as const,
+      fit: card,
+    },
+  ];
+  it("draws only what SanctuaryFeature allows and the person did not hide, in the person's order and areas", () => {
+    const { pieces, areaOf } = piecesFromLayout(surfaces, {
+      order: ['notes', 'roll'],
+      hidden: [],
+      pinned: ['notes'],
+      zoneBySurface: { notes: 'today' },
+    });
+    expect(pieces.map((p) => p.id)).toEqual(['roll', 'reports', 'notes']);
+    expect(pieces.find((p) => p.id === 'notes')).toMatchObject({ pinned: true, savedIndex: 0 });
+    expect(pieces.find((p) => p.id === 'reports')).toMatchObject({
+      task: false,
+      roleImportance: 0.5,
+    });
+    expect(areaOf.notes).toBe('today');
+  });
+  it('keys a saved layout per room and perspective', () => {
+    expect(floorLayoutId('workspace', 'bond-royal')).not.toBe(
+      floorLayoutId('workspace', 'bond-visakha'),
     );
   });
 });
