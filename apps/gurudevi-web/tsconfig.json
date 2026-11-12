@@ -26,6 +26,9 @@
     "components/**/*.tsx",
     "tests/**/*.ts",
     "tests/**/*.tsx",
+    "spa/**/*.ts",
+    "spa/**/*.tsx",
+    "vite.config.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules", ".next"]

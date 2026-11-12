@@ -9,38 +9,244 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './../routes/__root'
+import { Route as NotificationsRouteImport } from './../routes/notifications'
 import { Route as SelfRouteImport } from './../routes/self'
+import { Route as SettingsRouteImport } from './../routes/settings'
+import { Route as CommunityAnnouncementsRouteImport } from './../routes/community/announcements'
+import { Route as CommunityForestRouteImport } from './../routes/community/forest'
+import { Route as LibraryIndexRouteImport } from './../routes/library/index'
+import { Route as LibraryContributeRouteImport } from './../routes/library/contribute'
+import { Route as LibraryCuratorRouteImport } from './../routes/library/curator'
+import { Route as LibraryMapRouteImport } from './../routes/library/map'
+import { Route as LibraryToolsRouteImport } from './../routes/library/tools'
+import { Route as ProfileIndexRouteImport } from './../routes/profile/index'
+import { Route as WorkspaceIndexRouteImport } from './../routes/workspace/index'
+import { Route as CommunityChatGroupIdRouteImport } from './../routes/community/chat/$groupId'
+import { Route as LibraryCollectionsIdRouteImport } from './../routes/library/collections/$id'
+import { Route as LibraryReaderBookIdRouteImport } from './../routes/library/reader/$bookId'
+import { Route as LibraryVideoVideoIdRouteImport } from './../routes/library/video/$videoId'
 
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SelfRoute = SelfRouteImport.update({
   id: '/self',
   path: '/self',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityAnnouncementsRoute = CommunityAnnouncementsRouteImport.update({
+  id: '/community/announcements',
+  path: '/community/announcements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityForestRoute = CommunityForestRouteImport.update({
+  id: '/community/forest',
+  path: '/community/forest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryIndexRoute = LibraryIndexRouteImport.update({
+  id: '/library/',
+  path: '/library/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryContributeRoute = LibraryContributeRouteImport.update({
+  id: '/library/contribute',
+  path: '/library/contribute',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryCuratorRoute = LibraryCuratorRouteImport.update({
+  id: '/library/curator',
+  path: '/library/curator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryMapRoute = LibraryMapRouteImport.update({
+  id: '/library/map',
+  path: '/library/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryToolsRoute = LibraryToolsRouteImport.update({
+  id: '/library/tools',
+  path: '/library/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
+  id: '/workspace/',
+  path: '/workspace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityChatGroupIdRoute = CommunityChatGroupIdRouteImport.update({
+  id: '/community/chat/$groupId',
+  path: '/community/chat/$groupId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryCollectionsIdRoute = LibraryCollectionsIdRouteImport.update({
+  id: '/library/collections/$id',
+  path: '/library/collections/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryReaderBookIdRoute = LibraryReaderBookIdRouteImport.update({
+  id: '/library/reader/$bookId',
+  path: '/library/reader/$bookId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryVideoVideoIdRoute = LibraryVideoVideoIdRouteImport.update({
+  id: '/library/video/$videoId',
+  path: '/library/video/$videoId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/notifications': typeof NotificationsRoute
   '/self': typeof SelfRoute
+  '/settings': typeof SettingsRoute
+  '/community/announcements': typeof CommunityAnnouncementsRoute
+  '/community/forest': typeof CommunityForestRoute
+  '/library/contribute': typeof LibraryContributeRoute
+  '/library/curator': typeof LibraryCuratorRoute
+  '/library/map': typeof LibraryMapRoute
+  '/library/tools': typeof LibraryToolsRoute
+  '/library/': typeof LibraryIndexRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/workspace/': typeof WorkspaceIndexRoute
+  '/community/chat/$groupId': typeof CommunityChatGroupIdRoute
+  '/library/collections/$id': typeof LibraryCollectionsIdRoute
+  '/library/reader/$bookId': typeof LibraryReaderBookIdRoute
+  '/library/video/$videoId': typeof LibraryVideoVideoIdRoute
 }
 export interface FileRoutesByTo {
+  '/notifications': typeof NotificationsRoute
   '/self': typeof SelfRoute
+  '/settings': typeof SettingsRoute
+  '/community/announcements': typeof CommunityAnnouncementsRoute
+  '/community/forest': typeof CommunityForestRoute
+  '/library/contribute': typeof LibraryContributeRoute
+  '/library/curator': typeof LibraryCuratorRoute
+  '/library/map': typeof LibraryMapRoute
+  '/library/tools': typeof LibraryToolsRoute
+  '/library': typeof LibraryIndexRoute
+  '/profile': typeof ProfileIndexRoute
+  '/workspace': typeof WorkspaceIndexRoute
+  '/community/chat/$groupId': typeof CommunityChatGroupIdRoute
+  '/library/collections/$id': typeof LibraryCollectionsIdRoute
+  '/library/reader/$bookId': typeof LibraryReaderBookIdRoute
+  '/library/video/$videoId': typeof LibraryVideoVideoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/notifications': typeof NotificationsRoute
   '/self': typeof SelfRoute
+  '/settings': typeof SettingsRoute
+  '/community/announcements': typeof CommunityAnnouncementsRoute
+  '/community/forest': typeof CommunityForestRoute
+  '/library/contribute': typeof LibraryContributeRoute
+  '/library/curator': typeof LibraryCuratorRoute
+  '/library/map': typeof LibraryMapRoute
+  '/library/tools': typeof LibraryToolsRoute
+  '/library/': typeof LibraryIndexRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/workspace/': typeof WorkspaceIndexRoute
+  '/community/chat/$groupId': typeof CommunityChatGroupIdRoute
+  '/library/collections/$id': typeof LibraryCollectionsIdRoute
+  '/library/reader/$bookId': typeof LibraryReaderBookIdRoute
+  '/library/video/$videoId': typeof LibraryVideoVideoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/self'
+  fullPaths:
+    | '/notifications'
+    | '/self'
+    | '/settings'
+    | '/community/announcements'
+    | '/community/forest'
+    | '/library/contribute'
+    | '/library/curator'
+    | '/library/map'
+    | '/library/tools'
+    | '/library/'
+    | '/profile/'
+    | '/workspace/'
+    | '/community/chat/$groupId'
+    | '/library/collections/$id'
+    | '/library/reader/$bookId'
+    | '/library/video/$videoId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/self'
-  id: '__root__' | '/self'
+  to:
+    | '/notifications'
+    | '/self'
+    | '/settings'
+    | '/community/announcements'
+    | '/community/forest'
+    | '/library/contribute'
+    | '/library/curator'
+    | '/library/map'
+    | '/library/tools'
+    | '/library'
+    | '/profile'
+    | '/workspace'
+    | '/community/chat/$groupId'
+    | '/library/collections/$id'
+    | '/library/reader/$bookId'
+    | '/library/video/$videoId'
+  id:
+    | '__root__'
+    | '/notifications'
+    | '/self'
+    | '/settings'
+    | '/community/announcements'
+    | '/community/forest'
+    | '/library/contribute'
+    | '/library/curator'
+    | '/library/map'
+    | '/library/tools'
+    | '/library/'
+    | '/profile/'
+    | '/workspace/'
+    | '/community/chat/$groupId'
+    | '/library/collections/$id'
+    | '/library/reader/$bookId'
+    | '/library/video/$videoId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  NotificationsRoute: typeof NotificationsRoute
   SelfRoute: typeof SelfRoute
+  SettingsRoute: typeof SettingsRoute
+  CommunityAnnouncementsRoute: typeof CommunityAnnouncementsRoute
+  CommunityForestRoute: typeof CommunityForestRoute
+  LibraryContributeRoute: typeof LibraryContributeRoute
+  LibraryCuratorRoute: typeof LibraryCuratorRoute
+  LibraryMapRoute: typeof LibraryMapRoute
+  LibraryToolsRoute: typeof LibraryToolsRoute
+  LibraryIndexRoute: typeof LibraryIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
+  WorkspaceIndexRoute: typeof WorkspaceIndexRoute
+  CommunityChatGroupIdRoute: typeof CommunityChatGroupIdRoute
+  LibraryCollectionsIdRoute: typeof LibraryCollectionsIdRoute
+  LibraryReaderBookIdRoute: typeof LibraryReaderBookIdRoute
+  LibraryVideoVideoIdRoute: typeof LibraryVideoVideoIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/self': {
       id: '/self'
       path: '/self'
@@ -48,11 +254,124 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SelfRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/announcements': {
+      id: '/community/announcements'
+      path: '/community/announcements'
+      fullPath: '/community/announcements'
+      preLoaderRoute: typeof CommunityAnnouncementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/forest': {
+      id: '/community/forest'
+      path: '/community/forest'
+      fullPath: '/community/forest'
+      preLoaderRoute: typeof CommunityForestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/': {
+      id: '/library/'
+      path: '/library'
+      fullPath: '/library/'
+      preLoaderRoute: typeof LibraryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/contribute': {
+      id: '/library/contribute'
+      path: '/library/contribute'
+      fullPath: '/library/contribute'
+      preLoaderRoute: typeof LibraryContributeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/curator': {
+      id: '/library/curator'
+      path: '/library/curator'
+      fullPath: '/library/curator'
+      preLoaderRoute: typeof LibraryCuratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/map': {
+      id: '/library/map'
+      path: '/library/map'
+      fullPath: '/library/map'
+      preLoaderRoute: typeof LibraryMapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/tools': {
+      id: '/library/tools'
+      path: '/library/tools'
+      fullPath: '/library/tools'
+      preLoaderRoute: typeof LibraryToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspace/': {
+      id: '/workspace/'
+      path: '/workspace'
+      fullPath: '/workspace/'
+      preLoaderRoute: typeof WorkspaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/chat/$groupId': {
+      id: '/community/chat/$groupId'
+      path: '/community/chat/$groupId'
+      fullPath: '/community/chat/$groupId'
+      preLoaderRoute: typeof CommunityChatGroupIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/collections/$id': {
+      id: '/library/collections/$id'
+      path: '/library/collections/$id'
+      fullPath: '/library/collections/$id'
+      preLoaderRoute: typeof LibraryCollectionsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/reader/$bookId': {
+      id: '/library/reader/$bookId'
+      path: '/library/reader/$bookId'
+      fullPath: '/library/reader/$bookId'
+      preLoaderRoute: typeof LibraryReaderBookIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/video/$videoId': {
+      id: '/library/video/$videoId'
+      path: '/library/video/$videoId'
+      fullPath: '/library/video/$videoId'
+      preLoaderRoute: typeof LibraryVideoVideoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  NotificationsRoute: NotificationsRoute,
   SelfRoute: SelfRoute,
+  SettingsRoute: SettingsRoute,
+  CommunityAnnouncementsRoute: CommunityAnnouncementsRoute,
+  CommunityForestRoute: CommunityForestRoute,
+  LibraryContributeRoute: LibraryContributeRoute,
+  LibraryCuratorRoute: LibraryCuratorRoute,
+  LibraryMapRoute: LibraryMapRoute,
+  LibraryToolsRoute: LibraryToolsRoute,
+  LibraryIndexRoute: LibraryIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
+  WorkspaceIndexRoute: WorkspaceIndexRoute,
+  CommunityChatGroupIdRoute: CommunityChatGroupIdRoute,
+  LibraryCollectionsIdRoute: LibraryCollectionsIdRoute,
+  LibraryReaderBookIdRoute: LibraryReaderBookIdRoute,
+  LibraryVideoVideoIdRoute: LibraryVideoVideoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

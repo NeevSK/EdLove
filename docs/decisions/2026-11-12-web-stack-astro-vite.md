@@ -114,7 +114,12 @@ by default. On a 2G or 3G connection the difference is seconds per page.
    `tooling/web-stack-ratchet.json`):
    - `nextImportFiles`: files in `app/` and `lib/` importing `next/*` (183 today).
    - `exploreBackendClients`: backend client code found in the Explore bundle. Target: none.
-5. **Each route moves as a journey,** with browser evidence (phone-size screenshot, no console
+5. **A codemod does the predictable part** (`node scripts/codemods/web-migrate.mjs`, dry run by
+   default; `--write --segment=explore` writes routes and never overwrites one). It sorts every page
+   (explore-ready, explore-review, client-wrap, server-data, astro-static, astro-island) and lifts each
+   page's `if (isExplore)` block into a route. First run, 12 Nov: 15 Explore routes generated; all 16
+   Explore routes open in a 390 px Chrome page with no console errors and no backend requests.
+6. **Each route moves as a journey,** with browser evidence (phone-size screenshot, no console
    errors, no backend requests on Explore) before the Next route retires.
 
 ### Order of work

@@ -1,5 +1,6 @@
 import {
   notFound as routerNotFound,
+  type RegisteredRouter,
   redirect as routerRedirect,
   useLocation,
   useParams as useRouterParams,
@@ -34,7 +35,8 @@ export function useSearchParams(): URLSearchParams {
 }
 
 export function useParams<T extends Record<string, string>>(): T {
-  return useRouterParams({ strict: false }) as T;
+  // Not tied to one route: the Next screens read params by name, so ask the router loosely.
+  return useRouterParams<RegisteredRouter, undefined, false>({ strict: false }) as T;
 }
 
 export function redirect(href: string): never {
