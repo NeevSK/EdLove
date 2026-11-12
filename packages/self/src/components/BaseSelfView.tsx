@@ -45,7 +45,10 @@ export function BaseSelfView({
 }: BaseSelfViewProps) {
   const router = useRouter();
 
-  const { viewMode, setViewMode, viewScale, setScale } = useTemporalStore();
+  const viewMode = useTemporalStore((s) => s.viewMode);
+  const setViewMode = useTemporalStore((s) => s.setViewMode);
+  const viewScale = useTemporalStore((s) => s.viewScale);
+  const setScale = useTemporalStore((s) => s.setScale);
   const isHistoryMode = viewMode === 'timeline';
   const { context } = usePermissions();
   const isAnonymous = context.isAnonymous;

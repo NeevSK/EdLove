@@ -52,6 +52,7 @@ specific, common failure.
 | C | **Wiring** (`effect/Layers.ts`, `effect/AppRuntime.ts`, `effect/bindings/*`) | Which adapter backs which port, decided once | Every caller choosing its own adapter; tests can't substitute | A DI container (Java/Angular style): heavy and magical. We use plain module exports and Effect layers |
 | 4 | **State** | Zustand stores, slices, XState machines, TanStack Query definitions | Server data copied into stores by hand; state holding unchecked data | Redux everywhere: more ceremony. Context everywhere: re-render storms |
 | 5 | **Hooks** | What screens call; they combine state and logic | Screens knowing about stores, queries and adapters | Fat components: fine for prototypes, painful at our size |
+| 5 | **Coordinators** (`*.coordinator.ts`) | Multi-step work across several stores and ports: guest activation, account switching, snapshot refresh, device-security intents | Orchestration smeared across hooks and `useEffect`s, or hidden inside adapters that then have to read stores | A "service layer" (Java). This is the archetypes doc's Flow / Coordinator ("use case" in Clean Architecture). Plain functions, no classes, no React |
 | 6 | **Screens and components** | JSX | UI importing the database | (none; this is just React) |
 
 **Is this a Java pattern?** No. The archetypes doc §1.5 bans the Java baggage (`*Manager`,
@@ -96,6 +97,18 @@ their own sake.
 - Tier numbers.
 - The exact violation counts. The direction matters; the number is just a progress meter.
 
+### Who may read the database schema
+
+Only `@repo/core` may import `@repo/schema` (the generated ZModel contracts) or `@repo/database`.
+Within core, only the contract files (`logic/schemas/*`, `types/*`) and adapters do. Everyone else
+imports core's contract types. An upstream schema change then lands in one place, core's
+schemas, instead of in every screen. This was already the rule for `@repo/database`
+(`no-db-leaks-to-apps` in `.dependency-cruiser.cjs`); it now covers `@repo/schema` too. Checked
+on 2026-11-12: no code outside core imports either package.
+
+Note that the shape of the data comes from **types**, not from stores. Stores hold runtime
+values; a store is not a channel for schema information.
+
 ## 5. Decisions so far, with their costs
 
 | Decision | Why | Cost and tradeoff |
@@ -113,6 +126,29 @@ their own sake.
 | XState 6 beta | The statechart runtime we already target (ADR) | A beta dependency |
 | Guests write local Self data with no sync | Product decision: try before signing up, nothing leaks to the server | Guest data stays on the device until conversion |
 | The ratchet blocks a merge when a metric rises | Stops backsliding | It is red today on two older metrics (files over 800 lines, root scripts), so everyone commits with `--no-verify`. **The gate currently protects nothing.** See §7 |
+
+### Tooling: what already exists, and what to use instead of hand-rolling
+
+- **dependency-cruiser is already configured** (`.dependency-cruiser.cjs`: package layers, no
+  database leaks, no stores outside core, no cross-domain imports, no cycles). It is the standard
+  tool for exactly this job. Two problems, though: it can't read TypeScript under the repo's
+  TypeScript 7 (it needs `typescript <7` until TS 7.1 publishes an API), so it misses sources; and
+  no hook or CI job runs it. Today it reports 131 errors (59 cycles, 27 store imports from apps,
+  24 core-to-package imports, 7 cross-domain imports). Our hand-written tier audit
+  (`scripts/audit-archetype-violations.mjs`) duplicates part of it. The sensible end state: a
+  TypeScript 6 compiler beside TS 7 for tools, dependency-cruiser running in CI for the package
+  level, and the tier audit kept only for what dependency-cruiser can't express (content rules,
+  parse checks).
+- **eslint-plugin-boundaries** is the other common choice. It doesn't fit here: the repo lints
+  with Biome and oxlint, and typescript-eslint doesn't support TypeScript 7 yet.
+- **Zustand 5.1** (installed): stores use `persist` with `version`/`migrate`/`partialize` well.
+  The gap was components reading the whole store (`const { a, b } = useTemporalStore()`), which
+  re-renders on every change. 41 such reads became atomic selectors (2026-11-12), as AGENTS.md
+  requires. `useShallow` is the tool for multi-field reads where a package depends on zustand.
+  `devtools`, `subscribeWithSelector` and `unstable_ssrSafe` (for Next) aren't used yet. They're
+  optional, and `ssrSafe` is still marked unstable.
+- **TanStack Query 5**: use `queryOptions()` for shared query definitions (`store/queries/*`), as
+  `api/hooks` already does; it keeps keys and data types linked.
 
 ## 6. Where I disagree (Claude), and why
 

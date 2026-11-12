@@ -17903,10 +17903,10 @@
      "toTier": "RETIRED"
     },
     {
-     "to": "packages/core/src/lib/sync/deviceSecurityIntents.ts",
+     "to": "packages/core/src/lib/sync/deviceSecurityIntents.coordinator.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
@@ -29453,10 +29453,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/deviceSecurityIntents.ts",
+     "to": "packages/core/src/lib/sync/deviceSecurityIntents.coordinator.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
@@ -31261,10 +31261,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/modes/demo.ts",
+     "to": "packages/core/src/logic/modes/demo.selectors.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/pairing/pairingCrypto.ts",
@@ -34202,9 +34202,9 @@
    ]
   },
   {
-   "file": "packages/core/src/lib/sync/deviceSecurityIntents.ts",
+   "file": "packages/core/src/lib/sync/deviceSecurityIntents.coordinator.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "F",
    "shape": "runtime",
    "lines": 75,
    "counts": {
@@ -34898,9 +34898,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/sync/replayPolicy.ts",
+   "file": "packages/core/src/lib/sync/replayPolicy.coordinator.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "F",
    "shape": "runtime",
    "lines": 67,
    "counts": {
@@ -34966,7 +34966,7 @@
    "package": "packages/core",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 517,
+   "lines": 520,
    "counts": {
     "types": 2,
     "consts": 0,
@@ -35041,10 +35041,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/replayPolicy.ts",
+     "to": "packages/core/src/lib/sync/replayPolicy.coordinator.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
@@ -38125,9 +38125,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/modes/demo.ts",
+   "file": "packages/core/src/logic/modes/demo.selectors.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T4",
    "shape": "contract+logic",
    "lines": 62,
    "counts": {
@@ -38633,9 +38633,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/modes/sandboxMode.ts",
+   "file": "packages/core/src/logic/modes/sandboxMode.selectors.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T4",
    "shape": "contract+logic",
    "lines": 53,
    "counts": {
@@ -48491,7 +48491,7 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "contract+logic",
-   "lines": 77,
+   "lines": 78,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -48551,7 +48551,9 @@
      "toTier": "T0"
     }
    ],
-   "outside": []
+   "outside": [
+    "@tanstack/react-query"
+   ]
   },
   {
    "file": "packages/core/src/store/queries/growthQuery.ts",
@@ -66336,7 +66338,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 523,
+   "lines": 526,
    "counts": {
     "types": 0,
     "consts": 1,
@@ -66344,7 +66346,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 494,
+    "functionLines": 497,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -66517,7 +66519,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 491,
+   "lines": 493,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -66525,7 +66527,7 @@
     "ambient": 5,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 470,
+    "functionLines": 472,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -67301,7 +67303,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 202,
+   "lines": 203,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -67309,7 +67311,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 140,
+    "functionLines": 141,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -68379,7 +68381,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "contract+logic",
-   "lines": 278,
+   "lines": 279,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -68387,7 +68389,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 218,
+    "functionLines": 219,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -68712,7 +68714,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 84,
+   "lines": 83,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -68720,7 +68722,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 66,
+    "functionLines": 65,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -71838,7 +71840,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "contract+logic",
-   "lines": 186,
+   "lines": 188,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -71846,7 +71848,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 156,
+    "functionLines": 158,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -82246,10 +82248,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/logic/modes/sandboxMode.ts",
+     "to": "packages/core/src/logic/modes/sandboxMode.selectors.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/ui/src/icons.ts",
@@ -83279,7 +83281,7 @@
    "package": "packages/ui",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 284,
+   "lines": 288,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -83287,7 +83289,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 268,
+    "functionLines": 272,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -83340,7 +83342,7 @@
    "package": "packages/ui",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 158,
+   "lines": 156,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -83348,7 +83350,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 138,
+    "functionLines": 136,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -83407,7 +83409,7 @@
    "package": "packages/ui",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 76,
+   "lines": 77,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -83415,7 +83417,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 47,
+    "functionLines": 48,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -83456,7 +83458,7 @@
    "package": "packages/ui",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 68,
+   "lines": 69,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -83464,7 +83466,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 48,
+    "functionLines": 49,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -83498,7 +83500,7 @@
    "package": "packages/ui",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 92,
+   "lines": 95,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -83506,7 +83508,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 76,
+    "functionLines": 79,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -83555,7 +83557,7 @@
    "package": "packages/ui",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 75,
+   "lines": 76,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -83563,7 +83565,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 21,
+    "functionLines": 22,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -126071,7 +126073,7 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 48,
+   "lines": 49,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -126079,7 +126081,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 39,
+    "functionLines": 40,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -128894,7 +128896,7 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 402,
+   "lines": 405,
    "counts": {
     "types": 0,
     "consts": 2,
@@ -128947,10 +128949,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/replayPolicy.ts",
+     "to": "packages/core/src/lib/sync/replayPolicy.coordinator.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "F"
     },
     {
      "to": "packages/core/src/logic/index.ts",
@@ -158822,28 +158824,28 @@
     "name": "isDemo",
     "where": [
      "packages/core/src/api/demo.ts",
-     "packages/core/src/logic/modes/demo.ts"
+     "packages/core/src/logic/modes/demo.selectors.ts"
     ]
    },
    {
     "name": "withDemo",
     "where": [
      "packages/core/src/api/demo.ts",
-     "packages/core/src/logic/modes/demo.ts"
+     "packages/core/src/logic/modes/demo.selectors.ts"
     ]
    },
    {
     "name": "withDemoWrite",
     "where": [
      "packages/core/src/api/demo.ts",
-     "packages/core/src/logic/modes/demo.ts"
+     "packages/core/src/logic/modes/demo.selectors.ts"
     ]
    },
    {
     "name": "demoAPI",
     "where": [
      "packages/core/src/api/demo.ts",
-     "packages/core/src/logic/modes/demo.ts"
+     "packages/core/src/logic/modes/demo.selectors.ts"
     ]
    },
    {
@@ -159075,49 +159077,49 @@
     "name": "SandboxModeValue",
     "where": [
      "packages/core/src/api/sandboxMode.ts",
-     "packages/core/src/logic/modes/sandboxMode.ts"
+     "packages/core/src/logic/modes/sandboxMode.selectors.ts"
     ]
    },
    {
     "name": "resolveSandboxMode",
     "where": [
      "packages/core/src/api/sandboxMode.ts",
-     "packages/core/src/logic/modes/sandboxMode.ts"
+     "packages/core/src/logic/modes/sandboxMode.selectors.ts"
     ]
    },
    {
     "name": "useSandboxMode",
     "where": [
      "packages/core/src/api/sandboxMode.ts",
-     "packages/core/src/logic/modes/sandboxMode.ts"
+     "packages/core/src/logic/modes/sandboxMode.selectors.ts"
     ]
    },
    {
     "name": "isSandboxActive",
     "where": [
      "packages/core/src/api/sandboxMode.ts",
-     "packages/core/src/logic/modes/sandboxMode.ts"
+     "packages/core/src/logic/modes/sandboxMode.selectors.ts"
     ]
    },
    {
     "name": "isDemoActive",
     "where": [
      "packages/core/src/api/sandboxMode.ts",
-     "packages/core/src/logic/modes/sandboxMode.ts"
+     "packages/core/src/logic/modes/sandboxMode.selectors.ts"
     ]
    },
    {
     "name": "isGhostActive",
     "where": [
      "packages/core/src/api/sandboxMode.ts",
-     "packages/core/src/logic/modes/sandboxMode.ts"
+     "packages/core/src/logic/modes/sandboxMode.selectors.ts"
     ]
    },
    {
     "name": "isBridgingActive",
     "where": [
      "packages/core/src/api/sandboxMode.ts",
-     "packages/core/src/logic/modes/sandboxMode.ts"
+     "packages/core/src/logic/modes/sandboxMode.selectors.ts"
     ]
    },
    {
@@ -159346,7 +159348,7 @@
     "union": "'bridging'|'demo'|'ghost'|'live'",
     "where": [
      "packages/core/src/api/sandboxMode.ts#SandboxModeValue",
-     "packages/core/src/logic/modes/sandboxMode.ts#SandboxModeValue"
+     "packages/core/src/logic/modes/sandboxMode.selectors.ts#SandboxModeValue"
     ]
    },
    {

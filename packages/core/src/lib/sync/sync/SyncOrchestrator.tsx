@@ -10,7 +10,10 @@ import {
   tryBeginReplay,
 } from '@repo/core/lib/sync/replayAdmission';
 import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity.adapter';
-import { isMutationReplayDeferred, planMutationReplay } from '@repo/core/lib/sync/replayPolicy';
+import {
+  isMutationReplayDeferred,
+  planMutationReplay,
+} from '@repo/core/lib/sync/replayPolicy.coordinator';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating.store';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';

@@ -63,7 +63,8 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
   const [interactionCount, setInteractionCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const { viewDate, isPastView } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
 
   useEffect(() => {
     if (!userId) {

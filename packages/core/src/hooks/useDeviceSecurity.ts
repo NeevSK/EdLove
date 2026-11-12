@@ -1,4 +1,4 @@
-import { isQueuedDeviceSecurityMutation } from '@repo/core/lib/sync/deviceSecurityIntents';
+import { isQueuedDeviceSecurityMutation } from '@repo/core/lib/sync/deviceSecurityIntents.coordinator';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { deviceSecurity } from '@repo/core/effect/bindings/deviceSecurity';
 import { useAuthStore } from '@repo/core/store/useAuthStore';

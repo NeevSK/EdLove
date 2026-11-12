@@ -15,6 +15,9 @@ export const TIERS = {
   C: { rank: 3.5, key: 'TIER_C_COMPOSITION', name: 'Composition root', icon: '🧩' },
   T4: { rank: 4, key: 'TIER_4_STORE', name: 'Tier 4: State', icon: '📦' },
   T5: { rank: 5, key: 'TIER_5_HOOK', name: 'Tier 5: Application hooks', icon: '🪝' },
+  // Flow / Coordinator archetype (canonical archetypes doc, Tier 5): orchestrates stores, ports and
+  // logic across steps (guest activation, account switching, snapshot refresh). Not React.
+  F: { rank: 5, key: 'TIER_5_COORDINATOR', name: 'Tier 5: Coordinators', icon: '🧭' },
   T6: { rank: 6, key: 'TIER_6_UI', name: 'Tier 6: Presentation', icon: '🎨' },
   UNPLACED: { rank: -1, key: 'UNPLACED', name: 'No tier', icon: '❓' },
 };
@@ -29,7 +32,8 @@ export const ALLOWED = {
   T4: ['T0', 'T1', 'T2', 'C'],
   // Hooks may use the composition root's bindings directly (owner decision, 2026-11-12): a Tier 4
   // module is for real query or state logic, not for forwarding calls.
-  T5: ['T0', 'T2', 'T4', 'C', 'T5'],
+  T5: ['T0', 'T2', 'T4', 'C', 'F', 'T5'],
+  F: ['T0', 'T1', 'T2', 'T4', 'C', 'F'],
   T6: ['T0', 'T5', 'T6'],
 };
 
@@ -41,6 +45,7 @@ export const FORBIDDEN_PACKAGES = {
   T3: [/^react($|-dom)/],
   T4: [/supabase/, /powersync/, /mmkv/, /drizzle/],
   T5: [/supabase/, /powersync/, /mmkv/, /drizzle/],
+  F: [/^react/, /supabase/, /powersync/, /mmkv/, /drizzle/],
   T6: [/supabase/, /powersync/, /mmkv/, /drizzle/, /^zustand/],
 };
 
@@ -99,7 +104,8 @@ export const NAME_RULES = [
   [/\.(schema|types|contract)\.tsx?$|\/types\.ts$/, 'T0'],
   [/\.port\.ts$|\.tags\.ts$/, 'T1'],
   [/\.adapter(\.(native|web|ios|android))?\.tsx?$|(Driver|Monitor|Sink|Vault)\.ts$/, 'T3'],
-  [/\/use\w*Store\.ts$|\.store\.ts$|\.slice\.ts$|\.machine\.ts$/, 'T4'],
+  [/\.coordinator\.ts$|Coordinator\.ts$/, 'F'],
+  [/\/use\w*Store\.ts$|\.store\.ts$|\.slice\.ts$|\.machine\.ts$|\.selectors\.ts$/, 'T4'],
   [/\/use[A-Z]\w*\.tsx?$/, 'T5'],
   [/\.tsx$/, 'T6'],
 ];

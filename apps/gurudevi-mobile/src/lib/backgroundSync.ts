@@ -12,7 +12,10 @@
 import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
 import { tryBeginReplay } from '@repo/core/lib/sync/replayAdmission';
 import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity.adapter';
-import { isMutationReplayDeferred, planMutationReplay } from '@repo/core/lib/sync/replayPolicy';
+import {
+  isMutationReplayDeferred,
+  planMutationReplay,
+} from '@repo/core/lib/sync/replayPolicy.coordinator';
 import { coreRuntime, useMutationQueue } from '@repo/core/logic';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { MUTATION_REGISTRY, type QueuedMutation, sovereignBus } from '@repo/core/sync';

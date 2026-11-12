@@ -14,6 +14,7 @@ import type {
   SnapshotMomentRecord,
   StudentGoal,
 } from '@repo/core/types/uiExperience';
+import { queryOptions } from '@tanstack/react-query';
 
 export type JourneyEventKind = 'mood' | 'journal' | 'growth' | 'rewards' | 'moments';
 
@@ -34,7 +35,7 @@ export function journeyEventsQuery(
   userId: string | null,
   view: TemporalView,
 ) {
-  return {
+  return queryOptions({
     queryKey: [
       `journey_history_${kind}`,
       userId,
@@ -45,19 +46,19 @@ export function journeyEventsQuery(
     queryFn: (): Promise<JourneyEvent[]> =>
       userId ? journeyReads[kind](userId, view) : Promise.resolve([]),
     enabled: Boolean(userId),
-  };
+  });
 }
 
 /** A year of activity for the heatmap. */
 export function temporalHeatmapQuery(userId: string | null, year: number) {
-  return {
+  return queryOptions({
     queryKey: ['temporal_heatmap', userId, year] as const,
     queryFn: (): Promise<HeatmapItem[]> =>
       userId
         ? uiExperience.getTemporalHeatmap(userId, getTemporalRange(`${year}-01-01`, 'year'))
         : Promise.resolve([]),
     enabled: Boolean(userId),
-  };
+  });
 }
 
 export const readStudentGoals = (userId: string): Promise<StudentGoal[]> =>

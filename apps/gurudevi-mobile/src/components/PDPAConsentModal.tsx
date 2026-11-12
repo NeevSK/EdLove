@@ -9,7 +9,8 @@ interface PDPAConsentModalProps {
 }
 
 export default function PDPAConsentModal({ isOpen, onClose }: PDPAConsentModalProps) {
-  const { grantConsent, denyConsent } = useConsentStore();
+  const grantConsent = useConsentStore((s) => s.grantConsent);
+  const denyConsent = useConsentStore((s) => s.denyConsent);
 
   const handleAccept = () => {
     grantConsent();

@@ -381,7 +381,7 @@ export const CLIENT_STATE_REGISTRY = [
   },
   {
     id: 'mutation-queue',
-    source: 'packages/core/src/lib/sync/useMutationQueue.ts',
+    source: 'packages/core/src/lib/sync/mutationQueue.store.ts',
     owner: 'sync-domain',
     stateClass: 'durable-command',
     scope: 'principal',
@@ -389,7 +389,7 @@ export const CLIENT_STATE_REGISTRY = [
   },
   {
     id: 'mutation-audit-log',
-    source: 'packages/core/src/lib/sync/MutationAuditLog.ts',
+    source: 'packages/core/src/lib/sync/mutationAuditLog.store.ts',
     owner: 'sync-domain',
     stateClass: 'durable-command',
     scope: 'principal',
@@ -397,7 +397,7 @@ export const CLIENT_STATE_REGISTRY = [
   },
   {
     id: 'version-gating',
-    source: 'packages/core/src/lib/sync/versionGating.ts',
+    source: 'packages/core/src/lib/sync/versionGating.store.ts',
     owner: 'sync-domain',
     stateClass: 'protocol-candidate',
     scope: 'device',
@@ -405,7 +405,7 @@ export const CLIENT_STATE_REGISTRY = [
   },
   {
     id: 'pending-intent',
-    source: 'packages/core/src/logic/deeplink/pendingIntentStore.ts',
+    source: 'packages/core/src/logic/deeplink/pendingIntent.store.ts',
     owner: 'navigation',
     stateClass: 'navigation-handoff',
     scope: 'route',

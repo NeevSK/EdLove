@@ -2187,7 +2187,7 @@ export function ArchitectureClient() {
                       ))}
                     </div>
                     <div className="rounded-lg bg-emerald-950/40 border border-emerald-800 p-2.5 text-xs text-emerald-200">
-                      <strong>Canonical SSOT:</strong> <code className="font-mono text-emerald-300">StorageManager</code> proxy in <code className="text-sky-300">packages/core/src/lib/storage.ts</code>.
+                      <strong>Canonical SSOT:</strong> <code className="font-mono text-emerald-300">StorageManager</code> proxy in <code className="text-sky-300">packages/core/src/lib/storage.adapter.ts</code>.
                     </div>
                   </div>
                 </div>

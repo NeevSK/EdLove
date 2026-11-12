@@ -132,7 +132,7 @@ export {
 } from '@repo/core/logic/experience/ActivityPulseContext';
 export { default as i18n } from '@repo/core/logic/i18n/i18n.adapter';
 export { mediaInitialState, mediaReducer } from '@repo/core/logic/mediaReducer';
-export { isDemo } from '@repo/core/logic/modes/demo';
+export { isDemo } from '@repo/core/logic/modes/demo.selectors';
 export {
   decryptPairingPayload,
   type EncryptedPairingEnvelope,

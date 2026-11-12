@@ -5,7 +5,7 @@ import {
   DEVICE_SECURITY_MUTATIONS,
   isOfflineLikeError,
   queueDeviceSecurityIntent,
-} from '@repo/core/lib/sync/deviceSecurityIntents';
+} from '@repo/core/lib/sync/deviceSecurityIntents.coordinator';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { APIError } from '@repo/core/types/API';

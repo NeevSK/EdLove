@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import { QueryClient } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -193,6 +195,15 @@ describe('state registry and XState admission', () => {
       source: 'packages/core/src/hooks/useGrowthQuery.ts',
       disposition: 'query',
     });
+  });
+
+  it('names a source file that exists for every registered state holder', () => {
+    // Files move (a move is not a deletion); a registry entry left behind would point at nothing.
+    const root = path.resolve(import.meta.dirname, '../../../..');
+    const missing = CLIENT_STATE_REGISTRY.filter(
+      (entry) => !existsSync(path.resolve(root, entry.source)),
+    ).map((entry) => entry.source);
+    expect(missing).toEqual([]);
   });
 
   it('rejects ceremony-only machines and admits a fully evidenced protocol', () => {

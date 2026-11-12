@@ -5,16 +5,17 @@
     "tiers": {
       "T0": 133,
       "T1": 37,
-      "T2": 176,
+      "T2": 172,
       "T3": 141,
       "C": 15,
-      "T4": 31,
+      "T4": 33,
       "T5": 49,
+      "F": 2,
       "T6": 6,
       "UNPLACED": 0
     },
     "findings": {
-      "upward-import": 24,
+      "upward-import": 16,
       "pass-through": 2,
       "tier-import": 21,
       "parse-above-boundary": 3,
@@ -90,7 +91,7 @@
       "tier": "T5",
       "to": "packages/core/src/accounts/authenticatedAccountCapture.adapter.ts",
       "toTier": "T3",
-      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Composition root, Tier 5: Application hooks"
+      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Composition root, Tier 5: Coordinators, Tier 5: Application hooks"
     },
     {
       "rule": "upward-import",
@@ -101,50 +102,10 @@
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
     },
     {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/sync/deviceSecurityIntents.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/sync/deviceSecurityIntents.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/sync/deviceSecurityIntents.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useAuthStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
       "rule": "parse-above-boundary",
-      "file": "packages/core/src/lib/sync/replayPolicy.ts",
-      "tier": "T2",
+      "file": "packages/core/src/lib/sync/replayPolicy.coordinator.ts",
+      "tier": "F",
       "reason": "2 schema parse call(s); decode at the adapter and pass typed data up"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/sync/replayPolicy.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/sync/replayPolicy.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useTemporalStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "tier-import",
@@ -214,8 +175,8 @@
       "rule": "tier-import",
       "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
       "tier": "T6",
-      "to": "packages/core/src/lib/sync/replayPolicy.ts",
-      "toTier": "T2",
+      "to": "packages/core/src/lib/sync/replayPolicy.coordinator.ts",
+      "toTier": "F",
       "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
@@ -275,35 +236,11 @@
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
     },
     {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/modes/demo.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/experienceState.store.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/modes/demo.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useAuthStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
       "rule": "imports-retired",
       "file": "packages/core/src/logic/modes/noticeComposer.ts",
       "tier": "T2",
       "to": "packages/core/src/api/planBridge.orpc.contract.ts",
       "reason": "Live code depends on the retired pre-v1 client"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/modes/sandboxMode.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/experienceState.store.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "upward-import",
@@ -824,7 +761,7 @@
     "packages/core/src/lib/storageWrapper.adapter.ts": "T3",
     "packages/core/src/lib/supabaseAuthStorage.adapter.ts": "T3",
     "packages/core/src/lib/sync/delta.ts": "T2",
-    "packages/core/src/lib/sync/deviceSecurityIntents.ts": "T2",
+    "packages/core/src/lib/sync/deviceSecurityIntents.coordinator.ts": "F",
     "packages/core/src/lib/sync/errorClassifier.ts": "T2",
     "packages/core/src/lib/sync/eventBus.adapter.ts": "T3",
     "packages/core/src/lib/sync/hooks/useOptimisticMerge.ts": "T5",
@@ -838,7 +775,7 @@
     "packages/core/src/lib/sync/registry.ts": "T2",
     "packages/core/src/lib/sync/replayAdmission.ts": "T2",
     "packages/core/src/lib/sync/replayIdentity.adapter.ts": "T3",
-    "packages/core/src/lib/sync/replayPolicy.ts": "T2",
+    "packages/core/src/lib/sync/replayPolicy.coordinator.ts": "F",
     "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx": "T6",
     "packages/core/src/lib/sync/versionGating.store.ts": "T4",
     "packages/core/src/lib/temporalEvents.ts": "T2",
@@ -892,7 +829,7 @@
     "packages/core/src/logic/mesh/transports/LanMdnsBearerTransport.ts": "T2",
     "packages/core/src/logic/mesh/transports/NostrDtnBearerTransport.ts": "T2",
     "packages/core/src/logic/modes/catalog.ts": "T2",
-    "packages/core/src/logic/modes/demo.ts": "T2",
+    "packages/core/src/logic/modes/demo.selectors.ts": "T4",
     "packages/core/src/logic/modes/index.ts": "T2",
     "packages/core/src/logic/modes/mockData.ts": "T2",
     "packages/core/src/logic/modes/multiSphere.ts": "T2",
@@ -900,7 +837,7 @@
     "packages/core/src/logic/modes/provisionalDefaults.ts": "T2",
     "packages/core/src/logic/modes/resolveSendTime.ts": "T2",
     "packages/core/src/logic/modes/sandboxDataset.ts": "T2",
-    "packages/core/src/logic/modes/sandboxMode.ts": "T2",
+    "packages/core/src/logic/modes/sandboxMode.selectors.ts": "T4",
     "packages/core/src/logic/modes/schedule.ts": "T2",
     "packages/core/src/logic/omnichannel/channelCapabilitySafety.ts": "T2",
     "packages/core/src/logic/omnichannel/index.ts": "T2",

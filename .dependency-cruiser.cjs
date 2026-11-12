@@ -163,13 +163,13 @@ module.exports = {
       name: 'no-db-leaks-to-apps',
       severity: 'error',
       comment:
-        'Apps and Domain packages must not import directly from the Database. Use @repo/core/types instead.',
+        'Apps and domain packages must not import the database or the generated schema directly. Use @repo/core/types or @repo/core/logic/schemas: core owns the contracts, so an upstream schema change is absorbed in one place.',
       from: {
         path: '^(apps/|packages/(?!core|database|types-shim))',
         pathNot: ['\\.test\\.ts$', '^apps/sanctuary-api/'],
       },
       to: {
-        path: '^packages/database/',
+        path: '^packages/(database|schema)/',
       },
     },
     {
