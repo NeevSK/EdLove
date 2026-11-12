@@ -1,3 +1,4 @@
+import { deskPort } from '@repo/classroom/deskPort';
 import {
   type DetailTier,
   type FloorSpace,
@@ -10,8 +11,17 @@ import {
 import { useFloorLayout } from '@repo/core/native';
 import { Card, FloorView, useStage } from '@repo/ui/components/native';
 import { floorFitOf, type KitPiece } from '@repo/ui/theme';
+import { useQuery } from '@tanstack/react-query';
+import { type Href, useRouter } from 'expo-router';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { type PieceContext, teacherPiece } from './pieces/teacher';
+
+/** Pieces that have their own screen today. The rest show what they know and open nothing yet. */
+const DESTINATIONS: Partial<Record<string, Href>> = {
+  events: '/workspace/events',
+};
 
 /** The shell bars above and below a work room (status, header, stripe, rooms bar). */
 const CHROME: FloorSpace['chrome'] = [
@@ -74,9 +84,34 @@ export function WorkFloor({ plan, userId, perspectiveId }: WorkFloorProps) {
     [plan, saved.layout, win.width, win.height, win.fontScale, stage.tier],
   );
 
+  const { t, i18n } = useTranslation();
+  const router = useRouter();
+  const isTeacher = plan.capacity === 'teacher';
+  const desk = useQuery({
+    queryKey: ['work-desk', 'teacher', deskPort.get().source],
+    queryFn: ({ signal }) => deskPort.get().teacherDesk(signal),
+    enabled: isTeacher,
+  });
+  const ctx: PieceContext = {
+    t,
+    locale: i18n.language || 'en',
+    canOpen: (id) => DESTINATIONS[id] !== undefined,
+    open: (id) => {
+      const to = DESTINATIONS[id];
+      if (to) router.push(to);
+    },
+  };
+
   return (
     <View style={styles.floor}>
-      <FloorView tree={tree} renderPiece={(p) => <Card title={p.label} />} />
+      <FloorView
+        tree={tree}
+        renderPiece={(p) =>
+          (isTeacher && desk.data ? teacherPiece(p.id, p.label, desk.data, ctx) : null) ?? (
+            <Card title={p.label} />
+          )
+        }
+      />
     </View>
   );
 }
