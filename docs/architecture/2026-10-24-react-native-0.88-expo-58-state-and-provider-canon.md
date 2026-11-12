@@ -8,6 +8,8 @@ scribe: "Antigravity"
 tags: [react-native-0.88, expo-58, providers, zustand, xstate, state-architecture, jsi, audio, haptics, canon]
 ---
 
+> **Status 2026-11-12:** the provider-flattening guidance still applies. The version numbers below are out of date: XState 6.0.0-beta.2 and Zustand 5.1.0 are installed. Current rules: [State, effects and hooks](2026-11-12-state-effects-hooks-and-capabilities.md).
+
 # Modern React Native State & Provider Architecture Canon
 
 > **"Reasoning is the weapon, reality is the ammunition."**  

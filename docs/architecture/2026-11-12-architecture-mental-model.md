@@ -251,6 +251,7 @@ Everything so far is **G0 (tsc per package) and G1 (Vitest with mocks, compared 
 | Document | Status |
 | --- | --- |
 | **This document** | Start here: the model, the reasons, the costs, the scorecard |
+| [State, effects and hooks](2026-11-12-state-effects-hooks-and-capabilities.md) | Who owns which state; the deterministic `useEffect` rule; hooks; `useReducer` versus XState; the capability map (upstream, our use, what to do) |
 | [2026-11-01 architectural hierarchy and archetypes](2026-11-01-architectural-hierarchy-and-archetypes.md) | The enforced tier rules (kept in sync with `tooling/architecture-tiers.mjs`) |
 | [2026-11-01 canonical file archetypes](2026-11-01-canonical-file-archetypes-and-first-principles.md) | The 12 archetypes and the Java ban. Its Flow/Coordinator is not yet implemented in tooling (§6) |
 | [platform-map.md](platform-map.md), [module-structure.md](module-structure.md) | The macro level: modules and ownership |

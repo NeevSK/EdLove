@@ -79,7 +79,7 @@ fixtures is not proof that the current API meets the target. User MCP, browser
 WebMCP and developer `platform-mcp` are distinct; record unimplemented channels
 and unresolved product decisions honestly.
 
-**Architecture mental model (read first):** [`docs/architecture/2026-11-12-architecture-mental-model.md`](docs/architecture/2026-11-12-architecture-mental-model.md) explains the whole model in one place: modules versus layers, why each layer exists, the decisions and their costs, a scorecard and the known unverified risks. It also says how the other architecture documents relate.
+**Architecture mental model (read first):** [`docs/architecture/2026-11-12-architecture-mental-model.md`](docs/architecture/2026-11-12-architecture-mental-model.md) explains the whole model in one place: modules versus layers, why each layer exists, the decisions and their costs, a scorecard and the known unverified risks. It also says how the other architecture documents relate. For state, effects, hooks, `useReducer` versus XState, and which library capabilities to use, follow [`docs/architecture/2026-11-12-state-effects-hooks-and-capabilities.md`](docs/architecture/2026-11-12-state-effects-hooks-and-capabilities.md).
 
 **Platform structure (read before any API, package or screen design):**
 [`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) is the

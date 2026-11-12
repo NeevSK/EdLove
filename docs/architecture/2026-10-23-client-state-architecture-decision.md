@@ -7,6 +7,8 @@ author: "Codex"
 tags: [architecture, client-state, zustand, xstate, tanstack-query, offline-first]
 ---
 
+> **Status 2026-11-12:** still authoritative. Item 5 under "What is wrong today" (unversioned persisted stores) is fixed: all 17 persisted stores declare `name` and `version`, enforced by `store/__tests__/persistContract.test.ts`. The deterministic rules for effects, hooks and `useReducer`, and the capability map, are in [State, effects and hooks](2026-11-12-state-effects-hooks-and-capabilities.md).
+
 # Client State Architecture Decision
 
 > **Updated 2026-11-11.** Read [product shape and tool ownership](2026-11-11-product-shape-and-tool-ownership.md) first. It keeps this document's decision and adds errors, the Effect runtime, the authority read and current versions; where they differ, it wins.
