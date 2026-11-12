@@ -1,7 +1,13 @@
 import type { SupabaseQueryError } from '@repo/core/adapters/supabaseIdentity.adapter';
 import type {
+  ConflictError,
   DatabaseQueryError,
+  ForbiddenError,
   NetworkError,
+  NotFoundError,
+  RateLimitedError,
+  UnavailableError,
+  ValidationError,
   OfflineMutationError,
   SyncDelegateError,
   SyncOperationError,
@@ -47,6 +53,12 @@ export type ExpectedFailure =
   | SyncTableError
   | SyncDelegateError
   | SyncOperationError
+  | ForbiddenError
+  | NotFoundError
+  | ConflictError
+  | ValidationError
+  | RateLimitedError
+  | UnavailableError
   | DeepLinkLengthError
   | DeepLinkForbiddenCharsError
   | DeepLinkTraversalError
@@ -113,6 +125,34 @@ export const FEEDBACK: { readonly [Tag in FailureTag]: FailureFeedback } = {
   SyncTableError: internal,
   SyncDelegateError: internal,
   SyncOperationError: internal,
+  // The next four reuse existing messages until they get their own copy in en, si and ta
+  // (client runtime plan, L7): no access, no longer available, changed elsewhere, check the form.
+  ForbiddenError: internal,
+  NotFoundError: {
+    remedy: 'none',
+    messageKey: 'errors.fetchFailed',
+    tone: 'error',
+    report: false,
+  },
+  ConflictError: {
+    remedy: 'retry',
+    messageKey: 'errors.tryAgain',
+    tone: 'info',
+    report: false,
+  },
+  ValidationError: internal,
+  RateLimitedError: {
+    remedy: 'wait',
+    messageKey: 'errors.tryAgain',
+    tone: 'info',
+    report: false,
+  },
+  UnavailableError: {
+    remedy: 'retry',
+    messageKey: 'errors.tryAgain',
+    tone: 'error',
+    report: false,
+  },
   DeepLinkLengthError: badLink,
   DeepLinkForbiddenCharsError: badLink,
   DeepLinkTraversalError: badLink,
@@ -137,6 +177,8 @@ const ENGLISH_FALLBACK: Readonly<Record<string, string>> = {
   'errors.savedForLater': "Saved. It will be sent when you're back online.",
   'errors.signInAgain': 'Please sign in again.',
   'errors.linkNotValid': "This link can't be opened.",
+  'errors.fetchFailed': 'Failed to fetch data',
+  'errors.tryAgain': 'Try again',
 };
 
 function tagOf(error: unknown): string | undefined {

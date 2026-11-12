@@ -183,6 +183,22 @@ function countReferenceOnlyDrift() {
   }
 }
 
+// `catch` blocks whose only statement is a console call: the failure is swallowed. Each should
+// classify (logic/failure/classifyFailure.ts) and then present or report (failureFeedback).
+function countCatchAndLogOnly() {
+  try {
+    const out = execFileSync(
+      'rg',
+      ['-U', '-c', String.raw`catch \(\w*\) \{\s*\n\s*console\.(error|warn|log)\([^\n]*\);?\s*\n\s*\}`, 'packages', 'apps',
+        '-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', ...RG_REFERENCE_ARGS],
+      { cwd: REPO_ROOT, encoding: 'utf8' },
+    );
+    return out.split('\n').filter(Boolean).reduce((n, line) => n + Number(line.split(':').pop()), 0);
+  } catch (error) {
+    return error.status === 1 ? 0 : Number.POSITIVE_INFINITY;
+  }
+}
+
 function countTierContentViolations() {
   try {
     const out = execSync('node scripts/audit-tier-content.mjs --summary-json', { cwd: REPO_ROOT, encoding: 'utf8' });
@@ -247,6 +263,7 @@ function measureMetrics() {
     reactCompilerRuleHits: reactCount(REACT_COMPILER_RULES),
     unparseableFiles: reactCount(['parse-error']),
     referenceOnlyDrift: countReferenceOnlyDrift(),
+    catchAndLogOnly: countCatchAndLogOnly(),
   };
 }
 
@@ -293,6 +310,7 @@ function main() {
     reactCompilerRuleHits: 'React Compiler rule hits',
     unparseableFiles: 'Parse errors (oxlint)',
     referenceOnlyDrift: 'Live .web list out of date',
+    catchAndLogOnly: 'catch blocks that only log',
   };
 
   console.log('----------------------------------------------------------------------');

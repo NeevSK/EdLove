@@ -90,6 +90,26 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
   Every adapter maps raw failures to one. One retry policy (an Effect `Schedule`) keyed by kind, used
   by queries, mutations, the outbox and sync. Pacer for every debounce, throttle, rate limit and
   batch.
+- **Done (2026-11-12).** The design was already decided in the
+  [2026-11-11 doc](2026-11-11-product-shape-and-tool-ownership.md), section 4: expected failures,
+  defects and interruptions, with one feedback table. What was built on it:
+  - **Six more kinds** in `effect/Errors.ts`: Forbidden, NotFound, Conflict, Validation,
+    RateLimited, Unavailable.
+  - **One classifier**, `logic/failure/classifyFailure.ts`. It turns an oRPC, HTTP, Postgres, JWT,
+    Zod or fetch failure into a kind; anything it doesn't recognise is a defect.
+  - **`RETRY_POLICY`**, a table keyed by kind.
+  - **Three classifiers re-pointed** to it: the outbox (`classifyError`), workspace sync and
+    `shouldRetryAPIRequest`. A comparison over 70 inputs found only fixes: workspace sync never
+    retried oRPC 429 and 5xx (v2 errors have no `status`); the outbox retried 422s and Zod
+    failures forever. Two suites that failed at baseline now pass (`syncPolicy`,
+    `errorNormalizer`).
+  - **Feedback.** The new kinds have entries in the existing feedback table, reusing existing
+    messages. Four deserve their own copy in en, si and ta: no access, no longer available, changed
+    elsewhere, and check the form.
+  - **Ratchet.** `catchAndLogOnly` has a ceiling of 165.
+  - **Still to do.** `presentFailure` still has no callers; queries and mutations will call it
+    (step 2). Four retry paths remain: Effect `Schedules`, the oRPC client's `retryDelay`,
+    device-security reads, and `idempotency.ts` with `utils/mutation.ts`.
 - **Production.** Jitter, caps, circuit breaking per endpoint, retry budgets.
 - **Enterprise.** Error budgets and SLOs; chaos tests for each kind.
 

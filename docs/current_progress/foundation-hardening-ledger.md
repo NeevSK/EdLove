@@ -311,3 +311,9 @@ web remains online-only with normal request/reconnect error handling.
   - The ratchet, both tier audits, the API-composition audit and the registry-coverage audit (coverage counts unchanged).
   - check-ui-boundaries still counts `*.web.tsx` files; that count tracks their retirement (78, baseline 112).
 - Ceilings re-measured: dependency gaps 86, set-state effects 151, compiler hits 187, parse errors 5. G0: every package at or below baseline (ui 29→26, admin 122→121, form-builder 46→44, library 41→40, self 134→133). G1: unchanged.
+
+### Client runtime L3: one failure classifier
+
+- New kinds in `effect/Errors.ts`; `logic/failure/classifyFailure.ts` with `RETRY_POLICY`. Outbox, workspace-sync and API retry decisions re-pointed to it. The error normalizer reads HTTP status from the kind (oRPC v2 has no `status`).
+- Behaviour, compared over 70 inputs: only fixes (oRPC 429 and 5xx now retried in workspace sync; 422 and Zod now permanent in the outbox; `statusCode` read). Unrecognised failures keep each caller's old default.
+- G0: core 50, web 1, mobile 17, unchanged. G1: core now fails 20 files (was 22); `syncPolicy` and `errorNormalizer` fixed. Ratchet: `catchAndLogOnly` 165 (new).

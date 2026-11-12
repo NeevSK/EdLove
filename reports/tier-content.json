@@ -26310,7 +26310,7 @@
    "package": "packages/core",
    "folderTier": "T0",
    "shape": "contract",
-   "lines": 78,
+   "lines": 127,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -26320,7 +26320,7 @@
     "functions": 0,
     "functionLines": 0,
     "classes": 0,
-    "errorClasses": 7,
+    "errorClasses": 13,
     "mutable": 0,
     "sideEffects": 0,
     "reexports": 0,
@@ -26333,12 +26333,18 @@
     "DatabaseQueryError",
     "SyncTableError",
     "SyncDelegateError",
-    "SyncOperationError"
+    "SyncOperationError",
+    "ForbiddenError",
+    "NotFoundError",
+    "ConflictError",
+    "ValidationError",
+    "RateLimitedError",
+    "UnavailableError"
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
-    "tests": 1
+    "prod": 4,
+    "tests": 2
    },
    "imports": [],
    "outside": [
@@ -32097,7 +32103,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract+logic",
-   "lines": 181,
+   "lines": 223,
    "counts": {
     "types": 4,
     "consts": 6,
@@ -33845,8 +33851,8 @@
    "file": "packages/core/src/lib/sync/errorClassifier.ts",
    "package": "packages/core",
    "folderTier": "T2",
-   "shape": "contract+logic",
-   "lines": 64,
+   "shape": "contract",
+   "lines": 26,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -33854,7 +33860,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 63,
+    "functionLines": 23,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -33876,7 +33882,14 @@
     "prod": 2,
     "tests": 3
    },
-   "imports": [],
+   "imports": [
+    {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    }
+   ],
    "outside": []
   },
   {
@@ -34076,7 +34089,7 @@
     {
      "to": "packages/core/src/lib/sync/errorClassifier.ts",
      "typeOnly": false,
-     "toShape": "contract+logic",
+     "toShape": "contract",
      "toTier": "T2"
     },
     {
@@ -34571,7 +34584,7 @@
     {
      "to": "packages/core/src/lib/sync/errorClassifier.ts",
      "typeOnly": false,
-     "toShape": "contract+logic",
+     "toShape": "contract",
      "toTier": "T2"
     },
     {
@@ -36455,6 +36468,58 @@
    },
    "imports": [],
    "outside": []
+  },
+  {
+   "file": "packages/core/src/logic/failure/classifyFailure.ts",
+   "package": "packages/core",
+   "folderTier": "T2",
+   "shape": "contract+logic",
+   "lines": 169,
+   "counts": {
+    "types": 3,
+    "consts": 6,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 6,
+    "functionLines": 83,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "FailureKind",
+    "isFailureKind",
+    "classifyFailure",
+    "RetryRule",
+    "RETRY_POLICY",
+    "isRetryable"
+   ],
+   "unions": [
+    {
+     "name": "RetryRule",
+     "union": "'backoff'|'never'|'serverPaced'"
+    }
+   ],
+   "importers": {
+    "prod": 4,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/effect/Errors.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": [
+    "@orpc/client",
+    "zod"
+   ]
   },
   {
    "file": "packages/core/src/logic/forms/index.ts",
@@ -43729,11 +43794,11 @@
    "file": "packages/core/src/logic/utils/errorNormalizer.ts",
    "package": "packages/core",
    "folderTier": "T2",
-   "shape": "runtime",
-   "lines": 154,
+   "shape": "contract+logic",
+   "lines": 166,
    "counts": {
     "types": 0,
-    "consts": 0,
+    "consts": 1,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
@@ -43762,6 +43827,12 @@
      "toTier": "T0"
     },
     {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
      "to": "packages/core/src/logic/utils/errorPolicy.ts",
      "typeOnly": false,
      "toShape": "runtime",
@@ -43778,7 +43849,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 19,
+   "lines": 20,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -43786,7 +43857,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 18,
+    "functionLines": 20,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -43800,10 +43871,17 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
-   "imports": [],
+   "imports": [
+    {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    }
+   ],
    "outside": []
   },
   {
@@ -44885,7 +44963,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 28,
+   "lines": 16,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -44893,7 +44971,7 @@
     "ambient": 1,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 29,
+    "functionLines": 17,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -44913,9 +44991,9 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/logic/utils/errorPolicy.ts",
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
      "typeOnly": false,
-     "toShape": "runtime",
+     "toShape": "contract+logic",
      "toTier": "T2"
     }
    ],

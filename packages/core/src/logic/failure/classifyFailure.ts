@@ -1,0 +1,168 @@
+import { ORPCError } from '@orpc/client';
+import {
+  ConflictError,
+  DatabaseQueryError,
+  ForbiddenError,
+  NetworkError,
+  NotFoundError,
+  OfflineMutationError,
+  RateLimitedError,
+  UnauthorizedError,
+  UnavailableError,
+  ValidationError,
+} from '@repo/core/effect/Errors';
+import { ZodError } from 'zod';
+
+/**
+ * One classifier for every raw failure the client meets: oRPC errors, HTTP responses, Supabase
+ * and Postgres errors, expired tokens, Zod parse failures and fetch failures.
+ *
+ * It returns the expected-failure kind (a Schema.TaggedError from effect/Errors.ts), or `null`
+ * when the failure is a defect: something no rule recognises, which only telemetry can fix.
+ * Retry (effect/Schedules.ts), the outbox (lib/sync/errorClassifier.ts), workspace sync and the
+ * person's feedback (lib/failureFeedback.adapter.ts) all read this one answer.
+ *
+ * The rules and their order come from the classifiers this replaces, so existing behaviour holds:
+ * an expired session first, then failures that won't fix themselves, then conflicts, then the
+ * transient ones. See docs/architecture/2026-11-12-client-runtime-foundation-plan.md, L3.
+ */
+export type FailureKind =
+  | UnauthorizedError
+  | ForbiddenError
+  | NotFoundError
+  | ConflictError
+  | ValidationError
+  | RateLimitedError
+  | UnavailableError
+  | NetworkError
+  | OfflineMutationError
+  | DatabaseQueryError;
+
+const KINDS = [
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ConflictError,
+  ValidationError,
+  RateLimitedError,
+  UnavailableError,
+  NetworkError,
+  OfflineMutationError,
+  DatabaseQueryError,
+] as const;
+
+/** Postgres SQLSTATEs (https://www.postgresql.org/docs/current/errcodes-appendix.html). */
+const PG_CONSTRAINT = new Set(['23505', '23503']); // unique, foreign key
+const PG_PRIVILEGE = '42501';
+const PG_SCHEMA = new Set(['42P01', '42703']); // missing relation, missing column
+
+const NETWORK_CODES = new Set(['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'NETWORK_ERROR']);
+
+interface RawFailure {
+  readonly status: number | undefined;
+  readonly code: string;
+  readonly message: string;
+  readonly retryAfterMs: number | undefined;
+}
+
+function read(error: object): RawFailure {
+  const record = error as Record<string, unknown>;
+  const numeric = (value: unknown) => (typeof value === 'number' ? value : undefined);
+  const status = numeric(record.status) ?? numeric(record.statusCode);
+  const rawCode = record.code ?? record.status ?? '';
+  const message = typeof record.message === 'string' ? record.message.toLowerCase() : '';
+  const data = record.data as Record<string, unknown> | undefined;
+  const retryAfter = numeric(data?.retryAfterMs) ?? numeric(record.retryAfterMs);
+  return { status, code: String(rawCode), message, retryAfterMs: retryAfter };
+}
+
+const isAny = (raw: RawFailure, statuses: number[], codes: string[]) =>
+  (raw.status !== undefined && statuses.includes(raw.status)) ||
+  codes.includes(raw.code) ||
+  statuses.some((status) => raw.code === String(status));
+
+const says = (raw: RawFailure, ...phrases: string[]) =>
+  phrases.some((phrase) => raw.message.includes(phrase));
+
+export function isFailureKind(error: unknown): error is FailureKind {
+  return KINDS.some((Kind) => error instanceof Kind);
+}
+
+export function classifyFailure(error: unknown): FailureKind | null {
+  if (isFailureKind(error)) return error;
+  if (error instanceof ZodError) return new ValidationError({ code: 'ZOD', cause: error });
+  if (typeof error !== 'object' || error === null) return null;
+
+  const raw = read(error);
+  const source = { code: raw.code || undefined, cause: error };
+
+  // An expired session pauses work until the person signs in again; it never goes to the DLQ.
+  if (
+    isAny(raw, [401], ['UNAUTHORIZED']) ||
+    says(raw, 'jwt expired', 'token expired', 'refresh token')
+  ) {
+    return new UnauthorizedError({ cause: error });
+  }
+
+  // Failures that won't fix themselves on retry.
+  if (isAny(raw, [403], ['FORBIDDEN']) || raw.code === PG_PRIVILEGE || says(raw, 'permission denied')) {
+    return new ForbiddenError(source);
+  }
+  if (isAny(raw, [404], ['NOT_FOUND']) || says(raw, 'not found')) {
+    return new NotFoundError(source);
+  }
+  if (isAny(raw, [400, 422], ['BAD_REQUEST', 'UNPROCESSABLE_CONTENT']) || PG_CONSTRAINT.has(raw.code)) {
+    return new ValidationError(source);
+  }
+  if (PG_SCHEMA.has(raw.code)) {
+    return new DatabaseQueryError({ cause: error, message: raw.code });
+  }
+
+  if (
+    isAny(raw, [409], ['CONFLICT']) ||
+    says(raw, 'conflict', 'version mismatch', 'stale data')
+  ) {
+    return new ConflictError(source);
+  }
+
+  // Transient: worth retrying.
+  if (isAny(raw, [429], ['TOO_MANY_REQUESTS'])) {
+    return new RateLimitedError({ ...source, retryAfterMs: raw.retryAfterMs });
+  }
+  if (
+    (raw.status !== undefined && (raw.status === 408 || raw.status >= 500)) ||
+    (error instanceof ORPCError && ['SERVICE_UNAVAILABLE', 'INTERNAL_SERVER_ERROR', 'TIMEOUT', 'BAD_GATEWAY', 'GATEWAY_TIMEOUT'].includes(error.code))
+  ) {
+    return new UnavailableError(source);
+  }
+  if (error instanceof TypeError || NETWORK_CODES.has(raw.code)) {
+    return new NetworkError({ cause: error });
+  }
+
+  return null;
+}
+
+/**
+ * Whether a kind is worth retrying, as a policy: change a value here and every retry path
+ * (workspace sync, the outbox, API calls) follows. `serverPaced` waits for the server's
+ * `retryAfterMs` when it gives one. Kinds marked `never` resolve another way: sign-in for
+ * Unauthorized, healing for Conflict, the outbox's own replay on reconnect for OfflineMutation.
+ */
+export type RetryRule = 'never' | 'backoff' | 'serverPaced';
+
+export const RETRY_POLICY: { readonly [Tag in FailureKind['_tag']]: RetryRule } = {
+  UnauthorizedError: 'never',
+  ForbiddenError: 'never',
+  NotFoundError: 'never',
+  ConflictError: 'never',
+  ValidationError: 'never',
+  RateLimitedError: 'serverPaced',
+  UnavailableError: 'backoff',
+  NetworkError: 'backoff',
+  OfflineMutationError: 'never',
+  DatabaseQueryError: 'never',
+};
+
+export function isRetryable(kind: FailureKind): boolean {
+  return RETRY_POLICY[kind._tag] !== 'never';
+}

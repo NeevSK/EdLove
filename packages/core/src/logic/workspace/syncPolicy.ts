@@ -1,20 +1,8 @@
-import { getAPIErrorStatus } from '@repo/core/logic/utils/errorPolicy';
-/** Shared retry policy for transient workspace synchronization failures. */
+import { classifyFailure, isRetryable } from '@repo/core/logic/failure/classifyFailure';
+/** Transient workspace sync failures are retried; unrecognised ones (defects) are not. */
 export function isRetryableWorkspaceSyncError(error: unknown): boolean {
-  if (!error || typeof error !== 'object') return false;
-
-  const status = getAPIErrorStatus(error);
-  if (typeof status !== 'number') {
-    const code = 'code' in error ? error.code : undefined;
-    return (
-      error instanceof TypeError ||
-      code === 'ECONNRESET' ||
-      code === 'ETIMEDOUT' ||
-      code === 'ENOTFOUND' ||
-      code === 'NETWORK_ERROR'
-    );
-  }
-  return status === 408 || status === 429 || status >= 500;
+  const kind = classifyFailure(error);
+  return kind !== null && isRetryable(kind);
 }
 
 export function shouldRetryWorkspaceSync(failureCount: number, error: unknown): boolean {
