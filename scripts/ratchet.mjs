@@ -212,6 +212,22 @@ function countHandRolledPacing() {
   }
 }
 
+// Hand-rolled async flags (`const [isSaving, setIsSaving] = useState(false)`); a mutation's or
+// query's `isPending` / `isFetching`, or a Pacer state selector, replaces them.
+function countHandRolledLoadingFlags() {
+  try {
+    const out = execFileSync(
+      'rg',
+      ['-c', String.raw`\[is\w*(Loading|Submitting|Saving|Sending|Processing|Fetching|Uploading|Creating|Deleting|Updating), set\w+\] = useState`,
+        'packages', 'apps', '-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', ...RG_REFERENCE_ARGS],
+      { cwd: REPO_ROOT, encoding: 'utf8' },
+    );
+    return out.split('\n').filter(Boolean).reduce((n, line) => n + Number(line.split(':').pop()), 0);
+  } catch (error) {
+    return error.status === 1 ? 0 : Number.POSITIVE_INFINITY;
+  }
+}
+
 function countTierContentViolations() {
   try {
     const out = execSync('node scripts/audit-tier-content.mjs --summary-json', { cwd: REPO_ROOT, encoding: 'utf8' });
@@ -278,6 +294,7 @@ function measureMetrics() {
     referenceOnlyDrift: countReferenceOnlyDrift(),
     catchAndLogOnly: countCatchAndLogOnly(),
     handRolledPacing: countHandRolledPacing(),
+    handRolledLoadingFlags: countHandRolledLoadingFlags(),
   };
 }
 
@@ -326,6 +343,7 @@ function main() {
     referenceOnlyDrift: 'Live .web list out of date',
     catchAndLogOnly: 'catch blocks that only log',
     handRolledPacing: 'Hand-rolled debounce/throttle files',
+    handRolledLoadingFlags: 'Hand-rolled loading flags',
   };
 
   console.log('----------------------------------------------------------------------');

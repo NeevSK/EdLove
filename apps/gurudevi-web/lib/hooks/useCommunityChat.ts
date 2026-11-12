@@ -5,8 +5,7 @@ import '@repo/core/api/community';
 import { storage } from '@repo/core/lib/storage.adapter';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
-import { useCallback, useEffect, useState } from 'react';
-import { useThrottledInvalidate } from '@repo/core/hooks/usePacer';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export interface ChatMessage {
   id: string;
@@ -144,12 +143,17 @@ export interface UseCommunityChatOptions {
   isEphemeral?: boolean;
 }
 
+/** One cache entry per thread; ephemeral (incognito) threads never share it with durable ones. */
+export const communityChatKey = (threadId: string, isEphemeral = false) =>
+  ['community', 'chat', threadId, isEphemeral ? 'ephemeral' : 'durable'] as const;
+
 /**
  * useCommunityChat
  *
- * Decoupled domain hook managing real-time and offline chat threads,
- * local message queues, optimistic sending, and auto-draining.
- * When isEphemeral is true, all persistence to storage or remote mutation queues is bypassed.
+ * A chat thread as a local query: messages live on the device (or only in memory when
+ * `isEphemeral`), are read through TanStack Query keyed by thread, and are written by a mutation
+ * that persists the message, updates the cache at once and queues the send in the outbox. Every
+ * component showing the same thread shares one cache entry; switching threads needs no effect.
  */
 export function useCommunityChat(
   threadId: string,
@@ -158,63 +162,62 @@ export function useCommunityChat(
 ) {
   const { isEphemeral = false } = options;
   const { isOffline, isOnline } = useOfflineStatus();
-  const [messages, setMessages] = useState<ChatMessage[]>(() =>
-    isEphemeral ? getInitialThreadMessages(threadId) : loadDurableChat(threadId),
-  );
+  const queryClient = useQueryClient();
+  const queryKey = communityChatKey(threadId, isEphemeral);
+  const readThread = () =>
+    isEphemeral ? getInitialThreadMessages(threadId) : loadDurableChat(threadId);
+
+  // Device storage is the source, so the read is synchronous, never stale and never waits for
+  // the network.
+  const { data: messages } = useQuery({
+    queryKey,
+    queryFn: readThread,
+    initialData: readThread,
+    staleTime: Number.POSITIVE_INFINITY,
+    networkMode: 'always',
+  });
+
   const pendingCount = useMutationQueue(
     (s) =>
       s.queue.filter((item) => item.scope === 'community' && item.name === 'sendChatMessage')
         .length,
   );
 
-  useEffect(() => {
-    if (isEphemeral) {
-      setMessages(DEFAULT_MESSAGES[threadId] ?? []);
-    } else {
-      setMessages(loadDurableChat(threadId));
-    }
-  }, [threadId, isEphemeral]);
-
-  const throttledRefresh = useThrottledInvalidate(300);
-
-  const sendMessage = useCallback(
-    async (text: string): Promise<ChatMessage> => {
+  const send = useMutation({
+    mutationKey: ['community', 'chat', 'send'],
+    // Writing to the device and queueing works offline; the outbox sends it later.
+    networkMode: 'always',
+    mutationFn: async (text: string): Promise<ChatMessage> => {
       const normalized = text.trim();
       if (!normalized) throw new Error('Cannot send an empty message.');
 
       const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const initials = currentUserName
         .split(' ')
         .map((p) => p[0])
         .join('')
         .slice(0, 2)
         .toUpperCase();
-
       const newMessage: ChatMessage = {
         id: `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         senderName: currentUserName,
         senderInitials: initials || 'ME',
         text: normalized,
-        time: timeStr,
+        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isSelf: true,
         status: isOffline ? 'pending_sync' : 'sent',
       };
 
       if (isEphemeral) {
-        // Ephemeral / Incognito mode: strictly volatile memory
-        setMessages((prev) => [...prev, newMessage]);
+        // Incognito: memory only, nothing persisted or queued.
+        queryClient.setQueryData<ChatMessage[]>(queryKey, (prev = []) => [...prev, newMessage]);
         return newMessage;
       }
 
-      const current = loadDurableChat(threadId);
-      const updatedList = [...current, newMessage];
+      const updated = [...loadDurableChat(threadId), newMessage];
+      saveDurableChat(threadId, updated);
+      queryClient.setQueryData<ChatMessage[]>(queryKey, updated);
 
-      // 1. Immediately persist locally
-      saveDurableChat(threadId, updatedList);
-      setMessages(updatedList);
-
-      // 2. Queue mutation
       await useMutationQueue.getState().addToQueue({
         name: 'sendChatMessage',
         scope: 'community',
@@ -227,17 +230,14 @@ export function useCommunityChat(
         },
         type: 'CUSTOM',
       });
-
-      void throttledRefresh(['community', 'chat', threadId]);
-
       return newMessage;
     },
-    [currentUserName, isOffline, threadId, isEphemeral, throttledRefresh],
-  );
+  });
 
   return {
     messages,
-    sendMessage,
+    sendMessage: send.mutateAsync,
+    isSending: send.isPending,
     isOffline,
     isOnline,
     pendingCount,

@@ -3,8 +3,7 @@
 import { storage } from '@repo/core/lib/storage.adapter';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
-import { useCallback, useEffect, useState } from 'react';
-import { useThrottledInvalidate } from '@repo/core/hooks/usePacer';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export interface ClimateMetrics {
   psychologicalSafety: number;
@@ -104,98 +103,86 @@ export function saveDurableClimate(
 /**
  * useClimateSensing
  *
- * Domain hook for classroom emotional & cognitive climate sensing,
- * offline anonymous Likert logging, and local radar calculation.
+ * Domain hook for classroom emotional & cognitive climate sensing, offline anonymous Likert
+ * logging and local radar calculation. A local query keyed by classroom, written by a mutation
+ * that saves on the device, updates the cache and queues the submission in the outbox.
  */
+/** Folds one more rating into the running average, to one decimal place. */
+function withRating(average: ClimateMetrics, ratings: ClimateMetrics, count: number): ClimateMetrics {
+  const fold = (key: keyof ClimateMetrics) =>
+    Number(((average[key] * (count - 1) + ratings[key]) / count).toFixed(1));
+  return {
+    psychologicalSafety: fold('psychologicalSafety'),
+    academicPacing: fold('academicPacing'),
+    peerBelonging: fold('peerBelonging'),
+    teacherWarmth: fold('teacherWarmth'),
+    cognitiveChallenge: fold('cognitiveChallenge'),
+  };
+}
+
+export const climateSensingKey = (classroomId: string) =>
+  ['classroom', 'climate', classroomId] as const;
+
 export function useClimateSensing(classroomId = 'class-10a') {
   const { isOffline, isOnline } = useOfflineStatus();
-  const [data, setData] = useState(() => loadDurableClimate(classroomId));
+  const queryClient = useQueryClient();
+  const queryKey = climateSensingKey(classroomId);
+
+  // Ratings are kept on the device; the read is synchronous and never waits for the network.
+  const { data } = useQuery({
+    queryKey,
+    queryFn: () => loadDurableClimate(classroomId),
+    initialData: () => loadDurableClimate(classroomId),
+    staleTime: Number.POSITIVE_INFINITY,
+    networkMode: 'always',
+  });
+
   const pendingCount = useMutationQueue(
     (s) =>
       s.queue.filter((item) => item.scope === 'classroom' && item.name === 'submitClimateSensing')
         .length,
   );
 
-  useEffect(() => {
-    setData(loadDurableClimate(classroomId));
-  }, [classroomId]);
-
-  const throttledRefresh = useThrottledInvalidate(500);
-
-  const submitRating = useCallback(
-    async (ratings: ClimateMetrics, note?: string): Promise<ClimateSubmission> => {
-      const nowIso = new Date().toISOString();
+  const submit = useMutation({
+    mutationKey: ['classroom', 'climate', 'submit'],
+    networkMode: 'always',
+    mutationFn: async ({
+      ratings,
+      note,
+    }: {
+      ratings: ClimateMetrics;
+      note?: string;
+    }): Promise<ClimateSubmission> => {
+      const submittedAt = new Date().toISOString();
       const submission: ClimateSubmission = {
         id: `climate-${Date.now()}`,
         metrics: ratings,
         note,
-        submittedAt: nowIso,
+        submittedAt,
       };
-
       const current = loadDurableClimate(classroomId);
-      // Recalculate rolling average
-      const count = current.history.length + 1;
-      const updatedMetrics: ClimateMetrics = {
-        psychologicalSafety: Number(
-          (
-            (current.metrics.psychologicalSafety * (count - 1) + ratings.psychologicalSafety) /
-            count
-          ).toFixed(1),
-        ),
-        academicPacing: Number(
-          ((current.metrics.academicPacing * (count - 1) + ratings.academicPacing) / count).toFixed(
-            1,
-          ),
-        ),
-        peerBelonging: Number(
-          ((current.metrics.peerBelonging * (count - 1) + ratings.peerBelonging) / count).toFixed(
-            1,
-          ),
-        ),
-        teacherWarmth: Number(
-          ((current.metrics.teacherWarmth * (count - 1) + ratings.teacherWarmth) / count).toFixed(
-            1,
-          ),
-        ),
-        cognitiveChallenge: Number(
-          (
-            (current.metrics.cognitiveChallenge * (count - 1) + ratings.cognitiveChallenge) /
-            count
-          ).toFixed(1),
-        ),
-      };
-
-      const updatedData = {
-        metrics: updatedMetrics,
+      const updated = {
+        metrics: withRating(current.metrics, ratings, current.history.length + 1),
         history: [submission, ...current.history],
       };
-
-      saveDurableClimate(classroomId, updatedData);
-      setData(updatedData);
+      saveDurableClimate(classroomId, updated);
+      queryClient.setQueryData(queryKey, updated);
 
       await useMutationQueue.getState().addToQueue({
         name: 'submitClimateSensing',
         scope: 'classroom',
-        variables: {
-          classroomId,
-          ratings,
-          note,
-          submittedAt: nowIso,
-        },
+        variables: { classroomId, ratings, note, submittedAt },
         type: 'CUSTOM',
       });
-
-      void throttledRefresh(['classroom', 'climate', classroomId]);
-
       return submission;
     },
-    [classroomId, throttledRefresh],
-  );
+  });
 
   return {
     metrics: data.metrics,
     history: data.history,
-    submitRating,
+    submitRating: (ratings: ClimateMetrics, note?: string) => submit.mutateAsync({ ratings, note }),
+    isSubmitting: submit.isPending,
     isOffline,
     isOnline,
     pendingCount,

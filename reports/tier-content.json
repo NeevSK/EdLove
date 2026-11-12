@@ -30003,7 +30003,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 8,
+    "prod": 6,
     "tests": 2
    },
    "imports": [],
@@ -34433,7 +34433,7 @@
    "unions": [],
    "importers": {
     "prod": 26,
-    "tests": 17
+    "tests": 18
    },
    "imports": [
     {
@@ -147384,7 +147384,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 121,
+   "lines": 116,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -147392,7 +147392,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 110,
+    "functionLines": 105,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -147444,7 +147444,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 210,
+   "lines": 201,
    "counts": {
     "types": 1,
     "consts": 2,
@@ -147452,7 +147452,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 106,
+    "functionLines": 97,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -148381,15 +148381,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 204,
+   "lines": 191,
    "counts": {
     "types": 3,
     "consts": 2,
     "constructs": 0,
     "ambient": 1,
     "schemas": 0,
-    "functions": 4,
-    "functionLines": 136,
+    "functions": 6,
+    "functionLines": 124,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -148404,6 +148404,7 @@
     "CANONICAL_CLIMATE_DIMENSIONS",
     "loadDurableClimate",
     "saveDurableClimate",
+    "climateSensingKey",
     "useClimateSensing"
    ],
    "unions": [],
@@ -148429,16 +148430,10 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/hooks/usePacer.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T5"
     }
    ],
    "outside": [
-    "react"
+    "@tanstack/react-query"
    ]
   },
   {
@@ -148453,8 +148448,8 @@
     "constructs": 0,
     "ambient": 2,
     "schemas": 0,
-    "functions": 5,
-    "functionLines": 162,
+    "functions": 6,
+    "functionLines": 161,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -148467,12 +148462,13 @@
     "loadDurableChat",
     "saveDurableChat",
     "UseCommunityChatOptions",
+    "communityChatKey",
     "useCommunityChat"
    ],
    "unions": [],
    "importers": {
     "prod": 4,
-    "tests": 1
+    "tests": 2
    },
    "imports": [
     {
@@ -148504,16 +148500,10 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/hooks/usePacer.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T5"
     }
    ],
    "outside": [
-    "react"
+    "@tanstack/react-query"
    ]
   },
   {

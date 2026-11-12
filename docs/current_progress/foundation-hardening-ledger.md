@@ -352,3 +352,11 @@ web remains online-only with normal request/reconnect error handling.
 - Drain moved from `SyncOrchestrator.tsx` (T6) to `useOutboxReplay.ts` (T5) behind bindings; tier import violations 35 → 20 (ceiling lowered). `outbox-scheduler.native.test.tsx` fixed (its conflict-store mock ignored selectors) and passes 3/3.
 - The outbox is dormant: empty registry, the drain not mounted, the background task not registered. It waits for v1 command handlers.
 - G0 unchanged (50/1/17). G1: core 20 failing (unchanged); mobile one fewer failing file. New: `replayDecision.test.ts` (5).
+
+### Client runtime L5 step 6, batch 1: web local queries and mutations
+
+- `useCommunityChat` (2 screens) and `useClimateSensing` (1 screen) are now local queries: TanStack Query keyed by thread or classroom, read synchronously from device storage (`initialData`, `staleTime: Infinity`, `networkMode: 'always'`), written by a `useMutation` that persists, updates the cache and queues in the outbox. The effect that re-read storage on an id change and the copied state are gone. Every reader of a thread shares one cache entry. Fixed: an ephemeral thread reset to `DEFAULT_MESSAGES` instead of `getInitialThreadMessages`.
+- `useAcademicDomain` and `useTuitionDomain` writes are `useMutation`; `isSubmitting` and `isProcessing` come from `isPending`. The hooks' APIs are unchanged; new `isSending`, `isSubmitting` (climate) and `isGrading`.
+- Failed sends now reach the person through the QueryClient policy. The screens caught them silently before.
+- The `lib/sync/*` copies of these hooks are unwired (only a test uses their load and save helpers) and are left in place.
+- Ratchet: effects that set state 151 → 148; `handRolledLoadingFlags` 52 (new). G0 web 1 (unchanged). G1 web unchanged; new `useCommunityChat.query.test.tsx` (3, G3 jsdom).

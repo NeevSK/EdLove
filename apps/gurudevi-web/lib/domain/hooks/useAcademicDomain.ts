@@ -1,8 +1,8 @@
 'use client';
 
 import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
-import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useDebouncedValue, useThrottledInvalidate } from '@repo/core/hooks/usePacer';
 import {
   academicAdapter,
@@ -13,7 +13,6 @@ import type { AcademicSubmissionView, AssignmentQuest } from '../ports/academic.
 export function useAcademicDomain() {
   const { isOnline } = useOfflineStatus();
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>('asg-wetland-study');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const throttledRefresh = useThrottledInvalidate(500);
@@ -54,52 +53,47 @@ export function useAcademicDomain() {
     );
   }, [submissions, debouncedSearch]);
 
-  const submitAssignment = useCallback(
-    async (assignmentId: string, content: string, photoUrl?: string) => {
-      setIsSubmitting(true);
-      try {
-        const result = await academicAdapter.submitAssignment({
-          assignmentId,
-          studentId: 'student-current-user',
-          content,
-          photoUrl,
-        });
-
-        // Throttle query invalidation using TanStack Pacer
-        void throttledRefresh(['academic', 'submissions']);
-        void throttledRefresh(['academic', 'submissions', assignmentId]);
-
-        return result;
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [throttledRefresh],
-  );
-
-  const gradeSubmission = useCallback(
-    async (submissionId: string, marks: number, letterGrade: string, feedback?: string) => {
-      const targetSub = submissions.find((s) => s.id === submissionId);
-      if (!targetSub) return null;
-
-      const result = await academicAdapter.gradeSubmission({
-        submissionId,
-        studentId: targetSub.student_id,
-        classroomId: targetSub.classroom || 'class-default',
-        assignmentId: targetSub.assignment_id,
-        marks,
-        letterGrade,
-        feedback,
-      });
-
-      // Throttle query invalidation using TanStack Pacer
+  const submit = useMutation({
+    mutationKey: ['academic', 'submissions', 'submit'],
+    mutationFn: (input: { assignmentId: string; content: string; photoUrl?: string }) =>
+      academicAdapter.submitAssignment({ ...input, studentId: 'student-current-user' }),
+    onSuccess: (_result, { assignmentId }) => {
       void throttledRefresh(['academic', 'submissions']);
-      void throttledRefresh(['academic', 'submissions', targetSub.assignment_id]);
-
-      return result;
+      void throttledRefresh(['academic', 'submissions', assignmentId]);
     },
-    [submissions, throttledRefresh],
-  );
+  });
+
+  const grade = useMutation({
+    mutationKey: ['academic', 'submissions', 'grade'],
+    mutationFn: (input: Parameters<typeof academicAdapter.gradeSubmission>[0]) =>
+      academicAdapter.gradeSubmission(input),
+    onSuccess: (_result, { assignmentId }) => {
+      void throttledRefresh(['academic', 'submissions']);
+      void throttledRefresh(['academic', 'submissions', assignmentId]);
+    },
+  });
+
+  const submitAssignment = (assignmentId: string, content: string, photoUrl?: string) =>
+    submit.mutateAsync({ assignmentId, content, photoUrl });
+
+  const gradeSubmission = async (
+    submissionId: string,
+    marks: number,
+    letterGrade: string,
+    feedback?: string,
+  ) => {
+    const target = submissions.find((s) => s.id === submissionId);
+    if (!target) return null;
+    return grade.mutateAsync({
+      submissionId,
+      studentId: target.student_id,
+      classroomId: target.classroom || 'class-default',
+      assignmentId: target.assignment_id,
+      marks,
+      letterGrade,
+      feedback,
+    });
+  };
 
   return {
     assignments,
@@ -113,7 +107,8 @@ export function useAcademicDomain() {
     setSelectedAssignmentId,
     submitAssignment,
     gradeSubmission,
-    isSubmitting,
+    isSubmitting: submit.isPending,
+    isGrading: grade.isPending,
     isOnline,
     throttledRefresh,
   };

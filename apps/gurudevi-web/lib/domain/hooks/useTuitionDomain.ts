@@ -2,8 +2,8 @@
 
 import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
-import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useDebouncedValue, useThrottledInvalidate } from '@repo/core/hooks/usePacer';
 import {
   DEFAULT_CANONICAL_BATCHES,
@@ -111,7 +111,6 @@ export function useTuitionDomain() {
   const throttledRefresh = useThrottledInvalidate(500);
 
   const [selectedBatchId, setSelectedBatchId] = useState<string>('batch-10a-math');
-  const [isProcessing, setIsProcessing] = useState(false);
 
   // TanStack Query: Batches catalog caching & revalidation
   const { data: batches = DEFAULT_CANONICAL_BATCHES } = useQuery({
@@ -148,47 +147,39 @@ export function useTuitionDomain() {
     );
   }, [fees, debouncedSearch]);
 
-  const issueReceipt = useCallback(
-    async (feeId: string) => {
-      const targetFee = fees.find((f) => f.id === feeId);
-      if (!targetFee) return null;
-
-      setIsProcessing(true);
-      try {
-        const result = await tuitionAdapter.issueReceipt({
-          feeId,
-          studentName: targetFee.studentName,
-          amount: targetFee.amount,
-          batchId: selectedBatchId,
-          payerUserId: `student-${targetFee.studentName.toLowerCase().replace(/\s+/g, '-')}`,
-          feeType: targetFee.feeType,
-        });
-
-        // Optimistically update fee status in UI
-        setFees((prev) =>
-          prev.map((f) =>
-            f.id === feeId
-              ? {
-                  ...f,
-                  status: 'paid',
-                  receiptNo: result.receiptNo,
-                  paidAt: new Date().toISOString().split('T')[0],
-                }
-              : f,
-          ),
-        );
-
-        // Throttle invalidation notification for background queries using TanStack Pacer
-        void throttledRefresh(['tuition', 'summary', selectedBatchId]);
-        void throttledRefresh(['tuition', 'receipts']);
-
-        return result;
-      } finally {
-        setIsProcessing(false);
-      }
+  const issue = useMutation({
+    mutationKey: ['tuition', 'receipts', 'issue'],
+    mutationFn: (fee: FeeViewModel) =>
+      tuitionAdapter.issueReceipt({
+        feeId: fee.id,
+        studentName: fee.studentName,
+        amount: fee.amount,
+        batchId: selectedBatchId,
+        payerUserId: `student-${fee.studentName.toLowerCase().replace(/\s+/g, '-')}`,
+        feeType: fee.feeType,
+      }),
+    onSuccess: (result, fee) => {
+      setFees((prev) =>
+        prev.map((f) =>
+          f.id === fee.id
+            ? {
+                ...f,
+                status: 'paid',
+                receiptNo: result.receiptNo,
+                paidAt: new Date().toISOString().split('T')[0],
+              }
+            : f,
+        ),
+      );
+      void throttledRefresh(['tuition', 'summary', selectedBatchId]);
+      void throttledRefresh(['tuition', 'receipts']);
     },
-    [fees, selectedBatchId, throttledRefresh],
-  );
+  });
+
+  const issueReceipt = async (feeId: string) => {
+    const target = fees.find((f) => f.id === feeId);
+    return target ? issue.mutateAsync(target) : null;
+  };
 
   return {
     batches,
@@ -202,7 +193,7 @@ export function useTuitionDomain() {
     selectedBatchId,
     setSelectedBatchId,
     issueReceipt,
-    isProcessing,
+    isProcessing: issue.isPending,
     isOnline,
     throttledRefresh,
   };
