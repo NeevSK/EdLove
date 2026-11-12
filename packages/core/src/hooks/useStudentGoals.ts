@@ -1,12 +1,6 @@
-import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
+import { readStudentGoals } from '@repo/core/store/queries/experienceQueries';
+import type { StudentGoal } from '@repo/core/types/uiExperience';
 import { useEffect, useMemo, useState } from 'react';
-
-export interface StudentGoal {
-  id: string;
-  title: string;
-  status: 'pending' | 'completed' | 'in_progress';
-  target_date: string;
-}
 
 /**
  * useStudentGoals
@@ -23,7 +17,7 @@ export const useStudentGoals = (userId?: string) => {
     const fetchGoals = async () => {
       setIsLoading(true);
       try {
-        const data = await uiExperience.getStudentGoals(userId);
+        const data = await readStudentGoals(userId);
         if (data) setGoals(data);
       } catch (e) {
         console.error('[useStudentGoals] Error:', e);

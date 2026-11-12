@@ -69,6 +69,8 @@ export const FOLDER_RULES = [
   ['packages/core/src/effect/Layers.ts', 'C'],
   ['packages/core/src/effect/bindings.ts', 'C'],
   ['packages/core/src/effect/bindings/', 'C'],
+  // Promise bridges onto the app runtime (runEffect, fireAndForgetEffect): part of the root.
+  ['packages/core/src/effect/Runtime.ts', 'C'],
   ['packages/core/src/adapters/', 'T3'],
   ['packages/core/src/platform/drivers/', 'T3'],
   ['packages/core/src/native/', 'T3'],
@@ -121,7 +123,7 @@ export function tierOf(filePath) {
     if (GENERIC_FOLDERS.includes(rule)) continue;
     if (typeof rule === 'string' ? filePath.startsWith(rule) : rule.test(filePath)) return tier;
   }
-  if (/(__tests__|__mocks__)\/|\.(test|spec)\.tsx?$|\.d\.ts$/.test(filePath)) return 'UNPLACED';
+  if (/(__tests__|__mocks__)\/|\.(test|spec)\.tsx?$|\.d\.ts$|^packages\/core\/src\/testing\//.test(filePath)) return 'UNPLACED';
   // Then the name; logic/ and module folders are judged by what each file says it is.
   if (DEFAULT_T2_ROOTS.some((root) => filePath.startsWith(root))) {
     for (const [rule, tier] of NAME_RULES) if (rule.test(filePath)) return tier;

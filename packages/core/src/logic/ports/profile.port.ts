@@ -67,7 +67,6 @@ export interface ProfileJourneySnapshot {
   whispered_moments: WhisperedMomentSnapshot[];
 }
 
-
 export interface ProfileJourneyEvent {
   id: string;
   timestamp: string;

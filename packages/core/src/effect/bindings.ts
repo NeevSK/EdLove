@@ -1,8 +1,9 @@
 import { featureRolloutCache as rolloutCache } from '@repo/core/adapters/feature-rollout/featureRolloutCache.adapter';
 import { growthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
-import { journeySnapshotStore } from '@repo/core/adapters/storage/journeySnapshot.adapter';
-import { growthViewSource } from '@repo/core/adapters/supabase/growthView.adapter';
-import { authProfileStorage, restoreIdentityProfile } from '@repo/core/lib/authProfileStorage.adapter';
+import {
+  authProfileStorage,
+  restoreIdentityProfile,
+} from '@repo/core/lib/authProfileStorage.adapter';
 import type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,
@@ -16,6 +17,9 @@ import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
  * Some things state needs synchronously are bound here, once, to their adapters; persistence,
  * the session scope and the event bus are in ./bindings/state.ts. Stores import these names and
  * never an adapter or lib/ file.
+ *
+ * A binding whose adapter pulls in a heavy chain (the database client, date libraries) gets its own
+ * file under ./bindings/, so importing the auth store doesn't load it.
  */
 
 /** The feature-flag source. */
@@ -26,12 +30,6 @@ export const featureRolloutCache: {
   read(key: string, context: string): Promise<FeatureRolloutSnapshot | null>;
   write(key: string, context: string, snapshot: FeatureRolloutSnapshot): Promise<void>;
 } = rolloutCache;
-
-/** Role journey snapshots on the device; one that can't be read loads as null. */
-export const journeySnapshots = journeySnapshotStore;
-
-/** The growth view and its offline snapshot, decoded at the boundary. */
-export const growthView = growthViewSource;
 
 /** Records a state change for the next error report. */
 export const breadcrumb: typeof leaveBreadcrumb = leaveBreadcrumb;

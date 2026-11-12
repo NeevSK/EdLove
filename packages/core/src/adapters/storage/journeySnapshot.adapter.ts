@@ -1,4 +1,5 @@
 import { storage } from '@repo/core/lib/storage.adapter';
+import type { JourneySnapshotStore } from '@repo/core/logic/ports/journeySnapshot.port';
 import type { WorkspaceRolePersona } from '@repo/core/types';
 import { z } from 'zod';
 
@@ -21,10 +22,7 @@ export function getJourneySnapshotStorageKey(persona: WorkspaceRolePersona): str
   return `role_journey:v6:${persona}:snapshot`;
 }
 
-export function saveJourneySnapshot(
-  persona: WorkspaceRolePersona,
-  snapshot: unknown,
-): void {
+export function saveJourneySnapshot(persona: WorkspaceRolePersona, snapshot: unknown): void {
   const envelope = {
     version: SNAPSHOT_SCHEMA_VERSION,
     savedAt: new Date().toISOString(),
@@ -56,7 +54,7 @@ export function dropJourneySnapshot(persona: WorkspaceRolePersona): void {
   storage.delete(getJourneySnapshotStorageKey(persona));
 }
 
-export const journeySnapshotStore = {
+export const journeySnapshotStore: JourneySnapshotStore = {
   load: loadJourneySnapshot,
   save: saveJourneySnapshot,
   drop: dropJourneySnapshot,

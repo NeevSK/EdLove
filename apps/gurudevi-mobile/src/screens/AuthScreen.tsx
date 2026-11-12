@@ -25,7 +25,7 @@ import {
   clearExistingAccountTransferAuthorization,
 } from '@repo/core/native/guestConversionLedger';
 import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import {
   Avatar,
   Button,

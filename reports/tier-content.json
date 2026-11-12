@@ -13533,7 +13533,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract+logic",
-   "lines": 64,
+   "lines": 62,
    "counts": {
     "types": 0,
     "consts": 2,
@@ -13541,7 +13541,7 @@
     "ambient": 0,
     "schemas": 1,
     "functions": 4,
-    "functionLines": 43,
+    "functionLines": 40,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -13568,6 +13568,12 @@
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/ports/journeySnapshot.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
     },
     {
      "to": "packages/core/src/types/index.ts",
@@ -13946,7 +13952,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
-   "lines": 40,
+   "lines": 41,
    "counts": {
     "types": 0,
     "consts": 1,
@@ -13982,6 +13988,12 @@
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/ports/growthView.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
     },
     {
      "to": "packages/core/src/logic/schemas/growth.schema.ts",
@@ -14361,15 +14373,15 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
-   "lines": 329,
+   "lines": 286,
    "counts": {
-    "types": 7,
+    "types": 0,
     "consts": 0,
     "constructs": 1,
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 256,
+    "functionLines": 268,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -14378,19 +14390,12 @@
     "jsx": false
    },
    "exports": [
-    "JourneyEventRecord",
-    "StudentGoalRecord",
-    "SnapshotMomentRecord",
-    "PendingAttendanceItem",
-    "PendingGradingItem",
-    "HeatmapItem",
-    "UIExperienceRepository",
     "createSupabaseUIExperienceRepository",
     "supabaseUIExperienceRepository"
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -14401,8 +14406,26 @@
      "toTier": "T2"
     },
     {
+     "to": "packages/core/src/logic/ports/uiExperience.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    },
+    {
      "to": "packages/core/src/types/API.ts",
      "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/types/Temporal.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/types/uiExperience.ts",
+     "typeOnly": true,
      "toShape": "contract",
      "toTier": "T0"
     },
@@ -14992,15 +15015,15 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 384,
+   "lines": 386,
    "counts": {
-    "types": 7,
+    "types": 6,
     "consts": 3,
     "constructs": 1,
     "ambient": 1,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 80,
+    "functionLines": 82,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -15009,7 +15032,6 @@
     "jsx": false
    },
    "exports": [
-    "AIContextDomain",
     "ContextSensitivityTier",
     "AIContextSlotId",
     "AIContextSlotPolicy",
@@ -15023,10 +15045,6 @@
    ],
    "unions": [
     {
-     "name": "AIContextDomain",
-     "union": "'community'|'library'|'profile'|'self'|'workspace'"
-    },
-    {
      "name": "ContextSensitivityTier",
      "union": "'always_safe'|'configurable_default_on'|'explicit_attach_only'|'sacred_never_ingest'"
     },
@@ -15036,10 +15054,17 @@
     }
    ],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 1
    },
-   "imports": [],
+   "imports": [
+    {
+     "to": "packages/core/src/types/aiContext.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
    "outside": [
     "react",
     "zustand"
@@ -15050,7 +15075,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 292,
+   "lines": 290,
    "counts": {
     "types": 5,
     "consts": 3,
@@ -15058,7 +15083,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 85,
+    "functionLines": 83,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -15090,10 +15115,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/ai/contextRegistry.store.ts",
+     "to": "packages/core/src/types/aiContext.ts",
      "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T4"
+     "toShape": "contract",
+     "toTier": "T0"
     }
    ],
    "outside": []
@@ -25736,7 +25761,7 @@
    "package": "packages/core",
    "folderTier": "RETIRED",
    "shape": "runtime",
-   "lines": 66,
+   "lines": 70,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -25744,7 +25769,7 @@
     "ambient": 1,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 64,
+    "functionLines": 68,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -26858,7 +26883,7 @@
   {
    "file": "packages/core/src/effect/Runtime.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "C",
    "shape": "runtime",
    "lines": 112,
    "counts": {
@@ -26948,6 +26973,141 @@
    ]
   },
   {
+   "file": "packages/core/src/effect/bindings/experience.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 6,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "uiExperience"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/ports/uiExperience.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/growth.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 6,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "growthView"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/supabase/growthView.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/ports/growthView.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/effect/bindings/journey.ts",
+   "package": "packages/core",
+   "folderTier": "C",
+   "shape": "contract",
+   "lines": 6,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "journeySnapshots"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/adapters/storage/journeySnapshot.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/ports/journeySnapshot.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/effect/bindings/state.ts",
    "package": "packages/core",
    "folderTier": "C",
@@ -27031,10 +27191,10 @@
    "package": "packages/core",
    "folderTier": "C",
    "shape": "contract",
-   "lines": 41,
+   "lines": 39,
    "counts": {
     "types": 0,
-    "consts": 6,
+    "consts": 4,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
@@ -27050,14 +27210,12 @@
    "exports": [
     "featureRollout",
     "featureRolloutCache",
-    "journeySnapshots",
-    "growthView",
     "breadcrumb",
     "authProfile"
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -27069,18 +27227,6 @@
     },
     {
      "to": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/storage/journeySnapshot.adapter.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/supabase/growthView.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -27144,7 +27290,7 @@
      "to": "packages/core/src/effect/Runtime.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/effect/AppRuntime.ts",
@@ -27162,7 +27308,7 @@
      "to": "packages/core/src/effect/Runtime.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "C"
     },
     {
      "to": "packages/core/src/effect/Schedules.ts",
@@ -28363,13 +28509,13 @@
     {
      "to": "packages/core/src/hooks/useStudentGoals.ts",
      "typeOnly": false,
-     "toShape": "contract",
+     "toShape": "runtime",
      "toTier": "T5"
     },
     {
      "to": "packages/core/src/hooks/useTemporalHeatmap.ts",
      "typeOnly": false,
-     "toShape": "contract",
+     "toShape": "runtime",
      "toTier": "T5"
     },
     {
@@ -29333,15 +29479,15 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "contract+logic",
-   "lines": 145,
+   "lines": 110,
    "counts": {
-    "types": 2,
+    "types": 1,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 124,
+    "functionLines": 98,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -29350,7 +29496,6 @@
     "jsx": false
    },
    "exports": [
-    "JourneyEvent",
     "HolisticView",
     "useJourneyHistory"
    ],
@@ -29361,22 +29506,28 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
      "toTier": "T5"
     },
     {
+     "to": "packages/core/src/store/queries/experienceQueries.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T4"
+    },
+    {
      "to": "packages/core/src/store/useTemporalStore.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/types/uiExperience.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
     }
    ],
    "outside": [
@@ -29564,16 +29715,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
      "toTier": "T5"
+    },
+    {
+     "to": "packages/core/src/store/queries/experienceQueries.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/store/useTemporalStore.ts",
@@ -29713,9 +29864,9 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "contract+logic",
-   "lines": 69,
+   "lines": 57,
    "counts": {
-    "types": 3,
+    "types": 1,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
@@ -29730,8 +29881,6 @@
     "jsx": false
    },
    "exports": [
-    "PendingAttendanceItem",
-    "PendingGradingItem",
     "PendingActionsResult",
     "usePendingActions"
    ],
@@ -29742,10 +29891,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
+     "to": "packages/core/src/store/queries/experienceQueries.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract+logic",
+     "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/types/uiExperience.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
     }
    ],
    "outside": [
@@ -29958,16 +30113,16 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/failureFeedback.ts",
+     "to": "packages/core/src/lib/failureFeedback.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/feedback.ts",
+     "to": "packages/core/src/lib/feedback.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/sync/delta.ts",
@@ -30408,10 +30563,10 @@
    "file": "packages/core/src/hooks/useStudentGoals.ts",
    "package": "packages/core",
    "folderTier": "T5",
-   "shape": "contract",
-   "lines": 42,
+   "shape": "runtime",
+   "lines": 36,
    "counts": {
-    "types": 1,
+    "types": 0,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
@@ -30426,7 +30581,6 @@
     "jsx": false
    },
    "exports": [
-    "StudentGoal",
     "useStudentGoals"
    ],
    "unions": [],
@@ -30436,10 +30590,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
+     "to": "packages/core/src/store/queries/experienceQueries.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
+     "toShape": "contract+logic",
+     "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/types/uiExperience.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
     }
    ],
    "outside": [
@@ -30450,16 +30610,16 @@
    "file": "packages/core/src/hooks/useTemporalHeatmap.ts",
    "package": "packages/core",
    "folderTier": "T5",
-   "shape": "contract",
-   "lines": 39,
+   "shape": "runtime",
+   "lines": 24,
    "counts": {
-    "types": 1,
+    "types": 0,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 28,
+    "functionLines": 20,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -30468,7 +30628,6 @@
     "jsx": false
    },
    "exports": [
-    "HeatmapData",
     "useTemporalHeatmap"
    ],
    "unions": [],
@@ -30478,22 +30637,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
      "to": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/logic/utils/temporalUtils.ts",
+     "to": "packages/core/src/store/queries/experienceQueries.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T4"
     }
    ],
    "outside": [
@@ -30557,7 +30710,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "barrel",
-   "lines": 413,
+   "lines": 417,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -30785,10 +30938,10 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/logic/utils/LanguageUtils.ts",
+     "to": "packages/core/src/logic/utils/LanguageUtils.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/utils/QRBuilder.ts",
@@ -31057,13 +31210,13 @@
     {
      "to": "packages/core/src/hooks/useStudentGoals.ts",
      "typeOnly": false,
-     "toShape": "contract",
+     "toShape": "runtime",
      "toTier": "T5"
     },
     {
      "to": "packages/core/src/hooks/useTemporalHeatmap.ts",
      "typeOnly": false,
-     "toShape": "contract",
+     "toShape": "runtime",
      "toTier": "T5"
     },
     {
@@ -31121,10 +31274,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/agents/index.ts",
+     "to": "packages/core/src/logic/agents/agents.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/grading/GPACalculator.ts",
@@ -31993,9 +32146,9 @@
    ]
   },
   {
-   "file": "packages/core/src/lib/failureFeedback.ts",
+   "file": "packages/core/src/lib/failureFeedback.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract+logic",
    "lines": 181,
    "counts": {
@@ -32048,10 +32201,10 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/lib/feedback.ts",
+     "to": "packages/core/src/lib/feedback.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/auth/authCallbackAttempt.ts",
@@ -32193,9 +32346,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/feedback.ts",
+   "file": "packages/core/src/lib/feedback.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 11,
    "counts": {
@@ -32810,9 +32963,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/monitoring/sentry.ts",
+   "file": "packages/core/src/lib/monitoring/sentry.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 50,
    "counts": {
@@ -34372,7 +34525,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 66,
+   "lines": 67,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -34417,6 +34570,12 @@
      "toTier": "T4"
     },
     {
+     "to": "packages/core/src/types/Temporal.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
      "to": "packages/core/src/types/mutationQueue.ts",
      "typeOnly": true,
      "toShape": "contract",
@@ -34457,10 +34616,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/feedback.ts",
+     "to": "packages/core/src/lib/feedback.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/sync/errorClassifier.ts",
@@ -34752,9 +34911,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/agents/index.ts",
+   "file": "packages/core/src/logic/agents/agents.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 30,
    "counts": {
@@ -34908,10 +35067,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/feedback.ts",
+     "to": "packages/core/src/lib/feedback.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/monitoring/index.ts",
@@ -36648,7 +36807,7 @@
     {
      "to": "packages/core/src/hooks/useTemporalHeatmap.ts",
      "typeOnly": false,
-     "toShape": "contract",
+     "toShape": "runtime",
      "toTier": "T5"
     },
     {
@@ -37311,7 +37470,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/effect/bindings.ts",
+     "to": "packages/core/src/effect/bindings/journey.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "C"
@@ -39929,7 +40088,7 @@
    "package": "packages/core",
    "folderTier": "T1",
    "shape": "contract",
-   "lines": 243,
+   "lines": 246,
    "counts": {
     "types": 3,
     "consts": 0,
@@ -40266,6 +40425,45 @@
    ]
   },
   {
+   "file": "packages/core/src/logic/ports/growthView.port.ts",
+   "package": "packages/core",
+   "folderTier": "T1",
+   "shape": "contract",
+   "lines": 12,
+   "counts": {
+    "types": 1,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "GrowthViewSource"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/logic/schemas/growth.schema.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/logic/ports/guardian.port.ts",
    "package": "packages/core",
    "folderTier": "T1",
@@ -40360,6 +40558,45 @@
     },
     {
      "to": "packages/core/src/types/User.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/logic/ports/journeySnapshot.port.ts",
+   "package": "packages/core",
+   "folderTier": "T1",
+   "shape": "contract",
+   "lines": 9,
+   "counts": {
+    "types": 1,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "JourneySnapshotStore"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/types/index.ts",
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T0"
@@ -40525,7 +40762,7 @@
    "package": "packages/core",
    "folderTier": "T1",
    "shape": "contract",
-   "lines": 128,
+   "lines": 127,
    "counts": {
     "types": 11,
     "consts": 0,
@@ -40786,6 +41023,51 @@
    "imports": [
     {
      "to": "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/logic/ports/uiExperience.port.ts",
+   "package": "packages/core",
+   "folderTier": "T1",
+   "shape": "contract",
+   "lines": 34,
+   "counts": {
+    "types": 1,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "UIExperienceRepository"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/types/Temporal.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/types/uiExperience.ts",
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T0"
@@ -42247,7 +42529,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 5,
     "tests": 0
    },
    "imports": [
@@ -43409,9 +43691,9 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/utils/LanguageUtils.ts",
+   "file": "packages/core/src/logic/utils/LanguageUtils.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 85,
    "counts": {
@@ -43702,10 +43984,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/utils/LanguageUtils.ts",
+     "to": "packages/core/src/logic/utils/LanguageUtils.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/utils/logger.ts",
@@ -43815,7 +44097,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 116,
+   "lines": 114,
    "counts": {
     "types": 3,
     "consts": 0,
@@ -43823,7 +44105,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 4,
-    "functionLines": 74,
+    "functionLines": 73,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -43846,12 +44128,6 @@
     "tests": 1
    },
    "imports": [
-    {
-     "to": "packages/core/src/store/useTemporalStore.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T4"
-    },
     {
      "to": "packages/core/src/types/Temporal.ts",
      "typeOnly": true,
@@ -47144,10 +47420,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/utils/LanguageUtils.ts",
+     "to": "packages/core/src/logic/utils/LanguageUtils.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": [
@@ -47849,11 +48125,78 @@
    "outside": []
   },
   {
+   "file": "packages/core/src/store/queries/experienceQueries.ts",
+   "package": "packages/core",
+   "folderTier": "T4",
+   "shape": "contract+logic",
+   "lines": 77,
+   "counts": {
+    "types": 1,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 5,
+    "functionLines": 46,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "JourneyEventKind",
+    "journeyEventsQuery",
+    "temporalHeatmapQuery",
+    "readStudentGoals",
+    "readPendingActions",
+    "saveSnapshotMoment"
+   ],
+   "unions": [
+    {
+     "name": "JourneyEventKind",
+     "union": "'growth'|'journal'|'moments'|'mood'|'rewards'"
+    }
+   ],
+   "importers": {
+    "prod": 5,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/effect/bindings/experience.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/logic/utils/temporalUtils.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/types/Temporal.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/types/uiExperience.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/store/queries/growthQuery.ts",
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 42,
+   "lines": 43,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -47861,7 +48204,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 4,
-    "functionLines": 32,
+    "functionLines": 33,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -47882,7 +48225,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/effect/bindings.ts",
+     "to": "packages/core/src/effect/bindings/growth.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "C"
@@ -48803,9 +49146,9 @@
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
-   "lines": 81,
+   "lines": 76,
    "counts": {
-    "types": 5,
+    "types": 1,
     "consts": 0,
     "constructs": 1,
     "ambient": 0,
@@ -48820,34 +49163,13 @@
     "jsx": false
    },
    "exports": [
-    "TemporalPhase",
-    "TemporalViewMode",
-    "TemporalReadPolicy",
-    "TemporalCapability",
     "TemporalState",
     "useTemporalStore"
    ],
-   "unions": [
-    {
-     "name": "TemporalPhase",
-     "union": "'future'|'past'|'present'"
-    },
-    {
-     "name": "TemporalViewMode",
-     "union": "'spotlight'|'timeline'"
-    },
-    {
-     "name": "TemporalReadPolicy",
-     "union": "'cached-only'|'live'"
-    },
-    {
-     "name": "TemporalCapability",
-     "union": "'audit_history'|'business_fact'|'effective_dated'|'event_stream'|'snapshot'"
-    }
-   ],
+   "unions": [],
    "importers": {
-    "prod": 15,
-    "tests": 7
+    "prod": 14,
+    "tests": 6
    },
    "imports": [
     {
@@ -49030,7 +49352,7 @@
   {
    "file": "packages/core/src/testing/scenarioHarness.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "UNPLACED",
    "shape": "contract+logic",
    "lines": 90,
    "counts": {
@@ -51140,9 +51462,9 @@
    "package": "packages/core",
    "folderTier": "T0",
    "shape": "contract",
-   "lines": 25,
+   "lines": 45,
    "counts": {
-    "types": 4,
+    "types": 9,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
@@ -51160,16 +51482,37 @@
     "TemporalPoint",
     "TemporalScale",
     "TemporalBounds",
-    "LongitudinalRecord"
+    "LongitudinalRecord",
+    "TemporalPhase",
+    "TemporalViewMode",
+    "TemporalReadPolicy",
+    "TemporalCapability",
+    "TemporalView"
    ],
    "unions": [
     {
      "name": "TemporalScale",
      "union": "'custom'|'day'|'month'|'week'|'year'"
+    },
+    {
+     "name": "TemporalPhase",
+     "union": "'future'|'past'|'present'"
+    },
+    {
+     "name": "TemporalViewMode",
+     "union": "'spotlight'|'timeline'"
+    },
+    {
+     "name": "TemporalReadPolicy",
+     "union": "'cached-only'|'live'"
+    },
+    {
+     "name": "TemporalCapability",
+     "union": "'audit_history'|'business_fact'|'effective_dated'|'event_stream'|'snapshot'"
     }
    ],
    "importers": {
-    "prod": 13,
+    "prod": 17,
     "tests": 0
    },
    "imports": [],
@@ -51615,6 +51958,43 @@
    "outside": []
   },
   {
+   "file": "packages/core/src/types/aiContext.ts",
+   "package": "packages/core",
+   "folderTier": "T0",
+   "shape": "contract",
+   "lines": 3,
+   "counts": {
+    "types": 1,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "AIContextDomain"
+   ],
+   "unions": [
+    {
+     "name": "AIContextDomain",
+     "union": "'community'|'library'|'profile'|'self'|'workspace'"
+    }
+   ],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/types/authSession.ts",
    "package": "packages/core",
    "folderTier": "T0",
@@ -51988,7 +52368,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 142,
+    "prod": 143,
     "tests": 11
    },
    "imports": [
@@ -52932,6 +53312,43 @@
    ],
    "importers": {
     "prod": 4,
+    "tests": 0
+   },
+   "imports": [],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/types/uiExperience.ts",
+   "package": "packages/core",
+   "folderTier": "T0",
+   "shape": "contract",
+   "lines": 47,
+   "counts": {
+    "types": 6,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "JourneyEvent",
+    "StudentGoal",
+    "SnapshotMomentRecord",
+    "PendingAttendanceItem",
+    "PendingGradingItem",
+    "HeatmapItem"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 6,
     "tests": 0
    },
    "imports": [],
@@ -63840,10 +64257,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/feedback.ts",
+     "to": "packages/core/src/lib/feedback.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/index.ts",
@@ -121590,10 +122007,10 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/feedback.ts",
+     "to": "packages/core/src/lib/feedback.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/index.ts",
@@ -123322,10 +123739,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/feedback.ts",
+     "to": "packages/core/src/lib/feedback.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/index.ts",
@@ -130340,10 +130757,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/feedback.ts",
+     "to": "packages/core/src/lib/feedback.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/ui/src/components/native/index.ts",
@@ -158342,20 +158759,6 @@
     ]
    },
    {
-    "name": "JourneyEvent",
-    "where": [
-     "packages/core/src/hooks/useJourneyHistory.ts",
-     "packages/self/src/hooks/useJourneyData.ts"
-    ]
-   },
-   {
-    "name": "useStudentGoals",
-    "where": [
-     "packages/core/src/hooks/useStudentGoals.ts",
-     "packages/self/src/hooks/useStudentGoals.ts"
-    ]
-   },
-   {
     "name": "SafeTelemetryValue",
     "where": [
      "packages/core/src/lib/monitoring/safeData.ts",
@@ -158409,6 +158812,13 @@
     "where": [
      "packages/core/src/types/User.ts",
      "apps/edlove-web/src/types/index.ts"
+    ]
+   },
+   {
+    "name": "JourneyEvent",
+    "where": [
+     "packages/core/src/types/uiExperience.ts",
+     "packages/self/src/hooks/useJourneyData.ts"
     ]
    },
    {
@@ -158627,6 +159037,13 @@
     "where": [
      "packages/core/src/types/Workbench.ts#TemporalIntent",
      "packages/ui/src/theme/contracts.ts#TimeIntent"
+    ]
+   },
+   {
+    "union": "'community'|'library'|'profile'|'self'|'workspace'",
+    "where": [
+     "packages/core/src/types/aiContext.ts#AIContextDomain",
+     "apps/gurudevi-mobile/src/components/shell/roomActions.ts#Room"
     ]
    },
    {

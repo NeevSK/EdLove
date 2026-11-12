@@ -1,5 +1,6 @@
 import { supabaseGrowthAdapter } from '@repo/core/adapters/supabase/growth.adapter';
 import { storage } from '@repo/core/lib/storage.adapter';
+import type { GrowthViewSource } from '@repo/core/logic/ports/growthView.port';
 import {
   type GrowthView,
   GrowthViewSchema,
@@ -11,7 +12,7 @@ import {
  * The growth view at the boundary: read from the database and decoded once, and the offline
  * snapshot on the device, also decoded here. Everything above receives a typed GrowthView.
  */
-export const growthViewSource = {
+export const growthViewSource: GrowthViewSource = {
   /** The account's growth view, or null if it has none yet. Rejects a row owned by anyone else. */
   async read(principalId: string): Promise<GrowthView | null> {
     const result = await supabaseGrowthAdapter.getGrowthState(principalId);
@@ -32,8 +33,8 @@ export const growthViewSource = {
   },
 
   writeSnapshot(key: string, data: GrowthView | null): Promise<void> {
-    return Promise.resolve(storage.setAsync(key, JSON.stringify({ savedAt: Date.now(), data }))).then(
-      () => undefined,
-    );
+    return Promise.resolve(
+      storage.setAsync(key, JSON.stringify({ savedAt: Date.now(), data })),
+    ).then(() => undefined);
   },
 };

@@ -6,7 +6,8 @@ import {
   CHAT_SEND_COMMAND,
   ChatSendCommandSchema,
 } from '@repo/core/logic/schemas/chat-command.schema';
-import { type TemporalReadPolicy, useTemporalStore } from '@repo/core/store/useTemporalStore';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import { type TemporalReadPolicy } from '@repo/core/types/Temporal';
 import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 
 /** A pending message cannot overtake an unresolved predecessor in the same account/channel. */

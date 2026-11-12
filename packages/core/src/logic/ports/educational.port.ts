@@ -13,7 +13,10 @@ import type {
   StudentSubmissionSummary,
   TeacherProfessionalRecord,
 } from '@repo/core/logic/schemas/classroom.schema';
-import type { ClassroomGradingSettingsRow, StudentGradeRow } from '@repo/core/logic/schemas/grading.schema';
+import type {
+  ClassroomGradingSettingsRow,
+  StudentGradeRow,
+} from '@repo/core/logic/schemas/grading.schema';
 import type { LessonRow } from '@repo/core/logic/schemas/lesson.schema';
 import type { Material as LessonMaterial } from '@repo/core/logic/schemas/material.schema';
 import type { Student } from '@repo/core/logic/schemas/student.schema';

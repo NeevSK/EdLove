@@ -8,7 +8,7 @@ import type {
   SyncTableError,
   UnauthorizedError,
 } from '@repo/core/effect/Errors';
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import type { InvalidAuthCallbackAttempt } from '@repo/core/logic/auth/authCallbackAttempt';
 import type {
   DeepLinkForbiddenCharsError,

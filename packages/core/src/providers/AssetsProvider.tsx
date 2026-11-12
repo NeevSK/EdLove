@@ -1,5 +1,5 @@
 import { storage } from '@repo/core/lib/storage.adapter';
-import { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
+import { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils.adapter';
 import type React from 'react';
 import { type ReactNode, useEffect } from 'react';
 

@@ -1,22 +1,22 @@
 {
   "summary": {
     "scope": "packages/core/src",
-    "files": 769,
+    "files": 777,
     "tiers": {
-      "T0": 131,
-      "T1": 34,
-      "T2": 183,
-      "T3": 136,
-      "C": 4,
-      "T4": 30,
+      "T0": 133,
+      "T1": 37,
+      "T2": 176,
+      "T3": 141,
+      "C": 8,
+      "T4": 31,
       "T5": 48,
       "T6": 6,
       "UNPLACED": 0
     },
     "findings": {
-      "upward-import": 43,
+      "upward-import": 25,
       "pass-through": 2,
-      "tier-import": 64,
+      "tier-import": 61,
       "parse-above-boundary": 3,
       "imports-retired": 1
     }
@@ -78,35 +78,11 @@
     },
     {
       "rule": "upward-import",
-      "file": "packages/core/src/ai/platformManifest.ts",
-      "tier": "T2",
-      "to": "packages/core/src/ai/contextRegistry.store.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
       "file": "packages/core/src/api/v1/client.ts",
       "tier": "T2",
       "to": "packages/core/src/lib/security/transportSecurity.adapter.ts",
       "toTier": "T3",
       "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/effect/Runtime.ts",
-      "tier": "T2",
-      "to": "packages/core/src/monitoring/index.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/effect/Runtime.ts",
-      "tier": "T2",
-      "to": "packages/core/src/effect/AppRuntime.ts",
-      "toTier": "C",
-      "reason": "Tier 2: Domain imports Composition root, which sits above it"
     },
     {
       "rule": "tier-import",
@@ -206,33 +182,9 @@
     },
     {
       "rule": "tier-import",
-      "file": "packages/core/src/hooks/useJourneyHistory.ts",
-      "tier": "T5",
-      "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
-      "toTier": "T3",
-      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
-    },
-    {
-      "rule": "tier-import",
       "file": "packages/core/src/hooks/useLocalFirstQuery.ts",
       "tier": "T5",
       "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/hooks/useManualSnapshot.ts",
-      "tier": "T5",
-      "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
-      "toTier": "T3",
-      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/hooks/usePendingActions.ts",
-      "tier": "T5",
-      "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
       "toTier": "T3",
       "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
@@ -265,6 +217,22 @@
       "file": "packages/core/src/hooks/useQuerySnapshotHydration.ts",
       "tier": "T5",
       "to": "packages/core/src/lib/storage.adapter.ts",
+      "toTier": "T3",
+      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/hooks/useSafeMutation.ts",
+      "tier": "T5",
+      "to": "packages/core/src/lib/failureFeedback.adapter.ts",
+      "toTier": "T3",
+      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/hooks/useSafeMutation.ts",
+      "tier": "T5",
+      "to": "packages/core/src/lib/feedback.adapter.ts",
       "toTier": "T3",
       "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
@@ -325,68 +293,12 @@
       "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/hooks/useStudentGoals.ts",
-      "tier": "T5",
-      "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
-      "toTier": "T3",
-      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/hooks/useTemporalHeatmap.ts",
-      "tier": "T5",
-      "to": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
-      "toTier": "T3",
-      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
-    },
-    {
       "rule": "upward-import",
       "file": "packages/core/src/lib/authProfileStorage.adapter.ts",
       "tier": "T3",
       "to": "packages/core/src/lib/experienceState.store.ts",
       "toTier": "T4",
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/failureFeedback.ts",
-      "tier": "T2",
-      "to": "packages/core/src/adapters/supabaseIdentity.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/failureFeedback.ts",
-      "tier": "T2",
-      "to": "packages/core/src/monitoring/index.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/failureFeedback.ts",
-      "tier": "T2",
-      "to": "packages/core/src/native/guestStorage.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/feedback.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/lib/monitoring/sentry.ts",
-      "tier": "T2",
-      "to": "packages/core/src/platform/drivers/telemetrySink.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
       "rule": "upward-import",
@@ -446,8 +358,8 @@
       "rule": "tier-import",
       "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
       "tier": "T6",
-      "to": "packages/core/src/lib/feedback.ts",
-      "toTier": "T2",
+      "to": "packages/core/src/lib/feedback.adapter.ts",
+      "toTier": "T3",
       "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
@@ -564,22 +476,6 @@
     },
     {
       "rule": "upward-import",
-      "file": "packages/core/src/logic/agents/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/agents/reliefAgent.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/agents/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/agents/reliefAgent.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
       "file": "packages/core/src/logic/apiInterceptor.adapter.ts",
       "tier": "T3",
       "to": "packages/core/src/store/useAuthStore.ts",
@@ -640,22 +536,6 @@
       "to": "packages/core/src/store/useCedarDecisionStore.ts",
       "toTier": "T4",
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/utils/LanguageUtils.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/i18n/i18n.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/utils/temporalUtils.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useTemporalStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "upward-import",
@@ -735,8 +615,8 @@
       "rule": "tier-import",
       "file": "packages/core/src/providers/AssetsProvider.tsx",
       "tier": "T6",
-      "to": "packages/core/src/logic/utils/LanguageUtils.ts",
-      "toTier": "T2",
+      "to": "packages/core/src/logic/utils/LanguageUtils.adapter.ts",
+      "toTier": "T3",
       "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
@@ -866,54 +746,6 @@
       "to": "packages/core/src/store/useCedarDecisionStore.ts",
       "toTier": "T4",
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/testing/scenarioHarness.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/storageWrapper.adapter.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/testing/scenarioHarness.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/testing/scenarioHarness.ts",
-      "tier": "T2",
-      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/testing/scenarioHarness.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useAuthStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/testing/scenarioHarness.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useConflictStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/testing/scenarioHarness.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useTemporalStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     }
   ],
   "placement": {
@@ -1191,8 +1023,11 @@
     "packages/core/src/effect/AppRuntime.ts": "C",
     "packages/core/src/effect/Errors.ts": "T0",
     "packages/core/src/effect/Layers.ts": "C",
-    "packages/core/src/effect/Runtime.ts": "T2",
+    "packages/core/src/effect/Runtime.ts": "C",
     "packages/core/src/effect/Schedules.ts": "T2",
+    "packages/core/src/effect/bindings/experience.ts": "C",
+    "packages/core/src/effect/bindings/growth.ts": "C",
+    "packages/core/src/effect/bindings/journey.ts": "C",
     "packages/core/src/effect/bindings/state.ts": "C",
     "packages/core/src/effect/bindings.ts": "C",
     "packages/core/src/effect/index.ts": "T2",
@@ -1275,10 +1110,10 @@
     "packages/core/src/lib/deviceSecurityQueryKeys.ts": "T2",
     "packages/core/src/lib/errors.ts": "T2",
     "packages/core/src/lib/experienceState.store.ts": "T4",
-    "packages/core/src/lib/failureFeedback.ts": "T2",
+    "packages/core/src/lib/failureFeedback.adapter.ts": "T3",
     "packages/core/src/lib/featureRolloutSnapshot.ts": "T2",
     "packages/core/src/lib/featureRuntime.ts": "T2",
-    "packages/core/src/lib/feedback.ts": "T2",
+    "packages/core/src/lib/feedback.adapter.ts": "T3",
     "packages/core/src/lib/gradePublication.ts": "T2",
     "packages/core/src/lib/grading.ts": "T2",
     "packages/core/src/lib/idempotency.ts": "T2",
@@ -1290,7 +1125,7 @@
     "packages/core/src/lib/mediaUtils.ts": "T2",
     "packages/core/src/lib/monitoring/posthog.ts": "T2",
     "packages/core/src/lib/monitoring/safeData.ts": "T2",
-    "packages/core/src/lib/monitoring/sentry.ts": "T2",
+    "packages/core/src/lib/monitoring/sentry.adapter.ts": "T3",
     "packages/core/src/lib/notificationQueryKeys.ts": "T2",
     "packages/core/src/lib/pendingGateAction.adapter.ts": "T3",
     "packages/core/src/lib/permissions.ts": "T2",
@@ -1329,7 +1164,7 @@
     "packages/core/src/lib/temporalEvents.ts": "T2",
     "packages/core/src/lib/tenantStorage.adapter.ts": "T3",
     "packages/core/src/logic/accountLifecycle.ts": "T2",
-    "packages/core/src/logic/agents/index.ts": "T2",
+    "packages/core/src/logic/agents/agents.adapter.ts": "T3",
     "packages/core/src/logic/agents/reliefAgent.adapter.ts": "T3",
     "packages/core/src/logic/apiInterceptor.adapter.ts": "T3",
     "packages/core/src/logic/auth/AuthClient.adapter.ts": "T3",
@@ -1426,8 +1261,10 @@
     "packages/core/src/logic/ports/founder.port.ts": "T1",
     "packages/core/src/logic/ports/gradingProjection.port.ts": "T1",
     "packages/core/src/logic/ports/growth.port.ts": "T1",
+    "packages/core/src/logic/ports/growthView.port.ts": "T1",
     "packages/core/src/logic/ports/guardian.port.ts": "T1",
     "packages/core/src/logic/ports/identity.port.ts": "T1",
+    "packages/core/src/logic/ports/journeySnapshot.port.ts": "T1",
     "packages/core/src/logic/ports/notification.port.ts": "T1",
     "packages/core/src/logic/ports/paymentProvider.port.ts": "T1",
     "packages/core/src/logic/ports/permissionSnapshot.port.ts": "T1",
@@ -1439,6 +1276,7 @@
     "packages/core/src/logic/ports/storage.port.ts": "T1",
     "packages/core/src/logic/ports/storage.ts": "T1",
     "packages/core/src/logic/ports/teacherInsights.port.ts": "T1",
+    "packages/core/src/logic/ports/uiExperience.port.ts": "T1",
     "packages/core/src/logic/ports/workspaceLayout.port.ts": "T1",
     "packages/core/src/logic/reflection/catalog.ts": "T2",
     "packages/core/src/logic/reflection/index.ts": "T2",
@@ -1489,7 +1327,7 @@
     "packages/core/src/logic/schemas/temporal.schema.ts": "T0",
     "packages/core/src/logic/schemas/user.schema.ts": "T0",
     "packages/core/src/logic/schemas/workspace-layout.schema.ts": "T0",
-    "packages/core/src/logic/utils/LanguageUtils.ts": "T2",
+    "packages/core/src/logic/utils/LanguageUtils.adapter.ts": "T3",
     "packages/core/src/logic/utils/QRBuilder.ts": "T2",
     "packages/core/src/logic/utils/QRResolver.ts": "T2",
     "packages/core/src/logic/utils/errorNormalizer.ts": "T2",
@@ -1572,6 +1410,7 @@
     "packages/core/src/spatial/spatial.adapter.ts": "T3",
     "packages/core/src/store/index.ts": "T4",
     "packages/core/src/store/queries/entitlementQuery.ts": "T4",
+    "packages/core/src/store/queries/experienceQueries.ts": "T4",
     "packages/core/src/store/queries/growthQuery.ts": "T4",
     "packages/core/src/store/resetScopedStores.ts": "T4",
     "packages/core/src/store/scopeSession.ts": "T4",
@@ -1595,7 +1434,6 @@
     "packages/core/src/store/useUIStore.ts": "T4",
     "packages/core/src/test-shims/expo-constants.ts": "T2",
     "packages/core/src/test-shims/react-native.ts": "T2",
-    "packages/core/src/testing/scenarioHarness.ts": "T2",
     "packages/core/src/thresholds/thresholdEvaluator.ts": "T2",
     "packages/core/src/types/API.ts": "T0",
     "packages/core/src/types/Accounting.ts": "T0",
@@ -1647,6 +1485,7 @@
     "packages/core/src/types/WhatsApp.ts": "T0",
     "packages/core/src/types/Workbench.ts": "T0",
     "packages/core/src/types/Workspace.ts": "T0",
+    "packages/core/src/types/aiContext.ts": "T0",
     "packages/core/src/types/authSession.ts": "T0",
     "packages/core/src/types/authorization.ts": "T0",
     "packages/core/src/types/cedarEvaluationContext.ts": "T0",
@@ -1668,6 +1507,7 @@
     "packages/core/src/types/spatial.ts": "T0",
     "packages/core/src/types/thresholds.ts": "T0",
     "packages/core/src/types/topology.ts": "T0",
+    "packages/core/src/types/uiExperience.ts": "T0",
     "packages/core/src/types/visualization.ts": "T0",
     "packages/core/src/utils/effect.ts": "T2",
     "packages/core/src/utils/idempotency.ts": "T2",

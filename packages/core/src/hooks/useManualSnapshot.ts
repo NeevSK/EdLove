@@ -1,5 +1,5 @@
-import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
 import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
+import { saveSnapshotMoment } from '@repo/core/store/queries/experienceQueries';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -33,7 +33,7 @@ export function useManualSnapshot() {
 
       setIsSaving(true);
       try {
-        const data = await uiExperience.createSnapshotMoment({
+        const data = await saveSnapshotMoment({
           userId,
           resonanceDate: viewDate,
           label,

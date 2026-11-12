@@ -1,4 +1,4 @@
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import { usePermissions } from '@repo/core/logic';
 import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';

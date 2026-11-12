@@ -171,7 +171,7 @@ export {
   isEdloveUuidV8,
   parseEdloveUuidV8,
 } from '@repo/core/logic/schemas/edloveUuidV8';
-export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
+export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils.adapter';
 export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 export type { QRResolveResult } from '@repo/core/logic/utils/QRResolver';
 export { resolveQR } from '@repo/core/logic/utils/QRResolver';
@@ -296,7 +296,7 @@ export type {
   IEntitlementPort,
 } from '@repo/core/logic';
 export { cryptoVault } from '@repo/core/logic';
-export * from '@repo/core/logic/agents';
+export * from '@repo/core/logic/agents/agents.adapter';
 export { GPACalculator } from '@repo/core/logic/grading/GPACalculator';
 export * from '@repo/core/logic/permissions/accessContext';
 export * from '@repo/core/logic/permissions/authority';
@@ -408,5 +408,9 @@ export type {
   QueuedMutation,
   QueuedMutationDispatchResult,
 } from '@repo/core/types/mutationQueue';
-export { type UseWebTodosReturn, useWebTodos, type WebTodo } from './adapters/supabase/webTodos.react';
+export {
+  type UseWebTodosReturn,
+  useWebTodos,
+  type WebTodo,
+} from './adapters/supabase/webTodos.react';
 export { z };

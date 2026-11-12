@@ -9,7 +9,7 @@ import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { useScopedNotifications } from '@repo/core/hooks';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import {
   isLocalOnlyIdentity,
   resolveWorkspaceSwitcherTargets,

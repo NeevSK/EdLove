@@ -1,4 +1,4 @@
-import { journeySnapshots } from '@repo/core/effect/bindings';
+import { journeySnapshots } from '@repo/core/effect/bindings/journey';
 import {
   RoleJourneyContextSchema,
   AdvanceStepEventSchema,

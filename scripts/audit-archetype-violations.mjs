@@ -52,7 +52,7 @@ function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
     const p = path.join(dir, d.name);
     if (d.isDirectory())
-      return ['node_modules', '__tests__', 'generated', 'dist'].includes(d.name) ? [] : walk(p);
+      return ['node_modules', '__tests__', '__mocks__', 'testing', 'generated', 'dist'].includes(d.name) ? [] : walk(p);
     return /\.tsx?$/.test(d.name) &&
       !/\.(test|spec)\.tsx?$/.test(d.name) &&
       !d.name.endsWith('.d.ts')

@@ -1,10 +1,10 @@
+import type { AIContextDomain } from '@repo/core/types/aiContext';
 import { useEffect } from 'react';
 import { create } from 'zustand';
 
 /**
  * The 5 bounded Sanctuary surfaces that can publish contextual state to the AI Companion.
  */
-export type AIContextDomain = 'self' | 'workspace' | 'library' | 'community' | 'profile';
 
 /**
  * 4-Tier Sensitivity Classification for AI Context Ingestion:
@@ -269,7 +269,9 @@ export function sanitizeContextEnvelope(
       continue;
     }
 
-    const cleanSummary = String(slice.summary ?? '').trim().slice(0, 500);
+    const cleanSummary = String(slice.summary ?? '')
+      .trim()
+      .slice(0, 500);
     if (!cleanSummary) continue;
 
     if (charCount + cleanSummary.length > MAX_ENVELOPE_CHARS) {

@@ -1,4 +1,4 @@
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import { classifyError } from '@repo/core/lib/sync/errorClassifier';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { useMutationAuditLog } from '@repo/core/lib/sync/mutationAuditLog.store';

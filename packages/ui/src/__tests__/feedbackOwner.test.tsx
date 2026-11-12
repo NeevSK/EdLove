@@ -1,4 +1,4 @@
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { act, render } from '@testing-library/react-native';
 import { afterEach, describe, expect, it, vi } from 'vitest';

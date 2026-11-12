@@ -9,7 +9,7 @@ import si from '../../logic/i18n/locales/si.json';
 import ta from '../../logic/i18n/locales/ta.json';
 
 const mocks = vi.hoisted(() => ({ showToast: vi.fn(), captureException: vi.fn() }));
-vi.mock('@repo/core/lib/feedback', () => ({ showToast: mocks.showToast }));
+vi.mock('@repo/core/lib/feedback.adapter', () => ({ showToast: mocks.showToast }));
 vi.mock('@repo/core/monitoring', () => ({ captureException: mocks.captureException }));
 
 import {
@@ -17,7 +17,7 @@ import {
   FEEDBACK,
   feedbackFor,
   presentFailure,
-} from '@repo/core/lib/failureFeedback';
+} from '@repo/core/lib/failureFeedback.adapter';
 
 const SRC = resolve(__dirname, '../..');
 

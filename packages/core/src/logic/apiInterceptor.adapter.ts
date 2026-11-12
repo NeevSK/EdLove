@@ -1,5 +1,5 @@
 import { getAPIErrorStatus } from '@repo/core/logic/utils/errorPolicy';
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import { captureException } from '@repo/core/monitoring';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { APIError } from '@repo/core/types/API';

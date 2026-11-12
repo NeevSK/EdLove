@@ -1,14 +1,7 @@
-import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
 import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
-import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
+import { temporalHeatmapQuery } from '@repo/core/store/queries/experienceQueries';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-
-export interface HeatmapData {
-  date: string;
-  intensity: number;
-  count: number;
-}
 
 /**
  * useTemporalHeatmap
@@ -19,15 +12,7 @@ export function useTemporalHeatmap(year: number) {
   const { context } = useSanctuaryFeature();
   const userId = context.userId;
 
-  const { data: rawData = [], isLoading } = useQuery({
-    queryKey: ['temporal_heatmap', userId, year],
-    queryFn: async () => {
-      if (!userId) return [];
-      const range = getTemporalRange(`${year}-01-01`, 'year');
-      return uiExperience.getTemporalHeatmap(userId, range);
-    },
-    enabled: !!userId,
-  });
+  const { data: rawData = [], isLoading } = useQuery(temporalHeatmapQuery(userId, year));
 
   const heatmap = useMemo(() => rawData, [rawData]);
 

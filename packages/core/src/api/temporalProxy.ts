@@ -38,11 +38,15 @@ export function createTemporalProxy<T extends object>(moduleName: string, target
         const result: unknown = await Reflect.apply(originalMethod, obj, args);
 
         if (isTemporalQuery(result)) {
-          return applyTemporalFilter(result, {
-            column: 'created_at',
-            mode: 'event_time',
-            capability: 'event_stream',
-          });
+          return applyTemporalFilter(
+            result,
+            {
+              column: 'created_at',
+              mode: 'event_time',
+              capability: 'event_stream',
+            },
+            { viewDate, phase, viewScale },
+          );
         }
 
         return result;

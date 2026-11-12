@@ -1,4 +1,4 @@
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import { useAuth } from '@repo/core/logic';
 import { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
 import {

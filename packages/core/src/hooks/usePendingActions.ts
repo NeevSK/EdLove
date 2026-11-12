@@ -10,21 +10,9 @@
  * Gracefully degrades on any DB error  returns empty arrays rather than throwing.
  */
 
-import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
+import { readPendingActions } from '@repo/core/store/queries/experienceQueries';
+import type { PendingAttendanceItem, PendingGradingItem } from '@repo/core/types/uiExperience';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-export interface PendingAttendanceItem {
-  classroomId: string;
-  classroomName: string;
-}
-
-export interface PendingGradingItem {
-  assignmentId: string;
-  assignmentTitle: string;
-  classroomId: string;
-  classroomName: string;
-  ungradedCount: number;
-}
 
 export interface PendingActionsResult {
   attendancePending: PendingAttendanceItem[];
@@ -43,7 +31,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
     setIsLoading(true);
 
     try {
-      const result = await uiExperience.getPendingActions(teacherId);
+      const result = await readPendingActions(teacherId);
       setAttendancePending(result.attendancePending);
       setGradingPending(result.gradingPending);
     } catch {

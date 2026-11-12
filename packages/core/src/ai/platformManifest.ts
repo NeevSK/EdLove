@@ -1,4 +1,4 @@
-import type { AIContextDomain } from './contextRegistry.store';
+import type { AIContextDomain } from '../types/aiContext';
 
 /**
  * Sphere 1: Developmental Age & Persona Band
@@ -156,9 +156,7 @@ const SACRED_MEMORY_BLOCK_PATTERNS = [
 /**
  * Sanitizes opt-in longitudinal companion memory items so sacred private data is never injected.
  */
-export function sanitizeCompanionMemories(
-  memories?: CompanionMemoryItem[],
-): CompanionMemoryItem[] {
+export function sanitizeCompanionMemories(memories?: CompanionMemoryItem[]): CompanionMemoryItem[] {
   if (!Array.isArray(memories)) return [];
   return memories
     .filter((item) => {

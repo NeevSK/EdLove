@@ -1,6 +1,6 @@
 import { OfflineMutationError, runToPromise } from '@repo/core/effect';
-import { presentFailure } from '@repo/core/lib/failureFeedback';
-import { showToast } from '@repo/core/lib/feedback';
+import { presentFailure } from '@repo/core/lib/failureFeedback.adapter';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import { DeltaResonance } from '@repo/core/lib/sync/delta';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { useMutationAuditLog } from '@repo/core/lib/sync/mutationAuditLog.store';
