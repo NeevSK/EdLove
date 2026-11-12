@@ -25,7 +25,7 @@ const node = (id: string, extra: Partial<FloorNode['piece']> = {}): FloorNode =>
 
 const pieces = [node('A'), node('B', { lit: true, time: 'later' }), node('C', { time: 'now' })];
 const wrap = (n: React.ReactNode) => (
-  <WorldScope world={WORLD_IDS[0]} phase="morning" mode="light">
+  <WorldScope world={WORLD_IDS[0]!} phase="morning" mode="light">
     {n}
   </WorldScope>
 );
