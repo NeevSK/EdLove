@@ -1,20 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { SanctuaryShell } from '../../../app/(sanctuary)/components/SanctuaryShell';
 import { ToolsWorkbenchDesk } from '../../../app/(sanctuary)/library/tools/ToolsWorkbenchDesk';
+import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/library/tools')({
-  component: ExploreRoute,
+  component: LibraryToolsScreen,
 });
 
-function ExploreRoute() {
-  return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <ToolsWorkbenchDesk displayName="Guest Explorer" />
-    </SanctuaryShell>
-  );
+function LibraryToolsScreen() {
+  const { displayName } = useSession();
+  return <ToolsWorkbenchDesk displayName={displayName} />;
 }

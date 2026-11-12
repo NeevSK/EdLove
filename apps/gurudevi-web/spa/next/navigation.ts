@@ -1,6 +1,6 @@
 import {
-  notFound as routerNotFound,
   type RegisteredRouter,
+  notFound as routerNotFound,
   redirect as routerRedirect,
   useLocation,
   useParams as useRouterParams,

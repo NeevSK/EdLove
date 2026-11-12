@@ -1,21 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { SanctuaryShell } from '../../../../app/(sanctuary)/components/SanctuaryShell';
 import { DocumentReaderDesk } from '../../../../app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk';
+import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/library/reader/$bookId')({
-  component: ExploreRoute,
+  component: LibraryReaderBookidScreen,
 });
 
-function ExploreRoute() {
+function LibraryReaderBookidScreen() {
   const { bookId } = Route.useParams();
-  return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <DocumentReaderDesk bookId={bookId} displayName="Guest Explorer" />
-    </SanctuaryShell>
-  );
+  const { displayName } = useSession();
+  return <DocumentReaderDesk bookId={bookId} displayName={displayName} />;
 }

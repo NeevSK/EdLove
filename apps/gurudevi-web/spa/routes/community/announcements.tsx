@@ -1,26 +1,21 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { AnnouncementsFloor } from '../../../app/(sanctuary)/community/announcements/AnnouncementsFloor';
-import { SanctuaryShell } from '../../../app/(sanctuary)/components/SanctuaryShell';
-import { getExploreSampleAnnouncements } from '../../../lib/community/announcements-contract';
+import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/community/announcements')({
-  component: ExploreRoute,
+  component: CommunityAnnouncementsScreen,
 });
 
-function ExploreRoute() {
-  const announcements = getExploreSampleAnnouncements();
+function CommunityAnnouncementsScreen() {
+  const { surface, displayName } = useSession();
+  const { sources } = Route.useRouteContext();
+  const { data: announcements } = useSuspenseQuery(sources.announcements());
   return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <AnnouncementsFloor
-        announcements={announcements}
-        displayName="Guest Explorer"
-        isExplore={true}
-      />
-    </SanctuaryShell>
+    <AnnouncementsFloor
+      announcements={announcements}
+      displayName={displayName}
+      isExplore={surface === 'explore'}
+    />
   );
 }

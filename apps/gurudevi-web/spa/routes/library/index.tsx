@@ -1,20 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { SanctuaryShell } from '../../../app/(sanctuary)/components/SanctuaryShell';
 import { LibraryFloor } from '../../../app/(sanctuary)/library/LibraryFloor';
+import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/library/')({
-  component: ExploreRoute,
+  component: LibraryScreen,
 });
 
-function ExploreRoute() {
+function LibraryScreen() {
+  const { surface, accountId, displayName } = useSession();
   return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <LibraryFloor accountId="explore-guest" displayName="Guest Explorer" mode="explore" />
-    </SanctuaryShell>
+    <LibraryFloor
+      accountId={accountId}
+      displayName={displayName}
+      mode={surface === 'explore' ? 'explore' : 'account'}
+    />
   );
 }

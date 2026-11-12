@@ -1,16 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { SanctuaryShell } from '../../app/(sanctuary)/components/SanctuaryShell';
 import { SelfFloor } from '../../app/(sanctuary)/self/SelfFloor';
+import { useSession } from '../surface/session';
 
 export const Route = createFileRoute('/self')({
-  component: () => (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <SelfFloor accountId="explore-guest" displayName="Guest Explorer" initialPracticing={true} />
-    </SanctuaryShell>
-  ),
+  component: SelfScreen,
 });
+
+function SelfScreen() {
+  const { accountId, displayName } = useSession();
+  return <SelfFloor accountId={accountId} displayName={displayName} initialPracticing={true} />;
+}

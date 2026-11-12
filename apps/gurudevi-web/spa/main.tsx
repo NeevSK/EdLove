@@ -1,11 +1,21 @@
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-import { createRoot } from 'react-dom/client';
 import { DEFAULT_WORLD } from '@repo/ui/theme';
 import { sharedTokenCss, worldsCss } from '@repo/ui/theme/web';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { createRoot } from 'react-dom/client';
+import { getQueryClient } from '../lib/query/getQueryClient';
 import '../app/styles.css';
 import { routeTree } from './generated/routeTree.gen';
+import { ExploreSession, exploreSources } from './surface/explore';
 
-const router = createRouter({ routeTree, defaultPreload: 'intent' });
+// The surface this build serves. The same routes and screens run on every surface; only who is here
+// and where data comes from change.
+const router = createRouter({
+  routeTree,
+  context: { queryClient: getQueryClient(), sources: exploreSources },
+  defaultPreload: 'intent',
+  // Loaders read through the query cache, so the router never holds a second copy of the data.
+  defaultPreloadStaleTime: 0,
+});
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -31,4 +41,8 @@ document.documentElement.dataset.world = savedWorld() ?? DEFAULT_WORLD;
 
 const container = document.getElementById('app');
 if (!container) throw new Error('#app is missing from index.html');
-createRoot(container).render(<RouterProvider router={router} />);
+createRoot(container).render(
+  <ExploreSession>
+    <RouterProvider router={router} />
+  </ExploreSession>,
+);

@@ -3,14 +3,15 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
-import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { signInPath } from '../auth/routeSafety';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { NotificationsFloor } from './NotificationsFloor';
+import { notificationFeed, unreadCount } from './notificationFeed';
 
 export const metadata = { title: 'Notifications | Gurudevi Sanctuary' };
 
@@ -41,9 +42,12 @@ export default async function NotificationsPage({
         navigationPrefix=""
         showAccountNavigation={true}
         isExploreMode={true}
-        unreadNotifications={2}
+        unreadNotifications={unreadCount(notificationFeed('explore'))}
       >
-        <NotificationsFloor displayName="Guest Explorer" isExplore={true} />
+        <NotificationsFloor
+          displayName="Guest Explorer"
+          notifications={notificationFeed('explore')}
+        />
       </SanctuaryShell>
     );
   }
@@ -63,9 +67,12 @@ export default async function NotificationsPage({
         navigationPrefix=""
         showAccountNavigation={true}
         isExploreMode={false}
-        unreadNotifications={1}
+        unreadNotifications={unreadCount(notificationFeed('sanctuary'))}
       >
-        <NotificationsFloor displayName={devSession.displayName} isExplore={false} />
+        <NotificationsFloor
+          displayName={devSession.displayName}
+          notifications={notificationFeed('sanctuary')}
+        />
       </SanctuaryShell>
     );
   }
@@ -118,7 +125,10 @@ export default async function NotificationsPage({
       navigationPrefix=""
       activeCapacity={entry.activeCapacity}
     >
-      <NotificationsFloor displayName={entry.displayName} />
+      <NotificationsFloor
+        displayName={entry.displayName}
+        notifications={notificationFeed('sanctuary')}
+      />
     </SanctuaryShell>
   );
 }

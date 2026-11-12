@@ -1,25 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { SanctuaryShell } from '../../../app/(sanctuary)/components/SanctuaryShell';
 import { ProfileFloor } from '../../../app/(sanctuary)/profile/ProfileFloor';
+import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/profile/')({
-  component: ExploreRoute,
+  component: ProfileScreen,
 });
 
-function ExploreRoute() {
+function ProfileScreen() {
+  const { surface, accountId, displayName, roleLabel } = useSession();
   return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <ProfileFloor
-        accountId="guest-explorer"
-        displayName="Guest Explorer"
-        primaryScopeRole="Guest Explorer"
-        isExplore={true}
-      />
-    </SanctuaryShell>
+    <ProfileFloor
+      accountId={accountId}
+      displayName={displayName}
+      primaryScopeRole={roleLabel}
+      isExplore={surface === 'explore'}
+    />
   );
 }

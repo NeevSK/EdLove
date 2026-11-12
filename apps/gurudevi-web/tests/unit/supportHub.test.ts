@@ -148,15 +148,15 @@ describe('Support Hub & Functionality Guide Suite', () => {
   });
 
   describe('Contact Channels & SLA Alignment', () => {
-    it('configures canonical support, institutional, and gratitude channels on the official gurudevi.app domain', () => {
-      expect(CONTACT_EMAILS.support).toBe('support@gurudevi.app');
-      expect(CONTACT_EMAILS.institutional).toBe('institutional@gurudevi.app');
-      expect(CONTACT_EMAILS.gratitude).toBe('gratitude@gurudevi.app');
+    it('configures canonical support, institutional, and gratitude channels on the official gurudevi.lk domain', () => {
+      expect(CONTACT_EMAILS.support).toBe('support@gurudevi.lk');
+      expect(CONTACT_EMAILS.institutional).toBe('institutional@gurudevi.lk');
+      expect(CONTACT_EMAILS.gratitude).toBe('gratitude@gurudevi.lk');
 
       const emails = SUPPORT_CONTACT_CHANNELS.map((c) => c.email);
-      expect(emails).toContain('support@gurudevi.app');
-      expect(emails).toContain('institutional@gurudevi.app');
-      expect(emails).toContain('gratitude@gurudevi.app');
+      expect(emails).toContain('support@gurudevi.lk');
+      expect(emails).toContain('institutional@gurudevi.lk');
+      expect(emails).toContain('gratitude@gurudevi.lk');
 
       for (const channel of SUPPORT_CONTACT_CHANNELS) {
         expect(channel.name).toBeTruthy();

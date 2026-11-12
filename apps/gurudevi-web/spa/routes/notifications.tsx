@@ -1,21 +1,15 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { SanctuaryShell } from '../../app/(sanctuary)/components/SanctuaryShell';
 import { NotificationsFloor } from '../../app/(sanctuary)/notifications/NotificationsFloor';
+import { useSession } from '../surface/session';
 
 export const Route = createFileRoute('/notifications')({
-  component: ExploreRoute,
+  component: NotificationsScreen,
 });
 
-function ExploreRoute() {
-  return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-      unreadNotifications={2}
-    >
-      <NotificationsFloor displayName="Guest Explorer" isExplore={true} />
-    </SanctuaryShell>
-  );
+function NotificationsScreen() {
+  const { displayName } = useSession();
+  const { sources } = Route.useRouteContext();
+  const { data: notifications } = useSuspenseQuery(sources.notifications());
+  return <NotificationsFloor displayName={displayName} notifications={notifications} />;
 }

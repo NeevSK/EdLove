@@ -1,20 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { SchoolForestFloor } from '../../../app/(sanctuary)/community/forest/SchoolForestFloor';
-import { SanctuaryShell } from '../../../app/(sanctuary)/components/SanctuaryShell';
+import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/community/forest')({
-  component: ExploreRoute,
+  component: CommunityForestScreen,
 });
 
-function ExploreRoute() {
-  return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <SchoolForestFloor displayName="Guest Explorer" />
-    </SanctuaryShell>
-  );
+function CommunityForestScreen() {
+  const { displayName } = useSession();
+  return <SchoolForestFloor displayName={displayName} />;
 }

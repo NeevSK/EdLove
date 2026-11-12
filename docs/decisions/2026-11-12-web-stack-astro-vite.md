@@ -156,6 +156,29 @@ by default. On a 2G or 3G connection the difference is seconds per page.
   work in Vite unchanged.
 - The mobile app.
 
+## One app, two surfaces
+
+Explore and sanctuary are **one web app**, never two sites that could drift. Every route, screen and
+component is shared; Explore is a public place to try Gurudevi with no account. What differs is only
+what the surface plugs in at the root (`spa/main.tsx`):
+
+| Plugged in | Explore | Sanctuary |
+| --- | --- | --- |
+| **Session** (`spa/surface/session.tsx`): who is here | a visitor and the persona they chose (teacher by default), kept on the device | the signed-in account and its authority |
+| **Sources** (`spa/surface/sources.ts`): where each query is answered | sample data in the browser (`spa/surface/explore.tsx`) | the v1 API (`v1.….queryOptions()`) |
+| **Storage** | the browser only | the API, with the outbox for writes |
+
+Rules that keep it one app:
+- A route reads `useSession()` and runs `useSuspenseQuery(sources.x())`; its loader prefetches the same
+  query with `ensureQueryData`. Routes never ask which surface they are on.
+- The shell is mounted once in `spa/routes/__root.tsx`, from the session, so it stays in place while
+  people move between places.
+- A new kind of data gets a `Source` in `Sources`, with an Explore answer and an API answer, before a
+  screen reads it.
+- `check-web-stack` counts the screens that still ask (`isExplore`, `mode === 'explore'`, ...): 132 on
+  12 Nov, mostly inside floors that pick sample data themselves. The number only goes down; each
+  floor moves its data behind a `Source`.
+
 ## Data, state and links in the web app
 
 **No database from the web, ever.** The browser reaches data only through the v1 API (oRPC v2 client
@@ -200,8 +223,8 @@ by agents.
 
 ## Found and fixed while verifying
 
-- Contact emails: `seo.ts` used `@gurudevi.lk` addresses while `@repo/core/site` and the 12 Sep ADR use
-  `@gurudevi.app`. `seo.ts` is gone; every page reads `CONTACT_EMAILS` from core.
+- Contact emails: they were defined in three places with two domains. The owner chose `@gurudevi.lk` as
+  the official addresses (12 Nov); `@repo/core/site` now reads them from `@repo/core/config/publicUrls`.
 - `llms.txt` advertised `/llms-full.txt`, which did not exist; it now does, with every journal essay.
 - `next build` stopped on a test importing that missing route; the test moved with the files it tests
   and passes.
@@ -218,8 +241,10 @@ no requests to the sanctuary host.
 - `worlds.css` carries every world (718 KB raw). Serve the active world, load others on change.
 - An Explore runtime check in CI (headless browser, fail on any backend request); the bundle
   ratchet cannot see a request to a URL that also appears in a link.
-- `components/intro/IntroClient.tsx` in the public site is not used by any page (it was not used in
-  Next either). Removing it needs the owner's sign-off.
+- `components/intro/IntroClient.tsx` is not used by a page yet; the owner keeps it for a better intro
+  (out of scope here).
+- `@repo/ui/utils/urls.ts` duplicates `@repo/core/config/publicUrls` (and has diverged: it validates
+  URLs). One should re-export the other.
 - `tests/unit/supportHub.test.ts` "serves own support page directly on explore" fails on the base
   branch as well.
 

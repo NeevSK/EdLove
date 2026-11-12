@@ -1,20 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { SanctuaryShell } from '../../../app/(sanctuary)/components/SanctuaryShell';
 import { WorkspaceFloor } from '../../../app/(sanctuary)/workspace/WorkspaceFloor';
+import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/workspace/')({
-  component: ExploreRoute,
+  component: WorkspaceScreen,
 });
 
-function ExploreRoute() {
+function WorkspaceScreen() {
+  const { surface, displayName, capacity } = useSession();
   return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <WorkspaceFloor capacity="TEACHER" displayName="Guest Explorer" mode="explore" />
-    </SanctuaryShell>
+    <WorkspaceFloor
+      displayName={displayName}
+      capacity={capacity}
+      mode={surface === 'explore' ? 'explore' : 'account'}
+    />
   );
 }

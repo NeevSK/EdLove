@@ -11,6 +11,10 @@
  *    list that has gone is reported so the list can shrink.
  * 3. directDatabaseCalls: table queries, stored procedures, storage and realtime channels called
  *    straight from web code. The web client reaches data only through the v1 API; the goal is 0.
+ * 4. surfaceBranches: places a screen asks whether it is on Explore (`isExplore`, `isExploreMode`,
+ *    `mode === 'explore'`, `surface === 'explore'`). Explore and sanctuary are one app; screens read
+ *    the session and the surface's sources instead. Next route files (page.tsx) are not counted:
+ *    they leave with Next. The goal is 0.
  *
  *   node scripts/check-web-stack.mjs            check (builds the Explore bundle first)
  *   node scripts/check-web-stack.mjs --no-build check an existing apps/gurudevi-web/dist-explore
@@ -43,11 +47,16 @@ function walk(dir) {
 }
 
 const NEXT_IMPORT = /from\s+['"]next(\/[a-z-]+)?['"]/;
+const SURFACE_BRANCH = /\bisExplore(Mode)?\b|\b(mode|surface) === 'explore'/g;
 const DATABASE_CALL =
   /\.from\(\s*['"`][a-z_]+['"`]\s*\)|\.rpc\(\s*['"`]|\.storage\s*\.\s*from\(|\.channel\(\s*['"`]|\.removeChannel\(/g;
 const nextImportFiles = ['app', 'lib']
   .flatMap((d) => walk(path.join(WEB, d)))
   .filter((f) => NEXT_IMPORT.test(fs.readFileSync(f, 'utf8'))).length;
+const surfaceBranches = ['app/(sanctuary)', 'lib/sanctuary', 'spa']
+  .flatMap((d) => walk(path.join(WEB, d)))
+  .filter((f) => !/\.test\.tsx?$/.test(f) && path.basename(f) !== 'page.tsx')
+  .reduce((sum, f) => sum + (fs.readFileSync(f, 'utf8').match(SURFACE_BRANCH)?.length ?? 0), 0);
 const directDatabaseCalls = ['app', 'lib', 'spa']
   .flatMap((d) => walk(path.join(WEB, d)))
   .filter((f) => !/\.test\.tsx?$/.test(f))
@@ -77,6 +86,8 @@ if (nextImportFiles > ceiling.nextImportFiles)
   failures.push(
     `next/* importing files rose to ${nextImportFiles} (ceiling ${ceiling.nextImportFiles})`,
   );
+if (surfaceBranches > ceiling.surfaceBranches)
+  failures.push(`surface branches rose to ${surfaceBranches} (ceiling ${ceiling.surfaceBranches})`);
 if (directDatabaseCalls > ceiling.directDatabaseCalls)
   failures.push(
     `direct database calls rose to ${directDatabaseCalls} (ceiling ${ceiling.directDatabaseCalls})`,
@@ -86,6 +97,7 @@ if (added.length) failures.push(`Explore bundle gained backend clients: ${added.
 const gone = ceiling.exploreBackendClients.filter((c) => !exploreBackendClients.includes(c));
 
 console.log(`next/* importing files   ${nextImportFiles} (ceiling ${ceiling.nextImportFiles})`);
+console.log(`surface branches         ${surfaceBranches} (ceiling ${ceiling.surfaceBranches})`);
 console.log(
   `direct database calls    ${directDatabaseCalls} (ceiling ${ceiling.directDatabaseCalls})`,
 );
@@ -106,7 +118,7 @@ if (
 ) {
   fs.writeFileSync(
     RATCHET,
-    `${JSON.stringify({ ...ceiling, nextImportFiles: Math.min(nextImportFiles, ceiling.nextImportFiles), directDatabaseCalls: Math.min(directDatabaseCalls, ceiling.directDatabaseCalls), exploreBackendClients: ceiling.exploreBackendClients.filter((c) => !gone.includes(c)) }, null, 2)}\n`,
+    `${JSON.stringify({ ...ceiling, nextImportFiles: Math.min(nextImportFiles, ceiling.nextImportFiles), directDatabaseCalls: Math.min(directDatabaseCalls, ceiling.directDatabaseCalls), surfaceBranches: Math.min(surfaceBranches, ceiling.surfaceBranches), exploreBackendClients: ceiling.exploreBackendClients.filter((c) => !gone.includes(c)) }, null, 2)}\n`,
   );
   console.log('Ceilings lowered.');
 }

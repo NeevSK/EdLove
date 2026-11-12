@@ -1,21 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { SanctuaryShell } from '../../../../app/(sanctuary)/components/SanctuaryShell';
 import { VideoPlayerDesk } from '../../../../app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk';
+import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/library/video/$videoId')({
-  component: ExploreRoute,
+  component: LibraryVideoVideoidScreen,
 });
 
-function ExploreRoute() {
+function LibraryVideoVideoidScreen() {
   const { videoId } = Route.useParams();
-  return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <VideoPlayerDesk videoId={videoId} displayName="Guest Explorer" />
-    </SanctuaryShell>
-  );
+  const { displayName } = useSession();
+  return <VideoPlayerDesk videoId={videoId} displayName={displayName} />;
 }

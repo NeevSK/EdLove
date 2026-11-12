@@ -1,3 +1,9 @@
+import {
+  GURUDEVI_GRATITUDE_EMAIL,
+  GURUDEVI_INSTITUTIONAL_EMAIL,
+  GURUDEVI_SUPPORT_EMAIL,
+} from './config/publicUrls';
+
 export const EDLOVE_URL = 'https://edlove.org';
 export const INTUITUI_URL = 'https://intuituilabs.studio';
 export const FOUNDER_URL = 'https://neevsk.intuituilabs.studio';
@@ -204,10 +210,11 @@ export const SOCIAL_LINKS = {
   beacons: WEB_LINKS.beacons,
 } as const;
 
+/** The institutional addresses on gurudevi.lk; web builds may override them with PUBLIC_* variables. */
 export const CONTACT_EMAILS = {
-  support: publicEmail('PUBLIC_GURUDEVI_SUPPORT_EMAIL', 'support@gurudevi.app'),
-  gratitude: publicEmail('PUBLIC_GURUDEVI_GRATITUDE_EMAIL', 'gratitude@gurudevi.app'),
-  institutional: publicEmail('PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL', 'institutional@gurudevi.app'),
+  support: publicEmail('PUBLIC_GURUDEVI_SUPPORT_EMAIL', GURUDEVI_SUPPORT_EMAIL),
+  gratitude: publicEmail('PUBLIC_GURUDEVI_GRATITUDE_EMAIL', GURUDEVI_GRATITUDE_EMAIL),
+  institutional: publicEmail('PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL', GURUDEVI_INSTITUTIONAL_EMAIL),
 } as const;
 
 function publicEmail(name: string, fallback: string): string {

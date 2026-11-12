@@ -1,21 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { GroupChatFloor } from '../../../../app/(sanctuary)/community/chat/[groupId]/GroupChatFloor';
-import { SanctuaryShell } from '../../../../app/(sanctuary)/components/SanctuaryShell';
+import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/community/chat/$groupId')({
-  component: ExploreRoute,
+  component: CommunityChatGroupidScreen,
 });
 
-function ExploreRoute() {
+function CommunityChatGroupidScreen() {
   const { groupId } = Route.useParams();
-  return (
-    <SanctuaryShell
-      displayName="Guest Explorer"
-      navigationPrefix=""
-      showAccountNavigation={true}
-      isExploreMode={true}
-    >
-      <GroupChatFloor groupId={groupId} displayName="Guest Explorer" capacity="guest" />
-    </SanctuaryShell>
-  );
+  const { displayName, capacity } = useSession();
+  return <GroupChatFloor groupId={groupId} displayName={displayName} capacity={capacity} />;
 }
