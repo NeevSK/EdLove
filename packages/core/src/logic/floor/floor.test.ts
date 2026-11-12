@@ -13,6 +13,7 @@ import {
   piecesFromLayout,
   printFloor,
   screenBudget,
+  shareByPriority,
   shareSpace,
   widthClassOf,
 } from '@repo/core/logic/floor';
@@ -66,6 +67,24 @@ const classroom = (over: Partial<FloorInput> = {}): FloorInput => ({
   space: phone,
   controls: { detail: 'rich', motion: 'full' },
   ...over,
+});
+
+describe('shareByPriority', () => {
+  it('opens the most important child fully before the next grows', () => {
+    const r = shareByPriority(300, [
+      { id: 'tools', min: 100, preferred: 200, weight: 1 },
+      { id: 'today', min: 80, preferred: 250, weight: 4 },
+    ]);
+    expect(r.sizes).toEqual({ tools: 100, today: 200 });
+    expect(r.folded).toEqual([]);
+  });
+  it('folds the least important when even the minimums do not fit', () => {
+    const r = shareByPriority(150, [
+      { id: 'a', min: 100, preferred: 100, weight: 3 },
+      { id: 'b', min: 100, preferred: 100, weight: 1 },
+    ]);
+    expect(r.folded).toEqual(['b']);
+  });
 });
 
 describe('shareSpace', () => {

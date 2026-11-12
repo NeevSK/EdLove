@@ -1,7 +1,7 @@
 import { type FloorConfig, floorConfigWith } from './config';
 import { mayReorder, orderAreas, orderGroups, orderPieces, weightOf } from './hierarchy';
 import { choosePattern, PATTERNS } from './patterns';
-import { orientationOf, screenBudget, shareSpace, widthClassOf } from './space';
+import { orientationOf, screenBudget, shareByPriority, shareSpace, widthClassOf } from './space';
 import type {
   AreaInput,
   DepthCue,
@@ -93,6 +93,39 @@ function groupHeights(
     default: {
       const sum = shown.reduce((s, p) => s + prefOf(p), 0) + (shown.length - 1) * gap;
       return { min: minOne, preferred: head + sum };
+    }
+  }
+}
+
+/** How many of a group's visible pieces its given height can show (at least one). */
+function piecesThatFit(g: PlannedGroup, size: number, fontScale: number, gap: number): number {
+  const shown = g.visible;
+  if (shown.length <= 1) return shown.length;
+  const head = HEADING * fontScale;
+  const prefOf = (p: PieceInput) => (p.fit.preferred?.h ?? p.fit.min.h) * fontScale;
+  const room = size - head + 0.5;
+  switch (g.pattern) {
+    case 'shelf':
+    case 'circle-rail':
+    case 'chip-rail':
+      return shown.length;
+    case 'tile-grid':
+    case 'mixed-tiles': {
+      const cols = columns(g.width, shown[0]?.fit.min.w ?? 140, gap);
+      const rowH = Math.max(...shown.map(prefOf));
+      const rows = Math.max(1, Math.floor((room + gap) / (rowH + gap)));
+      return Math.min(shown.length, rows * cols);
+    }
+    default: {
+      let used = 0;
+      let n = 0;
+      for (const p of shown) {
+        const next = used + (n > 0 ? gap : 0) + prefOf(p);
+        if (n > 0 && next > room) break;
+        used = next;
+        n += 1;
+      }
+      return n;
     }
   }
 }
@@ -204,17 +237,48 @@ export function layoutFloor(input: FloorInput): FloorTree {
     }
     return run;
   };
-  const candidates = floorPattern === 'board' ? planned : stackRun();
-  const gapsTotal = Math.max(0, candidates.length - 1) * config.gaps.group;
-  const shared = shareSpace(
-    Math.max(0, screen.floor.h - gapsTotal),
-    candidates.map((g) => ({
-      id: g.group.id,
-      min: heights.get(g.group.id)?.min ?? HEADING,
-      preferred: heights.get(g.group.id)?.preferred ?? HEADING,
-      weight: g.weight,
-    })),
-  );
+  // A board's columns split a fixed screen (proportional share); a stack
+  // scrolls, so the most important groups open fully first.
+  const share = floorPattern === 'board' ? shareSpace : shareByPriority;
+  const shareOf = (run: readonly PlannedGroup[]) =>
+    share(
+      Math.max(0, screen.floor.h - Math.max(0, run.length - 1) * config.gaps.group),
+      run.map((g) => ({
+        id: g.group.id,
+        min: heights.get(g.group.id)?.min ?? HEADING,
+        preferred: heights.get(g.group.id)?.preferred ?? HEADING,
+        weight: g.weight,
+      })),
+    );
+  let candidates = floorPattern === 'board' ? planned : stackRun();
+  // A board gives every area its own full-height column, so each column is
+  // shared among its own groups only.
+  const boardShare = () => {
+    const sizes: Record<string, number> = {};
+    const folded: string[] = [];
+    for (const area of areas) {
+      const r = shareOf(planned.filter((g) => g.area.id === area.id));
+      Object.assign(sizes, r.sizes);
+      folded.push(...r.folded);
+    }
+    return { sizes, folded };
+  };
+  let shared = floorPattern === 'board' ? boardShare() : shareOf(candidates);
+  // In a stack, a less important group never squeezes a more important one
+  // above it: while one that outranks the last group is short of its
+  // preferred size, the last group waits below the fold instead.
+  while (floorPattern === 'stack' && candidates.length > 1) {
+    const last = candidates[candidates.length - 1]!;
+    const squeezed = candidates.some(
+      (g) =>
+        g.weight > last.weight &&
+        (shared.sizes[g.group.id] ?? 0) < (heights.get(g.group.id)?.preferred ?? HEADING) - 0.5,
+    );
+    if (!squeezed) break;
+    last.why.push(`waits below so a more important group above opens fully`);
+    candidates = candidates.slice(0, -1);
+    shared = shareOf(candidates);
+  }
   const onFirst = new Set(
     candidates.map((g) => g.group.id).filter((id) => !shared.folded.includes(id)),
   );
@@ -237,6 +301,23 @@ export function layoutFloor(input: FloorInput): FloorTree {
     children: [],
     piece: p,
   });
+
+  // A group on the first screen shows only the pieces its share can hold;
+  // the rest wait behind its See all instead of overflowing the fold.
+  for (const g of planned) {
+    const size = shared.sizes[g.group.id];
+    if (!onFirst.has(g.group.id) || size === undefined) continue;
+    const fits = piecesThatFit(g, size, space.fontScale, gap);
+    if (fits < g.visible.length) {
+      // A task is never put behind See all to save room; it stays in place.
+      const keep = g.visible.filter((p, i) => i < fits || p.task);
+      if (keep.length < g.visible.length) {
+        g.folded = [...g.visible.filter((p) => !keep.includes(p)), ...g.folded];
+        g.visible = keep;
+        g.why.push(`its share of the first screen holds ${fits}; the rest are behind See all`);
+      }
+    }
+  }
 
   const groupNodes = planned.map((g): FloorNode => {
     const placement = onFirst.has(g.group.id) ? 'first-screen' : 'below';

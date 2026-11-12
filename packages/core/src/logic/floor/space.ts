@@ -64,6 +64,37 @@ export function shareSpace(available: number, children: readonly ShareChild[]): 
   return { sizes, folded };
 }
 
+/**
+ * Shares `available` down a stack by importance: every child gets its
+ * minimum (the lowest weight folds while even the minimums do not fit), then
+ * the most important child grows to its preferred size first, then the next.
+ * A stack scrolls, so space is not a pie to split evenly: the lamp and today's
+ * tasks open fully, and what matters least is the part that waits below.
+ * Ties keep reading order.
+ */
+export function shareByPriority(available: number, children: readonly ShareChild[]): ShareResult {
+  const folded: string[] = [];
+  let live = [...children];
+  while (live.length > 0 && live.reduce((sum, c) => sum + c.min, 0) > available) {
+    const lowest = live.reduce((lo, c) => (c.weight <= lo.weight ? c : lo));
+    folded.push(lowest.id);
+    live = live.filter((c) => c !== lowest);
+  }
+  const sizes: Record<string, number> = {};
+  for (const c of live) sizes[c.id] = c.min;
+  let left = available - live.reduce((sum, c) => sum + c.min, 0);
+  const byWeight = live
+    .map((c, i) => ({ c, i }))
+    .sort((a, b) => b.c.weight - a.c.weight || a.i - b.i);
+  for (const { c } of byWeight) {
+    if (left <= 0) break;
+    const give = Math.min(left, Math.max(0, c.preferred - c.min));
+    sizes[c.id] = c.min + give;
+    left -= give;
+  }
+  return { sizes, folded };
+}
+
 export interface ScreenBudget {
   floor: { w: number; h: number };
   shown: string[];
