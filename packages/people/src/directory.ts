@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import type { Capacity, User } from '@repo/core/types';
 
 export interface PeopleDirectoryEntry extends User {

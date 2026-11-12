@@ -1,4 +1,4 @@
-import { createPerspectiveStorageScope } from '@repo/core/lib/tenantStorage';
+import { createPerspectiveStorageScope } from '@repo/core/lib/tenantStorage.adapter';
 import { resetScopedStores } from '@repo/core/store/resetScopedStores';
 import { PERSONAL_SCOPE_PERSPECTIVE, useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { transitionScopeSession } from '@repo/core/store/scopeSessionCoordinator';

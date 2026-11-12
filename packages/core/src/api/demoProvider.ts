@@ -11,7 +11,7 @@
 
 import { isDemo } from '@repo/core/api/demo';
 import * as MOCK from '@repo/core/api/mockData';
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 import { useUIStore } from '@repo/core/store/useUIStore';
 
 /**

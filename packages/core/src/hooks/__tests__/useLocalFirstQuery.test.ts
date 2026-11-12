@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { SafeZustandStorage } from '../../lib/storageWrapper';
+import { SafeZustandStorage } from '../../lib/storageWrapper.adapter';
 
 describe('useLocalFirstQuery storage contract & isolation', () => {
   it('SafeZustandStorage persists and retrieves serialized items cross-platform', async () => {

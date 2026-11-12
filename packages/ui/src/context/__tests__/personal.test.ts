@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const store = vi.hoisted(() => new Map<string, string>());
 
-vi.mock('@repo/core/lib/storage', () => ({
+vi.mock('@repo/core/lib/storage.adapter', () => ({
   storage: {
     getStringAsync: vi.fn(async (key: string) => store.get(key) ?? null),
     set: vi.fn((key: string, value: string) => {

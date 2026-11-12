@@ -18,7 +18,7 @@ vi.mock('@repo/core/adapters/supabaseNotification.adapter', () => ({ supabaseNot
 vi.mock('@repo/core/store/useAuthStore', () => ({
   useAuthStore: (select: (value: typeof fixture.auth) => unknown) => select(fixture.auth),
 }));
-vi.mock('@repo/core/lib/experienceState', () => ({
+vi.mock('@repo/core/lib/experienceState.store', () => ({
   useExperienceState: (select: (value: typeof fixture.auth) => unknown) => select(fixture.auth),
 }));
 vi.mock('@repo/core/store/scopeSession', () => ({

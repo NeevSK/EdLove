@@ -7,7 +7,7 @@ import {
 import { createSupabaseTuitionBatchRepository } from '@repo/core/adapters/supabase/tuitionBatchRepository';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { useScopedNotifications } from '@repo/core/hooks';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { showToast } from '@repo/core/lib/feedback';
 import {

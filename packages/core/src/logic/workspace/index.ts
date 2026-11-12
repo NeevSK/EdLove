@@ -26,7 +26,7 @@ export {
   queueGuardianWorkspace,
   reconcileProvisionalWorkspaces,
   useProvisionalWorkspaceQueue,
-} from '@repo/core/logic/workspace/provisionalWorkspace';
+} from '@repo/core/logic/workspace/provisionalWorkspace.store';
 export {
   createWorkspaceRendererConfig,
   resolveWorkspaceRendererPlatform,

@@ -1,4 +1,4 @@
-import { buildPartitionedKey, storage } from '@repo/core/lib/storage';
+import { buildPartitionedKey, storage } from '@repo/core/lib/storage.adapter';
 import { type ParsedStudent, parseStudents } from '@repo/scanner-kit/ocr/parsers/StudentParser';
 import type { OCRPipeline } from '@repo/scanner-kit/ocr/OCRPipeline';
 import type { OCRProviderName } from '@repo/scanner-kit/ocr/types';

@@ -1,4 +1,4 @@
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { HStack } from '@repo/ui/components/ui/hstack';
 import { Text } from '@repo/ui/components/ui/text';
 import { Toast, ToastTitle } from '@repo/ui/components/ui/toast';

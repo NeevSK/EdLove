@@ -1,5 +1,5 @@
 import { isQueuedDeviceSecurityMutation } from '@repo/core/lib/sync/deviceSecurityIntents';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { supabaseDeviceSecurityAdapter as deviceSecurity } from '@repo/core/adapters/supabaseDeviceSecurity.adapter';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCallback, useMemo, useState } from 'react';

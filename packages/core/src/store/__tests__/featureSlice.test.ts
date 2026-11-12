@@ -1,4 +1,4 @@
-import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
+import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope.adapter';
 import {
   normalizeFeatureRolloutSnapshot,
   FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS as ttl,
@@ -26,7 +26,7 @@ vi.mock('@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter', 
     },
   },
 }));
-vi.mock('@repo/core/lib/storage', () => ({
+vi.mock('@repo/core/lib/storage.adapter', () => ({
   storage: { getStringAsync: fixture.read, setAsync: fixture.write },
 }));
 

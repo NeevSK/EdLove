@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { setGuestScope } from '@repo/core/native/guestScope';
 import { isLocalGuestSessionId, LOCAL_GUEST_ID_PREFIX } from '@repo/core/types/localGuest';
 

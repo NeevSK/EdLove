@@ -1,6 +1,6 @@
 import { createORPCClient, ORPCError } from '@orpc/client';
 import { RPCLink, type RPCLinkOptions } from '@orpc/client/fetch';
-import { assertSecureApiUrl } from '../../lib/security/transportSecurity';
+import { assertSecureApiUrl } from '../../lib/security/transportSecurity.adapter';
 import type { AppContractClient } from './contract';
 
 export const API_V1_PREFIX = '/api/v1';

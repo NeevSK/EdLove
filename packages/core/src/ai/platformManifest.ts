@@ -1,4 +1,4 @@
-import type { AIContextDomain } from './contextRegistry';
+import type { AIContextDomain } from './contextRegistry.store';
 
 /**
  * Sphere 1: Developmental Age & Persona Band

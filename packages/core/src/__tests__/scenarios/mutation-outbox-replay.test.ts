@@ -1,6 +1,6 @@
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useConflictStore } from '@repo/core/store/useConflictStore';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';

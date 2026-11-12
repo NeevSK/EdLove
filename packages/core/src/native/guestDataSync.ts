@@ -3,7 +3,7 @@ import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 // retired identityAPI
 import { isEdloveAccountId } from '@repo/core/logic/schemas/edloveUuidV8';
 // retired orpcClient
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { readGuestConversionRecord } from '@repo/core/native/guestConversionLedger';
 import { GuestStorage } from '@repo/core/native/guestStorage';
 import {

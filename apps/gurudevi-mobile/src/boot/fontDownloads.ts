@@ -7,7 +7,7 @@
  * The person decides whether downloads may use mobile data; on Wi-Fi they always may.
  */
 
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { registerAvailableFonts } from '@repo/ui/theme/native';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as Font from 'expo-font';

@@ -1,6 +1,6 @@
 import { getSandboxDomainConfig } from '@repo/core/api/sandboxDataset';
 import { resolveSandboxMode } from '@repo/core/api/sandboxMode';
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 import { useUIStore } from '@repo/core/store/useUIStore';
 
 const WRITE_METHOD_PREFIXES = [

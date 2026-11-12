@@ -1,8 +1,8 @@
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import {
   isQueuedMutationAcknowledged,
   useMutationQueue,
-} from '@repo/core/lib/sync/useMutationQueue';
+} from '@repo/core/lib/sync/mutationQueue.store';
 import {
   CHAT_SEND_COMMAND,
   type ChatChannel,

@@ -1,4 +1,4 @@
-import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 import { ErrorState, WorldLoading } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { router, useGlobalSearchParams } from 'expo-router';

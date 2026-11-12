@@ -1,4 +1,4 @@
-import { createPerspectiveStorageScope } from '@repo/core/lib/tenantStorage';
+import { createPerspectiveStorageScope } from '@repo/core/lib/tenantStorage.adapter';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
   CITIZENSHIP,

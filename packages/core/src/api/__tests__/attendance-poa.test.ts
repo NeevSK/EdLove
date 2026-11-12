@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IStorage } from '../../logic/interfaces/storage.port';
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useTemporalStore } from '../../store/useTemporalStore';
 
-vi.mock('../../logic/permissions/localEvaluator', () => ({
+vi.mock('../../logic/permissions/localEvaluator.adapter', () => ({
   checkLocalPermission: vi.fn(() => Promise.resolve(true)),
 }));
 
-vi.mock('../../lib/security/deviceTrust', () => ({
+vi.mock('../../lib/security/deviceTrust.adapter', () => ({
   DeviceTrustEngine: {
     checkDeviceTrustStatus: vi.fn(() => Promise.resolve(true)),
   },

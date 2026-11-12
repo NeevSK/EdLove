@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { GuestStorage } from '@repo/core/native/guestStorage';
 import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 

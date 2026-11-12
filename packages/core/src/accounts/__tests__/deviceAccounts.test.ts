@@ -22,7 +22,7 @@ const mockClearPowerSyncAccount = vi.fn();
 const mockDisconnectPowerSync = vi.fn();
 const mockSetStoredSessionForAccount = vi.fn();
 
-vi.mock('../../lib/storage', () => ({
+vi.mock('../../lib/storage.adapter', () => ({
   storage: {
     getString: (...args: unknown[]) => mockGetString(...args),
     set: (...args: unknown[]) => mockSet(...args),
@@ -58,14 +58,14 @@ vi.mock('@repo/core/auth', () => ({
   },
 }));
 
-vi.mock('../../lib/supabaseAuthStorage', () => ({
+vi.mock('../../lib/supabaseAuthStorage.adapter', () => ({
   clearLegacySupabaseSession: vi.fn(),
   getStoredSessionForAccount: (...args: unknown[]) => mockGetStoredSessionForAccount(...args),
   removeStoredSessionForAccount: vi.fn(),
   setStoredSessionForAccount: (...args: unknown[]) => mockSetStoredSessionForAccount(...args),
 }));
 
-vi.mock('../../lib/storageWrapper', () => ({
+vi.mock('../../lib/storageWrapper.adapter', () => ({
   SafeZustandStorage: {
     getItem: () => null,
     setItem: () => Promise.resolve(),
@@ -86,7 +86,7 @@ vi.mock('@repo/core/store/resetScopedStores', () => ({
   resetScopedStores: vi.fn(),
 }));
 
-vi.mock('../../lib/accountPin', () => ({
+vi.mock('../../lib/accountPin.adapter', () => ({
   accountPin: {
     removePin: vi.fn(),
   },
@@ -97,11 +97,11 @@ vi.mock('../../adapters/powersync/database', () => ({
   disconnectPowerSync: (...args: unknown[]) => mockDisconnectPowerSync(...args),
 }));
 
-import { getActiveAccountId, setActiveAccountId } from '../../lib/accountScope';
+import { getActiveAccountId, setActiveAccountId } from '../../lib/accountScope.adapter';
 import { openReplayAdmission, tryBeginReplay } from '../../lib/sync/replayAdmission';
-import { useMutationQueue } from '../../lib/sync/useMutationQueue';
+import { useMutationQueue } from '../../lib/sync/mutationQueue.store';
 import { rehydrateScopedStores } from '../../store/resetScopedStores';
-import { deviceAccounts } from '../deviceAccounts';
+import { deviceAccounts } from '../deviceAccounts.adapter';
 
 const validAccessToken =
   'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJ1c2VyLTEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJleHAiOjQxMDI0NDQ4MDB9.signature';

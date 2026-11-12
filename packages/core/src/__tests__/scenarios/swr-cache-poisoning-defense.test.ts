@@ -1,9 +1,9 @@
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import {
   invalidateResilience,
   useOfflineStatus,
   withResilience,
-} from '@repo/core/offline/resilience';
+} from '@repo/core/offline/resilience.adapter';
 import { useOfflineStatus as canonicalOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

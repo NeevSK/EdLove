@@ -9,7 +9,7 @@ import {
   saveDocumentVisionDraft,
 } from '../documentVisionMachine';
 
-vi.mock('@repo/core/lib/storage', () => {
+vi.mock('@repo/core/lib/storage.adapter', () => {
   const store = new Map<string, string>();
   return {
     storage: {

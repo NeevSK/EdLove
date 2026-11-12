@@ -3,7 +3,7 @@ import type {
   PowerSyncBackendConnector,
   SyncStatus,
 } from '@powersync/common';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 
 type ConnectionStatus = Pick<
   SyncStatus,

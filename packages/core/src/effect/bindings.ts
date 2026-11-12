@@ -1,9 +1,9 @@
 import { featureRolloutCache as rolloutCache } from '@repo/core/adapters/feature-rollout/featureRolloutCache.adapter';
 import { growthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
-import { getAccountScopeRevision, scopeStorageKey } from '@repo/core/lib/accountScope';
-import { authProfileStorage, restoreIdentityProfile } from '@repo/core/lib/authProfileStorage';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { getAccountScopeRevision, scopeStorageKey } from '@repo/core/lib/accountScope.adapter';
+import { authProfileStorage, restoreIdentityProfile } from '@repo/core/lib/authProfileStorage.adapter';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,

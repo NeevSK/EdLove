@@ -4,8 +4,8 @@ import {
   loadJourneySnapshot,
   roleJourneyMachine,
   saveJourneySnapshot,
-} from '@repo/core/logic/journey/roleJourneyMachine.v6';
-import { storage } from '@repo/core/lib/storage';
+} from '@repo/core/logic/journey/roleJourney.machine';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createActor } from 'xstate';
 

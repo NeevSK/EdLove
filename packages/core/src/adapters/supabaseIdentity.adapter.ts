@@ -4,7 +4,7 @@ import {
   type SessionContinuity,
 } from '@repo/core/adapters/supabase/sessionContinuity';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
 import {

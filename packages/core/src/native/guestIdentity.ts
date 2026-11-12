@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { type Capacity, CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 
 const GUEST_IDENTITY_PREFIX = 'gurudevi:guest-identity:';

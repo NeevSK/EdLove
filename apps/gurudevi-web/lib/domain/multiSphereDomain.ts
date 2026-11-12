@@ -1,7 +1,7 @@
 'use client';
 
 import { getSandboxSamples } from '@repo/core/logic/modes/sandboxDataset';
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useCallback, useEffect, useState } from 'react';
 import { erpAdapter } from './adapters/erp/erp.adapter';
 

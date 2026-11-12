@@ -1,4 +1,4 @@
-import { type DeviceAccountRecord, deviceAccounts } from '@repo/core/accounts/deviceAccounts';
+import { type DeviceAccountRecord, deviceAccounts } from '@repo/core/accounts/deviceAccounts.adapter';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 export type { DeviceAccountRecord };

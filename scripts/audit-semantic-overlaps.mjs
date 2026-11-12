@@ -135,7 +135,7 @@ for (const st of storageSymbols.slice(0, 10)) {
 }
 console.log('   ➔ Redundancy: storage, storageWrapper, scopedStateStorage, authStorage, supabaseAuthStorage, SafeZustandStorage.');
 console.log('   ➔ Redundancy: scopeStorageKey vs guestStorageKey vs localGuestStorageKey.');
-console.log('   ➔ Canonical SSOT: StorageManager proxy (lib/storage.ts) + unified sessionScopeKey.\n');
+console.log('   ➔ Canonical SSOT: StorageManager proxy (lib/storage.adapter.ts) + unified sessionScopeKey.\n');
 
 // 3. UI Button Implementations
 console.log('--- 3. OVERLAP: Button UI Components across Monorepo ---');

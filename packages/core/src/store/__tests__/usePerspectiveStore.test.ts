@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { usePerspectiveStore, DEFAULT_PERSONAL_PERSPECTIVE } from '../usePerspectiveStore';
 import { useCedarDecisionStore } from '../useCedarDecisionStore';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 
 describe('usePerspectiveStore', () => {

@@ -1,6 +1,6 @@
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationAuditLog } from '@repo/core/lib/sync/mutationAuditLog.store';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import { v7 as uuidv7 } from 'uuid';

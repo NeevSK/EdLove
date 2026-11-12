@@ -1,6 +1,6 @@
 'use client';
 
-import { useOfflineStatus } from '@repo/core/offline/resilience';
+import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';

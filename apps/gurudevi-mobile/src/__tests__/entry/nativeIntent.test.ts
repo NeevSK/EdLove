@@ -1,4 +1,4 @@
-import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
+import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntent.store';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { redirectSystemPath } from '../../../app/+native-intent';

@@ -7,8 +7,8 @@
  * Gap closed: "Missing Reactive UI bridge between Background Sync and Foreground UI"
  */
 
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useEffect, useState } from 'react';
 
 export type SyncStatusKind = 'idle' | 'syncing' | 'success' | 'error' | 'conflict' | 'offline';

@@ -1,9 +1,9 @@
-import { setActiveAccountId } from '@repo/core/lib/accountScope';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { setActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import {
   isQueuedMutationAcknowledged,
   useMutationQueue,
-} from '@repo/core/lib/sync/useMutationQueue';
+} from '@repo/core/lib/sync/mutationQueue.store';
 import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,

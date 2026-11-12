@@ -16,7 +16,7 @@ import { handleAPIError } from '@repo/core';
 import { validators } from '@repo/core/utils';
 import { useDeviceAccounts } from '@repo/core/hooks';
 import { accountPin, getSessionIdentityMode } from '@repo/core/logic';
-import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 import {
   authorizeExistingAccountTransfer,
   beginGuestConversion,

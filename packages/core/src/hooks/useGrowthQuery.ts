@@ -1,6 +1,6 @@
 import { useQuerySnapshotHydration } from '@repo/core/hooks/useQuerySnapshotHydration';
-import { getAccountScopeRevision, getActiveAccountId } from '@repo/core/lib/accountScope';
-import { storage } from '@repo/core/lib/storage';
+import { getAccountScopeRevision, getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { supabaseGrowthAdapter } from '@repo/core/adapters/supabase/growth.adapter';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';

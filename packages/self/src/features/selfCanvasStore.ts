@@ -1,5 +1,5 @@
 import { generateIdempotencyKey } from '@repo/core/lib/idempotency';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { captureException, logBreadcrumb, trackEvent } from '@repo/core/monitoring';
 import { registerGuestLeaseDataKey } from '@repo/core/native/guestLease';

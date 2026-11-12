@@ -1,4 +1,4 @@
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import type { NetworkStatus } from '@repo/core/logic/interfaces/network.port';
 

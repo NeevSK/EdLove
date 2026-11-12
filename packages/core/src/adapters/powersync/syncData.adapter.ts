@@ -1,5 +1,5 @@
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import type {
   IDatabasePort,
   LocalReadQuery,

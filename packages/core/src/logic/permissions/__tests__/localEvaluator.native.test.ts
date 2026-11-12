@@ -1,8 +1,8 @@
 import { generateKeyPairSync, sign as nodeSign } from 'node:crypto';
 import { generateSnapshot } from '@repo/policies';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { checkLocalPermission } from '../localEvaluator.native';
-import { verifySnapshotSignature } from '../signature';
+import { checkLocalPermission } from '../localEvaluator.adapter.native';
+import { verifySnapshotSignature } from '../signature.adapter';
 
 // Mock database wrapper
 const mockDrizzle = {

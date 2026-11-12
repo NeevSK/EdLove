@@ -1,4 +1,4 @@
-import { setActiveAccountId } from '@repo/core/lib/accountScope';
+import { setActiveAccountId } from '@repo/core/lib/accountScope.adapter';
 import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { replayAssignmentSubmission } from './assignmentCommands';

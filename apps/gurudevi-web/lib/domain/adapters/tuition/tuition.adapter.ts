@@ -9,8 +9,8 @@
  * - CommercialPerspective schema compatible with @repo/core & gurudevi-mobile
  */
 
-import { storage } from '@repo/core/lib/storage';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { storage } from '@repo/core/lib/storage.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import type { CommercialPerspective } from '@repo/core/types/Perspective';
 import type { FeeReceiptInput, FeeReceiptResult, ITuitionPort, ITuitionStoragePort, TuitionBatchSummary } from '../../ports/tuition.port';
 import type { FinancialTransaction, LedgerEntry } from '@repo/core/types/Accounting';

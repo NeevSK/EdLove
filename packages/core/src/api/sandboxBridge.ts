@@ -1,4 +1,4 @@
-import { type DemoIntent, useExperienceState } from '@repo/core/lib/experienceState';
+import { type DemoIntent, useExperienceState } from '@repo/core/lib/experienceState.store';
 
 /**
  * Whitelist of supported mutation actions eligible for graduation/replay.

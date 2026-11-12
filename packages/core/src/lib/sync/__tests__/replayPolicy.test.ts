@@ -2,7 +2,7 @@ import { CHAT_SEND_COMMAND } from '@repo/core/logic/schemas/chat-command.schema'
 import { afterEach, describe, expect, it } from 'vitest';
 import type { QueuedMutation } from '../../../types/mutationQueue';
 import { planMutationReplay } from '../replayPolicy';
-import { useMutationQueue } from '../useMutationQueue';
+import { useMutationQueue } from '../mutationQueue.store';
 
 const account = '123e4567-e89b-8101-8000-426614174000';
 const channel = '123e4567-e89b-8101-8000-426614174002';

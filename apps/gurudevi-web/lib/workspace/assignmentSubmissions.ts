@@ -10,7 +10,7 @@ import {
 } from '@repo/core/api/assignmentSubmissionTransport';
 import { educationalContract } from '@repo/core/api/educational.contract';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 type SubmissionIntent = Readonly<{ assignmentId: string; content: string | null }>;

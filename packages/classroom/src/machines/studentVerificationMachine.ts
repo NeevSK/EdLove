@@ -1,5 +1,5 @@
-import { buildPartitionedKey, type PartitionKeyOptions } from '@repo/core/lib/storage';
-import { storage } from '@repo/core/lib/storage';
+import { buildPartitionedKey, type PartitionKeyOptions } from '@repo/core/lib/storage.adapter';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { Cause, Effect, Exit } from 'effect';
 import { createActor, createMachine, types } from 'xstate';
 import { z } from 'zod';

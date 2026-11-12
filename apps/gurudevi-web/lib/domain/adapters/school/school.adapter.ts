@@ -6,7 +6,7 @@
  * and bridges live database state for institutional school profiles.
  */
 
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 import type {
   ISchoolPort,

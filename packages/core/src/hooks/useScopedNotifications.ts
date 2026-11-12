@@ -1,6 +1,6 @@
 import { getSandboxSamples } from '@repo/core/logic/modes/sandboxDataset';
 import type { QueryScope } from '@repo/core/lib/clientStateFoundation';
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 import {
   NOTIFICATION_LIST_LIMIT,
   notificationQueryKeys,

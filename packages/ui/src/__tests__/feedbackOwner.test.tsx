@@ -1,5 +1,5 @@
 import { showToast } from '@repo/core/lib/feedback';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { act, render } from '@testing-library/react-native';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ToastProvider } from '../providers/ToastProvider';

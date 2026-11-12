@@ -212,3 +212,12 @@ web remains online-only with normal request/reconnect error handling.
   - `passThroughFiles` 41 → 30: tightened to the current count.
 - `Source files > 800 LOC` (39/36) and `Root package.json scripts` (165/129) fail at HEAD as well. They are pre-existing and their ceilings are left alone, as the owner asked.
 - `scripts/move-modules.mjs` now rewrites explicit `package.json` exports entries for moved files.
+
+### Batch 1: files named for what they are
+
+- 30 I/O files became `*.adapter.ts` (`lib/` storage and session, security, sync eventBus and replayIdentity, permissions evaluator with `.native`/`.web` variants, signature, snapshotRefresh, reflection records, webAuth, reliefAgent, apiInterceptor, AuthClient, offline resilience, accounts/*). `logic/i18n/config.ts` became `i18n.adapter.ts`.
+- 7 state files became `*.store.ts` / `*.machine.ts`: experienceState, mutationAuditLog, versionGating, mutationQueue (formerly `useMutationQueue.ts`, a store and not a hook), pendingIntent, provisionalWorkspace, contextRegistry, roleJourney.machine (formerly `roleJourneyMachine.v6.ts`).
+- Export names are unchanged; only paths moved. The `package.json` exports entries (storageWrapper, web-auth, offline) were updated by the script.
+- `PLACEMENTS` is now empty, because the names carry the tier.
+- Core findings went from 242 to 192. forbidden-package went from 21 to 3: the remaining three are React hooks in `adapters/`. `tierImportViolations` ceiling 199 → 161.
+- G0: all package and app tsc counts are identical to HEAD. G1: the 22 failing core test files are the same as the baseline.

@@ -1,7 +1,7 @@
 import { showToast } from '@repo/core/lib/feedback';
 import { classifyError } from '@repo/core/lib/sync/errorClassifier';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
+import { useMutationAuditLog } from '@repo/core/lib/sync/mutationAuditLog.store';
 import { migrateQueuedMutation } from '@repo/core/lib/sync/outboxMigration';
 import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
 import {
@@ -9,10 +9,10 @@ import {
   subscribeReplayAdmission,
   tryBeginReplay,
 } from '@repo/core/lib/sync/replayAdmission';
-import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity';
+import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity.adapter';
 import { isMutationReplayDeferred, planMutationReplay } from '@repo/core/lib/sync/replayPolicy';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
+import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating.store';
 import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useAuthStore } from '@repo/core/store/useAuthStore';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useOfflineStatus } from '@repo/core/offline/resilience';
+import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useDebouncedValue, useThrottledInvalidate } from '../../pacer/usePacer';

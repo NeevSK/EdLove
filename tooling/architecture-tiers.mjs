@@ -74,71 +74,10 @@ export const FOLDER_RULES = [
 ];
 
 /**
- * Files whose folder doesn't state their tier. Each says what the file is, its tier, and its
- * proper home. Remove an entry once the file has moved.
+ * Files whose name and folder can't state their tier. Each says what the file is and its tier.
+ * Prefer a name suffix from NAME_RULES; an entry here is a last resort.
  */
-export const PLACEMENTS = {
-  'packages/core/src/lib/accountScope.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/adapters/session/',
-    why: 'The session register: active account and a revision for dropping stale work (with native/guestScope.ts)',
-  },
-  'packages/core/src/lib/featureRolloutSnapshot.ts': {
-    tier: 'T2',
-    home: 'packages/core/src/logic/registry/',
-    why: 'Pure: turns a rollout port result into a flag snapshot',
-  },
-  'packages/core/src/lib/experienceState.ts': {
-    tier: 'T4',
-    home: 'packages/core/src/store/',
-    why: 'A Zustand store with persistence',
-  },
-  'packages/core/src/lib/storage.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/adapters/storage/',
-    why: 'Wraps the platform storage driver',
-  },
-  'packages/core/src/lib/storageWrapper.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/adapters/storage/',
-    why: 'Zustand persist storage over the storage adapter',
-  },
-  'packages/core/src/lib/authStorage.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/adapters/storage/',
-    why: 'Reads and writes auth records in storage',
-  },
-  'packages/core/src/lib/scopedStateStorage.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/adapters/storage/',
-    why: 'Account-scoped persist storage',
-  },
-  'packages/core/src/lib/authProfileStorage.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/adapters/storage/',
-    why: 'Persists the auth profile',
-  },
-  'packages/core/src/lib/devicePreferences.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/adapters/storage/',
-    why: 'Device preference records in storage',
-  },
-  'packages/core/src/lib/sync/eventBus.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/adapters/events/',
-    why: 'In-process pub/sub runtime',
-  },
-  'packages/core/src/lib/security/transportSecurity.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/platform/drivers/',
-    why: 'Guards and performs network fetches',
-  },
-  'packages/core/src/logic/permissions/signature.ts': {
-    tier: 'T3',
-    home: 'packages/core/src/platform/drivers/cryptoVault',
-    why: 'Verifies signatures with the platform WebCrypto API, which is I/O',
-  },
-};
+export const PLACEMENTS = {};
 
 /**
  * The tier a file's name declares, from the naming taxonomy in AGENTS.md. A feature module (lib/sync,
@@ -148,7 +87,7 @@ export const PLACEMENTS = {
 export const NAME_RULES = [
   [/\.(schema|types|contract)\.tsx?$|\/types\.ts$/, 'T0'],
   [/\.port\.ts$|\.tags\.ts$/, 'T1'],
-  [/\.adapter\.tsx?$|(Driver|Monitor|Sink|Vault)\.ts$/, 'T3'],
+  [/\.adapter(\.(native|web|ios|android))?\.tsx?$|(Driver|Monitor|Sink|Vault)\.ts$/, 'T3'],
   [/\/use\w*Store\.ts$|\.store\.ts$|\.slice\.ts$|\.machine\.ts$/, 'T4'],
   [/\/use[A-Z]\w*\.tsx?$/, 'T5'],
   [/\.tsx$/, 'T6'],

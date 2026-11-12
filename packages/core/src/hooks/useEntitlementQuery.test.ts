@@ -14,7 +14,7 @@ vi.mock('@repo/core/adapters/supabase/supabaseEntitlement.adapter', () => ({
   },
 }));
 
-vi.mock('@repo/core/lib/storageWrapper', () => ({
+vi.mock('@repo/core/lib/storageWrapper.adapter', () => ({
   SafeZustandStorage: {
     getItem: (key: string) => fixture.persisted.get(key) ?? null,
     setItem: async (key: string, value: string) => void fixture.persisted.set(key, value),

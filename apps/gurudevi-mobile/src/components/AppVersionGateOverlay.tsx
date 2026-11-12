@@ -1,4 +1,4 @@
-import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
+import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating.store';
 import { Button, Surface, Text } from '@repo/ui/components/native';
 import { useWorld } from '@repo/ui/theme/native';
 import { Linking, Modal, ScrollView, StyleSheet, View } from 'react-native';

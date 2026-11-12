@@ -1,4 +1,4 @@
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 
 /** Requests display by the mounted feedback host; contains no auth state. */
 export function showToast(

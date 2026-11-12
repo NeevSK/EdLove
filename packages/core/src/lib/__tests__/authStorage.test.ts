@@ -6,9 +6,9 @@ const persistence = vi.hoisted(() => ({
   set: vi.fn(),
   delete: vi.fn(),
 }));
-vi.mock('@repo/core/lib/storage', () => ({ storage: persistence }));
+vi.mock('@repo/core/lib/storage.adapter', () => ({ storage: persistence }));
 
-import { supabaseAuthStorage } from '../authStorage';
+import { supabaseAuthStorage } from '../authStorage.adapter';
 
 beforeEach(() => vi.resetAllMocks());
 

@@ -9,8 +9,8 @@
  * - Contracts: createAssignmentRepository & createGradingRepository in @repo/core
  */
 
-import { storage } from '@repo/core/lib/storage';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { storage } from '@repo/core/lib/storage.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type {
   AcademicSubmissionView,

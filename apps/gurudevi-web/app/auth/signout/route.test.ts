@@ -1,4 +1,4 @@
-import { secureApiFetch } from '@repo/core/lib/security/transportSecurity';
+import { secureApiFetch } from '@repo/core/lib/security/transportSecurity.adapter';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

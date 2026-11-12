@@ -5,7 +5,7 @@
  * comfort together for the people the app serves: older teachers, young learners, everyone else.
  */
 
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useSyncExternalStore } from 'react';
 import type { ComfortSize } from '../theme/types';
 import { getReading, type Reading } from '../theme/native/style';

@@ -1,5 +1,5 @@
 import { toMutationReceipt } from '@repo/core/lib/sync/receipts';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useConflictStore } from '@repo/core/store/useConflictStore';
 import { describe, expect, it } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';

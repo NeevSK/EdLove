@@ -1,7 +1,7 @@
 /* eslint-disable import-x/export */
 // 1. Foundation (No relative dependencies)
 
-export { accountTransition } from '@repo/core/accounts/accountTransition';
+export { accountTransition } from '@repo/core/accounts/accountTransition.adapter';
 export {
   type DeviceAccountProfile,
   type DeviceAccountRecord,
@@ -9,9 +9,9 @@ export {
   deviceAccounts,
   getDeviceAccountsConfig,
   setDeviceAccountsConfig,
-} from '@repo/core/accounts/deviceAccounts';
+} from '@repo/core/accounts/deviceAccounts.adapter';
 // 4. API & Business Logic (Named exports for better tree-shaking)
-export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
+export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin.adapter';
 export { marksToGPA } from '@repo/core/lib/grading';
 export {
   CLASSROOM_RESOURCE_SCOPE,
@@ -30,7 +30,7 @@ export {
   getPendingGateAction,
   type PendingGateAction,
   setPendingGateAction,
-} from '@repo/core/lib/pendingGateAction';
+} from '@repo/core/lib/pendingGateAction.adapter';
 export {
   getCapacityLabel,
   getSchoolCapacityForUser,
@@ -69,10 +69,10 @@ export type {
   SyncPracticeController,
 } from '@repo/core/lib/practiceContract';
 export { createPracticeController } from '@repo/core/lib/practiceContract';
-export { StorageKeys, storage } from '@repo/core/lib/storage';
-export { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-export type { SanctuaryAPIError } from '@repo/core/logic/apiInterceptor';
-export { handleAPIError, withErrorHandling } from '@repo/core/logic/apiInterceptor';
+export { StorageKeys, storage } from '@repo/core/lib/storage.adapter';
+export { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+export type { SanctuaryAPIError } from '@repo/core/logic/apiInterceptor.adapter';
+export { handleAPIError, withErrorHandling } from '@repo/core/logic/apiInterceptor.adapter';
 export * from '@repo/core/logic/capabilityDecision';
 export {
   classifyRouteIntent,
@@ -84,7 +84,7 @@ export {
   type PendingDeepLinkIntent,
   pendingIntentStore,
   usePendingIntentStore,
-} from '@repo/core/logic/deeplink/pendingIntentStore';
+} from '@repo/core/logic/deeplink/pendingIntent.store';
 export type {
   PlatformEvents,
   SchoolAttendanceRecordedPayload,
@@ -130,7 +130,7 @@ export {
   ActivityPulseProvider,
   useActivityPulse,
 } from '@repo/core/logic/experience/ActivityPulseContext';
-export { default as i18n } from '@repo/core/logic/i18n/config';
+export { default as i18n } from '@repo/core/logic/i18n/i18n.adapter';
 export { mediaInitialState, mediaReducer } from '@repo/core/logic/mediaReducer';
 export { isDemo } from '@repo/core/logic/modes/demo';
 export {
@@ -186,7 +186,7 @@ export {
   invalidateResilience,
   type ResilienceOptions,
   withResilience,
-} from '@repo/core/offline/resilience';
+} from '@repo/core/offline/resilience.adapter';
 export { useResponsiveRenderer } from '@repo/core/platform/useResponsiveRenderer';
 export { AssetsProvider } from '@repo/core/providers/AssetsProvider';
 // 3. Auth & Context
@@ -232,7 +232,7 @@ export { PowerSyncFormsAdapter } from '@repo/core/adapters/powersync/forms.adapt
 export { SupabaseFormsAdapter } from '@repo/core/adapters/supabase/forms.adapter';
 // Hexagonal Adapters
 export { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
-export * from '@repo/core/ai/contextRegistry';
+export * from '@repo/core/ai/contextRegistry.store';
 export * from '@repo/core/ai/platformManifest';
 export * from '@repo/core/constants/SriLankanSchools';
 export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
@@ -279,10 +279,10 @@ export {
   type ThreeWayMergeResult,
 } from '@repo/core/lib/sync/delta';
 export { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-export { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+export { useMutationAuditLog } from '@repo/core/lib/sync/mutationAuditLog.store';
 export type { SyncOrchestratorTraceEvent } from '@repo/core/lib/sync/sync/SyncOrchestrator';
 export { default as SyncOrchestrator } from '@repo/core/lib/sync/sync/SyncOrchestrator';
-export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+export { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 // Hexagonal Ports
 export type {
   AuthorizationDecision,

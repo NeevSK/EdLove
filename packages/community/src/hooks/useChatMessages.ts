@@ -1,7 +1,7 @@
 import type { ChatMessage } from '@repo/core/types/Community';
 import { useQuerySnapshotHydration } from '@repo/core/hooks/useQuerySnapshotHydration';
-import { getAccountScopeRevision, getActiveAccountId } from '@repo/core/lib/accountScope';
-import { storage } from '@repo/core/lib/storage';
+import { getAccountScopeRevision, getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import { storage } from '@repo/core/lib/storage.adapter';
 import type { ChatChannel } from '@repo/core/logic/schemas/chat-command.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { useQuery } from '@tanstack/react-query';

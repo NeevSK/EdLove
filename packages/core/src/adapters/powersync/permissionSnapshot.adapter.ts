@@ -1,6 +1,6 @@
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { permissionSnapshots } from '@repo/core/adapters/powersync/schema';
-import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
+import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature.adapter';
 import type {
   IPermissionSnapshotPort,
   PermissionSnapshotRead,

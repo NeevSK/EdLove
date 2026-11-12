@@ -12,8 +12,8 @@ vi.mock('../../adapters/powersync/database', () => ({
 }));
 
 import { openReplayAdmission, tryBeginReplay } from '../../lib/sync/replayAdmission';
-import { useMutationQueue } from '../../lib/sync/useMutationQueue';
-import { accountTransition } from '../accountTransition';
+import { useMutationQueue } from '../../lib/sync/mutationQueue.store';
+import { accountTransition } from '../accountTransition.adapter';
 
 function command(id: string, userId?: string): QueuedMutation {
   return {

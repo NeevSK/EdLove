@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { createActor, setup } from 'xstate';
 import { restoreActor } from 'xstate/persist';
 import { z } from 'zod';

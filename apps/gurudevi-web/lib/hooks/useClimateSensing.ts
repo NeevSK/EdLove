@@ -1,8 +1,8 @@
 'use client';
 
-import { storage } from '@repo/core/lib/storage';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { useOfflineStatus } from '@repo/core/offline/resilience';
+import { storage } from '@repo/core/lib/storage.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
+import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
 import { useCallback, useEffect, useState } from 'react';
 import { useThrottledInvalidate } from '@/lib/pacer/usePacer';
 

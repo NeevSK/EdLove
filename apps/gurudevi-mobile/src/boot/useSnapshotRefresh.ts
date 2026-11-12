@@ -1,5 +1,5 @@
 import { useAuth } from '@repo/core/logic';
-import { startPermissionSnapshotRefresh } from '@repo/core/logic/permissions/snapshotRefresh';
+import { startPermissionSnapshotRefresh } from '@repo/core/logic/permissions/snapshotRefresh.adapter';
 import { useEffect } from 'react';
 import { v1Client } from '@/lib/v1Client';
 

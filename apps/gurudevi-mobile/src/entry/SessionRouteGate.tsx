@@ -2,7 +2,7 @@ import { Button, Text } from '@repo/ui/components/native';
 import { useWorld } from '@repo/ui/theme/native';
 import { View } from 'react-native';
 import { useAuth } from '@repo/core/logic';
-import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
+import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntent.store';
 import { BrandPulse } from '@repo/ui';
 import { Mascot } from '@repo/ui/components/Mascot';
 import { type Href, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';

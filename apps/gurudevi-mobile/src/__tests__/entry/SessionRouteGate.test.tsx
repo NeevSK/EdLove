@@ -77,7 +77,7 @@ vi.mock('@repo/ui/theme/native', () => ({
 import {
   DEFAULT_PENDING_INTENT_TTL_MS,
   pendingIntentStore,
-} from '@repo/core/logic/deeplink/pendingIntentStore';
+} from '@repo/core/logic/deeplink/pendingIntent.store';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 
 function AppServices() {

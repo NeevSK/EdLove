@@ -229,9 +229,9 @@
       "default": "./src/auth.ts"
     },
     "./web-auth": {
-      "types": "./src/webAuth.ts",
-      "import": "./src/webAuth.ts",
-      "default": "./src/webAuth.ts"
+      "types": "./src/webAuth.adapter.ts",
+      "import": "./src/webAuth.adapter.ts",
+      "default": "./src/webAuth.adapter.ts"
     },
     "./web-authorized-entry": {
       "types": "./src/webAuthorizedEntry.ts",
@@ -299,9 +299,9 @@
       "default": "./src/logic/events/bus.ts"
     },
     "./offline": {
-      "types": "./src/offline/resilience.ts",
-      "import": "./src/offline/resilience.ts",
-      "default": "./src/offline/resilience.ts"
+      "types": "./src/offline/resilience.adapter.ts",
+      "import": "./src/offline/resilience.adapter.ts",
+      "default": "./src/offline/resilience.adapter.ts"
     },
     "./efficiency": {
       "types": "./src/efficiency/index.ts",
@@ -314,9 +314,9 @@
       "default": "./src/verger/index.ts"
     },
     "./storage-wrapper": {
-      "types": "./src/lib/storageWrapper.ts",
-      "import": "./src/lib/storageWrapper.ts",
-      "default": "./src/lib/storageWrapper.ts"
+      "types": "./src/lib/storageWrapper.adapter.ts",
+      "import": "./src/lib/storageWrapper.adapter.ts",
+      "default": "./src/lib/storageWrapper.adapter.ts"
     },
     "./lib": {
       "types": "./src/lib/index.ts",

@@ -1,5 +1,5 @@
 import { MemoryStorageAdapter } from '@repo/core/adapters/MemoryStorageAdapter';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { storage } from './storageDriver';
 

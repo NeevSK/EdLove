@@ -16,11 +16,11 @@ const fixture = vi.hoisted(() => ({
   setDemoMode: vi.fn(),
   records: new Map<string, string | number>(),
 }));
-vi.mock('@repo/core/accounts/authenticatedAccountCapture', () => ({
+vi.mock('@repo/core/accounts/authenticatedAccountCapture.adapter', () => ({
   captureAuthenticatedDeviceAccount: vi.fn(),
   getVerifiedDeviceAccountProfile: vi.fn(),
 }));
-vi.mock('@repo/core/accounts/deviceAccounts', () => ({
+vi.mock('@repo/core/accounts/deviceAccounts.adapter', () => ({
   deviceAccounts: { list: async () => [], retainRefreshedSession: fixture.retainRefreshedSession },
 }));
 vi.mock('@repo/core/adapters/powersync/database', () => ({ disconnectPowerSync: vi.fn() }));
@@ -34,7 +34,7 @@ vi.mock('@repo/core/auth', () => ({
     signOut: vi.fn(),
   },
 }));
-vi.mock('@repo/core/lib/accountScope', () => ({ getActiveAccountId: () => null }));
+vi.mock('@repo/core/lib/accountScope.adapter', () => ({ getActiveAccountId: () => null }));
 vi.mock('@repo/core/lib/sync/replayAdmission', () => ({ openReplayAdmission: vi.fn() }));
 vi.mock('@repo/core/logic/auth/profileResolution', () => ({
   resolveAuthProfile: fixture.resolveAuthProfile,
@@ -68,7 +68,7 @@ vi.mock('@repo/core/store/useAuthStore', () => {
     }),
   };
 });
-vi.mock('@repo/core/lib/experienceState', () => ({
+vi.mock('@repo/core/lib/experienceState.store', () => ({
   useExperienceState: <T,>(select: (state: { setDemoMode: typeof fixture.setDemoMode }) => T) =>
     select({ setDemoMode: fixture.setDemoMode }),
 }));

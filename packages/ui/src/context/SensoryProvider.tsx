@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { setHapticsEnabled } from '@repo/ui/utils/haptics';
 import {
   createContext,

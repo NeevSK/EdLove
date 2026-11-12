@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 /** Observes one key on the selected backend without mirroring it into a store. */

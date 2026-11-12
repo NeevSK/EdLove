@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import type { FeatureRolloutSnapshot } from '@repo/core/logic/ports/featureRollout.port';
 import { z } from 'zod';
 

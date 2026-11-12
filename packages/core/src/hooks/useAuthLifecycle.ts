@@ -1,9 +1,9 @@
-import { captureAuthenticatedDeviceAccount } from '@repo/core/accounts/authenticatedAccountCapture';
-import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
+import { captureAuthenticatedDeviceAccount } from '@repo/core/accounts/authenticatedAccountCapture.adapter';
+import { deviceAccounts } from '@repo/core/accounts/deviceAccounts.adapter';
 import { disconnectPowerSync } from '@repo/core/adapters/powersync/database';
 import { authAPI } from '@repo/core/auth';
-import { getActiveAccountId } from '@repo/core/lib/accountScope';
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 import { openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
 import {
   getSessionIdentityMode,
@@ -27,7 +27,7 @@ import { APIError } from '@repo/core/types/API';
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 
-export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticatedAccountCapture';
+export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticatedAccountCapture.adapter';
 
 /** Throttle minimum interval for mobile AppState wake-up profile reconciliation. */
 const APP_STATE_RECONCILE_THROTTLE_MS = 60_000;

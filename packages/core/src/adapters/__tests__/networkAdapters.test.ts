@@ -7,7 +7,7 @@ import type { NetInfoState } from '@react-native-community/netinfo';
 import { stopNetworkBusAdapter, startNetworkBusAdapter } from '@repo/core/adapters/NetworkBusAdapter';
 import { NativeNetworkAdapter } from '@repo/core/adapters/native/NativeNetworkAdapter';
 import { WebNetworkAdapter } from '@repo/core/adapters/WebNetworkAdapter';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import type { INetwork, NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
 

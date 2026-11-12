@@ -1,4 +1,4 @@
-import { buildPartitionedKey } from '@repo/core/lib/storage';
+import { buildPartitionedKey } from '@repo/core/lib/storage.adapter';
 import { describe, expect, it } from 'vitest';
 
 describe('buildPartitionedKey Governance', () => {

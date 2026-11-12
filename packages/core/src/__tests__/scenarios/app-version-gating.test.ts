@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { sovereignBus } from '../../lib/sync/eventBus';
-import { useMutationQueue } from '../../lib/sync/useMutationQueue';
-import { compareSemver, useVersionGatingStore } from '../../lib/sync/versionGating';
+import { sovereignBus } from '../../lib/sync/eventBus.adapter';
+import { useMutationQueue } from '../../lib/sync/mutationQueue.store';
+import { compareSemver, useVersionGatingStore } from '../../lib/sync/versionGating.store';
 
 describe('Disaster Suite 6: App Version Gating, Force Updates & Outbox Freezing', () => {
   beforeEach(() => {

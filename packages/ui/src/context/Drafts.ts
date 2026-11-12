@@ -10,8 +10,8 @@
  * words are not kept (a journal you burn) do not use it.
  */
 
-import { getActiveAccountId } from '@repo/core/lib/accountScope';
-import { storage } from '@repo/core/lib/storage';
+import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 

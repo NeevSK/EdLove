@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { secureApiFetch } from '@repo/core/lib/security/transportSecurity';
+import { secureApiFetch } from '@repo/core/lib/security/transportSecurity.adapter';
 
 const mocks = vi.hoisted(() => ({ getUser: vi.fn(), rpc: vi.fn(), createServerClient: vi.fn() }));
 

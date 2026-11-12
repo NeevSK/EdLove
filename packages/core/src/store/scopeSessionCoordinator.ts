@@ -1,6 +1,6 @@
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { scopeStorageKey } from '@repo/core/lib/accountScope';
-import { storage } from '@repo/core/lib/storage';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
+import { scopeStorageKey } from '@repo/core/lib/accountScope.adapter';
+import { storage } from '@repo/core/lib/storage.adapter';
 import {
   createScopeSessionSnapshot,
   PERSONAL_SCOPE_PERSPECTIVE,

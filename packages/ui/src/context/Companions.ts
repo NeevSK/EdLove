@@ -8,7 +8,7 @@
  * Kept on the phone (no account needed), applied by the floor's companion layer.
  */
 
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useSyncExternalStore } from 'react';
 
 export type CompanionTone = 'lamp' | 'glow' | 'ornament' | 'ink';

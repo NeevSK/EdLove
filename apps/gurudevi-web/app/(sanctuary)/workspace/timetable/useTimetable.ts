@@ -1,6 +1,6 @@
 'use client';
 
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import { useCallback, useState, useSyncExternalStore } from 'react';
 

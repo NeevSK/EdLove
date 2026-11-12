@@ -1,4 +1,4 @@
-import { secureApiFetch } from '@repo/core/lib/security/transportSecurity';
+import { secureApiFetch } from '@repo/core/lib/security/transportSecurity.adapter';
 import { classifyAuthCallback } from '@repo/core/logic/auth/authCallbackPolicy';
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';

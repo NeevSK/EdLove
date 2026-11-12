@@ -3,7 +3,7 @@
  * applied by the kit's `typeStyle` to every word. Load once at start; changes save at once.
  */
 
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useSyncExternalStore } from 'react';
 import {
   getReading,

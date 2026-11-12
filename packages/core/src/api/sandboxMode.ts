@@ -1,4 +1,4 @@
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 
 /**
  * The four mutually-exclusive runtime modes for the sandbox/demo layer.

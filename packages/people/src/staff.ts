@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { APIError, type StaffAttendance, type StaffLeave } from '@repo/core/types';
 
 async function getCollection<T>(key: string): Promise<T[]> {

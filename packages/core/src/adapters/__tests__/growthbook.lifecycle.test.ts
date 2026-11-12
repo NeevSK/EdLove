@@ -20,7 +20,7 @@ vi.mock('@repo/core/platform/drivers/networkMonitor', () => ({
     },
   },
 }));
-vi.mock('@repo/core/lib/storage', () => ({
+vi.mock('@repo/core/lib/storage.adapter', () => ({
   storage: {
     getStringAsync: async (key: string) => fixture.records.get(key),
     setAsync: async (key: string, value: string) => {

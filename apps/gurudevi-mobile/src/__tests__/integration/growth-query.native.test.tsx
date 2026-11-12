@@ -1,6 +1,6 @@
 import { useBanyanGrowth } from '@repo/core/hooks/useBanyanGrowth';
 import { useNaturePaths } from '@repo/core/hooks/useNaturePaths';
-import { setActiveAccountId } from '@repo/core/lib/accountScope';
+import { setActiveAccountId } from '@repo/core/lib/accountScope.adapter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
@@ -27,7 +27,7 @@ const fixture = vi.hoisted(() => {
 vi.mock('@repo/core/adapters/supabase/growth.adapter', () => ({
   supabaseGrowthAdapter: { getGrowthState: fixture.getGrowth },
 }));
-vi.mock('@repo/core/lib/storage', () => ({
+vi.mock('@repo/core/lib/storage.adapter', () => ({
   storage: { getStringAsync: fixture.read, setAsync: fixture.write },
 }));
 vi.mock('@repo/core/store/useAuthStore', () => ({

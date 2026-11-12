@@ -15,30 +15,30 @@ export {
 } from '@repo/core/hooks/useSanctuaryVisitor';
 export { useScopedDeviceSecurity } from '@repo/core/hooks/useScopedDeviceSecurity';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
-export { accountPin } from '@repo/core/lib/accountPin';
+export { accountPin } from '@repo/core/lib/accountPin.adapter';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
   validateInviteCode,
-} from '@repo/core/lib/inviteCodes';
+} from '@repo/core/lib/inviteCodes.adapter';
 export {
   clearPendingGateAction,
   getPendingGateAction,
   type PendingGateAction,
   setPendingGateAction,
-} from '@repo/core/lib/pendingGateAction';
+} from '@repo/core/lib/pendingGateAction.adapter';
 export {
   buildPartitionedKey,
   type PartitionKeyOptions,
   StorageKeys,
   storage,
-} from '@repo/core/lib/storage';
-export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+} from '@repo/core/lib/storage.adapter';
+export { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 export type {
   AccountLifecycleCommand,
   AccountLifecycleResult,
 } from '@repo/core/logic/accountLifecycle';
-export * from '@repo/core/logic/apiInterceptor';
+export * from '@repo/core/logic/apiInterceptor.adapter';
 export {
   type AuthCallbackAttempt,
   type AuthCallbackPurpose,
@@ -75,14 +75,14 @@ export {
   type RouteIntent,
   type ValidatedReferrerIntent,
 } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
-export { DeepLinkType, handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
+export { DeepLinkType, handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 export {
   isPendingIntentExpired,
   type PendingDeepLinkIntent,
   type PendingIntentStoreState,
   pendingIntentStore,
   usePendingIntentStore,
-} from '@repo/core/logic/deeplink/pendingIntentStore';
+} from '@repo/core/logic/deeplink/pendingIntent.store';
 export * from '@repo/core/logic/domains';
 export * from '@repo/core/logic/entities';
 export * from '@repo/core/logic/events/bus';
@@ -91,7 +91,7 @@ export * from '@repo/core/logic/experience';
 export * from '@repo/core/logic/experience/ActivityPulseContext';
 export * from '@repo/core/logic/forms';
 export * from '@repo/core/logic/grading';
-export { default as i18n } from '@repo/core/logic/i18n/config';
+export { default as i18n } from '@repo/core/logic/i18n/i18n.adapter';
 export * from '@repo/core/logic/mediaReducer';
 export {
   meetsSubscriptionTier,

@@ -1,7 +1,7 @@
 import {
   isQueuedMutationAcknowledged,
   useMutationQueue,
-} from '@repo/core/lib/sync/useMutationQueue';
+} from '@repo/core/lib/sync/mutationQueue.store';
 import {
   CHAT_SEND_COMMAND,
   ChatSendCommandSchema,

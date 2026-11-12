@@ -17,10 +17,10 @@ vi.mock('../../../adapters/powersync/database', () => ({
   registerPermissionValidator: vi.fn(),
 }));
 vi.mock('../cedarClientEvaluator', () => ({ evaluateShape2: state.evaluate }));
-vi.mock('../localResourceAttributes', () => ({ getLocalResourceAttributes: async () => ({}) }));
-vi.mock('../signature', () => ({ verifySnapshotSignature: state.verify }));
+vi.mock('../localResourceAttributes.adapter', () => ({ getLocalResourceAttributes: async () => ({}) }));
+vi.mock('../signature.adapter', () => ({ verifySnapshotSignature: state.verify }));
 
-import { checkLocalPermission } from '../localEvaluator.native';
+import { checkLocalPermission } from '../localEvaluator.adapter.native';
 
 describe('native dynamic Cedar snapshot boundary', () => {
   const request = {

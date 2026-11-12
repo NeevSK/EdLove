@@ -1,7 +1,7 @@
-import { useExperienceState } from '@repo/core/lib/experienceState';
-import { withScopedStateWritesPaused } from '@repo/core/lib/scopedStateStorage';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
+import { withScopedStateWritesPaused } from '@repo/core/lib/scopedStateStorage.adapter';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';

@@ -1,9 +1,9 @@
 import { runEffect } from '@repo/core/effect';
 import type { ClassroomRef, CoordinationGap } from '../schemas/agentContracts.schema';
-import { checkSectionReliefGapsEffect, detectAttendanceGapsEffect } from './reliefAgent';
+import { checkSectionReliefGapsEffect, detectAttendanceGapsEffect } from './reliefAgent.adapter';
 
 export * from '../schemas/agentContracts.schema';
-export * from './reliefAgent';
+export * from './reliefAgent.adapter';
 
 /**
  * Promise-bridged execution boundary for discovering staff relief gaps.

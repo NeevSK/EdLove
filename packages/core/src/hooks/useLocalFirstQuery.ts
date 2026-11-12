@@ -1,6 +1,6 @@
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

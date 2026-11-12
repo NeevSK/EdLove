@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { useFeatureStore } from '@repo/core/store';
 import { useCallback, useEffect, useState } from 'react';
 

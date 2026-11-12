@@ -1,5 +1,5 @@
 import type { AccountDeletionRequest } from '@repo/core/logic/ports/auth.port';
-import { secureApiFetch } from '@repo/core/lib/security/transportSecurity';
+import { secureApiFetch } from '@repo/core/lib/security/transportSecurity.adapter';
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { supabaseConfig } from '../../../lib/supabase/config';

@@ -1,5 +1,5 @@
 import { SupabaseAuthAdapter } from '@repo/core/adapters/supabase/auth.adapter';
-import { AuthClient } from './logic/auth/AuthClient';
+import { AuthClient } from './logic/auth/AuthClient.adapter';
 import { supabaseIdentityAdapter as identity } from './adapters/supabaseIdentity.adapter';
 import { resetScopedStores } from '@repo/core/store/resetScopedStores';
 

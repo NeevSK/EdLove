@@ -1,5 +1,5 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 

@@ -1,5 +1,5 @@
-import { storage } from '@repo/core/lib/storage';
-import { TenantPartitionedStorageAdapter } from '@repo/core/lib/tenantStorage';
+import { storage } from '@repo/core/lib/storage.adapter';
+import { TenantPartitionedStorageAdapter } from '@repo/core/lib/tenantStorage.adapter';
 import type { IStorage } from '@repo/core/logic/interfaces/storage.port';
 import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import {

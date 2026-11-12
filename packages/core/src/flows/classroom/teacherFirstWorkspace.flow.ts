@@ -68,7 +68,7 @@ export const teacherFirstWorkspaceFlow: FeatureJTBDGraph = {
           role: 'Native workspace dispatcher and permission states',
         },
         {
-          reference: 'packages/core/src/logic/workspace/provisionalWorkspace.ts',
+          reference: 'packages/core/src/logic/workspace/provisionalWorkspace.store.ts',
           role: 'Existing durable provisioning queue; teacher classroom commands are not supported',
         },
         {

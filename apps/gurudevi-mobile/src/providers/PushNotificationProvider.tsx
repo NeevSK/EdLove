@@ -1,4 +1,4 @@
-import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 import { storage } from '@repo/core/native';
 import * as Notifications from 'expo-notifications';
 import { type Href, router } from 'expo-router';

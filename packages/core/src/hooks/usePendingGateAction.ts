@@ -1,9 +1,9 @@
-import type { PendingGateAction } from '@repo/core/lib/pendingGateAction';
+import type { PendingGateAction } from '@repo/core/lib/pendingGateAction.adapter';
 import {
   clearPendingGateAction,
   getPendingGateAction,
   setPendingGateAction,
-} from '@repo/core/lib/pendingGateAction';
+} from '@repo/core/lib/pendingGateAction.adapter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface UsePendingGateActionResult {

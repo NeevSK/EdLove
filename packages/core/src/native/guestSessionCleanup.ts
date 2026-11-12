@@ -1,5 +1,5 @@
 import { authAPI } from '@repo/core/auth';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { GuestStorage } from '@repo/core/native/guestStorage';
 import { GuestDataSync } from '@repo/core/native/guestDataSync';
 import { clearLocalGuestIdentity } from '@repo/core/native/guestIdentity';

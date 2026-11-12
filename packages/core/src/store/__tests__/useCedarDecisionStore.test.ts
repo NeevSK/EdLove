@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { verifySnapshotSignature } from '../../logic/permissions/signature';
+import { verifySnapshotSignature } from '../../logic/permissions/signature.adapter';
 import { useCedarDecisionStore } from '../useCedarDecisionStore';
 
 const mockDrizzle = {
@@ -17,7 +17,7 @@ vi.mock('../../adapters/powersync/database', () => ({
   getDrizzleDB: () => mockDrizzle,
 }));
 
-vi.mock('../../logic/permissions/signature', () => ({
+vi.mock('../../logic/permissions/signature.adapter', () => ({
   verifySnapshotSignature: vi.fn().mockResolvedValue(true),
 }));
 

@@ -66,7 +66,7 @@ function walk(directory, files) {
 }
 
 function candidateOwner(file, source) {
-  if (file.includes('/lib/sync/useMutationQueue') || source.includes('MutationQueue')) {
+  if (file.includes('/lib/sync/mutationQueue.store') || source.includes('MutationQueue')) {
     return 'durable-command';
   }
   if (file.includes('/lib/sync/versionGating')) return 'protocol-candidate';

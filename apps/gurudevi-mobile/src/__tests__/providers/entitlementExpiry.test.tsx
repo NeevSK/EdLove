@@ -15,7 +15,7 @@ vi.mock('@repo/core/adapters/supabase/supabaseEntitlement.adapter', () => ({
     }
   },
 }));
-vi.mock('@repo/core/lib/storageWrapper', () => ({
+vi.mock('@repo/core/lib/storageWrapper.adapter', () => ({
   SafeZustandStorage: { getItem: async () => null, setItem: async () => undefined },
 }));
 

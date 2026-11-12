@@ -1,5 +1,5 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import type { INetwork, NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { useAuthStore } from '@repo/core/store/useAuthStore';

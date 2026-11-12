@@ -1,5 +1,5 @@
 import { createAuthenticatedV1Client } from '@repo/core/api/v1/client';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import {
   PERSONAL_SCOPE_PERSPECTIVE,
   type ScopeSessionSnapshot,
@@ -8,7 +8,7 @@ import {
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { startPermissionSnapshotRefresh } from '../snapshotRefresh';
+import { startPermissionSnapshotRefresh } from '../snapshotRefresh.adapter';
 
 const writes = vi.hoisted(() => ({ run: vi.fn(async (_statement: unknown) => undefined) }));
 vi.mock('@repo/core/adapters/powersync/database', () => ({

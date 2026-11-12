@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const PERSISTENCE_KEY = 'GURUDEVI_CLASSROOM_CREATION_STATE';

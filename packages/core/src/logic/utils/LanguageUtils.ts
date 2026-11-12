@@ -1,4 +1,4 @@
-import i18n from '@repo/core/logic/i18n/config';
+import i18n from '@repo/core/logic/i18n/i18n.adapter';
 import type { KeyValueStorage } from '@repo/core/logic/ports/storage';
 
 const LANGUAGE_STORAGE_KEY = 'gurudevi-user-language';

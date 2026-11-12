@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 

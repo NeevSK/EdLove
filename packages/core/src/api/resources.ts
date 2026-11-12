@@ -1,5 +1,5 @@
 import { orpcClient } from '@repo/core/api/orpcClient';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { APIError } from '@repo/core/types/API';
 import type { ClassroomResource } from '@repo/core/types/Resource';
 

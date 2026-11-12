@@ -2575,7 +2575,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -2635,7 +2635,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -6831,7 +6831,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -9253,13 +9253,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -9377,13 +9377,13 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -9440,7 +9440,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -9541,13 +9541,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -10675,13 +10675,13 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -10736,16 +10736,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/schemas/chat-command.schema.ts",
@@ -10815,7 +10815,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -11513,9 +11513,9 @@
    ]
   },
   {
-   "file": "packages/core/src/accounts/accountTransition.ts",
+   "file": "packages/core/src/accounts/accountTransition.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 92,
    "counts": {
@@ -11555,10 +11555,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/ports/accountTransition.port.ts",
@@ -11570,9 +11570,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/accounts/authenticatedAccountCapture.ts",
+   "file": "packages/core/src/accounts/authenticatedAccountCapture.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 78,
    "counts": {
@@ -11601,10 +11601,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/deviceAccounts.ts",
+     "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/types/Identity.ts",
@@ -11628,9 +11628,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/accounts/deviceAccounts.ts",
+   "file": "packages/core/src/accounts/deviceAccounts.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 530,
    "counts": {
@@ -11665,10 +11665,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/accountTransition.ts",
+     "to": "packages/core/src/accounts/accountTransition.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/auth.ts",
@@ -11689,34 +11689,34 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/accountPin.ts",
+     "to": "packages/core/src/lib/accountPin.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/supabaseAuthStorage.ts",
+     "to": "packages/core/src/lib/supabaseAuthStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/sync/replayAdmission.ts",
@@ -11830,7 +11830,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -11977,10 +11977,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/permissions/localEvaluator.ts",
+     "to": "packages/core/src/logic/permissions/localEvaluator.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/ports/authz.port.ts",
@@ -12061,7 +12061,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -12109,7 +12109,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -12559,7 +12559,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -12983,7 +12983,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/permissions/signature.ts",
+     "to": "packages/core/src/logic/permissions/signature.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -13329,16 +13329,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/ports/database.port.ts",
@@ -13666,7 +13666,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -14442,13 +14442,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/authStorage.ts",
+     "to": "packages/core/src/lib/authStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/security/transportSecurity.ts",
+     "to": "packages/core/src/lib/security/transportSecurity.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -14549,7 +14549,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -14890,9 +14890,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/ai/contextRegistry.ts",
+   "file": "packages/core/src/ai/contextRegistry.store.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T4",
    "shape": "runtime",
    "lines": 384,
    "counts": {
@@ -14992,10 +14992,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/ai/contextRegistry.ts",
+     "to": "packages/core/src/ai/contextRegistry.store.ts",
      "typeOnly": true,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     }
    ],
    "outside": []
@@ -16988,7 +16988,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -17485,10 +17485,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": []
@@ -17609,7 +17609,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -17706,7 +17706,7 @@
      "toTier": "RETIRED"
     },
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -21254,10 +21254,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/logic/apiInterceptor.ts",
+     "to": "packages/core/src/logic/apiInterceptor.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": []
@@ -24390,7 +24390,7 @@
      "toTier": "RETIRED"
     },
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -24441,7 +24441,7 @@
      "toTier": "RETIRED"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -24678,7 +24678,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -24766,7 +24766,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -25517,10 +25517,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/authorization.ts",
+     "to": "packages/core/src/lib/authorization.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/types/index.ts",
@@ -25664,7 +25664,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -25979,7 +25979,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/security/transportSecurity.ts",
+     "to": "packages/core/src/lib/security/transportSecurity.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -26394,10 +26394,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/auth/AuthClient.ts",
+     "to": "packages/core/src/logic/auth/AuthClient.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/adapters/supabaseIdentity.adapter.ts",
@@ -26935,25 +26935,25 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/authProfileStorage.ts",
+     "to": "packages/core/src/lib/authProfileStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -28585,16 +28585,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/authenticatedAccountCapture.ts",
+     "to": "packages/core/src/accounts/authenticatedAccountCapture.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/accounts/deviceAccounts.ts",
+     "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/adapters/powersync/database.ts",
@@ -28609,13 +28609,13 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -28693,10 +28693,10 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/accounts/authenticatedAccountCapture.ts",
+     "to": "packages/core/src/accounts/authenticatedAccountCapture.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": [
@@ -28775,7 +28775,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -28816,10 +28816,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/deviceAccounts.ts",
+     "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": [
@@ -28864,10 +28864,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/adapters/supabaseDeviceSecurity.adapter.ts",
@@ -29135,7 +29135,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -29182,13 +29182,13 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -29409,7 +29409,7 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -29725,16 +29725,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/pendingGateAction.ts",
+     "to": "packages/core/src/lib/pendingGateAction.adapter.ts",
      "typeOnly": true,
      "toShape": "contract",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/pendingGateAction.ts",
+     "to": "packages/core/src/lib/pendingGateAction.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": [
@@ -29772,16 +29772,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/tenantStorage.ts",
+     "to": "packages/core/src/lib/tenantStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/interfaces/storage.port.ts",
@@ -29843,7 +29843,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -29923,16 +29923,16 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/MutationAuditLog.ts",
+     "to": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
@@ -30087,7 +30087,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -30221,7 +30221,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -30335,7 +30335,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -30522,22 +30522,22 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/accountTransition.ts",
+     "to": "packages/core/src/accounts/accountTransition.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/accounts/deviceAccounts.ts",
+     "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/accountPin.ts",
+     "to": "packages/core/src/lib/accountPin.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/grading.ts",
@@ -30558,10 +30558,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/pendingGateAction.ts",
+     "to": "packages/core/src/lib/pendingGateAction.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/permissions.ts",
@@ -30606,28 +30606,28 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/apiInterceptor.ts",
+     "to": "packages/core/src/logic/apiInterceptor.adapter.ts",
      "typeOnly": true,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/apiInterceptor.ts",
+     "to": "packages/core/src/logic/apiInterceptor.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/capabilityDecision.ts",
@@ -30642,10 +30642,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/deeplink/pendingIntentStore.ts",
+     "to": "packages/core/src/logic/deeplink/pendingIntent.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/events/bus.ts",
@@ -30666,10 +30666,10 @@
      "toTier": "T6"
     },
     {
-     "to": "packages/core/src/logic/i18n/config.ts",
+     "to": "packages/core/src/logic/i18n/i18n.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/mediaReducer.ts",
@@ -30762,10 +30762,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/platform/useResponsiveRenderer.ts",
@@ -30864,10 +30864,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/ai/contextRegistry.ts",
+     "to": "packages/core/src/ai/contextRegistry.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/ai/platformManifest.ts",
@@ -31032,10 +31032,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/MutationAuditLog.ts",
+     "to": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
@@ -31050,10 +31050,10 @@
      "toTier": "T6"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/index.ts",
@@ -31224,9 +31224,9 @@
    ]
   },
   {
-   "file": "packages/core/src/lib/accountPin.ts",
+   "file": "packages/core/src/lib/accountPin.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract+logic",
    "lines": 123,
    "counts": {
@@ -31266,7 +31266,7 @@
    ]
   },
   {
-   "file": "packages/core/src/lib/accountScope.ts",
+   "file": "packages/core/src/lib/accountScope.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -31336,7 +31336,7 @@
    ]
   },
   {
-   "file": "packages/core/src/lib/authProfileStorage.ts",
+   "file": "packages/core/src/lib/authProfileStorage.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -31367,19 +31367,19 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -31400,7 +31400,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/authStorage.ts",
+   "file": "packages/core/src/lib/authStorage.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract",
@@ -31430,7 +31430,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -31439,9 +31439,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/authorization.ts",
+   "file": "packages/core/src/lib/authorization.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 75,
    "counts": {
@@ -31483,10 +31483,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/permissions/localEvaluator.ts",
+     "to": "packages/core/src/logic/permissions/localEvaluator.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/types/API.ts",
@@ -31723,7 +31723,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/devicePreferences.ts",
+   "file": "packages/core/src/lib/devicePreferences.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -31761,7 +31761,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -31843,7 +31843,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/experienceState.ts",
+   "file": "packages/core/src/lib/experienceState.store.ts",
    "package": "packages/core",
    "folderTier": "T4",
    "shape": "runtime",
@@ -31874,7 +31874,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/scopedStateStorage.ts",
+     "to": "packages/core/src/lib/scopedStateStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -32115,7 +32115,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -32275,22 +32275,22 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/accountPin.ts",
+     "to": "packages/core/src/lib/accountPin.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/authorization.ts",
+     "to": "packages/core/src/lib/authorization.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/clientStateFoundation.ts",
@@ -32329,10 +32329,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/inviteCodes.ts",
+     "to": "packages/core/src/lib/inviteCodes.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/mediaUtils.ts",
@@ -32341,10 +32341,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/pendingGateAction.ts",
+     "to": "packages/core/src/lib/pendingGateAction.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/permissions.ts",
@@ -32359,22 +32359,22 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/supabaseAuthStorage.ts",
+     "to": "packages/core/src/lib/supabaseAuthStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/temporalEvents.ts",
@@ -32429,9 +32429,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/inviteCodes.ts",
+   "file": "packages/core/src/lib/inviteCodes.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract+logic",
    "lines": 205,
    "counts": {
@@ -32828,9 +32828,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/pendingGateAction.ts",
+   "file": "packages/core/src/lib/pendingGateAction.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract",
    "lines": 34,
    "counts": {
@@ -32861,7 +32861,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -33166,7 +33166,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/scopedStateStorage.ts",
+   "file": "packages/core/src/lib/scopedStateStorage.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -33197,7 +33197,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -33209,7 +33209,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -33263,9 +33263,9 @@
    ]
   },
   {
-   "file": "packages/core/src/lib/security/deviceTrust.ts",
+   "file": "packages/core/src/lib/security/deviceTrust.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract",
    "lines": 12,
    "counts": {
@@ -33397,7 +33397,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/security/transportSecurity.ts",
+   "file": "packages/core/src/lib/security/transportSecurity.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -33430,7 +33430,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/storage.ts",
+   "file": "packages/core/src/lib/storage.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract",
@@ -33471,7 +33471,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/storageWrapper.ts",
+   "file": "packages/core/src/lib/storageWrapper.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract",
@@ -33501,13 +33501,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/devicePreferences.ts",
+     "to": "packages/core/src/lib/devicePreferences.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -33516,9 +33516,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/supabaseAuthStorage.ts",
+   "file": "packages/core/src/lib/supabaseAuthStorage.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 104,
    "counts": {
@@ -33550,7 +33550,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -33563,54 +33563,6 @@
     }
    ],
    "outside": []
-  },
-  {
-   "file": "packages/core/src/lib/sync/MutationAuditLog.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
-   "shape": "runtime",
-   "lines": 81,
-   "counts": {
-    "types": 2,
-    "consts": 1,
-    "constructs": 1,
-    "ambient": 3,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "AuditEntry",
-    "useMutationAuditLog"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 5,
-    "tests": 2
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/lib/storageWrapper.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/types/mutationQueue.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": [
-    "zustand"
-   ]
   },
   {
    "file": "packages/core/src/lib/sync/delta.ts",
@@ -33690,16 +33642,16 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/MutationAuditLog.ts",
+     "to": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/store/useAuthStore.ts",
@@ -33757,7 +33709,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/sync/eventBus.ts",
+   "file": "packages/core/src/lib/sync/eventBus.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -33822,10 +33774,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     }
    ],
    "outside": [
@@ -33870,16 +33822,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     }
    ],
    "outside": [
@@ -33957,7 +33909,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -33981,10 +33933,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/MutationAuditLog.ts",
+     "to": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/lib/sync/registry.ts",
@@ -33999,10 +33951,10 @@
      "toTier": "T6"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/types/mutationQueue.ts",
@@ -34012,6 +33964,127 @@
     }
    ],
    "outside": []
+  },
+  {
+   "file": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
+   "package": "packages/core",
+   "folderTier": "T4",
+   "shape": "runtime",
+   "lines": 81,
+   "counts": {
+    "types": 2,
+    "consts": 1,
+    "constructs": 1,
+    "ambient": 3,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "AuditEntry",
+    "useMutationAuditLog"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 5,
+    "tests": 2
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/types/mutationQueue.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": [
+    "zustand"
+   ]
+  },
+  {
+   "file": "packages/core/src/lib/sync/mutationQueue.store.ts",
+   "package": "packages/core",
+   "folderTier": "T4",
+   "shape": "runtime",
+   "lines": 287,
+   "counts": {
+    "types": 0,
+    "consts": 1,
+    "constructs": 2,
+    "ambient": 4,
+    "schemas": 0,
+    "functions": 3,
+    "functionLines": 25,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 2,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "isQueuedMutationAcknowledged",
+    "useMutationQueue"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 26,
+    "tests": 17
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/lib/sync/idempotency.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/lib/sync/outboxMigration.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/types/mutationCommand.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/types/mutationQueue.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    }
+   ],
+   "outside": [
+    "uuid",
+    "zustand"
+   ]
   },
   {
    "file": "packages/core/src/lib/sync/outboxMigration.ts",
@@ -34179,9 +34252,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/sync/replayIdentity.ts",
+   "file": "packages/core/src/lib/sync/replayIdentity.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 24,
    "counts": {
@@ -34209,10 +34282,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/accounts/deviceAccounts.ts",
+     "to": "packages/core/src/accounts/deviceAccounts.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/auth.ts",
@@ -34221,7 +34294,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -34261,10 +34334,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/schemas/chat-command.schema.ts",
@@ -34331,16 +34404,16 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/MutationAuditLog.ts",
+     "to": "packages/core/src/lib/sync/mutationAuditLog.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/lib/sync/outboxMigration.ts",
@@ -34361,10 +34434,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/replayIdentity.ts",
+     "to": "packages/core/src/lib/sync/replayIdentity.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/sync/replayPolicy.ts",
@@ -34373,16 +34446,16 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/lib/sync/versionGating.ts",
+     "to": "packages/core/src/lib/sync/versionGating.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/monitoring/breadcrumbs.ts",
@@ -34426,82 +34499,9 @@
    ]
   },
   {
-   "file": "packages/core/src/lib/sync/useMutationQueue.ts",
+   "file": "packages/core/src/lib/sync/versionGating.store.ts",
    "package": "packages/core",
-   "folderTier": "T5",
-   "shape": "runtime",
-   "lines": 287,
-   "counts": {
-    "types": 0,
-    "consts": 1,
-    "constructs": 2,
-    "ambient": 4,
-    "schemas": 0,
-    "functions": 3,
-    "functionLines": 25,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 2,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "isQueuedMutationAcknowledged",
-    "useMutationQueue"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 26,
-    "tests": 17
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/lib/accountScope.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/lib/storageWrapper.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/lib/sync/idempotency.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/lib/sync/outboxMigration.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/types/mutationCommand.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/core/src/types/mutationQueue.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": [
-    "uuid",
-    "zustand"
-   ]
-  },
-  {
-   "file": "packages/core/src/lib/sync/versionGating.ts",
-   "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T4",
    "shape": "runtime",
    "lines": 114,
    "counts": {
@@ -34538,13 +34538,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -34588,9 +34588,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/lib/tenantStorage.ts",
+   "file": "packages/core/src/lib/tenantStorage.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 160,
    "counts": {
@@ -34621,7 +34621,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -34736,10 +34736,10 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/logic/agents/reliefAgent.ts",
+     "to": "packages/core/src/logic/agents/reliefAgent.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/schemas/agentContracts.schema.ts",
@@ -34748,18 +34748,18 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/logic/agents/reliefAgent.ts",
+     "to": "packages/core/src/logic/agents/reliefAgent.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/agents/reliefAgent.ts",
+   "file": "packages/core/src/logic/agents/reliefAgent.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract+logic",
    "lines": 213,
    "counts": {
@@ -34811,9 +34811,9 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/apiInterceptor.ts",
+   "file": "packages/core/src/logic/apiInterceptor.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 103,
    "counts": {
@@ -34876,9 +34876,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/auth/AuthClient.ts",
+   "file": "packages/core/src/logic/auth/AuthClient.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 604,
    "counts": {
@@ -35577,9 +35577,9 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/deeplink/handleDeepLink.ts",
+   "file": "packages/core/src/logic/deeplink/handleDeepLink.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract+logic",
    "lines": 96,
    "counts": {
@@ -35625,9 +35625,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/deeplink/pendingIntentStore.ts",
+   "file": "packages/core/src/logic/deeplink/pendingIntent.store.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T4",
    "shape": "runtime",
    "lines": 120,
    "counts": {
@@ -35662,7 +35662,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -37092,9 +37092,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/i18n/config.ts",
+   "file": "packages/core/src/logic/i18n/i18n.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 38,
    "counts": {
@@ -37161,10 +37161,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/logic/i18n/config.ts",
+     "to": "packages/core/src/logic/i18n/i18n.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": []
@@ -37279,34 +37279,34 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/accountPin.ts",
+     "to": "packages/core/src/lib/accountPin.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/inviteCodes.ts",
+     "to": "packages/core/src/lib/inviteCodes.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/pendingGateAction.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/pendingGateAction.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/accountLifecycle.ts",
@@ -37315,10 +37315,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/apiInterceptor.ts",
+     "to": "packages/core/src/logic/apiInterceptor.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/auth/authCallbackAttempt.ts",
@@ -37363,16 +37363,16 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/deeplink/handleDeepLink.ts",
+     "to": "packages/core/src/logic/deeplink/handleDeepLink.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/deeplink/pendingIntentStore.ts",
+     "to": "packages/core/src/logic/deeplink/pendingIntent.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/domains/index.ts",
@@ -37417,10 +37417,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/i18n/config.ts",
+     "to": "packages/core/src/logic/i18n/i18n.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/mediaReducer.ts",
@@ -37822,9 +37822,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/journey/roleJourneyMachine.v6.ts",
+   "file": "packages/core/src/logic/journey/roleJourney.machine.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T4",
    "shape": "runtime",
    "lines": 199,
    "counts": {
@@ -37866,7 +37866,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -38172,7 +38172,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -38688,7 +38688,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
@@ -39703,10 +39703,10 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/logic/permissions/localEvaluator.ts",
+     "to": "packages/core/src/logic/permissions/localEvaluator.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
@@ -39730,9 +39730,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/permissions/localEvaluator.native.ts",
+   "file": "packages/core/src/logic/permissions/localEvaluator.adapter.native.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 200,
    "counts": {
@@ -39778,13 +39778,13 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/permissions/localResourceAttributes.ts",
+     "to": "packages/core/src/logic/permissions/localResourceAttributes.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/permissions/signature.ts",
+     "to": "packages/core/src/logic/permissions/signature.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -39813,9 +39813,9 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/permissions/localEvaluator.ts",
+   "file": "packages/core/src/logic/permissions/localEvaluator.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 110,
    "counts": {
@@ -39861,10 +39861,10 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/security/deviceTrust.ts",
+     "to": "packages/core/src/lib/security/deviceTrust.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/auth/identityState.ts",
@@ -39891,24 +39891,24 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/logic/permissions/localResourceAttributes.ts",
+     "to": "packages/core/src/logic/permissions/localResourceAttributes.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/permissions/localResourceAttributes.ts",
+     "to": "packages/core/src/logic/permissions/localResourceAttributes.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/permissions/localEvaluator.web.ts",
+   "file": "packages/core/src/logic/permissions/localEvaluator.adapter.web.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 26,
    "counts": {
@@ -39953,9 +39953,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/permissions/localResourceAttributes.ts",
+   "file": "packages/core/src/logic/permissions/localResourceAttributes.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 50,
    "counts": {
@@ -40079,7 +40079,7 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/permissions/signature.ts",
+   "file": "packages/core/src/logic/permissions/signature.adapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
@@ -40120,9 +40120,9 @@
    ]
   },
   {
-   "file": "packages/core/src/logic/permissions/snapshotRefresh.ts",
+   "file": "packages/core/src/logic/permissions/snapshotRefresh.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 108,
    "counts": {
@@ -40162,7 +40162,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -41565,9 +41565,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/reflection/records.ts",
+   "file": "packages/core/src/logic/reflection/records.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "contract+logic",
    "lines": 417,
    "counts": {
@@ -44195,10 +44195,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/logic/i18n/config.ts",
+     "to": "packages/core/src/logic/i18n/i18n.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/ports/storage.ts",
@@ -45008,10 +45008,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/workspace/provisionalWorkspace.ts",
+     "to": "packages/core/src/logic/workspace/provisionalWorkspace.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/workspace/renderer.ts",
@@ -45361,9 +45361,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/logic/workspace/provisionalWorkspace.ts",
+   "file": "packages/core/src/logic/workspace/provisionalWorkspace.store.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T4",
    "shape": "runtime",
    "lines": 405,
    "counts": {
@@ -45402,7 +45402,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -46024,7 +46024,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -46178,7 +46178,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -46243,7 +46243,7 @@
      "toTier": "T0"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -46362,7 +46362,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -46417,7 +46417,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -46498,7 +46498,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -46965,7 +46965,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -47306,7 +47306,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -47502,9 +47502,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/offline/resilience.ts",
+   "file": "packages/core/src/offline/resilience.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 88,
    "counts": {
@@ -47534,16 +47534,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/logic/apiInterceptor.ts",
+     "to": "packages/core/src/logic/apiInterceptor.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/offline/useOfflineStatus.ts",
@@ -47943,7 +47943,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -48752,28 +48752,28 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/experienceState.ts",
+     "to": "packages/core/src/lib/experienceState.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
     },
     {
-     "to": "packages/core/src/lib/scopedStateStorage.ts",
+     "to": "packages/core/src/lib/scopedStateStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/store/scopeSession.ts",
@@ -48907,19 +48907,19 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -49142,7 +49142,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/scopedStateStorage.ts",
+     "to": "packages/core/src/lib/scopedStateStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -49310,13 +49310,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -49357,7 +49357,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -49400,7 +49400,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -49624,7 +49624,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -49728,7 +49728,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -49776,13 +49776,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/scopedStateStorage.ts",
+     "to": "packages/core/src/lib/scopedStateStorage.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -49794,7 +49794,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -49913,16 +49913,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/logic/interfaces/network.port.ts",
@@ -54638,9 +54638,9 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/webAuth.ts",
+   "file": "packages/core/src/webAuth.adapter.ts",
    "package": "packages/core",
-   "folderTier": "T2",
+   "folderTier": "T3",
    "shape": "runtime",
    "lines": 85,
    "counts": {
@@ -54677,7 +54677,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -62498,7 +62498,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -62544,7 +62544,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -62706,7 +62706,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -62751,7 +62751,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -65717,7 +65717,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -65796,7 +65796,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -71228,7 +71228,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -71324,7 +71324,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -71576,7 +71576,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -71689,7 +71689,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -71808,7 +71808,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -71868,7 +71868,7 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -71928,7 +71928,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72072,7 +72072,7 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72144,7 +72144,7 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72271,7 +72271,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72426,7 +72426,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72485,7 +72485,7 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72551,7 +72551,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72606,7 +72606,7 @@
      "toTier": "T4"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72659,7 +72659,7 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72719,7 +72719,7 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72785,7 +72785,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -72961,7 +72961,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -73105,13 +73105,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -83278,10 +83278,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/lib/sync/index.ts",
@@ -104688,7 +104688,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -104766,7 +104766,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -104814,13 +104814,13 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -105135,7 +105135,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -105184,7 +105184,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -105235,7 +105235,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -105287,7 +105287,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -105348,13 +105348,13 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/devicePreferences.ts",
+     "to": "packages/core/src/lib/devicePreferences.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -107553,7 +107553,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -108086,7 +108086,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/eventBus.ts",
+     "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -108665,10 +108665,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/deeplink/handleDeepLink.ts",
+     "to": "packages/core/src/logic/deeplink/handleDeepLink.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/native/guestConversionLedger.ts",
@@ -119044,7 +119044,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -122457,10 +122457,10 @@
      "toTier": "T5"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/offline/useOfflineStatus.ts",
@@ -123890,10 +123890,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/logic/deeplink/handleDeepLink.ts",
+     "to": "packages/core/src/logic/deeplink/handleDeepLink.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/ui/src/components/native/index.ts",
@@ -125447,7 +125447,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -125909,10 +125909,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/permissions/snapshotRefresh.ts",
+     "to": "packages/core/src/logic/permissions/snapshotRefresh.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "apps/gurudevi-mobile/src/lib/v1Client.ts",
@@ -126065,10 +126065,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/sync/versionGating.ts",
+     "to": "packages/core/src/lib/sync/versionGating.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/ui/src/components/native/index.ts",
@@ -128181,10 +128181,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/deeplink/pendingIntentStore.ts",
+     "to": "packages/core/src/logic/deeplink/pendingIntent.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     },
     {
      "to": "packages/ui/src/index.ts",
@@ -128408,10 +128408,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/deeplink/pendingIntentStore.ts",
+     "to": "packages/core/src/logic/deeplink/pendingIntent.store.ts",
      "typeOnly": true,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T4"
     }
    ],
    "outside": []
@@ -129029,7 +129029,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/accountScope.ts",
+     "to": "packages/core/src/lib/accountScope.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -129041,10 +129041,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/sync/replayIdentity.ts",
+     "to": "packages/core/src/lib/sync/replayIdentity.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/lib/sync/replayPolicy.ts",
@@ -130581,10 +130581,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/logic/deeplink/handleDeepLink.ts",
+     "to": "packages/core/src/logic/deeplink/handleDeepLink.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/native/index.ts",
@@ -131201,10 +131201,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/logic/deeplink/handleDeepLink.ts",
+     "to": "packages/core/src/logic/deeplink/handleDeepLink.adapter.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/native/guestConversionLedger.ts",
@@ -132696,7 +132696,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storageWrapper.ts",
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -149373,7 +149373,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -149899,7 +149899,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/security/transportSecurity.ts",
+     "to": "packages/core/src/lib/security/transportSecurity.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -149967,7 +149967,7 @@
      "toTier": "T1"
     },
     {
-     "to": "packages/core/src/lib/security/transportSecurity.ts",
+     "to": "packages/core/src/lib/security/transportSecurity.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -150015,7 +150015,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/security/transportSecurity.ts",
+     "to": "packages/core/src/lib/security/transportSecurity.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
@@ -151828,16 +151828,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/api/sandboxDataset.ts",
@@ -151887,7 +151887,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -151936,7 +151936,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -151996,7 +151996,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -152050,16 +152050,16 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "packages/core/src/types/Perspective.ts",
@@ -152166,7 +152166,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -152217,7 +152217,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -152264,10 +152264,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
@@ -152325,10 +152325,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/types/Perspective.ts",
@@ -152598,7 +152598,7 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -152919,7 +152919,7 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
@@ -153267,22 +153267,22 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
@@ -153342,22 +153342,22 @@
      "toTier": "RETIRED"
     },
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
@@ -156029,22 +156029,22 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
@@ -156094,22 +156094,22 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
@@ -156156,22 +156156,22 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     },
     {
      "to": "apps/gurudevi-web/lib/pacer/usePacer.ts",
@@ -156219,22 +156219,22 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/lib/storage.ts",
+     "to": "packages/core/src/lib/storage.adapter.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T3"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
-     "to": "packages/core/src/offline/resilience.ts",
+     "to": "packages/core/src/offline/resilience.adapter.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T2"
+     "toTier": "T3"
     }
    ],
    "outside": [
@@ -157140,10 +157140,10 @@
      "toTier": "RETIRED"
     },
     {
-     "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T5"
+     "toTier": "T4"
     },
     {
      "to": "apps/gurudevi-web/lib/supabase/browser.ts",
@@ -159227,7 +159227,7 @@
    {
     "name": "SafeZustandStorage",
     "where": [
-     "packages/core/src/lib/storageWrapper.ts",
+     "packages/core/src/lib/storageWrapper.adapter.ts",
      "packages/core/src/native/storageWrapper.ts"
     ]
    },

@@ -1,4 +1,4 @@
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 import { type Capacity } from '@repo/core/logic';
 
 import { useThemedColors } from '@repo/ui/hooks';

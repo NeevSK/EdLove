@@ -1,4 +1,4 @@
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 

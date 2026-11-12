@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { connectPowerSyncRuntime } from '../connectionLifecycle';
 
 const emit = vi.hoisted(() => vi.fn());
-vi.mock('@repo/core/lib/sync/eventBus', () => ({ sovereignBus: { emit } }));
+vi.mock('@repo/core/lib/sync/eventBus.adapter', () => ({ sovereignBus: { emit } }));
 const connector: PowerSyncBackendConnector = { fetchCredentials: vi.fn(), uploadData: vi.fn() };
 const controllers: AbortController[] = [];
 const owner = () => {

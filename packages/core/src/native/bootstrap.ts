@@ -11,7 +11,7 @@ import { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
 import { deviceIdentityDriver } from '@repo/core/platform/drivers/deviceIdentityDriver';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 // Managers
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { telemetrySink } from '@repo/core/platform/drivers/telemetrySink';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { Runtime } from '@repo/core/native/runtime';

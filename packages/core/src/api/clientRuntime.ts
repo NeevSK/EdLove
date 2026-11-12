@@ -1,4 +1,4 @@
-import { getActiveAccountId } from '@repo/core/lib/accountScope';
+import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
 import { hc } from 'hono/client';
 import { v7 as uuidv7 } from 'uuid';
 import { assertSecureApiUrl, secureApiFetch } from './transportSecurity';

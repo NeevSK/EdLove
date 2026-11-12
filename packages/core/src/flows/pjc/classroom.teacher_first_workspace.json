@@ -48,7 +48,7 @@
               "apps/sanctuary-api/src/core/handlers/workspaceProvisioning.ts",
               "packages/policies/src/policies/school/teacher.cedar",
               "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
-              "packages/core/src/logic/workspace/provisionalWorkspace.ts",
+              "packages/core/src/logic/workspace/provisionalWorkspace.store.ts",
               "packages/core/src/adapters/supabase/schoolInviteRepository.ts"
             ]
           },

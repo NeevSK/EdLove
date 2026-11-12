@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 

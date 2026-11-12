@@ -1,4 +1,4 @@
-import { createScopedStateStorage } from '@repo/core/lib/scopedStateStorage';
+import { createScopedStateStorage } from '@repo/core/lib/scopedStateStorage.adapter';
 import {
   closeWorkbenchTask,
   createDomainWorkbenchState,

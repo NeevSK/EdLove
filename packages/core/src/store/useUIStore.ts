@@ -1,14 +1,14 @@
-import { createScopedStateStorage } from '@repo/core/lib/scopedStateStorage';
+import { createScopedStateStorage } from '@repo/core/lib/scopedStateStorage.adapter';
 import {
   getActiveAccountId,
   getAccountScopeRevision,
-} from '@repo/core/lib/accountScope';
+} from '@repo/core/lib/accountScope.adapter';
 import {
   getGuestScope,
   getGuestScopeRevision,
   isGuestUserId,
 } from '@repo/core/native/guestScope';
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { createUISlice, type UISlice } from '@repo/core/store/slices/ui.slice';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';

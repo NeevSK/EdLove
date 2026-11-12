@@ -50,7 +50,7 @@ for (const dir of ['packages', 'apps']) {
     const src = fs.existsSync(path.join(ROOT, dir, name, 'src')) ? `${dir}/${name}/src` : `${dir}/${name}`;
     if (pkg.name) packageRoots.set(pkg.name, src);
     if (pkg.name && pkg.exports && typeof pkg.exports === 'object') {
-      // Subpath -> file, so `@repo/core/web-auth` finds src/webAuth.ts the way bundlers do.
+      // Subpath -> file, so `@repo/core/web-auth` finds src/webAuth.adapter.ts the way bundlers do.
       const pick = (v) => (typeof v === 'string' ? v : v && (v['react-native'] ?? v.import ?? v.default ?? v.types));
       for (const [sub, target] of Object.entries(pkg.exports)) {
         const t = pick(target);

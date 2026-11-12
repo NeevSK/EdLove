@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { createTenantSlice, type TenantSlice } from '@repo/core/store/slices/tenant.slice';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
