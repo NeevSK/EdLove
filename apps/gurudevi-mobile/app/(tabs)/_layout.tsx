@@ -68,6 +68,7 @@ import { AssistantSheet } from '@/components/shell/AssistantSheet';
 import { RoomFab } from '@/components/shell/RoomFab';
 import { type CommonActions, ROOM_NAMES } from '@/components/shell/roomActions';
 import { ShellTabBar } from '@/components/shell/ShellTabBar';
+import { presenceForPath } from '@/components/shell/screenPresence';
 import { useShellRequests } from '@/components/shell/shellRequests';
 import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
@@ -337,8 +338,9 @@ function TabsLayoutContent() {
     }
     return pathname === `/${currentDomain}` || pathname === `/${currentDomain}/`;
   }, [currentDomain, globalParams.feature, pathname]);
-  // A room's home shows the whole floor; inside a room it shows only behind the header.
-  useFloorPresence(isDomainRoot ? 'full' : 'band');
+  // Every screen stands on the world's ground; a room's home shows it in full, pages inside a
+  // room show it behind the header, and focused work (settings, notifications) gets a calm veil.
+  useFloorPresence(presenceForPath(pathname, { roomRoot: isDomainRoot }));
 
   const domainTabs = useActiveSubTabsStore(
     (s) => s.tabsByDomain[currentDomain] ?? EMPTY_DOMAIN_TABS,

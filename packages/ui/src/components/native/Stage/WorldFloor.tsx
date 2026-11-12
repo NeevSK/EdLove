@@ -50,6 +50,8 @@ export function splitLayers(layers: readonly ArtLayer[], live: boolean) {
   return { still: layers.slice(0, cut), moving: layers.slice(cut) };
 }
 
+/** How much of the ground covers the floor on a quiet screen: the picture stays faintly there. */
+const QUIET_VEIL = 0.9;
 const VEIL_MS = 420;
 
 export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
@@ -98,14 +100,17 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
   );
   const active = live && presence !== 'quiet' && !scrolling && visibility === 'active';
 
-  // Veils: a band veil keeps the floor visible behind the header only; quiet hides it.
+  // Veils: a band veil keeps the floor visible behind the header only. Quiet (settings, forms,
+  // reading) stills the floor and veils it calmly, but never hides it: every screen still stands
+  // on the world's ground. A plain world (Classic) has only its ground.
+  const quietTo = plain ? 1 : presence === 'quiet' ? QUIET_VEIL : 0;
   const band = useSharedValue(presence === 'band' ? 1 : 0);
-  const quiet = useSharedValue(presence === 'quiet' || plain ? 1 : 0);
+  const quiet = useSharedValue(quietTo);
   useEffect(() => {
     const ms = stage.transition === 'none' ? 0 : VEIL_MS;
     band.set(withTiming(presence === 'band' ? 1 : 0, { duration: ms }));
-    quiet.set(withTiming(presence === 'quiet' || plain ? 1 : 0, { duration: ms }));
-  }, [presence, plain, stage.transition, band, quiet]);
+    quiet.set(withTiming(quietTo, { duration: ms }));
+  }, [presence, quietTo, stage.transition, band, quiet]);
   const bandStyle = useAnimatedStyle(() => ({ opacity: band.get() }));
   const quietStyle = useAnimatedStyle(() => ({ opacity: quiet.get() }));
 
