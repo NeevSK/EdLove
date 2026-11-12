@@ -7,6 +7,8 @@ author: "Antigravity Pair Programming"
 tags: [architecture, clean-architecture, hexagonal, archetypes, tiers, boundaries]
 ---
 
+> Start with [the architecture mental model](2026-11-12-architecture-mental-model.md), which explains how this document fits with the others and where they disagree.
+
 # Canonical 7-Tier Architectural Hierarchy & Archetype Invariants
 
 ## 1. Executive Purpose: Graph Topological Depth vs. Architectural Tiers
