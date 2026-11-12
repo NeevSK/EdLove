@@ -39,6 +39,8 @@
   "include": [
     "src/**/*"
   ],
+  // Live .web files (tooling/live-web-files.json); the exclude below skips the reference ones.
+  "files": ["src/screens/VideoPlayerScreen.web.tsx"],
   "exclude": [
     "**/*.web.tsx",
     "**/*.web.ts"

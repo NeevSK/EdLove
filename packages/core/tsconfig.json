@@ -23,6 +23,8 @@
   "include": ["src/**/*", "src/**/*.json"],
   "exclude": [
     "node_modules",
+    "**/*.web.ts",
+    "**/*.web.tsx",
     "src/**/__tests__/**/*",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",

@@ -86,7 +86,7 @@ set-state-in-effect, ui 19, self 21. There are also **9 `rules-of-hooks` violati
 **Policy:** turn the compiler rules on as a ratchet. They are errors for new code. A stored count
 per package may only go down, like `tooling/ui-legacy-ratchet.json`. A rule is never suppressed.
 
-**Done (2026-11-12): oxlint is the enforcer.** `tooling/oxlint-react.json` turns every category
+**Done (2026-11-12): oxlint is the enforcer.** `.oxlintrc.react.json` turns every category
 off and enables only these rules (oxlint ships them natively): `rules-of-hooks`, `exhaustive-deps`,
 `set-state-in-effect`, `no-deriving-state-in-effects`, `set-state-in-render`, `purity`, `refs`,
 `immutability`, `globals`, `static-components`, `use-memo`, `preserve-manual-memoization` and
@@ -97,10 +97,13 @@ the results against ceilings in `tooling/ratchet.json`:
 | Metric | Ceiling |
 | --- | --- |
 | Rules of Hooks violations | 0 (all 9 fixed; a planted violation fails the gate) |
-| Effect/memo dependency gaps | 87 |
-| Effects that set or derive state | 156 |
-| React Compiler rule hits | 218 |
-| Parse errors | 10 (8 files, broken since 2026-11-06; oxlint cannot check them) |
+| Effect/memo dependency gaps | 86 |
+| Effects that set or derive state | 151 |
+| React Compiler rule hits | 187 |
+| Parse errors | 5 (4 files, broken since 2026-11-06; oxlint cannot check them) |
+
+The config lives at the repo root (`.oxlintrc.react.json`) because oxlint resolves `ignorePatterns`
+relative to the config file. Reference-only `*.web` files are skipped (see AGENTS.md).
 
 ESLint keeps `rules-of-hooks` and `exhaustive-deps` in `packages/eslint-config`, so nothing was
 removed; the two tools overlap on those two rules only.

@@ -10,6 +10,7 @@
  *   node scripts/audit-tier-content.mjs            # writes reports/tier-content.json and .md
  */
 import fs from 'node:fs';
+import { isReferenceOnly } from '../tooling/reference-only.mjs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { tierOf } from '../tooling/architecture-tiers.mjs';
@@ -30,7 +31,7 @@ function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
     const p = path.join(dir, d.name);
     if (d.isDirectory()) return SKIP_DIRS.has(d.name) || d.name.startsWith('.') ? [] : walk(p);
-    return /\.tsx?$/.test(d.name) && !/\.(test|spec|stories)\.tsx?$/.test(d.name) && !d.name.endsWith('.d.ts') ? [p] : [];
+    return /\.tsx?$/.test(d.name) && !/\.(test|spec|stories)\.tsx?$/.test(d.name) && !d.name.endsWith('.d.ts') && !isReferenceOnly(p) ? [p] : [];
   });
 }
 const dirsIn = (d) => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);

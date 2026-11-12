@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import { isReferenceOnly } from '../tooling/reference-only.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SyntaxKind } from 'typescript/ast';
@@ -423,7 +424,7 @@ function collect(dir, files) {
   for (const entry of fs.readdirSync(absolute, { withFileTypes: true })) {
     const relative = `${dir}/${entry.name}`;
     if (entry.isDirectory()) collect(relative, files);
-    else if (entry.isFile() && /\.(?:ts|tsx|js|mjs)$/.test(entry.name))
+    else if (entry.isFile() && /\.(?:ts|tsx|js|mjs)$/.test(entry.name) && !isReferenceOnly(relative))
       files[relative] = fs.readFileSync(path.join(root, relative), 'utf8');
   }
 }

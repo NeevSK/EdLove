@@ -293,8 +293,21 @@ web remains online-only with normal request/reconnect error handling.
 
 ### Tooling: React rules enforced by oxlint, gated by the ratchet
 
-- `tooling/oxlint-react.json`: categories off; the React and React Compiler rules on explicitly (the earlier "noise" came from enabling whole categories). It checks every package and app in about 2.5 s. ESLint's configs are unchanged.
+- `.oxlintrc.react.json`: categories off; the React and React Compiler rules on explicitly (the earlier "noise" came from enabling whole categories). It checks every package and app in about 2.5 s. ESLint's configs are unchanged.
 - `scripts/ratchet.mjs` gains five metrics: Rules of Hooks 0, dependency gaps 87, effects that set or derive state 156, compiler rule hits 218, parse errors 10. Ceilings were set by hand at today's counts, not by `--update`. A planted conditional hook fails the gate.
 - Fixed: all 9 Rules of Hooks violations. The last one was `VisionCamera.adapter.tsx`, where the hook moved into an always-rendered child. Also fixed: timer cleanups (CommandPalette, InteractiveChat, ScannerModal.web, AIAssistantScreen.web, ProgressTree), `useFloorPresence` (now `useSyncExternalStore` over navigation focus, with no try/catch around a hook) and the web `AuthQueryCacheBoundary` (now `useOptionalAuth`; its two tests spy on that hook).
 - Eight files do not parse and have been broken since `308aa4f35` (2026-11-06): SubmissionModal(.web), SpreadsheetViewer, gesture-handler.d.ts, DocumentListScreen.web, TeacherFeedbackModal, TeacherEchoHistoryModal and BaseSelfView.web. The selector codemod did not cause the BaseSelfView error; it only moved it 2 lines.
 - G0: no change in any touched package. G1: core fails the same 22 files; the app and package suites fail the same files as at HEAD.
+
+### Tooling: reference-only `.web` files excluded
+
+- Rule (from Neev): `*.web.ts(x)` outside `apps/gurudevi-web` are reference only. The import graph agrees for 87 of the 100. The other 13 are live, because shared code imports them by name: the `@repo/ui` barrels export four Gateway/WebScreen components and `AppSettingsScreen.web`; `@repo/admin` exports `SchoolProfileScreen.web`; `useAnalytics` imports `PostHogAnalytics.web`; and form-builder, library and self barrels export their web screens. Mobile bundles all of these. gurudevi-web also loads `icons.web.ts` (browser condition) and `FeatureStateBoundary.web.tsx`.
+- One list: `tooling/live-web-files.json`, read by `tooling/reference-only.mjs` (`isReferenceOnly`, rg args) and `.dependency-cruiser.cjs`. `scripts/check-reference-only.mjs` recomputes the set from the import graph (browser resolution for gurudevi-web's tree, react-native resolution for everything else) and checks that every config carries it. It is a ratchet metric with a ceiling of 0; removing an entry fails it.
+- Applied to:
+  - oxlint: root, React and mobile configs. The React config moved to the repo root because oxlint resolves `ignorePatterns` relative to the config file, so its earlier ignores (tests, dist) never applied.
+  - Biome formatting, ESLint `base.js` and mobile, knip, dependency-cruiser.
+  - tsconfig excludes in ui, core, analytics, scanner-kit, ai and mobile, with live files under `files`. Admin, form-builder, library and self already excluded every `.web` file, which caused five TS6307 errors in the baseline; their live files are now listed.
+  - Core vitest skips `*.web.test.ts`.
+  - The ratchet, both tier audits, the API-composition audit and the registry-coverage audit (coverage counts unchanged).
+  - check-ui-boundaries still counts `*.web.tsx` files; that count tracks their retirement (78, baseline 112).
+- Ceilings re-measured: dependency gaps 86, set-state effects 151, compiler hits 187, parse errors 5. G0: every package at or below baseline (ui 29→26, admin 122→121, form-builder 46→44, library 41→40, self 134→133). G1: unchanged.

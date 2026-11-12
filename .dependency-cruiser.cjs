@@ -1,3 +1,4 @@
+const LIVE_WEB_FILES = require('./tooling/live-web-files.json');
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
   forbidden: [
@@ -219,7 +220,14 @@ module.exports = {
   ],
   options: {
     exclude: {
-      path: ['\\.vercel', 'node_modules', 'dist', '\\.turbo'],
+      path: [
+        '\\.vercel',
+        'node_modules',
+        'dist',
+        '\\.turbo',
+        // Reference-only web variants (tooling/reference-only.mjs); the web app is apps/gurudevi-web.
+        `^(?!apps/gurudevi-web/)${LIVE_WEB_FILES.map((f) => `(?!${f.replace(/\./g, '\.')}$)`).join('')}.*\.web\.tsx?$`,
+      ],
     },
     doNotFollow: {
       path: ['node_modules', 'dist', '.turbo', '\\.vercel'],

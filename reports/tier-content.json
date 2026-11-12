@@ -1818,7 +1818,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 2
    },
    "imports": [
@@ -3099,120 +3099,6 @@
    "outside": [
     "react"
    ]
-  },
-  {
-   "file": "packages/admin/src/screens/DocumentListScreen.web.tsx",
-   "package": "packages/admin",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 398,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 17,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 364,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 1
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/ui/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/admin/src/document-workflow/api.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": null
-    }
-   ],
-   "outside": [
-    "react"
-   ]
-  },
-  {
-   "file": "packages/admin/src/screens/EnhancedAnalyticsDashboard.web.tsx",
-   "package": "packages/admin",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 153,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 143,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "EnhancedAnalyticsDashboard"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/analytics/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": null
-    },
-    {
-     "to": "packages/analytics/src/ui.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
   },
   {
    "file": "packages/admin/src/screens/FounderVisionScreen.tsx",
@@ -4692,7 +4578,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -4923,73 +4809,6 @@
    ]
   },
   {
-   "file": "packages/ai/src/screens/AIAssistantScreen.web.tsx",
-   "package": "packages/ai",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 525,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 502,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "AIAssistantScreen"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ai/src/hooks/useAIAgent.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/store/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/ui/src/utils/dateTimeUtils.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/utils/navigation.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "expo-router",
-    "react",
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/ai/src/screens/AIScreen.tsx",
    "package": "packages/ai",
    "folderTier": null,
@@ -5211,53 +5030,6 @@
    ]
   },
   {
-   "file": "packages/analytics/src/components/AnalyticsProvider.web.tsx",
-   "package": "packages/analytics",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 27,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 1,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 13,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "AnalyticsProvider"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/analytics/src/engine/PostHogAnalytics.web.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/analytics/src/context/ActivityPulseContext.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    }
-   ],
-   "outside": [
-    "react"
-   ]
-  },
-  {
    "file": "packages/analytics/src/components/GPAInsights.tsx",
    "package": "packages/analytics",
    "folderTier": null,
@@ -5463,7 +5235,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [],
@@ -5595,7 +5367,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 9,
     "tests": 0
    },
    "imports": [
@@ -5643,7 +5415,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 9,
     "tests": 0
    },
    "imports": [
@@ -5692,7 +5464,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 9,
     "tests": 0
    },
    "imports": [],
@@ -5773,7 +5545,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -6532,7 +6304,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -7066,66 +6838,6 @@
    ]
   },
   {
-   "file": "packages/classroom/src/components/SubmissionModal.web.tsx",
-   "package": "packages/classroom",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 263,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 1,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 229,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "SubmissionModal"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/ui/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/classroom/src/components/grading/GradeEntryForm.tsx",
    "package": "packages/classroom",
    "folderTier": null,
@@ -7406,51 +7118,6 @@
    "outside": []
   },
   {
-   "file": "packages/classroom/src/components/onboarding/PrincipalOnboardingView.web.tsx",
-   "package": "packages/classroom",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 135,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 2,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 126,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "PrincipalOnboardingViewWeb"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/classroom/src/components/onboarding/StudentOnboardingView.tsx",
    "package": "packages/classroom",
    "folderTier": null,
@@ -7504,57 +7171,6 @@
    ]
   },
   {
-   "file": "packages/classroom/src/components/onboarding/StudentOnboardingView.web.tsx",
-   "package": "packages/classroom",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 121,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 103,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "StudentOnboardingViewWeb"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/classroom/src/components/onboarding/TeacherOnboardingView.tsx",
    "package": "packages/classroom",
    "folderTier": null,
@@ -7601,51 +7217,6 @@
     "react-native",
     "react-i18next"
    ]
-  },
-  {
-   "file": "packages/classroom/src/components/onboarding/TeacherOnboardingView.web.tsx",
-   "package": "packages/classroom",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 113,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 104,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "TeacherOnboardingViewWeb"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
   },
   {
    "file": "packages/classroom/src/components/onboarding/index.ts",
@@ -10002,51 +9573,6 @@
    "outside": []
   },
   {
-   "file": "packages/community/src/components/CommunityPresence.web.tsx",
-   "package": "packages/community",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 95,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 81,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "CommunityPresence"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/community/src/hooks/useCommunityPresence.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/community/src/components/CreateGroupModal.tsx",
    "package": "packages/community",
    "folderTier": null,
@@ -10854,7 +10380,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -12733,62 +12259,6 @@
    ]
   },
   {
-   "file": "packages/core/src/adapters/powersync/database.web.ts",
-   "package": "packages/core",
-   "folderTier": "T3",
-   "shape": "runtime",
-   "lines": 42,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 1,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 6,
-    "functionLines": 38,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "getPowerSyncDB",
-    "getDrizzleDB",
-    "injectNativePowerSyncDB",
-    "getActivePowerSyncDB",
-    "disconnectPowerSync",
-    "clearPowerSyncAccount"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 14,
-    "tests": 15
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/adapters/powersync/databaseRegistry.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T3"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/core/src/adapters/powersync/databaseRegistry.ts",
    "package": "packages/core",
    "folderTier": "T3",
@@ -12814,7 +12284,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -12968,7 +12438,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "runtime",
-   "lines": 193,
+   "lines": 192,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -12976,7 +12446,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 10,
-    "functionLines": 161,
+    "functionLines": 160,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 1,
@@ -13315,7 +12785,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 2
    },
    "imports": [
@@ -13382,7 +12852,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 4,
     "tests": 1
    },
    "imports": [],
@@ -15002,7 +14472,7 @@
     }
    ],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 1
    },
    "imports": [
@@ -17976,7 +17446,7 @@
    "unions": [],
    "importers": {
     "prod": 1,
-    "tests": 5
+    "tests": 4
    },
    "imports": [
     {
@@ -18025,51 +17495,6 @@
    "outside": [
     "uuid"
    ]
-  },
-  {
-   "file": "packages/core/src/api/deviceTrust.web.ts",
-   "package": "packages/core",
-   "folderTier": "RETIRED",
-   "shape": "runtime",
-   "lines": 247,
-   "counts": {
-    "types": 0,
-    "consts": 2,
-    "constructs": 0,
-    "ambient": 10,
-    "schemas": 0,
-    "functions": 7,
-    "functionLines": 57,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "deviceTrustAPI"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 5
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/api/identity.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "RETIRED"
-    },
-    {
-     "to": "packages/core/src/types/API.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": []
   },
   {
    "file": "packages/core/src/api/durableAgents.contract.ts",
@@ -20590,7 +20015,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 9,
     "tests": 4
    },
    "imports": [
@@ -26601,7 +26026,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 15,
+    "prod": 14,
     "tests": 6
    },
    "imports": [
@@ -28877,7 +28302,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 36,
+    "prod": 28,
     "tests": 0
    },
    "imports": [
@@ -30343,46 +29768,6 @@
    ]
   },
   {
-   "file": "packages/core/src/hooks/useMediaDownloader.web.ts",
-   "package": "packages/core",
-   "folderTier": "T5",
-   "shape": "runtime",
-   "lines": 53,
-   "counts": {
-    "types": 2,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 2,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 44,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "DownloadState",
-    "useMediaDownloader"
-   ],
-   "unions": [
-    {
-     "name": "DownloadState",
-     "union": "'downloading'|'error'|'idle'|'ready'"
-    }
-   ],
-   "importers": {
-    "prod": 2,
-    "tests": 1
-   },
-   "imports": [],
-   "outside": [
-    "react"
-   ]
-  },
-  {
    "file": "packages/core/src/hooks/useNaturePaths.ts",
    "package": "packages/core",
    "folderTier": "T5",
@@ -31285,7 +30670,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 9,
     "tests": 1
    },
    "imports": [
@@ -37320,7 +36705,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 137,
+    "prod": 115,
     "tests": 17
    },
    "imports": [
@@ -39981,53 +39366,6 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T3"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/logic/permissions/localEvaluator.adapter.web.ts",
-   "package": "packages/core",
-   "folderTier": "T3",
-   "shape": "runtime",
-   "lines": 26,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 3,
-    "functionLines": 26,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "getLocalResourceAttributes",
-    "verifyLocalPolicySignature",
-    "checkLocalPermission"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 6
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/schemas/user.schema.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/core/src/types/authorization.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
     }
    ],
    "outside": []
@@ -44178,7 +43516,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 14,
+    "prod": 13,
     "tests": 5
    },
    "imports": [
@@ -44527,7 +43865,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -46657,7 +45995,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 13,
+    "prod": 11,
     "tests": 3
    },
    "imports": [
@@ -47310,42 +46648,6 @@
    "outside": []
   },
   {
-   "file": "packages/core/src/native/webPush.web.ts",
-   "package": "packages/core",
-   "folderTier": "T3",
-   "shape": "runtime",
-   "lines": 78,
-   "counts": {
-    "types": 2,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 3,
-    "schemas": 0,
-    "functions": 5,
-    "functionLines": 72,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "WebPushSubscription",
-    "WebPushPermission",
-    "getWebPushPermission",
-    "registerWebPushSubscription",
-    "unregisterWebPushSubscription"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": []
-  },
-  {
    "file": "packages/core/src/native/webSentryAdapter.native.ts",
    "package": "packages/core",
    "folderTier": "T3",
@@ -47383,43 +46685,6 @@
    "folderTier": "T3",
    "shape": "barrel",
    "lines": 4,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 1,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/adapters/web/SentryTelemetryAdapter.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T3"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/core/src/native/webSentryAdapter.web.ts",
-   "package": "packages/core",
-   "folderTier": "T3",
-   "shape": "barrel",
-   "lines": 2,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -47531,7 +46796,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 28,
+    "prod": 26,
     "tests": 5
    },
    "imports": [
@@ -48432,7 +47697,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 46,
+    "prod": 42,
     "tests": 1
    },
    "imports": [
@@ -49723,7 +48988,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 17,
+    "prod": 13,
     "tests": 3
    },
    "imports": [
@@ -49964,7 +49229,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 53,
+    "prod": 52,
     "tests": 0
    },
    "imports": [
@@ -51218,7 +50483,7 @@
     }
    ],
    "importers": {
-    "prod": 9,
+    "prod": 8,
     "tests": 0
    },
    "imports": [
@@ -52204,7 +51469,7 @@
     }
    ],
    "importers": {
-    "prod": 26,
+    "prod": 20,
     "tests": 0
    },
    "imports": [],
@@ -52534,7 +51799,7 @@
     }
    ],
    "importers": {
-    "prod": 10,
+    "prod": 9,
     "tests": 1
    },
    "imports": [],
@@ -52834,7 +52099,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 143,
+    "prod": 139,
     "tests": 11
    },
    "imports": [
@@ -55370,7 +54635,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -55455,7 +54720,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [],
@@ -56347,66 +55612,6 @@
    ],
    "outside": [
     "react-native",
-    "@intuitui-labs/form-builder-engine",
-    "react"
-   ]
-  },
-  {
-   "file": "packages/form-builder/src/screens/ClimateSensingScreen.web.tsx",
-   "package": "packages/form-builder",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 472,
-   "counts": {
-    "types": 2,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 3,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 413,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "ClimateSensingScreenWeb"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/form-builder/src/apps/resilience-sensing-schema.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/form-builder/src/NativeForm.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/utils/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
     "@intuitui-labs/form-builder-engine",
     "react"
    ]
@@ -59097,39 +58302,6 @@
    ]
   },
   {
-   "file": "packages/library/src/api/database.web.ts",
-   "package": "packages/library",
-   "folderTier": null,
-   "shape": "contract",
-   "lines": 217,
-   "counts": {
-    "types": 1,
-    "consts": 5,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "KnowledgeNodeIndex",
-    "knowledgeDB"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": []
-  },
-  {
    "file": "packages/library/src/api/image-to-pdf.ts",
    "package": "packages/library",
    "folderTier": null,
@@ -59555,53 +58727,6 @@
      "to": "packages/ui/src/theme/Theme.ts",
      "typeOnly": false,
      "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/core/src/types/Library.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": [
-    "react"
-   ]
-  },
-  {
-   "file": "packages/library/src/components/LibraryThumbnailCard.web.tsx",
-   "package": "packages/library",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 337,
-   "counts": {
-    "types": 1,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 277,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "LibraryThumbnailCard"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
      "toTier": "T6"
     },
     {
@@ -61211,60 +60336,6 @@
    ]
   },
   {
-   "file": "packages/library/src/screens/PDFViewerScreen.web.tsx",
-   "package": "packages/library",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 129,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 1,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 112,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "PDFViewerScreen"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/utils/navigation.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "expo-router",
-    "react"
-   ]
-  },
-  {
    "file": "packages/library/src/screens/ReaderScreen.tsx",
    "package": "packages/library",
    "folderTier": null,
@@ -61667,41 +60738,6 @@
      "toTier": null
     }
    ],
-   "outside": []
-  },
-  {
-   "file": "packages/library/src/shims/native-shim.web.ts",
-   "package": "packages/library",
-   "folderTier": null,
-   "shape": "contract",
-   "lines": 15,
-   "counts": {
-    "types": 0,
-    "consts": 2,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 2,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "MapView",
-    "Marker",
-    "PROVIDER_GOOGLE",
-    "NativeModules"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [],
    "outside": []
   },
   {
@@ -64782,7 +63818,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -65308,42 +64344,6 @@
    ]
   },
   {
-   "file": "packages/scanner-kit/src/ScannerModal.web.tsx",
-   "package": "packages/scanner-kit",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 235,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 1,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 102,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "ScannerModal"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "react",
-    "react-i18next",
-    "react-native"
-   ]
-  },
-  {
    "file": "packages/scanner-kit/src/adapters/CameraDriver.port.ts",
    "package": "packages/scanner-kit",
    "folderTier": null,
@@ -65430,15 +64430,15 @@
    "package": "packages/scanner-kit",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 92,
+   "lines": 95,
    "counts": {
     "types": 0,
     "consts": 1,
     "constructs": 1,
     "ambient": 0,
     "schemas": 0,
-    "functions": 1,
-    "functionLines": 43,
+    "functions": 2,
+    "functionLines": 45,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 2,
@@ -66461,7 +65461,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 12,
+    "prod": 7,
     "tests": 0
    },
    "imports": [
@@ -66597,7 +65597,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 4,
     "tests": 0
    },
    "imports": [
@@ -66615,120 +65615,6 @@
     }
    ],
    "outside": []
-  },
-  {
-   "file": "packages/self/src/components/BaseSelfView.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 493,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 5,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 472,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "BaseSelfView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 12,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/store/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/offline/useOfflineStatus.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/self/src/components/BaseSelfView.types.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/FeatureErrorBoundary.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/selfEntryPresentation.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/constants/selfRegistry.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useFeatureActivity.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/components/DerivedHistoryView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ErrorMessage.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/FeatureInfoIcon.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalNavigator.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/tokens/index.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-native"
-   ]
   },
   {
    "file": "packages/self/src/components/BreathGuide.tsx",
@@ -66789,59 +65675,6 @@
     "react-native",
     "react-native-skia",
     "react-i18next",
-    "@repo/self"
-   ]
-  },
-  {
-   "file": "packages/self/src/components/BreathGuide.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 268,
-   "counts": {
-    "types": 4,
-    "consts": 3,
-    "constructs": 0,
-    "ambient": 1,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 223,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "BreathGuide"
-   ],
-   "unions": [
-    {
-     "name": "Phase",
-     "union": "'exhale'|'hold'|'inhale'|'rest'"
-    }
-   ],
-   "importers": {
-    "prod": 3,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
     "@repo/self"
    ]
   },
@@ -66961,51 +65794,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/CommunityPresence.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 95,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 81,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "CommunityPresence"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/hooks/useCommunityPresence.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/self/src/components/DailyRhythm.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -67031,7 +65819,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 8,
+    "prod": 4,
     "tests": 0
    },
    "imports": [
@@ -67091,65 +65879,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/DailyRhythm.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 337,
-   "counts": {
-    "types": 0,
-    "consts": 2,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 293,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "DailyRhythm"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 8,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/hooks/useTimetable.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/core/src/types/Wellbeing.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react"
-   ]
-  },
-  {
    "file": "packages/self/src/components/DecisionJournalSection.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -67175,7 +65904,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -67282,45 +66011,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/EnergyBarChart.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "contract+logic",
-   "lines": 128,
-   "counts": {
-    "types": 1,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 102,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "EnergyBarChart"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 5,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/constants/wellbeing.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": null
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/self/src/components/EnergyForecast.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -67401,72 +66091,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/EnergyForecast.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 203,
-   "counts": {
-    "types": 1,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 141,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "EnergyForecast"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/self/src/constants/wellbeing.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useEnergyForecast.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-native-reanimated"
-   ]
-  },
-  {
    "file": "packages/self/src/components/FeatureErrorBoundary.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -67492,7 +66116,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -67583,7 +66207,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -67629,59 +66253,6 @@
     "react",
     "react-i18next",
     "react-native-reanimated"
-   ]
-  },
-  {
-   "file": "packages/self/src/components/FireJournal.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 163,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 136,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "FireJournal"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 6,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/hooks/useFireJournal.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react"
    ]
   },
   {
@@ -67758,7 +66329,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -67812,7 +66383,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -67874,65 +66445,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/GratitudeGlimmers.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 336,
-   "counts": {
-    "types": 2,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 290,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "GratitudeGlimmers"
-   ],
-   "unions": [
-    {
-     "name": "Category",
-     "union": "'colleague-kindness'|'personal-win'|'student-said'"
-    }
-   ],
-   "importers": {
-    "prod": 5,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/hooks/useGratitude.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/core/src/types/Wellbeing.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "date-fns",
-    "react"
-   ]
-  },
-  {
    "file": "packages/self/src/components/JoyJar.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -67958,7 +66470,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -68014,65 +66526,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/JoyJar.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 363,
-   "counts": {
-    "types": 2,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 316,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "JoyJar"
-   ],
-   "unions": [
-    {
-     "name": "Category",
-     "union": "'breakthrough'|'connection'|'other'|'question'"
-    }
-   ],
-   "importers": {
-    "prod": 6,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/hooks/useJoyJar.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/core/src/types/Wellbeing.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "date-fns",
-    "react"
-   ]
-  },
-  {
    "file": "packages/self/src/components/MoodLotus.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -68098,7 +66551,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 11,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -68128,66 +66581,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/MoodLotus.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 419,
-   "counts": {
-    "types": 1,
-    "consts": 6,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 357,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "MoodLotus"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 11,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/self/src/hooks/useMoodLogs.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-native-reanimated"
-   ]
-  },
-  {
    "file": "packages/self/src/components/MoodPickerCard.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -68213,7 +66606,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 8,
+    "prod": 5,
     "tests": 0
    },
    "imports": [
@@ -68312,60 +66705,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/MyGradesView.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 192,
-   "counts": {
-    "types": 1,
-    "consts": 2,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 181,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "MyGradesView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/hooks/useStudentGrades.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "date-fns",
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/self/src/components/OrientationCaptureStep.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -68427,7 +66766,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 324,
+   "lines": 329,
    "counts": {
     "types": 1,
     "consts": 1,
@@ -68435,7 +66774,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 238,
+    "functionLines": 243,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -68479,48 +66818,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/ProgressTree.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "contract+logic",
-   "lines": 279,
-   "counts": {
-    "types": 1,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 219,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "ProgressTree"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    }
-   ],
-   "outside": [
-    "@repo/self",
-    "react"
-   ]
-  },
-  {
    "file": "packages/self/src/components/PulseDashboard.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -68546,7 +66843,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 8,
+    "prod": 5,
     "tests": 0
    },
    "imports": [
@@ -68739,79 +67036,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/ResonancePatternCard.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 290,
-   "counts": {
-    "types": 1,
-    "consts": 6,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 3,
-    "functionLines": 247,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "ResonancePatternCardProps",
-    "ResonancePatternCard"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/profile/src/index.ts",
-     "typeOnly": true,
-     "toShape": "barrel",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useOrientationInference.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/core/src/types/Wellbeing.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-native-reanimated"
-   ]
-  },
-  {
    "file": "packages/self/src/components/ResonanceTimeline.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -68837,7 +67061,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -69244,7 +67468,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -69293,53 +67517,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/SleepTracker.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "contract+logic",
-   "lines": 236,
-   "counts": {
-    "types": 1,
-    "consts": 2,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 210,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "SleepTracker"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 6,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/self/src/hooks/useSleepTracker.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    }
-   ],
-   "outside": [
-    "react"
-   ]
-  },
-  {
    "file": "packages/self/src/components/SpotlightEmpty.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -69365,7 +67542,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -69458,59 +67635,6 @@
     "react",
     "react-i18next",
     "react-native-reanimated"
-   ]
-  },
-  {
-   "file": "packages/self/src/components/StudentGoals.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 273,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 258,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "StudentGoals"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/hooks/useStudentGoals.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/core/src/types/Wellbeing.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react"
    ]
   },
   {
@@ -69643,7 +67767,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [],
@@ -69788,7 +67912,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -69810,78 +67934,6 @@
     "react",
     "react-i18next",
     "react-native"
-   ]
-  },
-  {
-   "file": "packages/self/src/components/TomorrowPrep.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 266,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 234,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "TomorrowPrep"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 6,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/self/src/hooks/useTomorrowPrep.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/core/src/types/Wellbeing.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/utils/dialogs.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-native-reanimated"
    ]
   },
   {
@@ -69910,7 +67962,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -69951,73 +68003,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/VoiceJournaling.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 345,
-   "counts": {
-    "types": 2,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 2,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 302,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "VoiceJournaling"
-   ],
-   "unions": [
-    {
-     "name": "RecordingState",
-     "union": "'idle'|'playing'|'recorded'|'recording'|'unsupported'"
-    }
-   ],
-   "importers": {
-    "prod": 10,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/utils/haptics.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@repo/self",
-    "react",
-    "react-i18next",
-    "react-native-reanimated"
-   ]
-  },
-  {
    "file": "packages/self/src/components/WelcomeModal.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -70043,7 +68028,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 11,
+    "prod": 7,
     "tests": 0
    },
    "imports": [
@@ -70070,55 +68055,6 @@
     "react",
     "react-i18next",
     "react-native"
-   ]
-  },
-  {
-   "file": "packages/self/src/components/WelcomeModal.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 109,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 2,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 83,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "WelcomeModal"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 11,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-i18next",
-    "react-native-reanimated"
    ]
   },
   {
@@ -70196,48 +68132,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/WindDownRitual.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 236,
-   "counts": {
-    "types": 2,
-    "consts": 2,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 180,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "WindDownRitual"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@repo/self",
-    "react"
-   ]
-  },
-  {
    "file": "packages/self/src/components/WisdomSeeds.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -70263,7 +68157,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 5,
     "tests": 0
    },
    "imports": [
@@ -70319,53 +68213,6 @@
    ]
   },
   {
-   "file": "packages/self/src/components/WisdomSeeds.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 195,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 180,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "WisdomSeeds"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 10,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/hooks/useWisdom.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react"
-   ]
-  },
-  {
    "file": "packages/self/src/components/archive/ShadowAgentDrawer.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -70413,53 +68260,6 @@
     "react-native",
     "react-i18next",
     "react-native-reanimated"
-   ]
-  },
-  {
-   "file": "packages/self/src/components/archive/ShadowAgentDrawer.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 122,
-   "counts": {
-    "types": 0,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 1,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 100,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "ShadowAgentDrawer"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react"
    ]
   },
   {
@@ -70701,7 +68501,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 1
    },
    "imports": [
@@ -70747,7 +68547,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 6,
     "tests": 2
    },
    "imports": [
@@ -70837,7 +68637,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -71497,7 +69297,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -71539,7 +69339,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 4,
     "tests": 0
    },
    "imports": [
@@ -71652,7 +69452,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 9,
+    "prod": 7,
     "tests": 0
    },
    "imports": [
@@ -71718,7 +69518,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 4,
     "tests": 0
    },
    "imports": [
@@ -71765,7 +69565,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -71837,7 +69637,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -71897,7 +69697,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 12,
+    "prod": 7,
     "tests": 0
    },
    "imports": [
@@ -72041,7 +69841,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -72101,7 +69901,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 14,
+    "prod": 8,
     "tests": 0
    },
    "imports": [
@@ -72187,7 +69987,7 @@
     }
    ],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -72342,7 +70142,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -72454,7 +70254,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -72514,7 +70314,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -72581,7 +70381,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -72628,7 +70428,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -72688,7 +70488,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -72748,7 +70548,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 8,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -73592,7 +71392,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -73720,7 +71520,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -73847,157 +71647,6 @@
    ]
   },
   {
-   "file": "packages/self/src/screens/self/FounderSelfView.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 193,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 169,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "FounderSelfView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/store/useUIStore.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/self/src/components/BaseSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/MoodLotus.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/MoodPickerCard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/PulseDashboard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/ResonanceTimeline.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/VoiceJournaling.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WelcomeModal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WisdomSeeds.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useJournalEntries.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useMoodLogs.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useWisdom.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/views/sections.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/components/JourneyHistoryCard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalProvider.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalShield.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@repo/self",
-    "react",
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/self/src/screens/self/GuardianSelfView.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -74023,7 +71672,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -74144,156 +71793,6 @@
    ]
   },
   {
-   "file": "packages/self/src/screens/self/GuardianSelfView.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 150,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 126,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "GuardianSelfView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/self/src/components/BaseSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/DailyRhythm.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/FireJournal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/GratitudeGlimmers.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/JoyJar.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/MoodLotus.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/ResonanceTimeline.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/SleepTracker.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/TomorrowPrep.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/VoiceJournaling.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WisdomSeeds.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useJournalEntries.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useMoodLogs.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/views/sections.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/components/JourneyHistoryCard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalProvider.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalShield.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@repo/self",
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/self/src/screens/self/PrincipalSelfView.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -74319,7 +71818,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -74464,181 +71963,6 @@
    ]
   },
   {
-   "file": "packages/self/src/screens/self/PrincipalSelfView.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 225,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 197,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "PrincipalSelfView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/store/useUIStore.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/self/src/components/BaseSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/DailyRhythm.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/DecisionJournalSection.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/GovernanceHistoryTimeline.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/MoodLotus.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/MoodPickerCard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/PulseDashboard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/ResonanceTimeline.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WelcomeModal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WisdomSeeds.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useDecisionJournal.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useEnergyForecast.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useJournalEntries.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useMoodLogs.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/views/sections.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/components/JourneyHistoryCard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalProvider.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalShield.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@repo/self",
-    "react",
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/self/src/screens/self/StudentSelfView.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -74664,7 +71988,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -74742,143 +72066,6 @@
    ]
   },
   {
-   "file": "packages/self/src/screens/self/StudentSelfView.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 107,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 89,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "StudentSelfView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/store/useUIStore.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/self/src/components/BaseSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/DailyRhythm.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/FireJournal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/JoyJar.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/MoodLotus.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/SleepTracker.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/TomorrowPrep.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/VoiceJournaling.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WelcomeModal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WisdomSeeds.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useJournalEntries.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useMoodLogs.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useSanctuaryRegistry.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/views/sections.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    }
-   ],
-   "outside": [
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/self/src/screens/self/TeacherSelfView.tsx",
    "package": "packages/self",
    "folderTier": null,
@@ -74904,7 +72091,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -75074,217 +72261,6 @@
    ]
   },
   {
-   "file": "packages/self/src/screens/self/TeacherSelfView.web.tsx",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 254,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 219,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "TeacherSelfView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/store/useUIStore.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/self/src/components/BaseSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/DailyRhythm.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/DecisionJournalSection.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/FireJournal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/GratitudeGlimmers.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/JoyJar.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/MoodLotus.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/MoodPickerCard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/PulseDashboard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/ResonanceTimeline.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/SleepTracker.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/SpotlightEmpty.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/TeachingHistoryTimeline.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/TomorrowPrep.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/VoiceJournaling.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WelcomeModal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/components/WisdomSeeds.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useJournalEntries.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/hooks/useMoodLogs.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/views/sections.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/ui/src/components/JourneyHistoryCard.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalProvider.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/TemporalShield.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/providers/ToastProvider.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@repo/self",
-    "react",
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/self/src/screens/self/index.ts",
    "package": "packages/self",
    "folderTier": null,
@@ -75344,73 +72320,6 @@
     },
     {
      "to": "packages/self/src/screens/self/TeacherSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/self/src/screens/self/index.web.ts",
-   "package": "packages/self",
-   "folderTier": null,
-   "shape": "barrel",
-   "lines": 12,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 6,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/self/src/screens/self/AdminSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/FounderSelfView.web.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/GuardianSelfView.web.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/PrincipalSelfView.web.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/StudentSelfView.web.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/TeacherSelfView.web.tsx",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
@@ -75583,7 +72492,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 11,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -76356,7 +73265,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 25,
+    "prod": 21,
     "tests": 6
    },
    "imports": [
@@ -76418,7 +73327,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 12,
+    "prod": 9,
     "tests": 3
    },
    "imports": [
@@ -76570,7 +73479,7 @@
     }
    ],
    "importers": {
-    "prod": 4,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -76673,7 +73582,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 2,
     "tests": 1
    },
    "imports": [
@@ -77096,7 +74005,7 @@
     }
    ],
    "importers": {
-    "prod": 6,
+    "prod": 5,
     "tests": 0
    },
    "imports": [
@@ -77201,47 +74110,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components/DeviceSecurityCenter.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 25,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 23,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "DeviceSecurityCenter"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@repo/ui"
-   ]
-  },
-  {
    "file": "packages/ui/src/components/DomainSubHeader.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -77324,40 +74192,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components/EaseView.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 36,
-   "counts": {
-    "types": 2,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 12,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "EaseView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 6,
-    "tests": 1
-   },
-   "imports": [],
-   "outside": [
-    "react-native"
-   ]
-  },
-  {
    "file": "packages/ui/src/components/EmptyState.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -77383,7 +74217,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -77463,58 +74297,6 @@
     },
     {
      "to": "packages/ui/src/components/SanctuaryModal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
-  },
-  {
-   "file": "packages/ui/src/components/EntityModal.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 51,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 38,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "EntityModalProps",
-    "EntityModal"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": true,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/ui/src/components/SanctuaryModal.web.tsx",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T6"
@@ -77712,7 +74494,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -77764,7 +74546,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 15,
+    "prod": 11,
     "tests": 3
    },
    "imports": [
@@ -77870,7 +74652,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -77924,7 +74706,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 5,
     "tests": 1
    },
    "imports": [
@@ -77985,7 +74767,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 5,
     "tests": 1
    },
    "imports": [
@@ -78025,7 +74807,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 10,
+    "prod": 8,
     "tests": 2
    },
    "imports": [
@@ -78245,7 +75027,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 2,
     "tests": 1
    },
    "imports": [
@@ -78258,49 +75040,6 @@
    ],
    "outside": [
     "react-native-external-keyboard"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/FocusRing.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 84,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 67,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "FocusRingProps",
-    "FocusRing"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 4,
-    "tests": 1
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/components/motion.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-native"
    ]
   },
   {
@@ -78470,7 +75209,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -78594,105 +75333,6 @@
     "react",
     "react-i18next",
     "react-native",
-    "react-native-safe-area-context"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/GlobalHeader.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 299,
-   "counts": {
-    "types": 3,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 256,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "GlobalHeaderProps",
-    "GlobalHeader"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 1
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/store/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/ui/src/components/NotificationDrawer.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/SanctuaryInput.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/tokens/index.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/utils/haptics.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/utils/headerUtils.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "expo-router",
-    "react",
-    "react-i18next",
     "react-native-safe-area-context"
    ]
   },
@@ -79065,7 +75705,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -79143,72 +75783,6 @@
     "react",
     "react-native",
     "react-native-webview"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/InternalBrowser.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 220,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 1,
-    "ambient": 5,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 139,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "InternalBrowserProps",
-    "InternalBrowser"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/components/ui/text/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ui/view/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/hooks/useTheme.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react-native"
    ]
   },
   {
@@ -79290,7 +75864,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -79548,7 +76122,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 5,
     "tests": 0
    },
    "imports": [
@@ -79891,7 +76465,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 16,
+    "prod": 14,
     "tests": 4
    },
    "imports": [
@@ -79957,7 +76531,7 @@
     }
    ],
    "importers": {
-    "prod": 7,
+    "prod": 5,
     "tests": 0
    },
    "imports": [
@@ -80145,7 +76719,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -80226,7 +76800,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 4,
     "tests": 0
    },
    "imports": [
@@ -80665,7 +77239,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 5,
     "tests": 1
    },
    "imports": [
@@ -80895,7 +77469,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -80945,7 +77519,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 13,
+    "prod": 12,
     "tests": 1
    },
    "imports": [
@@ -81219,79 +77793,13 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 4,
     "tests": 0
    },
    "imports": [
     {
      "to": "packages/ui/src/components/EmptyState.tsx",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/theme/Theme.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@shopify/flash-list",
-    "react"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/SanctuaryFlashList.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 69,
-   "counts": {
-    "types": 0,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 56,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 1,
-    "jsx": true
-   },
-   "exports": [
-    "SanctuaryFlashList"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 5,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/components/EmptyState.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/SanctuaryFlashList.tsx",
-     "typeOnly": true,
      "toShape": "runtime",
      "toTier": "T6"
     },
@@ -81458,7 +77966,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -81517,7 +78025,7 @@
     }
    ],
    "importers": {
-    "prod": 7,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -81560,72 +78068,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components/SanctuaryLegendList.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 98,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 78,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 1,
-    "jsx": true
-   },
-   "exports": [
-    "SanctuaryLegendList"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 7,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/components/EmptyState.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/SanctuaryLegendList.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/context/ChatContext.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/theme/Theme.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "@legendapp/list",
-    "react"
-   ]
-  },
-  {
    "file": "packages/ui/src/components/SanctuaryModal.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -81652,7 +78094,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 16,
+    "prod": 15,
     "tests": 2
    },
    "imports": [
@@ -81676,66 +78118,6 @@
     },
     {
      "to": "packages/ui/src/utils/classNames.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react-native"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/SanctuaryModal.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 116,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 97,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "SanctuaryModalProps",
-    "SanctuaryModal"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 16,
-    "tests": 2
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/components/UniversalModal.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/tokens/index.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T6"
@@ -82091,41 +78473,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components/SanctuaryTable.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 66,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 57,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "SanctuaryTableWebProps",
-    "SanctuaryTable"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "@tanstack/react-table"
-   ]
-  },
-  {
    "file": "packages/ui/src/components/SanctuaryToast.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -82210,115 +78557,6 @@
     "react-native-reanimated",
     "react-native-safe-area-context",
     "react-native-worklets"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/SanctuaryToast.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 103,
-   "counts": {
-    "types": 2,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 2,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 86,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "ToastType",
-    "SanctuaryToast"
-   ],
-   "unions": [
-    {
-     "name": "ToastType",
-     "union": "'error'|'info'|'success'|'warning'"
-    }
-   ],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/components/ui/box/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ui/text/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/tokens/index.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-native"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/SanctuaryVirtualTable.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 116,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 101,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "SanctuaryVirtualTableWebProps",
-    "SanctuaryVirtualTable"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "@tanstack/react-table",
-    "@tanstack/react-virtual",
-    "react"
    ]
   },
   {
@@ -82467,7 +78705,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 14,
+    "prod": 13,
     "tests": 2
    },
    "imports": [
@@ -82493,61 +78731,6 @@
    "outside": [
     "react-native",
     "react-native-safe-area-context"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/ScreenWrapper.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 118,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 1,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 80,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "ScreenWrapperProps",
-    "useBottomTabPadding",
-    "ScreenWrapper"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 14,
-    "tests": 2
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/hooks/useTheme.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/layout.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react-native"
    ]
   },
   {
@@ -82624,7 +78807,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 5,
     "tests": 1
    },
    "imports": [
@@ -82642,61 +78825,6 @@
     },
     {
      "to": "packages/ui/src/components/native/Waiting/Waiting.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/layout.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/tokens/motion.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react-native"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/Skeleton.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 114,
-   "counts": {
-    "types": 2,
-    "consts": 0,
-    "constructs": 1,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 3,
-    "functionLines": 71,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "ShimmerBlock",
-    "SkeletonCard",
-    "SkeletonList"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 6,
-    "tests": 1
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/tokens/index.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T6"
@@ -82760,43 +78888,6 @@
    "outside": []
   },
   {
-   "file": "packages/ui/src/components/SkeletonLoader.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 175,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 3,
-    "schemas": 0,
-    "functions": 4,
-    "functionLines": 144,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 1,
-    "jsx": true
-   },
-   "exports": [
-    "SkeletonCard",
-    "SkeletonAvatar",
-    "SkeletonTextLine"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 4,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "react",
-    "react-native"
-   ]
-  },
-  {
    "file": "packages/ui/src/components/SkiaGlowAura.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -82840,50 +78931,6 @@
     "react-native",
     "react-native-reanimated",
     "react-native-redash"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/SkiaGlowAura.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 100,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 1,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 66,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "SkiaGlowAuraProps",
-    "SkiaGlowAura"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 4,
-    "tests": 1
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/context/VisualCapabilities.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-native",
-    "react-native-reanimated"
    ]
   },
   {
@@ -83092,7 +79139,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 5,
     "tests": 1
    },
    "imports": [
@@ -83404,7 +79451,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -83533,7 +79580,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -83553,48 +79600,6 @@
    "outside": [
     "react",
     "react-native"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/TemporalProvider.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 69,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 1,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 49,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "TemporalProvider",
-    "useTemporalAesthetics"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 5,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    }
-   ],
-   "outside": [
-    "react"
    ]
   },
   {
@@ -83680,7 +79685,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -83751,47 +79756,11 @@
     }
    ],
    "importers": {
-    "prod": 5,
+    "prod": 4,
     "tests": 0
    },
    "imports": [],
    "outside": [
-    "react-native"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components/UniversalModal.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 70,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 1,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 24,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "UniversalModalProps",
-    "UniversalModal"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 5,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": [
-    "react",
     "react-native"
    ]
   },
@@ -83882,7 +79851,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -83934,7 +79903,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -85058,7 +81027,7 @@
     }
    ],
    "importers": {
-    "prod": 18,
+    "prod": 13,
     "tests": 1
    },
    "imports": [
@@ -85159,46 +81128,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components/maps/UnifiedMapView.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 34,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 20,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "UnifiedMapViewProps",
-    "UnifiedMapView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/ui/src/components/maps/UnifiedMarker.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -85265,55 +81194,10 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [],
-   "outside": []
-  },
-  {
-   "file": "packages/ui/src/components/maps/UnifiedMarker.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 35,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 24,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "UnifiedMarker"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/components/maps/UnifiedMarker.types.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ui/box/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
    "outside": []
   },
   {
@@ -86088,114 +81972,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components/media/VideoPlayer.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 235,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 214,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "VideoPlayerProps",
-    "VideoPlayer"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 5,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/ui/src/components/BrandPulse.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ErrorState.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/SanctuaryButton.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ui/box/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ui/hstack/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ui/text/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ui/vstack/index.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/hooks/useTheme.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/utils/dateTimeUtils.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react"
-   ]
-  },
-  {
    "file": "packages/ui/src/components/media/index.ts",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -86304,7 +82080,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 8,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -91773,7 +87549,7 @@
    "package": "packages/ui",
    "folderTier": "T6",
    "shape": "runtime",
-   "lines": 141,
+   "lines": 155,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -91781,7 +87557,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 5,
-    "functionLines": 86,
+    "functionLines": 99,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -94797,7 +90573,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [],
@@ -95354,46 +91130,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components/social/CommunityPresence.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 100,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 86,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "CommunityPresenceWebProps",
-    "CommunityPresence"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/ui/src/components/social/SocialShieldModal.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -95759,7 +91495,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 11,
+    "prod": 8,
     "tests": 1
    },
    "imports": [],
@@ -96365,7 +92101,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 5,
     "tests": 0
    },
    "imports": [],
@@ -97681,7 +93417,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 23,
+    "prod": 20,
     "tests": 6
    },
    "imports": [
@@ -97881,7 +93617,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 19,
+    "prod": 18,
     "tests": 0
    },
    "imports": [],
@@ -97919,7 +93655,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 6,
     "tests": 0
    },
    "imports": [],
@@ -98356,69 +94092,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components/visualization/VastuView.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 57,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 45,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "VastuView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/types/index.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/hooks/useTheme.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/hooks/useThemedColors.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/tokens/index.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/ui/src/components/visualization/VatyaView.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -98476,63 +94149,6 @@
    "outside": [
     "react-native-svg"
    ]
-  },
-  {
-   "file": "packages/ui/src/components/visualization/VatyaView.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 54,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 44,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "VatyaView"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 2,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/types/index.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/hooks/useTheme.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/hooks/useThemedColors.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": []
   },
   {
    "file": "packages/ui/src/components/visualization/index.ts",
@@ -104258,47 +99874,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/components-native/LivingCard.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 93,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 76,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "LivingCard"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react-native"
-   ]
-  },
-  {
    "file": "packages/ui/src/components-native/NoiseOverlay.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -104332,38 +99907,6 @@
     "react-native-skia",
     "react-native"
    ]
-  },
-  {
-   "file": "packages/ui/src/components-native/NoiseOverlay.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 18,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 9,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "NoiseOverlay"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": []
   },
   {
    "file": "packages/ui/src/components-native/TemporalGlass.tsx",
@@ -104404,53 +99947,6 @@
    ],
    "outside": [
     "react-native-skia",
-    "react-native"
-   ]
-  },
-  {
-   "file": "packages/ui/src/components-native/TemporalGlass.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 59,
-   "counts": {
-    "types": 1,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 32,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "TemporalGlass"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
     "react-native"
    ]
   },
@@ -104534,7 +100030,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 5,
     "tests": 0
    },
    "imports": [],
@@ -105407,7 +100903,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 27,
+    "prod": 26,
     "tests": 8
    },
    "imports": [
@@ -105476,7 +100972,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 15,
+    "prod": 14,
     "tests": 1
    },
    "imports": [
@@ -105990,7 +101486,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 15,
+    "prod": 12,
     "tests": 1
    },
    "imports": [
@@ -106215,7 +101711,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 2,
     "tests": 0
    },
    "imports": [
@@ -106485,7 +101981,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 33,
+    "prod": 27,
     "tests": 3
    },
    "imports": [
@@ -106556,7 +102052,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 15,
+    "prod": 13,
     "tests": 0
    },
    "imports": [
@@ -106601,7 +102097,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 257,
+    "prod": 218,
     "tests": 12
    },
    "imports": [],
@@ -106633,7 +102129,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 257,
+    "prod": 218,
     "tests": 12
    },
    "imports": [
@@ -106670,7 +102166,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 257,
+    "prod": 218,
     "tests": 12
    },
    "imports": [],
@@ -106702,7 +102198,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 20,
+    "prod": 19,
     "tests": 3
    },
    "imports": [
@@ -107109,297 +102605,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/index.web.ts",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "barrel",
-   "lines": 61,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 44,
-    "jsx": false
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 20,
-    "tests": 3
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/components/NotificationSettingsPanel.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/context/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/hooks/useNotificationPreferences.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/primitives.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/providers/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/screens/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/shims/native-web-stub.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/theme/Theme.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/tokens/index.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/utils/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/BrandedEmptyState.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/BrandedEmptyState.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/BrandPulse.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/BrandPulse.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/CelebrationOverlay.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/CelebrationOverlay.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/Collapse.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/Collapse.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ErrorState.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ErrorState.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/FeatureStateBoundary.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/FeatureStateBoundary.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/FireflyFeedbackScene.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/FireflyFeedbackScene.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/FocusRing.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/FocusRing.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/InteractiveRadarChart.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/layout.ts",
-     "typeOnly": true,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/layout.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/Mascot.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/Mascot.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/MascotPod.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/MascotPod.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/motion.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/tokens/motion.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/PressableScale.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/PressableScale.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ScreenWrapper.tsx",
-     "typeOnly": true,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/Skeleton.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/Success.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/screenTransitions.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/VisualCapabilityInspector.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/ui/src/machines/authOrchestrationMachine.ts",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -107575,7 +102780,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 218,
+    "prod": 183,
     "tests": 8
    },
    "imports": [
@@ -108067,7 +103272,7 @@
     }
    ],
    "importers": {
-    "prod": 30,
+    "prod": 28,
     "tests": 5
    },
    "imports": [
@@ -108139,7 +103344,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 5,
     "tests": 0
    },
    "imports": [
@@ -108743,120 +103948,6 @@
    ]
   },
   {
-   "file": "packages/ui/src/screens/AuthScreen.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 822,
-   "counts": {
-    "types": 4,
-    "consts": 1,
-    "constructs": 2,
-    "ambient": 2,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 28,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 3,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [
-    "AuthScreenWeb"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/auth.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/logic/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/core/src/native/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/types/index.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/core/src/logic/utils/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T2"
-    },
-    {
-     "to": "packages/ui/src/components/GatewayScreenShell.web.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/LivingGlow.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/SanctuaryBackground.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/hooks/useTheme.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/providers/ToastProvider.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "react",
-    "react-i18next"
-   ]
-  },
-  {
    "file": "packages/ui/src/screens/ComponentShowcaseScreen.tsx",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -109062,101 +104153,6 @@
    "outside": [
     "react-i18next",
     "react-native"
-   ]
-  },
-  {
-   "file": "packages/ui/src/screens/NotificationsScreen.web.tsx",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 321,
-   "counts": {
-    "types": 0,
-    "consts": 1,
-    "constructs": 2,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 9,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": true
-   },
-   "exports": [],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/hooks/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/store/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T4"
-    },
-    {
-     "to": "packages/core/src/offline/useOfflineStatus.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T5"
-    },
-    {
-     "to": "packages/core/src/types/index.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/ui/src/components/BrandedEmptyState.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/BrandPulse.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/ErrorState.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/layout.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/WebScreenHeader.web.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/icons.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    }
-   ],
-   "outside": [
-    "date-fns",
-    "react",
-    "react-i18next"
    ]
   },
   {
@@ -109512,7 +104508,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 3,
     "tests": 0
    },
    "imports": [
@@ -109941,7 +104937,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [],
@@ -110077,7 +105073,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 67,
+    "prod": 64,
     "tests": 3
    },
    "imports": [
@@ -111433,49 +106429,10 @@
     }
    ],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [],
-   "outside": []
-  },
-  {
-   "file": "packages/ui/src/theme/nitroThemeTransition.web.ts",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 22,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 1,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 17,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "startThemeTransition"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [
-    {
-     "to": "packages/ui/src/theme/nitroThemeTransition.types.ts",
-     "typeOnly": true,
-     "toShape": "contract",
-     "toTier": "T6"
-    }
-   ],
    "outside": []
   },
   {
@@ -114317,7 +109274,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 52,
+    "prod": 45,
     "tests": 1
    },
    "imports": [
@@ -114370,7 +109327,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 13,
+    "prod": 11,
     "tests": 0
    },
    "imports": [],
@@ -114547,40 +109504,6 @@
    "outside": []
   },
   {
-   "file": "packages/ui/src/utils/SanctuaryLocation.web.ts",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 80,
-   "counts": {
-    "types": 2,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 5,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "SanctuaryLocation",
-    "LocationSubscription",
-    "LocationObject"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": []
-  },
-  {
    "file": "packages/ui/src/utils/a11yUtils.ts",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -114720,7 +109643,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 2,
     "tests": 0
    },
    "imports": [],
@@ -114752,45 +109675,13 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 5,
+    "prod": 4,
     "tests": 0
    },
    "imports": [],
    "outside": [
     "react-native"
    ]
-  },
-  {
-   "file": "packages/ui/src/utils/dialogs.web.ts",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 7,
-   "counts": {
-    "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 1,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 6,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "confirmAction"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 5,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": []
   },
   {
    "file": "packages/ui/src/utils/feedbackPolicy.ts",
@@ -114893,7 +109784,7 @@
     }
    ],
    "importers": {
-    "prod": 89,
+    "prod": 87,
     "tests": 46
    },
    "imports": [],
@@ -114931,7 +109822,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -114968,7 +109859,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 18,
+    "prod": 16,
     "tests": 1
    },
    "imports": [
@@ -115119,71 +110010,6 @@
    "outside": []
   },
   {
-   "file": "packages/ui/src/utils/linking.web.ts",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "runtime",
-   "lines": 211,
-   "counts": {
-    "types": 8,
-    "consts": 3,
-    "constructs": 0,
-    "ambient": 5,
-    "schemas": 0,
-    "functions": 19,
-    "functionLines": 188,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 1,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "ExternalLinkTrustLevel",
-    "WebExternalOpenMethod",
-    "NativeExternalOpenMethod",
-    "ExternalOpenMethod",
-    "ExternalLinkOpenOptions",
-    "isAllowedExternalUri",
-    "getRecommendedExternalOpenMethod",
-    "getStoredExternalOpenPreference",
-    "setStoredExternalOpenPreference",
-    "clearStoredExternalOpenPreference",
-    "openExternalURL",
-    "showExternalLinkOptions",
-    "registerExternalLinkRuntime",
-    "getExternalLinkDomain"
-   ],
-   "unions": [
-    {
-     "name": "ExternalLinkTrustLevel",
-     "union": "'broken'|'external'|'verified'"
-    },
-    {
-     "name": "WebExternalOpenMethod",
-     "union": "'new_tab'|'same_tab'"
-    },
-    {
-     "name": "NativeExternalOpenMethod",
-     "union": "'external_browser'|'in_app_browser'"
-    }
-   ],
-   "importers": {
-    "prod": 3,
-    "tests": 1
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/native/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T3"
-    }
-   ],
-   "outside": []
-  },
-  {
    "file": "packages/ui/src/utils/navigation.ts",
    "package": "packages/ui",
    "folderTier": "T6",
@@ -115209,7 +110035,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 14,
+    "prod": 12,
     "tests": 0
    },
    "imports": [],
@@ -115284,38 +110110,6 @@
    "outside": [
     "react-native"
    ]
-  },
-  {
-   "file": "packages/ui/src/utils/shareAction.web.ts",
-   "package": "packages/ui",
-   "folderTier": "T6",
-   "shape": "contract",
-   "lines": 32,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 1,
-    "functionLines": 26,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "shareAction"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": []
   },
   {
    "file": "packages/ui/src/utils/stringUtils.ts",
@@ -125962,38 +120756,6 @@
    "outside": []
   },
   {
-   "file": "apps/gurudevi-mobile/src/boot/worldFontFiles.web.ts",
-   "package": "apps/gurudevi-mobile",
-   "folderTier": null,
-   "shape": "contract",
-   "lines": 47,
-   "counts": {
-    "types": 0,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "WORLD_FONT_FILES"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": []
-  },
-  {
    "file": "apps/gurudevi-mobile/src/brand/mascotArtwork.ts",
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
@@ -129102,41 +123864,6 @@
    "outside": []
   },
   {
-   "file": "apps/gurudevi-mobile/src/lib/backgroundSync.web.ts",
-   "package": "apps/gurudevi-mobile",
-   "folderTier": null,
-   "shape": "contract",
-   "lines": 20,
-   "counts": {
-    "types": 0,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 3,
-    "functionLines": 15,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "BACKGROUND_SYNC_TASK",
-    "registerBackgroundSync",
-    "unregisterBackgroundSync",
-    "triggerBackgroundSyncForTesting"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 0,
-    "tests": 0
-   },
-   "imports": [],
-   "outside": []
-  },
-  {
    "file": "apps/gurudevi-mobile/src/lib/backgroundSyncTask.ts",
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
@@ -129170,38 +123897,6 @@
     "expo-background-task",
     "expo-task-manager"
    ]
-  },
-  {
-   "file": "apps/gurudevi-mobile/src/lib/backgroundSyncTask.web.ts",
-   "package": "apps/gurudevi-mobile",
-   "folderTier": null,
-   "shape": "contract",
-   "lines": 4,
-   "counts": {
-    "types": 0,
-    "consts": 1,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 0,
-    "functionLines": 0,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "BACKGROUND_SYNC_TASK"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 3,
-    "tests": 3
-   },
-   "imports": [],
-   "outside": []
   },
   {
    "file": "apps/gurudevi-mobile/src/lib/capabilities/webCapabilityRegistry.ts",
@@ -129537,40 +124232,6 @@
     "react-native",
     "react-native-nitro-google-signin"
    ]
-  },
-  {
-   "file": "apps/gurudevi-mobile/src/lib/googleSignIn.web.ts",
-   "package": "apps/gurudevi-mobile",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 29,
-   "counts": {
-    "types": 1,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
-    "schemas": 0,
-    "functions": 2,
-    "functionLines": 16,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 1,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "NativeGoogleResult",
-    "configureGoogleOneTap",
-    "signInWithGoogleNative"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 2
-   },
-   "imports": [],
-   "outside": []
   },
   {
    "file": "apps/gurudevi-mobile/src/lib/journeyAnalytics.ts",
@@ -136463,15 +131124,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 80,
+   "lines": 85,
    "counts": {
     "types": 1,
     "consts": 0,
     "constructs": 1,
     "ambient": 0,
     "schemas": 0,
-    "functions": 2,
-    "functionLines": 64,
+    "functions": 3,
+    "functionLines": 70,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -136481,7 +131142,8 @@
    },
    "exports": [
     "AuthProvider",
-    "useAuth"
+    "useAuth",
+    "useOptionalAuth"
    ],
    "unions": [],
    "importers": {
@@ -148347,7 +143009,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 378,
+   "lines": 379,
    "counts": {
     "types": 2,
     "consts": 0,
@@ -148355,7 +143017,7 @@
     "ambient": 4,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 366,
+    "functionLines": 367,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -153918,7 +148580,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 60,
+   "lines": 53,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -153926,7 +148588,7 @@
     "ambient": 2,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 53,
+    "functionLines": 46,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -156757,7 +151419,7 @@
     "jsx": true
    },
    "exports": [
-    "tutiiSpotlightOverlay"
+    "TutiiSpotlightOverlay"
    ],
    "unions": [],
    "importers": {
@@ -159372,20 +154034,6 @@
      "apps/gurudevi-web/app/journal/feed.xml/route.ts",
      "apps/gurudevi-web/app/knowledge.json/route.ts",
      "apps/gurudevi-web/app/llms.txt/route.ts"
-    ]
-   },
-   {
-    "name": "WORLD_FONT_FILES",
-    "where": [
-     "apps/gurudevi-mobile/src/boot/worldFontFiles.ts",
-     "apps/gurudevi-mobile/src/boot/worldFontFiles.web.ts"
-    ]
-   },
-   {
-    "name": "BACKGROUND_SYNC_TASK",
-    "where": [
-     "apps/gurudevi-mobile/src/lib/backgroundSync.web.ts",
-     "apps/gurudevi-mobile/src/lib/backgroundSyncTask.web.ts"
     ]
    },
    {

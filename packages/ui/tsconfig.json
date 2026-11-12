@@ -18,5 +18,7 @@
     "types": ["@repo/types-shim", "vitest/globals", "node", "react-test-renderer"]
   },
   "include": ["src/**/*", "nativewind-env.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  // *.web files are reference only (tooling/reference-only.mjs), except those shared code imports (tooling/live-web-files.json).
+  "files": ["src/components/FeatureStateBoundary.web.tsx", "src/components/GatewayFooter.web.tsx", "src/components/GatewayHeader.web.tsx", "src/components/GatewayScreenShell.web.tsx", "src/components/WebScreenHeader.web.tsx", "src/icons.web.ts", "src/screens/AppSettingsScreen.web.tsx"],
+  "exclude": ["node_modules", "dist", "**/*.web.ts", "**/*.web.tsx"]
 }

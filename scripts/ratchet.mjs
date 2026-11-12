@@ -13,6 +13,7 @@
  */
 
 import { execFileSync, execSync } from 'node:child_process';
+import { RG_REFERENCE_ARGS } from '../tooling/reference-only.mjs';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -35,6 +36,7 @@ function runRgCount(pattern, extraArgs = []) {
       '-g', '!**/dist/**',
       '-g', '!**/generated/**',
       '-g', '!**/node_modules/**',
+      ...RG_REFERENCE_ARGS,
       ...extraArgs,
       '--stats',
     ];
@@ -125,7 +127,7 @@ function countPassThroughFiles() {
   return tierAudit()['pass-through'] ?? 0;
 }
 
-// React rules (tooling/oxlint-react.json): hooks rules, effect dependencies, effects that
+// React rules (.oxlintrc.react.json): hooks rules, effect dependencies, effects that
 // set state, and the React Compiler rules. One oxlint run (~3s) for all packages and apps.
 let reactLint;
 function reactLintCounts() {
@@ -133,7 +135,7 @@ function reactLintCounts() {
     reactLint = {};
     let out = '';
     try {
-      out = execFileSync('node_modules/.bin/oxlint', ['-c', 'tooling/oxlint-react.json', '-f', 'json', 'packages', 'apps'], {
+      out = execFileSync('node_modules/.bin/oxlint', ['-c', '.oxlintrc.react.json', '-f', 'json', 'packages', 'apps'], {
         cwd: REPO_ROOT,
         encoding: 'utf8',
         maxBuffer: 64 * 1024 * 1024,
@@ -170,6 +172,17 @@ const REACT_COMPILER_RULES = [
   'react(set-state-in-render)',
 ];
 
+// tooling/live-web-files.json against the import graph and the tool configs.
+function countReferenceOnlyDrift() {
+  try {
+    execFileSync('node', ['scripts/check-reference-only.mjs'], { cwd: REPO_ROOT, stdio: 'pipe' });
+    return 0;
+  } catch (error) {
+    const m = String(error.stderr ?? '').match(/(\d+) problem/);
+    return m ? Number(m[1]) : Number.POSITIVE_INFINITY;
+  }
+}
+
 function countTierContentViolations() {
   try {
     const out = execSync('node scripts/audit-tier-content.mjs --summary-json', { cwd: REPO_ROOT, encoding: 'utf8' });
@@ -190,7 +203,7 @@ function countRootScripts() {
 
 function countFilesOver800Loc() {
   try {
-    const cmd = `rg --files packages apps -g "*.ts" -g "*.tsx" -g "!**/__tests__/**" -g "!**/*.test.*" -g "!**/dist/**" -g "!**/generated/**" -g "!**/node_modules/**"`;
+    const cmd = `rg --files packages apps -g "*.ts" -g "*.tsx" -g "!**/__tests__/**" -g "!**/*.test.*" -g "!**/dist/**" -g "!**/generated/**" -g "!**/node_modules/**" ${RG_REFERENCE_ARGS.map((a) => `'${a}'`).join(' ')}`;
     const files = execSync(cmd, { cwd: REPO_ROOT, encoding: 'utf8' }).trim().split(/\r?\n/).filter(Boolean);
     let count = 0;
     for (const file of files) {
@@ -233,6 +246,7 @@ function measureMetrics() {
     effectsThatSetState: reactCount(['react(set-state-in-effect)', 'react(no-deriving-state-in-effects)']),
     reactCompilerRuleHits: reactCount(REACT_COMPILER_RULES),
     unparseableFiles: reactCount(['parse-error']),
+    referenceOnlyDrift: countReferenceOnlyDrift(),
   };
 }
 
@@ -278,6 +292,7 @@ function main() {
     effectsThatSetState: 'Effects that set or derive state',
     reactCompilerRuleHits: 'React Compiler rule hits',
     unparseableFiles: 'Parse errors (oxlint)',
+    referenceOnlyDrift: 'Live .web list out of date',
   };
 
   console.log('----------------------------------------------------------------------');

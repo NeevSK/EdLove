@@ -9,6 +9,7 @@
  * Writes reports/tier-audit.json and reports/tier-audit.md.
  */
 import fs from 'node:fs';
+import { isReferenceOnly } from '../tooling/reference-only.mjs';
 import path from 'node:path';
 import {
   ALLOWED,
@@ -55,7 +56,7 @@ function walk(dir) {
       return ['node_modules', '__tests__', '__mocks__', 'testing', 'generated', 'dist'].includes(d.name) ? [] : walk(p);
     return /\.tsx?$/.test(d.name) &&
       !/\.(test|spec)\.tsx?$/.test(d.name) &&
-      !d.name.endsWith('.d.ts')
+      !d.name.endsWith('.d.ts') && !isReferenceOnly(p)
       ? [p]
       : [];
   });
