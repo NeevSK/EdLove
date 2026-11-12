@@ -68,6 +68,7 @@ import { AssistantSheet } from '@/components/shell/AssistantSheet';
 import { RoomFab } from '@/components/shell/RoomFab';
 import { type CommonActions, ROOM_NAMES } from '@/components/shell/roomActions';
 import { ShellTabBar } from '@/components/shell/ShellTabBar';
+import { useShellRequests } from '@/components/shell/shellRequests';
 import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
 import { useShellVariant } from '@/lib/navigation/shellVariant';
@@ -157,6 +158,13 @@ function TabsLayoutContent() {
     'workspace' | 'self' | 'library' | 'community' | 'profile' | null
   >(null);
   const [isInviteCodeModalOpen, setInviteCodeModalOpen] = useState(false);
+  // A room asked for one of the shell's sheets (Profile: switch bond, join with a code).
+  const askedSheet = useShellRequests((state) => state.asked);
+  useEffect(() => {
+    const sheet = askedSheet ? useShellRequests.getState().take() : null;
+    if (sheet === 'perspectives') setPerspectiveSwitcherOpen(true);
+    if (sheet === 'invite') setInviteCodeModalOpen(true);
+  }, [askedSheet]);
 
   // Auto-reconcile perspective entities from Postgres / PowerSync SQLite on boot
   useEffect(() => {
