@@ -1,4 +1,5 @@
-export interface UserContext {
+/** The principal a permission snapshot is generated for (server-side input). */
+export interface SnapshotSubject {
   id: string;
   school_id?: string;
   capacity: string;
