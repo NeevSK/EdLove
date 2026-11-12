@@ -11368,6 +11368,51 @@
    "outside": []
   },
   {
+   "file": "packages/core/src/accounts/queryAccountBoundary.coordinator.ts",
+   "package": "packages/core",
+   "folderTier": "F",
+   "shape": "runtime",
+   "lines": 27,
+   "counts": {
+    "types": 0,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 24,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "bindQueryCacheToAccount"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/lib/clientStateFoundation.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/store/scopeSession.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T4"
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/adapters/MemoryStorageAdapter.ts",
    "package": "packages/core",
    "folderTier": "T3",
@@ -31953,8 +31998,8 @@
     }
    ],
    "importers": {
-    "prod": 11,
-    "tests": 6
+    "prod": 12,
+    "tests": 7
    },
    "imports": [],
    "outside": []
@@ -45260,7 +45305,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 20,
+    "prod": 21,
     "tests": 15
    },
    "imports": [
@@ -48152,7 +48197,7 @@
    "unions": [],
    "importers": {
     "prod": 3,
-    "tests": 6
+    "tests": 7
    },
    "imports": [
     {
@@ -48248,7 +48293,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 17,
+    "prod": 18,
     "tests": 15
    },
    "imports": [
@@ -48301,7 +48346,7 @@
    "unions": [],
    "importers": {
     "prod": 4,
-    "tests": 6
+    "tests": 7
    },
    "imports": [
     {
@@ -124741,7 +124786,7 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 33,
+   "lines": 40,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -124753,7 +124798,7 @@
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
-    "sideEffects": 2,
+    "sideEffects": 3,
     "reexports": 0,
     "jsx": false
    },
@@ -124767,10 +124812,22 @@
    },
    "imports": [
     {
+     "to": "packages/core/src/accounts/queryAccountBoundary.coordinator.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "F"
+    },
+    {
      "to": "packages/core/src/effect/bindings/queryClient.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
      "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/monitoring/index.ts",
+     "typeOnly": false,
+     "toShape": "barrel",
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/platform/drivers/networkMonitor.ts",

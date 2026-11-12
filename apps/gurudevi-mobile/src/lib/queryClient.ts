@@ -1,4 +1,6 @@
+import { bindQueryCacheToAccount } from '@repo/core/accounts/queryAccountBoundary.coordinator';
 import { queryClientConfig } from '@repo/core/effect/bindings/queryClient';
+import { captureException } from '@repo/core/monitoring';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { focusManager, onlineManager, QueryClient } from '@tanstack/react-query';
 import { AppState, Platform } from 'react-native';
@@ -29,4 +31,9 @@ export const queryClient = new QueryClient(
       staleTime: 1000 * 60 * 5, // 5 minutes
     },
   }),
+);
+
+// One account never sees the previous account's cached data (web: AuthQueryCacheBoundary).
+bindQueryCacheToAccount(queryClient, (error) =>
+  captureException(error, { operation: 'query-account-boundary' }),
 );
