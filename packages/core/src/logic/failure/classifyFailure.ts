@@ -166,3 +166,77 @@ export const RETRY_POLICY: { readonly [Tag in FailureKind['_tag']]: RetryRule } 
 export function isRetryable(kind: FailureKind): boolean {
   return RETRY_POLICY[kind._tag] !== 'never';
 }
+
+/**
+ * The developer and agent view of a failure. The person sees a message and a remedy
+ * (lib/failureFeedback.adapter.ts); this is the other audience: what kind it is, the source's own
+ * code, the retry rule and the next step to try. Every field is flat and holds no identifiers or
+ * prose from the payload, so it passes the telemetry privacy filter
+ * (monitoring/safeData.ts) as it is.
+ */
+export type AgentHint =
+  | 'REFRESH_SESSION'
+  | 'CHECK_CAPABILITY'
+  | 'CHECK_ID_OR_DELETION'
+  | 'REFETCH_AND_REBASE'
+  | 'CHECK_INPUT_AGAINST_CONTRACT'
+  | 'BACK_OFF'
+  | 'RETRY_WITH_BACKOFF'
+  | 'RETRY_ON_CONNECT'
+  | 'WAIT_FOR_REPLAY'
+  | 'CHECK_LOCAL_SCHEMA'
+  | 'READ_TAG'
+  | 'LOG_AND_ESCALATE';
+
+export const AGENT_HINT: { readonly [Tag in FailureKind['_tag']]: AgentHint } = {
+  UnauthorizedError: 'REFRESH_SESSION',
+  ForbiddenError: 'CHECK_CAPABILITY',
+  NotFoundError: 'CHECK_ID_OR_DELETION',
+  ConflictError: 'REFETCH_AND_REBASE',
+  ValidationError: 'CHECK_INPUT_AGAINST_CONTRACT',
+  RateLimitedError: 'BACK_OFF',
+  UnavailableError: 'RETRY_WITH_BACKOFF',
+  NetworkError: 'RETRY_ON_CONNECT',
+  OfflineMutationError: 'WAIT_FOR_REPLAY',
+  DatabaseQueryError: 'CHECK_LOCAL_SCHEMA',
+};
+
+export interface FailureDiagnosis {
+  /** The error's own tag when it has one, else the classified kind, else `Defect`. */
+  readonly kind: string;
+  /** The source's code (oRPC code, HTTP status, Postgres SQLSTATE), when there is one. */
+  readonly code: string | null;
+  readonly retry: RetryRule;
+  readonly agentHint: AgentHint;
+  /** Where it happened, as the caller names the operation (never a record ID). */
+  readonly operation: string | null;
+}
+
+function ownTag(error: unknown): string | undefined {
+  if (typeof error !== 'object' || error === null || !('_tag' in error)) return undefined;
+  return typeof error._tag === 'string' ? error._tag : undefined;
+}
+
+export function diagnoseFailure(error: unknown, operation?: string): FailureDiagnosis {
+  const kind = classifyFailure(error);
+  const tag = ownTag(error);
+  const kindCode = kind && 'code' in kind && typeof kind.code === 'string' ? kind.code : undefined;
+  const rawCode =
+    tag === undefined && typeof error === 'object' && error !== null ? read(error).code : '';
+  const sourceCode = kindCode ?? (rawCode || null);
+  if (kind && (tag === undefined || tag === kind._tag)) {
+    return {
+      kind: kind._tag,
+      code: sourceCode,
+      retry: RETRY_POLICY[kind._tag],
+      agentHint: AGENT_HINT[kind._tag],
+      operation: operation ?? null,
+    };
+  }
+  // A tagged error outside the classified kinds (deep links, agents, guest storage): its tag
+  // already names it precisely.
+  if (tag !== undefined) {
+    return { kind: tag, code: null, retry: 'never', agentHint: 'READ_TAG', operation: operation ?? null };
+  }
+  return { kind: 'Defect', code: null, retry: 'never', agentHint: 'LOG_AND_ESCALATE', operation: operation ?? null };
+}

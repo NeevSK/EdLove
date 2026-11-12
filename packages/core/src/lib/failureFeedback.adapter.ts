@@ -31,6 +31,7 @@ import type {
   AgentSchemaError,
   AgentTimeoutError,
 } from '@repo/core/logic/schemas/agentContracts.schema';
+import { diagnoseFailure, type FailureDiagnosis } from '@repo/core/logic/failure/classifyFailure';
 import { captureException } from '@repo/core/monitoring';
 import type { GuestStorageError } from '@repo/core/native/guestStorage';
 import i18next from 'i18next';
@@ -209,14 +210,20 @@ export function messageFor(feedback: FailureFeedback): string {
 }
 
 /**
- * Shows a failure through the world's toast host and reports it when the person can't act on it.
- * Returns the feedback so a caller can also render the remedy inline.
+ * Shows a failure to the person through the world's toast host, and reports it when they can't
+ * act on it. The report carries the developer and agent view (`diagnoseFailure`), never the
+ * person's message. Returns both views so a caller can render the remedy inline and a developer
+ * surface can show the diagnosis.
  */
-export function presentFailure(error: unknown, operation?: string): FailureFeedback {
+export function presentFailure(
+  error: unknown,
+  operation?: string,
+): { readonly feedback: FailureFeedback; readonly diagnosis: FailureDiagnosis } {
   const feedback = feedbackFor(error);
+  const diagnosis = diagnoseFailure(error, operation);
   if (feedback.report) {
-    captureException(error, { operation, boundary: 'failure-feedback', tag: tagOf(error) });
+    captureException(error, { boundary: 'failure-feedback', remedy: feedback.remedy, ...diagnosis });
   }
   showToast(messageFor(feedback), feedback.tone);
-  return feedback;
+  return { feedback, diagnosis };
 }

@@ -106,6 +106,13 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
   - **Feedback.** The new kinds have entries in the existing feedback table, reusing existing
     messages. Four deserve their own copy in en, si and ta: no access, no longer available, changed
     elsewhere, and check the form.
+  - **Two audiences.** The person gets a message key and a remedy (`FEEDBACK`). Developers and
+    agents get `diagnoseFailure`: the kind, the source's own code, the retry rule, an
+    `AGENT_HINT` (for example `REFETCH_AND_REBASE`) and the operation. The diagnosis is flat and
+    identifier-free, so it passes the telemetry privacy filter as it is. `presentFailure` shows
+    the first and reports the second. A test checks that neither carries the other's text. This
+    replaces the unused `guide` and `agentHint` fields of the old `lib/errors.ts`, which stays
+    until its one importer moves.
   - **Ratchet.** `catchAndLogOnly` has a ceiling of 165.
   - **Still to do.** `presentFailure` still has no callers; queries and mutations will call it
     (step 2). Four retry paths remain: Effect `Schedules`, the oRPC client's `retryDelay`,

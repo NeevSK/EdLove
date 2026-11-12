@@ -2,7 +2,7 @@ import { ORPCError } from '@orpc/client';
 import { ConflictError, NetworkError } from '@repo/core/effect/Errors';
 import { describe, expect, it } from 'vitest';
 import { ZodError } from 'zod';
-import { classifyFailure, isRetryable, RETRY_POLICY } from './classifyFailure';
+import { AGENT_HINT, classifyFailure, diagnoseFailure, isRetryable, RETRY_POLICY } from './classifyFailure';
 
 const tag = (error: unknown) => classifyFailure(error)?._tag ?? 'defect';
 
@@ -71,5 +71,32 @@ describe('G1 RETRY_POLICY: which kinds are worth retrying', () => {
   it('answers through isRetryable', () => {
     expect(isRetryable(new NetworkError({ cause: new TypeError('x') }))).toBe(true);
     expect(isRetryable(new ConflictError({}))).toBe(false);
+  });
+});
+
+describe('G1 diagnoseFailure: the developer and agent view', () => {
+  it('names the kind, the source code, the retry rule and the next step', () => {
+    expect(diagnoseFailure({ status: 409, code: 'CONFLICT' }, 'attendance.save')).toEqual({
+      kind: 'ConflictError',
+      code: 'CONFLICT',
+      retry: 'never',
+      agentHint: 'REFETCH_AND_REBASE',
+      operation: 'attendance.save',
+    });
+  });
+
+  it('keeps a precise tag it does not classify', () => {
+    expect(diagnoseFailure({ _tag: 'DeepLinkTraversalError' })).toMatchObject({
+      kind: 'DeepLinkTraversalError',
+      agentHint: 'READ_TAG',
+    });
+  });
+
+  it('marks a defect for escalation', () => {
+    expect(diagnoseFailure(new Error('boom'))).toMatchObject({ kind: 'Defect', agentHint: 'LOG_AND_ESCALATE' });
+  });
+
+  it('has a hint for every kind', () => {
+    expect(Object.keys(AGENT_HINT).sort()).toEqual(Object.keys(RETRY_POLICY).sort());
   });
 });

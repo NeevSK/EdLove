@@ -85,10 +85,27 @@ describe('failure feedback', { tags: ['fast'] }, () => {
   });
 
   it('treats anything else as a defect: reported, with a generic message', () => {
-    const feedback = presentFailure(new Error('relation "users" does not exist'), 'profile.save');
+    const { feedback } = presentFailure(new Error('relation "users" does not exist'), 'profile.save');
     expect(feedback).toBe(DEFECT_FEEDBACK);
     expect(mocks.captureException).toHaveBeenCalledTimes(1);
     expect(mocks.showToast).toHaveBeenCalledWith('Something went wrong', 'error');
+  });
+
+  it('gives the person a message and developers a diagnosis, never mixing them', () => {
+    const raw = { code: '42P01', message: 'relation "users" does not exist' };
+    const { diagnosis } = presentFailure(raw, 'profile.save');
+    expect(diagnosis).toEqual({
+      kind: 'DatabaseQueryError',
+      code: '42P01',
+      retry: 'never',
+      agentHint: 'CHECK_LOCAL_SCHEMA',
+      operation: 'profile.save',
+    });
+    expect(mocks.showToast).toHaveBeenCalledWith('Something went wrong', 'error');
+    const [, context] = mocks.captureException.mock.calls[0] ?? [];
+    expect(context).toMatchObject({ kind: 'DatabaseQueryError', agentHint: 'CHECK_LOCAL_SCHEMA' });
+    expect(JSON.stringify(context)).not.toContain('Something went wrong');
+    expect(JSON.stringify(context)).not.toContain('relation');
   });
 
   it('never shows the technical message of an expected failure', () => {
