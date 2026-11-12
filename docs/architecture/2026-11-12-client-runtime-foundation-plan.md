@@ -191,6 +191,47 @@ mappings (L7). Each has one file, one shape and one gate. After the baseline, a 
 (`pnpm new:feature <domain>/<name>`) writes those entries, and the gates check that every step has
 a destination, a presentation, a back rule and a capability.
 
+## 2a. Ownership and leverage (2026-11-12)
+
+**Ownership.** L0 (schemas, contracts, the drift check) is Neev's. Everything downstream (L1 to L9)
+takes contract types as they are and does not edit `packages/schema`, `*.schema.ts` or the API.
+When L0 changes, it flows through the types.
+
+**Where small work moves the most.** Measured over shipping code (no tests, no reference-only files):
+
+| Signal | Count |
+| --- | --- |
+| `throw new Error(` | 754 in 257 files |
+| `console.error` / `console.warn` | 609 in 255 files |
+| `catch` blocks that only log | 167 |
+| Hand-rolled loading flags (`useState(false)`, `isXLoading`) | 389 in 244 files |
+| `useQuery(` / `useMutation(` | 42 / 18 |
+| `queryOptions(` factories | 19 in 6 files |
+| `setTimeout(` | 175 in 136 files |
+| `useRouter(` | 55 files |
+
+Ordered by what each one unlocks:
+
+1. **The outcome and error kinds** (L3). One module: tagged error kinds and the outcome type. It is the
+   input to retry, healing, feedback, telemetry and navigation, so every later layer gets simpler.
+   About 250 files throw, log or swallow failures today; each becomes "map to a kind".
+2. **Query and mutation factories** (L5, L4). Account-scoped keys, plus `queryOptions` and
+   `mutationOptions` per domain with the retry policy and error mapping built in. With 389
+   hand-rolled loading flags against 42 `useQuery` calls, this removes the most code.
+3. **The feedback channel** (L7). Mutations settle into outcomes; one channel turns outcomes into
+   toast, haptic and inline state. It depends on 1 and 2, and replaces 51 toast sites and 16 direct
+   haptics imports.
+4. **The navigator adapter** (L9) over the flow steps, with the presentation policy. 55 files use
+   the router directly.
+5. **The outbox port** (L4). One interface; the three queues become backends selected by policy.
+6. **Mechanical sweeps.** Pacer for hand-rolled debounce and throttle, motion from the recipes, XState
+   `setup()`, timer cleanup.
+
+**The multiplier is the ratchet.** Each primitive lands with a metric that may only go down (sites
+that throw raw `Error`, catch-and-log blocks, hand-rolled loading flags, direct router calls, direct
+toasts and haptics). Then any agent can do the conversions safely, a few files at a time, without a
+decision from Neev, and the count shows the progress.
+
 ## 3. Order of work
 
 Each step is baseline for its layer, gated by the ratchet, then committed:
