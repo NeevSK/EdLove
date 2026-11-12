@@ -1,46 +1,92 @@
 {
   "summary": {
     "scope": "packages/core/src",
-    "files": 783,
+    "files": 792,
     "tiers": {
-      "T0": 120,
+      "T0": 130,
       "T1": 34,
-      "T2": 144,
-      "T3": 108,
+      "T2": 239,
+      "T3": 109,
       "C": 3,
-      "T4": 22,
-      "T5": 43,
-      "T6": 0,
-      "UNPLACED": 309
+      "T4": 25,
+      "T5": 49,
+      "T6": 6,
+      "UNPLACED": 0
     },
     "findings": {
-      "unplaced": 309,
-      "forbidden-package": 14,
-      "pass-through": 41,
-      "upward-import": 57,
-      "parse-above-boundary": 14,
-      "tier-import": 79,
-      "misplaced": 12
+      "upward-import": 83,
+      "forbidden-package": 21,
+      "pass-through": 30,
+      "parse-above-boundary": 17,
+      "tier-import": 78,
+      "misplaced": 12,
+      "imports-retired": 1
     }
   },
   "findings": [
     {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/accounts/accountTransition.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/adapters/powersync/database.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/accounts/authenticatedAccountCapture.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "upward-import",
+      "file": "packages/core/src/accounts/accountTransition.ts",
+      "tier": "T2",
+      "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+      "toTier": "T5",
+      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
     },
     {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/accounts/deviceAccounts.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/native/deviceTrust.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/accounts/deviceAccounts.ts",
+      "tier": "T2",
+      "to": "packages/core/src/adapters/supabaseIdentity.adapter.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/accounts/deviceAccounts.ts",
+      "tier": "T2",
+      "to": "packages/core/src/lib/accountScope.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/accounts/deviceAccounts.ts",
+      "tier": "T2",
+      "to": "packages/core/src/lib/experienceState.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/accounts/deviceAccounts.ts",
+      "tier": "T2",
+      "to": "packages/core/src/lib/storage.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/accounts/deviceAccounts.ts",
+      "tier": "T2",
+      "to": "packages/core/src/store/resetScopedStores.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "forbidden-package",
@@ -72,6 +118,14 @@
       "reason": "Tier 3: Adapters imports Tier 4: State, which sits above it"
     },
     {
+      "rule": "upward-import",
+      "file": "packages/core/src/adapters/powersync/syncData.adapter.ts",
+      "tier": "T3",
+      "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+      "toTier": "T5",
+      "reason": "Tier 3: Adapters imports Tier 5: Application hooks, which sits above it"
+    },
+    {
       "rule": "forbidden-package",
       "file": "packages/core/src/adapters/powersync/todosHook.ts",
       "tier": "T3",
@@ -86,1336 +140,48 @@
       "reason": "Tier 3: Adapters may not use react"
     },
     {
-      "rule": "unplaced",
+      "rule": "forbidden-package",
       "file": "packages/core/src/ai/contextRegistry.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "react",
+      "reason": "Tier 2: Domain may not use react"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/ai/platformManifest.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "forbidden-package",
+      "file": "packages/core/src/ai/contextRegistry.ts",
+      "tier": "T2",
+      "to": "zustand",
+      "reason": "Tier 2: Domain may not use zustand"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/academicCycles.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/admin.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/admin.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/admin.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/agent.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/agent.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/agent.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/agent.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/announcements.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/announcements.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/appContract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/assignmentCommands.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/assignmentSubmissionReplay.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/assignmentSubmissionTransport.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/assignments.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/attendance-v1.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/attendance.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/attendance.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/audit-poa-runtime.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/auth.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/authorization.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/base.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/capabilities.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/capabilityFoundation.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/channel.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/chatCommands.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/circles.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/classroom.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/classroomGroups.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/classroomNotes.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/classroomNotes.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/classroomStudents.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/classrooms.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/client.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/client.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/clientRuntime.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/community.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/community.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/community.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/contextualChallenges.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/contractCoverage.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/contracts.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/credentialInventory.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/credentialUnlink.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/dailyContent.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/dailyContent.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/dataGateway.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/decisionJournal.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/decisionJournal.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/demo.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/demoProvider.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/deviceTrust.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/deviceTrust.web.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/durableAgents.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/echo.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/echo.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/editorial.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/educational.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/educational.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/educational.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/erp.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/erp.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/events.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/eventsReceiver.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/formTemplates.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/forms.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/founder.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/founder.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/functions.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/gateway.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/grading.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/grading.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/grading.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/grading.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/groups.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/growth.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/growthSignals.generated.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/growthSignals.generated.zod.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/growthSignals.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/guardian-assessment.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/guardian-assessment.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/guardian-assessment.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/guardian.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/guardian.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/highways.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/history.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/history.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/attendance.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/classroom.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/comment.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/community.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/founder.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/grading.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/hooks/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/library.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/manifesto.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/poll.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/presence.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/profile.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/hooks/social.hooks.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/identity.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/identity.generated.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/identity.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/identity.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/impactRipples.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/interceptor.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/interceptor.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/inventory.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/inventory.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/journalEntries.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/journalEntries.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/learningReflections.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/lessonMaterials.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/library.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/library.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/library.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/longitudinal.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/longitudinal.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/mapping.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/mapping.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/mapping.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/media.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/mediaUpload.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/mediaUpload.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/messaging.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/messaging.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/mockData.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/moonPhase.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/naturePaths.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/onboarding.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/onboarding.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/onboarding.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/onboardingClient.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/operations.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/orchestration/community.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/orchestration/educational.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/orchestration/erp.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/orchestration/erp.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/orchestration/growth.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/orchestration/growth.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/orchestration/identity.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/orchestration/operations.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/orchestration/specialized.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/orpcClient.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/passwordChange.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/permissionSnapshot.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/phoneAuth.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/pilot.orpc.v2.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/planBridge.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/planBridge.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/presence.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/presence.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/presenceRealtime.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/principalNotes.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/principalNotes.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/principalWorkspace.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/principalWorkspace.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/privacy.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/privacy.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/privacy.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/pro.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/profile.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/profile.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/profile.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/pushDispatcher.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/resonantProxy.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/resources.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/rewards.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/rewards.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/sacredMissions.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/sacredMissions.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/sandboxBridge.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/sandboxDataset.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/sandboxMode.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/school.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/schoolForest.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/schoolForest.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/self.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/social.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/social.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/staffManagement.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/studentObservations.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/studentPotential.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/studentPotential.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/supabase.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "pass-through",
-      "file": "packages/core/src/api/supabase.ts",
-      "tier": "UNPLACED",
-      "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/sync.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/sync.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/syncCredentials.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/teacher.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/teacherInsights.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/teacherInsights.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/temporalProxy.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/thuthimal.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/thuthimal.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/tracking.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/tracking.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/transportSecurity.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/userGrowthState.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/api/v1/client.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/v1/contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/warmMirror.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/warmMirror.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/workspace-provisioning.orpc.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/workspaceLayout.contract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/workspaceLayout.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/workspaceLayoutPatch.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/api/workspaceProvisioning.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/auth.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/config/publicUrls.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/educational/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/security/transportSecurity.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
       "rule": "pass-through",
       "file": "packages/core/src/educational/index.ts",
-      "tier": "UNPLACED",
+      "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/educational/thresholdCascade.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/effect/Runtime.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/monitoring/index.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/effect/Schedules.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/effect/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/efficiency/hermesDeviceShield.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/efficiency/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "upward-import",
+      "file": "packages/core/src/effect/Runtime.ts",
+      "tier": "T2",
+      "to": "packages/core/src/effect/AppRuntime.ts",
+      "toTier": "C",
+      "reason": "Tier 2: Domain imports Composition root, which sits above it"
     },
     {
       "rule": "parse-above-boundary",
@@ -1600,6 +366,14 @@
       "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
     {
+      "rule": "upward-import",
+      "file": "packages/core/src/hooks/useSanctuaryVisitor.ts",
+      "tier": "T5",
+      "to": "packages/core/src/providers/AuthProvider.tsx",
+      "toTier": "T6",
+      "reason": "Tier 5: Application hooks imports Tier 6: Presentation, which sits above it"
+    },
+    {
       "rule": "tier-import",
       "file": "packages/core/src/hooks/useSchoolCreation.ts",
       "tier": "T5",
@@ -1648,28 +422,18 @@
       "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/accountPin.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/platform/drivers/cryptoVault.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
       "rule": "misplaced",
       "file": "packages/core/src/lib/accountScope.ts",
       "tier": "T3",
       "reason": "The session register: active account and a revision for dropping stale work (with native/guestScope.ts); belongs in packages/core/src/adapters/session/"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/audit-log.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
     },
     {
       "rule": "misplaced",
@@ -1692,52 +456,32 @@
       "reason": "Reads and writes auth records in storage; belongs in packages/core/src/adapters/storage/"
     },
     {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/authorization.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/adapters/supabaseClient.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/authorization.ts",
+      "tier": "T2",
+      "to": "packages/core/src/adapters/supabaseIdentity.adapter.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "parse-above-boundary",
       "file": "packages/core/src/lib/catalogPracticeRuntime.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/circuit-breaker.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/clientStateFoundation.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/cloudinary.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "reason": "1 schema parse call(s); decode at the adapter and pass typed data up"
     },
     {
       "rule": "misplaced",
       "file": "packages/core/src/lib/devicePreferences.ts",
       "tier": "T3",
       "reason": "Device preference records in storage; belongs in packages/core/src/adapters/storage/"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/deviceSecurityQueryKeys.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/errors.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
     },
     {
       "rule": "misplaced",
@@ -1754,10 +498,28 @@
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/failureFeedback.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/adapters/supabaseIdentity.adapter.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/failureFeedback.ts",
+      "tier": "T2",
+      "to": "packages/core/src/monitoring/index.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/failureFeedback.ts",
+      "tier": "T2",
+      "to": "packages/core/src/native/guestStorage.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
       "rule": "misplaced",
@@ -1766,148 +528,56 @@
       "reason": "Pure: turns a rollout port result into a flag snapshot; belongs in packages/core/src/logic/registry/"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/featureRuntime.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/feedback.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/sync/eventBus.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/gradePublication.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/grading.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/idempotency.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/inventoryScope.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/inviteCodes.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/keyValueStorageAdapter.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/mediaUploadPolicy.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/mediaUtils.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/monitoring/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/adapters/supabaseClient.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
       "rule": "pass-through",
       "file": "packages/core/src/lib/monitoring/index.ts",
-      "tier": "UNPLACED",
+      "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/monitoring/posthog.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/monitoring/index.ts",
+      "tier": "T2",
+      "to": "packages/core/src/monitoring/index.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/monitoring/safeData.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/monitoring/sentry.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/platform/drivers/telemetrySink.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/notificationQueryKeys.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/pendingGateAction.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/storage.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/permissions.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/persistenceBoundary.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/practiceBoundary.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/practiceContract.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "parse-above-boundary",
       "file": "packages/core/src/lib/practiceDocumentLifecycle.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/practiceSessionResolver.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "reason": "2 schema parse call(s); decode at the adapter and pass typed data up"
     },
     {
       "rule": "misplaced",
@@ -1916,28 +586,12 @@
       "reason": "Account-scoped persist storage; belongs in packages/core/src/adapters/storage/"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/security/credentialInventory.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/security/deviceTrust.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/security/passwordChange.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/security/phoneAuth.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/native/deviceTrust.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
       "rule": "misplaced",
@@ -1958,34 +612,58 @@
       "reason": "Zustand persist storage over the storage adapter; belongs in packages/core/src/adapters/storage/"
     },
     {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/supabaseAuthStorage.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/accountScope.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/supabaseAuthStorage.ts",
+      "tier": "T2",
+      "to": "packages/core/src/platform/drivers/cryptoVault.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "upward-import",
       "file": "packages/core/src/lib/sync/MutationAuditLog.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/delta.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "forbidden-package",
+      "file": "packages/core/src/lib/sync/MutationAuditLog.ts",
+      "tier": "T2",
+      "to": "zustand",
+      "reason": "Tier 2: Domain may not use zustand"
     },
     {
-      "rule": "unplaced",
+      "rule": "forbidden-package",
+      "file": "packages/core/src/lib/sync/MutationAuditLog.ts",
+      "tier": "T2",
+      "to": "zustand/middleware",
+      "reason": "Tier 2: Domain may not use zustand/middleware"
+    },
+    {
+      "rule": "upward-import",
       "file": "packages/core/src/lib/sync/deviceSecurityIntents.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+      "toTier": "T5",
+      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/errorClassifier.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/sync/deviceSecurityIntents.ts",
+      "tier": "T2",
+      "to": "packages/core/src/store/useAuthStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "misplaced",
@@ -1994,94 +672,208 @@
       "reason": "In-process pub/sub runtime; belongs in packages/core/src/adapters/events/"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/hooks/useOptimisticMerge.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "tier-import",
       "file": "packages/core/src/lib/sync/hooks/useSyncStatus.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T5",
+      "to": "packages/core/src/lib/sync/eventBus.ts",
+      "toTier": "T3",
+      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/idempotency.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/outboxMigration.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/receipts.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/registry.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/sync/replayAdmission.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/lib/sync/replayIdentity.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/accountScope.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
+      "rule": "parse-above-boundary",
       "file": "packages/core/src/lib/sync/replayPolicy.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "reason": "2 schema parse call(s); decode at the adapter and pass typed data up"
     },
     {
-      "rule": "unplaced",
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/sync/replayPolicy.ts",
+      "tier": "T2",
+      "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+      "toTier": "T5",
+      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/sync/replayPolicy.ts",
+      "tier": "T2",
+      "to": "packages/core/src/store/useTemporalStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
+    },
+    {
+      "rule": "tier-import",
       "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T6",
+      "to": "packages/core/src/lib/feedback.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
-      "rule": "unplaced",
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/errorClassifier.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/eventBus.ts",
+      "toTier": "T3",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/MutationAuditLog.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/outboxMigration.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/registry.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/replayAdmission.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/replayIdentity.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/replayPolicy.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/lib/sync/versionGating.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/monitoring/breadcrumbs.ts",
+      "toTier": "T3",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/store/useAuthStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/store/useConflictStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/store/useTemporalStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
+    },
+    {
+      "rule": "tier-import",
       "file": "packages/core/src/lib/sync/useMutationQueue.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T5",
+      "to": "packages/core/src/lib/accountScope.ts",
+      "toTier": "T3",
+      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
     {
-      "rule": "unplaced",
+      "rule": "tier-import",
+      "file": "packages/core/src/lib/sync/useMutationQueue.ts",
+      "tier": "T5",
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "toTier": "T3",
+      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
+    },
+    {
+      "rule": "upward-import",
       "file": "packages/core/src/lib/sync/versionGating.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/lib/temporalEvents.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "upward-import",
+      "file": "packages/core/src/lib/sync/versionGating.ts",
+      "tier": "T2",
+      "to": "packages/core/src/lib/sync/eventBus.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
+      "rule": "forbidden-package",
+      "file": "packages/core/src/lib/sync/versionGating.ts",
+      "tier": "T2",
+      "to": "zustand",
+      "reason": "Tier 2: Domain may not use zustand"
+    },
+    {
+      "rule": "forbidden-package",
+      "file": "packages/core/src/lib/sync/versionGating.ts",
+      "tier": "T2",
+      "to": "zustand/middleware",
+      "reason": "Tier 2: Domain may not use zustand/middleware"
+    },
+    {
+      "rule": "upward-import",
       "file": "packages/core/src/lib/tenantStorage.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/storage.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
       "rule": "parse-above-boundary",
@@ -2172,26 +964,10 @@
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/attendanceProjection/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/attendanceProjection.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
-    },
-    {
       "rule": "pass-through",
       "file": "packages/core/src/logic/domains/classroomNotes/index.ts",
       "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/classroomNotes/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/classroomNotes.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
     },
     {
       "rule": "pass-through",
@@ -2200,26 +976,10 @@
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/educational/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/educational.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
-    },
-    {
       "rule": "pass-through",
       "file": "packages/core/src/logic/domains/founder/index.ts",
       "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/founder/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/founder.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
     },
     {
       "rule": "pass-through",
@@ -2228,26 +988,10 @@
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/gradingProjection/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/gradingProjection.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
-    },
-    {
       "rule": "pass-through",
       "file": "packages/core/src/logic/domains/guardian/index.ts",
       "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/guardian/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/guardian.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
     },
     {
       "rule": "pass-through",
@@ -2262,26 +1006,10 @@
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/principalWorkspace/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/principalWorkspace.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
-    },
-    {
       "rule": "pass-through",
       "file": "packages/core/src/logic/domains/profile/index.ts",
       "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/profile/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/profile.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
     },
     {
       "rule": "pass-through",
@@ -2296,39 +1024,16 @@
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/teacherInsights/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/teacherInsights.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
-    },
-    {
       "rule": "pass-through",
       "file": "packages/core/src/logic/domains/workspaceLayout/index.ts",
       "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/domains/workspaceLayout/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/workspaceLayout.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
     },
     {
       "rule": "pass-through",
       "file": "packages/core/src/logic/entities/index.ts",
       "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "forbidden-package",
-      "file": "packages/core/src/logic/experience/ActivityPulseContext.tsx",
-      "tier": "T2",
-      "to": "react",
-      "reason": "Tier 2: Domain may not use react"
     },
     {
       "rule": "pass-through",
@@ -2362,150 +1067,6 @@
       "reason": "Tier 2: Domain may not use react-i18next"
     },
     {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/hooks/useAuthLifecycle.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/hooks/useDeviceAccounts.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/hooks/useDeviceSecurity.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/hooks/useManualSnapshot.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/hooks/usePerspectiveSwitch.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/hooks/useSanctuaryVisitor.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/hooks/useScopedDeviceSecurity.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/hooks/useTemporalHeatmap.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/lib/storage.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/ports/productAnalytics.port.ts",
-      "toTier": "T1",
-      "reason": "Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/platform/drivers/cryptoVault.ts",
-      "toTier": "T3",
-      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useActiveSubTabsStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useAuthStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useConsentStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useDraftsStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useFeatureStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/index.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/useTemporalStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
-    },
-    {
       "rule": "parse-above-boundary",
       "file": "packages/core/src/logic/journey/roleJourneyMachine.v6.ts",
       "tier": "T2",
@@ -2527,6 +1088,13 @@
       "reason": "Tier 2: Domain may not use xstate"
     },
     {
+      "rule": "forbidden-package",
+      "file": "packages/core/src/logic/journey/roleJourneyMachine.v6.ts",
+      "tier": "T2",
+      "to": "xstate/persist",
+      "reason": "Tier 2: Domain may not use xstate/persist"
+    },
+    {
       "rule": "upward-import",
       "file": "packages/core/src/logic/modes/demo.ts",
       "tier": "T2",
@@ -2541,6 +1109,13 @@
       "to": "packages/core/src/store/useAuthStore.ts",
       "toTier": "T4",
       "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
+    },
+    {
+      "rule": "imports-retired",
+      "file": "packages/core/src/logic/modes/noticeComposer.ts",
+      "tier": "T2",
+      "to": "packages/core/src/api/planBridge.orpc.contract.ts",
+      "reason": "Live code depends on the retired pre-v1 client"
     },
     {
       "rule": "upward-import",
@@ -2743,26 +1318,10 @@
       "reason": "1 schema parse call(s); decode at the adapter and pass typed data up"
     },
     {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/registry/useDomainFeature.ts",
-      "tier": "T2",
-      "to": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
-      "toTier": "T5",
-      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
-    },
-    {
       "rule": "pass-through",
       "file": "packages/core/src/logic/store-slices/auth.slice.ts",
-      "tier": "T2",
+      "tier": "T4",
       "reason": "Only re-exports or renames; import the source instead"
-    },
-    {
-      "rule": "upward-import",
-      "file": "packages/core/src/logic/store-slices/auth.slice.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/slices/auth.slice.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "pass-through",
@@ -2771,32 +1330,40 @@
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "pass-through",
-      "file": "packages/core/src/logic/store-slices/tenant.slice.ts",
+      "rule": "upward-import",
+      "file": "packages/core/src/logic/store-slices/index.ts",
       "tier": "T2",
-      "reason": "Only re-exports or renames; import the source instead"
+      "to": "packages/core/src/logic/store-slices/auth.slice.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "upward-import",
-      "file": "packages/core/src/logic/store-slices/tenant.slice.ts",
+      "file": "packages/core/src/logic/store-slices/index.ts",
       "tier": "T2",
-      "to": "packages/core/src/store/slices/tenant.slice.ts",
+      "to": "packages/core/src/logic/store-slices/tenant.slice.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/logic/store-slices/index.ts",
+      "tier": "T2",
+      "to": "packages/core/src/logic/store-slices/ui.slice.ts",
       "toTier": "T4",
       "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "pass-through",
-      "file": "packages/core/src/logic/store-slices/ui.slice.ts",
-      "tier": "T2",
+      "file": "packages/core/src/logic/store-slices/tenant.slice.ts",
+      "tier": "T4",
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "upward-import",
+      "rule": "pass-through",
       "file": "packages/core/src/logic/store-slices/ui.slice.ts",
-      "tier": "T2",
-      "to": "packages/core/src/store/slices/ui.slice.ts",
-      "toTier": "T4",
-      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
+      "tier": "T4",
+      "reason": "Only re-exports or renames; import the source instead"
     },
     {
       "rule": "upward-import",
@@ -2891,218 +1458,74 @@
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/offline/resilience.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "tier-import",
       "file": "packages/core/src/offline/useOfflineStatus.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T5",
+      "to": "packages/core/src/adapters/subscribeToNetwork.ts",
+      "toTier": "T3",
+      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/platform/useResponsiveRenderer.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "tier-import",
+      "file": "packages/core/src/offline/useOfflineStatus.ts",
+      "tier": "T5",
+      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
+      "toTier": "T3",
+      "reason": "Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks"
     },
     {
-      "rule": "unplaced",
+      "rule": "tier-import",
       "file": "packages/core/src/providers/AssetsProvider.tsx",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T6",
+      "to": "packages/core/src/lib/storage.ts",
+      "toTier": "T3",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/providers/AuthProvider.tsx",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "tier-import",
+      "file": "packages/core/src/providers/AssetsProvider.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/logic/utils/LanguageUtils.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
-      "rule": "unplaced",
+      "rule": "tier-import",
       "file": "packages/core/src/providers/CapabilityHydrationProvider.tsx",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T6",
+      "to": "packages/core/src/logic/auth/identityState.ts",
+      "toTier": "T2",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/providers/GlobalProvider.tsx",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "tier-import",
+      "file": "packages/core/src/providers/CapabilityHydrationProvider.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/store/scopeSession.ts",
+      "toTier": "T4",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/providers/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/routing/routeManifest.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/shared/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/spatial/districtCentroids.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/spatial/geoMath.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/spatial/globalComparative.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/spatial/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "tier-import",
+      "file": "packages/core/src/providers/CapabilityHydrationProvider.tsx",
+      "tier": "T6",
+      "to": "packages/core/src/store/useAuthStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation"
     },
     {
       "rule": "pass-through",
       "file": "packages/core/src/spatial/index.ts",
-      "tier": "UNPLACED",
+      "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/spatial/sampleSchools.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/spatial/spatial.adapter.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/resetScopedStores.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/scopeSession.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/scopeSessionCoordinator.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useActiveSubTabsStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useAuthStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useConsentStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useDraftsStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useFeatureStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useSensoryStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useTemporalStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useTenantStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useUIStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/usePerspectiveStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
-    },
-    {
-      "rule": "tier-import",
-      "file": "packages/core/src/store/index.ts",
-      "tier": "T4",
-      "to": "packages/core/src/store/useEntitlementStore.ts",
-      "toTier": "T4",
-      "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
+      "rule": "upward-import",
+      "file": "packages/core/src/spatial/index.ts",
+      "tier": "T2",
+      "to": "packages/core/src/spatial/spatial.adapter.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
       "rule": "tier-import",
@@ -3127,6 +1550,14 @@
       "to": "packages/core/src/lib/sync/eventBus.ts",
       "toTier": "T3",
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/store/resetScopedStores.ts",
+      "tier": "T4",
+      "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+      "toTier": "T5",
+      "reason": "Tier 4: State imports Tier 5: Application hooks, which sits above it"
     },
     {
       "rule": "tier-import",
@@ -3329,148 +1760,71 @@
       "reason": "Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/test-shims/expo-constants.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/test-shims/react-native.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "upward-import",
       "file": "packages/core/src/testing/scenarioHarness.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/thresholds/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "rule": "upward-import",
+      "file": "packages/core/src/testing/scenarioHarness.ts",
+      "tier": "T2",
+      "to": "packages/core/src/lib/sync/useMutationQueue.ts",
+      "toTier": "T5",
+      "reason": "Tier 2: Domain imports Tier 5: Application hooks, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/testing/scenarioHarness.ts",
+      "tier": "T2",
+      "to": "packages/core/src/platform/drivers/networkMonitor.ts",
+      "toTier": "T3",
+      "reason": "Tier 2: Domain imports Tier 3: Adapters, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/testing/scenarioHarness.ts",
+      "tier": "T2",
+      "to": "packages/core/src/store/useAuthStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/testing/scenarioHarness.ts",
+      "tier": "T2",
+      "to": "packages/core/src/store/useConflictStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
+    },
+    {
+      "rule": "upward-import",
+      "file": "packages/core/src/testing/scenarioHarness.ts",
+      "tier": "T2",
+      "to": "packages/core/src/store/useTemporalStore.ts",
+      "toTier": "T4",
+      "reason": "Tier 2: Domain imports Tier 4: State, which sits above it"
     },
     {
       "rule": "pass-through",
       "file": "packages/core/src/thresholds/index.ts",
-      "tier": "UNPLACED",
+      "tier": "T2",
       "reason": "Only re-exports or renames; import the source instead"
     },
     {
-      "rule": "unplaced",
-      "file": "packages/core/src/thresholds/thresholdEvaluator.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/utils/effect.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/utils/idempotency.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/utils/mutation.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/utils/random.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/utils/temporal.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/experience.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/gurudeviDiagnostics.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/gurudeviLevers.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/gurudeviScenarios.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/gurudeviWorkloads.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/host.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/index.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/launch.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/screens.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/verger/wallpaper.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
+      "rule": "forbidden-package",
       "file": "packages/core/src/webAuth.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
-    },
-    {
-      "rule": "unplaced",
-      "file": "packages/core/src/webAuthorizedEntry.ts",
-      "tier": "UNPLACED",
-      "reason": "Its folder states no tier and it has no placement"
+      "tier": "T2",
+      "to": "@supabase/supabase-js",
+      "reason": "Tier 2: Domain may not use @supabase/supabase-js"
     }
   ],
   "placement": {
-    "packages/core/src/accounts/accountTransition.ts": "UNPLACED",
-    "packages/core/src/accounts/authenticatedAccountCapture.ts": "UNPLACED",
-    "packages/core/src/accounts/deviceAccounts.ts": "UNPLACED",
+    "packages/core/src/accounts/accountTransition.ts": "T2",
+    "packages/core/src/accounts/authenticatedAccountCapture.ts": "T2",
+    "packages/core/src/accounts/deviceAccounts.ts": "T2",
     "packages/core/src/adapters/MemoryStorageAdapter.ts": "T3",
     "packages/core/src/adapters/NetworkBusAdapter.ts": "T3",
     "packages/core/src/adapters/WebCryptoAdapter.ts": "T3",
@@ -3531,222 +1885,222 @@
     "packages/core/src/adapters/web/BrowserStorageAdapter.ts": "T3",
     "packages/core/src/adapters/web/SentryTelemetryAdapter.ts": "T3",
     "packages/core/src/adapters/zenstack/profileRepository.ts": "T3",
-    "packages/core/src/ai/contextRegistry.ts": "UNPLACED",
-    "packages/core/src/ai/platformManifest.ts": "UNPLACED",
-    "packages/core/src/api/academicCycles.ts": "UNPLACED",
-    "packages/core/src/api/admin.contract.ts": "UNPLACED",
-    "packages/core/src/api/admin.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/agent.contract.ts": "UNPLACED",
-    "packages/core/src/api/agent.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/agent.ts": "UNPLACED",
-    "packages/core/src/api/announcements.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/announcements.ts": "UNPLACED",
-    "packages/core/src/api/appContract.ts": "UNPLACED",
-    "packages/core/src/api/assignmentCommands.ts": "UNPLACED",
-    "packages/core/src/api/assignmentSubmissionReplay.ts": "UNPLACED",
-    "packages/core/src/api/assignmentSubmissionTransport.ts": "UNPLACED",
-    "packages/core/src/api/assignments.ts": "UNPLACED",
-    "packages/core/src/api/attendance-v1.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/attendance.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/attendance.ts": "UNPLACED",
-    "packages/core/src/api/audit-poa-runtime.ts": "UNPLACED",
-    "packages/core/src/api/auth.ts": "UNPLACED",
-    "packages/core/src/api/authorization.ts": "UNPLACED",
-    "packages/core/src/api/base.ts": "UNPLACED",
-    "packages/core/src/api/capabilities.ts": "UNPLACED",
-    "packages/core/src/api/capabilityFoundation.ts": "UNPLACED",
-    "packages/core/src/api/channel.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/chatCommands.ts": "UNPLACED",
-    "packages/core/src/api/circles.ts": "UNPLACED",
-    "packages/core/src/api/classroom.ts": "UNPLACED",
-    "packages/core/src/api/classroomGroups.ts": "UNPLACED",
-    "packages/core/src/api/classroomNotes.contract.ts": "UNPLACED",
-    "packages/core/src/api/classroomNotes.ts": "UNPLACED",
-    "packages/core/src/api/classroomStudents.ts": "UNPLACED",
-    "packages/core/src/api/classrooms.ts": "UNPLACED",
-    "packages/core/src/api/client.ts": "UNPLACED",
-    "packages/core/src/api/clientRuntime.ts": "UNPLACED",
-    "packages/core/src/api/community.contract.ts": "UNPLACED",
-    "packages/core/src/api/community.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/community.ts": "UNPLACED",
-    "packages/core/src/api/contextualChallenges.ts": "UNPLACED",
-    "packages/core/src/api/contractCoverage.ts": "UNPLACED",
-    "packages/core/src/api/contracts.ts": "UNPLACED",
-    "packages/core/src/api/credentialInventory.ts": "UNPLACED",
-    "packages/core/src/api/credentialUnlink.ts": "UNPLACED",
-    "packages/core/src/api/dailyContent.contract.ts": "UNPLACED",
-    "packages/core/src/api/dailyContent.ts": "UNPLACED",
-    "packages/core/src/api/dataGateway.ts": "UNPLACED",
-    "packages/core/src/api/decisionJournal.contract.ts": "UNPLACED",
-    "packages/core/src/api/decisionJournal.ts": "UNPLACED",
-    "packages/core/src/api/demo.ts": "UNPLACED",
-    "packages/core/src/api/demoProvider.ts": "UNPLACED",
-    "packages/core/src/api/deviceTrust.ts": "UNPLACED",
-    "packages/core/src/api/deviceTrust.web.ts": "UNPLACED",
-    "packages/core/src/api/durableAgents.contract.ts": "UNPLACED",
-    "packages/core/src/api/echo.contract.ts": "UNPLACED",
-    "packages/core/src/api/echo.ts": "UNPLACED",
-    "packages/core/src/api/editorial.contract.ts": "UNPLACED",
-    "packages/core/src/api/educational.contract.ts": "UNPLACED",
-    "packages/core/src/api/educational.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/erp.contract.ts": "UNPLACED",
-    "packages/core/src/api/erp.ts": "UNPLACED",
-    "packages/core/src/api/events.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/eventsReceiver.ts": "UNPLACED",
-    "packages/core/src/api/formTemplates.ts": "UNPLACED",
-    "packages/core/src/api/forms.contract.ts": "UNPLACED",
-    "packages/core/src/api/founder.contract.ts": "UNPLACED",
-    "packages/core/src/api/founder.ts": "UNPLACED",
-    "packages/core/src/api/functions.ts": "UNPLACED",
-    "packages/core/src/api/gateway.ts": "UNPLACED",
-    "packages/core/src/api/grading.contract.ts": "UNPLACED",
-    "packages/core/src/api/grading.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/grading.ts": "UNPLACED",
-    "packages/core/src/api/groups.ts": "UNPLACED",
-    "packages/core/src/api/growth.contract.ts": "UNPLACED",
-    "packages/core/src/api/growthSignals.generated.ts": "UNPLACED",
-    "packages/core/src/api/growthSignals.generated.zod.ts": "UNPLACED",
-    "packages/core/src/api/growthSignals.ts": "UNPLACED",
-    "packages/core/src/api/guardian-assessment.contract.ts": "UNPLACED",
-    "packages/core/src/api/guardian-assessment.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/guardian.contract.ts": "UNPLACED",
-    "packages/core/src/api/guardian.ts": "UNPLACED",
-    "packages/core/src/api/highways.ts": "UNPLACED",
-    "packages/core/src/api/history.contract.ts": "UNPLACED",
-    "packages/core/src/api/history.ts": "UNPLACED",
-    "packages/core/src/api/hooks/attendance.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/classroom.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/comment.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/community.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/founder.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/grading.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/index.ts": "UNPLACED",
-    "packages/core/src/api/hooks/library.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/manifesto.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/poll.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/presence.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/profile.hooks.ts": "UNPLACED",
-    "packages/core/src/api/hooks/social.hooks.ts": "UNPLACED",
-    "packages/core/src/api/identity.contract.ts": "UNPLACED",
-    "packages/core/src/api/identity.generated.ts": "UNPLACED",
-    "packages/core/src/api/identity.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/identity.ts": "UNPLACED",
-    "packages/core/src/api/impactRipples.ts": "UNPLACED",
-    "packages/core/src/api/index.ts": "UNPLACED",
-    "packages/core/src/api/interceptor.ts": "UNPLACED",
-    "packages/core/src/api/inventory.contract.ts": "UNPLACED",
-    "packages/core/src/api/inventory.ts": "UNPLACED",
-    "packages/core/src/api/journalEntries.contract.ts": "UNPLACED",
-    "packages/core/src/api/journalEntries.ts": "UNPLACED",
-    "packages/core/src/api/learningReflections.contract.ts": "UNPLACED",
-    "packages/core/src/api/lessonMaterials.ts": "UNPLACED",
-    "packages/core/src/api/library.contract.ts": "UNPLACED",
-    "packages/core/src/api/library.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/library.ts": "UNPLACED",
-    "packages/core/src/api/longitudinal.contract.ts": "UNPLACED",
-    "packages/core/src/api/longitudinal.ts": "UNPLACED",
-    "packages/core/src/api/mapping.contract.ts": "UNPLACED",
-    "packages/core/src/api/mapping.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/mapping.ts": "UNPLACED",
-    "packages/core/src/api/media.ts": "UNPLACED",
-    "packages/core/src/api/mediaUpload.contract.ts": "UNPLACED",
-    "packages/core/src/api/mediaUpload.ts": "UNPLACED",
-    "packages/core/src/api/messaging.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/messaging.ts": "UNPLACED",
-    "packages/core/src/api/mockData.ts": "UNPLACED",
-    "packages/core/src/api/moonPhase.ts": "UNPLACED",
-    "packages/core/src/api/naturePaths.ts": "UNPLACED",
-    "packages/core/src/api/onboarding.contract.ts": "UNPLACED",
-    "packages/core/src/api/onboarding.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/onboarding.ts": "UNPLACED",
-    "packages/core/src/api/onboardingClient.ts": "UNPLACED",
-    "packages/core/src/api/operations.contract.ts": "UNPLACED",
-    "packages/core/src/api/orchestration/community.ts": "UNPLACED",
-    "packages/core/src/api/orchestration/educational.ts": "UNPLACED",
-    "packages/core/src/api/orchestration/erp.ts": "UNPLACED",
-    "packages/core/src/api/orchestration/growth.ts": "UNPLACED",
-    "packages/core/src/api/orchestration/identity.ts": "UNPLACED",
-    "packages/core/src/api/orchestration/operations.ts": "UNPLACED",
-    "packages/core/src/api/orchestration/specialized.ts": "UNPLACED",
-    "packages/core/src/api/orpcClient.ts": "UNPLACED",
-    "packages/core/src/api/passwordChange.ts": "UNPLACED",
-    "packages/core/src/api/permissionSnapshot.contract.ts": "UNPLACED",
-    "packages/core/src/api/phoneAuth.ts": "UNPLACED",
-    "packages/core/src/api/pilot.orpc.v2.ts": "UNPLACED",
-    "packages/core/src/api/planBridge.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/planBridge.ts": "UNPLACED",
-    "packages/core/src/api/presence.contract.ts": "UNPLACED",
-    "packages/core/src/api/presence.ts": "UNPLACED",
-    "packages/core/src/api/presenceRealtime.ts": "UNPLACED",
-    "packages/core/src/api/principalNotes.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/principalNotes.ts": "UNPLACED",
-    "packages/core/src/api/principalWorkspace.contract.ts": "UNPLACED",
-    "packages/core/src/api/principalWorkspace.ts": "UNPLACED",
-    "packages/core/src/api/privacy.contract.ts": "UNPLACED",
-    "packages/core/src/api/privacy.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/privacy.ts": "UNPLACED",
-    "packages/core/src/api/pro.contract.ts": "UNPLACED",
-    "packages/core/src/api/profile.contract.ts": "UNPLACED",
-    "packages/core/src/api/profile.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/profile.ts": "UNPLACED",
-    "packages/core/src/api/pushDispatcher.ts": "UNPLACED",
-    "packages/core/src/api/resonantProxy.ts": "UNPLACED",
-    "packages/core/src/api/resources.ts": "UNPLACED",
-    "packages/core/src/api/rewards.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/rewards.ts": "UNPLACED",
-    "packages/core/src/api/sacredMissions.contract.ts": "UNPLACED",
-    "packages/core/src/api/sacredMissions.ts": "UNPLACED",
-    "packages/core/src/api/sandboxBridge.ts": "UNPLACED",
-    "packages/core/src/api/sandboxDataset.ts": "UNPLACED",
-    "packages/core/src/api/sandboxMode.ts": "UNPLACED",
-    "packages/core/src/api/school.ts": "UNPLACED",
-    "packages/core/src/api/schoolForest.contract.ts": "UNPLACED",
-    "packages/core/src/api/schoolForest.ts": "UNPLACED",
-    "packages/core/src/api/self.contract.ts": "UNPLACED",
-    "packages/core/src/api/social.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/social.ts": "UNPLACED",
-    "packages/core/src/api/staffManagement.ts": "UNPLACED",
-    "packages/core/src/api/studentObservations.ts": "UNPLACED",
-    "packages/core/src/api/studentPotential.contract.ts": "UNPLACED",
-    "packages/core/src/api/studentPotential.ts": "UNPLACED",
-    "packages/core/src/api/supabase.ts": "UNPLACED",
-    "packages/core/src/api/sync.contract.ts": "UNPLACED",
-    "packages/core/src/api/sync.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/syncCredentials.ts": "UNPLACED",
-    "packages/core/src/api/teacher.ts": "UNPLACED",
-    "packages/core/src/api/teacherInsights.contract.ts": "UNPLACED",
-    "packages/core/src/api/teacherInsights.ts": "UNPLACED",
-    "packages/core/src/api/temporalProxy.ts": "UNPLACED",
-    "packages/core/src/api/thuthimal.contract.ts": "UNPLACED",
-    "packages/core/src/api/thuthimal.ts": "UNPLACED",
-    "packages/core/src/api/tracking.contract.ts": "UNPLACED",
-    "packages/core/src/api/tracking.ts": "UNPLACED",
-    "packages/core/src/api/transportSecurity.ts": "UNPLACED",
-    "packages/core/src/api/userGrowthState.ts": "UNPLACED",
-    "packages/core/src/api/v1/client.ts": "UNPLACED",
-    "packages/core/src/api/v1/contract.ts": "UNPLACED",
-    "packages/core/src/api/warmMirror.contract.ts": "UNPLACED",
-    "packages/core/src/api/warmMirror.ts": "UNPLACED",
-    "packages/core/src/api/workspace-provisioning.orpc.contract.ts": "UNPLACED",
-    "packages/core/src/api/workspaceLayout.contract.ts": "UNPLACED",
-    "packages/core/src/api/workspaceLayout.ts": "UNPLACED",
-    "packages/core/src/api/workspaceLayoutPatch.ts": "UNPLACED",
-    "packages/core/src/api/workspaceProvisioning.ts": "UNPLACED",
-    "packages/core/src/auth.ts": "UNPLACED",
-    "packages/core/src/config/publicUrls.ts": "UNPLACED",
+    "packages/core/src/ai/contextRegistry.ts": "T2",
+    "packages/core/src/ai/platformManifest.ts": "T2",
+    "packages/core/src/api/academicCycles.ts": "RETIRED",
+    "packages/core/src/api/admin.contract.ts": "RETIRED",
+    "packages/core/src/api/admin.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/agent.contract.ts": "RETIRED",
+    "packages/core/src/api/agent.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/agent.ts": "RETIRED",
+    "packages/core/src/api/announcements.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/announcements.ts": "RETIRED",
+    "packages/core/src/api/appContract.ts": "RETIRED",
+    "packages/core/src/api/assignmentCommands.ts": "RETIRED",
+    "packages/core/src/api/assignmentSubmissionReplay.ts": "RETIRED",
+    "packages/core/src/api/assignmentSubmissionTransport.ts": "RETIRED",
+    "packages/core/src/api/assignments.ts": "RETIRED",
+    "packages/core/src/api/attendance-v1.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/attendance.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/attendance.ts": "RETIRED",
+    "packages/core/src/api/audit-poa-runtime.ts": "RETIRED",
+    "packages/core/src/api/auth.ts": "RETIRED",
+    "packages/core/src/api/authorization.ts": "RETIRED",
+    "packages/core/src/api/base.ts": "RETIRED",
+    "packages/core/src/api/capabilities.ts": "RETIRED",
+    "packages/core/src/api/capabilityFoundation.ts": "RETIRED",
+    "packages/core/src/api/channel.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/chatCommands.ts": "RETIRED",
+    "packages/core/src/api/circles.ts": "RETIRED",
+    "packages/core/src/api/classroom.ts": "RETIRED",
+    "packages/core/src/api/classroomGroups.ts": "RETIRED",
+    "packages/core/src/api/classroomNotes.contract.ts": "RETIRED",
+    "packages/core/src/api/classroomNotes.ts": "RETIRED",
+    "packages/core/src/api/classroomStudents.ts": "RETIRED",
+    "packages/core/src/api/classrooms.ts": "RETIRED",
+    "packages/core/src/api/client.ts": "RETIRED",
+    "packages/core/src/api/clientRuntime.ts": "RETIRED",
+    "packages/core/src/api/community.contract.ts": "RETIRED",
+    "packages/core/src/api/community.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/community.ts": "RETIRED",
+    "packages/core/src/api/contextualChallenges.ts": "RETIRED",
+    "packages/core/src/api/contractCoverage.ts": "RETIRED",
+    "packages/core/src/api/contracts.ts": "RETIRED",
+    "packages/core/src/api/credentialInventory.ts": "RETIRED",
+    "packages/core/src/api/credentialUnlink.ts": "RETIRED",
+    "packages/core/src/api/dailyContent.contract.ts": "RETIRED",
+    "packages/core/src/api/dailyContent.ts": "RETIRED",
+    "packages/core/src/api/dataGateway.ts": "RETIRED",
+    "packages/core/src/api/decisionJournal.contract.ts": "RETIRED",
+    "packages/core/src/api/decisionJournal.ts": "RETIRED",
+    "packages/core/src/api/demo.ts": "RETIRED",
+    "packages/core/src/api/demoProvider.ts": "RETIRED",
+    "packages/core/src/api/deviceTrust.ts": "RETIRED",
+    "packages/core/src/api/deviceTrust.web.ts": "RETIRED",
+    "packages/core/src/api/durableAgents.contract.ts": "RETIRED",
+    "packages/core/src/api/echo.contract.ts": "RETIRED",
+    "packages/core/src/api/echo.ts": "RETIRED",
+    "packages/core/src/api/editorial.contract.ts": "RETIRED",
+    "packages/core/src/api/educational.contract.ts": "RETIRED",
+    "packages/core/src/api/educational.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/erp.contract.ts": "RETIRED",
+    "packages/core/src/api/erp.ts": "RETIRED",
+    "packages/core/src/api/events.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/eventsReceiver.ts": "RETIRED",
+    "packages/core/src/api/formTemplates.ts": "RETIRED",
+    "packages/core/src/api/forms.contract.ts": "RETIRED",
+    "packages/core/src/api/founder.contract.ts": "RETIRED",
+    "packages/core/src/api/founder.ts": "RETIRED",
+    "packages/core/src/api/functions.ts": "RETIRED",
+    "packages/core/src/api/gateway.ts": "RETIRED",
+    "packages/core/src/api/grading.contract.ts": "RETIRED",
+    "packages/core/src/api/grading.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/grading.ts": "RETIRED",
+    "packages/core/src/api/groups.ts": "RETIRED",
+    "packages/core/src/api/growth.contract.ts": "RETIRED",
+    "packages/core/src/api/growthSignals.generated.ts": "RETIRED",
+    "packages/core/src/api/growthSignals.generated.zod.ts": "RETIRED",
+    "packages/core/src/api/growthSignals.ts": "RETIRED",
+    "packages/core/src/api/guardian-assessment.contract.ts": "RETIRED",
+    "packages/core/src/api/guardian-assessment.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/guardian.contract.ts": "RETIRED",
+    "packages/core/src/api/guardian.ts": "RETIRED",
+    "packages/core/src/api/highways.ts": "RETIRED",
+    "packages/core/src/api/history.contract.ts": "RETIRED",
+    "packages/core/src/api/history.ts": "RETIRED",
+    "packages/core/src/api/hooks/attendance.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/classroom.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/comment.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/community.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/founder.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/grading.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/index.ts": "RETIRED",
+    "packages/core/src/api/hooks/library.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/manifesto.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/poll.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/presence.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/profile.hooks.ts": "RETIRED",
+    "packages/core/src/api/hooks/social.hooks.ts": "RETIRED",
+    "packages/core/src/api/identity.contract.ts": "RETIRED",
+    "packages/core/src/api/identity.generated.ts": "RETIRED",
+    "packages/core/src/api/identity.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/identity.ts": "RETIRED",
+    "packages/core/src/api/impactRipples.ts": "RETIRED",
+    "packages/core/src/api/index.ts": "RETIRED",
+    "packages/core/src/api/interceptor.ts": "RETIRED",
+    "packages/core/src/api/inventory.contract.ts": "RETIRED",
+    "packages/core/src/api/inventory.ts": "RETIRED",
+    "packages/core/src/api/journalEntries.contract.ts": "RETIRED",
+    "packages/core/src/api/journalEntries.ts": "RETIRED",
+    "packages/core/src/api/learningReflections.contract.ts": "RETIRED",
+    "packages/core/src/api/lessonMaterials.ts": "RETIRED",
+    "packages/core/src/api/library.contract.ts": "RETIRED",
+    "packages/core/src/api/library.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/library.ts": "RETIRED",
+    "packages/core/src/api/longitudinal.contract.ts": "RETIRED",
+    "packages/core/src/api/longitudinal.ts": "RETIRED",
+    "packages/core/src/api/mapping.contract.ts": "RETIRED",
+    "packages/core/src/api/mapping.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/mapping.ts": "RETIRED",
+    "packages/core/src/api/media.ts": "RETIRED",
+    "packages/core/src/api/mediaUpload.contract.ts": "RETIRED",
+    "packages/core/src/api/mediaUpload.ts": "RETIRED",
+    "packages/core/src/api/messaging.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/messaging.ts": "RETIRED",
+    "packages/core/src/api/mockData.ts": "RETIRED",
+    "packages/core/src/api/moonPhase.ts": "RETIRED",
+    "packages/core/src/api/naturePaths.ts": "RETIRED",
+    "packages/core/src/api/onboarding.contract.ts": "RETIRED",
+    "packages/core/src/api/onboarding.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/onboarding.ts": "RETIRED",
+    "packages/core/src/api/onboardingClient.ts": "RETIRED",
+    "packages/core/src/api/operations.contract.ts": "RETIRED",
+    "packages/core/src/api/orchestration/community.ts": "RETIRED",
+    "packages/core/src/api/orchestration/educational.ts": "RETIRED",
+    "packages/core/src/api/orchestration/erp.ts": "RETIRED",
+    "packages/core/src/api/orchestration/growth.ts": "RETIRED",
+    "packages/core/src/api/orchestration/identity.ts": "RETIRED",
+    "packages/core/src/api/orchestration/operations.ts": "RETIRED",
+    "packages/core/src/api/orchestration/specialized.ts": "RETIRED",
+    "packages/core/src/api/orpcClient.ts": "RETIRED",
+    "packages/core/src/api/passwordChange.ts": "RETIRED",
+    "packages/core/src/api/permissionSnapshot.contract.ts": "RETIRED",
+    "packages/core/src/api/phoneAuth.ts": "RETIRED",
+    "packages/core/src/api/pilot.orpc.v2.ts": "RETIRED",
+    "packages/core/src/api/planBridge.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/planBridge.ts": "RETIRED",
+    "packages/core/src/api/presence.contract.ts": "RETIRED",
+    "packages/core/src/api/presence.ts": "RETIRED",
+    "packages/core/src/api/presenceRealtime.ts": "RETIRED",
+    "packages/core/src/api/principalNotes.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/principalNotes.ts": "RETIRED",
+    "packages/core/src/api/principalWorkspace.contract.ts": "RETIRED",
+    "packages/core/src/api/principalWorkspace.ts": "RETIRED",
+    "packages/core/src/api/privacy.contract.ts": "RETIRED",
+    "packages/core/src/api/privacy.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/privacy.ts": "RETIRED",
+    "packages/core/src/api/pro.contract.ts": "RETIRED",
+    "packages/core/src/api/profile.contract.ts": "RETIRED",
+    "packages/core/src/api/profile.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/profile.ts": "RETIRED",
+    "packages/core/src/api/pushDispatcher.ts": "RETIRED",
+    "packages/core/src/api/resonantProxy.ts": "RETIRED",
+    "packages/core/src/api/resources.ts": "RETIRED",
+    "packages/core/src/api/rewards.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/rewards.ts": "RETIRED",
+    "packages/core/src/api/sacredMissions.contract.ts": "RETIRED",
+    "packages/core/src/api/sacredMissions.ts": "RETIRED",
+    "packages/core/src/api/sandboxBridge.ts": "RETIRED",
+    "packages/core/src/api/sandboxDataset.ts": "RETIRED",
+    "packages/core/src/api/sandboxMode.ts": "RETIRED",
+    "packages/core/src/api/school.ts": "RETIRED",
+    "packages/core/src/api/schoolForest.contract.ts": "RETIRED",
+    "packages/core/src/api/schoolForest.ts": "RETIRED",
+    "packages/core/src/api/self.contract.ts": "RETIRED",
+    "packages/core/src/api/social.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/social.ts": "RETIRED",
+    "packages/core/src/api/staffManagement.ts": "RETIRED",
+    "packages/core/src/api/studentObservations.ts": "RETIRED",
+    "packages/core/src/api/studentPotential.contract.ts": "RETIRED",
+    "packages/core/src/api/studentPotential.ts": "RETIRED",
+    "packages/core/src/api/supabase.ts": "RETIRED",
+    "packages/core/src/api/sync.contract.ts": "RETIRED",
+    "packages/core/src/api/sync.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/syncCredentials.ts": "RETIRED",
+    "packages/core/src/api/teacher.ts": "RETIRED",
+    "packages/core/src/api/teacherInsights.contract.ts": "RETIRED",
+    "packages/core/src/api/teacherInsights.ts": "RETIRED",
+    "packages/core/src/api/temporalProxy.ts": "RETIRED",
+    "packages/core/src/api/thuthimal.contract.ts": "RETIRED",
+    "packages/core/src/api/thuthimal.ts": "RETIRED",
+    "packages/core/src/api/tracking.contract.ts": "RETIRED",
+    "packages/core/src/api/tracking.ts": "RETIRED",
+    "packages/core/src/api/transportSecurity.ts": "RETIRED",
+    "packages/core/src/api/userGrowthState.ts": "RETIRED",
+    "packages/core/src/api/v1/client.ts": "T2",
+    "packages/core/src/api/v1/contract.ts": "T2",
+    "packages/core/src/api/warmMirror.contract.ts": "RETIRED",
+    "packages/core/src/api/warmMirror.ts": "RETIRED",
+    "packages/core/src/api/workspace-provisioning.orpc.contract.ts": "RETIRED",
+    "packages/core/src/api/workspaceLayout.contract.ts": "RETIRED",
+    "packages/core/src/api/workspaceLayout.ts": "RETIRED",
+    "packages/core/src/api/workspaceLayoutPatch.ts": "RETIRED",
+    "packages/core/src/api/workspaceProvisioning.ts": "RETIRED",
+    "packages/core/src/auth.ts": "T2",
+    "packages/core/src/config/publicUrls.ts": "T2",
     "packages/core/src/constants/SriLankanSchools.ts": "T0",
     "packages/core/src/constants/index.ts": "T0",
-    "packages/core/src/educational/index.ts": "UNPLACED",
-    "packages/core/src/educational/thresholdCascade.ts": "UNPLACED",
+    "packages/core/src/educational/index.ts": "T2",
+    "packages/core/src/educational/thresholdCascade.ts": "T2",
     "packages/core/src/effect/AppRuntime.ts": "C",
     "packages/core/src/effect/Errors.ts": "T0",
     "packages/core/src/effect/Layers.ts": "C",
-    "packages/core/src/effect/Runtime.ts": "UNPLACED",
-    "packages/core/src/effect/Schedules.ts": "UNPLACED",
+    "packages/core/src/effect/Runtime.ts": "T2",
+    "packages/core/src/effect/Schedules.ts": "T2",
     "packages/core/src/effect/bindings.ts": "C",
-    "packages/core/src/effect/index.ts": "UNPLACED",
-    "packages/core/src/efficiency/hermesDeviceShield.ts": "UNPLACED",
-    "packages/core/src/efficiency/index.ts": "UNPLACED",
+    "packages/core/src/effect/index.ts": "T2",
+    "packages/core/src/efficiency/hermesDeviceShield.ts": "T2",
+    "packages/core/src/efficiency/index.ts": "T2",
     "packages/core/src/flows/account/linkedProviders.flow.ts": "T0",
     "packages/core/src/flows/admin/guardianLinkStudent.flow.ts": "T0",
     "packages/core/src/flows/admin/principalConnectSchool.flow.ts": "T0",
@@ -3810,75 +2164,75 @@
     "packages/core/src/hooks/useStudentGoals.ts": "T5",
     "packages/core/src/hooks/useTemporalHeatmap.ts": "T5",
     "packages/core/src/hooks/useTenantContext.ts": "T5",
-    "packages/core/src/index.ts": "UNPLACED",
-    "packages/core/src/lib/accountPin.ts": "UNPLACED",
+    "packages/core/src/index.ts": "T2",
+    "packages/core/src/lib/accountPin.ts": "T2",
     "packages/core/src/lib/accountScope.ts": "T3",
-    "packages/core/src/lib/audit-log.ts": "UNPLACED",
+    "packages/core/src/lib/audit-log.ts": "T2",
     "packages/core/src/lib/authProfileStorage.ts": "T3",
     "packages/core/src/lib/authStorage.ts": "T3",
-    "packages/core/src/lib/authorization.ts": "UNPLACED",
-    "packages/core/src/lib/catalogPracticeRuntime.ts": "UNPLACED",
-    "packages/core/src/lib/circuit-breaker.ts": "UNPLACED",
-    "packages/core/src/lib/clientStateFoundation.ts": "UNPLACED",
-    "packages/core/src/lib/cloudinary.ts": "UNPLACED",
+    "packages/core/src/lib/authorization.ts": "T2",
+    "packages/core/src/lib/catalogPracticeRuntime.ts": "T2",
+    "packages/core/src/lib/circuit-breaker.ts": "T2",
+    "packages/core/src/lib/clientStateFoundation.ts": "T2",
+    "packages/core/src/lib/cloudinary.ts": "T2",
     "packages/core/src/lib/devicePreferences.ts": "T3",
-    "packages/core/src/lib/deviceSecurityQueryKeys.ts": "UNPLACED",
-    "packages/core/src/lib/errors.ts": "UNPLACED",
+    "packages/core/src/lib/deviceSecurityQueryKeys.ts": "T2",
+    "packages/core/src/lib/errors.ts": "T2",
     "packages/core/src/lib/experienceState.ts": "T4",
-    "packages/core/src/lib/failureFeedback.ts": "UNPLACED",
+    "packages/core/src/lib/failureFeedback.ts": "T2",
     "packages/core/src/lib/featureRolloutSnapshot.ts": "T2",
-    "packages/core/src/lib/featureRuntime.ts": "UNPLACED",
-    "packages/core/src/lib/feedback.ts": "UNPLACED",
-    "packages/core/src/lib/gradePublication.ts": "UNPLACED",
-    "packages/core/src/lib/grading.ts": "UNPLACED",
-    "packages/core/src/lib/idempotency.ts": "UNPLACED",
-    "packages/core/src/lib/index.ts": "UNPLACED",
-    "packages/core/src/lib/inventoryScope.ts": "UNPLACED",
-    "packages/core/src/lib/inviteCodes.ts": "UNPLACED",
-    "packages/core/src/lib/keyValueStorageAdapter.ts": "UNPLACED",
-    "packages/core/src/lib/mediaUploadPolicy.ts": "UNPLACED",
-    "packages/core/src/lib/mediaUtils.ts": "UNPLACED",
-    "packages/core/src/lib/monitoring/index.ts": "UNPLACED",
-    "packages/core/src/lib/monitoring/posthog.ts": "UNPLACED",
-    "packages/core/src/lib/monitoring/safeData.ts": "UNPLACED",
-    "packages/core/src/lib/monitoring/sentry.ts": "UNPLACED",
-    "packages/core/src/lib/notificationQueryKeys.ts": "UNPLACED",
-    "packages/core/src/lib/pendingGateAction.ts": "UNPLACED",
-    "packages/core/src/lib/permissions.ts": "UNPLACED",
-    "packages/core/src/lib/persistenceBoundary.ts": "UNPLACED",
-    "packages/core/src/lib/practiceBoundary.ts": "UNPLACED",
-    "packages/core/src/lib/practiceContract.ts": "UNPLACED",
-    "packages/core/src/lib/practiceDocumentLifecycle.ts": "UNPLACED",
-    "packages/core/src/lib/practiceSessionResolver.ts": "UNPLACED",
+    "packages/core/src/lib/featureRuntime.ts": "T2",
+    "packages/core/src/lib/feedback.ts": "T2",
+    "packages/core/src/lib/gradePublication.ts": "T2",
+    "packages/core/src/lib/grading.ts": "T2",
+    "packages/core/src/lib/idempotency.ts": "T2",
+    "packages/core/src/lib/index.ts": "T2",
+    "packages/core/src/lib/inventoryScope.ts": "T2",
+    "packages/core/src/lib/inviteCodes.ts": "T2",
+    "packages/core/src/lib/keyValueStorageAdapter.ts": "T2",
+    "packages/core/src/lib/mediaUploadPolicy.ts": "T2",
+    "packages/core/src/lib/mediaUtils.ts": "T2",
+    "packages/core/src/lib/monitoring/index.ts": "T2",
+    "packages/core/src/lib/monitoring/posthog.ts": "T2",
+    "packages/core/src/lib/monitoring/safeData.ts": "T2",
+    "packages/core/src/lib/monitoring/sentry.ts": "T2",
+    "packages/core/src/lib/notificationQueryKeys.ts": "T2",
+    "packages/core/src/lib/pendingGateAction.ts": "T2",
+    "packages/core/src/lib/permissions.ts": "T2",
+    "packages/core/src/lib/persistenceBoundary.ts": "T2",
+    "packages/core/src/lib/practiceBoundary.ts": "T2",
+    "packages/core/src/lib/practiceContract.ts": "T2",
+    "packages/core/src/lib/practiceDocumentLifecycle.ts": "T2",
+    "packages/core/src/lib/practiceSessionResolver.ts": "T2",
     "packages/core/src/lib/scopedStateStorage.ts": "T3",
-    "packages/core/src/lib/security/credentialInventory.ts": "UNPLACED",
-    "packages/core/src/lib/security/deviceTrust.ts": "UNPLACED",
-    "packages/core/src/lib/security/passwordChange.ts": "UNPLACED",
-    "packages/core/src/lib/security/phoneAuth.ts": "UNPLACED",
+    "packages/core/src/lib/security/credentialInventory.ts": "T2",
+    "packages/core/src/lib/security/deviceTrust.ts": "T2",
+    "packages/core/src/lib/security/passwordChange.ts": "T2",
+    "packages/core/src/lib/security/phoneAuth.ts": "T2",
     "packages/core/src/lib/security/transportSecurity.ts": "T3",
     "packages/core/src/lib/storage.ts": "T3",
     "packages/core/src/lib/storageWrapper.ts": "T3",
-    "packages/core/src/lib/supabaseAuthStorage.ts": "UNPLACED",
-    "packages/core/src/lib/sync/MutationAuditLog.ts": "UNPLACED",
-    "packages/core/src/lib/sync/delta.ts": "UNPLACED",
-    "packages/core/src/lib/sync/deviceSecurityIntents.ts": "UNPLACED",
-    "packages/core/src/lib/sync/errorClassifier.ts": "UNPLACED",
+    "packages/core/src/lib/supabaseAuthStorage.ts": "T2",
+    "packages/core/src/lib/sync/MutationAuditLog.ts": "T2",
+    "packages/core/src/lib/sync/delta.ts": "T2",
+    "packages/core/src/lib/sync/deviceSecurityIntents.ts": "T2",
+    "packages/core/src/lib/sync/errorClassifier.ts": "T2",
     "packages/core/src/lib/sync/eventBus.ts": "T3",
-    "packages/core/src/lib/sync/hooks/useOptimisticMerge.ts": "UNPLACED",
-    "packages/core/src/lib/sync/hooks/useSyncStatus.ts": "UNPLACED",
-    "packages/core/src/lib/sync/idempotency.ts": "UNPLACED",
-    "packages/core/src/lib/sync/index.ts": "UNPLACED",
-    "packages/core/src/lib/sync/outboxMigration.ts": "UNPLACED",
-    "packages/core/src/lib/sync/receipts.ts": "UNPLACED",
-    "packages/core/src/lib/sync/registry.ts": "UNPLACED",
-    "packages/core/src/lib/sync/replayAdmission.ts": "UNPLACED",
-    "packages/core/src/lib/sync/replayIdentity.ts": "UNPLACED",
-    "packages/core/src/lib/sync/replayPolicy.ts": "UNPLACED",
-    "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx": "UNPLACED",
-    "packages/core/src/lib/sync/useMutationQueue.ts": "UNPLACED",
-    "packages/core/src/lib/sync/versionGating.ts": "UNPLACED",
-    "packages/core/src/lib/temporalEvents.ts": "UNPLACED",
-    "packages/core/src/lib/tenantStorage.ts": "UNPLACED",
+    "packages/core/src/lib/sync/hooks/useOptimisticMerge.ts": "T5",
+    "packages/core/src/lib/sync/hooks/useSyncStatus.ts": "T5",
+    "packages/core/src/lib/sync/idempotency.ts": "T2",
+    "packages/core/src/lib/sync/index.ts": "T2",
+    "packages/core/src/lib/sync/outboxMigration.ts": "T2",
+    "packages/core/src/lib/sync/receipts.ts": "T2",
+    "packages/core/src/lib/sync/registry.ts": "T2",
+    "packages/core/src/lib/sync/replayAdmission.ts": "T2",
+    "packages/core/src/lib/sync/replayIdentity.ts": "T2",
+    "packages/core/src/lib/sync/replayPolicy.ts": "T2",
+    "packages/core/src/lib/sync/sync/SyncOrchestrator.tsx": "T6",
+    "packages/core/src/lib/sync/useMutationQueue.ts": "T5",
+    "packages/core/src/lib/sync/versionGating.ts": "T2",
+    "packages/core/src/lib/temporalEvents.ts": "T2",
+    "packages/core/src/lib/tenantStorage.ts": "T2",
     "packages/core/src/logic/accountLifecycle.ts": "T2",
     "packages/core/src/logic/agents/index.ts": "T2",
     "packages/core/src/logic/agents/reliefAgent.ts": "T2",
@@ -3899,7 +2253,6 @@
     "packages/core/src/logic/domains/attendanceProjection/index.ts": "T2",
     "packages/core/src/logic/domains/audit/ports.ts": "T2",
     "packages/core/src/logic/domains/classroomNotes/index.ts": "T2",
-    "packages/core/src/logic/domains/community/ports.ts": "T2",
     "packages/core/src/logic/domains/educational/index.ts": "T2",
     "packages/core/src/logic/domains/founder/index.ts": "T2",
     "packages/core/src/logic/domains/gradingProjection/index.ts": "T2",
@@ -3921,7 +2274,7 @@
     "packages/core/src/logic/events/producers.ts": "T2",
     "packages/core/src/logic/events/runtimeBridge.ts": "T2",
     "packages/core/src/logic/events/schemas.ts": "T2",
-    "packages/core/src/logic/experience/ActivityPulseContext.tsx": "T2",
+    "packages/core/src/logic/experience/ActivityPulseContext.tsx": "T6",
     "packages/core/src/logic/experience/index.ts": "T2",
     "packages/core/src/logic/experience/mode.ts": "T2",
     "packages/core/src/logic/forms/analytics.ts": "T2",
@@ -3999,9 +2352,9 @@
     "packages/core/src/logic/ports/guardian.port.ts": "T1",
     "packages/core/src/logic/ports/identity.port.ts": "T1",
     "packages/core/src/logic/ports/notification.port.ts": "T1",
+    "packages/core/src/logic/ports/paymentProvider.port.ts": "T1",
     "packages/core/src/logic/ports/permissionSnapshot.port.ts": "T1",
     "packages/core/src/logic/ports/principalWorkspace.port.ts": "T1",
-    "packages/core/src/logic/ports/productAnalytics.port.ts": "T1",
     "packages/core/src/logic/ports/profile.port.ts": "T1",
     "packages/core/src/logic/ports/pushNotification.port.ts": "T1",
     "packages/core/src/logic/ports/realtime.port.ts": "T1",
@@ -4018,7 +2371,7 @@
     "packages/core/src/logic/registry/capabilityManifest.ts": "T2",
     "packages/core/src/logic/registry/featureLifecycleManifest.ts": "T2",
     "packages/core/src/logic/registry/featureLifecyclePolicy.ts": "T2",
-    "packages/core/src/logic/registry/useDomainFeature.ts": "T2",
+    "packages/core/src/logic/registry/useDomainFeature.ts": "T5",
     "packages/core/src/logic/runtimeRegistry.ts": "T2",
     "packages/core/src/logic/schemas/academic-lifecycle.schema.ts": "T0",
     "packages/core/src/logic/schemas/accounting.schema.ts": "T0",
@@ -4058,10 +2411,10 @@
     "packages/core/src/logic/schemas/temporal.schema.ts": "T0",
     "packages/core/src/logic/schemas/user.schema.ts": "T0",
     "packages/core/src/logic/schemas/workspace-layout.schema.ts": "T0",
-    "packages/core/src/logic/store-slices/auth.slice.ts": "T2",
+    "packages/core/src/logic/store-slices/auth.slice.ts": "T4",
     "packages/core/src/logic/store-slices/index.ts": "T2",
-    "packages/core/src/logic/store-slices/tenant.slice.ts": "T2",
-    "packages/core/src/logic/store-slices/ui.slice.ts": "T2",
+    "packages/core/src/logic/store-slices/tenant.slice.ts": "T4",
+    "packages/core/src/logic/store-slices/ui.slice.ts": "T4",
     "packages/core/src/logic/utils/LanguageUtils.ts": "T2",
     "packages/core/src/logic/utils/QRBuilder.ts": "T2",
     "packages/core/src/logic/utils/QRResolver.ts": "T2",
@@ -4123,28 +2476,28 @@
     "packages/core/src/native/webSentryAdapter.native.ts": "T3",
     "packages/core/src/native/webSentryAdapter.ts": "T3",
     "packages/core/src/native/webSentryAdapter.web.ts": "T3",
-    "packages/core/src/offline/resilience.ts": "UNPLACED",
-    "packages/core/src/offline/useOfflineStatus.ts": "UNPLACED",
+    "packages/core/src/offline/resilience.ts": "T2",
+    "packages/core/src/offline/useOfflineStatus.ts": "T5",
     "packages/core/src/platform/drivers/cryptoVault.ts": "T3",
     "packages/core/src/platform/drivers/deviceIdentityDriver.ts": "T3",
     "packages/core/src/platform/drivers/index.ts": "T3",
     "packages/core/src/platform/drivers/networkMonitor.ts": "T3",
     "packages/core/src/platform/drivers/storageDriver.ts": "T3",
     "packages/core/src/platform/drivers/telemetrySink.ts": "T3",
-    "packages/core/src/platform/useResponsiveRenderer.ts": "UNPLACED",
-    "packages/core/src/providers/AssetsProvider.tsx": "UNPLACED",
-    "packages/core/src/providers/AuthProvider.tsx": "UNPLACED",
-    "packages/core/src/providers/CapabilityHydrationProvider.tsx": "UNPLACED",
-    "packages/core/src/providers/GlobalProvider.tsx": "UNPLACED",
-    "packages/core/src/providers/index.ts": "UNPLACED",
-    "packages/core/src/routing/routeManifest.ts": "UNPLACED",
-    "packages/core/src/shared/index.ts": "UNPLACED",
-    "packages/core/src/spatial/districtCentroids.ts": "UNPLACED",
-    "packages/core/src/spatial/geoMath.ts": "UNPLACED",
-    "packages/core/src/spatial/globalComparative.ts": "UNPLACED",
-    "packages/core/src/spatial/index.ts": "UNPLACED",
-    "packages/core/src/spatial/sampleSchools.ts": "UNPLACED",
-    "packages/core/src/spatial/spatial.adapter.ts": "UNPLACED",
+    "packages/core/src/platform/useResponsiveRenderer.ts": "T5",
+    "packages/core/src/providers/AssetsProvider.tsx": "T6",
+    "packages/core/src/providers/AuthProvider.tsx": "T6",
+    "packages/core/src/providers/CapabilityHydrationProvider.tsx": "T6",
+    "packages/core/src/providers/GlobalProvider.tsx": "T6",
+    "packages/core/src/providers/index.ts": "T2",
+    "packages/core/src/routing/routeManifest.ts": "T2",
+    "packages/core/src/shared/index.ts": "T2",
+    "packages/core/src/spatial/districtCentroids.ts": "T2",
+    "packages/core/src/spatial/geoMath.ts": "T2",
+    "packages/core/src/spatial/globalComparative.ts": "T2",
+    "packages/core/src/spatial/index.ts": "T2",
+    "packages/core/src/spatial/sampleSchools.ts": "T2",
+    "packages/core/src/spatial/spatial.adapter.ts": "T3",
     "packages/core/src/store/index.ts": "T4",
     "packages/core/src/store/queries/entitlementQuery.ts": "T4",
     "packages/core/src/store/resetScopedStores.ts": "T4",
@@ -4167,13 +2520,15 @@
     "packages/core/src/store/useTemporalStore.ts": "T4",
     "packages/core/src/store/useTenantStore.ts": "T4",
     "packages/core/src/store/useUIStore.ts": "T4",
-    "packages/core/src/test-shims/expo-constants.ts": "UNPLACED",
-    "packages/core/src/test-shims/react-native.ts": "UNPLACED",
-    "packages/core/src/testing/scenarioHarness.ts": "UNPLACED",
-    "packages/core/src/thresholds/index.ts": "UNPLACED",
-    "packages/core/src/thresholds/thresholdEvaluator.ts": "UNPLACED",
+    "packages/core/src/test-shims/expo-constants.ts": "T2",
+    "packages/core/src/test-shims/react-native.ts": "T2",
+    "packages/core/src/testing/scenarioHarness.ts": "T2",
+    "packages/core/src/thresholds/index.ts": "T2",
+    "packages/core/src/thresholds/thresholdEvaluator.ts": "T2",
     "packages/core/src/types/API.ts": "T0",
+    "packages/core/src/types/Accounting.ts": "T0",
     "packages/core/src/types/Actor.ts": "T0",
+    "packages/core/src/types/Analytics.ts": "T0",
     "packages/core/src/types/Assignment.ts": "T0",
     "packages/core/src/types/Attendance.ts": "T0",
     "packages/core/src/types/Authority.ts": "T0",
@@ -4194,8 +2549,10 @@
     "packages/core/src/types/Inventory.ts": "T0",
     "packages/core/src/types/Lesson.ts": "T0",
     "packages/core/src/types/LessonMaterial.ts": "T0",
+    "packages/core/src/types/Library.ts": "T0",
     "packages/core/src/types/Media.ts": "T0",
     "packages/core/src/types/Onboarding.ts": "T0",
+    "packages/core/src/types/Payments.ts": "T0",
     "packages/core/src/types/Perspective.ts": "T0",
     "packages/core/src/types/Policy.ts": "T0",
     "packages/core/src/types/PreferredName.ts": "T0",
@@ -4213,43 +2570,49 @@
     "packages/core/src/types/Tenancy.ts": "T0",
     "packages/core/src/types/Thuthimal.ts": "T0",
     "packages/core/src/types/User.ts": "T0",
+    "packages/core/src/types/UserPreferences.ts": "T0",
+    "packages/core/src/types/Wellbeing.ts": "T0",
     "packages/core/src/types/WhatsApp.ts": "T0",
     "packages/core/src/types/Workbench.ts": "T0",
     "packages/core/src/types/Workspace.ts": "T0",
+    "packages/core/src/types/authSession.ts": "T0",
     "packages/core/src/types/authorization.ts": "T0",
     "packages/core/src/types/cedarEvaluationContext.ts": "T0",
     "packages/core/src/types/citizenship.ts": "T0",
+    "packages/core/src/types/communityView.ts": "T0",
     "packages/core/src/types/deviceTrust.ts": "T0",
     "packages/core/src/types/domainEntry.ts": "T0",
     "packages/core/src/types/entityProtocol.ts": "T0",
     "packages/core/src/types/index.ts": "T0",
+    "packages/core/src/types/localGuest.ts": "T0",
     "packages/core/src/types/mesh.ts": "T0",
     "packages/core/src/types/mutationCommand.ts": "T0",
     "packages/core/src/types/mutationQueue.ts": "T0",
     "packages/core/src/types/navigation.ts": "T0",
     "packages/core/src/types/notifications.ts": "T0",
+    "packages/core/src/types/productAnalytics.ts": "T0",
     "packages/core/src/types/reflection.ts": "T0",
     "packages/core/src/types/runtime.ts": "T0",
     "packages/core/src/types/spatial.ts": "T0",
     "packages/core/src/types/thresholds.ts": "T0",
     "packages/core/src/types/topology.ts": "T0",
     "packages/core/src/types/visualization.ts": "T0",
-    "packages/core/src/utils/effect.ts": "UNPLACED",
-    "packages/core/src/utils/idempotency.ts": "UNPLACED",
-    "packages/core/src/utils/mutation.ts": "UNPLACED",
-    "packages/core/src/utils/random.ts": "UNPLACED",
-    "packages/core/src/utils/temporal.ts": "UNPLACED",
-    "packages/core/src/verger/experience.ts": "UNPLACED",
-    "packages/core/src/verger/gurudeviDiagnostics.ts": "UNPLACED",
-    "packages/core/src/verger/gurudeviLevers.ts": "UNPLACED",
-    "packages/core/src/verger/gurudeviScenarios.ts": "UNPLACED",
-    "packages/core/src/verger/gurudeviWorkloads.ts": "UNPLACED",
-    "packages/core/src/verger/host.ts": "UNPLACED",
-    "packages/core/src/verger/index.ts": "UNPLACED",
-    "packages/core/src/verger/launch.ts": "UNPLACED",
-    "packages/core/src/verger/screens.ts": "UNPLACED",
-    "packages/core/src/verger/wallpaper.ts": "UNPLACED",
-    "packages/core/src/webAuth.ts": "UNPLACED",
-    "packages/core/src/webAuthorizedEntry.ts": "UNPLACED"
+    "packages/core/src/utils/effect.ts": "T2",
+    "packages/core/src/utils/idempotency.ts": "T2",
+    "packages/core/src/utils/mutation.ts": "T2",
+    "packages/core/src/utils/random.ts": "T2",
+    "packages/core/src/utils/temporal.ts": "T2",
+    "packages/core/src/verger/experience.ts": "T2",
+    "packages/core/src/verger/gurudeviDiagnostics.ts": "T2",
+    "packages/core/src/verger/gurudeviLevers.ts": "T2",
+    "packages/core/src/verger/gurudeviScenarios.ts": "T2",
+    "packages/core/src/verger/gurudeviWorkloads.ts": "T2",
+    "packages/core/src/verger/host.ts": "T2",
+    "packages/core/src/verger/index.ts": "T2",
+    "packages/core/src/verger/launch.ts": "T2",
+    "packages/core/src/verger/screens.ts": "T2",
+    "packages/core/src/verger/wallpaper.ts": "T2",
+    "packages/core/src/webAuth.ts": "T2",
+    "packages/core/src/webAuthorizedEntry.ts": "T2"
   }
 }

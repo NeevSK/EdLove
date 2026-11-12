@@ -136,6 +136,7 @@ const add = (rule, file, detail) => findings.push({ rule, file, tier: tierOf(fil
 
 for (const file of files) {
   const tier = tierOf(file);
+  if (tier === 'RETIRED') continue;
   const { imports, passThrough, parses } = parse(file);
   if (tier === 'UNPLACED')
     add('unplaced', file, { reason: 'Its folder states no tier and it has no placement' });
@@ -167,7 +168,14 @@ for (const file of files) {
       continue;
     }
     if (!scope && !inScope.has(target)) continue;
+    // A declared package entry is the package's public surface; it gathers every tier by design.
+    if (ENTRY_BARRELS.has(file)) continue;
     const to = tierOf(target);
+    if (to === 'RETIRED') {
+      if (!/(__tests__|__mocks__)\/|\.(test|spec)\.tsx?$/.test(file))
+        add('imports-retired', file, { to: target, reason: 'Live code depends on the retired pre-v1 client' });
+      continue;
+    }
     if (tier === 'UNPLACED' || to === 'UNPLACED') continue;
     if (imp.typeOnly && TIERS[to].rank <= TIERS[tier].rank) continue; // types are erased; downward type imports are fine
     if (ALLOWED[tier].includes(to)) continue;

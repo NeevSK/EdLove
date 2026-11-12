@@ -1,396 +1,59 @@
 # Tier audit: packages/core/src
 
-783 files. Rules: tooling/architecture-tiers.mjs.
+792 files. Rules: tooling/architecture-tiers.mjs.
 
 | Tier | Files |
 | --- | --- |
-| Tier 0: Contracts | 120 |
+| Tier 0: Contracts | 130 |
 | Tier 1: Ports | 34 |
-| Tier 2: Domain | 144 |
-| Tier 3: Adapters | 108 |
+| Tier 2: Domain | 239 |
+| Tier 3: Adapters | 109 |
 | Composition root | 3 |
-| Tier 4: State | 22 |
-| Tier 5: Application hooks | 43 |
-| No tier | 309 |
+| Tier 4: State | 25 |
+| Tier 5: Application hooks | 49 |
+| Tier 6: Presentation | 6 |
 
-## unplaced (309)
+## upward-import (83)
 
-- `core/accounts/accountTransition.ts` (No tier): Its folder states no tier and it has no placement
-- `core/accounts/authenticatedAccountCapture.ts` (No tier): Its folder states no tier and it has no placement
-- `core/accounts/deviceAccounts.ts` (No tier): Its folder states no tier and it has no placement
-- `core/ai/contextRegistry.ts` (No tier): Its folder states no tier and it has no placement
-- `core/ai/platformManifest.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/academicCycles.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/admin.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/admin.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/agent.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/agent.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/agent.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/announcements.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/announcements.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/appContract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/assignmentCommands.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/assignmentSubmissionReplay.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/assignmentSubmissionTransport.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/assignments.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/attendance-v1.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/attendance.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/attendance.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/audit-poa-runtime.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/auth.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/authorization.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/base.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/capabilities.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/capabilityFoundation.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/channel.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/chatCommands.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/circles.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/classroom.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/classroomGroups.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/classroomNotes.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/classroomNotes.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/classroomStudents.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/classrooms.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/client.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/clientRuntime.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/community.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/community.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/community.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/contextualChallenges.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/contractCoverage.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/contracts.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/credentialInventory.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/credentialUnlink.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/dailyContent.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/dailyContent.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/dataGateway.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/decisionJournal.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/decisionJournal.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/demo.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/demoProvider.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/deviceTrust.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/deviceTrust.web.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/durableAgents.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/echo.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/echo.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/editorial.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/educational.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/educational.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/erp.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/erp.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/events.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/eventsReceiver.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/formTemplates.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/forms.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/founder.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/founder.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/functions.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/gateway.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/grading.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/grading.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/grading.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/groups.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/growth.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/growthSignals.generated.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/growthSignals.generated.zod.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/growthSignals.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/guardian-assessment.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/guardian-assessment.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/guardian.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/guardian.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/highways.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/history.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/history.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/attendance.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/classroom.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/comment.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/community.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/founder.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/grading.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/library.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/manifesto.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/poll.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/presence.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/profile.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/hooks/social.hooks.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/identity.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/identity.generated.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/identity.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/identity.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/impactRipples.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/interceptor.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/inventory.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/inventory.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/journalEntries.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/journalEntries.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/learningReflections.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/lessonMaterials.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/library.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/library.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/library.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/longitudinal.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/longitudinal.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/mapping.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/mapping.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/mapping.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/media.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/mediaUpload.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/mediaUpload.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/messaging.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/messaging.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/mockData.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/moonPhase.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/naturePaths.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/onboarding.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/onboarding.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/onboarding.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/onboardingClient.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/operations.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/orchestration/community.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/orchestration/educational.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/orchestration/erp.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/orchestration/growth.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/orchestration/identity.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/orchestration/operations.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/orchestration/specialized.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/orpcClient.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/passwordChange.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/permissionSnapshot.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/phoneAuth.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/pilot.orpc.v2.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/planBridge.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/planBridge.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/presence.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/presence.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/presenceRealtime.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/principalNotes.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/principalNotes.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/principalWorkspace.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/principalWorkspace.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/privacy.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/privacy.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/privacy.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/pro.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/profile.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/profile.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/profile.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/pushDispatcher.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/resonantProxy.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/resources.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/rewards.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/rewards.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/sacredMissions.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/sacredMissions.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/sandboxBridge.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/sandboxDataset.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/sandboxMode.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/school.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/schoolForest.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/schoolForest.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/self.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/social.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/social.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/staffManagement.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/studentObservations.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/studentPotential.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/studentPotential.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/supabase.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/sync.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/sync.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/syncCredentials.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/teacher.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/teacherInsights.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/teacherInsights.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/temporalProxy.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/thuthimal.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/thuthimal.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/tracking.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/tracking.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/transportSecurity.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/userGrowthState.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/v1/client.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/v1/contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/warmMirror.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/warmMirror.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/workspace-provisioning.orpc.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/workspaceLayout.contract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/workspaceLayout.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/workspaceLayoutPatch.ts` (No tier): Its folder states no tier and it has no placement
-- `core/api/workspaceProvisioning.ts` (No tier): Its folder states no tier and it has no placement
-- `core/auth.ts` (No tier): Its folder states no tier and it has no placement
-- `core/config/publicUrls.ts` (No tier): Its folder states no tier and it has no placement
-- `core/educational/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/educational/thresholdCascade.ts` (No tier): Its folder states no tier and it has no placement
-- `core/effect/Runtime.ts` (No tier): Its folder states no tier and it has no placement
-- `core/effect/Schedules.ts` (No tier): Its folder states no tier and it has no placement
-- `core/effect/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/efficiency/hermesDeviceShield.ts` (No tier): Its folder states no tier and it has no placement
-- `core/efficiency/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/accountPin.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/audit-log.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/authorization.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/catalogPracticeRuntime.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/circuit-breaker.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/clientStateFoundation.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/cloudinary.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/deviceSecurityQueryKeys.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/errors.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/failureFeedback.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/featureRuntime.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/feedback.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/gradePublication.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/grading.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/idempotency.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/inventoryScope.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/inviteCodes.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/keyValueStorageAdapter.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/mediaUploadPolicy.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/mediaUtils.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/monitoring/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/monitoring/posthog.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/monitoring/safeData.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/monitoring/sentry.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/notificationQueryKeys.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/pendingGateAction.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/permissions.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/persistenceBoundary.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/practiceBoundary.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/practiceContract.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/practiceDocumentLifecycle.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/practiceSessionResolver.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/security/credentialInventory.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/security/deviceTrust.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/security/passwordChange.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/security/phoneAuth.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/supabaseAuthStorage.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/MutationAuditLog.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/delta.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/deviceSecurityIntents.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/errorClassifier.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/hooks/useOptimisticMerge.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/hooks/useSyncStatus.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/idempotency.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/outboxMigration.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/receipts.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/registry.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/replayAdmission.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/replayIdentity.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/replayPolicy.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/sync/SyncOrchestrator.tsx` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/useMutationQueue.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/sync/versionGating.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/temporalEvents.ts` (No tier): Its folder states no tier and it has no placement
-- `core/lib/tenantStorage.ts` (No tier): Its folder states no tier and it has no placement
-- `core/offline/resilience.ts` (No tier): Its folder states no tier and it has no placement
-- `core/offline/useOfflineStatus.ts` (No tier): Its folder states no tier and it has no placement
-- `core/platform/useResponsiveRenderer.ts` (No tier): Its folder states no tier and it has no placement
-- `core/providers/AssetsProvider.tsx` (No tier): Its folder states no tier and it has no placement
-- `core/providers/AuthProvider.tsx` (No tier): Its folder states no tier and it has no placement
-- `core/providers/CapabilityHydrationProvider.tsx` (No tier): Its folder states no tier and it has no placement
-- `core/providers/GlobalProvider.tsx` (No tier): Its folder states no tier and it has no placement
-- `core/providers/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/routing/routeManifest.ts` (No tier): Its folder states no tier and it has no placement
-- `core/shared/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/spatial/districtCentroids.ts` (No tier): Its folder states no tier and it has no placement
-- `core/spatial/geoMath.ts` (No tier): Its folder states no tier and it has no placement
-- `core/spatial/globalComparative.ts` (No tier): Its folder states no tier and it has no placement
-- `core/spatial/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/spatial/sampleSchools.ts` (No tier): Its folder states no tier and it has no placement
-- `core/spatial/spatial.adapter.ts` (No tier): Its folder states no tier and it has no placement
-- `core/test-shims/expo-constants.ts` (No tier): Its folder states no tier and it has no placement
-- `core/test-shims/react-native.ts` (No tier): Its folder states no tier and it has no placement
-- `core/testing/scenarioHarness.ts` (No tier): Its folder states no tier and it has no placement
-- `core/thresholds/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/thresholds/thresholdEvaluator.ts` (No tier): Its folder states no tier and it has no placement
-- `core/utils/effect.ts` (No tier): Its folder states no tier and it has no placement
-- `core/utils/idempotency.ts` (No tier): Its folder states no tier and it has no placement
-- `core/utils/mutation.ts` (No tier): Its folder states no tier and it has no placement
-- `core/utils/random.ts` (No tier): Its folder states no tier and it has no placement
-- `core/utils/temporal.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/experience.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/gurudeviDiagnostics.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/gurudeviLevers.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/gurudeviScenarios.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/gurudeviWorkloads.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/host.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/index.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/launch.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/screens.ts` (No tier): Its folder states no tier and it has no placement
-- `core/verger/wallpaper.ts` (No tier): Its folder states no tier and it has no placement
-- `core/webAuth.ts` (No tier): Its folder states no tier and it has no placement
-- `core/webAuthorizedEntry.ts` (No tier): Its folder states no tier and it has no placement
-
-## forbidden-package (14)
-
-- `core/adapters/powersync/hooks.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
-- `core/adapters/powersync/todosHook.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
-- `core/adapters/supabase/todosHook.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
-- `core/logic/deeplink/pendingIntentStore.ts` (Tier 2: Domain) → `zustand`: Tier 2: Domain may not use zustand
-- `core/logic/deeplink/pendingIntentStore.ts` (Tier 2: Domain) → `zustand/middleware`: Tier 2: Domain may not use zustand/middleware
-- `core/logic/experience/ActivityPulseContext.tsx` (Tier 2: Domain) → `react`: Tier 2: Domain may not use react
-- `core/logic/i18n/config.ts` (Tier 2: Domain) → `react-i18next`: Tier 2: Domain may not use react-i18next
-- `core/logic/journey/roleJourneyMachine.v6.ts` (Tier 2: Domain) → `xstate`: Tier 2: Domain may not use xstate
-- `core/logic/permissions/localEvaluator.native.ts` (Tier 2: Domain) → `drizzle-orm`: Tier 2: Domain may not use drizzle-orm
-- `core/logic/permissions/localResourceAttributes.ts` (Tier 2: Domain) → `drizzle-orm`: Tier 2: Domain may not use drizzle-orm
-- `core/logic/permissions/snapshotRefresh.ts` (Tier 2: Domain) → `drizzle-orm`: Tier 2: Domain may not use drizzle-orm
-- `core/logic/reflection/records.ts` (Tier 2: Domain) → `drizzle-orm`: Tier 2: Domain may not use drizzle-orm
-- `core/logic/workspace/provisionalWorkspace.ts` (Tier 2: Domain) → `zustand`: Tier 2: Domain may not use zustand
-- `core/logic/workspace/provisionalWorkspace.ts` (Tier 2: Domain) → `zustand/middleware`: Tier 2: Domain may not use zustand/middleware
-
-## pass-through (41)
-
-- `core/adapters/powersync/powersync-react-shim.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
-- `core/api/admin.orpc.contract.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/agent.orpc.contract.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/client.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/educational.orpc.contract.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/grading.orpc.contract.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/guardian-assessment.orpc.contract.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/hooks/index.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/interceptor.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/orchestration/erp.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/orchestration/growth.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/api/supabase.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/educational/index.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/flows/pjc.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/lib/monitoring/index.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/logic/domains/attendanceProjection/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/classroomNotes/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/educational/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/founder/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/gradingProjection/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/guardian/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/principalWorkspace/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/profile/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/social/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/teacherInsights/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/domains/workspaceLayout/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/entities/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/experience/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/forms/analytics.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/forms/dynamic-loader.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/forms/form-engine.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/permissions/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/store-slices/auth.slice.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/store-slices/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/store-slices/tenant.slice.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/store-slices/ui.slice.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/logic/utils/uuid.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
-- `core/native/webSentryAdapter.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
-- `core/spatial/index.ts` (No tier): Only re-exports or renames; import the source instead
-- `core/thresholds/index.ts` (No tier): Only re-exports or renames; import the source instead
-
-## upward-import (57)
-
+- `core/accounts/accountTransition.ts` (Tier 2: Domain) → `core/adapters/powersync/database.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/accounts/accountTransition.ts` (Tier 2: Domain) → `core/lib/sync/useMutationQueue.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
+- `core/accounts/deviceAccounts.ts` (Tier 2: Domain) → `core/native/deviceTrust.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/accounts/deviceAccounts.ts` (Tier 2: Domain) → `core/adapters/supabaseIdentity.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/accounts/deviceAccounts.ts` (Tier 2: Domain) → `core/lib/accountScope.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/accounts/deviceAccounts.ts` (Tier 2: Domain) → `core/lib/experienceState.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
+- `core/accounts/deviceAccounts.ts` (Tier 2: Domain) → `core/lib/storage.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/accounts/deviceAccounts.ts` (Tier 2: Domain) → `core/store/resetScopedStores.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/adapters/powersync/secureDrizzleProxy.ts` (Tier 3: Adapters) → `core/store/scopeSession.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/adapters/powersync/secureDrizzleProxy.ts` (Tier 3: Adapters) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
+- `core/adapters/powersync/syncData.adapter.ts` (Tier 3: Adapters) → `core/lib/sync/useMutationQueue.ts` (Tier 5: Application hooks): Tier 3: Adapters imports Tier 5: Application hooks, which sits above it
+- `core/api/v1/client.ts` (Tier 2: Domain) → `core/lib/security/transportSecurity.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/effect/Runtime.ts` (Tier 2: Domain) → `core/monitoring/index.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/effect/Runtime.ts` (Tier 2: Domain) → `core/effect/AppRuntime.ts` (Composition root): Tier 2: Domain imports Composition root, which sits above it
+- `core/hooks/useSanctuaryVisitor.ts` (Tier 5: Application hooks) → `core/providers/AuthProvider.tsx` (Tier 6: Presentation): Tier 5: Application hooks imports Tier 6: Presentation, which sits above it
+- `core/lib/accountPin.ts` (Tier 2: Domain) → `core/platform/drivers/cryptoVault.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/lib/authProfileStorage.ts` (Tier 3: Adapters) → `core/lib/experienceState.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
+- `core/lib/authorization.ts` (Tier 2: Domain) → `core/adapters/supabaseClient.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/authorization.ts` (Tier 2: Domain) → `core/adapters/supabaseIdentity.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/failureFeedback.ts` (Tier 2: Domain) → `core/adapters/supabaseIdentity.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/failureFeedback.ts` (Tier 2: Domain) → `core/monitoring/index.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/failureFeedback.ts` (Tier 2: Domain) → `core/native/guestStorage.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/feedback.ts` (Tier 2: Domain) → `core/lib/sync/eventBus.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/inviteCodes.ts` (Tier 2: Domain) → `core/adapters/supabaseClient.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/monitoring/index.ts` (Tier 2: Domain) → `core/monitoring/index.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/monitoring/sentry.ts` (Tier 2: Domain) → `core/platform/drivers/telemetrySink.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/pendingGateAction.ts` (Tier 2: Domain) → `core/lib/storage.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/security/deviceTrust.ts` (Tier 2: Domain) → `core/native/deviceTrust.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/supabaseAuthStorage.ts` (Tier 2: Domain) → `core/lib/accountScope.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/supabaseAuthStorage.ts` (Tier 2: Domain) → `core/platform/drivers/cryptoVault.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/sync/MutationAuditLog.ts` (Tier 2: Domain) → `core/lib/storageWrapper.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/sync/deviceSecurityIntents.ts` (Tier 2: Domain) → `core/lib/sync/useMutationQueue.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
+- `core/lib/sync/deviceSecurityIntents.ts` (Tier 2: Domain) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
+- `core/lib/sync/replayIdentity.ts` (Tier 2: Domain) → `core/lib/accountScope.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/sync/replayPolicy.ts` (Tier 2: Domain) → `core/lib/sync/useMutationQueue.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
+- `core/lib/sync/replayPolicy.ts` (Tier 2: Domain) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
+- `core/lib/sync/versionGating.ts` (Tier 2: Domain) → `core/lib/storageWrapper.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/sync/versionGating.ts` (Tier 2: Domain) → `core/lib/sync/eventBus.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/lib/tenantStorage.ts` (Tier 2: Domain) → `core/lib/storage.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/agents/reliefAgent.ts` (Tier 2: Domain) → `core/adapters/supabaseClient.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/apiInterceptor.ts` (Tier 2: Domain) → `core/monitoring/index.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/apiInterceptor.ts` (Tier 2: Domain) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
@@ -398,23 +61,6 @@
 - `core/logic/auth/AuthClient.ts` (Tier 2: Domain) → `core/monitoring/index.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/deeplink/handleDeepLink.ts` (Tier 2: Domain) → `core/adapters/supabaseClient.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/deeplink/pendingIntentStore.ts` (Tier 2: Domain) → `core/lib/storageWrapper.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/hooks/useAuthLifecycle.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/hooks/useDeviceAccounts.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/hooks/useDeviceSecurity.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/hooks/useManualSnapshot.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/hooks/usePerspectiveSwitch.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/hooks/useSanctuaryVisitor.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/hooks/useScopedDeviceSecurity.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/hooks/useTemporalHeatmap.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/lib/storage.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/logic/permissions/hooks/useSanctuaryFeature.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/platform/drivers/cryptoVault.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/store/useActiveSubTabsStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/store/useConsentStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/store/useDraftsStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/store/useFeatureStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/index.ts` (Tier 2: Domain) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/journey/roleJourneyMachine.v6.ts` (Tier 2: Domain) → `core/lib/storage.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/modes/demo.ts` (Tier 2: Domain) → `core/lib/experienceState.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/modes/demo.ts` (Tier 2: Domain) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
@@ -435,23 +81,90 @@
 - `core/logic/permissions/snapshotRefresh.ts` (Tier 2: Domain) → `core/store/scopeSessionCoordinator.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/permissions/snapshotRefresh.ts` (Tier 2: Domain) → `core/store/useCedarDecisionStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/reflection/records.ts` (Tier 2: Domain) → `core/adapters/powersync/schema.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
-- `core/logic/registry/useDomainFeature.ts` (Tier 2: Domain) → `core/logic/permissions/hooks/useSanctuaryFeature.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
-- `core/logic/store-slices/auth.slice.ts` (Tier 2: Domain) → `core/store/slices/auth.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/store-slices/tenant.slice.ts` (Tier 2: Domain) → `core/store/slices/tenant.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
-- `core/logic/store-slices/ui.slice.ts` (Tier 2: Domain) → `core/store/slices/ui.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
+- `core/logic/store-slices/index.ts` (Tier 2: Domain) → `core/logic/store-slices/auth.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
+- `core/logic/store-slices/index.ts` (Tier 2: Domain) → `core/logic/store-slices/tenant.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
+- `core/logic/store-slices/index.ts` (Tier 2: Domain) → `core/logic/store-slices/ui.slice.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/utils/temporalUtils.ts` (Tier 2: Domain) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 - `core/logic/workspace/provisionalWorkspace.ts` (Tier 2: Domain) → `core/adapters/supabase/tuitionBatchRepository.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/logic/workspace/provisionalWorkspace.ts` (Tier 2: Domain) → `core/lib/storageWrapper.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
 - `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/scopeSession.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/scopeSessionCoordinator.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
 - `core/native/localGuestActivation.ts` (Tier 3: Adapters) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 3: Adapters imports Tier 4: State, which sits above it
+- `core/spatial/index.ts` (Tier 2: Domain) → `core/spatial/spatial.adapter.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/store/resetScopedStores.ts` (Tier 4: State) → `core/lib/sync/useMutationQueue.ts` (Tier 5: Application hooks): Tier 4: State imports Tier 5: Application hooks, which sits above it
+- `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/lib/storageWrapper.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/lib/sync/useMutationQueue.ts` (Tier 5: Application hooks): Tier 2: Domain imports Tier 5: Application hooks, which sits above it
+- `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/platform/drivers/networkMonitor.ts` (Tier 3: Adapters): Tier 2: Domain imports Tier 3: Adapters, which sits above it
+- `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
+- `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/store/useConflictStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
+- `core/testing/scenarioHarness.ts` (Tier 2: Domain) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 2: Domain imports Tier 4: State, which sits above it
 
-## parse-above-boundary (14)
+## forbidden-package (21)
+
+- `core/adapters/powersync/hooks.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
+- `core/adapters/powersync/todosHook.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
+- `core/adapters/supabase/todosHook.ts` (Tier 3: Adapters) → `react`: Tier 3: Adapters may not use react
+- `core/ai/contextRegistry.ts` (Tier 2: Domain) → `react`: Tier 2: Domain may not use react
+- `core/ai/contextRegistry.ts` (Tier 2: Domain) → `zustand`: Tier 2: Domain may not use zustand
+- `core/lib/sync/MutationAuditLog.ts` (Tier 2: Domain) → `zustand`: Tier 2: Domain may not use zustand
+- `core/lib/sync/MutationAuditLog.ts` (Tier 2: Domain) → `zustand/middleware`: Tier 2: Domain may not use zustand/middleware
+- `core/lib/sync/versionGating.ts` (Tier 2: Domain) → `zustand`: Tier 2: Domain may not use zustand
+- `core/lib/sync/versionGating.ts` (Tier 2: Domain) → `zustand/middleware`: Tier 2: Domain may not use zustand/middleware
+- `core/logic/deeplink/pendingIntentStore.ts` (Tier 2: Domain) → `zustand`: Tier 2: Domain may not use zustand
+- `core/logic/deeplink/pendingIntentStore.ts` (Tier 2: Domain) → `zustand/middleware`: Tier 2: Domain may not use zustand/middleware
+- `core/logic/i18n/config.ts` (Tier 2: Domain) → `react-i18next`: Tier 2: Domain may not use react-i18next
+- `core/logic/journey/roleJourneyMachine.v6.ts` (Tier 2: Domain) → `xstate`: Tier 2: Domain may not use xstate
+- `core/logic/journey/roleJourneyMachine.v6.ts` (Tier 2: Domain) → `xstate/persist`: Tier 2: Domain may not use xstate/persist
+- `core/logic/permissions/localEvaluator.native.ts` (Tier 2: Domain) → `drizzle-orm`: Tier 2: Domain may not use drizzle-orm
+- `core/logic/permissions/localResourceAttributes.ts` (Tier 2: Domain) → `drizzle-orm`: Tier 2: Domain may not use drizzle-orm
+- `core/logic/permissions/snapshotRefresh.ts` (Tier 2: Domain) → `drizzle-orm`: Tier 2: Domain may not use drizzle-orm
+- `core/logic/reflection/records.ts` (Tier 2: Domain) → `drizzle-orm`: Tier 2: Domain may not use drizzle-orm
+- `core/logic/workspace/provisionalWorkspace.ts` (Tier 2: Domain) → `zustand`: Tier 2: Domain may not use zustand
+- `core/logic/workspace/provisionalWorkspace.ts` (Tier 2: Domain) → `zustand/middleware`: Tier 2: Domain may not use zustand/middleware
+- `core/webAuth.ts` (Tier 2: Domain) → `@supabase/supabase-js`: Tier 2: Domain may not use @supabase/supabase-js
+
+## pass-through (30)
+
+- `core/adapters/powersync/powersync-react-shim.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
+- `core/educational/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/flows/pjc.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/lib/monitoring/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/attendanceProjection/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/classroomNotes/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/educational/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/founder/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/gradingProjection/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/guardian/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/principalWorkspace/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/profile/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/social/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/teacherInsights/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/domains/workspaceLayout/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/entities/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/experience/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/forms/analytics.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/forms/dynamic-loader.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/forms/form-engine.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/permissions/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/store-slices/auth.slice.ts` (Tier 4: State): Only re-exports or renames; import the source instead
+- `core/logic/store-slices/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/logic/store-slices/tenant.slice.ts` (Tier 4: State): Only re-exports or renames; import the source instead
+- `core/logic/store-slices/ui.slice.ts` (Tier 4: State): Only re-exports or renames; import the source instead
+- `core/logic/utils/uuid.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/native/webSentryAdapter.ts` (Tier 3: Adapters): Only re-exports or renames; import the source instead
+- `core/spatial/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+- `core/thresholds/index.ts` (Tier 2: Domain): Only re-exports or renames; import the source instead
+
+## parse-above-boundary (17)
 
 - `core/flows/journeyPilot.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
 - `core/flows/pjc/catalogLoader.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
 - `core/flows/pjc/hierarchy.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
 - `core/hooks/useGrowthQuery.ts` (Tier 5: Application hooks): 2 schema parse call(s); decode at the adapter and pass typed data up
+- `core/lib/catalogPracticeRuntime.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
+- `core/lib/practiceDocumentLifecycle.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
+- `core/lib/sync/replayPolicy.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
 - `core/logic/agents/reliefAgent.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
 - `core/logic/auth/AuthClient.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
 - `core/logic/journey/roleJourneyMachine.v6.ts` (Tier 2: Domain): 1 schema parse call(s); decode at the adapter and pass typed data up
@@ -463,7 +176,7 @@
 - `core/logic/workspace/layoutSession.ts` (Tier 2: Domain): 2 schema parse call(s); decode at the adapter and pass typed data up
 - `core/logic/workspace/layoutSync.ts` (Tier 2: Domain): 3 schema parse call(s); decode at the adapter and pass typed data up
 
-## tier-import (79)
+## tier-import (78)
 
 - `core/hooks/useAuthLifecycle.ts` (Tier 5: Application hooks) → `core/adapters/powersync/database.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useAuthLifecycle.ts` (Tier 5: Application hooks) → `core/lib/accountScope.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
@@ -491,31 +204,30 @@
 - `core/hooks/useStudentGoals.ts` (Tier 5: Application hooks) → `core/adapters/supabase/uiExperienceRepository.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/hooks/useTemporalHeatmap.ts` (Tier 5: Application hooks) → `core/adapters/supabase/uiExperienceRepository.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
 - `core/lib/experienceState.ts` (Tier 4: State) → `core/lib/scopedStateStorage.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/logic/domains/attendanceProjection/index.ts` (Tier 2: Domain) → `core/logic/ports/attendanceProjection.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/classroomNotes/index.ts` (Tier 2: Domain) → `core/logic/ports/classroomNotes.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/educational/index.ts` (Tier 2: Domain) → `core/logic/ports/educational.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/founder/index.ts` (Tier 2: Domain) → `core/logic/ports/founder.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/gradingProjection/index.ts` (Tier 2: Domain) → `core/logic/ports/gradingProjection.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/guardian/index.ts` (Tier 2: Domain) → `core/logic/ports/guardian.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/principalWorkspace/index.ts` (Tier 2: Domain) → `core/logic/ports/principalWorkspace.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/profile/index.ts` (Tier 2: Domain) → `core/logic/ports/profile.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/teacherInsights/index.ts` (Tier 2: Domain) → `core/logic/ports/teacherInsights.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/domains/workspaceLayout/index.ts` (Tier 2: Domain) → `core/logic/ports/workspaceLayout.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/logic/index.ts` (Tier 2: Domain) → `core/logic/ports/productAnalytics.port.ts` (Tier 1: Ports): Tier 2: Domain may import only Tier 0: Contracts, Tier 2: Domain
-- `core/store/index.ts` (Tier 4: State) → `core/store/resetScopedStores.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/scopeSession.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/scopeSessionCoordinator.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useActiveSubTabsStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useConsentStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useDraftsStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useFeatureStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useSensoryStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useTenantStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useUIStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/usePerspectiveStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
-- `core/store/index.ts` (Tier 4: State) → `core/store/useEntitlementStore.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
+- `core/lib/sync/hooks/useSyncStatus.ts` (Tier 5: Application hooks) → `core/lib/sync/eventBus.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/feedback.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/errorClassifier.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/eventBus.ts` (Tier 3: Adapters): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/MutationAuditLog.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/outboxMigration.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/registry.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/replayAdmission.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/replayIdentity.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/replayPolicy.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/lib/sync/versionGating.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/monitoring/breadcrumbs.ts` (Tier 3: Adapters): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/store/useConflictStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/sync/SyncOrchestrator.tsx` (Tier 6: Presentation) → `core/store/useTemporalStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/lib/sync/useMutationQueue.ts` (Tier 5: Application hooks) → `core/lib/accountScope.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
+- `core/lib/sync/useMutationQueue.ts` (Tier 5: Application hooks) → `core/lib/storageWrapper.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
+- `core/offline/useOfflineStatus.ts` (Tier 5: Application hooks) → `core/adapters/subscribeToNetwork.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
+- `core/offline/useOfflineStatus.ts` (Tier 5: Application hooks) → `core/platform/drivers/networkMonitor.ts` (Tier 3: Adapters): Tier 5: Application hooks may import only Tier 0: Contracts, Tier 2: Domain, Tier 4: State, Tier 5: Application hooks
+- `core/providers/AssetsProvider.tsx` (Tier 6: Presentation) → `core/lib/storage.ts` (Tier 3: Adapters): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/providers/AssetsProvider.tsx` (Tier 6: Presentation) → `core/logic/utils/LanguageUtils.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/providers/CapabilityHydrationProvider.tsx` (Tier 6: Presentation) → `core/logic/auth/identityState.ts` (Tier 2: Domain): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/providers/CapabilityHydrationProvider.tsx` (Tier 6: Presentation) → `core/store/scopeSession.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
+- `core/providers/CapabilityHydrationProvider.tsx` (Tier 6: Presentation) → `core/store/useAuthStore.ts` (Tier 4: State): Tier 6: Presentation may import only Tier 0: Contracts, Tier 5: Application hooks, Tier 6: Presentation
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/lib/experienceState.ts` (Tier 4: State): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/lib/scopedStateStorage.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
 - `core/store/resetScopedStores.ts` (Tier 4: State) → `core/lib/sync/eventBus.ts` (Tier 3: Adapters): Tier 4: State may import only Tier 0: Contracts, Tier 1: Ports, Tier 2: Domain, Composition root
@@ -559,3 +271,7 @@
 - `core/lib/storageWrapper.ts` (Tier 3: Adapters): Zustand persist storage over the storage adapter; belongs in packages/core/src/adapters/storage/
 - `core/lib/sync/eventBus.ts` (Tier 3: Adapters): In-process pub/sub runtime; belongs in packages/core/src/adapters/events/
 - `core/logic/permissions/signature.ts` (Tier 3: Adapters): Verifies signatures with the platform WebCrypto API, which is I/O; belongs in packages/core/src/platform/drivers/cryptoVault
+
+## imports-retired (1)
+
+- `core/logic/modes/noticeComposer.ts` (Tier 2: Domain) → `core/api/planBridge.orpc.contract.ts`: Live code depends on the retired pre-v1 client

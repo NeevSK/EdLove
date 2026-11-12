@@ -120,7 +120,22 @@ for (const file of files) {
     else fs.writeFileSync(file, next);
   }
 }
+// A package's exports name its files: keep every explicit entry pointing at the moved file.
+const manifests = new Map();
+for (const [from, to] of moves) {
+  const dir = from.split('/').slice(0, 2).join('/');
+  const manifest = `${dir}/package.json`;
+  if (!fs.existsSync(manifest)) continue;
+  const text = manifests.get(manifest) ?? fs.readFileSync(manifest, 'utf8');
+  const rel = (f) => `./${f.slice(dir.length + 1)}`;
+  const next = text.split(`"${rel(from)}"`).join(`"${rel(to)}"`);
+  if (next !== text) {
+    console.log(`${manifest}: ${rel(from)} -> ${rel(to)}`);
+    manifests.set(manifest, next);
+  }
+}
 if (!DRY) {
+  for (const [manifest, text] of manifests) fs.writeFileSync(manifest, text);
   for (const [from, to] of moves) {
     fs.mkdirSync(path.dirname(to), { recursive: true });
     execFileSync('git', ['mv', from, to]);

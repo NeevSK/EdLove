@@ -200,3 +200,15 @@ isolation, lease-contention, and recovery-UI tests; (3) expose the shared
 platform-neutral command/receipt contract for all future consumers; (4) obtain
 mobile/device evidence. Browser offline capability is explicitly deferred;
 web remains online-only with normal request/reconnect error handling.
+
+## 2026-11-12 — Tier from the file name; ratchet re-baselined
+
+- `tooling/architecture-tiers.mjs` now places every `packages/core/src` file. Folder rules come first. Then name rules apply (`*.schema|types|contract` → T0, `*.port|*.tags` → T1, `*.adapter`/Driver/Monitor/Sink/Vault → T3, stores/slices/machines → T4, `use*` hooks → T5, `.tsx` → T6). Any file left over defaults to T2.
+- The pre-v1 client (`packages/core/src/api/` except `v1/`) is tier `RETIRED`. Live files that import it are reported as `imports-retired`.
+- Declared package entries (the `exports` barrels) are the public surface and are exempt from import direction.
+- Ratchet re-baseline, with reasons. No code got worse:
+  - `unplacedFiles` 335 → 0: every core file now has a tier.
+  - `tierImportViolations` 161 → 199: 309 files that had no tier before are now checked. The rule is unchanged, so the extra violations were always there and are now visible. Before this change the count was 154.
+  - `passThroughFiles` 41 → 30: tightened to the current count.
+- `Source files > 800 LOC` (39/36) and `Root package.json scripts` (165/129) fail at HEAD as well. They are pre-existing and their ceilings are left alone, as the owner asked.
+- `scripts/move-modules.mjs` now rewrites explicit `package.json` exports entries for moved files.

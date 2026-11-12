@@ -140,11 +140,40 @@ export const PLACEMENTS = {
   },
 };
 
+/**
+ * The tier a file's name declares, from the naming taxonomy in AGENTS.md. A feature module (lib/sync,
+ * verger, spatial ...) keeps its files together; each file says what it is by its name.
+ * Tests and declaration files are not tiered.
+ */
+export const NAME_RULES = [
+  [/\.(schema|types|contract)\.tsx?$|\/types\.ts$/, 'T0'],
+  [/\.port\.ts$|\.tags\.ts$/, 'T1'],
+  [/\.adapter\.tsx?$|(Driver|Monitor|Sink|Vault)\.ts$/, 'T3'],
+  [/\/use\w*Store\.ts$|\.store\.ts$|\.slice\.ts$|\.machine\.ts$/, 'T4'],
+  [/\/use[A-Z]\w*\.tsx?$/, 'T5'],
+  [/\.tsx$/, 'T6'],
+];
+
+/** Packages whose untiered files default to Tier 2 (pure logic) until their names say otherwise. */
+const DEFAULT_T2_ROOTS = ['packages/core/src/'];
+
+/** The pre-v1 client: being retired, not fixed. Nothing live may import it (rule imports-retired). */
+export const RETIRED = [/^packages\/core\/src\/api\/(?!v1\/)/];
+
 export function tierOf(filePath) {
+  if (RETIRED.some((re) => re.test(filePath))) return 'RETIRED';
   const placed = PLACEMENTS[filePath];
   if (placed) return placed.tier;
+  // Explicit tier folders first: types/, logic/ports/, adapters/, store/, hooks/ mean what they say.
   for (const [rule, tier] of FOLDER_RULES) {
+    if (rule === 'packages/core/src/logic/') continue;
     if (typeof rule === 'string' ? filePath.startsWith(rule) : rule.test(filePath)) return tier;
+  }
+  if (/(__tests__|__mocks__)\/|\.(test|spec)\.tsx?$|\.d\.ts$/.test(filePath)) return 'UNPLACED';
+  // Then the name; logic/ and module folders are judged by what each file says it is.
+  if (DEFAULT_T2_ROOTS.some((root) => filePath.startsWith(root))) {
+    for (const [rule, tier] of NAME_RULES) if (rule.test(filePath)) return tier;
+    return 'T2';
   }
   return 'UNPLACED';
 }
