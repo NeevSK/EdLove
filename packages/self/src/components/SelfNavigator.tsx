@@ -4,7 +4,7 @@ import type { SelfNavigatorMode } from '@repo/self/hooks/useSelfNavigatorMode';
 import { EmptyState, ErrorState } from '@repo/ui/components/native';
 import { WaitingSign } from '@repo/ui/components/native';
 
-import { useBreakpoint, useResponsiveGrid } from '@repo/ui/components/layout';
+import { isMobileLayout, useBreakpoint, useResponsiveGrid } from '@repo/ui/components/layout';
 import { FlashList } from '@shopify/flash-list';
 import { Layers, LayoutGrid } from '@repo/ui/icons';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
@@ -52,7 +52,7 @@ export function SelfNavigator({
   const isTablet = breakpoint !== 'phone';
   const isDesktop = breakpoint === 'desktop';
   // Web-on-mobile: force mobile layout when shell is webCompact (width <768 even on web)
-  const isWebMobile = Platform.OS === 'web' && width <= 767;
+  const isWebMobile = Platform.OS === 'web' && isMobileLayout(width);
   const effectiveIsTablet = isWebMobile ? false : isTablet;
   const tiledCols = effectiveIsTablet ? (isDesktop ? 5 : 4) : 3;
   // Container-aware: measure actual container width for tiled grid

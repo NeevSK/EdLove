@@ -426,7 +426,7 @@
   color: #aab4a7;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 47.99rem) {
   .header {
     min-height: 62px;
     padding-inline: 20px;
@@ -459,7 +459,7 @@
   }
 }
 
-@media (max-width: 390px) {
+@media (max-width: 47.99rem) {
   .main {
     padding-inline: 18px;
   }

@@ -85,7 +85,7 @@
   color: var(--w-ink-soft, #625a51);
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 47.99rem) {
   .actions summary {
     width: 2.5rem;
     height: 2.5rem;

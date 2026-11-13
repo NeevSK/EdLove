@@ -115,7 +115,7 @@
 }
 
 /* Mobile responsive adjustments */
-@media (max-width: 640px) {
+@media (max-width: 47.99rem) {
   .roleLensContainer {
     width: 100%;
     justify-content: space-between;

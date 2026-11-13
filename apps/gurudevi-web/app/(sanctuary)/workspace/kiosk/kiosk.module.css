@@ -60,7 +60,7 @@
   flex: 1;
 }
 
-@media (max-width: 840px) {
+@media (max-width: 47.99rem) {
   .kioskGrid {
     grid-template-columns: 1fr;
   }

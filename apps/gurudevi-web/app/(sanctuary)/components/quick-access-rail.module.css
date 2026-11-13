@@ -389,11 +389,11 @@
   .sheet { inset-block-end: env(safe-area-inset-bottom); }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99rem) {
   .rail[data-orientation="vertical"] { display: none; }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
   .sheet {
     inset: auto 1.25rem 1.25rem auto;
     width: min(28rem, calc(100vw - 2.5rem));

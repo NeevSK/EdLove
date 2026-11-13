@@ -94,7 +94,7 @@
   padding: 8mm 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 47.99rem) {
   .badgeSheetGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;

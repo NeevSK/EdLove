@@ -20,6 +20,7 @@ import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { tokens } from '@repo/ui/tokens';
 import { useEffect, useMemo, useState } from 'react';
 import { useWindowDimensions, View, Text, Pressable, ScrollView } from 'react-native';
+import { breakpointOf } from '@repo/ui/components/layout';
 
 /**
  * BaseSelfView.web - Capability-Driven Sanctuary for Web.
@@ -30,7 +31,7 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
   const isAnonymous = context.isAnonymous;
   const { status: networkStatus } = useOfflineStatus();
   const { width } = useWindowDimensions();
-  const breakpoint = width >= 1024 ? 'desktop' : width >= 600 ? 'tablet' : 'phone';
+  const breakpoint = breakpointOf(width);
   const frame = {
     gutter:
       breakpoint === 'desktop'

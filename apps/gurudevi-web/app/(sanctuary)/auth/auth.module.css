@@ -153,7 +153,7 @@
   align-items: center;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 63.99rem) {
   .authGrid {
     grid-template-columns: 1fr;
     gap: 32px;

@@ -144,7 +144,7 @@
   width: 100%;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 63.99rem) {
   .stageContent {
     flex-direction: column;
     gap: 28px;
@@ -160,7 +160,7 @@
   align-items: flex-start;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 63.99rem) {
   .heroTextPane {
     align-items: center;
     max-width: 100%;
@@ -228,7 +228,7 @@
   max-width: 420px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 47.99rem) {
   .actionButtonGroup {
     flex-direction: column;
     width: 100%;
@@ -757,7 +757,7 @@
   box-shadow: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 63.99rem) {
   .stageContainer {
     padding-top: 4px;
     padding-bottom: 28px;
@@ -774,7 +774,7 @@
 
 }
 
-@media (max-width: 600px) {
+@media (max-width: 47.99rem) {
   .gatewayHeader {
     padding: 14px 18px;
   }
@@ -966,7 +966,7 @@
   margin: 16px 0 28px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 47.99rem) {
   .roleChoiceGrid {
     grid-template-columns: 1fr;
   }

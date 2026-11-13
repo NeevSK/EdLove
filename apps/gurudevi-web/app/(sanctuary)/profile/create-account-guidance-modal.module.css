@@ -87,7 +87,7 @@
   gap: 0.85rem;
 }
 
-@media (max-width: 540px) {
+@media (max-width: 47.99rem) {
   .comparisonGrid {
     grid-template-columns: 1fr;
   }

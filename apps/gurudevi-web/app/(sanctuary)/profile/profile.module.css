@@ -326,14 +326,14 @@
   border-color: var(--w-lamp);
 }
 
-@media (max-width: 1023px) and (min-width: 768px) {
+@media (max-width: 63.99rem) and (min-width: 48rem) {
   .masterDetailLayout {
     grid-template-columns: 17rem minmax(0, 1fr);
     gap: 1.5rem;
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99rem) {
   .masterDetailLayout {
     display: flex;
     flex-direction: column;
@@ -386,7 +386,7 @@
   }
 }
 
-@media (max-width: 36rem) {
+@media (max-width: 47.99rem) {
   .profile,
   .state {
     padding: 0.75rem;

@@ -337,7 +337,7 @@
   color: #365c32;
   background: #edf5e9;
 }
-@media (max-width: 640px) {
+@media (max-width: 47.99rem) {
   .attendanceHeading {
     align-items: start;
     flex-direction: column;
@@ -358,7 +358,7 @@
   gap: clamp(1rem, 2vw, 1.75rem);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99rem) {
   .masterDetailLayout {
     grid-template-columns: minmax(0, 1fr);
   }

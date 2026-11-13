@@ -115,7 +115,7 @@
    Top bars (Layer 1, Layer 2, Layer 4) slide away cleanly.
    ========================================================================= */
 
-@media (max-width: 48rem) {
+@media (max-width: 47.99rem) {
   /* The room tabs leave the header and sit at the foot of the screen, like the phone app. */
   .layer3,
   .deckRoot[data-collapsed="true"] .layer3 {

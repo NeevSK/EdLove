@@ -1427,7 +1427,7 @@ a {
   padding: 0 24px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99rem) {
   .legal-nav {
     top: 68px;
     padding: 0 16px;
@@ -1481,7 +1481,7 @@ a {
   box-sizing: border-box;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 47.99rem) {
   .reading-shell {
     padding: 28px 20px 64px;
   }
@@ -1633,14 +1633,14 @@ a {
 }
 
 /* Responsive Media Queries */
-@media (max-width: 960px) {
+@media (max-width: 63.99rem) {
   .roadmap-grid {
     grid-template-columns: 1fr;
     gap: 24px;
   }
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 63.99rem) {
   html[lang="si"] .desktop-nav,
   html[data-locale="si"] .desktop-nav,
   html[lang="ta"] .desktop-nav,
@@ -1659,7 +1659,7 @@ a {
   }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 63.99rem) {
   .site-header__inner {
     width: min(100% - 32px, 1180px);
     min-height: 68px;

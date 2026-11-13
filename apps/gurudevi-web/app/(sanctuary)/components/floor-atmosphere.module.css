@@ -206,7 +206,7 @@
   color: var(--ink, #111827);
 }
 
-@media (orientation: portrait) and (max-width: 48rem) {
+@media (orientation: portrait) and (max-width: 47.99rem) {
   .atmosphereTrigger {
     bottom: calc(var(--bottom-tabs-block-size, 4.75rem) + 0.75rem);
     right: 0.75rem;

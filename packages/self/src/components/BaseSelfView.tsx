@@ -27,6 +27,7 @@ import { tokens } from '@repo/ui/tokens';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo } from 'react';
 import { useWindowDimensions, View, Text, Pressable, ScrollView } from 'react-native';
+import { isTabletViewport } from '@repo/ui/components/layout';
 
 const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
 
@@ -52,7 +53,7 @@ export function BaseSelfView({
   const { status: networkStatus } = useOfflineStatus();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
-  const isTablet = isLandscape ? height >= 600 : width >= 768;
+  const isTablet = isTabletViewport(width, height);
 
   const allFeatures = useMemo(
     () => [

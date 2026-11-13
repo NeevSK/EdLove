@@ -259,7 +259,7 @@
   background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
 }
 
-@media (max-width: 860px) {
+@media (max-width: 47.99rem) {
   .tocSidebar {
     width: 100%;
     height: auto;

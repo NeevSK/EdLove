@@ -926,7 +926,7 @@
 }
 
 /* On small screens / narrow canvases (<= 48rem), anchored bottom tabs preserve canvas width. */
-@media (max-width: 48rem) {
+@media (max-width: 47.99rem) {
   .shell .body,
   .shell[data-navigation-layout="horizontal"] .body { grid-template-columns: minmax(0, 1fr); }
   .body {
@@ -1179,7 +1179,7 @@
   }
 }
 
-@media (max-width: 26rem) {
+@media (max-width: 47.99rem) {
   .header {
     padding-right: 0.35rem;
     padding-left: 0.5rem;
@@ -1264,7 +1264,7 @@
   pointer-events: auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 47.99rem) {
   .fabDock {
     bottom: calc(max(env(safe-area-inset-bottom), 1rem) + var(--bottom-tabs-block-size));
     right: max(env(safe-area-inset-right), 1rem);

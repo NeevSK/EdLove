@@ -6,7 +6,7 @@
   margin: 12px 0 24px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 47.99rem) {
   .roleChoiceGrid {
     grid-template-columns: 1fr;
   }
