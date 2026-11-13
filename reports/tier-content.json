@@ -27300,7 +27300,7 @@
    "unions": [],
    "importers": {
     "prod": 32,
-    "tests": 0
+    "tests": 1
    },
    "imports": [
     {
@@ -34218,49 +34218,48 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "runtime",
-   "lines": 116,
+   "lines": 15,
    "counts": {
-    "types": 2,
-    "consts": 1,
+    "types": 0,
+    "consts": 0,
     "constructs": 0,
-    "ambient": 1,
+    "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 86,
+    "functionLines": 10,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 0,
+    "reexports": 1,
     "jsx": false
    },
    "exports": [
-    "SyncStatusKind",
-    "SyncStatus",
     "useSyncStatus"
    ],
-   "unions": [
-    {
-     "name": "SyncStatusKind",
-     "union": "'conflict'|'error'|'idle'|'offline'|'success'|'syncing'"
-    }
-   ],
+   "unions": [],
    "importers": {
     "prod": 1,
     "tests": 0
    },
    "imports": [
     {
-     "to": "packages/core/src/effect/bindings/state.ts",
+     "to": "packages/core/src/lib/sync/syncStatus.coordinator.ts",
      "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "C"
+     "toShape": "runtime",
+     "toTier": "F"
     },
     {
-     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
+     "to": "packages/core/src/store/useSyncStatusStore.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/logic/sync/syncStatus.ts",
+     "typeOnly": true,
+     "toShape": "contract+logic",
+     "toTier": "T2"
     }
    ],
    "outside": [
@@ -34877,6 +34876,57 @@
      "typeOnly": true,
      "toShape": "runtime",
      "toTier": "T5"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/lib/sync/syncStatus.coordinator.ts",
+   "package": "packages/core",
+   "folderTier": "F",
+   "shape": "runtime",
+   "lines": 65,
+   "counts": {
+    "types": 0,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 2,
+    "functionLines": 60,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 2,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "retainSyncStatus"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/effect/bindings/state.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "C"
+    },
+    {
+     "to": "packages/core/src/lib/sync/mutationQueue.store.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T4"
+    },
+    {
+     "to": "packages/core/src/store/useSyncStatusStore.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T4"
     }
    ],
    "outside": []
@@ -44009,6 +44059,52 @@
    ]
   },
   {
+   "file": "packages/core/src/logic/sync/syncStatus.ts",
+   "package": "packages/core",
+   "folderTier": "T2",
+   "shape": "contract+logic",
+   "lines": 124,
+   "counts": {
+    "types": 4,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 2,
+    "functionLines": 65,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "SyncStatusKind",
+    "RemotePhase",
+    "SyncStatus",
+    "SyncStatusEvent",
+    "INITIAL_SYNC_STATUS",
+    "reduceSyncStatus"
+   ],
+   "unions": [
+    {
+     "name": "SyncStatusKind",
+     "union": "'conflict'|'error'|'idle'|'offline'|'success'|'syncing'"
+    },
+    {
+     "name": "RemotePhase",
+     "union": "'available'|'connecting'|'off'|'syncing'|'unavailable'"
+    }
+   ],
+   "importers": {
+    "prod": 2,
+    "tests": 1
+   },
+   "imports": [],
+   "outside": []
+  },
+  {
    "file": "packages/core/src/logic/sync/uploadDecision.ts",
    "package": "packages/core",
    "folderTier": "T2",
@@ -49353,6 +49449,47 @@
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "C"
+    }
+   ],
+   "outside": [
+    "zustand"
+   ]
+  },
+  {
+   "file": "packages/core/src/store/useSyncStatusStore.ts",
+   "package": "packages/core",
+   "folderTier": "T4",
+   "shape": "runtime",
+   "lines": 21,
+   "counts": {
+    "types": 1,
+    "consts": 0,
+    "constructs": 1,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "useSyncStatusStore"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/logic/sync/syncStatus.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
     }
    ],
    "outside": [

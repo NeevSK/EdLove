@@ -233,6 +233,7 @@ way up. It is proved with a synthetic table (`pipe_probe`), as the foundation ru
 | **Uploader**: oldest transaction first, one route per table, idempotency key `powersync:<installation>:<clientId>`, complete only when every change is settled | `syncPipe.ts` `createMutationUploader` | Built, G1 |
 | **Failure decision**: retry, wait for sign-in, reject (server wins) or stop, as a policy (`UPLOAD_POLICY`: conflict `serverWins` or `hold`, `maxDefectAttempts`) | `logic/sync/uploadDecision.ts` | Built, G1 |
 | Connection lifecycle: connect, status to the bus, first-sync timeout | `connectionLifecycle.ts` (now takes the SDK's `Authenticator` + `MutationUploader` form) | Built, G1 |
+| Sync status for the person (outbox and connection in one value) | `logic/sync/syncStatus.ts` reducer, `useSyncStatusStore`, `syncStatus.coordinator` (one shared subscription), `useSyncStatus` | Built, G1. No screen shows it yet: the indicator is UI kit work |
 | Rejections to the person | `onRejected` → `presentFailure` (`apps/gurudevi-mobile/src/lib/syncConnection.ts`) | Built |
 | **Sync grant** procedure `identity.syncGrant` (v1) | `apps/sanctuary-api/src/security/syncGrant.ts`; contract `SyncGrant` | Built, G1 (real ES256 signing, verified with jose). Admitted in the composition audit. Lifetime: min(session, 5 min) |
 | **Upload commands** (v1, one per routed table) | API | Owed per table, when a table is admitted |
