@@ -29734,15 +29734,15 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "contract+logic",
-   "lines": 188,
+   "lines": 125,
    "counts": {
-    "types": 3,
+    "types": 4,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 162,
+    "functionLines": 95,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -29759,7 +29759,7 @@
    "unions": [],
    "importers": {
     "prod": 2,
-    "tests": 1
+    "tests": 2
    },
    "imports": [
     {
@@ -29794,7 +29794,7 @@
     }
    ],
    "outside": [
-    "react"
+    "@tanstack/react-query"
    ]
   },
   {
@@ -33882,7 +33882,7 @@
    "unions": [],
    "importers": {
     "prod": 35,
-    "tests": 20
+    "tests": 21
    },
    "imports": [
     {
@@ -48831,7 +48831,7 @@
    "unions": [],
    "importers": {
     "prod": 39,
-    "tests": 26
+    "tests": 27
    },
    "imports": [
     {
@@ -49302,7 +49302,7 @@
    "unions": [],
    "importers": {
     "prod": 14,
-    "tests": 6
+    "tests": 7
    },
    "imports": [
     {

@@ -182,3 +182,26 @@ ZenStack's CLI) or are store leftovers, so they don't load at runtime.
    creation hooks) before wiring either.
 5. **XState:** move to `setup()` when a machine is touched; adopt `validatePersistedSnapshot` and
    `machineVersions` for persisted machines.
+
+## Classifying effects that set state (2026-11-13)
+
+`node scripts/classify-effects.mjs` (add `--list` for locations, or `--json`) sorts every effect
+oxlint reports as setting state by what its body does, in about 3 s. It's a dry run and changes
+nothing. Each bucket has one recipe:
+
+| Bucket | Recipe |
+| --- | --- |
+| `fetch`, `loader` | `useQuery`, or `useLocalFirstQuery` for data cached on the device |
+| `mirror` | compute it during render; or a local query when the initializer reads storage |
+| `controlled` | `const value = prop ?? internal` |
+| `reset` | reset during render, or give the component a `key` |
+| `derive` | compute during render (`useMemo` if it's costly) |
+| `mount-read` | `useSyncExternalStore` with a server snapshot |
+| `subscription`, `timer` | legitimate: keep them, with cleanup |
+| `other` | read it |
+
+**A blind codemod over all of them is not safe.** On 2026-11-13 the 134 split into eight
+buckets, and the biggest (`loader`, 27) needs each loader read. The one uniform family, 12
+hooks in `packages/self`, can't be converted mechanically, because its data layer is missing
+(see the client runtime plan, step 6).
+
