@@ -37,7 +37,7 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 | | | Teaching relations | `learning.relations` | card ([draft](learning/relations.md)) |
 | | | Lessons and materials | `learning.lessons` | skeleton |
 | | | Assignments and submissions | `learning.assignments` | skeleton |
-| | | Assessments and quizzes | `learning.assessments` | skeleton |
+| | | Assessments and quizzes | `learning.assessments` | card ([draft](learning/assessments.md)) |
 | | | Grading | `learning.grading` | skeleton |
 | | | Classroom notes | `learning.notes` | skeleton |
 | Institution operations | `ops` | Schools and academic structure | `ops.institutions` | skeleton |
