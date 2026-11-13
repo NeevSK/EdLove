@@ -234,7 +234,7 @@ function DailyRhythmContent() {
           </Animated.View>
         </Box>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+        <ScrollView className="flex-1">
           <VStack className="gap-4 pb-20">
             {periods.map((period, index) => {
               const active = isPeriodActive(period.start_time || '', period.end_time || '');

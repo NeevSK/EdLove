@@ -226,7 +226,6 @@ export function SelfNavigator({
             renderItem={renderItem}
             horizontal={!isLandscape}
             showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
             contentContainerStyle={
               isLandscape
                 ? { paddingVertical: tokens.spacing.xs, paddingHorizontal: tokens.spacing.xs }

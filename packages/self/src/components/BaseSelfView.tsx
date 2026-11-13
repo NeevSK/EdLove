@@ -287,7 +287,6 @@ export function BaseSelfView({
       />
 
       <ScrollView
-        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         {voiceJournal && <View className="px-lg pt-sm">{voiceJournal}</View>}
@@ -340,7 +339,6 @@ export function BaseSelfView({
               renderItem={renderFeatureItem}
               horizontal={!isLandscape}
               showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
               contentContainerStyle={
                 isLandscape
                   ? { paddingVertical: tokens.spacing.xs, paddingHorizontal: tokens.spacing.xs }

@@ -1,38 +1,7 @@
 @import "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap";
 @import "tailwindcss";
 
-/* Universal Living Scrollbar Harmonization (Zero Raw OS Box Scrollbars) */
-*,
-*::before,
-*::after {
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 60%, var(--w-line, rgba(255, 255, 255, 0.25))) transparent;
-}
-
-::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
-}
-
-::-webkit-scrollbar-track {
-  background: color-mix(in srgb, var(--w-line, rgba(255, 255, 255, 0.05)) 40%, transparent);
-}
-
-::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 55%, var(--w-line, rgba(160, 150, 130, 0.45)));
-  border-radius: 9999px;
-  border: 1.5px solid transparent;
-  background-clip: padding-box;
-  transition: background 0.15s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--w-lamp, #e2c37a);
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
+/* Scroll bars: one rule in the kit (theme/kitCss.ts), not here or in pages. */
 
 /* ==========================================================================
    Sovereign World & Diurnal Theme System

@@ -16,10 +16,8 @@
   max-width: 100%;
   overflow-x: auto;
   padding: 0.25rem 0.5rem;
-  scrollbar-width: none;
 }
 
-.rail[data-orientation="horizontal"]::-webkit-scrollbar { display: none; }
 
 .editorButton,
 .shortcut {

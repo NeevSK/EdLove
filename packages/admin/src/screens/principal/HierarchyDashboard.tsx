@@ -141,7 +141,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
   };
 
   return (
-    <ScrollView className="flex-1 bg-phase-canvas" showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 bg-phase-canvas">
       <VStack className="gap-8 p-5">
         <Pressable
           onPress={() => {

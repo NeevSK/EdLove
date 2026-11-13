@@ -111,7 +111,6 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
           bounces={false}
         >
           {/* Top Bar: Brand Badge & Language Selector */}

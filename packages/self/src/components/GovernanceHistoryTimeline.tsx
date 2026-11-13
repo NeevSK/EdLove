@@ -43,7 +43,7 @@ export default function GovernanceHistoryTimeline({ userId }: GovernanceHistoryT
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+    <ScrollView className="flex-1">
       <View space="lg" className="pb-10">
         {history.map((record: GovernanceRecord, index: number) => (
           <Animated.View key={record.id} entering={FadeInRight.delay(index * 100)}>

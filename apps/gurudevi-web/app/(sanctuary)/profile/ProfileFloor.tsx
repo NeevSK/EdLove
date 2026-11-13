@@ -477,7 +477,7 @@ export function ProfileFloor({
             <div className={styles.masterDetailLayout}>
               {/* Mobile quick-switch pills */}
               <div
-                className={styles.mobileSectionPills}
+                className={`gd-strip ${styles.mobileSectionPills}`}
                 role="tablist"
                 aria-label="Profile sections"
               >

@@ -200,7 +200,7 @@ export function TaskStrip({
 
   const strip = (
     <div className={styles.taskStripShell} data-mobile-idle={isIdleOverview}>
-    <nav aria-label="Open work tabs" className={`${styles.taskStrip} ${shellSlot ? styles.shellTaskStrip : ''} ${className ?? ''}`}>
+    <nav aria-label="Open work tabs" className={`gd-strip ${styles.taskStrip} ${shellSlot ? styles.shellTaskStrip : ''} ${className ?? ''}`}>
       <button
         aria-label={overviewActive ? 'Home' : 'Open Home'}
         aria-current={overviewActive ? 'page' : undefined}

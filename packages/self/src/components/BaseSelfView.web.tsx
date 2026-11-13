@@ -286,7 +286,6 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
           paddingHorizontal: frame.gutter,
           paddingVertical: tokens.spacing.xl,
         }}
-        showsVerticalScrollIndicator={false}
       >
         <View style={{ maxWidth: frame.maxWidth, width: '100%', alignSelf: 'center' }}>
           {networkStatus === 'offline' && (

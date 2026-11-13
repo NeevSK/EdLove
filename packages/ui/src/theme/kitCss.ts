@@ -774,6 +774,21 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-scrollarea-track[data-visibility="scrolling"]{opacity:0;transition:opacity 0.3s ease}
 .gd-scrollarea-track[data-visibility="scrolling"][data-moving="true"],
 .gd-scrollarea-track[data-visibility="scrolling"]:hover{opacity:0.85}
+/* Native scroll bars, one rule for every page (pages never style their own).
+   Desktop: thin and world-coloured. Touch screens and phone width: none standing; the OS shows its
+   own while moving. A row that scrolls sideways (tabs, chips, rails) declares .gd-strip and never
+   shows a bar; the cut-off item at the edge is the hint that there is more. */
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--w-lamp) 60%,var(--w-line)) transparent}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:color-mix(in srgb,var(--w-line) 40%,transparent)}
+::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--w-lamp) 55%,var(--w-line));border-radius:9999px;border:1.5px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--w-lamp)}
+::-webkit-scrollbar-corner{background:transparent}
+.gd-strip{scrollbar-width:none;overscroll-behavior-x:contain}.gd-strip::-webkit-scrollbar{display:none}
+@media (hover:none) and (pointer:coarse), (max-width:48rem){
+*{scrollbar-width:none !important}
+::-webkit-scrollbar{display:none !important;width:0 !important;height:0 !important}
+}
 /* Touch screens and the phone-width layout: no standing scroll bar anywhere, whatever a page asks
    for; it appears while the content moves and fades after, as on the phone app and the OS itself. */
 @media (hover:none) and (pointer:coarse), (max-width:48rem){
