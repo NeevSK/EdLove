@@ -15,7 +15,6 @@
   gap: 0.15rem;
   padding: 0.2rem 0 0;
   overflow-x: auto;
-  scrollbar-width: none;
   border-bottom: 1px solid var(--line);
 }
 
@@ -28,7 +27,7 @@
   padding-inline: clamp(1rem, 2vw, 2rem);
 }
 
-@media (max-width: 48rem) {
+@media (max-width: 47.99rem) {
   .routeTaskStrip { grid-template-columns: minmax(0, 1fr); }
   .routeTaskStrip > :last-child { justify-self: end; }
   .taskStripShell[data-mobile-idle="true"] {
@@ -36,7 +35,6 @@
   }
 }
 
-.taskStrip::-webkit-scrollbar { display: none; }
 
 .overview,
 .taskButton,
@@ -279,7 +277,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 46rem) {
+@media (max-width: 47.99rem) {
   .contextDate {
     margin-left: auto;
   }
@@ -291,11 +289,11 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99rem) {
   .quickAccessTab { display: inline-flex; }
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 47.99rem) {
   .contextMeaning p {
     display: none;
   }
@@ -430,8 +428,8 @@
   text-transform: uppercase;
 }
 
-.phaseIntentText[data-intent="review"] { color: #806b4c; }
-.phaseIntentText[data-intent="plan"] { color: #527388; }
+.phaseIntentText[data-intent="review"] { color: var(--w-lamp-deep); }
+.phaseIntentText[data-intent="plan"] { color: var(--w-lamp-deep); }
 
 .activeDayPill {
   display: inline-flex;
@@ -523,7 +521,7 @@
 .stepperArrow:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 7%, transparent); }
 .stepperArrow:disabled { opacity: 0.3; }
 .activityCount { color: var(--ink-soft); font-size: 0.72rem; white-space: nowrap; }
-@media (max-width: 34rem) {
+@media (max-width: 47.99rem) {
   .temporalBox { gap: 0.2rem 0.4rem; }
   .boxRelativeLabel { display: none; }
   .activeDayPill { min-height: 2.5rem; }
@@ -548,7 +546,7 @@
 }
 
 .modalBackdrop::backdrop {
-  background: color-mix(in srgb, #111 38%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 38%, transparent);
   backdrop-filter: blur(8px);
 }
 
@@ -573,14 +571,10 @@
   animation: modalScaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 47.99rem) {
   .temporalBoxSection[data-compact="true"] .temporalBox { flex-wrap: wrap; }
   .temporalModes { min-width: 11.5rem; }
   .temporalModeButton { min-height: 2.4rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .temporalModePaper { transition-duration: 0.01ms; }
 }
 
 @keyframes modalScaleUp {
@@ -625,13 +619,15 @@
 }
 
 .horizon[data-intent="review"] {
-  background: color-mix(in srgb, var(--paper) 95%, #92754c 5%);
-  border-bottom-color: color-mix(in srgb, var(--line) 80%, #92754c 20%);
+  background: color-mix(in srgb, var(--paper) 95%, var(--w-lamp) 5%);
+  border-bottom-color: color-mix(in srgb, var(--line) 80%, var(--w-lamp) 20%);
+  color: var(--w-on-lamp);
 }
 
 .horizon[data-intent="plan"] {
-  background: color-mix(in srgb, var(--paper) 96%, #4a7590 4%);
-  border-bottom-color: color-mix(in srgb, var(--line) 80%, #4a7590 20%);
+  background: color-mix(in srgb, var(--paper) 96%, var(--w-lamp) 4%);
+  border-bottom-color: color-mix(in srgb, var(--line) 80%, var(--w-lamp) 20%);
+  color: var(--w-on-lamp);
 }
 
 .horizonHeader {
@@ -680,15 +676,15 @@
 }
 
 .intentBadge[data-intent="review"] {
-  background: color-mix(in srgb, #92754c 14%, transparent);
-  color: #7a5e36;
-  border: 1px solid color-mix(in srgb, #92754c 28%, transparent);
+  background: color-mix(in srgb, var(--w-lamp) 14%, transparent);
+  color: var(--w-lamp-deep);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 28%, transparent);
 }
 
 .intentBadge[data-intent="plan"] {
-  background: color-mix(in srgb, #3c6e8e 14%, transparent);
-  color: #2b5570;
-  border: 1px solid color-mix(in srgb, #3c6e8e 28%, transparent);
+  background: color-mix(in srgb, var(--w-lamp) 14%, transparent);
+  color: var(--w-lamp-deep);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 28%, transparent);
 }
 
 .horizonOrientation {
@@ -749,12 +745,8 @@
   gap: 0.35rem;
   padding: 0.2rem 0 0.1rem;
   overflow-x: auto;
-  scrollbar-width: none;
 }
 
-.ribbonStrip::-webkit-scrollbar {
-  display: none;
-}
 
 .ribbonSlot {
   display: flex;

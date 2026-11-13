@@ -153,6 +153,8 @@ const BASE_CSS = `
 .gd-s-tip{width:3px;height:${s(0.15)};margin-left:1px;background:var(--w-ink)}
 .gd-perch{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .gd-dialog{padding:0;margin:auto;border:0;background:transparent;color:var(--w-ink);width:calc(100% - 48px);max-width:420px;overflow:visible}
+/* The one scrim behind every modal, drawer and sheet; pages use var(--gd-scrim), never their own tint. */
+:root{--gd-scrim:color-mix(in srgb, var(--w-ink) 42%, transparent)}[data-mode="dark"]{--gd-scrim:color-mix(in srgb, var(--w-ground) 72%, transparent)}
 .gd-dialog::backdrop{background:color-mix(in srgb, var(--w-ink) 42%, transparent)}
 [data-mode="dark"] .gd-dialog::backdrop,.gd-dialog[data-mode="dark"]::backdrop{background:color-mix(in srgb, var(--w-ground) 72%, transparent)}
 .gd-overlay-panel{display:flex;flex-direction:column;gap:12px;padding:20px;background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);color:var(--w-ink)}
@@ -600,7 +602,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-notice-words{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.gd-notice-title{margin:0;font-family:var(--w-text-label-font);font-size:var(--w-text-label-size);font-weight:var(--w-text-label-weight)}.gd-notice-message{margin:0;font-family:var(--w-text-body-font);font-size:var(--w-text-body-size);line-height:var(--w-text-body-lh)}
 .gd-notice-dismiss,.gd-search-clear{appearance:none;border:0;margin:0;background:none;color:inherit;flex:none;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:20px;display:grid;place-items:center}.gd-notice-dismiss:focus-visible,.gd-search-clear:focus-visible{outline:2px solid var(--w-focus);outline-offset:-2px}
 .gd-search{display:flex;flex-direction:column;gap:6px}.gd-search-well{display:flex;align-items:center;gap:8px;min-height:44px;border-radius:22px;padding:0 4px 0 14px;background:var(--w-sunken);color:var(--w-ink-soft);box-shadow:inset 0 0 0 1px var(--w-line);transition:box-shadow var(--w-light-ms)}
-.gd-search-well:focus-within,.gd-search-well[data-focused="true"]{box-shadow:0 0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent), 0 2px 8px rgba(0, 0, 0, 0.2);border-color:var(--w-lamp, #e2c37a);color:var(--w-lamp, #e2c37a)}.gd-search-clear{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:9999px;border:0;background:color-mix(in srgb, var(--w-ink, #fff) 15%, transparent);color:var(--w-ink, #fff);font-size:14px;cursor:pointer;transition:all 0.15s ease;flex-shrink:0}.gd-search-clear:hover{background:var(--w-lamp, #e2c37a);color:#111;transform:scale(1.08)}.gd-search-kbd{font-size:0.68rem;font-family:monospace;font-weight:600;padding:0.1rem 0.35rem;border-radius:0.3rem;background:color-mix(in srgb, var(--w-ink, #fff) 8%, transparent);border:1px solid var(--w-line, rgba(255, 255, 255, 0.08));color:var(--w-ink-soft, rgba(255, 255, 255, 0.5));flex-shrink:0}.gd-search-input{flex:1;min-width:0;border:0;background:none;outline:none;font-family:var(--w-field-value-font);font-size:var(--w-field-value-size);color:var(--w-ink);padding:8px 0}.gd-search-input::-webkit-search-cancel-button{display:none}
+.gd-search-well:focus-within,.gd-search-well[data-focused="true"]{box-shadow:0 0 0 3px color-mix(in srgb, var(--w-lamp) 25%, transparent), 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);border-color:var(--w-lamp);color:var(--w-lamp)}.gd-search-clear{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:9999px;border:0;background:color-mix(in srgb, var(--w-ink) 15%, transparent);color:var(--w-ink);font-size:14px;cursor:pointer;transition:all 0.15s ease;flex-shrink:0}.gd-search-clear:hover{background:var(--w-lamp);color:var(--w-ink);transform:scale(1.08)}.gd-search-kbd{font-size:0.68rem;font-family:monospace;font-weight:600;padding:0.1rem 0.35rem;border-radius:0.3rem;background:color-mix(in srgb, var(--w-ink) 8%, transparent);border:1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 8%, transparent));color:var(--w-ink-soft, color-mix(in srgb, var(--w-raised) 50%, transparent));flex-shrink:0}.gd-search-input{flex:1;min-width:0;border:0;background:none;outline:none;font-family:var(--w-field-value-font);font-size:var(--w-field-value-size);color:var(--w-ink);padding:8px 0}.gd-search-input::-webkit-search-cancel-button{display:none}
 .gd-search-count{margin:0;font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size);color:var(--w-ink-soft)}.gd-search-count:empty{display:none}
 .gd-number{display:flex;flex-direction:column;gap:6px;align-items:flex-start}.gd-number-well{display:inline-flex;align-items:center;padding:3px;border-radius:var(--w-button-radius);background:var(--w-sunken)}
 .gd-number-step{appearance:none;border:0;margin:0;width:44px;height:44px;border-radius:var(--w-button-radius);background:none;color:var(--w-ink);font-size:20px;cursor:pointer;transition:background-color var(--w-light-ms)}.gd-number-step:hover:not(:disabled){background:var(--w-raised)}.gd-number-step:disabled{opacity:.35;cursor:default}.gd-number-step:focus-visible{outline:2px solid var(--w-focus);outline-offset:-2px}
@@ -786,6 +788,35 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-scrollarea-track[data-visibility="scrolling"]{opacity:0;transition:opacity 0.3s ease}
 .gd-scrollarea-track[data-visibility="scrolling"][data-moving="true"],
 .gd-scrollarea-track[data-visibility="scrolling"]:hover{opacity:0.85}
+/* Reduced motion: one rule for every page. When the person or their device asks for less motion,
+   nothing moves; animations and transitions jump to their end. Pages never write their own block.
+   Waiting signs are left out: they hold a still pose of their own (see .gd-s above). */
+@media (prefers-reduced-motion:reduce){:where(*:not(.gd-s,.gd-s *)),:where(*:not(.gd-s *))::before,:where(*:not(.gd-s *))::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+/* Blur costs a low-end phone a lot. Verger decides: when it says the device can only afford
+   reduced or essential visuals, no surface blurs what is behind it. Pages never gate it themselves. */
+html[data-visual-quality="reduced"] *,html[data-visual-quality="essential"] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* Touch size: on a touch screen nothing you press is smaller than the platform minimum
+   (44px, Apple and WCAG 2.5.5; the phone app uses 48 on Android). One rule for every page; pages
+   never set their own. Inline text links are exempt, as WCAG allows. */
+:root{--gd-touch-min:44px}
+@media (pointer:coarse){
+:where(button,[role="button"],[role="tab"],[role="menuitem"],[role="switch"],[role="option"],select,summary,input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"])):not(.sr-only){min-block-size:var(--gd-touch-min)!important;min-inline-size:var(--gd-touch-min)!important}
+}
+/* Native scroll bars, one rule for every page (pages never style their own).
+   Desktop: thin and world-coloured. Touch screens and phone width: none standing; the OS shows its
+   own while moving. A row that scrolls sideways (tabs, chips, rails) declares .gd-strip and never
+   shows a bar; the cut-off item at the edge is the hint that there is more. */
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--w-lamp) 60%,var(--w-line)) transparent}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:color-mix(in srgb,var(--w-line) 40%,transparent)}
+::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--w-lamp) 55%,var(--w-line));border-radius:9999px;border:1.5px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--w-lamp)}
+::-webkit-scrollbar-corner{background:transparent}
+.gd-strip{scrollbar-width:none;overscroll-behavior-x:contain}.gd-strip::-webkit-scrollbar{display:none}
+@media (hover:none) and (pointer:coarse), (max-width:48rem){
+*{scrollbar-width:none !important}
+::-webkit-scrollbar{display:none !important;width:0 !important;height:0 !important}
+}
 /* Touch screens and the phone-width layout: no standing scroll bar anywhere, whatever a page asks
    for; it appears while the content moves and fades after, as on the phone app and the OS itself. */
 @media (hover:none) and (pointer:coarse), (max-width:48rem){
@@ -1167,10 +1198,10 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   gap: 0.5rem;
   padding: 0.28rem 0.65rem;
-  border-radius: var(--w-radius-md, 0.65rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  border-radius: var(--w-radius-md);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 12%, transparent));
+  background: var(--w-surface, color-mix(in srgb, var(--paper) 94%, var(--ink) 4%));
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   user-select: none;
 }
 
@@ -1178,7 +1209,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 .gd-time-liveClockSvg {
@@ -1192,26 +1223,26 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   background: transparent;
   border: 0;
   padding: 0.1rem 0.25rem;
-  border-radius: var(--w-radius-sm, 0.35rem);
+  border-radius: var(--w-radius-sm);
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
 .gd-time-timeDigitalBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-ink, #fff) 8%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 8%, transparent);
 }
 
 .gd-time-digitalNumbers {
-  font: 700 0.95rem var(--w-font-mono, monospace, ui-monospace);
+  font: 700 0.95rem var(--w-font-mono);
   letter-spacing: 0.05em;
-  color: var(--w-ink, #fff);
+  color: var(--w-ink);
   white-space: nowrap;
 }
 
 .gd-time-periodBadge {
   font-size: 0.65rem;
   font-weight: 700;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
   letter-spacing: 0.04em;
 }
 
@@ -1222,7 +1253,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-time-formatTag {
   font: 600 0.62rem system-ui, sans-serif;
-  color: var(--w-ink-soft, rgba(255, 255, 255, 0.45));
+  color: var(--w-ink-soft, color-mix(in srgb, var(--w-raised) 45%, transparent));
   text-transform: uppercase;
 }
 
@@ -1247,9 +1278,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--paper-light, #171825) 90%, transparent) 40%, color-mix(in srgb, var(--paper, #0e101a) 95%, transparent));
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+  background: radial-gradient(circle, color-mix(in srgb, var(--paper-light) 90%, transparent) 40%, color-mix(in srgb, var(--paper) 95%, transparent));
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--w-shadow-tint) 40%, transparent), 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);
+  border: 1px solid var(--line);
 }
 
 .gd-circadian-clockSvg {
@@ -1260,44 +1291,44 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-circadian-outerRim {
   fill: none;
-  stroke: color-mix(in srgb, var(--w-line, rgba(255, 255, 255, 0.12)) 80%, transparent);
+  stroke: color-mix(in srgb, var(--w-line, color-mix(in srgb, var(--w-raised) 12%, transparent)) 80%, transparent);
   stroke-width: 1;
 }
 
 .gd-circadian-solarBead {
-  fill: var(--w-lamp, #e2c37a);
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp, #e2c37a) 80%, transparent));
+  fill: var(--w-lamp);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp) 80%, transparent));
 }
 
 .gd-circadian-cardinalTick {
-  stroke: var(--w-lamp, #e2c37a);
+  stroke: var(--w-lamp);
   stroke-width: 2;
   stroke-linecap: round;
 }
 
 .gd-circadian-minorTick {
-  stroke: var(--ink-soft, rgba(255, 255, 255, 0.3));
+  stroke: var(--ink-soft);
   stroke-width: 1;
   stroke-linecap: round;
 }
 
 .gd-circadian-hourHand {
-  stroke: var(--ink, #fff);
+  stroke: var(--ink);
   stroke-width: 2.8;
   stroke-linecap: round;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gd-circadian-minuteHand {
-  stroke: var(--w-lamp, #e2c37a);
+  stroke: var(--w-lamp);
   stroke-width: 1.8;
   stroke-linecap: round;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gd-circadian-centerPivot {
-  fill: var(--paper, #11121d);
-  stroke: var(--w-lamp, #e2c37a);
+  fill: var(--paper);
+  stroke: var(--w-lamp);
   stroke-width: 1.5;
 }
 
@@ -1311,7 +1342,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-circadian-digitalTime {
   font: 700 1.15rem monospace;
   letter-spacing: 0.04em;
-  color: var(--ink, #fff);
+  color: var(--ink);
 }
 
 .gd-circadian-phaseLabel {
@@ -1319,7 +1350,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   gap: 0.3rem;
   font: 600 0.72rem system-ui, sans-serif;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -1337,17 +1368,17 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   font-family: monospace;
   font-weight: 600;
   border-radius: 0.35rem;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
-  background: color-mix(in srgb, var(--paper-light, #1f202e) 80%, transparent);
-  color: var(--ink-soft, rgba(255, 255, 255, 0.75));
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  color: var(--ink-soft);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-circadian-stepBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 18%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 18%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 40%, transparent);
+  color: var(--w-lamp);
 }
 
 
@@ -1388,12 +1419,12 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.35rem;
   padding: 0.15rem 0.4rem;
   min-height: 1.95rem;
-  border-radius: var(--w-radius-sm, 4px);
-  border: 1px solid var(--w-line, rgba(19, 30, 39, 0.14));
-  background: color-mix(in srgb, var(--w-surface, #ffffff) 90%, transparent);
+  border-radius: var(--w-radius-sm);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-ink) 14%, transparent));
+  background: color-mix(in srgb, var(--w-surface) 90%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 1px 2px rgba(19, 30, 39, 0.04);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   user-select: none;
   white-space: nowrap;
   max-width: 100%;
@@ -1406,30 +1437,30 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   gap: 0.25rem;
   padding: 0.15rem 0.3rem;
-  border-radius: var(--w-radius-sm, 3px);
+  border-radius: var(--w-radius-sm);
   border: 1px solid transparent;
   background: transparent;
-  color: var(--w-ink, #131e27);
+  color: var(--w-ink);
   cursor: pointer;
   transition: all 0.15s ease;
   touch-action: manipulation;
 }
 
 .gd-combo-nanoClockBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  border-color: var(--w-lamp);
   transform: translateY(-1px);
 }
 
 .gd-combo-nanoClockBtn:focus-visible {
-  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline: 2px solid var(--w-lamp);
   outline-offset: 2px;
 }
 
 .gd-combo-nanoClockTime {
-  font: 700 0.72rem var(--w-font-mono, monospace, ui-monospace);
+  font: 700 0.72rem var(--w-font-mono);
   letter-spacing: 0.04em;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 /* COMPACT TWO-ROW QUIET STACK */
@@ -1439,10 +1470,10 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   gap: 0.35rem;
   padding: 0.35rem 0.6rem;
-  border-radius: var(--w-radius-lg, 0.85rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-radius: var(--w-radius-lg);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 12%, transparent));
+  background: var(--w-surface, color-mix(in srgb, var(--paper) 94%, var(--ink) 4%));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   user-select: none;
   box-sizing: border-box;
 }
@@ -1464,10 +1495,10 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   flex-direction: column;
   gap: clamp(0.45rem, 1.2vw, 0.75rem);
   padding: clamp(0.6rem, 1.8vw, 1.25rem);
-  border-radius: var(--w-radius-lg, clamp(0.75rem, 1.8vw, 1.25rem));
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  border-radius: var(--w-radius-lg);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 12%, transparent));
+  background: var(--w-surface, color-mix(in srgb, var(--paper) 94%, var(--ink) 4%));
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--w-shadow-tint) 18%, transparent);
   width: 100%;
   max-width: 48rem;
   box-sizing: border-box;
@@ -1481,7 +1512,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   flex-wrap: wrap;
   gap: 0.5rem;
   padding-bottom: 0.45rem;
-  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--line);
 }
 
 .gd-combo-comboTitleRow {
@@ -1494,12 +1525,12 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   font: 700 clamp(0.72rem, 1.5vw, 0.82rem) system-ui, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 .gd-combo-comboSubtitle {
   font-size: 0.65rem;
-  color: var(--ink-soft, rgba(255, 255, 255, 0.45));
+  color: var(--ink-soft);
 }
 
 .gd-combo-togglePillsGroup {
@@ -1511,23 +1542,23 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-combo-togglePill {
   padding: 0.2rem 0.55rem;
   border-radius: 9999px;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 60%, transparent);
-  color: var(--ink-soft, rgba(255, 255, 255, 0.65));
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 60%, transparent);
+  color: var(--ink-soft);
   font: 600 0.72rem system-ui, sans-serif;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-combo-togglePill:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-combo-togglePill[data-active="true"] {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 40%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-combo-comboBody {
@@ -1545,7 +1576,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-combo-comboDivider {
   width: 1px;
   align-self: stretch;
-  background: var(--line, rgba(255, 255, 255, 0.08));
+  background: var(--line);
 }
 
 .gd-combo-clockSegment {
@@ -1561,8 +1592,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.4rem;
   padding: 0.75rem 1rem;
   border-radius: 1rem;
-  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 80%, transparent);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.06));
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  border: 1px solid var(--line);
 }
 
 .gd-combo-clockCardTop {
@@ -1580,8 +1611,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.75rem;
   padding: 0.45rem 0.75rem;
   border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--paper-light, #1d1e2e) 85%, transparent);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  background: color-mix(in srgb, var(--paper-light) 85%, transparent);
+  border: 1px solid var(--line);
 }
 
 .gd-combo-timeReadoutGroup {
@@ -1597,16 +1628,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
-  background: color-mix(in srgb, var(--paper, #141522) 80%, transparent);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-combo-clockIconBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  border-color: var(--w-lamp);
   transform: scale(1.05);
 }
 
@@ -1623,20 +1654,20 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-combo-digitalNumbersBtn:hover {
-  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
 }
 
 .gd-combo-digitalNumbers {
   font: 700 clamp(0.88rem, 2.2vw, 1.05rem) var(--font-mono, monospace, ui-monospace);
   letter-spacing: 0.05em;
-  color: var(--ink, #fff);
+  color: var(--ink);
   white-space: nowrap;
 }
 
 .gd-combo-periodBadge {
   font-size: 0.65rem;
   font-weight: 700;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
   letter-spacing: 0.04em;
 }
 
@@ -1650,8 +1681,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.2rem;
   padding: 0.1rem 0.35rem;
   border-radius: 0.4rem;
-  background: color-mix(in srgb, var(--paper, #141522) 80%, transparent);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
+  border: 1px solid var(--line);
 }
 
 .gd-combo-formatBtn {
@@ -1660,23 +1691,23 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   padding: 0.1rem 0.25rem;
   border-radius: 0.25rem;
   font: 600 0.66rem system-ui, sans-serif;
-  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  color: var(--ink-soft);
   cursor: pointer;
   transition: all 0.12s ease;
 }
 
 .gd-combo-formatBtn:hover {
-  color: var(--ink, #fff);
+  color: var(--ink);
 }
 
 .gd-combo-formatBtn[data-active="true"] {
-  color: var(--w-lamp, #e2c37a);
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  color: var(--w-lamp);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .gd-combo-formatDivider {
   font-size: 0.6rem;
-  color: var(--line, rgba(255, 255, 255, 0.2));
+  color: var(--line);
   user-select: none;
 }
 
@@ -1686,8 +1717,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   padding: 0.75rem;
   border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 70%, transparent);
-  border: 1px dashed var(--line, rgba(255, 255, 255, 0.12));
+  background: color-mix(in srgb, var(--paper-light) 70%, transparent);
+  border: 1px dashed var(--line);
   animation: fadeInDial 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1706,13 +1737,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   font: 600 0.68rem system-ui, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 .gd-combo-closeSegmentBtn {
   background: transparent;
   border: 0;
-  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  color: var(--ink-soft);
   font-size: 0.75rem;
   cursor: pointer;
   padding: 0.1rem 0.3rem;
@@ -1721,8 +1752,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-combo-closeSegmentBtn:hover {
-  background: color-mix(in srgb, var(--ink, #fff) 10%, transparent);
-  color: var(--ink, #fff);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
 }
 
 /* Responsive Stacking for Mobile and Tablet */
@@ -1853,10 +1884,10 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 2rem;
   height: 2rem;
   padding: 0;
-  border-radius: var(--w-radius-sm, 0.42rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.16));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 92%, var(--ink, #fff) 6%));
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  border-radius: var(--w-radius-sm);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 16%, transparent));
+  background: var(--w-surface, color-mix(in srgb, var(--paper) 92%, var(--ink) 6%));
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 18%, transparent);
   cursor: pointer;
   overflow: hidden;
   transition: all 0.18s ease;
@@ -1866,12 +1897,12 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-nanoDayBadge:hover {
   transform: translateY(-1px);
-  border-color: var(--w-lamp, #e2c37a);
-  box-shadow: 0 2px 8px rgba(226, 195, 122, 0.3);
+  border-color: var(--w-lamp);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .gd-date-nanoDayBadge:focus-visible {
-  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline: 2px solid var(--w-lamp);
   outline-offset: 2px;
 }
 
@@ -1883,27 +1914,27 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 0.05rem 0;
-  color: var(--w-on-lamp, #fff);
-  background: var(--w-lamp, color-mix(in srgb, var(--paper, #141522) 80%, var(--ink, #fff) 20%));
+  color: var(--w-on-lamp);
+  background: var(--w-lamp, color-mix(in srgb, var(--paper) 80%, var(--ink) 20%));
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .gd-date-nanoDayHeader[data-intent="current"] {
-  background: var(--w-lamp, #10b981);
+  background: var(--w-lamp);
 }
 
 .gd-date-nanoDayHeader[data-intent="review"] {
-  background: color-mix(in srgb, var(--w-lamp, #f59e0b) 60%, var(--w-ink-soft, #888));
+  background: color-mix(in srgb, var(--w-lamp) 60%, var(--w-ink-soft));
 }
 
 .gd-date-nanoDayHeader[data-intent="plan"] {
-  background: color-mix(in srgb, var(--w-lamp, #8b5cf6) 85%, var(--w-surface, #222));
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-surface));
 }
 
 .gd-date-nanoDayNumber {
-  font: 700 0.85rem var(--w-font-mono, monospace, ui-monospace);
+  font: 700 0.85rem var(--w-font-mono);
   line-height: 1.1;
-  color: var(--w-ink, #fff);
+  color: var(--w-ink);
 }
 
 /* --------------------------------------------------------------------------
@@ -1915,9 +1946,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.15rem;
   padding: 0.12rem 0.28rem;
   border-radius: 9999px;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
-  background: color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 92%, var(--ink) 4%);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 10%, transparent);
   backdrop-filter: blur(12px);
   user-select: none;
   font-size: 0.72rem;
@@ -1932,18 +1963,18 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   border: 0;
   border-radius: 9999px;
   background: transparent;
-  color: var(--ink, currentColor);
+  color: var(--ink);
   font: 600 0.74rem system-ui, -apple-system, sans-serif;
   cursor: pointer;
   transition: all 0.18s ease;
 }
 
 .gd-date-compactDateBtn:hover {
-  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
 }
 
 .gd-date-compactDateBtn:focus-visible {
-  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline: 2px solid var(--w-lamp);
   outline-offset: 2px;
 }
 
@@ -1958,7 +1989,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   border: 0;
   border-radius: 0.35rem;
   background: transparent;
-  color: var(--ink, currentColor);
+  color: var(--ink);
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -1966,11 +1997,11 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-chevronBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--ink, #fff) 10%, transparent);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
 }
 
 .gd-date-chevronBtn:focus-visible {
-  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline: 2px solid var(--w-lamp);
   outline-offset: 2px;
 }
 
@@ -1989,18 +2020,18 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-phasePip[data-intent="current"] {
-  background: #10b981;
-  box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+  background: var(--w-lamp);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--w-lamp) 50%, transparent);
 }
 
 .gd-date-phasePip[data-intent="review"] {
-  background: #f59e0b;
-  box-shadow: 0 0 5px rgba(245, 158, 11, 0.4);
+  background: var(--w-lamp);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--w-lamp) 40%, transparent);
 }
 
 .gd-date-phasePip[data-intent="plan"] {
-  background: #8b5cf6;
-  box-shadow: 0 0 5px rgba(139, 92, 246, 0.4);
+  background: var(--w-lamp);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--w-lamp) 40%, transparent);
 }
 
 /* --------------------------------------------------------------------------
@@ -2011,10 +2042,10 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   gap: 0.45rem;
   padding: 0.3rem 0.65rem;
-  border-radius: var(--w-radius-md, 0.85rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: var(--w-radius-md);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 12%, transparent));
+  background: var(--w-surface, color-mix(in srgb, var(--paper) 92%, var(--ink) 4%));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 15%, transparent);
   user-select: none;
 }
 
@@ -2026,15 +2057,15 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   border-radius: 0.5rem;
   border: 1px solid transparent;
   background: transparent;
-  color: var(--ink, #fff);
+  color: var(--ink);
   font: 700 0.88rem Georgia, serif;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-date-mediumDateTrigger:hover {
-  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .gd-date-mediumDayBadge {
@@ -2046,9 +2077,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: 1.85rem;
   padding: 0;
   border-radius: 0.38rem;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
-  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 95%, transparent);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 95%, transparent);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 15%, transparent);
   cursor: pointer;
   overflow: hidden;
   transition: all 0.15s ease;
@@ -2057,8 +2088,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-mediumDayBadge:hover {
   transform: translateY(-1px);
-  border-color: var(--w-lamp, #e2c37a);
-  box-shadow: 0 2px 6px rgba(226, 195, 122, 0.25);
+  border-color: var(--w-lamp);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-lamp) 25%, transparent);
 }
 
 .gd-date-mediumDayBadgeHeader {
@@ -2069,27 +2100,27 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 0.05rem 0;
-  color: var(--w-on-lamp, #fff);
-  background: var(--w-lamp, color-mix(in srgb, var(--paper, #141522) 80%, var(--ink, #fff) 20%));
+  color: var(--w-on-lamp);
+  background: var(--w-lamp, color-mix(in srgb, var(--paper) 80%, var(--ink) 20%));
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .gd-date-mediumDayBadgeHeader[data-intent="current"] {
-  background: var(--w-lamp, #10b981);
+  background: var(--w-lamp);
 }
 
 .gd-date-mediumDayBadgeHeader[data-intent="review"] {
-  background: color-mix(in srgb, var(--w-lamp, #f59e0b) 60%, var(--w-ink-soft, #888));
+  background: color-mix(in srgb, var(--w-lamp) 60%, var(--w-ink-soft));
 }
 
 .gd-date-mediumDayBadgeHeader[data-intent="plan"] {
-  background: color-mix(in srgb, var(--w-lamp, #8b5cf6) 85%, var(--w-surface, #222));
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-surface));
 }
 
 .gd-date-mediumDayBadgeNumber {
-  font: 700 0.8rem var(--w-font-mono, monospace, ui-monospace);
+  font: 700 0.8rem var(--w-font-mono);
   line-height: 1.1;
-  color: var(--w-ink, #fff);
+  color: var(--w-ink);
 }
 
 .gd-date-mediumPhasePill {
@@ -2098,9 +2129,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.25rem;
   padding: 0.15rem 0.45rem;
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  color: var(--w-lamp);
   font: 600 0.72rem system-ui, sans-serif;
   cursor: pointer;
 }
@@ -2112,16 +2143,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 1.65rem;
   height: 1.65rem;
   border-radius: 0.45rem;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 70%, transparent);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 70%, transparent);
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.15s ease;
 }
 
 .gd-date-mediumCalendarBtn:hover {
-  background: var(--w-lamp, #e2c37a);
-  border-color: var(--w-lamp, #e2c37a);
+  background: var(--w-lamp);
+  border-color: var(--w-lamp);
 }
 
 /* --------------------------------------------------------------------------
@@ -2132,10 +2163,10 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   flex-direction: column;
   gap: clamp(0.35rem, 1vw, 0.5rem);
   padding: clamp(0.5rem, 1.5vw, 0.85rem) clamp(0.65rem, 1.8vw, 1.1rem);
-  border-radius: var(--w-radius-lg, clamp(0.85rem, 1.8vw, 1.25rem));
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%));
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border-radius: var(--w-radius-lg);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 12%, transparent));
+  background: var(--w-surface, color-mix(in srgb, var(--paper) 92%, var(--ink) 4%));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   user-select: none;
   width: 100%;
   max-width: 48rem;
@@ -2151,7 +2182,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   justify-content: space-between;
   gap: clamp(0.4rem, 1.2vw, 0.75rem);
   padding-bottom: clamp(0.35rem, 1vw, 0.5rem);
-  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }
 
@@ -2170,7 +2201,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 /* Pure Date Heading */
 .gd-date-pureDateHeading {
   font: 700 clamp(0.95rem, 2.5vw, 1.22rem) Georgia, "Times New Roman", serif;
-  color: var(--ink, #fff);
+  color: var(--ink);
   letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
@@ -2186,17 +2217,17 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: clamp(1.65rem, 3.5vw, 2rem);
   padding: 0;
   border-radius: clamp(0.4rem, 1vw, 0.6rem);
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.12)));
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 10%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, var(--line));
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  color: var(--w-lamp);
   cursor: pointer;
   transition: all 0.18s ease;
 }
 
 .gd-date-calendarIconBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
-  color: var(--w-on-lamp, #1a1608);
+  background: color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  border-color: var(--w-lamp);
+  color: var(--w-on-lamp);
   transform: translateY(-1px);
 }
 
@@ -2204,13 +2235,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: clamp(0.85rem, 2vw, 1.05rem);
   height: clamp(0.85rem, 2vw, 1.05rem);
   color: currentColor;
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp) 40%, transparent));
 }
 
 .gd-date-calendarGlyph {
   font-size: clamp(0.8rem, 2vw, 1rem);
   line-height: 1;
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp) 40%, transparent));
 }
 
 /* Stepper Chevrons on Top Flanks */
@@ -2221,9 +2252,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: clamp(1.7rem, 3.8vw, 2.1rem);
   height: clamp(1.7rem, 3.8vw, 2.1rem);
   border-radius: clamp(0.45rem, 1vw, 0.65rem);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
-  color: var(--ink, currentColor);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  color: var(--ink);
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
@@ -2231,9 +2262,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-stepperBtnFlank:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 40%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-date-stepperBtnFlank:disabled {
@@ -2262,8 +2293,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   flex: 1;
   max-width: 22rem;
   border-radius: clamp(0.55rem, 1vw, 0.75rem);
-  background: color-mix(in srgb, var(--paper, #1a1610) 75%, var(--ink, #fff) 8%);
-  border: 1px solid color-mix(in srgb, var(--line, rgba(255, 255, 255, 0.1)) 60%, transparent);
+  background: color-mix(in srgb, var(--paper) 75%, var(--ink) 8%);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
   isolation: isolate;
   white-space: nowrap;
 }
@@ -2275,9 +2306,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   left: 2px;
   width: calc((100% - 4px) / 3);
   border-radius: 0.6rem;
-  background: var(--paper-light, #25201a);
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.15)));
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  background: var(--paper-light);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, var(--line));
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 15%, transparent);
   transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -2302,14 +2333,14 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   border: 0;
   border-radius: 0.6rem;
   background: transparent;
-  color: var(--ink-soft, rgba(255, 255, 255, 0.6));
+  color: var(--ink-soft);
   cursor: pointer;
   white-space: nowrap;
   transition: color 0.18s ease;
 }
 
 .gd-date-phaseBtn[aria-pressed="true"] {
-  color: var(--ink, #fff);
+  color: var(--ink);
 }
 
 .gd-date-phaseBtnContent {
@@ -2340,14 +2371,14 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-phaseSvg {
   display: inline-block;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
   opacity: 0.9;
-  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp) 40%, transparent));
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease, color 0.15s ease;
 }
 
 .gd-date-phaseBtn[aria-pressed="true"] .gd-date-phaseSvg {
-  color: var(--w-on-lamp, #1a1608);
+  color: var(--w-on-lamp);
   opacity: 1;
 }
 
@@ -2366,7 +2397,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-date-phaseEmoji {
   font-size: clamp(0.64rem, 1.5vw, 0.76rem);
   opacity: 0.9;
-  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp) 40%, transparent));
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
 }
 
@@ -2397,17 +2428,17 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: clamp(1.7rem, 3.8vw, 2.1rem);
   padding: 0;
   border-radius: clamp(0.45rem, 1vw, 0.6rem);
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.12)));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, var(--line));
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  color: var(--w-lamp);
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .gd-date-datePickerIconBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 22%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 22%, transparent);
+  border-color: var(--w-lamp);
   transform: scale(1.08);
 }
 
@@ -2418,16 +2449,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   margin-right: 0.5rem;
   padding: 0.2rem 0.45rem;
   border-radius: 0.4rem;
-  background: #111;
-  color: var(--w-lamp, #e2c37a);
+  background: var(--w-ink);
+  color: var(--w-lamp);
   font: 600 0.7rem system-ui, sans-serif;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   transform: translateX(4px);
   transition: opacity 0.15s ease, transform 0.15s ease;
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 30%, transparent);
 }
 
 .gd-date-pickerZone:hover .gd-date-datePickerTooltip {
@@ -2445,9 +2476,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-date-dateDirectInput {
   padding: 0.25rem 0.55rem;
   border-radius: 0.55rem;
-  border: 1px solid var(--w-lamp, #e2c37a);
-  background: var(--paper, #11121d);
-  color: var(--ink, #fff);
+  border: 1px solid var(--w-lamp);
+  background: var(--paper);
+  color: var(--ink);
   font: 600 0.85rem monospace;
   outline: none;
   width: 7.8rem;
@@ -2465,13 +2496,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-dateDirectConfirmBtn {
-  background: var(--w-lamp, #e2c37a);
-  color: #111;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 
 .gd-date-dateDirectCancelBtn {
-  background: color-mix(in srgb, var(--ink, #fff) 12%, transparent);
-  color: var(--ink, #fff);
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+  color: var(--ink);
 }
 
 /* --------------------------------------------------------------------------
@@ -2482,7 +2513,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   justify-content: flex-start;
   padding-top: 0.45rem;
-  border-top: 1px dashed var(--line, rgba(255, 255, 255, 0.08));
+  border-top: 1px dashed var(--line);
   animation: leapsSlideIn 180ms ease-out;
 }
 
@@ -2501,9 +2532,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.25rem;
   padding: 0.22rem 0.55rem;
   border-radius: 9999px;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 70%, transparent);
-  color: var(--ink-soft, rgba(255, 255, 255, 0.7));
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 70%, transparent);
+  color: var(--ink-soft);
   font: 600 0.72rem system-ui, sans-serif;
   cursor: pointer;
   white-space: nowrap;
@@ -2511,15 +2542,15 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-leapPillBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 35%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 35%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-date-leapPillBtn[data-active="true"] {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  border-color: var(--w-lamp);
+  color: var(--w-lamp);
 }
 
 .gd-date-leapEmoji {
@@ -2533,10 +2564,10 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 100%;
   max-width: 24rem;
   padding: 0.85rem;
-  border-radius: var(--w-radius-lg, 1rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.15));
-  background: var(--w-surface-elevated, var(--paper-light, #25201a));
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+  border-radius: var(--w-radius-lg);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 15%, transparent));
+  background: var(--w-surface-elevated, var(--paper-light));
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--w-shadow-tint) 28%, transparent);
   animation: traySlideDown 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -2558,24 +2589,24 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border-radius: var(--w-radius-sm, 0.5rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.1));
+  border-radius: var(--w-radius-sm);
+  border: 1px solid var(--w-line, color-mix(in srgb, var(--w-raised) 10%, transparent));
   background: transparent;
-  color: var(--w-ink, currentColor);
+  color: var(--w-ink);
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-date-trayNavBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  border-color: var(--w-lamp);
+  color: var(--w-lamp);
 }
 
 .gd-date-monthTitle {
-  font: 700 0.95rem var(--w-font-display, Georgia, "Times New Roman", serif);
-  color: var(--w-ink, #fff);
+  font: 700 0.95rem var(--w-font-display);
+  color: var(--w-ink);
 }
 
 /* Weekday Labels */
@@ -2589,7 +2620,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-weekdayLabel {
   font: 600 0.7rem system-ui, sans-serif;
-  color: var(--w-ink-soft, rgba(255, 255, 255, 0.45));
+  color: var(--w-ink-soft, color-mix(in srgb, var(--w-raised) 45%, transparent));
   text-transform: uppercase;
 }
 
@@ -2607,19 +2638,19 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   justify-content: center;
   aspect-ratio: 1;
-  border-radius: var(--w-radius-sm, 0.5rem);
+  border-radius: var(--w-radius-sm);
   border: 1px solid transparent;
   background: transparent;
-  color: var(--w-ink, currentColor);
-  font: 500 0.82rem var(--w-font-mono, monospace, system-ui);
+  color: var(--w-ink);
+  font: 500 0.82rem var(--w-font-mono);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-date-dayCell:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-date-dayCell[data-outside="true"] {
@@ -2628,16 +2659,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-dayCell[data-today="true"] {
   font-weight: 700;
-  border-color: var(--w-lamp, #e2c37a);
-  color: var(--w-lamp, #e2c37a);
+  border-color: var(--w-lamp);
+  color: var(--w-lamp);
 }
 
 .gd-date-dayCell[data-selected="true"] {
-  background: var(--w-lamp, #e2c37a);
-  color: var(--w-on-lamp, #111);
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
   font-weight: 700;
-  border-color: var(--w-lamp, #e2c37a);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
+  border-color: var(--w-lamp);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--w-lamp) 40%, transparent);
 }
 
 .gd-date-dayCell:disabled {
@@ -2651,11 +2682,11 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 3px;
   height: 3px;
   border-radius: 9999px;
-  background: var(--w-lamp, #e2c37a);
+  background: var(--w-lamp);
 }
 
 .gd-date-dayCell[data-selected="true"] .gd-date-dayPip {
-  background: var(--w-on-lamp, #111);
+  background: var(--w-on-lamp);
 }
 
 /* --------------------------------------------------------------------------
@@ -2760,18 +2791,18 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
   border-radius: 0.85rem;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
-  background: color-mix(in srgb, var(--paper-light, #1c1d2c) 80%, transparent);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 10%, transparent);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   width: 100%;
 }
 
 .gd-searchbar-searchWell[data-focused="true"] {
-  border-color: var(--w-lamp, #e2c37a);
-  background: color-mix(in srgb, var(--paper-light, #1c1d2c) 95%, transparent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent),
-              0 2px 8px rgba(0, 0, 0, 0.2);
+  border-color: var(--w-lamp);
+  background: color-mix(in srgb, var(--paper-light) 95%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp) 25%, transparent),
+              0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);
 }
 
 .gd-searchbar-searchIcon {
@@ -2783,7 +2814,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-searchbar-searchWell[data-focused="true"] .gd-searchbar-searchIcon {
   opacity: 1;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 .gd-searchbar-searchInput {
@@ -2791,13 +2822,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   min-width: 0;
   border: 0;
   background: transparent;
-  color: var(--ink, #fff);
+  color: var(--ink);
   font: 500 0.88rem system-ui, -apple-system, sans-serif;
   outline: none;
 }
 
 .gd-searchbar-searchInput::placeholder {
-  color: var(--ink-soft, rgba(255, 255, 255, 0.45));
+  color: var(--ink-soft);
 }
 
 /* Remove default webkit search decoration cancel buttons */
@@ -2815,8 +2846,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: 1.35rem;
   border-radius: 9999px;
   border: 0;
-  background: color-mix(in srgb, var(--ink, #fff) 15%, transparent);
-  color: var(--ink, #fff);
+  background: color-mix(in srgb, var(--ink) 15%, transparent);
+  color: var(--ink);
   font-size: 0.72rem;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -2824,8 +2855,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-searchbar-clearBtn:hover {
-  background: var(--w-lamp, #e2c37a);
-  color: #111;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
   transform: scale(1.08);
 }
 
@@ -2835,9 +2866,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   font-weight: 600;
   padding: 0.1rem 0.35rem;
   border-radius: 0.3rem;
-  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
-  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
   flex-shrink: 0;
 }
 

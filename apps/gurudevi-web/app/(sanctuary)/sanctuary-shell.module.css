@@ -156,12 +156,12 @@
 .headerAction[aria-current="page"] {
   background: color-mix(in srgb, var(--w-raised) 72%, var(--w-lamp) 8%);
   border-color: var(--w-line);
-  color: var(--w-ink);
+  color: var(--w-on-lamp);
 }
 .commandPaletteTrigger:hover {
   background: color-mix(in srgb, var(--w-raised) 72%, var(--w-lamp) 8%);
   border-color: var(--w-line);
-  color: var(--w-ink);
+  color: var(--w-on-lamp);
 }
 .profileAction {
   background: var(--w-raised);
@@ -426,6 +426,7 @@
   height: 1.25rem;
   border-radius: 999px 0 0 999px;
   background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 .shell[data-sidebar="collapsed"] .rail .navLabel {
   position: absolute;
@@ -522,6 +523,7 @@
   height: 1.35rem;
   border-radius: 999px;
   background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 .navSymbol {
   display: inline-flex;
@@ -755,7 +757,7 @@
   border: 1px solid color-mix(in srgb, var(--w-danger) 35%, var(--w-line));
   border-radius: 0.65rem;
   background: color-mix(in srgb, var(--w-raised) 88%, var(--w-danger) 12%);
-  color: var(--w-ink);
+  color: var(--w-on-danger);
   font-size: 0.82rem;
 }
 .srOnly {
@@ -926,7 +928,7 @@
 }
 
 /* On small screens / narrow canvases (<= 48rem), anchored bottom tabs preserve canvas width. */
-@media (max-width: 48rem) {
+@media (max-width: 47.99rem) {
   .shell .body,
   .shell[data-navigation-layout="horizontal"] .body { grid-template-columns: minmax(0, 1fr); }
   .body {
@@ -1040,7 +1042,8 @@
     border-radius: 999px;
     background: var(--w-lamp);
     transform: translateX(-50%);
-  }
+  color: var(--w-on-lamp);
+}
   .rail nav {
     width: 100%;
     min-width: 0;
@@ -1124,7 +1127,8 @@
     border-radius: 999px;
     background: var(--w-lamp);
     transform: translateX(-50%);
-  }
+  color: var(--w-on-lamp);
+}
   .navLink[aria-current="page"]::after {
     display: none;
   }
@@ -1133,7 +1137,8 @@
     height: 1.85rem;
     border-radius: 50%;
     background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
-  }
+  color: var(--w-on-lamp);
+}
   .shell[data-sidebar="collapsed"] .navLink[aria-current="page"] {
     border-color: transparent;
     background: transparent;
@@ -1153,7 +1158,8 @@
     border-radius: 999px;
     background: var(--w-lamp);
     transform: translateX(-50%);
-  }
+  color: var(--w-on-lamp);
+}
   .navLink[aria-current="page"] .navSymbol {
     color: var(--w-lamp-deep);
     transform: none;
@@ -1179,7 +1185,7 @@
   }
 }
 
-@media (max-width: 26rem) {
+@media (max-width: 47.99rem) {
   .header {
     padding-right: 0.35rem;
     padding-left: 0.5rem;
@@ -1264,7 +1270,7 @@
   pointer-events: auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 47.99rem) {
   .fabDock {
     bottom: calc(max(env(safe-area-inset-bottom), 1rem) + var(--bottom-tabs-block-size));
     right: max(env(safe-area-inset-right), 1rem);

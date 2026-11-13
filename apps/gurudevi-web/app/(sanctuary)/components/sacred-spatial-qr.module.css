@@ -55,10 +55,11 @@
   position: absolute;
   inset: -20px;
   border-radius: 32px;
-  background: radial-gradient(circle at 50% 50%, rgba(239, 132, 31, 0.18), transparent 70%);
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--w-lamp) 18%, transparent), transparent 70%);
   filter: blur(12px);
   pointer-events: none;
   animation: auraBreathe 4s ease-in-out infinite alternate;
+  color: var(--w-on-lamp);
 }
 
 @keyframes auraBreathe {
@@ -73,10 +74,10 @@
 }
 
 .qrSurface {
-  background: #ffffff;
+  background: var(--w-raised);
   padding: 20px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px -10px rgba(19, 30, 39, 0.15), 0 0 0 1px rgba(239, 132, 31, 0.25);
+  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--w-shadow-tint) 15%, transparent), 0 0 0 1px color-mix(in srgb, var(--w-lamp) 25%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,11 +85,11 @@
 }
 
 .mandalaSurface {
-  background: radial-gradient(circle at 50% 50%, rgba(245, 237, 214, 0.6) 0%, rgba(255, 255, 255, 0.95) 100%);
-  border: 1px solid rgba(239, 132, 31, 0.3);
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--w-raised) 60%, transparent) 0%, color-mix(in srgb, var(--w-raised) 95%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
   padding: 24px;
   border-radius: 20px;
-  box-shadow: 0 12px 36px -8px rgba(239, 132, 31, 0.2);
+  box-shadow: 0 12px 36px -8px color-mix(in srgb, var(--w-lamp) 20%, transparent);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -99,7 +100,7 @@
 
 .mandalaSurface:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 44px -8px rgba(239, 132, 31, 0.3);
+  box-shadow: 0 16px 44px -8px color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .mandalaPrompt {
@@ -108,7 +109,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #ef841f;
+  color: var(--w-lamp-deep);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -129,25 +130,25 @@
   font-weight: 600;
   padding: 8px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(239, 132, 31, 0.4);
-  background: rgba(255, 255, 255, 0.9);
-  color: #131e27;
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 40%, transparent);
+  background: color-mix(in srgb, var(--w-raised) 90%, transparent);
+  color: var(--w-ink);
   cursor: pointer;
   transition: all 0.2s ease;
   backdrop-filter: blur(8px);
 }
 
 .actionButton:hover {
-  background: #ef841f;
-  color: #ffffff;
-  border-color: #ef841f;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
+  border-color: var(--w-lamp);
   transform: translateY(-1px);
 }
 
 .actionButtonActive {
-  background: #ef841f;
-  color: #ffffff;
-  border-color: #ef841f;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
+  border-color: var(--w-lamp);
 }
 
 .scanLine {
@@ -156,10 +157,11 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #ef841f, transparent);
-  box-shadow: 0 0 8px #ef841f;
+  background: linear-gradient(90deg, transparent, var(--w-lamp), transparent);
+  box-shadow: 0 0 8px var(--w-lamp);
   animation: scanSweep 2.5s ease-in-out infinite;
   pointer-events: none;
+  color: var(--w-on-lamp);
 }
 
 @keyframes scanSweep {

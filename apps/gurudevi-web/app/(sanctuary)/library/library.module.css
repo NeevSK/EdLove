@@ -226,7 +226,7 @@
   margin: 0.25rem 0;
 }
 
-@media (max-width: 42rem) {
+@media (max-width: 47.99rem) {
   .overview {
     grid-template-columns: 1fr;
   }
@@ -254,7 +254,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99rem) {
   .masterDetailLayout {
     display: block;
   }
@@ -627,14 +627,14 @@
     color-mix(in srgb, var(--lotus) 12%, var(--paper)) 0%,
     color-mix(in srgb, var(--paper-light) 90%, transparent) 100%
   );
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   position: relative;
   overflow: hidden;
   align-items: center;
   margin-bottom: 1.5rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 47.99rem) {
   .heroBanner {
     grid-template-columns: 1fr;
     gap: 1.2rem;
