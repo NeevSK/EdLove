@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Activity,
   ArrowRight,
@@ -25,9 +23,10 @@ import {
   Wifi,
   WifiOff,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '../../../lib/i18n';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import {
   FeaturedFlow,
   PUBLIC_SUPPORT_CONFIG,
@@ -233,13 +232,13 @@ export function SupportHub({
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Link
-              href="/intro"
+            <a
+              href={resolveSurfaceUrl('public', '/intro')}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-ink/20 bg-white/80 px-5 py-2.5 font-sans text-xs font-bold text-ink hover:bg-white hover:border-ink transition-all shadow-xs"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
               <span>Walk Through with Tutii (1 min)</span>
-            </Link>
+            </a>
 
             {config.bannerNotice.actionHref && (
               <a
@@ -975,12 +974,12 @@ export function SupportHub({
                 status.
               </p>
             </div>
-            <Link
-              href="/status"
+            <a
+              href={resolveSurfaceUrl('public', '/status')}
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-6 py-2.5 font-sans text-xs font-bold text-paper-light hover:bg-lotus transition-colors"
             >
               Open Live Status Page ↗
-            </Link>
+            </a>
           </div>
         </section>
       )}

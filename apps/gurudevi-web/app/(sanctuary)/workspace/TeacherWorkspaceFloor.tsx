@@ -1,5 +1,3 @@
-'use client';
-
 import {
   ArrowRight,
   BookOpen,
@@ -13,7 +11,7 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { Pebble, Button, Card } from '@repo/ui/components/web';
 import styles from './teacher-workspace.module.css';
@@ -116,7 +114,7 @@ export function TeacherWorkspaceFloor({
           />
 
           <Link
-            href={`/workspace/classroom/${encodeURIComponent(activeClass.id)}`}
+            to="/workspace/classroom/$id" params={{ id: activeClass.id }}
             style={{ textDecoration: 'none' }}
           >
             <Button label="Classroom Hub" variant="secondary" size="md" icon={BookOpen} />
@@ -145,19 +143,7 @@ export function TeacherWorkspaceFloor({
           </div>
 
           <div className={styles.pebbleSlot}>
-            <Link href="/qr" style={{ textDecoration: 'none' }}>
-              <Pebble
-                title="Scan QR"
-                emoji="📷"
-                rhythm="Tokens"
-                gear="auto"
-                titleAttr="Scan Student QR Tokens"
-              />
-            </Link>
-          </div>
-
-          <div className={styles.pebbleSlot}>
-            <Link href="/workspace/gradebook" style={{ textDecoration: 'none' }}>
+            <Link to="/workspace/gradebook" style={{ textDecoration: 'none' }}>
               <Pebble
                 title="Gradebook"
                 emoji="🎓"
@@ -169,7 +155,7 @@ export function TeacherWorkspaceFloor({
           </div>
 
           <div className={styles.pebbleSlot}>
-            <Link href="/workspace/submissions" style={{ textDecoration: 'none' }}>
+            <Link to="/workspace/submissions" style={{ textDecoration: 'none' }}>
               <Pebble
                 title="Assignments"
                 emoji="📥"
@@ -181,7 +167,7 @@ export function TeacherWorkspaceFloor({
           </div>
 
           <div className={styles.pebbleSlot}>
-            <Link href="/workspace/timetable" style={{ textDecoration: 'none' }}>
+            <Link to="/workspace/timetable" style={{ textDecoration: 'none' }}>
               <Pebble
                 title="Timetable"
                 emoji="📅"
@@ -206,7 +192,7 @@ export function TeacherWorkspaceFloor({
           {classrooms.map((cls) => (
             <Link
               key={cls.id}
-              href={`/workspace/classroom/${encodeURIComponent(cls.id)}`}
+              to="/workspace/classroom/$id" params={{ id: cls.id }}
               className={styles.classroomCardItem}
             >
               <div className={styles.classHeader}>
@@ -236,7 +222,7 @@ export function TeacherWorkspaceFloor({
             Today's Timetable Rhythm
           </h3>
           <Link
-            href="/workspace/timetable"
+            to="/workspace/timetable"
             style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--w-lamp-deep)', textDecoration: 'none' }}
           >
             Full Week Schedule →

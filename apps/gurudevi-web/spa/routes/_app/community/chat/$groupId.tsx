@@ -3,6 +3,7 @@ import { GroupChatFloor } from '../../../../../app/(sanctuary)/community/chat/[g
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/community/chat/$groupId')({
+  head: () => ({ meta: [{ title: 'Discussion Circle | Gurudevi Sanctuary' }] }),
   component: CommunityChatGroupIdScreen,
 });
 

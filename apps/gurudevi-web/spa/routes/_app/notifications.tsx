@@ -4,6 +4,7 @@ import { NotificationsFloor } from '../../../app/(sanctuary)/notifications/Notif
 import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/_app/notifications')({
+  head: () => ({ meta: [{ title: 'Notifications | Gurudevi Sanctuary' }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(context.sources.notifications()),
   component: NotificationsScreen,
 });

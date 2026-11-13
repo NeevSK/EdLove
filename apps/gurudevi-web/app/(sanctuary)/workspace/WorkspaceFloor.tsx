@@ -1,11 +1,8 @@
-'use client';
-
 import { resolvePracticeAvailability } from '@repo/core/logic/registry/capabilityManifest';
 import { resolveTemporalCoordinates, resolveTemporalIntent } from '@repo/core/logic/workbench';
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
 import {
@@ -472,7 +469,7 @@ export function WorkspaceFloor({
       setError('Close another Workspace task before opening this tool.');
       return;
     }
-    router.push(feature.href);
+    void router.navigate({ href: feature.href });
   }
 
   function focusTask(task: WorkbenchTaskDescriptor) {
@@ -481,7 +478,7 @@ export function WorkspaceFloor({
       setOverview(false);
       return;
     }
-    if (task.route !== '/workspace') router.push(task.route);
+    if (task.route !== '/workspace') void router.navigate({ href: task.route });
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {
@@ -492,7 +489,7 @@ export function WorkspaceFloor({
       task.featureId === attendanceTask.featureId &&
       new URLSearchParams(window.location.search).has('task')
     ) {
-      router.replace('/workspace');
+      void router.navigate({ href: '/workspace', replace: true });
     }
   }
 
@@ -746,7 +743,7 @@ export function WorkspaceFloor({
         onOpenOverview={() => {
           setOverview(true);
           if (new URLSearchParams(window.location.search).has('task')) {
-            router.replace('/workspace');
+            void router.navigate({ href: '/workspace', replace: true });
           }
           requestAnimationFrame(() =>
             document.getElementById('workspace-catalog-title')?.scrollIntoView({
@@ -898,34 +895,34 @@ export function WorkspaceFloor({
             <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               {voice === 'student' ? (
                 <>
-                  <Link href="/self/attendance" className={styles.primary}>
+                  <Link to="/workspace/attendance" className={styles.primary}>
                     {posture.actionText}
                   </Link>
-                  <Link href="/workspace/timetable" className={styles.secondary}>
+                  <Link to="/workspace/timetable" className={styles.secondary}>
                     View timetable
                   </Link>
-                  <Link href="/self" className={styles.secondary}>
+                  <Link to="/self" className={styles.secondary}>
                     Quiet journal
                   </Link>
                 </>
               ) : voice === 'guardian' ? (
                 <>
-                  <Link href="/workspace" className={styles.primary}>
+                  <Link to="/workspace" className={styles.primary}>
                     {posture.actionText}
                   </Link>
-                  <Link href="/community" className={styles.secondary}>
+                  <Link to="/community" className={styles.secondary}>
                     Community dialogues
                   </Link>
-                  <Link href="/library" className={styles.secondary}>
+                  <Link to="/library" className={styles.secondary}>
                     Family guides
                   </Link>
                 </>
               ) : voice === 'principal' && coordinates.intent === 'plan' ? (
                 <>
-                  <Link href="/workspace/events" className={styles.primary}>
+                  <Link to="/workspace/events" className={styles.primary}>
                     {posture.actionText}
                   </Link>
-                  <Link href="/workspace/school" className={styles.secondary}>
+                  <Link to="/workspace/school" className={styles.secondary}>
                     School profile
                   </Link>
                 </>
@@ -1105,7 +1102,7 @@ export function WorkspaceFloor({
                     <h2 id="attendance-title">{classroom?.name ?? 'Daily attendance'}</h2>
                     {classroom?.id ? (
                       <Link
-                        href={`/workspace/classroom/${encodeURIComponent(classroom.id)}`}
+                        to="/workspace/classroom/$id" params={{ id: classroom.id }}
                         style={{
                           fontSize: '0.85rem',
                           fontWeight: 600,
@@ -1260,10 +1257,10 @@ export function WorkspaceFloor({
                           flexWrap: 'wrap',
                         }}
                       >
-                        <Link href="/workspace/badges" className={styles.kioskLink}>
+                        <Link to="/workspace/badges" className={styles.kioskLink}>
                           📇 Print Class Badges
                         </Link>
-                        <Link href="/workspace/kiosk" className={styles.kioskLink}>
+                        <Link to="/workspace/kiosk" className={styles.kioskLink}>
                           Open Doorway Kiosk Scanner →
                         </Link>
                       </div>
@@ -1366,7 +1363,7 @@ export function WorkspaceFloor({
                   </p>
                 ) : null}
                 {focused?.route ? (
-                  <Link className={styles.catalogOpenButton} href={focused.route}>
+                  <Link className={styles.catalogOpenButton} to={focused.route}>
                     Open full tool →
                   </Link>
                 ) : null}

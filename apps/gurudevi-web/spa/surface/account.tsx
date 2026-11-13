@@ -1,5 +1,6 @@
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
-import { type AuthorizedEntryResult, mapAuthorizedEntry } from '@repo/core/web-authorized-entry';
+import { createAuthenticatedV1Client } from '@repo/core/api/v1/client';
+import type { AuthorizedEntryResult } from '@repo/core/web-authorized-entry';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { AuthProvider, useAuth } from '../../app/(sanctuary)/auth/AuthProvider';
@@ -9,9 +10,9 @@ import { getExploreSampleAnnouncements } from '../../lib/community/announcements
 import { loadCommunityGroups } from '../../lib/community/groups';
 import { resolveSanctuaryDevSession } from '../../lib/sanctuary/devSession';
 import { createBrowserSupabaseClient } from '../../lib/supabase/browser';
-import { ACTIVE_BOND_COOKIE, authoritativeFacts, readV1Entry } from '../../lib/sanctuary/v1Entry';
+import { readAccountEntry } from '../../lib/sanctuary/accountEntry';
 import { type Access, AccessScope } from './access';
-import type { AccountHome, Sources } from './sources';
+import type { AccountHome, Commands, Sources } from './sources';
 
 /** A signed-in person: Supabase proves who they are, Sanctuary says what they may do. */
 export function Surface({ children }: { readonly children: ReactNode }) {
@@ -29,7 +30,7 @@ function AccountAccess({ children }: { readonly children: ReactNode }) {
   const token = state.session?.access_token;
   const entry = useQuery({
     queryKey: ['session', 'entry', subject],
-    queryFn: () => readEntry(token ?? '', subject ?? ''),
+    queryFn: () => readAccountEntry(token ?? '', subject ?? ''),
     enabled: !preview && state.status === 'authenticated' && Boolean(token && subject),
     staleTime: 60_000,
   });
@@ -54,12 +55,11 @@ function AccountAccess({ children }: { readonly children: ReactNode }) {
   return <AccessScope access={access}>{children}</AccessScope>;
 }
 
-async function readEntry(token: string, subject: string): Promise<AuthorizedEntryResult> {
+function apiOrigin(): string {
   const origin = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/+$/, '');
   if (!origin) throw new Error('Sanctuary services are not configured in this build.');
   assertSecureApiUrl(origin);
-  const entry = await readV1Entry(origin, token);
-  return mapAuthorizedEntry(authoritativeFacts(entry, subject, cookie(ACTIVE_BOND_COOKIE)));
+  return origin;
 }
 
 function fromEntry(entry: AuthorizedEntryResult): Access {
@@ -135,7 +135,27 @@ export const sources: Sources = {
       return { kind: 'unavailable' };
     },
   }),
+  accountDeletion: () => ({
+    queryKey: ['v1', 'identity', 'deletion'],
+    queryFn: () => v1().identity.deletion.status(),
+  }),
 };
+
+export const commands: Commands = {
+  requestAccountDeletion: () => v1().identity.deletion.request(),
+  cancelAccountDeletion: () => v1().identity.deletion.cancel(),
+};
+
+let client: ReturnType<typeof createAuthenticatedV1Client> | undefined;
+
+/** The account's v1 client, made on first use so a build without an API origin still starts. */
+function v1() {
+  client ??= createAuthenticatedV1Client({
+    origin: apiOrigin(),
+    getAccessToken: async () => (await accessToken()) ?? null,
+  });
+  return client;
+}
 
 async function accessToken(): Promise<string | undefined> {
   const { data } = (await createBrowserSupabaseClient()?.auth.getSession()) ?? {

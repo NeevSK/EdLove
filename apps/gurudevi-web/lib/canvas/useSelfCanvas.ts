@@ -1,5 +1,3 @@
-'use client';
-
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import {
   createSelfAccessContext,

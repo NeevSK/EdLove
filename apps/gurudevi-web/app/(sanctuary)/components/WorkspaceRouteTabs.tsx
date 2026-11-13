@@ -1,12 +1,10 @@
-'use client';
-
 import type { WorkbenchTaskDescriptor } from '@repo/core/types';
 import {
   resolveTemporalCoordinates,
   resolveTemporalIntent,
   toIsoDate,
 } from '@repo/core/logic/workbench';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { useEffect, useMemo } from 'react';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
@@ -82,19 +80,19 @@ export function WorkspaceRouteTabs({
 
   function focusTask(task: WorkbenchTaskDescriptor) {
     workbench.focus(task.taskKey);
-    if (pathname !== task.route) router.push(task.route);
+    if (pathname !== task.route) void router.navigate({ href: task.route });
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {
     const result = workbench.close(task.taskKey);
     if (pathname !== task.route) return;
     if (result.kind === 'overview') {
-      router.push('/workspace');
+      void router.navigate({ href: '/workspace' });
       return;
     }
     if (result.kind === 'focused-task') {
       const nextTask = result.state.tasks.find((item) => item.taskKey === result.taskKey);
-      if (nextTask) router.push(nextTask.route);
+      if (nextTask) void router.navigate({ href: nextTask.route });
     }
   }
 
@@ -106,7 +104,7 @@ export function WorkspaceRouteTabs({
         onCloseTask={closeTask}
         onFocusTask={focusTask}
         onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
-        onOpenOverview={() => router.push('/workspace')}
+        onOpenOverview={() => void router.navigate({ href: '/workspace' })}
         quickAccessItems={features.map((feature) => ({
           id: feature.id,
           label: feature.label,

@@ -3,6 +3,7 @@ import { LibraryAtlasDesk } from '../../../../app/(sanctuary)/library/map/Librar
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/map')({
+  head: () => ({ meta: [{ title: 'Library Map | Gurudevi Sanctuary' }] }),
   component: LibraryMapScreen,
 });
 

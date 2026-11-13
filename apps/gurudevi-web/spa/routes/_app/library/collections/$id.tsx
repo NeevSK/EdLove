@@ -3,6 +3,7 @@ import { CollectionShelfDesk } from '../../../../../app/(sanctuary)/library/coll
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/collections/$id')({
+  head: () => ({ meta: [{ title: 'Collection Details | Gurudevi Sanctuary' }] }),
   component: LibraryCollectionsIdScreen,
 });
 

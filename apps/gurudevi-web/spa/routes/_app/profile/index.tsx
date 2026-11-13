@@ -3,6 +3,7 @@ import { ProfileFloor } from '../../../../app/(sanctuary)/profile/ProfileFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/profile/')({
+  head: () => ({ meta: [{ title: 'Profile | Gurudevi Sanctuary' }] }),
   component: ProfileScreen,
 });
 

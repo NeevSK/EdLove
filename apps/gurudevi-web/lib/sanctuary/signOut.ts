@@ -33,7 +33,6 @@ export async function executeSovereignSignOut(redirectTo = '/'): Promise<void> {
   let token: string | undefined;
   let sessionRead = false;
   let remoteRevocationConfirmed = false;
-  let cookiesCleared = false;
   let localSessionCleared = false;
   let transientStorageCleared = true;
 
@@ -73,27 +72,7 @@ export async function executeSovereignSignOut(redirectTo = '/'): Promise<void> {
   }
   const remoteRevocationRequired = !sessionRead || Boolean(token);
 
-  // 2. Clear the HTTP-only session cookies a server set (Next). The client build keeps its session
-  // in cookies the browser client writes itself, which step 3 clears; it has no server to ask.
-  if (process.env.GURUDEVI_SESSION_COOKIES === 'browser') {
-    cookiesCleared = true;
-  } else {
-    try {
-      const response = await fetch('/auth/signout', {
-        method: 'POST',
-        credentials: 'same-origin',
-        cache: 'no-store',
-        redirect: 'error',
-        signal: AbortSignal.timeout(5000),
-      });
-      cookiesCleared = response.ok;
-      if (response.body) await response.body.cancel();
-    } catch {
-      cookiesCleared = false;
-    }
-  }
-
-  // 3. Clear Supabase local client session if present
+  // 2. Clear this browser's session. The browser client keeps it; no server sets session cookies.
   if (supabase) {
     try {
       await supabase.auth.signOut({ scope: 'local' });
@@ -111,7 +90,7 @@ export async function executeSovereignSignOut(redirectTo = '/'): Promise<void> {
     } catch {
       transientStorageCleared = false;
     }
-    const localCleanupComplete = cookiesCleared && localSessionCleared && transientStorageCleared;
+    const localCleanupComplete = localSessionCleared && transientStorageCleared;
     if (!localCleanupComplete || (remoteRevocationRequired && !remoteRevocationConfirmed)) {
       throw new SignOutIncompleteError(localCleanupComplete, remoteRevocationConfirmed);
     }

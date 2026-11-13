@@ -3,6 +3,7 @@ import { PlanFloor } from '../../../../app/(sanctuary)/workspace/plan/PlanFloor'
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/plan')({
+  head: () => ({ meta: [{ title: 'Plan & Calm Notices | Gurudevi Sanctuary' }] }),
   component: WorkspacePlanScreen,
 });
 

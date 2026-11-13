@@ -1,4 +1,5 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
+import { render } from '@/tests/support/render';
 import { useVerger } from '@repo/verger-react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { GurudeviWebVerger } from '../../lib/runtime/GurudeviWebVerger';

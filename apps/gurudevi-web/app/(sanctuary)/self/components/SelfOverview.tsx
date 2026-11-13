@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { SelfFeatureManifestItem } from '@repo/self/features/catalog';

@@ -1,5 +1,3 @@
-'use client';
-
 import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { ToastHost, toast } from '@repo/ui/components/web';
 import { useEffect } from 'react';

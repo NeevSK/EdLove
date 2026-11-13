@@ -1,5 +1,3 @@
-'use client';
-
 import type { SceneGroundMode, WorkspaceWallpaper } from '@repo/core/types';
 import { experienceOf } from '@repo/core/verger';
 import { DEFAULT_WORLD, isWorldId, phaseTokens, resolveWorld, WORLDS } from '@repo/ui/theme';

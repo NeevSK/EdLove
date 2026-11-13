@@ -3,6 +3,7 @@ import { KioskFloor } from '../../../../app/(sanctuary)/workspace/kiosk/KioskFlo
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/kiosk')({
+  head: () => ({ meta: [{ title: 'Doorway Ingress Kiosk | Gurudevi Sanctuary' }] }),
   component: WorkspaceKioskScreen,
 });
 

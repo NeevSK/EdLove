@@ -1,5 +1,3 @@
-'use client';
-
 import { Battery, BatteryCharging, BatteryLow, BatteryMedium, Sparkles, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';

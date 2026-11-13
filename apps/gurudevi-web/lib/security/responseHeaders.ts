@@ -1,7 +1,6 @@
 /**
- * The security headers every Gurudevi web response carries, as pure data: Next's proxy sets them
- * per request, and each Vite build writes them for its host (`_headers`). One definition, so the
- * two cannot drift while both serve.
+ * The security headers every Gurudevi web response carries, as pure data: each build writes them
+ * for its host (`_headers`), so Explore and sanctuary come from one definition.
  */
 
 /** Where the browser may connect besides its own origin: the auth provider and the API. */
@@ -33,20 +32,18 @@ function parse(value: string | null | undefined): URL | null {
 export interface HeaderOptions {
   /** Origins the page may connect to besides itself. Explore passes none: it never leaves the browser. */
   readonly connect: readonly string[];
-  /** Next needs inline scripts for its runtime; the Vite builds have none. */
-  readonly inlineScripts: boolean;
   /** Development servers need `eval` and their HMR sockets. */
   readonly development: boolean;
 }
 
 export function securityHeaders({
   connect,
-  inlineScripts,
   development,
 }: HeaderOptions): Readonly<Record<string, string>> {
   const scriptSrc = [
     "'self'",
-    ...(inlineScripts || development ? ["'unsafe-inline'"] : []),
+    // The built app has no inline script; only a development server injects one.
+    ...(development ? ["'unsafe-inline'"] : []),
     ...(development ? ["'unsafe-eval'"] : []),
   ];
   const connectSrc = ["'self'", ...connect, ...(development ? ['ws:', 'http:'] : [])];

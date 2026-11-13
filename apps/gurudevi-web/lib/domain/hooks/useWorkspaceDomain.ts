@@ -1,5 +1,3 @@
-'use client';
-
 import { type QueryScope, scopedQueryKey } from '@repo/core/lib/clientStateFoundation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';

@@ -1,8 +1,5 @@
-'use client';
-
 import React, { useState, useMemo, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, useLocation } from '@tanstack/react-router';
 import { KIT_CATEGORIES, type KitCategoryGroup } from '../kitNavigationData';
 import { ScrollArea, SearchField } from '@repo/ui/components/web';
 import styles from './kit-toc.module.css';
@@ -32,7 +29,7 @@ export function KitTableOfContents({
   collapsible = true,
   className = '',
 }: KitTableOfContentsProps) {
-  const pathname = usePathname();
+  const pathname = useLocation({ select: (location) => location.pathname });
   const [filterQuery, setFilterQuery] = useState('');
   const [sortBy, setSortBy] = useState<'domain' | 'az'>('domain');
   
@@ -195,7 +192,7 @@ export function KitTableOfContents({
                         return (
                           <Link
                             key={comp.id}
-                            href={href}
+                            to={href}
                             className={styles.componentLink}
                             data-active={isSelected}
                             onClick={handleClick}

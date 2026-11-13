@@ -1,21 +1,6 @@
 import { WORLD_IDS } from '@repo/ui/theme';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import RootLayout from '@/app/layout';
-
-vi.mock('@/app/components/PDPAConsentBanner', () => ({ PDPAConsentBanner: () => null }));
-vi.mock('next/headers', () => ({
-  cookies: vi.fn().mockResolvedValue({
-    get: vi.fn().mockReturnValue(undefined),
-  }),
-}));
-
-const layout = await RootLayout({ children: <span>Content</span> });
-const html = renderToStaticMarkup(layout);
-const page = new DOMParser().parseFromString(html, 'text/html');
-const bootstrap = Array.from(page.scripts).find((script) =>
-  script.textContent?.includes('gurudevi_world'),
-)?.textContent;
+import { afterEach, describe, expect, it } from 'vitest';
+import { applySavedPreferences } from '@/lib/runtime/savedPreferences';
 
 afterEach(() => {
   localStorage.clear();
@@ -31,19 +16,23 @@ afterEach(() => {
   }
 });
 
-describe('World selection before hydration', () => {
+describe('World selection before the first render (G1 / jsdom)', () => {
   it.each(WORLD_IDS)('restores the saved %s world from the canonical registry', (world) => {
     localStorage.setItem('gurudevi_world', world);
-    expect(bootstrap).toBeTruthy();
-    new Function(bootstrap ?? '')();
+    applySavedPreferences();
     expect(document.documentElement.getAttribute('data-world')).toBe(world);
   });
 
   it('ignores unknown stored values and preserves the legacy appearance preference', () => {
     localStorage.setItem('gurudevi_world', 'unrecognized-world');
     localStorage.setItem('gurudevi_appearance_preset', 'night');
-    new Function(bootstrap ?? '')();
+    applySavedPreferences();
     expect(document.documentElement.hasAttribute('data-world')).toBe(false);
     expect(document.documentElement.getAttribute('data-mode')).toBe('dark');
+  });
+
+  it('picks the phase of the hour, as the scene clock does', () => {
+    applySavedPreferences(document.documentElement, new Date(2026, 10, 13, 2));
+    expect(document.documentElement.getAttribute('data-phase')).toBe('night');
   });
 });

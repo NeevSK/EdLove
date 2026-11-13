@@ -3,6 +3,7 @@ import { ClassroomDetailFloor } from '../../../../../app/(sanctuary)/workspace/c
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/classroom/$id')({
+  head: () => ({ meta: [{ title: 'Classroom Hub | Gurudevi Sanctuary' }] }),
   component: ClassroomScreen,
 });
 

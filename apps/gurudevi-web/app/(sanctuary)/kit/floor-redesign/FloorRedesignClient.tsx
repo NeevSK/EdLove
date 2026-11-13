@@ -1,7 +1,5 @@
-'use client';
-
 import React, { useState, useRef } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import {
   MoreHorizontal,
   SlidersHorizontal,
@@ -229,7 +227,7 @@ export function FloorRedesignClient() {
         {/* Navigation Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.875rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Link href="/kit" style={{ color: '#131e27', fontWeight: 700, textDecoration: 'none' }}>
+            <Link to="/kit" style={{ color: '#131e27', fontWeight: 700, textDecoration: 'none' }}>
               🪷 Kit Hub
             </Link>
             <span style={{ color: '#a8a29e' }}>/</span>

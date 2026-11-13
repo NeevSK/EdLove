@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 import {

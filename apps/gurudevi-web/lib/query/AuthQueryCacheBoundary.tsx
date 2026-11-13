@@ -1,5 +1,3 @@
-'use client';
-
 import { startEventsReceiver } from '@repo/core/api/eventsReceiver';
 import { disposeAccountBoundaryQueries } from '@repo/core/lib/clientStateFoundation';
 import { useQueryClient } from '@tanstack/react-query';

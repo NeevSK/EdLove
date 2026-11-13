@@ -1,5 +1,3 @@
-'use client';
-
 import { FormEvent, useEffect, useReducer } from 'react';
 import { useTranslation } from '../../../lib/i18n';
 

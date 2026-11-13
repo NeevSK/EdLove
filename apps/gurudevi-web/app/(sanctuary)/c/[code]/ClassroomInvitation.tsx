@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
+
 
 /** A shared classroom link: open it in the app if installed, get the app, or join on the web. */
 export function ClassroomInvitation({ code: rawCode }: Readonly<{ code: string }>) {
@@ -10,8 +11,6 @@ export function ClassroomInvitation({ code: rawCode }: Readonly<{ code: string }
     `utm_source=invite&inviteCode=${cleanCode}&intent=classroom`,
   );
   const playStoreUrl = `https://play.google.com/store/apps/details?id=app.gurudevi.sanctuary&referrer=${playStoreReferrer}`;
-  const webCommunityUrl = `/community?inviteCode=${encodeURIComponent(cleanCode)}`;
-
   return (
     <main
       style={{
@@ -113,7 +112,8 @@ export function ClassroomInvitation({ code: rawCode }: Readonly<{ code: string }
           </a>
 
           <Link
-            href={webCommunityUrl}
+            to="/community"
+            search={{ inviteCode: cleanCode }}
             style={{
               display: 'block',
               backgroundColor: '#F5EDD6',

@@ -2,11 +2,10 @@
 /**
  * Web stack gate (decision: docs/decisions/2026-11-12-web-stack-astro-vite.md).
  *
- * Two ratchets in tooling/web-stack-ratchet.json, both only allowed to go down:
+ * 1. No `next` import anywhere in apps/gurudevi-web: the app is Vite and TanStack Router.
  *
- * 1. nextImportFiles: screens and libraries in apps/gurudevi-web/app and lib importing `next/*`
- *    (Next's own route files are not counted: they leave with Next). The client build runs them
- *    through stand-ins in apps/gurudevi-web/spa/next.
+ * The ratchets in tooling/web-stack-ratchet.json, each only allowed to go down:
+ *
  * 2. exploreBackendClients: backend clients found in the Explore bundle. Explore has no account, no
  *    API and no database, so the goal is an empty list. A client not on the list fails; one on the
  *    list that has gone is reported so the list can shrink.
@@ -14,9 +13,8 @@
  *    straight from web code. The web client reaches data only through the v1 API; the goal is 0.
  * 4. surfaceBranches: places a screen asks whether it is on Explore (`isExplore`, `isExploreMode`,
  *    `mode === 'explore'`, `surface === 'explore'`). Explore and sanctuary are one app; screens read
- *    the session and the surface's sources instead. Next route files are not counted: they leave
- *    with Next. Client routes are: a route handing a floor `mode` or `isExplore` is a floor still
- *    waiting to read the session itself. The goal is 0.
+ *    the session and the surface's sources instead. A route handing a floor `mode` or `isExplore`
+ *    is a floor still waiting to read the session itself. The goal is 0.
  *
  *   node scripts/check-web-stack.mjs            check (builds the Explore bundle first)
  *   node scripts/check-web-stack.mjs --no-build check an existing apps/gurudevi-web/dist-explore
@@ -52,16 +50,13 @@ const NEXT_IMPORT = /from\s+['"]next(\/[a-z-]+)?['"]/;
 const SURFACE_BRANCH = /\bisExplore(Mode)?\b|\b(mode|surface) === 'explore'/g;
 const DATABASE_CALL =
   /\.from\(\s*['"`][a-z_]+['"`]\s*\)|\.rpc\(\s*['"`]|\.storage\s*\.\s*from\(|\.channel\(\s*['"`]|\.removeChannel\(/g;
-// Next's own route files (page.tsx, layout.tsx, route.ts, …) go when Next goes; what is counted is
-// the screens and libraries that still need rewriting before then.
-const NEXT_ROUTE_FILE = /^(page|layout|route|error|global-error|not-found|loading|template|default)\.tsx?$/;
-const nextImportFiles = ['app', 'lib']
+const nextImports = ['app', 'lib', 'spa', 'tests']
   .flatMap((d) => walk(path.join(WEB, d)))
-  .filter((f) => !NEXT_ROUTE_FILE.test(path.basename(f)))
-  .filter((f) => NEXT_IMPORT.test(fs.readFileSync(f, 'utf8'))).length;
+  .filter((f) => NEXT_IMPORT.test(fs.readFileSync(f, 'utf8')))
+  .map((f) => path.relative(WEB, f));
 const surfaceBranches = ['app/(sanctuary)', 'lib/sanctuary', 'spa']
   .flatMap((d) => walk(path.join(WEB, d)))
-  .filter((f) => !/\.test\.tsx?$/.test(f) && !NEXT_ROUTE_FILE.test(path.basename(f)))
+  .filter((f) => !/\.test\.tsx?$/.test(f))
   .reduce((sum, f) => sum + (fs.readFileSync(f, 'utf8').match(SURFACE_BRANCH)?.length ?? 0), 0);
 const directDatabaseCalls = ['app', 'lib', 'spa']
   .flatMap((d) => walk(path.join(WEB, d)))
@@ -88,10 +83,7 @@ const exploreBackendClients = Object.entries(BACKEND_CLIENTS)
 
 const ceiling = JSON.parse(fs.readFileSync(RATCHET, 'utf8'));
 const failures = [];
-if (nextImportFiles > ceiling.nextImportFiles)
-  failures.push(
-    `next/* importing files rose to ${nextImportFiles} (ceiling ${ceiling.nextImportFiles})`,
-  );
+if (nextImports.length) failures.push(`next is imported again: ${nextImports.join(', ')}`);
 if (surfaceBranches > ceiling.surfaceBranches)
   failures.push(`surface branches rose to ${surfaceBranches} (ceiling ${ceiling.surfaceBranches})`);
 if (directDatabaseCalls > ceiling.directDatabaseCalls)
@@ -102,7 +94,7 @@ const added = exploreBackendClients.filter((c) => !ceiling.exploreBackendClients
 if (added.length) failures.push(`Explore bundle gained backend clients: ${added.join(', ')}`);
 const gone = ceiling.exploreBackendClients.filter((c) => !exploreBackendClients.includes(c));
 
-console.log(`next/* importing files   ${nextImportFiles} (ceiling ${ceiling.nextImportFiles})`);
+console.log(`next imports             ${nextImports.length} (allowed 0)`);
 console.log(`surface branches         ${surfaceBranches} (ceiling ${ceiling.surfaceBranches})`);
 console.log(
   `direct database calls    ${directDatabaseCalls} (ceiling ${ceiling.directDatabaseCalls})`,
@@ -118,13 +110,13 @@ if (failures.length) {
 }
 if (
   args.has('--lower') &&
-  (nextImportFiles < ceiling.nextImportFiles ||
+  (surfaceBranches < ceiling.surfaceBranches ||
     directDatabaseCalls < ceiling.directDatabaseCalls ||
     gone.length)
 ) {
   fs.writeFileSync(
     RATCHET,
-    `${JSON.stringify({ ...ceiling, nextImportFiles: Math.min(nextImportFiles, ceiling.nextImportFiles), directDatabaseCalls: Math.min(directDatabaseCalls, ceiling.directDatabaseCalls), surfaceBranches: Math.min(surfaceBranches, ceiling.surfaceBranches), exploreBackendClients: ceiling.exploreBackendClients.filter((c) => !gone.includes(c)) }, null, 2)}\n`,
+    `${JSON.stringify({ ...ceiling, directDatabaseCalls: Math.min(directDatabaseCalls, ceiling.directDatabaseCalls), surfaceBranches: Math.min(surfaceBranches, ceiling.surfaceBranches), exploreBackendClients: ceiling.exploreBackendClients.filter((c) => !gone.includes(c)) }, null, 2)}\n`,
   );
   console.log('Ceilings lowered.');
 }

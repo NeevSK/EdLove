@@ -1,5 +1,3 @@
-'use client';
-
 import { useSyncExternalStore } from 'react';
 import type { SectorKind } from '@repo/core/types/Perspective';
 import type { CivicRoleId } from '@repo/core/types/CivicRole';

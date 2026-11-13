@@ -3,6 +3,7 @@ import { ToolsWorkbenchDesk } from '../../../../app/(sanctuary)/library/tools/To
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/tools')({
+  head: () => ({ meta: [{ title: 'Knowledge Tools | Gurudevi Sanctuary' }] }),
   component: LibraryToolsScreen,
 });
 

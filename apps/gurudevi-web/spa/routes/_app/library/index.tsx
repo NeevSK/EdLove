@@ -3,6 +3,7 @@ import { LibraryFloor } from '../../../../app/(sanctuary)/library/LibraryFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/')({
+  head: () => ({ meta: [{ title: 'Library | Gurudevi Sanctuary' }] }),
   component: LibraryScreen,
 });
 

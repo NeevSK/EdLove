@@ -1,5 +1,3 @@
-'use client';
-
 import type { TemporalIntent } from '@repo/core/logic/workbench';
 import type { ReactNode } from 'react';
 import styles from './workbench.module.css';

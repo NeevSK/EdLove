@@ -1,5 +1,3 @@
-'use client';
-
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
 import {
   resolveTemporalCoordinates,
@@ -134,18 +132,23 @@ const SELF_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
   },
 ];
 
+export type SelfPractice = 'breath' | 'journal';
+
 export function SelfFloor({
   accountId,
   displayName,
   initialPracticing = false,
   initialCapacity,
   capacities = [],
+  practice,
 }: Readonly<{
   accountId?: string;
   displayName: string;
   initialPracticing?: boolean;
   initialCapacity?: string;
   capacities?: readonly string[];
+  /** A practice a link asked to open, such as a quick-access shortcut. */
+  practice?: SelfPractice;
 }>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
   const [isPracticing, setIsPracticing] = useState(initialPracticing || accountId === 'explore');
@@ -439,14 +442,14 @@ export function SelfFloor({
     openFeature(feature);
   }
 
+  // Opens on each new request, including from a shortcut while Self is already showing.
   useEffect(() => {
-    const practice = new URLSearchParams(window.location.search).get('practice');
     if (practice === 'breath') {
       openFeature(requiredFeature('breath_guide'));
     } else if (practice === 'journal') {
       openFireJournal();
     }
-  }, []);
+  }, [practice]);
 
   const journalActive = !showOverview && focusedTask?.featureId === fireJournalFeature.id;
   const wellbeingTaskActive =

@@ -3,6 +3,7 @@ import { TuitionFloor } from '../../../../app/(sanctuary)/workspace/tuition/Tuit
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/tuition')({
+  head: () => ({ meta: [{ title: 'Tuition & Fees | Gurudevi Sanctuary' }] }),
   component: WorkspaceTuitionScreen,
 });
 

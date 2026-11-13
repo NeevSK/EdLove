@@ -1,12 +1,10 @@
-'use client';
-
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   getClientConsentStatus,
   PDPA_CONSENT_EVENT,
   setClientConsentStatus,
 } from '../../lib/privacy/consent';
+import { resolveSurfaceUrl } from '../../lib/surface-urls';
 
 export function PDPAConsentBanner() {
   const [mounted, setMounted] = useState(false);
@@ -79,13 +77,13 @@ export function PDPAConsentBanner() {
             In compliance with Sri Lanka’s Personal Data Protection Act (PDPA No. 9 of 2022),
             essential sanctuary operations do not depend on optional telemetry. We request your
             consent to measure application health and learning performance. Review our{' '}
-            <Link
-              href="/privacy"
+            <a
+              href={resolveSurfaceUrl('public', '/privacy')}
               className="text-action underline underline-offset-2 hover:opacity-80"
               style={{ color: 'var(--color-action, #a85022)' }}
             >
               Privacy Policy
-            </Link>{' '}
+            </a>{' '}
             for complete transparency.
           </p>
         </div>

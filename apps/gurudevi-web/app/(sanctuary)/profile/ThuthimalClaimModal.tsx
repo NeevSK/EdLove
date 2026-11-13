@@ -1,5 +1,3 @@
-'use client';
-
 import { thuthimalAPI } from '@repo/core/api/thuthimal';
 import React, { useState } from 'react';
 import styles from './thuthimal-claim-modal.module.css';

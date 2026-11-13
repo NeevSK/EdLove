@@ -3,6 +3,7 @@ import { BadgeSheetFloor } from '../../../../app/(sanctuary)/workspace/badges/Ba
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/badges')({
+  head: () => ({ meta: [{ title: 'Print Student Badges & QR Passes | Gurudevi Sanctuary' }] }),
   component: WorkspaceBadgesScreen,
 });
 

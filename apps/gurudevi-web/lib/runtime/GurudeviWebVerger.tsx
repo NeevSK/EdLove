@@ -1,5 +1,3 @@
-'use client';
-
 import {
   GURUDEVI_WEB_HOST,
   hostWith,
@@ -16,7 +14,7 @@ import {
   screenNameOf,
 } from '@repo/core/verger';
 import { useScreenAnnouncement } from '@repo/verger-react';
-import { usePathname } from 'next/navigation';
+import { useLocation } from '@tanstack/react-router';
 import { VergerBrowser } from '@repo/verger-web/react';
 import { type ReactNode, useState } from 'react';
 import { useWebFidelity } from './webFidelity';
@@ -60,9 +58,8 @@ const killSwitchOn = () => typeof window !== 'undefined' && globalThis.__GURUDEV
  * Record ids fold into one screen (`screenNameOf`).
  */
 function ScreenAnnouncer() {
-  // Typed `string`, but null outside the App Router (tests, a Pages Router fallback): no screen yet.
-  const pathname: string | null = usePathname();
-  useScreenAnnouncement(pathname === null ? null : screenNameOf(pathname));
+  const pathname = useLocation({ select: (location) => location.pathname });
+  useScreenAnnouncement(screenNameOf(pathname));
   return null;
 }
 

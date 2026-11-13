@@ -261,8 +261,18 @@ no requests to the sanctuary host.
 
 ## Known follow-ups (engineering)
 
-- Five brand files (mark, favicon, flag, two Tutii cutouts) are in both sites' `public/`. Once Next is
-  gone they become imports from `@repo/ui` assets.
+- Five brand files (mark, favicon, flag, two Tutii cutouts) are in both sites' `public/`; they should
+  become imports from `@repo/ui` assets.
+- The public site sends no security headers yet (no `_headers`); its islands need a CSP written for
+  Astro's hydration scripts before one is added.
+- Explore's build still contains the account routes (sign-in, recovery) and the founder floor as
+  split chunks, which carry the Supabase and API clients; Explore never loads them and its CSP
+  allows no connection, but the bundle ratchet still lists those clients. Explore's route tree
+  should leave them out.
+- The build-time env names still say `NEXT_PUBLIC_*` (shared with `@repo/core`); rename across core,
+  web and the deploy job together.
+- The library reader's demo document (`/sample-curriculum.pdf`) does not exist, so its frame shows
+  nothing (it did under Next too).
 - Fonts load from Google Fonts on every site; self-host them so pages work offline and on a first
   visit without a third party.
 - `worlds.css` carries every world (718 KB raw). Serve the active world, load others on change.
@@ -355,6 +365,38 @@ Open (engineering):
   web build; GitHub Pages does not). No workflow deploys the Vite builds yet; the one that does must
   publish them to such a host, and a check after deploy should read the live headers back.
 - `@orpc/*` is a beta (2.0.0-beta.50) in production paths; pin it and read its changelog per bump.
+
+## Next removed (13 Nov)
+
+The web app is Vite + React + TanStack Router only; Next, its pages, proxy and server routes are
+gone, and `check-web-stack` refuses any `next` import. What Next's server did moved to its home:
+
+| Next did | Now |
+| --- | --- |
+| `/auth/complete` (code exchange, cookies) | the client route `/auth/complete`; the browser keeps the session |
+| `/auth/signout` (clear session cookies) | nothing to clear: no server sets session cookies; sign-out revokes through the API and clears the browser session |
+| `/auth/deletion` (account deletion request) | v1 API `identity.deletion.{status,request,cancel}` over the same database functions, run as the account (`withAccountData`); the web calls it through the surface's `commands` |
+| `/.well-known/*` (app links) | written by each build from `lib/appLinks.ts`, served as JSON |
+| `robots.txt` | one `robotsTxt()` in `@repo/core/site`, written by each build and served by the public site |
+| `/api/og`, `/badge.svg` | `renderShareImage`, `renderSchoolBadge` in the public site, prerendered at `/share/<world>/<lang>.svg` and `/badge/<world>/<lang>.svg` |
+| `/api/architecture/source` and its server action | one reader, served by the dev server only (`lib/dev/architectureSource.ts`) |
+| proxy security headers | `_headers` from `lib/security/responseHeaders.ts`; checked live by `scripts/check-live-headers.mjs` |
+| root layout: saved world, light, phase, density, consent before paint | `lib/runtime/savedPreferences.ts`, run before the first render |
+| root layout: privacy consent banner | the root route |
+| page `metadata` titles | each route's `head`, read by `<HeadContent />` |
+
+Every `next/link`, router hook and `next/image` became the router's own (`Link` with typed `to`,
+`params` and `search`; `useNavigate`/`useRouter`; `<img>`). Typing links against the routes found
+links to pages that never existed (`/self/attendance`, `/qr`), an invite link carrying a code nothing
+read, and in-app links to public-site pages; each now goes where it was meant to, and the QR
+shortcut is gone because the web has no scanner. Menus hold `linkOptions`, so a stale destination
+fails the type check.
+
+**Owner decision pending:** school subdomains (`<school>.gurudevi.app` opening that school's page,
+badge and share card) were routed by Next's proxy. `lib/host-routing.ts` keeps that routing as the
+specification; serving it needs a Cloudflare Worker on the wildcard host. Until then the school
+page is `/school/<id>` on sanctuary and Explore, and the badge and card exist without a school
+name.
 
 ## Decided by the owner (13 Nov)
 

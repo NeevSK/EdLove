@@ -50,6 +50,13 @@ export interface SupportContactChannel {
   recommendedFor: string;
 }
 
+/** What the support page tells a browser tab and a search or answer engine about itself. */
+export const SUPPORT_PAGE = {
+  title: 'Support, Guides & Contribution · Gurudevi Sanctuary',
+  description:
+    'Comprehensive functionality guides, troubleshooting, direct support channels, and contribution pathways for Gurudevi Explore and Sanctuary web surfaces.',
+} as const;
+
 export const SUPPORT_CONTACT_CHANNELS: SupportContactChannel[] = [
   {
     name: 'Technical & Platform Support',
@@ -271,7 +278,7 @@ export const CONTRIBUTION_TRACKS: ContributionTrack[] = [
     title: 'Open Source Software Engineering',
     eyebrow: 'Code & Systems',
     description:
-      'Gurudevi is built on Next.js 16, Expo 58, React 19, and local-first SQLite architectures. We invite developers, security researchers, and accessibility champions to help build calm, dignified educational software.',
+      'Gurudevi is built on Vite, Astro, Expo 58, React 19, and local-first SQLite architectures. We invite developers, security researchers, and accessibility champions to help build calm, dignified educational software.',
     steps: [
       'Explore the monorepo architecture and check open issues on GitHub',
       'Adhere to strict Anti-Slop principles: zero unannotated deprecations, calm UI tokens',

@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { fetchInteractionCountForView } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './progress-tree.module.css';

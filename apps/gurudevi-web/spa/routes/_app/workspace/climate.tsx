@@ -3,6 +3,7 @@ import { ClimateSensingFloor } from '../../../../app/(sanctuary)/workspace/clima
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/climate')({
+  head: () => ({ meta: [{ title: 'Climate Pulse | Gurudevi Sanctuary' }] }),
   component: WorkspaceClimateScreen,
 });
 

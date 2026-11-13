@@ -7,6 +7,7 @@ import { safeReturnPath } from '../../../app/(sanctuary)/auth/routeSafety';
 import { useAccess } from '../../surface/access';
 
 export const Route = createFileRoute('/_account/account-recovery')({
+  head: () => ({ meta: [{ title: 'Account Status & Recovery | Gurudevi Sanctuary' }] }),
   validateSearch: z.object({ returnTo: z.string().optional(), mode: z.string().optional() }),
   component: AccountRecoveryScreen,
 });

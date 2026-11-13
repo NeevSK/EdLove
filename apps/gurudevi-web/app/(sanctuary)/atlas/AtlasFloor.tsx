@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useMemo, useState } from 'react';
 import styles from './atlas.module.css';
 import {
@@ -169,7 +167,7 @@ export function AtlasFloor({ initialRole = 'all' }: AtlasFloorProps) {
             </div>
 
             <div className={styles.routesBox}>
-              <Link href={screen.webRoute} className={styles.openLink}>
+              <Link to={screen.webRoute} className={styles.openLink}>
                 Open Web Screen ➔
               </Link>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>

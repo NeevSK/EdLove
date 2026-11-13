@@ -3,6 +3,7 @@ import { EnhancedAnalyticsFloor } from '../../../../app/(sanctuary)/admin/analyt
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/admin/analytics')({
+  head: () => ({ meta: [{ title: 'Institutional Analytics | Gurudevi Sanctuary' }] }),
   component: AdminAnalyticsScreen,
 });
 

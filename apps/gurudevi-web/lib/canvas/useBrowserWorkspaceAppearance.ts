@@ -1,5 +1,3 @@
-'use client';
-
 import { createSupabaseWorkspaceLayoutRepository } from '@repo/core/adapters/supabase/workspaceLayoutRepository';
 import type { WorkspaceLayoutTarget } from '@repo/core/logic/schemas/workspace-layout.schema';
 import {

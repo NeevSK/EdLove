@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import type { CommunityComment } from '../../../../lib/community/comments-contract';
 import { createCommunityComment, loadCommunityComments } from '../../../../lib/community/comments';

@@ -3,6 +3,7 @@ import { VideoPlayerDesk } from '../../../../../app/(sanctuary)/library/video/[v
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/video/$videoId')({
+  head: () => ({ meta: [{ title: 'Video Lecture | Gurudevi Sanctuary' }] }),
   component: LibraryVideoVideoIdScreen,
 });
 

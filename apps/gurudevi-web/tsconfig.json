@@ -3,7 +3,6 @@
   "compilerOptions": {
     "allowJs": false,
     "incremental": false,
-    "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./*"],
       "#surface": ["./spa/surface/explore.tsx"],
@@ -14,13 +13,10 @@
     }
   },
   "include": [
-    "next-env.d.ts",
-    "proxy.ts",
     "playwright.config.ts",
     "vitest.config.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
-    "app/.well-known/**/*",
     "lib/**/*.ts",
     "lib/**/*.tsx",
     "components/**/*.ts",
@@ -29,8 +25,7 @@
     "tests/**/*.tsx",
     "spa/**/*.ts",
     "spa/**/*.tsx",
-    "vite.config.ts",
-    ".next/types/**/*.ts"
+    "vite.config.ts"
   ],
-  "exclude": ["node_modules", ".next"]
+  "exclude": ["node_modules", "dist-explore", "dist-sanctuary"]
 }

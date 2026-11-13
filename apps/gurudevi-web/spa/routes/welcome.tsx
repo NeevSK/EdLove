@@ -6,6 +6,7 @@ import { WelcomeStage } from '../../app/(sanctuary)/welcome/WelcomeStage';
 import { useAccess } from '../surface/access';
 
 export const Route = createFileRoute('/welcome')({
+  head: () => ({ meta: [{ title: 'Welcome | Gurudevi Sanctuary' }] }),
   validateSearch: z.object({ returnTo: z.string().optional() }),
   component: WelcomeScreen,
 });

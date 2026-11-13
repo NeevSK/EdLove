@@ -3,6 +3,7 @@ import { SchoolForestFloor } from '../../../../app/(sanctuary)/community/forest/
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/community/forest')({
+  head: () => ({ meta: [{ title: 'School Forest | Gurudevi Sanctuary' }] }),
   component: CommunityForestScreen,
 });
 

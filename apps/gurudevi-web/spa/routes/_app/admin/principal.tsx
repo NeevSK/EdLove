@@ -3,6 +3,7 @@ import { PrincipalFloor } from '../../../../app/(sanctuary)/admin/principal/Prin
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/admin/principal')({
+  head: () => ({ meta: [{ title: 'Principal Command Center | Gurudevi Sanctuary' }] }),
   component: AdminPrincipalScreen,
 });
 

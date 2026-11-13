@@ -1,7 +1,5 @@
-'use client';
-
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { KitTableOfContents } from './KitTableOfContents';
 import { TemporalOrbit, type SpotHabitat } from './TemporalOrbit';
 import { ScrollInstrumentsShowcase } from './ScrollInstrumentsShowcase';
@@ -32,7 +30,7 @@ export function KitComponentsDirectory() {
         {/* Page Top Header */}
         <header className={styles.pageHeader}>
           <div className={styles.breadcrumbs}>
-            <Link href="/kit" className={styles.breadLink}>Sanctuary Kit</Link>
+            <Link to="/kit" className={styles.breadLink}>Sanctuary Kit</Link>
             <span className={styles.breadDivider}>/</span>
             <span className={styles.breadCurrent}>Components Directory & Temporal TOC</span>
           </div>
@@ -55,7 +53,7 @@ export function KitComponentsDirectory() {
                 situated along the celestial parabolic arc.
               </p>
             </div>
-            <Link href="/kit/components/temporal-horizon" className={styles.detailLinkBtn}>
+            <Link to="/kit/components/temporal-horizon" className={styles.detailLinkBtn}>
               Full Screen Temporal Lab →
             </Link>
           </div>
@@ -156,11 +154,11 @@ export function KitComponentsDirectory() {
                     <li key={c.id} className={styles.catListItem}>
                       <div className={styles.catItemRow}>
                         {c.route ? (
-                          <Link href={c.route} className={styles.catItemLink}>
+                          <Link to={c.route} className={styles.catItemLink}>
                             {c.name}
                           </Link>
                         ) : (
-                          <Link href={`/kit#${c.id}`} className={styles.catItemLink}>
+                          <Link to="/kit" hash={c.id} className={styles.catItemLink}>
                             {c.name}
                           </Link>
                         )}

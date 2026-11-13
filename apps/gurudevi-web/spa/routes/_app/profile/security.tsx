@@ -3,6 +3,7 @@ import { SecurityFloor } from '../../../../app/(sanctuary)/profile/security/Secu
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/profile/security')({
+  head: () => ({ meta: [{ title: 'Device Security | Gurudevi Sanctuary' }] }),
   component: ProfileSecurityScreen,
 });
 

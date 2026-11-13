@@ -3,6 +3,7 @@ import { GuardianFloor } from '../../../../app/(sanctuary)/workspace/guardian/Gu
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/guardian')({
+  head: () => ({ meta: [{ title: 'Guardian Portal | Gurudevi Sanctuary' }] }),
   component: WorkspaceGuardianScreen,
 });
 

@@ -3,6 +3,7 @@ import { TimetableFloor } from '../../../../app/(sanctuary)/workspace/timetable/
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/timetable')({
+  head: () => ({ meta: [{ title: 'Timetable | Gurudevi Sanctuary' }] }),
   component: WorkspaceTimetableScreen,
 });
 

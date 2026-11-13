@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
 import { editorialAdapter, type SchoolEditorialDraft } from '@/lib/domain';
 import {
@@ -151,7 +149,7 @@ export function SchoolFloor({
           </button>
 
           <Link
-            href={`/school/${fact.handle || fact.id}`}
+            to="/school/$id" params={{ id: fact.handle || fact.id }}
             className={styles.secondaryBtn}
             target="_blank"
             rel="noopener noreferrer"
@@ -159,11 +157,11 @@ export function SchoolFloor({
             <span>↗</span> Live School Website
           </Link>
 
-          <Link href="/workspace/editorial" className={styles.secondaryBtn}>
+          <Link to="/workspace/editorial" className={styles.secondaryBtn}>
             <span>✒️</span> Editorial Media Desk
           </Link>
 
-          <Link href="/workspace/kiosk" className={styles.secondaryBtn}>
+          <Link to="/workspace/kiosk" className={styles.secondaryBtn}>
             <span>⛶</span> Doorway Kiosk
           </Link>
 
@@ -459,7 +457,7 @@ export function SchoolFloor({
                       <div className={styles.articleFooter}>
                         <span>{article.subEntityName}</span>
                         <Link
-                          href={`/school/${fact.handle}/articles/${article.slug ?? article.id}`}
+                          to="/school/$id/articles/$slug" params={{ id: fact.handle, slug: article.slug ?? article.id }}
                           className={styles.articleLink}
                         >
                           Read ➔
@@ -587,7 +585,7 @@ export function SchoolFloor({
                   bulletins.
                 </p>
               </div>
-              <Link href="/workspace/editorial" className={styles.authorDeskLink}>
+              <Link to="/workspace/editorial" className={styles.authorDeskLink}>
                 ✒️ Open Media Desk
               </Link>
             </div>
@@ -618,7 +616,7 @@ export function SchoolFloor({
                     <div className={styles.articleFooter}>
                       <span>By {article.authorName}</span>
                       <Link
-                        href={`/school/${fact.handle}/articles/${article.slug ?? article.id}`}
+                        to="/school/$id/articles/$slug" params={{ id: fact.handle, slug: article.slug ?? article.id }}
                         className={styles.articleLink}
                       >
                         Read Full Story ➔

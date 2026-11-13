@@ -1,5 +1,3 @@
-'use client';
-
 import {
   ArrowLeft,
   BookOpen,
@@ -14,7 +12,7 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
 import styles from './classroom-detail.module.css';
 
@@ -46,7 +44,7 @@ export function ClassroomDetailFloor({
   return (
     <div className={styles.container}>
       <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-        <Link href="/workspace" className={styles.breadcrumbLink}>
+        <Link to="/workspace" className={styles.breadcrumbLink}>
           {t('classroom.workspaceBreadcrumb') || 'Workspace'}
         </Link>
         <span>/</span>
@@ -63,10 +61,10 @@ export function ClassroomDetailFloor({
         </div>
 
         <div className={styles.headerActions}>
-          <Link href="/workspace" className={styles.btnSecondary}>
+          <Link to="/workspace" className={styles.btnSecondary}>
             <ArrowLeft size={16} /> {t('classroom.returnRollCall')}
           </Link>
-          <Link href={`/workspace/gradebook?classroom=${classroomId}`} className={styles.btnPrimary}>
+          <Link to="/workspace/gradebook" search={{ classroom: classroomId }} className={styles.btnPrimary}>
             <GraduationCap size={16} /> {t('classroom.openGradebook')}
           </Link>
         </div>
@@ -139,7 +137,7 @@ export function ClassroomDetailFloor({
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Learner Cohort & Presence Stability</h2>
-            <Link href="/workspace" className={styles.btnSecondary}>
+            <Link to="/workspace" className={styles.btnSecondary}>
               <CheckCircle size={16} /> Mark Today's Roll
             </Link>
           </div>

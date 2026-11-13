@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import styles from './account-switcher.module.css';

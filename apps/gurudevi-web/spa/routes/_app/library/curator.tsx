@@ -3,6 +3,7 @@ import { CuratorReviewDesk } from '../../../../app/(sanctuary)/library/curator/C
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/curator')({
+  head: () => ({ meta: [{ title: 'Curator Studio | Gurudevi Sanctuary' }] }),
   component: LibraryCuratorScreen,
 });
 

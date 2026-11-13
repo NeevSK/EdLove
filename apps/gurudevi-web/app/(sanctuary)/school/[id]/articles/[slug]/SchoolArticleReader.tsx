@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import type { SchoolEditorialDraft, SchoolProfileData } from '@/lib/domain';
 import { SanctuaryShell } from '../../../../components/SanctuaryShell';
@@ -42,7 +42,7 @@ export function SchoolArticleReader({
     return (
       <main id="main-content" className={styles.articleContainer}>
         <div style={{ padding: '1rem 0' }}>
-          <Link href={`/school/${schoolId}`} className={styles.backLink}>
+          <Link to="/school/$id" params={{ id: schoolId }} className={styles.backLink}>
             ← Back to {profile.fact.name} Official Website
           </Link>
         </div>
@@ -53,7 +53,7 @@ export function SchoolArticleReader({
             faculty review.
           </p>
           <div>
-            <Link href={`/school/${schoolId}`} className={styles.backLink}>
+            <Link to="/school/$id" params={{ id: schoolId }} className={styles.backLink}>
               Return to School Homepage ➔
             </Link>
           </div>
@@ -86,7 +86,7 @@ export function SchoolArticleReader({
           }}
         >
           <Link
-            href={`/school/${schoolId}`}
+            to="/school/$id" params={{ id: schoolId }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -160,7 +160,7 @@ export function SchoolArticleReader({
             on Gurudevi School Commons.
           </div>
           <div>
-            <Link href={`/school/${schoolId}`} className={styles.backLink}>
+            <Link to="/school/$id" params={{ id: schoolId }} className={styles.backLink}>
               View More Publications ➔
             </Link>
           </div>

@@ -1,7 +1,4 @@
-'use client';
-
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { executeSovereignSignOut } from '../../../lib/sanctuary/signOut';
 
@@ -19,7 +16,7 @@ export function AccountRecoveryFloor({ message, returnTo }: AccountRecoveryFloor
   const handleRetry = () => {
     setIsRetrying(true);
     setError(null);
-    router.refresh();
+    void router.invalidate();
     setTimeout(() => {
       setIsRetrying(false);
     }, 1200);
@@ -71,7 +68,8 @@ export function AccountRecoveryFloor({ message, returnTo }: AccountRecoveryFloor
 
       <div className="border-t border-line/50 pt-4 text-center">
         <Link
-          href={`/recovery${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ''}`}
+          to="/recovery"
+          search={returnTo ? { returnTo } : {}}
           className="text-xs text-secondary hover:text-ink hover:underline"
         >
           Need to reset your credentials or password? Go to password recovery →

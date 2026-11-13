@@ -27,6 +27,27 @@ const scope = z.strictObject({
   admission: z.enum(['available', 'unsupported', 'denied']),
 });
 
+const DELETION_STATUSES = [
+  'pending_verification',
+  'scheduled',
+  'cancelled',
+  'completed',
+  'blocked',
+] as const;
+
+/**
+ * Where the account's deletion request stands. Requesting begins a review; it never erases the
+ * account. `reason` says why the request is where it is (for example `fresh_authentication_required`).
+ */
+export const AccountDeletion = z.strictObject({
+  status: z.enum(DELETION_STATUSES),
+  requestId: z.uuid().nullable(),
+  requestedAt: z.iso.datetime({ offset: true }).nullable(),
+  scheduledFor: z.iso.datetime({ offset: true }).nullable(),
+  reason: z.string(),
+});
+export type AccountDeletion = z.infer<typeof AccountDeletion>;
+
 export const appContract = {
   identity: {
     session: foundation.input(z.undefined()).output(
@@ -48,6 +69,12 @@ export const appContract = {
     ),
     // The one way a signed-in person gets in. Returns the existing personal bond on retry.
     createInitialBond: foundation.input(InitialBondInput).output(scope),
+    // The account's own deletion request. Asking again returns the open request.
+    deletion: {
+      status: foundation.input(z.undefined()).output(AccountDeletion.nullable()),
+      request: foundation.input(z.undefined()).output(AccountDeletion),
+      cancel: foundation.input(z.undefined()).output(AccountDeletion),
+    },
   },
   authority: {
     // Issues the signed offline permission snapshot for one bond. The device stores it and

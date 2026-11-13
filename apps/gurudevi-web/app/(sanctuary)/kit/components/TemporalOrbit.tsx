@@ -1,6 +1,4 @@
-﻿'use client';
-
-import React, { useState, useId } from 'react';
+﻿import React, { useState, useId } from 'react';
 import { ScrollArea } from '@repo/ui/components/web';
 import styles from './temporal-orbit.module.css';
 

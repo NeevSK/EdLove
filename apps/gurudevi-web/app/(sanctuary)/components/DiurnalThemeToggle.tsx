@@ -1,5 +1,3 @@
-'use client';
-
 import { ThemeSwitcher, type ThemeSwitcherProps } from '@repo/ui/components/web';
 import { WORLD_IDS, WORLDS, type WorldId } from '@repo/ui/theme';
 import { useTranslation } from '../../../lib/i18n';

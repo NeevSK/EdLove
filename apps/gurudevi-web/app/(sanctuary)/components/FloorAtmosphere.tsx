@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useRef } from 'react';
 import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import styles from './floor-atmosphere.module.css';

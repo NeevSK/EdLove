@@ -1,0 +1,104 @@
+name: Gurudevi web — Cloudflare Pages
+
+# gurudevi.app (Astro), sanctuary.gurudevi.app and explore.gurudevi.app (one Vite app, built once
+# per host). Each is static files on its own Pages project; after deploying, the live check asks
+# the deployment itself for its security headers, deep links and app-link files.
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Cloudflare Pages deployment target'
+        required: true
+        default: preview
+        type: choice
+        options:
+          - preview
+          - production
+
+concurrency:
+  group: gurudevi-web-${{ github.event.inputs.environment || 'preview' }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: ${{ matrix.site }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'preview' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - site: public
+            directory: apps/gurudevi-public
+            build: pnpm build
+            output: apps/gurudevi-public/dist
+            project: gurudevi-public
+          - site: sanctuary
+            directory: apps/gurudevi-web
+            build: pnpm build:sanctuary
+            output: apps/gurudevi-web/dist-sanctuary
+            project: gurudevi-sanctuary
+          - site: explore
+            directory: apps/gurudevi-web
+            build: pnpm build:explore
+            output: apps/gurudevi-web/dist-explore
+            project: gurudevi-explore
+    env:
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: ${{ github.event.inputs.environment == 'production' && 'prd' || 'stg' }}
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 12.16.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      - name: Load Doppler build environment
+        uses: ./.github/actions/load-doppler-env
+        with:
+          project: ${{ env.DOPPLER_PROJECT }}
+          config: ${{ env.DOPPLER_CONFIG }}
+          token: ${{ env.DOPPLER_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
+
+      # The web reads the same Supabase project and API as the apps. Explore reads none of them:
+      # its build has no backend address, and its policy allows no connection but itself.
+      - name: Build
+        working-directory: ${{ matrix.directory }}
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_SUPABASE_URL: ${{ matrix.site == 'sanctuary' && env.EXPO_PUBLIC_SUPABASE_URL || '' }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ matrix.site == 'sanctuary' && env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '' }}
+          NEXT_PUBLIC_API_URL: ${{ matrix.site == 'sanctuary' && env.EXPO_PUBLIC_API_URL || '' }}
+        run: ${{ matrix.build }}
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd
+        with:
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy ${{ matrix.output }}
+            --project-name ${{ matrix.project }}
+            --branch ${{ github.event.inputs.environment == 'production' && 'main' || 'preview' }}
+            --commit-dirty=true
+
+      - name: Check the live deployment
+        if: matrix.site != 'public'
+        run: node scripts/check-live-headers.mjs "${{ steps.deploy.outputs.deployment-url }}" ${{ matrix.site }}

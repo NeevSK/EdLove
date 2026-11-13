@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { render } from '@/tests/support/render';
 import { describe, expect, it } from 'vitest';
 import { GatewayHeader } from '../../app/(sanctuary)/components/GatewayHeader';
 import { LocaleProvider } from '../../lib/i18n';

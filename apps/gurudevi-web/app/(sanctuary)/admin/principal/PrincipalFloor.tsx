@@ -1,5 +1,3 @@
-'use client';
-
 import {
   AlertTriangle,
   Award,
@@ -14,7 +12,7 @@ import {
   Users,
   XCircle,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import {
   Button,
@@ -71,10 +69,10 @@ export function PrincipalFloor({
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <Link href="/workspace/workforce" style={{ textDecoration: 'none' }}>
+                <Link to="/workspace/workforce" style={{ textDecoration: 'none' }}>
                   <Button variant="secondary" size="md" label="👥 Workforce Roster" />
                 </Link>
-                <Link href="/admin/analytics" style={{ textDecoration: 'none' }}>
+                <Link to="/admin/analytics" style={{ textDecoration: 'none' }}>
                   <Button variant="primary" size="md" label="📈 Campus Analytics" />
                 </Link>
               </div>

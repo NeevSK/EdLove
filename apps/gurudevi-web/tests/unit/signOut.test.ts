@@ -25,33 +25,30 @@ beforeEach(() => {
     .mockResolvedValue({ data: { session: null }, error: null });
   mock.signOut.mockReset().mockResolvedValue({ error: null });
   mock.clear.mockReset();
-  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) =>
-    String(input) === '/auth/signout'
-      ? new Response(null, { status: 204 })
-      : Response.json({ ok: true }),
-  );
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async () => Response.json({ ok: true }));
 });
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
 });
-describe('G1 browser sign-out with substituted provider and cookie boundary', () => {
+describe('G1 browser sign-out with substituted provider and API', () => {
   it('redirects only after confirmed revocation and all local cleanup', async () => {
     await executeSovereignSignOut('/');
     expect(mock.signOut).toHaveBeenCalledWith({ scope: 'local' });
     expect(mock.clear).toHaveBeenCalledTimes(1);
     expect(mock.replace).toHaveBeenCalledWith('/');
   });
-  it('in the client build, asks no server for cookies and still requires the local session gone', async () => {
-    vi.stubEnv('GURUDEVI_SESSION_COOKIES', 'browser');
+  it('asks only the API to revoke, and clears the session this browser keeps', async () => {
     await executeSovereignSignOut('/');
-    expect(globalThis.fetch).not.toHaveBeenCalledWith('/auth/signout', expect.anything());
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+    expect(String(vi.mocked(globalThis.fetch).mock.calls[0]?.[0])).toBe(
+      'https://api.example.invalid/api/auth/sign-out',
+    );
     expect(mock.signOut).toHaveBeenCalledWith({ scope: 'local' });
     expect(mock.replace).toHaveBeenCalledWith('/');
   });
-  it('in the client build, still refuses to finish while the local session remains', async () => {
-    vi.stubEnv('GURUDEVI_SESSION_COOKIES', 'browser');
+  it('refuses to finish while the local session remains', async () => {
     mock.session
       .mockReset()
       .mockResolvedValue({ data: { session: { access_token: 'synthetic-access' } }, error: null });
@@ -61,8 +58,7 @@ describe('G1 browser sign-out with substituted provider and cookie boundary', ()
   it('cleans an already signed-out device without inventing a revocation request', async () => {
     mock.session.mockReset().mockResolvedValue({ data: { session: null }, error: null });
     await executeSovereignSignOut('/');
-    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
-    expect(globalThis.fetch).toHaveBeenCalledWith('/auth/signout', expect.any(Object));
+    expect(globalThis.fetch).not.toHaveBeenCalled();
     expect(mock.replace).toHaveBeenCalledWith('/');
   });
   it('reports unconfirmed revocation while still clearing local state', async () => {
@@ -96,19 +92,6 @@ describe('G1 browser sign-out with substituted provider and cookie boundary', ()
     await executeSovereignSignOut('/');
     expect(mock.session).toHaveBeenCalledTimes(2);
     expect(mock.replace).toHaveBeenCalledWith('/');
-  });
-  it('keeps cookie cleanup failure visible and still purges transient storage', async () => {
-    vi.mocked(globalThis.fetch).mockImplementation(async (input) =>
-      String(input) === '/auth/signout'
-        ? new Response(null, { status: 503 })
-        : Response.json({ ok: true }),
-    );
-    await expect(executeSovereignSignOut('/')).rejects.toMatchObject({
-      localCleanupComplete: false,
-      remoteRevocationConfirmed: true,
-    });
-    expect(mock.clear).toHaveBeenCalledTimes(1);
-    expect(mock.replace).not.toHaveBeenCalled();
   });
   it('keeps an uncleared browser session visible', async () => {
     mock.signOut.mockRejectedValue(new Error('Local storage failure'));

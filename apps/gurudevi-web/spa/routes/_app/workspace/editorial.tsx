@@ -5,6 +5,7 @@ import { EditorialFloor } from '../../../../app/(sanctuary)/workspace/editorial/
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/editorial')({
+  head: () => ({ meta: [{ title: 'Editorial Commons | Gurudevi Sanctuary' }] }),
   validateSearch: z.object({ view: z.enum(['commons']).optional().catch(undefined) }),
   component: WorkspaceEditorialScreen,
 });

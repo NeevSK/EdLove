@@ -2,10 +2,14 @@ import { CONTACT_EMAILS } from '@repo/core/site';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { SupportHub } from '../../../app/(sanctuary)/(support)/SupportHub';
+import { SUPPORT_PAGE } from '../../../app/(sanctuary)/(support)/supportData';
 import { getSupportConfig } from '../../../lib/support/supportConfig';
 import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/_app/support')({
+  head: () => ({
+    meta: [{ title: SUPPORT_PAGE.title }, { name: 'description', content: SUPPORT_PAGE.description }],
+  }),
   validateSearch: z.object({ school: z.string().optional() }),
   component: SupportScreen,
 });

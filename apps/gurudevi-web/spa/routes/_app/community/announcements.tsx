@@ -4,6 +4,7 @@ import { AnnouncementsFloor } from '../../../../app/(sanctuary)/community/announ
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/community/announcements')({
+  head: () => ({ meta: [{ title: 'Broadcaster Updates | Gurudevi Sanctuary' }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(context.sources.announcements()),
   component: AnnouncementsScreen,
 });

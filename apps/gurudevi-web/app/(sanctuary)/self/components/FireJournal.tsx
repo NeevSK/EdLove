@@ -1,5 +1,3 @@
-'use client';
-
 import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
 import { FeatureStateBoundary } from '@repo/ui/components/FeatureStateBoundary.web';
 import { type Dispatch, type FormEvent, type SetStateAction, useState } from 'react';

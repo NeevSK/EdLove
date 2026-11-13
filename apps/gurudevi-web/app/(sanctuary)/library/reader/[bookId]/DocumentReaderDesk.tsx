@@ -1,5 +1,3 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { MockDocumentOutlineItem as DocumentOutlineItem } from '@repo/core/api/library';
 import { orpcClient } from '@repo/core/api/orpcClient';
@@ -24,7 +22,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
 import styles from './reader.module.css';
 
@@ -205,7 +203,7 @@ export function DocumentReaderDesk({
       {!zenMode && (
         <header className={styles.readingDesk}>
           <div className={styles.titleArea}>
-            <Link className={styles.backLink} href="/library">
+            <Link className={styles.backLink} to="/library">
               ← Back to Sanctuary Library
             </Link>
             <h1 className={styles.documentHeading}>{documentTitle}</h1>

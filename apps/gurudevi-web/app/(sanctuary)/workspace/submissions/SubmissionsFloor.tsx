@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useRef, useState } from 'react';
 import { useAcademicDomain } from '@/lib/domain';
 import { submitBrowserAssignment } from '../../../../lib/workspace/assignmentSubmissions';
@@ -84,7 +82,7 @@ export function SubmissionsFloor({ accountId, authSubjectId, displayName, capaci
         <div className={styles.titleArea}>
           <div style={{ marginBottom: '0.5rem' }}>
             <Link
-              href="/workspace"
+              to="/workspace"
               style={{
                 fontSize: '0.8rem',
                 fontWeight: 650,

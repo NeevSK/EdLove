@@ -29,6 +29,7 @@ function leadsSchool(capacity: string, roles: readonly string[] = []): boolean {
 const SAMPLE_SCHOOL_ID = 'school-ananda-colombo';
 
 export const Route = createFileRoute('/_app/workspace/school')({
+  head: () => ({ meta: [{ title: 'School Profile | Gurudevi Sanctuary' }] }),
   component: WorkspaceSchoolScreen,
 });
 

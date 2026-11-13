@@ -1,7 +1,4 @@
-'use client';
-
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { Link, useLocation, useRouter } from '@tanstack/react-router';
 import {
   type DragEvent,
   type ReactNode,
@@ -27,15 +24,16 @@ import {
   advancedTools,
   isSanctuaryNavActive,
   primaryNavigation,
+  type QuickAccessDestination,
   type QuickAccessId,
   quickAccessDestinations,
   type SanctuaryNavItem,
-  withSanctuaryRoutePrefix,
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
 import {
   isOfferedTo,
   WEB_WORKSPACE_FEATURES,
+  type WorkspaceFeatureItem,
   workspaceFeatureAt,
 } from '../workspace/workspaceFeatureRegistry';
 import {
@@ -60,7 +58,6 @@ import { WorkspaceRouteTabs } from './WorkspaceRouteTabs';
 type SanctuaryShellProps = Readonly<{
   children: ReactNode;
   displayName: string;
-  navigationPrefix: string;
   /** Server-authorized capacity; it is display context, never an authorization decision. */
   activeCapacity?: string | null;
   unreadNotifications?: number;
@@ -77,7 +74,6 @@ const navigationLayoutKey = 'gurudevi_navigation_layout_v1';
 export function SanctuaryShell({
   children,
   displayName,
-  navigationPrefix,
   unreadNotifications = 0,
   showAccountNavigation = true,
   isExploreMode = false,
@@ -86,7 +82,7 @@ export function SanctuaryShell({
   activeCapacity,
 }: SanctuaryShellProps) {
   useInactivitySentinel(!isExploreMode);
-  const pathname = usePathname();
+  const pathname = useLocation({ select: (location) => location.pathname });
   const router = useRouter();
   const workspaceUsageScope = isExploreMode ? 'explore' : 'sanctuary';
   const workspaceWorkbench = useDomainWorkbench('workspace', { usageScope: workspaceUsageScope });
@@ -119,9 +115,6 @@ export function SanctuaryShell({
   );
 
   const fabActions = useMemo<readonly FabAction[]>(() => {
-    const prefix = navigationPrefix ? navigationPrefix.replace(/\/+$/, '') : '';
-    const makeHref = (path: string) => (prefix ? `${prefix}${path}` : path);
-
     return [
       {
         key: 'tutii-companion',
@@ -129,7 +122,8 @@ export function SanctuaryShell({
         hint: 'Direct mentor conversation & learning support',
         tone: 'lamp',
         group: 'Tutii & Intelligence',
-        onPress: () => router.push(makeHref('/community?pillar=messages&dm=tutii')),
+        onPress: () =>
+          void router.navigate({ to: '/community', search: { pillar: 'messages', dm: 'tutii' } }),
       },
       {
         key: 'ai-workspace',
@@ -137,7 +131,7 @@ export function SanctuaryShell({
         hint: 'Agent reasoning, artifacts & interactive proposals',
         tone: 'plain',
         group: 'Tutii & Intelligence',
-        onPress: () => router.push(makeHref('/community?pillar=messages')),
+        onPress: () => void router.navigate({ to: '/community', search: { pillar: 'messages' } }),
       },
       {
         key: 'ai-incognito',
@@ -145,7 +139,8 @@ export function SanctuaryShell({
         hint: 'Zero-trace, non-persisted inquiry',
         tone: 'plain',
         group: 'Tutii & Intelligence',
-        onPress: () => router.push(makeHref('/community?pillar=messages&mode=incognito')),
+        onPress: () =>
+          void router.navigate({ to: '/community', search: { pillar: 'messages', mode: 'incognito' } }),
       },
       {
         key: 'command-palette',
@@ -161,15 +156,15 @@ export function SanctuaryShell({
         hint: 'Grounding somatic pause and focus',
         tone: 'plain',
         group: 'Wellbeing',
-        onPress: () => router.push(makeHref('/self?practice=breath')),
+        onPress: () => void router.navigate({ to: '/self', search: { practice: 'breath' } }),
       },
     ];
-  }, [navigationPrefix, router]);
+  }, [router]);
   const quickAccessOptions = useMemo(
     () =>
       quickAccessDestinations.filter(
         (destination) =>
-          (!isExploreMode || destination.explore) && isOfferedTo(activeCapacity, destination.href),
+          (!isExploreMode || destination.explore) && isOfferedTo(activeCapacity, destination.link.to),
       ),
     [activeCapacity, isExploreMode],
   );
@@ -211,11 +206,7 @@ export function SanctuaryShell({
   const advancedTriggerRef = useRef<HTMLButtonElement>(null);
   const advancedMenuId = useId();
 
-  const primaryItems = withSanctuaryRoutePrefix(primaryNavigation, navigationPrefix);
-  const accountItems = withSanctuaryRoutePrefix(accountNavigation, navigationPrefix);
-  const profile = accountItems.find((item) => item.id === 'profile');
-  const notifications = accountItems.find((item) => item.id === 'notifications');
-  const settings = accountItems.find((item) => item.id === 'settings');
+  const [profile, notifications, settings] = accountNavigation;
 
   // Read sidebar preference from localStorage
   useEffect(() => {
@@ -375,28 +366,35 @@ export function SanctuaryShell({
     [],
   );
 
-  const openQuickAccessDestination = useCallback(
-    (href: string) => {
-      const feature = workspaceFeatureAt(href);
-      const route = feature?.id === 'attendance' ? '/workspace?task=attendance' : href;
-      if (feature) {
-        const result = workspaceWorkbench.open({
-          featureId: feature.id,
-          route,
-          title: feature.label,
-          icon: feature.symbol,
-          temporalBinding: { kind: 'follow-domain' },
-          localStatePolicy: 'restore-permitted',
-        });
-        if (result.kind === 'at-capacity') {
-          setQuickAccessNotice('Close a Workspace task before opening another.');
-          return;
-        }
+  /** A Workspace feature opens as a task on the Workspace's task strip, then shows its route. */
+  const openWorkspaceFeature = useCallback(
+    (feature: WorkspaceFeatureItem) => {
+      const route = feature.id === 'attendance' ? '/workspace?task=attendance' : feature.href;
+      const result = workspaceWorkbench.open({
+        featureId: feature.id,
+        route,
+        title: feature.label,
+        icon: feature.symbol,
+        temporalBinding: { kind: 'follow-domain' },
+        localStatePolicy: 'restore-permitted',
+      });
+      if (result.kind === 'at-capacity') {
+        setQuickAccessNotice('Close a Workspace task before opening another.');
+        return;
       }
       setQuickAccessNotice('');
-      if (pathname !== route) router.push(route);
+      if (pathname !== route) void router.navigate({ href: route });
     },
     [pathname, router, workspaceWorkbench],
+  );
+
+  const openQuickAccessDestination = useCallback(
+    (destination: QuickAccessDestination) => {
+      const feature = workspaceFeatureAt(destination.link.to);
+      if (feature) openWorkspaceFeature(feature);
+      else void router.navigate(destination.link);
+    },
+    [openWorkspaceFeature, router],
   );
 
   const toggleSidebar = useCallback(() => {
@@ -516,7 +514,7 @@ export function SanctuaryShell({
               <Link
                 aria-label="Help, report a problem, or send feedback"
                 className={styles.headerAction}
-                href="/support"
+                to="/support"
                 title="Help & feedback"
               >
                 <svg
@@ -530,7 +528,7 @@ export function SanctuaryShell({
                   <path d="M12 17.2h.01" />
                 </svg>
               </Link>
-              {showAccountNavigation && notifications && profile && settings ? (
+              {showAccountNavigation ? (
                 <nav aria-label="Account navigation" className={styles.accountActions}>
                   <Link
                     aria-label={
@@ -539,10 +537,10 @@ export function SanctuaryShell({
                         : 'Notifications'
                     }
                     aria-current={
-                      isSanctuaryNavActive(pathname, notifications.href) ? 'page' : undefined
+                      isSanctuaryNavActive(pathname, notifications.to) ? 'page' : undefined
                     }
                     className={styles.headerAction}
-                    href={notifications.href}
+                    to={notifications.to}
                     title="Notifications"
                   >
                     <HeaderActionGlyph id="notifications" />
@@ -554,9 +552,9 @@ export function SanctuaryShell({
                   </Link>
                   <Link
                     aria-label="Profile"
-                    aria-current={isSanctuaryNavActive(pathname, profile.href) ? 'page' : undefined}
+                    aria-current={isSanctuaryNavActive(pathname, profile.to) ? 'page' : undefined}
                     className={`${styles.headerAction} ${styles.profileAction}`}
-                    href={profile.href}
+                    to={profile.to}
                     title={displayName ? `Profile: ${displayName}` : 'Profile'}
                   >
                     <svg
@@ -572,10 +570,10 @@ export function SanctuaryShell({
                   <Link
                     aria-label="Settings"
                     aria-current={
-                      isSanctuaryNavActive(pathname, settings.href) ? 'page' : undefined
+                      isSanctuaryNavActive(pathname, settings.to) ? 'page' : undefined
                     }
                     className={styles.headerAction}
-                    href={settings.href}
+                    to={settings.to}
                     title="Settings"
                   >
                     <HeaderActionGlyph id="settings" />
@@ -607,7 +605,7 @@ export function SanctuaryShell({
         }
         navSlot={
           <nav aria-label="Main navigation" className={styles.horizontalNavigation} data-placement="deck">
-            {primaryItems.map((item) => (
+            {primaryNavigation.map((item) => (
               <NavLink emoji item={item} key={item.id} pathname={pathname} />
             ))}
           </nav>
@@ -621,7 +619,7 @@ export function SanctuaryShell({
                 isExploreMode={isExploreMode}
                 onOpenQuickAccessItem={(item) => {
                   const feature = WEB_WORKSPACE_FEATURES.find((candidate) => candidate.id === item.id);
-                  if (feature) openQuickAccessDestination(feature.href);
+                  if (feature) openWorkspaceFeature(feature);
                 }}
               />
             ) : null}
@@ -633,7 +631,7 @@ export function SanctuaryShell({
         <aside className={styles.rail} aria-label="Menu">
           <nav>
             <ul className={styles.navList}>
-              {primaryItems.map((item) => (
+              {primaryNavigation.map((item) => (
                 <li key={item.id}>
                   <NavLink item={item} pathname={pathname} collapsed={menuIsCollapsed} />
                 </li>
@@ -709,10 +707,10 @@ export function SanctuaryShell({
                     >
                       <Link
                         className={styles.quickAccessLink}
-                        href={`${navigationPrefix}${destination.href}`}
+                        {...destination.link}
                         onClick={(event) => {
                           event.preventDefault();
-                          openQuickAccessDestination(destination.href);
+                          openQuickAccessDestination(destination);
                         }}
                         title={destination.label}
                       >
@@ -785,7 +783,7 @@ export function SanctuaryShell({
           so it cannot reach the bottom of the screen; CSS shows exactly one of the two, and the
           hidden one (display: none) is out of the accessibility tree. */}
       <nav aria-label="Main navigation" className={styles.horizontalNavigation} data-placement="bottom">
-        {primaryItems.map((item) => (
+        {primaryNavigation.map((item) => (
           <NavLink emoji item={item} key={item.id} pathname={pathname} />
         ))}
       </nav>
@@ -810,13 +808,11 @@ export function SanctuaryShell({
         pathname={pathname}
         displayName={displayName}
         activeCapacity={activeCapacity}
-        navigationPrefix={navigationPrefix}
       />
 
       <CommandPalette
         capacity={activeCapacity}
         isOpen={commandPaletteOpen}
-        navigationPrefix={navigationPrefix}
         onClose={() => setCommandPaletteOpen(false)}
       />
     </LivingGround>
@@ -853,7 +849,7 @@ function NavLink({
   collapsed?: boolean;
   unreadCount?: number;
 }>) {
-  const active = isSanctuaryNavActive(pathname, item.href);
+  const active = isSanctuaryNavActive(pathname, item.to);
   const safeUnread = unreadCount ?? 0;
   const hasUnread = item.id === 'notifications' && safeUnread > 0;
 
@@ -861,7 +857,7 @@ function NavLink({
     <Link
       aria-current={active ? 'page' : undefined}
       className={styles.navLink}
-      href={item.href}
+      to={item.to}
       title={collapsed ? item.label : undefined}
     >
       <span aria-hidden="true" className={styles.navSymbol}>

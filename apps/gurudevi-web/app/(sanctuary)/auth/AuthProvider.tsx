@@ -1,5 +1,3 @@
-'use client';
-
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import { SignOutIncompleteError, sanctuarySignOut } from '@/lib/sanctuary/signOut';
 import { type BrowserAuthRuntime, type BrowserSession, browserAuthRuntime } from './browserAuth';

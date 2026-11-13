@@ -42,7 +42,6 @@ function Frame({ session }: { readonly session: Session }) {
   return (
     <SanctuaryShell
       displayName={session.displayName}
-      navigationPrefix=""
       showAccountNavigation
       isExploreMode={session.surface === 'explore'}
       activeCapacity={session.capacity}

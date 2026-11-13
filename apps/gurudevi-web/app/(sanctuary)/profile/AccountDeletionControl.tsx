@@ -1,12 +1,9 @@
-'use client';
-
-import type { AccountDeletionRequest } from '@repo/core/logic/ports/auth.port';
-import { useEffect, useState } from 'react';
+import type { AccountDeletion } from '@repo/core/api/v1/contract';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
 import styles from './profile.module.css';
 
-type RequestState = AccountDeletionRequest | null;
-
-function statusText(request: AccountDeletionRequest): string {
+function statusText(request: AccountDeletion): string {
   if (request.status === 'pending_verification')
     return 'Your deletion request is pending verification.';
   if (request.status === 'scheduled') return 'Your deletion request is scheduled.';
@@ -15,49 +12,30 @@ function statusText(request: AccountDeletionRequest): string {
 }
 
 export function AccountDeletionControl() {
-  const [request, setRequest] = useState<RequestState>(null);
-  const [state, setState] = useState<'loading' | 'ready' | 'submitting' | 'error'>('loading');
-  const [message, setMessage] = useState('');
+  // The surface's sources and commands, which the app hands every route.
+  const { sources, commands } = useRouter().options.context;
+  const queryClient = useQueryClient();
+  const source = sources.accountDeletion();
+  const request = useQuery(source);
+  const change = useMutation({
+    mutationFn: (action: 'request' | 'cancel') =>
+      action === 'request' ? commands.requestAccountDeletion() : commands.cancelAccountDeletion(),
+    onSuccess: (next) => queryClient.setQueryData(source.queryKey, next),
+  });
 
-  useEffect(() => {
-    let active = true;
-    void fetch('/auth/deletion', { credentials: 'same-origin' })
-      .then(async (response) => {
-        if (!response.ok) throw new Error('Unable to read deletion status.');
-        return (await response.json()) as RequestState;
-      })
-      .then((nextRequest) => {
-        if (!active) return;
-        setRequest(nextRequest);
-        setState('ready');
-      })
-      .catch(() => {
-        if (!active) return;
-        setState('error');
-        setMessage('We could not load your deletion status. Please try again later.');
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  async function mutate(method: 'POST' | 'DELETE') {
-    setState('submitting');
-    setMessage('');
-    try {
-      const response = await fetch('/auth/deletion', { method, credentials: 'same-origin' });
-      if (!response.ok) throw new Error('Deletion request failed.');
-      const nextRequest = (await response.json()) as AccountDeletionRequest;
-      setRequest(nextRequest);
-      setMessage(statusText(nextRequest));
-      setState('ready');
-    } catch {
-      setState('error');
-      setMessage('We could not update your deletion request. Please try again.');
-    }
+  const current = change.data ?? request.data ?? null;
+  const canCancel = current?.status === 'pending_verification' || current?.status === 'scheduled';
+  const submitting = change.isPending;
+  let message = '';
+  let failed = false;
+  if (change.isError) {
+    message = 'We could not update your deletion request. Please try again.';
+    failed = true;
+  } else if (change.data) message = statusText(change.data);
+  else if (request.isError) {
+    message = 'We could not load your deletion status. Please try again later.';
+    failed = true;
   }
-
-  const canCancel = request?.status === 'pending_verification' || request?.status === 'scheduled';
 
   return (
     <section className={styles.deletion} aria-labelledby="deletion-title">
@@ -66,24 +44,20 @@ export function AccountDeletionControl() {
         Requesting deletion begins a protected review. It does not erase your account immediately;
         retention rules for school, safeguarding, financial, and audit records may still apply.
       </p>
-      {state === 'loading' ? <p role="status">Loading deletion status…</p> : null}
-      {message ? <p role={state === 'error' ? 'alert' : 'status'}>{message}</p> : null}
+      {request.isPending ? <p role="status">Loading deletion status…</p> : null}
+      {message ? <p role={failed ? 'alert' : 'status'}>{message}</p> : null}
       <div className={styles.deletionActions}>
         {canCancel ? (
-          <button
-            disabled={state === 'submitting'}
-            onClick={() => void mutate('DELETE')}
-            type="button"
-          >
-            {state === 'submitting' ? 'Updating…' : 'Cancel deletion request'}
+          <button disabled={submitting} onClick={() => change.mutate('cancel')} type="button">
+            {submitting ? 'Updating…' : 'Cancel deletion request'}
           </button>
         ) : (
           <button
-            disabled={state === 'loading' || state === 'submitting'}
-            onClick={() => void mutate('POST')}
+            disabled={request.isPending || submitting}
+            onClick={() => change.mutate('request')}
             type="button"
           >
-            {state === 'submitting' ? 'Submitting…' : 'Request account deletion'}
+            {submitting ? 'Submitting…' : 'Request account deletion'}
           </button>
         )}
       </div>

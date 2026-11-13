@@ -35,7 +35,7 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 | App | Purpose | Framework | **Build In** |
 | :--- | :--- | :--- | :--- |
 | **`apps/gurudevi-mobile`** | **Native iOS/Android** - flagship mobile | Expo 58 (RN 0.88, New Arch) | ✅ Mobile features |
-| **`apps/gurudevi-web`** | **Gurudevi web app** - `sanctuary.gurudevi.app` and `explore.gurudevi.app` | Vite + React + TanStack Router (`spa/`); Next.js serves the routes not yet moved ([decision](docs/decisions/2026-11-12-web-stack-astro-vite.md)) | ✅ **Web app** |
+| **`apps/gurudevi-web`** | **Gurudevi web app** - `sanctuary.gurudevi.app` and `explore.gurudevi.app` | Vite + React + TanStack Router (`spa/`), static on Cloudflare Pages ([decision](docs/decisions/2026-11-12-web-stack-astro-vite.md)) | ✅ **Web app** |
 | **`apps/gurudevi-public`** | **Public site** - `gurudevi.app`: pages, journal, legal, SEO and agent files | Astro, static; React islands only where a page is interactive | ✅ **Public pages** |
 | `apps/sanctuary-api` | Sanctuary API | Node.js/Hono | ✅ Active |
 
@@ -143,7 +143,7 @@ for migrations, the signed `canonical_account_id` claim, and real-database proof
 | ❌ NEVER | ✅ INSTEAD |
 | :--- | :--- |
 | Import `*.web.tsx` in `gurudevi-web` | Build browser-native in `apps/gurudevi-web` |
-| Import legacy `@repo/ui` (primitives, `components/ui`, flat `components/*`) in Next.js | Use `@repo/ui/components/web`, `@repo/ui/theme`, `@repo/ui/theme/web` |
+| Import legacy `@repo/ui` (primitives, `components/ui`, flat `components/*`) in the web app | Use `@repo/ui/components/web`, `@repo/ui/theme`, `@repo/ui/theme/web` |
 | Import Expo/RN/PowerSync in `gurudevi-web` | Use `@repo/core/web-auth`, `@repo/core/web-authorized-entry` |
 | Build reusable UI ad hoc in an app (hand-made buttons, pills, fields) | Add it to `@repo/ui/components/web` and `/native` with the same props |
 | Import native storage (MMKV) in `@repo/core` | Use `storageDriver` polyfill proxy (zero native pollution) |
@@ -340,7 +340,7 @@ Never write the unqualified claim **"tests passed"**. A test result is valid onl
 | **G1** | Boundary Mock | Vitest, Jest | External APIs/storage substituted |
 | **G2** | Scenario Contract | Multi-step stateful flow | Network/storage substituted |
 | **G3** | Component Mounting | Real React component tree | Native bridge substituted |
-| **G4** | Platform Bundling | Metro/Next.js bundler + DOM | Real CSS and bundler |
+| **G4** | Platform Bundling | Metro/Vite bundler + DOM | Real CSS and bundler |
 | **G5** | Physical Device | Physical Android/iOS device | Real OS native threads |
 | **R1** | Production Canary | Production canary traffic | Real live systems |
 

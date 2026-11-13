@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';

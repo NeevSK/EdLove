@@ -6,6 +6,7 @@ import { OnboardingForm } from '../../../app/(sanctuary)/onboarding/OnboardingFo
 import styles from '../../../app/(sanctuary)/onboarding/onboarding.module.css';
 
 export const Route = createFileRoute('/_account/onboarding')({
+  head: () => ({ meta: [{ title: 'Meet Tutii | Gurudevi Sanctuary' }] }),
   component: OnboardingScreen,
 });
 

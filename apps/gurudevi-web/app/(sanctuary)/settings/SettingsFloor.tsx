@@ -1,9 +1,7 @@
-'use client';
-
 import type { WorkspaceAppearanceMotion } from '@repo/core/types';
 import type { WorldId } from '@repo/ui/theme';
 import { WorldPicker } from '@repo/ui/components/web';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import type { FidelityPreference } from '@repo/core/verger';
 import React, { useEffect, useState } from 'react';
 import { resolveSurfaceUrl } from '../../../lib/surface-urls';
@@ -795,7 +793,7 @@ export function SettingsFloor({
           </p>
           <div style={{ fontSize: '0.82rem', color: 'var(--color-ink-soft, #453c35)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
             <div>
-              <strong>Runtime Engine:</strong> Gurudevi Web v2.4.0 (Next.js 16 App Router · Turbopack)
+              <strong>Runtime Engine:</strong> Gurudevi Web v2.4.0 (Vite · React 19 · TanStack Router)
             </div>
             <div>
               <strong>Data Sovereignty:</strong> Sri Lanka PDPA No. 9 of 2022 Certified Architecture

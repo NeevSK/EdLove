@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import type { ScrollAreaVariant } from '@repo/ui/theme/contracts';
 import { ScrollArea } from '@repo/ui/components/web';

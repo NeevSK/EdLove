@@ -1,8 +1,6 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { WorkspaceAppearance } from '@repo/core/types';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { type ProfileSection, useProfileCanvas } from '../../../lib/canvas/useProfileCanvas';
@@ -571,7 +569,6 @@ export function ProfileFloor({
                         aria-label="Upload profile avatar"
                       >
                         {avatarUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
                           <img src={avatarUrl} alt={profileName} className={styles.avatarImg} />
                         ) : (
                           <span>👤</span>
@@ -625,10 +622,10 @@ export function ProfileFloor({
                       role="navigation"
                       aria-label="Profile Shortcuts"
                     >
-                      <Link href="/settings" className={styles.quickBtn}>
+                      <Link to="/settings" className={styles.quickBtn}>
                         ⚙️ Sanctuary Settings
                       </Link>
-                      <Link href="/profile/security" className={styles.quickBtn}>
+                      <Link to="/profile/security" className={styles.quickBtn}>
                         🛡️ Device & Security Floor
                       </Link>
                       <a
@@ -892,7 +889,7 @@ export function ProfileFloor({
                           }}
                         >
                           <Link
-                            href={resolveSurfaceUrl('sanctuary', '/sign-in')}
+                            to={resolveSurfaceUrl('sanctuary', '/sign-in')}
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -924,7 +921,7 @@ export function ProfileFloor({
                             Step into Sanctuary (Create Account) ↗
                           </button>
                           <Link
-                            href="/welcome"
+                            to="/welcome"
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -938,7 +935,7 @@ export function ProfileFloor({
                             Guest House →
                           </Link>
                           <Link
-                            href="/community"
+                            to="/community"
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -952,7 +949,7 @@ export function ProfileFloor({
                             Explore Circles →
                           </Link>
                           <Link
-                            href="/library"
+                            to="/library"
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -1223,7 +1220,7 @@ export function ProfileFloor({
                             📚 Sample Library Desk &amp; Curations
                           </h4>
                           <Link
-                            href="/library"
+                            to="/library"
                             style={{
                               fontSize: '0.75rem',
                               fontWeight: 650,
@@ -1246,7 +1243,8 @@ export function ProfileFloor({
                         </p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                           <Link
-                            href="/library/reader/mangroves"
+                            to="/library/reader/$bookId"
+                            params={{ bookId: 'mangroves' }}
                             className={styles.linktreeItem}
                             style={{ textDecoration: 'none' }}
                           >
@@ -1264,7 +1262,8 @@ export function ProfileFloor({
                             </span>
                           </Link>
                           <Link
-                            href="/library/video/intro-botany"
+                            to="/library/video/$videoId"
+                            params={{ videoId: 'intro-botany' }}
                             className={styles.linktreeItem}
                             style={{ textDecoration: 'none' }}
                           >
@@ -1291,7 +1290,7 @@ export function ProfileFloor({
                           }}
                         >
                           <Link
-                            href="/library/contribute"
+                            to="/library/contribute"
                             className={styles.copyQrBtn}
                             style={{
                               textDecoration: 'none',
@@ -1302,7 +1301,7 @@ export function ProfileFloor({
                             + Contribute New Material
                           </Link>
                           <Link
-                            href="/library/tools"
+                            to="/library/tools"
                             className={styles.copyQrBtn}
                             style={{
                               textDecoration: 'none',

@@ -1,5 +1,3 @@
-'use client';
-
 import { createSchoolRepository } from '@repo/core/adapters/supabase/educational/schoolRepository';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { getSandboxSamples } from '@repo/core/logic/modes/sandboxDataset';
@@ -15,7 +13,7 @@ import {
 import { TodoView } from '../../components/TodoView';
 import type { FurnitureDefinition } from '../../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../../components/SanctuaryFloorCanvas';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 
 interface FounderFloorProps {
@@ -89,7 +87,7 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
                 <div>
                   <div style={{ marginBottom: '0.5rem' }}>
                     <Link
-                      href="/workspace"
+                      to="/workspace"
                       style={{
                         fontSize: '0.85rem',
                         fontWeight: 600,
@@ -196,7 +194,7 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Text kind="title">Governed Sanctuary Institutions ({schools.length})</Text>
                     <Link
-                      href="/workspace/school"
+                      to="/workspace/school"
                       style={{
                         textDecoration: 'none',
                         display: 'inline-flex',
@@ -226,7 +224,7 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
 
                         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--w-edge, rgba(104, 94, 85, 0.12))' }}>
                           <Link
-                            href={`/school/${sch.id}`}
+                            to="/school/$id" params={{ id: sch.id }}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
@@ -245,7 +243,7 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
                             Explore Portal ↗
                           </Link>
                           <Link
-                            href={`/workspace/school?schoolId=${sch.id}`}
+                            to="/workspace/school" search={{ schoolId: sch.id }}
                             style={{
                               flex: 1,
                               textAlign: 'center',

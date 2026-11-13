@@ -1,5 +1,3 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import '@repo/core/api/community';
 import { storage } from '@repo/core/lib/storage.adapter';

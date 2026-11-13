@@ -1,5 +1,3 @@
-'use client';
-
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AccountSafeTrySelfPracticeAdapter } from '../../../../lib/sanctuary/selfExplore';
 import { MOOD_CHOICES } from '../../../../lib/sanctuary/selfWellbeing';

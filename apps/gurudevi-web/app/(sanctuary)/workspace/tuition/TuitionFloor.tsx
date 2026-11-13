@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import { type FeeViewModel as FeeRecord, useTuitionDomain } from '@/lib/domain';
 import { useTranslation } from '@/lib/i18n';
@@ -65,7 +63,7 @@ export function TuitionFloor({ displayName, capacity }: Readonly<TuitionFloorPro
         <div className={styles.titleArea}>
           <div style={{ marginBottom: '0.5rem' }}>
             <Link
-              href="/workspace"
+              to="/workspace"
               style={{
                 fontSize: '0.8rem',
                 fontWeight: 650,

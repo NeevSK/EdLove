@@ -1,5 +1,3 @@
-'use client';
-
 import { Check, CircleCheck, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { saveWindDownRitual } from '../../../../lib/sanctuary/selfBrowserAdapters';

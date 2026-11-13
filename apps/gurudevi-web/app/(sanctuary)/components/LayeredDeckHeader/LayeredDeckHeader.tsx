@@ -1,5 +1,3 @@
-'use client';
-
 import React, {
   type ReactNode,
   useCallback,

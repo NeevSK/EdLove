@@ -5,6 +5,7 @@ import { ResetPasswordForm } from '../../../app/(sanctuary)/auth/ResetPasswordFo
 import { safeReturnPath } from '../../../app/(sanctuary)/auth/routeSafety';
 
 export const Route = createFileRoute('/_account/reset-password')({
+  head: () => ({ meta: [{ title: 'Set a new password' }] }),
   validateSearch: z.object({ returnTo: z.string().optional() }),
   component: ResetPasswordScreen,
 });

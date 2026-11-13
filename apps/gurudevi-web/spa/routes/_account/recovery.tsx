@@ -5,6 +5,7 @@ import { RecoveryForm } from '../../../app/(sanctuary)/auth/RecoveryForm';
 import { safeReturnPath } from '../../../app/(sanctuary)/auth/routeSafety';
 
 export const Route = createFileRoute('/_account/recovery')({
+  head: () => ({ meta: [{ title: 'Recover your account' }] }),
   validateSearch: z.object({ returnTo: z.string().optional() }),
   component: RecoveryScreen,
 });

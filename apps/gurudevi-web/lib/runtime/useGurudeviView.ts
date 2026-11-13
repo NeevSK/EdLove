@@ -1,5 +1,3 @@
-'use client';
-
 import { experienceOf, type GurudeviExperience, type WallpaperReading } from '@repo/core/verger';
 import { useVergerSnapshot } from '@repo/verger-react';
 import { useMemo } from 'react';

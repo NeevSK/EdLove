@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import { useGratitude } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './gratitude-glimmers.module.css';

@@ -306,3 +306,18 @@ export const CRAWLER_RULES: readonly CrawlerRule[] = [
     disallow: ['/'],
   },
 ];
+
+const list = (value: string | readonly string[] | undefined) =>
+  value === undefined ? [] : typeof value === 'string' ? [value] : value;
+
+/** `robots.txt` for every Gurudevi host: the crawler policy above and the public sitemap. */
+export function robotsTxt(): string {
+  const groups = CRAWLER_RULES.map((rule) =>
+    [
+      ...list(rule.userAgent).map((agent) => `User-agent: ${agent}`),
+      ...list(rule.allow).map((path) => `Allow: ${path}`),
+      ...list(rule.disallow).map((path) => `Disallow: ${path}`),
+    ].join('\n'),
+  );
+  return `${groups.join('\n\n')}\n\nHost: ${absoluteUrl('/')}\nSitemap: ${absoluteUrl('/sitemap-index.xml')}\n`;
+}

@@ -5,7 +5,7 @@ import { getExploreCapacityMeta, useExploreCapacity } from '../../lib/explore/ex
 import { AccessScope } from './access';
 import { EXPLORE_COMMUNITY_GROUPS } from '../../app/(sanctuary)/community/exploreGroups';
 import { resolveSurfaceUrl } from '../../lib/surface-urls';
-import type { AccountHome, Sources } from './sources';
+import type { AccountHome, Commands, Sources } from './sources';
 
 /** A visitor with no account: the persona they chose to try, kept on this device. */
 export function Surface({ children }: { readonly children: ReactNode }) {
@@ -36,6 +36,16 @@ export const sources: Sources = {
     queryKey: ['explore', 'community-groups'],
     queryFn: async () => ({ kind: 'ready', groups: [...EXPLORE_COMMUNITY_GROUPS], hasMore: false }),
   }),
+  accountDeletion: () => ({
+    queryKey: ['explore', 'account-deletion'],
+    queryFn: async () => null,
+  }),
+};
+
+/** Explore has no account, so there is nothing to delete; no screen offers it here. */
+export const commands: Commands = {
+  requestAccountDeletion: () => Promise.reject(new Error('Explore has no account.')),
+  cancelAccountDeletion: () => Promise.reject(new Error('Explore has no account.')),
 };
 
 export const accountHome: AccountHome = {

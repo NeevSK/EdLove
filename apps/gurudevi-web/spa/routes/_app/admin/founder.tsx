@@ -3,6 +3,7 @@ import { FounderFloor } from '../../../../app/(sanctuary)/admin/founder/FounderF
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/admin/founder')({
+  head: () => ({ meta: [{ title: 'Founder Command | Gurudevi Sanctuary' }] }),
   component: AdminFounderScreen,
 });
 

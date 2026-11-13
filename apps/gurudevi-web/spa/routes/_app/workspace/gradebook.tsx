@@ -3,6 +3,7 @@ import { GradebookFloor } from '../../../../app/(sanctuary)/workspace/gradebook/
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/gradebook')({
+  head: () => ({ meta: [{ title: 'Gradebook | Gurudevi Sanctuary' }] }),
   component: WorkspaceGradebookScreen,
 });
 

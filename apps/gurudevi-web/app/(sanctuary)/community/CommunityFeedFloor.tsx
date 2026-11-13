@@ -1,7 +1,4 @@
-'use client';
-
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useCommunityCanvas } from '../../../lib/canvas/useCommunityCanvas';
 import { parseCommunityGroupsResult } from '../../../lib/community/groups-contract';
@@ -187,7 +184,7 @@ export function CommunityFeedFloor({
   }
 
   function retry() {
-    startRefresh(() => router.refresh());
+    startRefresh(() => void router.invalidate());
   }
 
   const breadcrumbText =
@@ -253,12 +250,12 @@ export function CommunityFeedFloor({
         onOpenQuickAccessItem={(item) => {
           quickAccess.trackUse(item.id);
           if (item.id === 'announcements') {
-            router.push('/community/announcements');
+            void router.navigate({ href: '/community/announcements' });
           } else if (item.id === 'circles') {
             setActivePillar('groups');
             handleClearSelectedGroup();
           } else if (item.id === 'forest') {
-            router.push('/community/forest');
+            void router.navigate({ href: '/community/forest' });
           }
         }}
         onToggleQuickAccessPin={quickAccess.togglePin}
@@ -353,7 +350,8 @@ export function CommunityFeedFloor({
             </p>
           </div>
           <Link
-            href={`/workspace?claimCode=${encodeURIComponent(inviteCode)}`}
+            to="/c/$code"
+            params={{ code: inviteCode }}
             style={{
               padding: '0.5rem 1.1rem',
               borderRadius: 'var(--w-radius-full, 9999px)',

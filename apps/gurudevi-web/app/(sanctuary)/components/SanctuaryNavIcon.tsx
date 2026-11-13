@@ -1,5 +1,3 @@
-'use client';
-
 import type { ReactNode } from 'react';
 
 const NAV_EMOJI: Readonly<Record<string, string>> = {

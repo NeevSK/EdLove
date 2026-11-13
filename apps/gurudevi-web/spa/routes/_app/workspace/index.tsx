@@ -5,6 +5,7 @@ import { Notice } from '../../../surface/Notice';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/')({
+  head: () => ({ meta: [{ title: 'Workspace | Gurudevi Sanctuary' }] }),
   validateSearch: z.object({
     task: z.string().optional(),
     classroom: z.string().optional(),

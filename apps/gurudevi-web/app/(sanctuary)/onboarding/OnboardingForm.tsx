@@ -1,5 +1,3 @@
-'use client';
-
 import {
   completeOnboarding,
   createInitialBond,
@@ -12,8 +10,7 @@ import {
   extractCandidateName,
   extractFirstName,
 } from '@repo/core/types';
-import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { resolveCanonicalDeviceAccount } from '@/lib/sanctuary/canonicalDeviceAccount';
 import { maskEmail, saveDeviceAccount } from '@/lib/sanctuary/deviceAccountRegistry';
@@ -265,13 +262,14 @@ export function OnboardingForm() {
       {step === 'name' ? (
         <section className={styles.step} aria-labelledby="onboarding-name-title">
           <div className={styles.conversationRow}>
-            <Image
+            <img
               className={styles.tutiiImage}
               src="/mascot/firefly-guide-onboarding-light-cutout-v2.webp"
               alt="Tutii listens as you introduce yourself."
               width={260}
               height={260}
-              priority
+              fetchPriority="high"
+              decoding="async"
             />
             <div className={styles.voice}>
               <h2 className={styles.title} id="onboarding-name-title">
@@ -343,7 +341,7 @@ export function OnboardingForm() {
             </div>
           </div>
           <div className={styles.actionRow}>
-            <Link className={styles.backAction} href="/welcome">
+            <Link className={styles.backAction} to="/welcome">
               Welcome
             </Link>
             {!detectedName || isEditingCustomName ? (
@@ -363,13 +361,14 @@ export function OnboardingForm() {
       {step === 'capacity' ? (
         <section className={styles.step} aria-labelledby="onboarding-capacity-title">
           <div className={styles.conversationRow}>
-            <Image
+            <img
               className={styles.tutiiImage}
               src="/mascot/firefly-guide-onboarding-light-cutout-v2.webp"
               alt="Tutii listens while you choose your role."
               width={260}
               height={260}
-              priority
+              fetchPriority="high"
+              decoding="async"
             />
             <div className={styles.voice}>
               <h2
@@ -413,13 +412,14 @@ export function OnboardingForm() {
       {step === 'nudge' ? (
         <section className={styles.step} aria-labelledby="onboarding-nudge-title">
           <div className={styles.conversationRow}>
-            <Image
+            <img
               className={styles.tutiiImage}
               src="/mascot/firefly-guide-welcome-light-cutout-v2.webp"
               alt="Tutii invites you to create your account."
               width={260}
               height={260}
-              priority
+              fetchPriority="high"
+              decoding="async"
             />
             <div className={styles.voice}>
               <h2 className={styles.title} id="onboarding-nudge-title">
@@ -434,7 +434,7 @@ export function OnboardingForm() {
           <div className={styles.nudgeActions}>
             <Link
               className={styles.primaryAction}
-              href="/sign-in?intent=signup&returnTo=%2Fonboarding"
+              to="/sign-in" search={{ intent: 'signup', returnTo: '/onboarding' }}
               onClick={() => saveOnboardingDraft(displayName, selectedCapacity)}
             >
               <span>Create account with Tutii</span>
@@ -442,7 +442,7 @@ export function OnboardingForm() {
             </Link>
             <Link
               className={styles.secondaryActionLink}
-              href="/sign-in?returnTo=%2Fonboarding"
+              to="/sign-in" search={{ returnTo: '/onboarding' }}
               onClick={() => saveOnboardingDraft(displayName, selectedCapacity)}
             >
               Already have an account? Sign in
@@ -485,8 +485,8 @@ export function OnboardingForm() {
         <div className={styles.error} role="alert">
           <p>{message}</p>
           <div className={styles.errorLinks}>
-            <Link href="/sign-in?returnTo=/onboarding">Sign in with account</Link>
-            <Link href="/welcome">Return to welcome</Link>
+            <Link to="/sign-in" search={{ returnTo: '/onboarding' }}>Sign in with account</Link>
+            <Link to="/welcome">Return to welcome</Link>
           </div>
         </div>
       ) : null}

@@ -1,5 +1,3 @@
-'use client';
-
 import type { WorkspaceWallpaper } from '@repo/core/types';
 
 const DB_NAME = 'SanctuaryWallpaperDB';

@@ -1,14 +1,13 @@
 import path from 'node:path';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, type Plugin, runnerImport } from 'vite';
+import { androidAssetLinks, appleAppSiteAssociation } from './lib/appLinks';
+import { architectureSourcePlugin } from './lib/dev/architectureSource';
 import { connectOrigins, securityHeaders } from './lib/security/responseHeaders';
 
 /**
- * The client-app build of this same folder (decision: docs/decisions/2026-11-12-web-stack-astro-vite.md).
- * It runs the existing screens unchanged while they still import `next/*`: those three modules are
- * swapped for thin stand-ins on TanStack Router. Next keeps building from `app/` until each journey
- * is accepted here.
+ * Gurudevi's web app, built once per host (decision: docs/decisions/2026-11-12-web-stack-astro-vite.md).
  *
  *   vite build --mode explore     explore.gurudevi.app: no account, no API, no database
  *   vite build                    sanctuary.gurudevi.app: signed-in people, the v1 API
@@ -16,23 +15,46 @@ import { connectOrigins, securityHeaders } from './lib/security/responseHeaders'
 /**
  * What the host serves with each build (Cloudflare Pages reads both files): the security headers,
  * with Explore allowed to connect to nothing but itself, so the browser enforces that it never
- * reaches the backend; long caching for hashed assets; and every path answered by the app, so a
- * shared link or a refresh opens directly.
+ * reaches the backend; long caching for hashed assets; the app-link files phones read; and every
+ * path answered by the app, so a shared link or a refresh opens directly.
  */
 function hostFiles(connect: readonly string[]): Plugin {
   return {
     name: 'gurudevi-host-files',
     apply: 'build',
-    generateBundle() {
+    async generateBundle() {
       const headers = Object.entries(
-        securityHeaders({ connect, inlineScripts: false, development: false }),
+        securityHeaders({ connect, development: false }),
       )
         .map(([name, value]) => `  ${name}: ${value}`)
         .join('\n');
       this.emitFile({
         type: 'asset',
         fileName: '_headers',
-        source: `/*\n${headers}\n\n/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n\n/index.html\n  Cache-Control: no-cache\n`,
+        source: [
+          `/*\n${headers}`,
+          '/assets/*\n  Cache-Control: public, max-age=31536000, immutable',
+          '/index.html\n  Cache-Control: no-cache',
+          // Apple reads this file only as JSON, and it has no extension to say so.
+          '/.well-known/*\n  Content-Type: application/json\n  Cache-Control: public, max-age=86400',
+        ].join('\n\n') + '\n',
+      });
+      // Every host follows the one crawler policy, which keeps the app's private paths unindexed.
+      // Core is TypeScript source, so it is loaded through Vite rather than by Node directly.
+      const { module: site } = await runnerImport<typeof import('@repo/core/site')>(
+        '@repo/core/site',
+        { configFile: false },
+      );
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: site.robotsTxt() });
+      this.emitFile({
+        type: 'asset',
+        fileName: '.well-known/apple-app-site-association',
+        source: JSON.stringify(appleAppSiteAssociation()),
+      });
+      this.emitFile({
+        type: 'asset',
+        fileName: '.well-known/assetlinks.json',
+        source: JSON.stringify(androidAssetLinks()),
       });
       this.emitFile({ type: 'asset', fileName: '_redirects', source: '/* /index.html 200\n' });
     },
@@ -61,12 +83,10 @@ export default defineConfig(({ mode }) => {
         autoCodeSplitting: true,
       }),
       react(),
+      architectureSourcePlugin(),
     ],
     resolve: {
       alias: [
-        { find: /^next\/link$/, replacement: path.join(root, 'next/link.tsx') },
-        { find: /^next\/navigation$/, replacement: path.join(root, 'next/navigation.ts') },
-        { find: /^next\/image$/, replacement: path.join(root, 'next/image.tsx') },
         { find: /^@\//, replacement: `${__dirname}/` },
         // One surface per build: Explore's bundle never contains the account surface, and the reverse.
         {
@@ -87,8 +107,6 @@ export default defineConfig(({ mode }) => {
       'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(
         explore ? '' : (process.env.NEXT_PUBLIC_API_URL ?? ''),
       ),
-      // The browser client holds the session here; no server sets session cookies (see signOut.ts).
-      'process.env.GURUDEVI_SESSION_COOKIES': JSON.stringify('browser'),
       'process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION': JSON.stringify(
         process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION ?? '',
       ),

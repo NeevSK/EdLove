@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { render } from '@/tests/support/render';
 import { describe, expect, it } from 'vitest';
 import { FloorRedesignClient } from '../../../app/(sanctuary)/kit/floor-redesign/FloorRedesignClient';
 

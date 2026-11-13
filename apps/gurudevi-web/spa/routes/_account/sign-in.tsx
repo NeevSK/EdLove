@@ -5,6 +5,7 @@ import { safeReturnPath } from '../../../app/(sanctuary)/auth/routeSafety';
 import { SignInFlow } from '../../../app/(sanctuary)/auth/SignInFlow';
 
 export const Route = createFileRoute('/_account/sign-in')({
+  head: () => ({ meta: [{ title: 'Sign in | Gurudevi Sanctuary' }] }),
   validateSearch: z.object({
     returnTo: z.string().optional(),
     reason: z.literal('sign-out-incomplete').optional().catch(undefined),

@@ -3,6 +3,7 @@ import { SubmissionsFloor } from '../../../../app/(sanctuary)/workspace/submissi
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/submissions')({
+  head: () => ({ meta: [{ title: 'Submissions | Gurudevi Sanctuary' }] }),
   component: WorkspaceSubmissionsScreen,
 });
 

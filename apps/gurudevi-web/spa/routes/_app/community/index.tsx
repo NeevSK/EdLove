@@ -5,6 +5,7 @@ import { CommunityFeedFloor } from '../../../../app/(sanctuary)/community/Commun
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/community/')({
+  head: () => ({ meta: [{ title: 'Community | Gurudevi Sanctuary' }] }),
   validateSearch: z.object({
     inviteCode: z.string().optional(),
     pillar: z.enum(['feed', 'groups', 'messages']).optional().catch(undefined),

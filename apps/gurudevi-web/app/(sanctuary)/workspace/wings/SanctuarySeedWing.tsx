@@ -1,8 +1,6 @@
-'use client';
-
 import type { SanctuarySeed } from '@/lib/domain/multiSphereDomain';
 import { BookOpen, Lock } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import styles from './sanctuary-seed-wing.module.css';
 
@@ -33,7 +31,7 @@ export function SanctuarySeedWing({ seeds }: SanctuarySeedWingProps): React.Reac
         {seeds.map((seed) => (
           <Link
             key={seed.id}
-            href="/self"
+            to="/self"
             className={styles.seedCard}
             title="Open private reflection workspace"
           >

@@ -3,6 +3,7 @@ import { ClaimSpotFloor } from '../../../../app/(sanctuary)/workspace/claim/Clai
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/claim')({
+  head: () => ({ meta: [{ title: 'Claim My Student Spot | Gurudevi Sanctuary' }] }),
   component: WorkspaceClaimScreen,
 });
 

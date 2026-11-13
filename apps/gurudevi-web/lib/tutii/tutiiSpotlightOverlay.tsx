@@ -1,7 +1,4 @@
-'use client';
-
 import { ArrowRight, Check, Sparkles, X } from 'lucide-react';
-import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { tutiiJourneySpec, UserRolePerspective } from './schema';
 import { createtutiiActor, tutiiMachineContext } from './tutiiMachine';
@@ -170,14 +167,13 @@ export function TutiiSpotlightOverlay({
           {/* Character Avatar & Title */}
           <div className="flex items-start gap-3 my-2">
             <div className="relative w-10 h-10 flex-shrink-0 rounded-full overflow-hidden border border-sanctuary-saffron/30 bg-cream-silence">
-              <Image
+              <img
                 src="/avatars/tutii-guide.png"
                 alt="tutii"
-                fill
-                sizes="40px"
-                className="object-cover"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
                 onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
+                  e.currentTarget.style.display = 'none';
                 }}
               />
               <div className="w-full h-full flex items-center justify-center text-sanctuary-saffron">

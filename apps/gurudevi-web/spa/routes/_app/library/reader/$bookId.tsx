@@ -3,6 +3,7 @@ import { DocumentReaderDesk } from '../../../../../app/(sanctuary)/library/reade
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/reader/$bookId')({
+  head: () => ({ meta: [{ title: 'Document Reader | Gurudevi Sanctuary' }] }),
   component: LibraryReaderBookIdScreen,
 });
 

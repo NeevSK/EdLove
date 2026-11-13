@@ -1,9 +1,7 @@
-'use client';
-
 import { ScrollArea } from '@repo/ui/components/web';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { KitTableOfContents } from '../KitTableOfContents';
 import { TemporalOrbit, type SpotHabitat } from '../TemporalOrbit';
 import { ScrollInstrumentsShowcase } from '../ScrollInstrumentsShowcase';
@@ -27,9 +25,9 @@ export function TemporalHorizonComparison() {
       <main className={styles.mainCanvas}>
         <header className={styles.pageHeader}>
           <div className={styles.breadcrumbs}>
-            <Link href="/kit" className={styles.breadLink}>Sanctuary Kit</Link>
+            <Link to="/kit" className={styles.breadLink}>Sanctuary Kit</Link>
             <span className={styles.breadDivider}>/</span>
-            <Link href="/kit/components" className={styles.breadLink}>Components</Link>
+            <Link to="/kit/components" className={styles.breadLink}>Components</Link>
             <span className={styles.breadDivider}>/</span>
             <span className={styles.breadCurrent}>Temporal Perception Lab</span>
           </div>

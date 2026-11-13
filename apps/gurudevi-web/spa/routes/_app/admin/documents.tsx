@@ -3,6 +3,7 @@ import { DocumentListFloor } from '../../../../app/(sanctuary)/admin/documents/D
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/admin/documents')({
+  head: () => ({ meta: [{ title: 'Circulars & Documents | Gurudevi Sanctuary' }] }),
   component: AdminDocumentsScreen,
 });
 

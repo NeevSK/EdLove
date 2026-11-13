@@ -4,9 +4,9 @@ import {
   FUNCTIONALITY_GUIDES,
   SUPPORT_CONTACT_CHANNELS,
   SUPPORT_FAQS,
+  SUPPORT_PAGE,
   SURFACE_COMPARISON,
 } from '../../app/(sanctuary)/(support)/supportData';
-import { metadata } from '../../app/(sanctuary)/(support)/support/page';
 import { CONTACT_EMAILS } from '@repo/core/site';
 import {
   EXPLORE_GURUDEVI_HOST,
@@ -187,9 +187,9 @@ describe('Support Hub & Functionality Guide Suite', () => {
 
   describe('Support Page Metadata', () => {
     it('publishes descriptive search and agentic discovery metadata', () => {
-      expect(metadata.title).toContain('Support');
-      expect(metadata.description).toContain('Explore');
-      expect(metadata.description).toContain('Sanctuary');
+      expect(SUPPORT_PAGE.title).toContain('Support');
+      expect(SUPPORT_PAGE.description).toContain('Explore');
+      expect(SUPPORT_PAGE.description).toContain('Sanctuary');
     });
   });
 });
