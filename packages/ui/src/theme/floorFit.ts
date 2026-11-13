@@ -161,3 +161,10 @@ export function floorFitOf(piece: KitPiece, platform: 'ios' | 'android' | 'web')
   if (fit.min.h >= target) return fit;
   return { ...fit, min: { ...fit.min, h: target } };
 }
+
+/**
+ * Least width (container, not window) where a floor pattern puts two things
+ * side by side: list beside detail, the desk beside what is at hand. One
+ * number for web and phone.
+ */
+export const FLOOR_SIDE_BY_SIDE = 600;

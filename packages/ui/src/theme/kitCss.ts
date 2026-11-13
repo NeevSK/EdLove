@@ -10,6 +10,7 @@
  * so it shows the pose native shows.
  */
 
+import { FLOOR_CSS } from './floorCss';
 import { radiusCss } from './css';
 import { resolveMotion } from './motion';
 import { resolveWorld } from './resolve';
@@ -2890,6 +2891,6 @@ let cache: string | null = null;
 
 /** Every rule for the later kit components, for all worlds. Cached; the data is static. */
 export function kitStylesheet(): string {
-  cache ??= [BASE_CSS, signTimingCss(), chargeCss(), worldPickCss()].join('\n');
+  cache ??= [BASE_CSS, FLOOR_CSS, signTimingCss(), chargeCss(), worldPickCss()].join('\n');
   return cache;
 }

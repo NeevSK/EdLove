@@ -5,6 +5,7 @@ export * from './hierarchy';
 export * from './layout';
 export * from './lint';
 export * from './patterns';
+export * from './roomFloor';
 export * from './rooms';
 export * from './settings';
 export * from './space';

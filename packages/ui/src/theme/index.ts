@@ -10,8 +10,6 @@
 
 export { buildRecipes } from './build';
 export * from './color';
-export * from './contracts';
-export * from './floorFit';
 export * from './miniChart';
 export * from './taskToolbar';
 export {
@@ -30,6 +28,7 @@ export {
   hapticFor,
   motionFor,
 } from './feedback';
+export * from './floorBias';
 export * from './floorFit';
 export * from './groundLimits';
 export {
