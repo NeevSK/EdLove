@@ -4,11 +4,11 @@ The form builder already holds the questions (`FormSchema` with rubrics) and mar
 
 ## Three separate ideas
 
-| Idea | Question it answers | Where |
-| --- | --- | --- |
-| **Mode** | How is it run? | `mode.ts` |
-| **Journal** | What happened in this attempt, and with what help? | `journal.ts` |
-| **Placement** | Where does it sit? | `videoCues.ts` (video); the others below |
+| Idea          | Question it answers                                | Where                                    |
+| ------------- | -------------------------------------------------- | ---------------------------------------- |
+| **Mode**      | How is it run?                                     | `mode.ts`                                |
+| **Journal**   | What happened in this attempt, and with what help? | `journal.ts`                             |
+| **Placement** | Where does it sit?                                 | `videoCues.ts` (video); the others below |
 
 Keeping them apart is what lets the same questions be a practice round on Monday, a check on Friday, a poll in a post, or three questions inside a video, without copying them.
 
@@ -16,16 +16,17 @@ Keeping them apart is what lets the same questions be a practice round on Monday
 
 Each mode is a policy with defaults (`MODE_DEFAULTS`), and any field can be overridden per activity (`resolveMode(mode, overrides)`).
 
-| | practice | check | exam | poll |
-| --- | --- | --- | --- | --- |
-| Marked | yes | yes | yes | no |
-| Feedback | after each question | on submitting | after it closes | never |
-| Hints | yes | yes | no | no |
-| Tries | unlimited | 1 | 1 | 1 (vote can change) |
-| Lockdown and time limit | no | no | yes | no |
-| Results to participants | never | never | never | after voting |
+|                         | practice            | check         | exam            | poll                |
+| ----------------------- | ------------------- | ------------- | --------------- | ------------------- |
+| Marked                  | yes                 | yes           | yes             | no                  |
+| Feedback                | after each question | on submitting | after it closes | never               |
+| Hints                   | yes                 | yes           | no              | no                  |
+| Tries                   | unlimited           | 1             | 1               | 1 (vote can change) |
+| Lockdown and time limit | no                  | no            | yes             | no                  |
+| Results to participants | never               | never         | never           | after voting        |
 
 Two defaults hold in every mode:
+
 - **Help never lowers marks** (`assistanceAffectsMarks: false`). The engine supports hint and retry penalties; `schemaForMode` sets them to zero unless a policy turns them on.
 - **No speed or streak bonuses** (`speedAndStreakBonus: false`), matching "no points, badges or streaks".
 
@@ -36,6 +37,7 @@ Telegram's "quiz" poll (one right answer, then an explanation) is a one-question
 ### Journal (`journal.ts`)
 
 An attempt is a list of steps, append-only and keyed by ids made on the device:
+
 - `answered`, `retried`;
 - `help_asked`, and `helped` with the kind of help: `hint` with its rung, `worked_example`, `peer`, `teacher`, `guardian` or `ai`, plus the helper;
 - `left_app`, `returned`, `time_up`.

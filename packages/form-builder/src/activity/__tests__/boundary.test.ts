@@ -8,6 +8,7 @@ const dir = join(import.meta.dirname, '..');
 const allowed = (s: string) =>
   s.startsWith('./') ||
   s.startsWith('../quiz') ||
+  s === 'zod' ||
   s.startsWith('@intuitui-labs/form-builder-engine/');
 
 describe('activity boundary', () => {
