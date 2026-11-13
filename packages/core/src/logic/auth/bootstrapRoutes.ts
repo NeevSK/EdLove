@@ -192,3 +192,15 @@ export function isPublicBootstrapRoute(pathname: string): boolean {
     pathname.startsWith('/public-form')
   );
 }
+
+/**
+ * Whether the app's own routes (the tabs and their modals) may render. The router enforces this
+ * through `Stack.Protected`, so a protected screen never mounts for a person who isn't admitted:
+ * on sign-out, or for an inactive account or unfinished onboarding, the guard swaps the route for a
+ * redirect before the screen renders, rather than after an effect sees it. While booting nothing is
+ * decided yet and the entry gate covers the screen, so the guard stays open and a deep link that
+ * arrived at launch isn't bounced away before its session resolves.
+ */
+export function admitsAppRoutes(decision: RouteDecision): boolean {
+  return decision === 'app' || decision === 'booting';
+}
