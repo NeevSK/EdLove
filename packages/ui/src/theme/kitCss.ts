@@ -770,6 +770,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-scrollarea-track[data-visibility="always"]{opacity:0.85}
 .gd-scrollarea:hover > .gd-scrollarea-track[data-visibility="always"],
 .gd-scrollarea-track[data-visibility="always"]:hover{opacity:1}
+/* "scrolling": shown only while moving, or while a pointer rests on it. */
+.gd-scrollarea-track[data-visibility="scrolling"]{opacity:0;transition:opacity 0.3s ease}
+.gd-scrollarea-track[data-visibility="scrolling"][data-moving="true"],
+.gd-scrollarea-track[data-visibility="scrolling"]:hover{opacity:0.85}
+/* Touch screens and the phone-width layout: no standing scroll bar anywhere, whatever a page asks
+   for; it appears while the content moves and fades after, as on the phone app and the OS itself. */
+@media (hover:none) and (pointer:coarse), (max-width:48rem){
+.gd-scrollarea-track{opacity:0 !important;pointer-events:none;transition:opacity 0.35s ease}
+.gd-scrollarea-track[data-moving="true"],.gd-scrollarea-track[data-active="true"]{opacity:0.7 !important}
+}
 
 /* Universal fail-safe thumb positioning and minimum grab target */
 .gd-scrollarea-thumb{
