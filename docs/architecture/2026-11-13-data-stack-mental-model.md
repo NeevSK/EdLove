@@ -1,7 +1,7 @@
 # The data stack: one mental model
 
 Status: consolidation, 2026-11-13. Read before wiring anything that stores, syncs or fetches
-data. Evidence is from the code as it stands; open decisions are Neev's and listed in section 7.
+data. Evidence is from the code as it stands; open decisions are Neev's and listed in section 11.
 Related: [client runtime plan](2026-11-12-client-runtime-foundation-plan.md) (L0 to L5).
 
 ## 1. The picture
@@ -88,69 +88,151 @@ must survive being offline.
 `uploadData`. That is where idempotency keys, the replay decision (`replayDecision.ts`) and conflict
 handling belong for synced tables.
 
-## 5. PowerSync today: what changed upstream
+## 5. One database, not two
 
-- **Sync Streams.** These are the successor to Sync Rules; they landed in beta in March 2026 and
-  are intended as a long-term complete replacement. Our `sync-config.yaml` already uses streams
-  (edition 3).
-- **Local-only tables.** Writes to these are not put in the upload queue: keep guest data there
-  until sign-in, then copy it into the synced tables in one transaction. Changing a table from
-  local-only to synced (or renaming one) deletes its data when the new schema is applied, so the
-  names are a commitment.
-- **Raw tables.** These are native SQLite tables, with foreign keys and cascades, instead of
-  JSON-backed views. Since May 2026, put and delete statements are inferred, and local-only columns
-  work on them. They need the Rust-based sync client.
-- **Local-only use without `connect()`.** This is supported: a PowerSync database can serve as a
-  local SQLite store with no sync.
-- **Versions.** We run `@powersync/web` 2.6.0 (2.7.0 is out), `react-native` 2.4.0 (2.4.1 out),
-  `react` 2.2.0 (2.2.1 out), and `common` 2.5.0 and `drizzle-driver` 0.8.0 (both current).
-  `@powersync/tanstack-react-query` 0.3.8 exists (TanStack queries over SQLite), still pre-1.0.
-  Upgrades go through the cautious-upgrade protocol.
+**Postgres (in Supabase) is the only database of record.** Everything else is a copy:
 
-## 6. Where reality differs from the model (2026-11-13)
+- The **PowerSync Service** is a replication pipe. It reads Postgres's change log and keeps its
+  own derived storage of which rows each device needs. If it is lost, it is rebuilt from Postgres.
+- The **device's SQLite** is a partial copy: the rows this person may see, plus their writes that
+  the server hasn't confirmed yet.
+- **TanStack Query** is a short-lived copy in memory.
 
-1. **Nothing syncs.** Mobile opens SQLite per account but `connectPowerSyncRuntime` is never
-   called, and there is no `uploadData` implementation in the apps.
-2. **The schemas disagree.** The client schema (`adapters/powersync/schema.ts`) declares about 30
-   tables; the streams sync 6.
-3. **Web has no device database.** PowerSync web is a dependency, but web uses a mock under tests
-   and SSR and throws otherwise. Web is fetch-only today.
-4. **There are two roads to Postgres.** Besides v1, core still calls `supabase.from` and `rpc`
-   directly (23 calls), which bypasses the API's authority and idempotency.
-5. **There's a hand-built mini-database.** Two key-value layers (`storage.adapter`, 59 files;
-   `SafeZustandStorage`, 38) and 50 raw `localStorage` calls hold domain lists as JSON (chat,
-   climate, tuition, submissions). These are records, and per section 3 they belong in PowerSync.
-6. **ZenStack policies aren't enforced at runtime.** The API uses `pg` directly, so authority lives
-   in the API's own code, not the ZModel policies.
+Data only ever moves one way into Postgres: **device → upload queue → v1 API → Postgres**. PowerSync
+never writes to Postgres itself. The API decides, then the new server row flows back down to every
+device, including the one that wrote it, and replaces the local version.
 
-## 7. Decisions (Neev's)
+This is a distributed system, as is every app that works offline. The problems are real but
+known, and each one has an owner:
 
-| # | Decision | Why it matters |
+| Problem | Example | Who handles it |
 | --- | --- | --- |
-| 1 | Which tables sync (the streams), using section 3 | Decides what works offline |
-| 2 | Is web local-first (PowerSync web, OPFS/IndexedDB) or fetch-only? | Web has no device database today |
-| 3 | Guest data in PowerSync local-only tables? | Replaces hand-built guest storage; the sign-in copy is one transaction |
-| 4 | Retire direct `supabase.from` and `rpc` from clients (auth stays) | One road to Postgres |
-| 5 | API runtime: raw `pg`, or ZenStack's client with policies | Whether ZModel policies are enforced |
-| 6 | Is the PowerSync service live for v1, and the upload endpoint designed? | Gates any real sync spike |
+| Duplicates | A retried upload marks the same student twice | Idempotency key on the command (attendance already has `idempotency_key`) |
+| Conflicts | Two teachers mark the same student on the same day | The API, by a written rule per table (the conflict policy) |
+| Rejected writes | A teacher who lost access marks attendance offline | The API refuses; the device's row is replaced by the server's copy, and the person is told |
+| Ordering | Edit, then delete, while offline | PowerSync's upload queue is ordered per device |
+| Stale reads | A device offline for a week | It shows the last sync time; the server's checkpoint gives a consistent snapshot when it reconnects |
 
-## 8. Order
+The rule: **the device may go first, but the server has the last word.**
 
-1. **Agree this model** (this doc). The older docs listed below predate Sync Streams, local-only
-   tables and v1. They stay as history until each is reconciled with this one.
-2. **Decide** section 7.
-3. **Spike on mobile:** `connect()` in dev against the streams; one table end to end (write
-   offline, upload through a v1 command, replicate back); try `@powersync/tanstack-react-query` on
-   it.
-4. **Then wire:** move records out of the key-value layers into PowerSync tables, and keep TanStack
-   for fetched answers. Effect conversions follow this map, so nothing is converted twice.
+## 6. First synced table: attendance (decided 2026-11-13)
+
+Neev chose attendance as the first synced table; others come later. What has to line up:
+
+| Piece | State |
+| --- | --- |
+| Postgres `attendance` (`AttendanceRecord`) | Key `(classroom_id, student_id, date)`; columns `status`, `date`, `idempotency_key`; **no `id`** |
+| Device `attendance` (`schema.ts`) | Has `id`, `marked_by`, `note`, `created_at`, `updated_at`, `occurred_at`, `academic_cycle_id` |
+| Sync stream | None yet |
+| Upload | None yet (no `uploadData`, no v1 attendance command) |
+
+The two shapes disagree, and PowerSync needs an `id` column on every synced row. The server shape
+is L0 (Neev's): either add an `id` to `attendance`, or have the stream select a derived `id`.
+Then a stream (teacher's classrooms, and the student's own rows) and a v1 command
+(`classroom.attendance.mark`) complete the loop.
+
+## 7. Web: offline-capable, not local-first
+
+- **Local-first:** the device copy is primary. Every read and write goes to the local database,
+  and the network catches up in the background. That is mobile's model.
+- **Offline-capable:** the network is primary, and the app degrades gracefully when it drops.
+  `client-state-and-web-offline-capability-canon.md` defines the levels:
+
+| Level | Promise |
+| --- | --- |
+| W0 | Preferences survive reload |
+| W1 | What you have seen stays visible during an outage |
+| W2 | The app opens with no network |
+| W3 | Chosen records survive a restart offline |
+| W4 | Chosen writes survive a restart and are sent later |
+
+Why web isn't local-first by default:
+
+- Browsers can evict storage.
+- School labs and shared computers would leave private records on a machine that isn't the person's.
+- Several tabs share one database.
+- Most web use is online.
+
+Web climbs the ladder one feature at a time instead. PowerSync web 2.7.0 (an OPFS file system
+picked automatically) makes W3 and W4 practical for a chosen feature, attendance included, when
+that is wanted.
+
+## 8. Sign-in and the sync token
+
+There are two different jobs:
+
+1. **Checking credentials** (phone OTP, Google, password). **Supabase Auth** does this: it sends
+   the codes and applies the rate limits. Passing passwords through our API adds a hop and a risk
+   with no gain.
+2. **Everything after:** who you are in Gurudevi, your bonds and permissions, and what you may
+   sync. **The API** owns all of this. It turns the Supabase session into the canonical account.
+
+PowerSync needs a token saying who the device is (`canonical_account_id`). `powersync/service.yaml`
+already trusts our own ES256 key (`gurudevi-sync-dev-…`), not Supabase's, so the intended design
+is that **the API issues the sync token**. No API endpoint signs one yet. The alternative,
+PowerSync trusting Supabase's JWT directly, is simpler, but it puts authority in a token we don't
+issue.
+
+A later web option is an API-backed session in an httpOnly cookie, so the browser never holds the
+token.
+
+## 9. PowerSync as of November 2026
+
+- **Managed tables (alpha, 2026-11-03).** `new Table(..., { direct: true })` stores plain SQLite
+  rows instead of PowerSync's JSON views. It is faster for long lists and aggregates (an
+  attendance sheet), with no migrations to write. It is alpha, so try it in the spike, not production.
+- **`connect()` takes an `Authenticator` and a `MutationUploader` separately** (web 2.6.0), with
+  download-only and upload-only forms. This maps cleanly onto ours: the API issues the token,
+  and the v1 commands do the uploads. The old single connector still works.
+- **The hang fix (web 2.6.0).** A sync connection or checkpoint could hang forever if the service
+  didn't answer, blocking uploads.
+- **OPFS for web (2.7.0, 2026-11-09).** `WASQLiteVFS.SimpleOpfsVFS` and `vfs: 'auto'`.
+- **DevTools (2026-11-09).** These show a running app's live database, with MCP tools for agents.
+  React Native support arrived in 2.4.1 (a Rozenite plugin).
+- **Sync Streams** are what our `sync-config.yaml` already uses (edition 3). Service is at 1.28.x.
+- **Our versions:** web 2.6.0 (2.7.0 out), react-native 2.4.0 (2.4.1), react 2.2.0 (2.2.1);
+  common 2.5.0 and drizzle-driver 0.8.0 are current. `@powersync/tanstack-react-query` 0.3.8 is
+  pre-1.0. Upgrades go through the cautious-upgrade protocol.
+
+## 10. Where reality differs from the model (2026-11-13)
+
+1. **Nothing syncs.** Mobile opens SQLite per account but never connects.
+2. **No sync token issuer.** The service trusts our dev key, but nothing signs with it.
+3. **Attendance shapes disagree** (section 6), and the device schema declares about 30 tables
+   while the streams cover 6.
+4. **Two roads to Postgres.** Core still calls `supabase.from` and `rpc` directly (23 calls),
+   bypassing the API.
+5. **A hand-built mini-database.** Key-value layers hold records as JSON (chat, climate, tuition,
+   submissions). These are records, which belong in PowerSync.
+6. **ZenStack policies aren't enforced at runtime.** The API uses `pg` directly.
+
+## 11. Decisions
+
+| # | Decision | State |
+| --- | --- | --- |
+| 1 | First synced table | **Attendance** (Neev, 2026-11-13); more later |
+| 2 | Web | Offline-capable by ladder, not local-first (the canon) |
+| 3 | Sign-in | Supabase Auth checks credentials; the API owns the account and issues the sync token (proposed) |
+| 4 | Retire direct `supabase.from` and `rpc` from clients | Proposed (auth calls stay) |
+| 5 | Attendance `id` (L0) | Neev |
+| 6 | PowerSync live for v1 | Intended. A Cloud instance "Development" (region jp) exists and its URL is in Doppler; whether it is running and replicating is to be confirmed |
+| 7 | Guest data in local-only tables | Open |
+| 8 | API runtime: `pg`, or ZenStack's client with policies | Open |
+
+## 12. Order
+
+1. Agree this model.
+2. Confirm the instance is live (dashboard or `powersync status`). Neev settles the attendance `id`.
+3. **Mobile spike on attendance:** the API issues the sync token, `connect()` with an
+   `Authenticator` and a `MutationUploader`, an attendance stream, and a `classroom.attendance.mark`
+   command. Prove it end to end: mark offline, reconnect, upload, see the row come back, try
+   a conflict and a rejection. DevTools on the device; try managed tables.
+4. Then wire: records out of the key-value layers into PowerSync, and TanStack for fetched answers.
 
 Older documents to reconcile: `2026-06-19-sqlite-drizzle-powersync-mechanics-guide.md`,
-`client-state-and-web-offline-capability-canon.md`, `offline-state-resilience-sop.md`,
-`2026-10-23-client-state-and-web-offline-conflict-audit.md`.
+`offline-state-resilience-sop.md`, `2026-10-23-client-state-and-web-offline-conflict-audit.md`.
+`client-state-and-web-offline-capability-canon.md` still holds and is the source for section 7.
 
-Sources: PowerSync docs on [Sync Streams](https://docs.powersync.com/sync/streams/overview),
-[local-only usage](https://docs.powersync.com/client-sdks/advanced/local-only-usage),
-[raw tables](https://docs.powersync.com/client-sdks/advanced/raw-tables); PowerSync blog,
-[2025 roadmap update](https://www.powersync.com/blog/2025-powersync-roadmap-update) and
-[May 2026 changelog](https://powersync.com/blog/powersync-changelog-may-2026).
+Sources: [PowerSync product updates](https://releases.powersync.com/),
+[JS web SDK changelog](https://releases.powersync.com/announcements/powersync-js-web-client-sdk),
+[Sync Streams](https://docs.powersync.com/sync/streams/overview).
