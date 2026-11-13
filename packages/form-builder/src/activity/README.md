@@ -1,0 +1,65 @@
+# Activities: modes, journals and placements
+
+The form builder already holds the questions (`FormSchema` with rubrics) and marks them (`quiz/grade.ts`, using `@intuitui-labs/form-builder-engine` 0.3.0). This folder adds what turns one set of questions into the different things a class needs. It is pure: no React, storage or network, and no app names (`__tests__/boundary.test.ts`).
+
+## Three separate ideas
+
+| Idea | Question it answers | Where |
+| --- | --- | --- |
+| **Mode** | How is it run? | `mode.ts` |
+| **Journal** | What happened in this attempt, and with what help? | `journal.ts` |
+| **Placement** | Where does it sit? | `videoCues.ts` (video); the others below |
+
+Keeping them apart is what lets the same questions be a practice round on Monday, a check on Friday, a poll in a post, or three questions inside a video, without copying them.
+
+### Modes (`mode.ts`)
+
+Each mode is a policy with defaults (`MODE_DEFAULTS`), and any field can be overridden per activity (`resolveMode(mode, overrides)`).
+
+| | practice | check | exam | poll |
+| --- | --- | --- | --- | --- |
+| Marked | yes | yes | yes | no |
+| Feedback | after each question | on submitting | after it closes | never |
+| Hints | yes | yes | no | no |
+| Tries | unlimited | 1 | 1 | 1 (vote can change) |
+| Lockdown and time limit | no | no | yes | no |
+| Results to participants | never | never | never | after voting |
+
+Two defaults hold in every mode:
+- **Help never lowers marks** (`assistanceAffectsMarks: false`). The engine supports hint and retry penalties; `schemaForMode` sets them to zero unless a policy turns them on.
+- **No speed or streak bonuses** (`speedAndStreakBonus: false`), matching "no points, badges or streaks".
+
+`schemaForMode(schema, policy)` never changes the authored schema. A poll keeps the questions and drops every answer key.
+
+Telegram's "quiz" poll (one right answer, then an explanation) is a one-question `check` with feedback per question. Its normal poll is `poll`. Vote counting for community posts stays where it is (`community.getPollStatus`).
+
+### Journal (`journal.ts`)
+
+An attempt is a list of steps, append-only and keyed by ids made on the device:
+- `answered`, `retried`;
+- `help_asked`, and `helped` with the kind of help: `hint` with its rung, `worked_example`, `peer`, `teacher`, `guardian` or `ai`, plus the helper;
+- `left_app`, `returned`, `time_up`.
+
+`assistanceByPart` says, per question, whether it was answered alone, and if not, what help came before the last answer. Help looked at after answering counts as review, not assistance. `gradeInputFromJournal` gives `gradeQuiz` its inputs, so marking and the record come from the same facts. This is the source for the steps in the [assessments card](../../../../docs/architecture/domains/learning/assessments.md).
+
+### Placements
+
+- **On its own:** the quiz runner, as today.
+- **Inside a video** (`videoCues.ts`): cues on the timeline (`atMs`, the questions, `pause`, `required`).
+  - Playback ticks that cross a cue open it, even when no tick lands on it exactly.
+  - A seek past an unanswered required cue stops there (`seekPastRequired`).
+  - Long ticks count as seeks, going backwards is always free, and answered cues don't reopen when rewatching.
+  - Every behaviour is a policy (`DEFAULT_CUE_POLICY`).
+  - It works with any player: `expo-video` on mobile, `<video>` on the web.
+- **Not built yet:** in a post (poll), in a relation's thread (shared to one learner), in a reading (at a place in a document), and live in class (everyone at once, with the teacher pacing). Live needs a realtime or local-network decision first.
+
+## Not built yet
+
+1. **The runner reads a `ModePolicy`.** `QuizRunner` takes the policy and writes journal steps (`hintsUsed` reaches marking today but is dropped from `QuizAttempt`).
+2. **The video host:** a native overlay on `expo-video` and a web overlay on `<video>`, both driving `advanceCues`.
+3. **New interaction kinds the engine lacks:** ordering, matching, drag the words, mark the words, hotspot on an image. Each needs a rubric kind and a native and a web control.
+4. **The H5P converter:** `content.json` of the question types into a `FormSchema`, with the WebView player (`@repo/library/h5p`) as the fallback for everything else.
+
+## Evidence
+
+G1 only: `vitest run src/activity src/quiz` passes 51 tests (19 new). tsc shows no errors in these files (44 pre-existing errors elsewhere in the package). The tests prove the rules under substituted time and answers. They don't prove a real player, a device or the screens.
