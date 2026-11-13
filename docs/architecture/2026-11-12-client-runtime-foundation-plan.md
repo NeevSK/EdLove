@@ -63,9 +63,14 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
 
 - **Today (done to baseline).** Tiers, store ownership, no cross-store subscriptions, every
   persisted store has a `version`, guarded by tests. See the state doc.
-- **Next.** XState: 14 machines without `setup()`; replace hand-built snapshot versioning with
-  `validatePersistedSnapshot` and `machineVersions`. Decide between `useSchoolCreation` and
-  `schoolProvisioningMachine` (Neev's decision).
+- **Done (2026-11-13).** XState: all 19 machines declare their schemas, and none uses the
+  deprecated `createMachine(config, options)`, so a `setup()` sweep would change nothing (it is for
+  shared sources and per-state schemas). Persisted machines (role journey, principal setup) are
+  versioned: `store/persistedActor.ts` restores through XState, drops another version or a finished
+  flow, and takes a `migrate` function when a version change must keep people's place. Ratchet
+  gates replace "Machines without setup()".
+- **Open.** Decide between `useSchoolCreation` and `schoolProvisioningMachine` (Neev's decision).
+  Runtime validation (`standardSchemaValidator`) is experimental; try it in tests first.
 
 ### L2 Transport
 
@@ -433,7 +438,7 @@ Each step is baseline for its layer, gated by the ratchet, then committed:
 4. **L2 transport.** One client per channel, one header path, timeouts, one offline signal.
 5. **L4 writes.** One outbox for the three queues; replay, conflict and healing loop; the outcome type.
 6. **L5 reads.** Effects → queries, package by package; account-scoped keys.
-7. **L1 machines.** `setup()` and XState 6 snapshot versioning.
+7. **L1 machines.** XState 6 snapshot versioning and schema gates. *Done 2026-11-13.*
 8. **L7 feedback, L8 motion, L6 files.** One channel, tokens only, one file policy.
 9. **L9 journeys.** Presentation, back, transition and prefetch on flow steps; the navigator adapter;
    `validateFlowDAG` as a real gate; then the feature generator.

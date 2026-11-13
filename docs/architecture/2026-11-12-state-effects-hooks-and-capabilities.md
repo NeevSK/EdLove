@@ -143,8 +143,9 @@ searching source files, excluding tests and docs.
 | **oRPC 2.0 beta.50** | TanStack utils (`.queryOptions` on procedures) | 16 | ✓ | Prefer it over hand-written keys for API reads |
 | **Zustand 5.1.0** (latest) | Atomic selectors, `persist` + `version`/`migrate`/`partialize` | all stores | ✓ (fixed 2026-11-12) | Async `migrate` is available in 5.1 when a shape changes |
 | | `subscribeWithSelector`, `devtools`, `unstable_ssrSafe` | 0 | not needed yet | One store subscription exists and is correct |
-| **XState 6.0.0-beta.2** | `setup({...})` | 5 of 19 machines | **behind** | 14 machines use plain `createMachine`; v6 marks its second `options` argument deprecated in favour of `setup()` or `machine.provide()`. Migrate when touched (ratchet "Machines without setup()") |
-| | Persistence: `restoreActor`, `validatePersistedSnapshot`, `machineVersions` | 4 / 0 / 0 | **we hand-built it** | `adapters/storage/journeySnapshot.adapter.ts` writes its own version envelope. v6 ships validation and versioned migration; adopt it for the role journey and the admin setup machine |
+| **XState 6.0.0-beta.2** | Schemas on `setup({...})` or on `createMachine({...})` | 19 of 19 | ✓ (checked 2026-11-13) | v6 checks both alike. Only `createMachine`'s second `options` argument is deprecated, and no machine passes it. `setup()` is for sources shared by several machines and for per-state schemas; a machine moves to it when it needs either, not as a sweep. Ratchet: "Machines without event schemas" and "createMachine(config, options)", both 0 |
+| | Persistence: machine `version`, `restoreActor`, `migrate` | 2 persisted machines | ✓ (2026-11-13) | `store/persistedActor.ts` `startPersistedActor`: snapshots carry `machine: { id, version }`; another version starts fresh unless the machine has a `migrate` function; a finished flow is dropped. Used by the role journey and principal setup. Ratchet: "restoreActor outside startPersistedActor", 0. `machineVersions()` (async, for retained historical schemas and event histories) when a machine first needs it. `validatePersistedSnapshot` is internal in beta.2 |
+| | Runtime validation (`xstate/validation` `standardSchemaValidator`) | 0 | experimental | Rejects schemas that transform (Zod `.default()` in several contexts). A policy to try in tests first |
 | | `fromPromise` / `fromCallback` actors | 0 | ✓ (n/a) | Effects run through `@xstate/effect` |
 | **Effect 4.1.4** | `Effect.gen`, `Layer`, `Schedule` | 22 / 4 / 8 | ✓ | Ports and adapters |
 | | `Stream` | 0 | not needed yet | — |
@@ -180,8 +181,9 @@ ZenStack's CLI) or are store leftovers, so they don't load at runtime.
    `mutationOptions` and `useActionState`.
 4. **Decide `useSchoolCreation` against `schoolProvisioningMachine`** (and the classroom and group
    creation hooks) before wiring either.
-5. **XState:** move to `setup()` when a machine is touched; adopt `validatePersistedSnapshot` and
-   `machineVersions` for persisted machines.
+5. **XState:** done to baseline (2026-11-13): persisted machines are versioned through
+   `startPersistedActor`; schemas are checked on every machine. `setup()` only where sources are
+   shared or states need their own schemas.
 
 ## Classifying effects that set state (2026-11-13)
 

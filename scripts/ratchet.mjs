@@ -14,6 +14,7 @@
 
 import { execFileSync, execSync } from 'node:child_process';
 import { RG_REFERENCE_ARGS } from '../tooling/reference-only.mjs';
+import { machineDefinitions } from './lib/machine-definitions.mjs';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -89,9 +90,19 @@ function countAuthorityStoreReads() {
   ]);
 }
 
-// Machines are declared with setup({ schemas }) so their context and events are checked.
-function countMachinesWithoutSetup() {
-  return runRgCount('= createMachine\\(');
+// Every machine declares its events (on setup() or createMachine; XState 6 checks both alike), and
+// none passes createMachine's deprecated second `options` argument (use setup() or .provide()).
+function countMachineDefinitionIssues() {
+  const machines = machineDefinitions();
+  return {
+    machinesWithoutEventSchemas: machines.filter((m) => !m.declaresEvents).length,
+    deprecatedMachineOptions: machines.filter((m) => m.deprecatedOptions).length,
+  };
+}
+
+// Persisted machines restore through startPersistedActor, which versions and drops unusable snapshots.
+function countHandBuiltMachinePersistence() {
+  return runRgCount('restoreActor\\(', ['-g', '!packages/core/src/store/persistedActor.ts']);
 }
 
 // Programs run outside the shared runtime skip its services and logging (packages/core/src/effect/AppRuntime.ts).
@@ -280,7 +291,8 @@ function measureMetrics() {
     plainErrorSubclasses: countPlainErrorSubclasses(),
     dataTaggedErrors: countDataTaggedErrors(),
     authorityStoreReads: countAuthorityStoreReads(),
-    machinesWithoutSetup: countMachinesWithoutSetup(),
+    ...countMachineDefinitionIssues(),
+    handBuiltMachinePersistence: countHandBuiltMachinePersistence(),
     directEffectRuns: countDirectEffectRuns(),
     tierImportViolations: countTierImportViolations(),
     unplacedFiles: countUnplacedFiles(),
@@ -329,7 +341,9 @@ function main() {
     plainErrorSubclasses: 'class X extends Error',
     dataTaggedErrors: 'Data.TaggedError (not serializable)',
     authorityStoreReads: 'Authority read from client stores',
-    machinesWithoutSetup: 'Machines without setup()',
+    machinesWithoutEventSchemas: 'Machines without event schemas',
+    deprecatedMachineOptions: 'createMachine(config, options) (deprecated)',
+    handBuiltMachinePersistence: 'restoreActor outside startPersistedActor',
     directEffectRuns: 'Effect.run* outside the app runtime',
     tierImportViolations: 'Tier import violations (core)',
     unplacedFiles: 'Files with no tier (core)',

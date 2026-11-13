@@ -7,8 +7,8 @@ import {
   ResetJourneyEventSchema,
 } from '@repo/core/logic/schemas/roleJourney.schema';
 import type { WorkspaceRolePersona } from '@repo/core/types';
-import { createActor, setup } from 'xstate';
-import { restoreActor } from 'xstate/persist';
+import { startPersistedActor } from '@repo/core/store/persistedActor';
+import { setup } from 'xstate';
 
 export const roleJourneyMachine = setup({
   schemas: {
@@ -22,6 +22,9 @@ export const roleJourneyMachine = setup({
   },
 }).createMachine({
   id: 'roleJourney',
+  // Bump when states, context or events change. Stored journeys of another version start fresh
+  // unless a `migrate` function is added here.
+  version: '1',
   initial: 'day0_onboarding',
   context: {
     persona: 'guest',
@@ -79,33 +82,15 @@ export const roleJourneyMachine = setup({
 
 export type RoleJourneyMachine = typeof roleJourneyMachine;
 
-/**
- * Creates and starts a restored or fresh Role Journey Actor for the given persona.
- */
+/** Starts the persona's role journey where it left off, or fresh, and keeps it saved. */
 export function createRoleJourneyActor(persona: WorkspaceRolePersona) {
-  const savedSnapshot = journeySnapshots.load(persona);
-  // An unreadable snapshot restores to an actor in 'error' rather than throwing: drop it and start fresh.
-  let actor = savedSnapshot
-    ? restoreActor(roleJourneyMachine, savedSnapshot as never)
-    : null;
-  if (actor && actor.getSnapshot().status === 'error') {
-    journeySnapshots.drop(persona);
-    actor = null;
-  }
-
-  if (actor) {
-    actor.start();
-  } else {
-    actor = createActor(roleJourneyMachine);
-    actor.start();
-    // Start with assigned persona
-    actor.send({ type: 'ADVANCE_STEP', stepId: `init_${persona}` });
-  }
-
-  // Subscribe to auto-persist transitions
-  actor.subscribe(() => {
-    journeySnapshots.save(persona, actor.getPersistedSnapshot());
-  });
-
-  return actor;
+  return startPersistedActor(
+    roleJourneyMachine,
+    {
+      load: () => journeySnapshots.load(persona),
+      save: (snapshot) => journeySnapshots.save(persona, snapshot),
+      drop: () => journeySnapshots.drop(persona),
+    },
+    (actor) => actor.send({ type: 'ADVANCE_STEP', stepId: `init_${persona}` }),
+  );
 }

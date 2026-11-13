@@ -71,35 +71,35 @@ describe('RoleJourneyMachine v6', () => {
     actor1.send({ type: 'ADVANCE_STEP', stepId: 'reviewed_curriculum' });
     actor1.send({ type: 'COMPLETE_MILESTONE', stepId: 'claimed_school' });
 
-    // Verify stored snapshot envelope
-    const rawEnvelope = storage.getString(getJourneySnapshotStorageKey('principal'));
-    expect(rawEnvelope).toBeTruthy();
+    // The stored snapshot is XState's own, stamped with the machine's identity.
+    expect(loadJourneySnapshot('principal')).toMatchObject({
+      machine: { id: 'roleJourney', version: roleJourneyMachine.version },
+    });
 
-    const loaded = loadJourneySnapshot('principal');
-    expect(loaded).toBeTruthy();
-
-    // Restore into a new actor instance
     const actor2 = createRoleJourneyActor('principal');
     expect(actor2.getSnapshot().value).toBe('day1_operational');
     expect(actor2.getSnapshot().context.completedStepIds).toContain('claimed_school');
   });
 
-  it('safely discards corrupt or outdated snapshot envelopes', () => {
-    // Write an invalid/stale version envelope
-    const key = getJourneySnapshotStorageKey('student');
-    storage.set(
-      key,
-      JSON.stringify({
-        version: 999, // Incompatible future version
-        savedAt: new Date().toISOString(),
-        snapshot: { value: 'corrupted' },
-      }),
-    );
+  it.each([
+    [
+      'the pre-versioning envelope',
+      { version: 2, savedAt: new Date().toISOString(), snapshot: { value: 'day1_operational' } },
+    ],
+    ['another machine version', { value: 'day1_operational', machine: { id: 'roleJourney', version: '999' } }],
+    ['a state the machine does not have', { value: 'nowhere', machine: { id: 'roleJourney', version: '1' } }],
+  ])('drops %s and starts fresh', async (_name, stored) => {
+    saveJourneySnapshot('student', stored);
+    const actor = createRoleJourneyActor('student');
+    expect(actor.getSnapshot().value).toBe('day0_onboarding');
+    expect(actor.getSnapshot().context.completedStepIds).toEqual(['init_student']);
+    // The fresh journey replaced what was stored.
+    expect(loadJourneySnapshot('student')).toMatchObject({ machine: { version: '1' } });
+  });
 
-    const loaded = loadJourneySnapshot('student');
-    expect(loaded).toBeNull();
-
-    // Storage key should be cleared
-    expect(storage.getString(key)).toBeUndefined();
+  it('drops a stored value that is not JSON', () => {
+    storage.set(getJourneySnapshotStorageKey('student'), '{not json');
+    expect(loadJourneySnapshot('student')).toBeNull();
+    expect(storage.getString(getJourneySnapshotStorageKey('student'))).toBeUndefined();
   });
 });

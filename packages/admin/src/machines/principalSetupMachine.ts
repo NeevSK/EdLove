@@ -1,6 +1,6 @@
 import { storage } from '@repo/core/lib/storage.adapter';
-import { createActor, setup } from 'xstate';
-import { restoreActor } from 'xstate/persist';
+import { startPersistedActor } from '@repo/core/store/persistedActor';
+import { setup } from 'xstate';
 import { z } from 'zod';
 
 export const SchoolTypeEnum = z.enum([
@@ -67,6 +67,9 @@ export const principalSetupMachine = setup({
   },
 }).createMachine({
   id: 'principalSetup',
+  // Bump when states, context or events change. Saved setups of another version start fresh
+  // unless a `migrate` function is added here.
+  version: '1',
   initial: 'welcome',
   context: {
     schoolName: '',
@@ -168,44 +171,22 @@ export const principalSetupMachine = setup({
 
 export type PrincipalSetupMachine = typeof principalSetupMachine;
 
-// -----------------------------------------------------------------------------
-// SNAPSHOT PERSISTENCE ENVELOPE (Crash-Proof Pause & Resume)
-// -----------------------------------------------------------------------------
-
-// 2: XState 6 beta; alpha snapshots are discarded on load.
-const PRINCIPAL_SETUP_SCHEMA_VERSION = 2;
-
-export const PrincipalSnapshotEnvelopeSchema = z.object({
-  version: z.number().int(),
-  savedAt: z.iso.datetime(),
-  snapshot: z.unknown(),
-});
+// Persistence (crash-proof pause and resume). The snapshot is XState's own, stamped with the
+// machine's `{ id, version }`; `startPersistedActor` decides whether a stored one is usable.
 
 export function getPrincipalSetupStorageKey(userId?: string): string {
   return `principal_setup:v6:${userId || 'default'}:snapshot`;
 }
 
 export function savePrincipalSetupSnapshot(snapshot: unknown, userId?: string): void {
-  const envelope = {
-    version: PRINCIPAL_SETUP_SCHEMA_VERSION,
-    savedAt: new Date().toISOString(),
-    snapshot,
-  };
-  storage.set(getPrincipalSetupStorageKey(userId), JSON.stringify(envelope));
+  storage.set(getPrincipalSetupStorageKey(userId), JSON.stringify(snapshot));
 }
 
 export function loadPrincipalSetupSnapshot(userId?: string): unknown | null {
   const raw = storage.getString(getPrincipalSetupStorageKey(userId));
   if (!raw) return null;
-
   try {
-    const parsed = JSON.parse(raw);
-    const validated = PrincipalSnapshotEnvelopeSchema.safeParse(parsed);
-    if (!validated.success || validated.data.version !== PRINCIPAL_SETUP_SCHEMA_VERSION) {
-      storage.delete(getPrincipalSetupStorageKey(userId));
-      return null;
-    }
-    return validated.data.snapshot;
+    return JSON.parse(raw);
   } catch {
     storage.delete(getPrincipalSetupStorageKey(userId));
     return null;
@@ -216,26 +197,11 @@ export function clearPrincipalSetupSnapshot(userId?: string): void {
   storage.delete(getPrincipalSetupStorageKey(userId));
 }
 
-/**
- * Creates, restores, and starts the Principal Setup Actor.
- */
+/** Starts the principal's setup where they left off, or fresh, and keeps it saved. */
 export function createPrincipalSetupActor(userId?: string) {
-  const savedSnapshot = loadPrincipalSetupSnapshot(userId);
-
-  const restored = savedSnapshot
-    ? restoreActor(principalSetupMachine, savedSnapshot as never)
-    : null;
-  // An unreadable snapshot restores to an actor in 'error' rather than throwing: drop it and start fresh.
-  const unreadable = restored?.getSnapshot().status === 'error';
-  if (unreadable) clearPrincipalSetupSnapshot(userId);
-  const actor = restored && !unreadable ? restored : createActor(principalSetupMachine);
-
-  actor.start();
-
-  // Auto-persist snapshot on every state/context change
-  actor.subscribe(() => {
-    savePrincipalSetupSnapshot(actor.getPersistedSnapshot(), userId);
+  return startPersistedActor(principalSetupMachine, {
+    load: () => loadPrincipalSetupSnapshot(userId),
+    save: (snapshot) => savePrincipalSetupSnapshot(snapshot, userId),
+    drop: () => clearPrincipalSetupSnapshot(userId),
   });
-
-  return actor;
 }
