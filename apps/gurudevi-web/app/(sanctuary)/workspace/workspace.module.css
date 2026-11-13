@@ -1,7 +1,7 @@
 .floor {
   display: grid;
   gap: clamp(1.5rem, 4vw, 3rem);
-  color: var(--ink, #29251f);
+  color: var(--ink);
 }
 .workbench {
   display: grid;
@@ -12,7 +12,7 @@
   min-width: 0;
   align-items: center;
   gap: 0.5rem;
-  border-bottom: 1px solid var(--line, rgba(44, 40, 37, 0.12));
+  border-bottom: 1px solid var(--line);
 }
 .workspaceTaskStrip {
   flex: 1 1 auto;
@@ -38,12 +38,12 @@
 .heading > p:last-child,
 .overview p,
 .attendanceHeading p {
-  color: var(--ink-ghost, #71695f);
+  color: var(--ink-ghost, var(--w-ink-soft));
   line-height: 1.65;
 }
 .eyebrow {
   margin: 0;
-  color: var(--sanctuary-saffron, #a45d25);
+  color: var(--sanctuary-saffron, var(--w-lamp-deep));
   font-size: 0.72rem;
   font-weight: 750;
   letter-spacing: 0.12em;
@@ -54,10 +54,10 @@
   display: grid;
   gap: 1.35rem;
   padding: clamp(1rem, 3vw, 2rem);
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 1.25rem;
-  background: var(--glass-surface, #fffdf8);
-  box-shadow: 0 1rem 3.5rem #3023150a;
+  background: var(--glass-surface, var(--w-raised));
+  box-shadow: 0 1rem 3.5rem color-mix(in srgb, var(--w-shadow-tint) 3.9%, transparent);
 }
 .overview h2,
 .attendance h2 {
@@ -79,13 +79,13 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 0.85rem;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.9rem;
 }
 .localTag {
-  color: #6b542c;
-  background: #faf0d9;
+  color: var(--w-lamp-deep);
+  background: var(--w-raised);
 }
 .primary {
   width: fit-content;
@@ -94,7 +94,7 @@
   border: 0;
   border-radius: 0.75rem;
   color: white;
-  background: var(--sanctuary-saffron, #9d5b25);
+  background: var(--sanctuary-saffron, var(--w-lamp));
   font: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -107,9 +107,9 @@
   width: fit-content;
   min-height: 2.8rem;
   padding: 0.65rem 1rem;
-  border: 1px solid var(--sanctuary-saffron, #9d5b25);
+  border: 1px solid var(--sanctuary-saffron, var(--w-lamp));
   border-radius: 0.75rem;
-  color: var(--sanctuary-saffron, #9d5b25);
+  color: var(--sanctuary-saffron, var(--w-lamp-deep));
   background: transparent;
   font: inherit;
   font-weight: 700;
@@ -125,13 +125,13 @@
   display: grid;
   gap: 0.35rem;
   font-size: 0.78rem;
-  color: var(--ink-ghost, #71695f);
+  color: var(--ink-ghost, var(--w-ink-soft));
 }
 .classPicker select {
   max-width: min(20rem, 60vw);
   min-height: 2.75rem;
   padding: 0.45rem 0.75rem;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 0.6rem;
   background: white;
   color: inherit;
@@ -142,7 +142,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 0.85rem;
   overflow: hidden;
 }
@@ -152,14 +152,14 @@
   gap: 1rem;
   min-height: 3.75rem;
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid var(--border, #ded8cf);
+  border-bottom: 1px solid var(--border);
 }
 .roster li:last-child {
   border-bottom: 0;
 }
 .roll {
   width: 2rem;
-  color: var(--ink-ghost, #71695f);
+  color: var(--ink-ghost, var(--w-ink-soft));
   font-variant-numeric: tabular-nums;
 }
 .studentName {
@@ -181,14 +181,14 @@
 }
 .status:disabled {
   min-width: 7rem;
-  color: var(--ink-ghost, #71695f);
-  background: #f2efe9;
+  color: var(--ink-ghost, var(--w-ink-soft));
+  background: var(--w-raised);
   cursor: not-allowed;
 }
 .status:focus-visible {
-  outline: 2px solid var(--sanctuary-saffron, #9d5b25);
+  outline: 2px solid var(--sanctuary-saffron, var(--w-focus));
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(157, 91, 37, 0.2);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--w-lamp) 20%, transparent);
 }
 .hotkeyBadge {
   display: inline-flex;
@@ -200,40 +200,40 @@
   font-family: monospace;
   font-weight: 700;
   border-radius: 0.25rem;
-  background: rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: color-mix(in srgb, var(--w-ink) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 10%, transparent);
   color: inherit;
   opacity: 0.85;
 }
 .present {
-  color: #446d3c;
-  background: #eff6eb;
+  color: var(--w-lamp-deep);
+  background: var(--w-raised);
 }
 .late {
-  color: #8c671b;
-  background: #faf2dc;
+  color: var(--w-lamp-deep);
+  background: var(--w-raised);
 }
 .absent {
-  color: #a24435;
-  background: #fbece8;
+  color: var(--w-danger);
+  background: var(--w-raised);
 }
 .excused {
-  color: #635d75;
-  background: #f1eff6;
+  color: var(--w-ink-soft);
+  background: var(--w-raised);
 }
 .bulkActions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  color: var(--ink-ghost, #71695f);
+  color: var(--ink-ghost, var(--w-ink-soft));
   font-size: 0.85rem;
 }
 .bulkActions button {
   min-height: 2.75rem;
   min-width: 2.75rem;
   padding: 0.5rem 0.85rem;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 999px;
   background: transparent;
   color: inherit;
@@ -247,23 +247,23 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 0.85rem;
-  background: #fbf9f4;
+  background: var(--w-raised);
 }
 .rapidRollCall label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--ink, #29251f);
+  color: var(--ink);
 }
 .rapidInput {
   flex: 1;
   min-width: 12rem;
   min-height: 2.5rem;
   padding: 0.4rem 0.75rem;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
-  background: #fffdf8;
+  background: var(--w-raised);
   color: inherit;
   font: inherit;
   font-size: 0.9rem;
@@ -271,9 +271,9 @@
 .rapidApplyBtn {
   min-height: 2.5rem;
   padding: 0.4rem 0.85rem;
-  border: 1px solid var(--sanctuary-saffron, #9d5b25);
+  border: 1px solid var(--sanctuary-saffron, var(--w-lamp));
   border-radius: 0.5rem;
-  background: var(--sanctuary-saffron, #9d5b25);
+  background: var(--sanctuary-saffron, var(--w-lamp));
   color: white;
   font: inherit;
   font-size: 0.85rem;
@@ -292,9 +292,9 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border: 1px dashed var(--sanctuary-saffron, #9d5b25);
+  border: 1px dashed var(--sanctuary-saffron, var(--w-lamp));
   border-radius: 0.75rem;
-  background: #fdfaf3;
+  background: var(--w-raised);
   font-size: 0.85rem;
 }
 .kioskLink {
@@ -302,22 +302,22 @@
   align-items: center;
   gap: 0.35rem;
   font-weight: 600;
-  color: var(--sanctuary-saffron, #9d5b25);
+  color: var(--sanctuary-saffron, var(--w-lamp-deep));
   text-decoration: underline;
 }
 .shadowPill {
   font-size: 0.7rem;
   padding: 0.15rem 0.45rem;
   border-radius: 999px;
-  background: #f2efe9;
-  color: #71695f;
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
   margin-left: 0.5rem;
   font-weight: 500;
 }
 .loading,
 .empty,
 .muted {
-  color: var(--ink-ghost, #71695f);
+  color: var(--ink-ghost, var(--w-ink-soft));
   line-height: 1.6;
 }
 .error,
@@ -327,12 +327,12 @@
   line-height: 1.5;
 }
 .error {
-  color: #872f24;
-  background: #fbece8;
+  color: var(--w-danger);
+  background: var(--w-raised);
 }
 .notice {
-  color: #365c32;
-  background: #edf5e9;
+  color: var(--w-lamp-deep);
+  background: var(--w-raised);
 }
 @media (max-width: 47.99rem) {
   .attendanceHeading {
@@ -411,8 +411,8 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.35rem 0;
-  border-bottom: 1px solid var(--border, #ded8cf);
-  color: var(--ink, #29251f);
+  border-bottom: 1px solid var(--border);
+  color: var(--ink);
 }
 
 .classroomHomeList button {
@@ -421,13 +421,13 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--ink-ghost, #71695f);
+  color: var(--ink-ghost, var(--w-ink-soft));
   cursor: pointer;
 }
 
 .classroomHomeList button:hover {
-  background: color-mix(in srgb, var(--sanctuary-saffron, #9d5b25) 12%, transparent);
-  color: var(--ink, #29251f);
+  background: color-mix(in srgb, var(--sanctuary-saffron, var(--w-lamp)) 12%, transparent);
+  color: var(--ink);
 }
 
 .classroomHomeList .classroomOpenButton {
@@ -436,7 +436,7 @@
   min-height: 2.75rem;
   border-radius: 0.5rem;
   padding: 0.4rem 0.6rem;
-  color: var(--ink, #29251f);
+  color: var(--ink);
   text-align: left;
 }
 
@@ -446,10 +446,10 @@
   gap: 0.5rem;
   min-height: 2.75rem;
   padding: 0.5rem 1rem;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 9999px;
-  background: var(--glass-surface, #fffdf8);
-  color: var(--ink, #29251f);
+  background: var(--glass-surface, var(--w-raised));
+  color: var(--ink);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -465,9 +465,9 @@
 .sessionPill {
   padding: 0.5rem 1rem;
   border-radius: 9999px;
-  border: 1px solid var(--border, #ded8cf);
-  background: #ffffff;
-  color: var(--ink, #29251f);
+  border: 1px solid var(--border);
+  background: var(--w-raised);
+  color: var(--ink);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -475,14 +475,14 @@
 }
 
 .sessionPill:hover {
-  border-color: var(--sanctuary-saffron, #9d5b25);
-  background: #faf0d9;
+  border-color: var(--sanctuary-saffron, var(--w-lamp));
+  background: var(--w-raised);
 }
 
 .sessionPillActive {
-  background: var(--sanctuary-saffron, #9d5b25);
-  border-color: var(--sanctuary-saffron, #9d5b25);
-  color: #ffffff;
+  background: var(--sanctuary-saffron, var(--w-lamp));
+  border-color: var(--sanctuary-saffron, var(--w-lamp));
+  color: var(--w-on-lamp);
 }
 
 .hallwayDriftBanner {
@@ -491,9 +491,9 @@
   gap: 0.75rem;
   padding: 0.85rem 1.25rem;
   border-radius: 0.75rem;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  color: #92400e;
+  background: var(--w-raised);
+  border: 1px solid var(--w-lamp);
+  color: var(--w-lamp-deep);
   font-size: 0.9rem;
   line-height: 1.4;
   margin-bottom: 0.75rem;
@@ -505,9 +505,9 @@
   gap: 0.75rem;
   padding: 0.85rem 1.25rem;
   border-radius: 0.75rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: var(--w-raised);
+  border: 1px solid var(--w-line);
+  color: var(--w-danger);
   font-size: 0.9rem;
   line-height: 1.4;
   margin-bottom: 0.75rem;
@@ -542,7 +542,7 @@
 
 .workspaceCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(48, 35, 21, 0.08);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
 }
 
 .roleTag {
@@ -550,9 +550,9 @@
   font-family: inherit;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ink-soft, #71695f);
-  background: rgba(44, 40, 37, 0.05);
-  border: 1px solid var(--line, rgba(44, 40, 37, 0.1));
+  color: var(--ink-soft);
+  background: color-mix(in srgb, var(--w-ink) 5%, transparent);
+  border: 1px solid var(--line);
   padding: 0.15rem 0.5rem;
   border-radius: 9999px;
   font-weight: 500;
@@ -566,7 +566,7 @@
   font-size: 0.85rem;
   font-family: inherit;
   font-weight: 600;
-  color: var(--sanctuary-saffron, #a45d25);
+  color: var(--sanctuary-saffron, var(--w-lamp-deep));
   background: transparent;
   border: none;
   padding: 0.25rem 0;
@@ -577,6 +577,6 @@
 
 .catalogOpenButton:hover,
 .catalogOpenLink:hover {
-  color: var(--ink, #1f1b18);
+  color: var(--ink);
   text-decoration: underline;
 }

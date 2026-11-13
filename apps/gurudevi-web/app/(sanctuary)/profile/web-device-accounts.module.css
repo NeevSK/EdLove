@@ -91,11 +91,13 @@
 .activeRow {
   border-color: color-mix(in srgb, var(--w-lamp) 40%, transparent);
   background-color: color-mix(in srgb, var(--w-lamp) 4%, transparent);
+  color: var(--w-on-lamp);
 }
 
 :global([data-appearance="night"]) .activeRow {
   border-color: color-mix(in srgb, var(--w-lamp) 50%, transparent);
   background-color: color-mix(in srgb, var(--w-lamp) 8%, transparent);
+  color: var(--w-on-lamp);
 }
 
 .accountInfo {

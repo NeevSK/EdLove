@@ -6,7 +6,7 @@
   border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 4px 16px rgba(50, 35, 20, 0.04);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
 }
 
 .header {

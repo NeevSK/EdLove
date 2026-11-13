@@ -6,7 +6,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-line, var(--w-raised));
   border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
 }
 
 .header {
@@ -246,6 +246,7 @@
   background: color-mix(in srgb, var(--w-lamp) 6%, transparent);
   border: 1px solid color-mix(in srgb, var(--w-lamp) 20%, transparent);
   gap: 1rem;
+  color: var(--w-on-lamp);
 }
 
 .desktopNotifLeft {
@@ -304,7 +305,7 @@
   background: var(--w-ink);
   color: var(--w-raised);
   font-size: 0.8125rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 15%, transparent);
   animation: fadeIn 0.2s ease-out;
 }
 

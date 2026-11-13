@@ -18,7 +18,7 @@
   max-width: 580px;
   width: 100%;
   padding: 2rem;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 24px 48px color-mix(in srgb, var(--w-shadow-tint) 28%, transparent);
   animation: modalIn 220ms ease-out;
   display: flex;
   flex-direction: column;
@@ -106,7 +106,7 @@
 .columnActive {
   background: var(--w-raised);
   border-color: var(--color-action);
-  box-shadow: 0 4px 12px rgba(154, 91, 45, 0.08);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-lamp) 8%, transparent);
 }
 
 .columnHeader {

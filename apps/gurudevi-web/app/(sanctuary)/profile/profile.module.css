@@ -40,7 +40,7 @@
   background: var(--w-raised);
   border: 1px solid var(--w-line);
   border-radius: 1rem;
-  box-shadow: 0 0.8rem 2rem rgb(59 38 24 / 8%);
+  box-shadow: 0 0.8rem 2rem color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
   margin-top: 1.5rem;
   padding: 1.5rem;
 }
@@ -65,7 +65,7 @@
 
 .identity dl > div:hover {
   border-color: var(--w-lamp);
-  box-shadow: 0 4px 12px rgba(59, 38, 24, 0.04);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
 }
 
 .identity dt {
@@ -151,7 +151,7 @@
 }
 
 .action:hover {
-  background: var(--w-ink);
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-ink));
 }
 
 .actionRow {
@@ -199,7 +199,7 @@
   border: 1px solid var(--w-line);
   border-radius: 1rem;
   background: var(--w-raised);
-  box-shadow: 0 0.5rem 1.5rem rgb(59 38 24 / 4%);
+  box-shadow: 0 0.5rem 1.5rem color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   position: sticky;
   top: 1.5rem;
 }
@@ -255,7 +255,7 @@
   background: var(--w-raised);
   border: 1px solid var(--w-line);
   border-radius: 1rem;
-  box-shadow: 0 0.8rem 2rem rgb(59 38 24 / 8%);
+  box-shadow: 0 0.8rem 2rem color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
   padding: 1.5rem;
   margin-top: 1rem;
 }
@@ -294,7 +294,7 @@
   background: var(--w-raised);
   border-color: var(--w-lamp);
   color: var(--w-lamp-deep);
-  box-shadow: 0 0 0 1px #9d5b25;
+  box-shadow: 0 0 0 1px var(--w-lamp);
 }
 
 .motionRow {
@@ -434,6 +434,7 @@
   background: linear-gradient(90deg, var(--w-lamp), var(--w-lamp));
   border-radius: 999px;
   transition: width 0.4s ease;
+  color: var(--w-on-lamp);
 }
 
 .completionSteps {
@@ -766,7 +767,7 @@
 }
 
 .quickBtnPrimary:hover {
-  background: var(--w-ink);
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-ink));
   color: var(--w-raised);
 }
 
@@ -868,7 +869,7 @@
   max-width: 32rem;
   width: 100%;
   padding: 1.75rem;
-  box-shadow: 0 1.5rem 3rem rgba(45, 32, 24, 0.22);
+  box-shadow: 0 1.5rem 3rem color-mix(in srgb, var(--w-shadow-tint) 22%, transparent);
 }
 
 

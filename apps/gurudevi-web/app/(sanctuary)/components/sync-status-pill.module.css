@@ -28,6 +28,7 @@
   transition:
     background-color var(--w-light-ms),
     box-shadow var(--w-light-ms);
+  color: var(--w-on-lamp);
 }
 
 .pill[data-status="online"] .word,
@@ -52,6 +53,7 @@
 
 .pill[data-status="unstable"] .statusDot {
   background: var(--w-lamp-deep);
+  color: var(--w-on-lamp);
 }
 
 .pill[data-status="unreachable"] {
@@ -61,6 +63,7 @@
 .pill[data-status="unreachable"] .statusDot {
   background: var(--w-danger);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-danger) 18%, transparent);
+  color: var(--w-on-danger);
 }
 
 @media (prefers-reduced-motion: no-preference) {

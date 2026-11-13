@@ -24,6 +24,7 @@
   );
   animation: heatPulse 1.2s ease-in-out infinite alternate;
   pointer-events: none;
+  color: var(--w-on-lamp);
 }
 
 @keyframes heatPulse {

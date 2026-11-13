@@ -28,7 +28,7 @@
   border: 1px solid color-mix(in srgb, var(--w-lamp) 20%, transparent);
   border-radius: 1.25rem;
   padding: 2rem;
-  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.25);
+  box-shadow: 0 20px 40px -10px color-mix(in srgb, var(--w-shadow-tint) 25%, transparent);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -80,6 +80,7 @@
 
 .stepDotActive {
   background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 
 .stepTitle {
@@ -125,7 +126,7 @@
 .energyBtnSelected {
   border-color: var(--w-lamp);
   background: var(--w-raised);
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-lamp) 20%, transparent);
 }
 
 .energyNum {
@@ -166,6 +167,7 @@
   background: radial-gradient(circle, color-mix(in srgb, var(--w-lamp) 25%, transparent) 0%, color-mix(in srgb, var(--w-lamp) 5%, transparent) 70%, transparent 100%);
   border: 1.5px solid color-mix(in srgb, var(--w-lamp) 35%, transparent);
   transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--w-on-lamp);
 }
 
 .breathInnerRing {
@@ -179,7 +181,7 @@
   justify-content: center;
   color: var(--w-on-lamp);
   font-size: 1.5rem;
-  box-shadow: 0 0 24px rgba(13, 148, 136, 0.4);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--w-lamp) 40%, transparent);
   transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

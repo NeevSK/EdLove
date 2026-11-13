@@ -115,6 +115,7 @@
   flex-direction: column;
   gap: 0.75rem;
   position: relative;
+  color: var(--w-on-lamp);
 }
 
 .seedSprout {

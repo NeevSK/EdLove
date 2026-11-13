@@ -20,7 +20,7 @@
   background: color-mix(in srgb, var(--paper) 96%, transparent);
   backdrop-filter: blur(24px);
   border-left: 1px solid var(--line);
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+  box-shadow: -8px 0 32px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -121,7 +121,7 @@
   background: var(--paper-light);
   border-color: var(--line);
   color: var(--color-sanctuary-saffron);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
 }
 
 .drawerBody {
@@ -214,7 +214,7 @@
   background: color-mix(in srgb, var(--lotus) 14%, var(--paper-light));
   color: var(--color-sanctuary-saffron);
   font-weight: 600;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 6%, transparent);
 }
 
 .gridFour {
@@ -286,13 +286,13 @@
   cursor: pointer;
   background-size: cover;
   background-position: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
   transition: all 0.2s ease;
 }
 
 .wallpaperCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 14%, transparent);
 }
 
 .wallpaperCardActive {
@@ -352,7 +352,7 @@
   border: 1px solid var(--line);
   border-radius: 0.6rem;
   background: var(--paper-light);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   touch-action: pan-y;
   cursor: grab;
@@ -362,7 +362,7 @@
 .furnitureItem[data-dnd-lifted="true"] {
   cursor: grabbing;
   transform: scale(1.02);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18), 0 0 0 2px var(--color-sanctuary-saffron);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--w-shadow-tint) 18%, transparent), 0 0 0 2px var(--color-sanctuary-saffron);
   border-color: var(--color-sanctuary-saffron);
   z-index: 10;
   opacity: 0.96;
@@ -377,7 +377,7 @@
   height: 3px;
   background: var(--color-sanctuary-saffron);
   border-radius: 3px;
-  box-shadow: 0 0 8px rgba(168, 80, 34, 0.45);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--w-lamp) 45%, transparent);
   pointer-events: none;
 }
 
@@ -390,7 +390,7 @@
   height: 3px;
   background: var(--color-sanctuary-saffron);
   border-radius: 3px;
-  box-shadow: 0 0 8px rgba(168, 80, 34, 0.45);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--w-lamp) 45%, transparent);
   pointer-events: none;
 }
 

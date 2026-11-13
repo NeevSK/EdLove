@@ -46,7 +46,7 @@
   border-radius: 0.75rem;
   background: var(--color-paper-light);
   border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -166,7 +166,7 @@
   border-radius: 1rem;
   overflow: hidden;
   border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
   background: var(--color-paper);
 }
 
@@ -195,7 +195,7 @@
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
   max-width: 24rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--w-shadow-tint) 6%, transparent);
 }
 
 .previewMockTitle {
@@ -345,7 +345,7 @@
 
 .textInput:focus {
   border-color: var(--color-action);
-  box-shadow: 0 0 0 2px rgba(168, 80, 34, 0.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .actionButton {
@@ -416,7 +416,7 @@
   padding: 1.75rem;
   max-width: 26rem;
   width: 100%;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--w-shadow-tint) 16%, transparent);
   display: flex;
   flex-direction: column;
   gap: 1rem;

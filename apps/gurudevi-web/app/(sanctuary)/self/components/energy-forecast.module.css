@@ -6,7 +6,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-line, var(--w-raised));
   border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
 }
 
 .header {
@@ -61,7 +61,7 @@
 .levelCardActive {
   background: var(--color-surface);
   border-color: var(--color-action);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .levelEmoji {
@@ -101,7 +101,7 @@
 .notesInput:focus {
   outline: none;
   border-color: var(--color-action);
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .saveBtn {

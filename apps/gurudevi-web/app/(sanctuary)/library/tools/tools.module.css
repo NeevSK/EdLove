@@ -118,7 +118,7 @@
   background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
   color: var(--w-lamp-deep);
   border-color: color-mix(in srgb, var(--w-lamp) 35%, transparent);
-  box-shadow: 0 0 20px rgba(125, 212, 192, 0.1);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--w-lamp) 10%, transparent);
 }
 
 /* Tool Workspace Panel */
@@ -127,7 +127,7 @@
   border: 1px solid color-mix(in srgb, var(--w-ink) 8%, transparent);
   border-radius: 1.25rem;
   padding: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--w-shadow-tint) 40%, transparent);
   backdrop-filter: blur(16px);
 }
 
@@ -245,7 +245,7 @@
 
 .textarea:focus {
   border-color: var(--w-lamp);
-  box-shadow: 0 0 0 2px rgba(125, 212, 192, 0.2);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-lamp) 20%, transparent);
 }
 
 /* Action Buttons */
@@ -273,7 +273,7 @@
 
 .btnPrimary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(125, 212, 192, 0.3);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .btnSecondary {

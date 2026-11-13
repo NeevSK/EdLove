@@ -15,7 +15,7 @@
   background: color-mix(in srgb, var(--w-raised) 94%, transparent);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--w-line);
-  box-shadow: 0 2px 12px rgba(31, 29, 26, 0.04);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
 }
 
 .mastheadInner {
@@ -91,7 +91,7 @@
 .navBtnActive {
   background: var(--w-danger) !important;
   color: var(--w-on-danger) !important;
-  box-shadow: 0 2px 8px rgba(122, 28, 32, 0.25);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-danger) 25%, transparent);
 }
 
 .portalBtn {
@@ -143,7 +143,7 @@
   align-items: center;
   justify-content: center;
   font-size: 3.5rem;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 36px color-mix(in srgb, var(--w-shadow-tint) 35%, transparent);
   flex-shrink: 0;
 }
 
@@ -258,7 +258,7 @@
 .vitalsBar {
   background: var(--w-raised);
   border-bottom: 1px solid var(--w-line);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
 }
 
 .vitalsInner {
@@ -345,12 +345,12 @@
   flex-direction: column;
   justify-content: space-between;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(31, 29, 26, 0.03);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
 }
 
 .articleCard:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(122, 28, 32, 0.08);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--w-danger) 8%, transparent);
   border-color: var(--w-line);
 }
 
@@ -467,7 +467,7 @@
   border: 1px solid var(--w-line);
   border-radius: 14px;
   padding: 1.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 2%, transparent);
 }
 
 .societyName {

@@ -60,7 +60,7 @@ def token(r, g, b, dark_file, prop):
         return '--w-ink-soft'
     deg = h * 360
     if deg < 15 or deg > 340: return '--w-danger'
-    if 85 <= deg < 160: return '--w-success'
+    if 85 <= deg < 160 and l > 0.35 and s > 0.5: return '--w-success'
     textish = prop in ('color', 'fill', 'stroke', '-webkit-text-fill-color')
     return '--w-lamp-deep' if textish else '--w-lamp'
 
@@ -89,7 +89,7 @@ def is_dark_file(css):
 
 def convert(css, dark=None):
     css = re.sub(r"var\((--[\w-]+)\s*,\s*([^()]*(?:\([^()]*\))?[^()]*)\)",
-                 lambda m: f"var({m.group(1)})" if m.group(1) in KNOWN else m.group(0), css)
+                 lambda m: f"var({m.group(1)})" if (m.group(1) in KNOWN or m.group(1).startswith("--w-")) else m.group(0), css)
     if dark is None: dark = is_dark_file(css)
     out, n = [], 0
     # walk declarations
@@ -98,7 +98,15 @@ def convert(css, dark=None):
         sel_prop, val = m.group(1), m.group(2)
         prop = sel_prop.strip().split()[-1].lower()
         if 'shadow' in prop or 'drop-shadow' in val:
-            return m.group(0)
+            # Darkness takes the world's shadow tint; a coloured glow takes its world colour.
+            def shade(cm):
+                nonlocal n
+                r, g, b, a = parse(cm.group(0))
+                n += 1
+                _, l, s_ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+                tok = '--w-shadow-tint' if (s_ < 0.22 or l < 0.25) else token(r, g, b, False, 'background')
+                return render(tok, a)
+            return f"{m.group(1)}:{COL.sub(shade, val)};"
         def rep(cm):
             nonlocal n
             r, g, b, a = parse(cm.group(0))
@@ -112,9 +120,19 @@ def convert(css, dark=None):
         bg = re.search(r"background(?:-color)?\s*:[^;]*var\(--w-(lamp|lamp-deep|danger)\)", body)
         if bg:
             on = '--w-on-danger' if bg.group(1) == 'danger' else '--w-on-lamp'
+            if not re.search(r"(^|[;{\s])color\s*:", body) and ':hover' not in m.group(1) and ':active' not in m.group(1):
+                body = body.rstrip() + f"\n  color: var({on});\n"
+
             body = re.sub(r"(\n\s*color\s*:\s*)var\(--w-(raised|ground|ink)\)", lambda c: c.group(1) + f'var({on})', body)
         return m.group(1) + '{' + body + '}'
     css = re.sub(r"([^{}]+)\{([^{}]*)\}", pair, css)
+    # A pressed or hovered fill that went darker stays a lit fill, a shade deeper, so its text keeps working.
+    def press(m):
+        if not re.search(r":(hover|active|focus)", m.group(1)):
+            return m.group(0)
+        body = re.sub(r"(background(?:-color)?\s*:\s*)var\(--w-(ink|ink-soft)\)", r"\1color-mix(in srgb, var(--w-lamp) 85%, var(--w-ink))", m.group(2))
+        return m.group(1) + '{' + body + '}'
+    css = re.sub(r"([^{}]+)\{([^{}]*)\}", press, css)
     return css, n, dark
 
 def scrims(css):
@@ -132,7 +150,7 @@ if __name__ == '__main__':
         src = open(p).read()
         new = scrims(src)
         new, n, dark = convert(new, p in DARK)
-        left = len(COL.findall(re.sub(r"[\w-]*shadow[^;]*;", '', new)))
+        left = len(COL.findall(new))
         print(f"{p}: {n} colours -> world ({'dark' if dark else 'light'} drawn), {left} left")
         if write and new != src:
             open(p, 'w').write(new)

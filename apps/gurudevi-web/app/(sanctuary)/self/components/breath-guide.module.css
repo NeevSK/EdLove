@@ -58,8 +58,8 @@
   );
   border: 2px solid color-mix(in srgb, var(--w-lamp) 40%, transparent);
   box-shadow:
-    0 0 40px -8px rgba(212, 132, 58, 0.25),
-    inset 0 2px 8px rgba(255, 255, 255, 0.8);
+    0 0 40px -8px color-mix(in srgb, var(--w-lamp) 25%, transparent),
+    inset 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 80%, transparent);
   transition:
     transform 1.2s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.8s ease,
@@ -184,13 +184,13 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   cursor: pointer;
-  box-shadow: 0 4px 16px -2px rgba(212, 132, 58, 0.4);
+  box-shadow: 0 4px 16px -2px color-mix(in srgb, var(--w-lamp) 40%, transparent);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .primaryButton:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px -2px rgba(212, 132, 58, 0.55);
+  box-shadow: 0 6px 20px -2px color-mix(in srgb, var(--w-lamp) 55%, transparent);
 }
 
 .stopButton {
@@ -218,7 +218,7 @@
     var(--paper) 100%
   );
   border: 1px solid color-mix(in srgb, var(--w-success) 40%, var(--line));
-  box-shadow: 0 8px 30px -4px rgba(76, 175, 80, 0.12);
+  box-shadow: 0 8px 30px -4px color-mix(in srgb, var(--w-lamp) 12%, transparent);
   max-width: 24rem;
 }
 

@@ -23,7 +23,7 @@
   max-width: 420px;
   height: 100%;
   background: var(--color-surface);
-  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+  box-shadow: -8px 0 24px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   display: flex;
   flex-direction: column;
   padding: 2rem 1.5rem;
@@ -81,19 +81,20 @@
   height: 90px;
   border-radius: 50%;
   background: radial-gradient(circle, var(--w-lamp) 0%, var(--w-lamp) 60%, color-mix(in srgb, var(--w-lamp) 0%, transparent) 100%);
-  filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.5));
+  filter: drop-shadow(0 0 25px color-mix(in srgb, var(--w-lamp) 50%, transparent));
   animation: breathingOrb 4s ease-in-out infinite;
+  color: var(--w-on-lamp);
 }
 
 @keyframes breathingOrb {
   0%,
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.4));
+    filter: drop-shadow(0 0 20px color-mix(in srgb, var(--w-lamp) 40%, transparent));
   }
   50% {
     transform: scale(1.12);
-    filter: drop-shadow(0 0 35px rgba(129, 140, 248, 0.7));
+    filter: drop-shadow(0 0 35px color-mix(in srgb, var(--w-lamp) 70%, transparent));
   }
 }
 

@@ -8,7 +8,7 @@
   border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 15%, transparent));
   border-radius: 0.75rem;
   overflow: hidden;
-  box-shadow: 0 4px 12px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.06));
+  box-shadow: 0 4px 12px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 6%, transparent));
   font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
 }
 

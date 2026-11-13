@@ -1,7 +1,7 @@
 .actions {
   position: relative;
   flex: 0 0 auto;
-  color: var(--w-ink, #1a1918);
+  color: var(--w-ink);
 }
 
 .actions summary {
@@ -10,12 +10,12 @@
   height: 2.25rem;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid var(--w-line, rgba(0, 0, 0, 0.15));
-  background: color-mix(in srgb, var(--w-raised, #ffffff) 85%, transparent);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 85%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  color: var(--w-ink, #1a1918);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  color: var(--w-ink);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 600;
@@ -30,15 +30,15 @@
 
 .actions summary:hover,
 .actions[open] summary {
-  background: var(--w-raised, #ffffff);
-  border-color: var(--w-lamp, #a85022);
-  color: var(--w-lamp, #a85022);
+  background: var(--w-raised);
+  border-color: var(--w-lamp);
+  color: var(--w-lamp);
   transform: translateY(-1px);
 }
 
 .actions summary:focus-visible,
 .menuItem:focus-visible {
-  outline: 2px solid var(--w-focus, #a85022);
+  outline: 2px solid var(--w-focus);
   outline-offset: 2px;
 }
 
@@ -51,11 +51,11 @@
   width: max-content;
   min-width: 13.5rem;
   padding: 0.35rem;
-  border: 1px solid var(--w-line, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--w-line);
   border-radius: 0.6rem;
-  background: var(--w-raised, #fffdf8);
-  color: var(--w-ink, #1a1918);
-  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.25);
+  background: var(--w-raised);
+  color: var(--w-ink);
+  box-shadow: 0 0.8rem 2rem color-mix(in srgb, var(--w-shadow-tint) 25%, transparent);
 }
 
 .menuItem {
@@ -67,7 +67,7 @@
   border: 0;
   border-radius: 0.35rem;
   background: transparent;
-  color: var(--w-ink, #1a1918);
+  color: var(--w-ink);
   font: inherit;
   font-size: 0.82rem;
   text-align: left;
@@ -82,7 +82,7 @@
 
 .menuItem svg {
   flex: 0 0 auto;
-  color: var(--w-ink-soft, #625a51);
+  color: var(--w-ink-soft);
 }
 
 @media (max-width: 47.99rem) {

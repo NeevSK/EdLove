@@ -627,7 +627,7 @@
     color-mix(in srgb, var(--lotus) 12%, var(--paper)) 0%,
     color-mix(in srgb, var(--paper-light) 90%, transparent) 100%
   );
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   position: relative;
   overflow: hidden;
   align-items: center;

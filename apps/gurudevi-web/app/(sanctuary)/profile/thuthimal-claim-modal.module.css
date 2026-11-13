@@ -18,7 +18,7 @@
   max-width: 480px;
   width: 100%;
   padding: 2.25rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--w-shadow-tint) 25%, transparent);
   animation: modalIn 220ms ease-out;
 }
 
@@ -164,6 +164,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  color: var(--w-on-lamp);
 }
 
 .giftFromLabel {

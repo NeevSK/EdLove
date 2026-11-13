@@ -10,7 +10,7 @@
   margin: 0 auto;
   gap: 1.5rem;
   font-family: var(--font-ui-grotesque, 'Outfit', -apple-system, sans-serif);
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   transition: all 0.3s ease;
 }
 
@@ -27,7 +27,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea {
@@ -42,7 +42,7 @@
   gap: 0.35rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--color-action, #a85022);
+  color: var(--color-action);
   text-decoration: none;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -53,7 +53,7 @@
 }
 
 .backLink:focus-visible {
-  outline: 2px solid var(--color-action, #a85022);
+  outline: 2px solid var(--color-action);
   outline-offset: 2px;
 }
 
@@ -68,7 +68,7 @@
 
 .lectureSub {
   font-size: 0.8rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-sunken));
   margin: 0;
   display: flex;
   align-items: center;
@@ -91,20 +91,20 @@
 
 /* Player Frame */
 .videoCard {
-  background: #11161a;
+  background: var(--w-ground);
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 35px color-mix(in srgb, var(--w-shadow-tint) 30%, transparent), 0 2px 6px color-mix(in srgb, var(--w-shadow-tint) 10%, transparent);
   display: flex;
   flex-direction: column;
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 8%, transparent);
 }
 
 .videoElement {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #0d1114;
+  background: var(--w-ground);
   outline: none;
   display: block;
 }
@@ -112,12 +112,12 @@
 /* Custom Playbar Controls */
 .controlsBar {
   padding: 0.85rem 1.25rem;
-  background: #181f26;
+  background: var(--w-ground);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: #f1ede6;
+  border-top: 1px solid color-mix(in srgb, var(--w-ink) 8%, transparent);
+  color: var(--w-ink);
 }
 
 .timelineRow {
@@ -133,7 +133,7 @@
   appearance: none;
   height: 6px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--w-ink) 20%, transparent);
   outline: none;
   cursor: pointer;
   transition: background 0.15s ease;
@@ -145,9 +145,9 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--color-action, #e06d2d);
+  background: var(--color-action);
   cursor: pointer;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--w-shadow-tint) 40%, transparent);
   transition: transform 0.15s ease;
 }
 
@@ -159,7 +159,7 @@
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
-  color: #c9c3b8;
+  color: var(--w-ink-soft);
   white-space: nowrap;
 }
 
@@ -182,9 +182,9 @@
   min-width: 44px;
   padding: 0.4rem 0.75rem;
   border-radius: 0.5rem;
-  background: #232c35;
-  color: #f1ede6;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--w-sunken);
+  color: var(--w-ink);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 10%, transparent);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -196,19 +196,19 @@
 }
 
 .ctrlBtn:hover {
-  background: #2e3945;
-  border-color: var(--color-action, #a85022);
-  color: #ffffff;
+  background: var(--w-sunken);
+  border-color: var(--color-action);
+  color: var(--w-ink);
 }
 
 .ctrlBtn:focus-visible {
-  outline: 2px solid var(--color-action, #a85022);
+  outline: 2px solid var(--color-action);
   outline-offset: 2px;
 }
 
 .ctrlBtnActive {
-  background: var(--color-action, #a85022) !important;
-  color: #ffffff !important;
+  background: var(--color-action) !important;
+  color: var(--w-ink) !important;
 }
 
 .speedPill {
@@ -216,7 +216,7 @@
   padding: 0.2rem 0.5rem;
   border-radius: 0.4rem;
   background: transparent;
-  color: #b5afa4;
+  color: var(--w-ink-soft);
   border: 1px solid transparent;
   font-size: 0.75rem;
   font-weight: 600;
@@ -225,13 +225,13 @@
 }
 
 .speedPill:hover {
-  color: #ffffff;
+  color: var(--w-ink);
 }
 
 .speedPillActive {
-  background: rgba(224, 109, 45, 0.25) !important;
-  border-color: rgba(224, 109, 45, 0.5) !important;
-  color: #ffaa77 !important;
+  background: color-mix(in srgb, var(--w-lamp) 25%, transparent) !important;
+  border-color: color-mix(in srgb, var(--w-lamp) 50%, transparent) !important;
+  color: var(--w-lamp-deep) !important;
 }
 
 /* Side Companion (Chapters & Notes) */
@@ -244,9 +244,9 @@
 .cardSection {
   padding: 1.25rem;
   border-radius: 1rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
-  box-shadow: 0 4px 14px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 15%, transparent));
+  box-shadow: 0 4px 14px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
@@ -256,7 +256,7 @@
   font-size: 0.95rem;
   font-weight: 700;
   margin: 0;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -275,8 +275,8 @@
   align-items: center;
   padding: 0.55rem 0.85rem;
   border-radius: 0.5rem;
-  background: var(--color-paper, #f7f2e8);
-  border: 1px solid rgba(104, 94, 85, 0.1);
+  background: var(--color-paper);
+  border: 1px solid color-mix(in srgb, var(--w-ink-soft) 10%, transparent);
   font-size: 0.85rem;
   cursor: pointer;
   text-align: left;
@@ -284,19 +284,20 @@
 }
 
 .chapterItem:hover {
-  background: color-mix(in srgb, var(--color-action, #a85022) 10%, #f7f2e8);
-  border-color: var(--color-action, #a85022);
+  background: color-mix(in srgb, var(--color-action) 10%, var(--w-ink));
+  border-color: var(--color-action);
 }
 
 .chapterItem:focus-visible {
-  outline: 2px solid var(--color-action, #a85022);
+  outline: 2px solid var(--color-action);
   outline-offset: 2px;
 }
 
 .chapterItemActive {
-  background: rgba(168, 80, 34, 0.12) !important;
-  border-color: var(--color-action, #a85022) !important;
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent) !important;
+  border-color: var(--color-action) !important;
   font-weight: 700;
+  color: var(--w-on-lamp);
 }
 
 .noteInputArea {
@@ -309,13 +310,13 @@
   min-height: 44px;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  background: #ffffff;
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  background: var(--w-ink);
   font-size: 0.8rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .noteInput:focus {
-  outline: 2px solid var(--color-action, #a85022);
+  outline: 2px solid var(--color-action);
   border-color: transparent;
 }
