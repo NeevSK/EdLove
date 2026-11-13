@@ -1,17 +1,18 @@
 export { resolveWorkspaceAppearanceColor } from '@repo/core/logic/workspace/appearance';
 export {
+  areasOfSurfaces,
   createDefaultWorkspaceLayout,
   getMaxPinnedForWorkspace,
   groupResolvedWorkspaceSurfacesByZone,
   MAX_PINNED_WORKSPACE_SURFACES,
+  nextAreaOf,
   normalizeWorkspaceLayout,
   resolveWorkspaceSurfaceLayout,
+  setWorkspaceFloorSettings,
   setWorkspaceSurfaceHidden,
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
-  areasOfSurfaces,
-  nextAreaOf,
 } from '@repo/core/logic/workspace/canvas';
 export {
   buildWorkspaceLayoutStorageKey,
@@ -32,8 +33,8 @@ export {
   createWorkspaceRendererConfig,
   resolveWorkspaceRendererPlatform,
 } from '@repo/core/logic/workspace/renderer';
-export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
 export {
   type WorkspaceRoomName,
   workspaceRoomNameOf,
 } from '@repo/core/logic/workspace/roomName';
+export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';

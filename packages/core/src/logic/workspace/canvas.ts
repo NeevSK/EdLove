@@ -2,6 +2,7 @@ import type {
   AreaId,
   ResolvedWorkspaceSurface,
   WorkspaceAppearance,
+  WorkspaceFloorSettings,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
 } from '@repo/core/types';
@@ -225,8 +226,18 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
     isDefault: migratedIsDefault,
     surfaceMetadata: migratedMetadata,
     appearance,
+    ...(layout.floor ? { floor: layout.floor } : {}),
     updatedAt,
   };
+}
+
+/** Saves the person's floor settings on a layout (see logic/floor/settings.ts). */
+export function setWorkspaceFloorSettings<TSurfaceId extends string>(
+  layout: WorkspaceLayout<TSurfaceId>,
+  floor: WorkspaceFloorSettings,
+  updatedAt: string,
+): WorkspaceLayout<TSurfaceId> {
+  return { ...layout, floor, isDefault: false, updatedAt };
 }
 
 export function resolveWorkspaceSurfaceLayout<

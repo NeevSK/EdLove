@@ -122,7 +122,17 @@ export interface WorkspaceLayout<TSurfaceId extends string = string> {
   isDefault?: boolean;
   surfaceMetadata?: Record<string, unknown>;
   appearance?: WorkspaceAppearance;
+  /** The person's floor settings for this room (or, on the every-room layout, for all rooms). */
+  floor?: WorkspaceFloorSettings;
   updatedAt: string;
+}
+
+/** See core logic/floor/settings.ts: a room follows the world until "just this room" is picked. */
+export interface WorkspaceFloorSettings {
+  density?: 'calm' | 'standard' | 'dense';
+  reorder?: 'smart-areas' | 'everywhere' | 'never';
+  scope: 'world' | 'room';
+  changedAt: string;
 }
 
 export interface WorkspaceRendererConfig {
