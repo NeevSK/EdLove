@@ -1,7 +1,7 @@
 /**
  * Keyboard: one owner for every key the app answers to.
  *
- * Pages and rooms never add their own keydown listener. They register a
+ * Floors and rooms never add their own keydown listener. They register a
  * shortcut here (keys, words for the "?" list, what it does), and the one
  * listener per platform decides who gets the key:
  *
@@ -9,14 +9,14 @@
  *      menu), so one press closes one thing, never everything at once.
  *   2. While the person types in a field, only Escape and shortcuts with a
  *      modifier (Ctrl/Cmd/Alt) count; plain letters stay letters.
- *   3. Otherwise the newest matching shortcut wins (a page's arrow keys beat
+ *   3. Otherwise the newest matching shortcut wins (a floor's arrow keys beat
  *      the app's), and the event is consumed.
  *
  * No platform code here: the web binds it to `window` (`./web.ts`); a phone
  * or tablet with a hardware keyboard can bind the same registry later.
  */
 
-export type ShortcutScope = 'app' | 'room' | 'page';
+export type ShortcutScope = 'app' | 'room' | 'floor';
 
 export interface Shortcut {
   /** Like "mod+k", "alt+t", "escape", "?", "arrowright". `mod` is Cmd on Apple, Ctrl elsewhere. */
@@ -128,12 +128,12 @@ export function createKeyboard(): Keyboard {
     },
     list() {
       if (listed) return listed;
-      const order: Record<ShortcutScope, number> = { page: 0, room: 1, app: 2 };
+      const order: Record<ShortcutScope, number> = { floor: 0, room: 1, app: 2 };
       const seen = new Set<string>();
       listed = [...entries]
         .reverse()
         .filter((e) => e.label && !seen.has(e.keys) && seen.add(e.keys))
-        .map((e) => ({ keys: e.keys, label: e.label as string, scope: e.scope ?? 'page' }))
+        .map((e) => ({ keys: e.keys, label: e.label as string, scope: e.scope ?? 'floor' }))
         .sort((a, b) => order[a.scope] - order[b.scope]);
       return listed;
     },

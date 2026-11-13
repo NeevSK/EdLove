@@ -5,7 +5,7 @@ import { keysLabel } from '../../../shortcuts/core';
 import { useShortcut, useShortcutList } from '../../../shortcuts/web';
 import { Dialog } from '../Dialog/Dialog';
 
-const SCOPE_TITLE = { page: 'This page', room: 'This room', app: 'Everywhere' } as const;
+const SCOPE_TITLE = { floor: 'This floor', room: 'This room', app: 'Everywhere' } as const;
 
 /**
  * The "?" list: every key the app answers to right now, grouped by where it
@@ -20,7 +20,7 @@ export function KeyboardHelp() {
     () => typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent),
     [],
   );
-  const groups = (['page', 'room', 'app'] as const)
+  const groups = (['floor', 'room', 'app'] as const)
     .map((scope) => ({ scope, items: list.filter((s) => s.scope === scope) }))
     .filter((g) => g.items.length > 0);
   return (
