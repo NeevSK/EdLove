@@ -1,5 +1,6 @@
 'use client';
 
+import { useEscapeLayer, useShortcut } from '@repo/ui/shortcuts/web';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { MockDocumentOutlineItem as DocumentOutlineItem } from '@repo/core/api/library';
 import { orpcClient } from '@repo/core/api/orpcClient';
@@ -139,23 +140,15 @@ export function DocumentReaderDesk({
     };
   }, [bookId]);
 
-  // Keyboard navigation for page flipping & zen mode
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        setCurrentPage((prev) => Math.max(prev - 1, 1));
-      } else if (e.key.toLowerCase() === 'z') {
-        setZenMode((prev) => !prev);
-      } else if (e.key === 'Escape' && zenMode) {
-        setZenMode(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [totalPages, zenMode]);
+  // Page keys, from the shared shortcuts (they show in the "?" list).
+  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const previousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  useShortcut('arrowright', nextPage, { label: 'Next page' });
+  useShortcut('pagedown', nextPage);
+  useShortcut('arrowleft', previousPage, { label: 'Previous page' });
+  useShortcut('pageup', previousPage);
+  useShortcut('z', () => setZenMode((prev) => !prev), { label: 'Focus reading on or off' });
+  useEscapeLayer(zenMode, () => setZenMode(false));
 
   const toggleBookmark = async () => {
     const next = !bookmarked;

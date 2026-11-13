@@ -175,3 +175,4 @@ export {
 
 
 export { feel } from './feel';
+export { KeyboardHelp } from './Keyboard/KeyboardHelp';

@@ -1,5 +1,6 @@
 'use client';
 
+import { openEscapeLayer } from '@repo/ui/shortcuts/web';
 import { ArrowRight, Check, Sparkles, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
@@ -28,6 +29,8 @@ export function tutiiSpotlightOverlay({
   const [stateValue, setStateValue] = useState<string>(actor.getSnapshot().value as string);
 
   useEffect(() => {
+    // Escape dismisses the spotlight through the shared keyboard layer.
+    const closeLayer = openEscapeLayer(() => actor.send({ type: 'DISMISS' }));
     const sub = actor.subscribe((s) => {
       setSnapshot(s.context as unknown as tutiiMachineContext);
       setStateValue(s.value as string);
@@ -53,20 +56,13 @@ export function tutiiSpotlightOverlay({
       actor.send({ type: 'RESIZE' });
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        actor.send({ type: 'DISMISS' });
-      }
-    };
-
     window.addEventListener('resize', handleResize, { passive: true });
-    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
+      closeLayer();
       sub.unsubscribe();
       actor.stop();
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [actor, autoStart, onComplete, onDismiss, role, spec]);
 

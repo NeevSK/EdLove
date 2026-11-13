@@ -40,6 +40,15 @@ function offenders(
 }
 
 describe('shared rules guard (web pages)', () => {
+  it('pages answer keys through the shared shortcuts, not their own listener (owner: platform)', () => {
+    // The kiosk reads a barcode scanner, which types like a keyboard: that is input, not shortcuts.
+    const allow = ['apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/KioskFloor.tsx'];
+    const pages = [...walk(WEB_PAGES, '.tsx'), ...walk(join(ROOT, 'apps/gurudevi-web/lib'), '.tsx')].filter(
+      (p) => !notAPage(p),
+    );
+    expect(offenders(pages, (t) => /addEventListener\(\s*['"]keydown/.test(t), allow)).toEqual([]);
+  });
+
   it('colours come from the world, not the page (owner: world)', () => {
     // The reader's sepia and night papers are a reading choice the person makes.
     const allow = ['apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/reader.module.css'];

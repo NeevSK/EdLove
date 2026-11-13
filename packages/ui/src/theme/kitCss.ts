@@ -785,6 +785,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 html[data-visual-quality="reduced"] *,html[data-visual-quality="essential"] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 /* Motion: pages time transitions with the world (--w-dur*, --w-ease); at verger's essential level every world moves at the base tempo, with fades only. */
 html[data-visual-quality="essential"]{--w-dur-micro:150ms!important;--w-dur:240ms!important;--w-dur-meaningful:520ms!important;--w-ease:cubic-bezier(.23,1,.32,1)!important;--w-travel:0px!important;--w-press:.98!important}
+/* Keyboard help ("?"): the shared shortcut list. */
+.gd-keys{display:grid;gap:8px;margin-block:12px}.gd-keys dl{display:grid;gap:6px;margin:0}.gd-keys-row{display:flex;align-items:center;gap:12px}.gd-keys-row dd{margin:0}.gd-kbd{font:600 .8rem/1 ui-monospace,monospace;padding:.25rem .45rem;border-radius:6px;background:color-mix(in srgb, var(--w-ink) 8%, transparent);border:1px solid var(--w-line);color:var(--w-ink);min-inline-size:2.2em;display:inline-block;text-align:center}
 /* Touch size: on a touch screen nothing you press is smaller than the platform minimum
    (44px, Apple and WCAG 2.5.5; the phone app uses 48 on Android). One rule for every page; pages
    never set their own. Inline text links are exempt, as WCAG allows. */

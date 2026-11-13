@@ -124,6 +124,16 @@
       "import": "./src/components/web/index.ts",
       "default": "./src/components/web/index.ts"
     },
+    "./shortcuts": {
+      "types": "./src/shortcuts/index.ts",
+      "import": "./src/shortcuts/index.ts",
+      "default": "./src/shortcuts/index.ts"
+    },
+    "./shortcuts/web": {
+      "types": "./src/shortcuts/web.ts",
+      "import": "./src/shortcuts/web.ts",
+      "default": "./src/shortcuts/web.ts"
+    },
     "./components": {
       "types": "./src/components/index.ts",
       "import": "./src/components/index.ts",

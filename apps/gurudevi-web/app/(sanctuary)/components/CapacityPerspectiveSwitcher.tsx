@@ -1,5 +1,6 @@
 'use client';
 
+import { useEscapeLayer } from '@repo/ui/shortcuts/web';
 import { useEffect, useId, useRef, useState } from 'react';
 import {
   EXPLORE_CAPACITIES,
@@ -40,21 +41,16 @@ export function CapacityPerspectiveSwitcher({
       }
     }
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-        triggerRef.current?.focus();
-      }
-    }
-
     document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
+  useEscapeLayer(isOpen, () => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  });
 
   if (!isExplore) {
     return (
