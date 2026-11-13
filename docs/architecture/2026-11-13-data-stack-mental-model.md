@@ -219,15 +219,41 @@ token.
 | 7 | Guest data in local-only tables | Open |
 | 8 | API runtime: `pg`, or ZenStack's client with policies | Open |
 
-## 12. Order
+## 12. The sync pipe (built 2026-11-13)
 
-1. Agree this model.
-2. Confirm the instance is live (dashboard or `powersync status`). Neev settles the attendance `id`.
-3. **Mobile spike on attendance:** the API issues the sync token, `connect()` with an
-   `Authenticator` and a `MutationUploader`, an attendance stream, and a `classroom.attendance.mark`
-   command. Prove it end to end: mark offline, reconnect, upload, see the row come back, try
-   a conflict and a rejection. DevTools on the device; try managed tables.
-4. Then wire: records out of the key-value layers into PowerSync, and TanStack for fetched answers.
+The pipe carries any table; it knows nothing about attendance or any other product data. What
+flows through it is configured at its two ends: sync streams on the way down, upload routes on the
+way up. It is proved with a synthetic table (`pipe_probe`), as the foundation rule asks.
+
+| Stage | Where | State |
+| --- | --- | --- |
+| Admission (signed in, not a guest, this account active) | `PowerSyncProvider`, `SingleActivePowerSyncRuntime` | Built |
+| Account-scoped database, one active at a time | `powerSyncDatabase.ts`, `singleActivePowerSyncRuntime.ts` | Built |
+| **Authenticator**: grant from the API, parsed and checked (account, expiry window, service origin, admission before and after) | `syncPipe.ts` `createSyncAuthenticator` | Built, G1 |
+| **Uploader**: oldest transaction first, one route per table, idempotency key `powersync:<installation>:<clientId>`, complete only when every change is settled | `syncPipe.ts` `createMutationUploader` | Built, G1 |
+| **Failure decision**: retry, wait for sign-in, reject (server wins) or stop, as a policy (`UPLOAD_POLICY`: conflict `serverWins` or `hold`, `maxDefectAttempts`) | `logic/sync/uploadDecision.ts` | Built, G1 |
+| Connection lifecycle: connect, status to the bus, first-sync timeout | `connectionLifecycle.ts` (now takes the SDK's `Authenticator` + `MutationUploader` form) | Built, G1 |
+| Rejections to the person | `onRejected` → `presentFailure` | Composition, at wiring |
+| **Sync grant** procedure (v1) | API | **Owed (Neev).** The pre-v1 `/api/auth/sync-credentials` went with the legacy routes. The client parses `SyncCredentialsSchema` |
+| **Upload commands** (v1, one per routed table) | API | Owed per table, when a table is admitted |
+| Connect call in the mobile provider | `PowerSyncProvider` via `runIfActive` | After the grant procedure exists |
+
+Guarantees the tests hold:
+
+- A change is never lost while offline.
+- A retry resends the same key.
+- An expired session waits.
+- A refused change leaves the queue, is reported, and the rest carry on.
+- A repeating bug can't block the queue.
+- A table with no route holds the queue rather than dropping it.
+- Nothing is sent after admission closes or the SDK aborts.
+
+## 13. Order
+
+1. Pipe: client side done (section 12). Next is the v1 sync grant procedure (API).
+2. Confirm the PowerSync instance is live; connect in the mobile provider; DevTools on a device.
+3. The first passenger (attendance, section 6) is product work and comes after the pipe is proved
+   on a device.
 
 Older documents to reconcile: `2026-06-19-sqlite-drizzle-powersync-mechanics-guide.md`,
 `offline-state-resilience-sop.md`, `2026-10-23-client-state-and-web-offline-conflict-audit.md`.

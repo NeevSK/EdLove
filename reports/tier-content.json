@@ -12186,7 +12186,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract+logic",
-   "lines": 71,
+   "lines": 69,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -12211,6 +12211,12 @@
     "tests": 2
    },
    "imports": [
+    {
+     "to": "packages/core/src/adapters/powersync/syncPipe.ts",
+     "typeOnly": true,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
     {
      "to": "packages/core/src/lib/sync/eventBus.adapter.ts",
      "typeOnly": false,
@@ -12398,7 +12404,7 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "barrel",
-   "lines": 49,
+   "lines": 56,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -12411,7 +12417,7 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 9,
+    "reexports": 10,
     "jsx": false
    },
    "exports": [],
@@ -12423,6 +12429,12 @@
    "imports": [
     {
      "to": "packages/core/src/adapters/powersync/connectionLifecycle.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/adapters/powersync/syncPipe.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
      "toTier": "T3"
@@ -12950,6 +12962,70 @@
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T1"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/core/src/adapters/powersync/syncPipe.ts",
+   "package": "packages/core",
+   "folderTier": "T3",
+   "shape": "contract+logic",
+   "lines": 146,
+   "counts": {
+    "types": 5,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 4,
+    "functionLines": 87,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "UploadRoute",
+    "UploadRoutes",
+    "UploadRejection",
+    "SyncPipeOptions",
+    "SyncConnection",
+    "createSyncAuthenticator",
+    "createMutationUploader",
+    "createSyncConnection"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 2
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/api/syncCredentials.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "RETIRED"
+    },
+    {
+     "to": "packages/core/src/api/transportSecurity.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "RETIRED"
+    },
+    {
+     "to": "packages/core/src/effect/Errors.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/logic/sync/uploadDecision.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
     }
    ],
    "outside": []
@@ -25158,7 +25234,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 0,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -25580,7 +25656,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 19,
+    "prod": 20,
     "tests": 4
    },
    "imports": [],
@@ -26398,8 +26474,8 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
-    "tests": 3
+    "prod": 8,
+    "tests": 5
    },
    "imports": [],
    "outside": [
@@ -36823,7 +36899,7 @@
     }
    ],
    "importers": {
-    "prod": 10,
+    "prod": 11,
     "tests": 4
    },
    "imports": [
@@ -42596,7 +42672,7 @@
    "unions": [],
    "importers": {
     "prod": 0,
-    "tests": 1
+    "tests": 2
    },
    "imports": [
     {
@@ -43970,6 +44046,54 @@
    "outside": [
     "zod"
    ]
+  },
+  {
+   "file": "packages/core/src/logic/sync/uploadDecision.ts",
+   "package": "packages/core",
+   "folderTier": "T2",
+   "shape": "contract",
+   "lines": 68,
+   "counts": {
+    "types": 3,
+    "consts": 2,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 27,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "UploadDecision",
+    "RejectReason",
+    "UPLOAD_POLICY",
+    "UploadPolicy",
+    "decideUploadFailure"
+   ],
+   "unions": [
+    {
+     "name": "RejectReason",
+     "union": "'conflict'|'defect'|'forbidden'|'invalid'|'notFound'"
+    }
+   ],
+   "importers": {
+    "prod": 1,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/logic/failure/classifyFailure.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": "T2"
+    }
+   ],
+   "outside": []
   },
   {
    "file": "packages/core/src/logic/utils/LanguageUtils.adapter.ts",

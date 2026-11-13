@@ -1,10 +1,14 @@
-import type { PowerSyncBackendConnector } from '@powersync/common';
+import type { SyncConnection } from '../syncPipe';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { connectPowerSyncRuntime } from '../connectionLifecycle';
 
 const emit = vi.hoisted(() => vi.fn());
 vi.mock('@repo/core/lib/sync/eventBus.adapter', () => ({ sovereignBus: { emit } }));
-const connector: PowerSyncBackendConnector = { fetchCredentials: vi.fn(), uploadData: vi.fn() };
+const connector: SyncConnection = {
+  powerSyncEndpoint: 'https://sync.example.com',
+  authenticator: { resolveCredentials: vi.fn() },
+  upload: vi.fn(),
+};
 const controllers: AbortController[] = [];
 const owner = () => {
   const controller = new AbortController();

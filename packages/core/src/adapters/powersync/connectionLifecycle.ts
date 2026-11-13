@@ -1,8 +1,5 @@
-import type {
-  CommonPowerSyncDatabase,
-  PowerSyncBackendConnector,
-  SyncStatus,
-} from '@powersync/common';
+import type { CommonPowerSyncDatabase, SyncStatus } from '@powersync/common';
+import type { SyncConnection } from '@repo/core/adapters/powersync/syncPipe';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 
 type ConnectionStatus = Pick<
@@ -15,7 +12,8 @@ type ConnectionStatus = Pick<
   | 'downloadError'
   | 'uploadError'
 >;
-type LifecycleDatabase = Pick<CommonPowerSyncDatabase, 'connect' | 'waitForFirstSync'> & {
+type LifecycleDatabase = Pick<CommonPowerSyncDatabase, 'waitForFirstSync'> & {
+  connect: (connection: SyncConnection) => Promise<void>;
   registerListener: (listener: { statusChanged: (status: ConnectionStatus) => void }) => () => void;
 };
 const FIRST_SYNC_TIMEOUT_MS = 30_000;
@@ -23,7 +21,7 @@ const FIRST_SYNC_TIMEOUT_MS = 30_000;
 /** Remote connection observation lives until its owner aborts, independently of local database access. */
 export async function connectPowerSyncRuntime(
   database: LifecycleDatabase,
-  connector: PowerSyncBackendConnector,
+  connection: SyncConnection,
   accountId: string,
   signal: AbortSignal,
 ): Promise<void> {
@@ -50,7 +48,7 @@ export async function connectPowerSyncRuntime(
   signal.addEventListener('abort', dispose, { once: true });
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    await database.connect(connector);
+    await database.connect(connection);
     if (signal.aborted) return;
     timer = setTimeout(
       () => firstSync.abort(new Error('PowerSync first sync timed out')),

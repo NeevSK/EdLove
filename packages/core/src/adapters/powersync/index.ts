@@ -7,6 +7,13 @@
 
 export { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
 export {
+  createSyncConnection,
+  type SyncConnection,
+  type UploadRejection,
+  type UploadRoute,
+  type UploadRoutes,
+} from '@repo/core/adapters/powersync/syncPipe';
+export {
   clearPowerSyncAccount,
   disconnectPowerSync,
   getActivePowerSyncDB,
