@@ -51,7 +51,7 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   white-space: nowrap;
 }
 
@@ -80,7 +80,7 @@
   border-radius: 12px;
   background-color: var(--w-raised);
   border: 1px solid color-mix(in srgb, var(--w-ink) 8%, transparent);
-  transition: border-color 0.2s;
+  transition: border-color var(--w-dur-micro);
 }
 
 :global([data-appearance="night"]) .accountRow {
@@ -183,7 +183,7 @@
   border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
   background-color: transparent;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .switchBtn:hover {

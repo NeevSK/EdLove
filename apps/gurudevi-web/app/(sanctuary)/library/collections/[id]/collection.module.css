@@ -23,7 +23,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .backButton:hover {
@@ -104,7 +104,7 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .forkBtn:hover {
@@ -123,7 +123,7 @@
   font-weight: 600;
   border: 1px solid var(--line);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .bookmarkBtn:hover {
@@ -181,7 +181,7 @@
   border-radius: 1rem;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--paper-light) 75%, transparent);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), border-color var(--w-dur-micro) var(--w-ease);
 }
 
 .resourceItem:hover {
@@ -242,7 +242,7 @@
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .launchButton:hover {

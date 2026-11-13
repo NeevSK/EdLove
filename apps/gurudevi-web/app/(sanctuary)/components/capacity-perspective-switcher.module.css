@@ -17,7 +17,7 @@
   font-size: 0.72rem;
   font-weight: 650;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   user-select: none;
 }
 
@@ -46,7 +46,7 @@
 .caret {
   font-size: 0.6rem;
   color: var(--ink-soft);
-  transition: transform 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 .trigger[aria-expanded="true"] .caret {
@@ -112,7 +112,7 @@
   cursor: pointer;
   font-family: inherit;
   color: var(--ink);
-  transition: background 0.12s ease;
+  transition: background var(--w-dur-micro) var(--w-ease);
 }
 
 .option:hover,

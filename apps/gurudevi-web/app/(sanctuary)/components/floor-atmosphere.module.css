@@ -97,7 +97,7 @@
   font-weight: 600;
   box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 6%, transparent);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .atmosphereTrigger:hover {
@@ -187,7 +187,7 @@
   font-size: 0.8rem;
   cursor: pointer;
   text-align: center;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .optionButton:hover {

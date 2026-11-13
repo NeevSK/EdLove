@@ -35,7 +35,7 @@
   background: transparent;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.16s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .navItem:hover {

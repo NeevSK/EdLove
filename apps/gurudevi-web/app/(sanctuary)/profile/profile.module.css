@@ -60,7 +60,7 @@
   flex-direction: column;
   gap: 0.35rem;
   padding: 1rem 1.25rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .identity dl > div:hover {
@@ -175,7 +175,7 @@
   font-weight: 700;
   padding: 0.75rem 1rem;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .secondaryAction:hover {
@@ -228,7 +228,7 @@
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .railItem:hover {
@@ -282,7 +282,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .presetButton:hover {
@@ -433,7 +433,7 @@
   height: 100%;
   background: linear-gradient(90deg, var(--w-lamp), var(--w-lamp));
   border-radius: 999px;
-  transition: width 0.4s ease;
+  transition: width var(--w-dur) var(--w-ease);
   color: var(--w-on-lamp);
 }
 
@@ -540,7 +540,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .copyQrBtn:hover {
@@ -687,7 +687,7 @@
   font-weight: 600;
   color: var(--w-ink);
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .linktreeItem:hover {
@@ -748,7 +748,7 @@
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   text-decoration: none;
   display: inline-flex;
   align-items: center;

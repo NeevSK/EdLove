@@ -73,6 +73,19 @@ describe('shared rules guard (web pages)', () => {
     expect(offenders(css, (t) => /prefers-reduced-motion/.test(t), allow)).toEqual([]);
   });
 
+  it('page transitions are timed by the world, not in ms (owner: world + verger)', () => {
+    // Slow ceremonial moves (over 600 ms, like a breath) keep their own time; everyday ones use
+    // var(--w-dur-micro | --w-dur | --w-dur-meaningful) and var(--w-ease).
+    const quick = (t: string) =>
+      [...t.matchAll(/(?<![\w-])transition(?:-duration)?\s*:([^;{}]*)/g)].some((m) =>
+        [...(m[1] ?? '').matchAll(/(?<![\w.-])(\d*\.?\d+)(ms|s)\b/g)].some((d) => {
+          const ms = Number(d[1]) * (d[2] === 's' ? 1000 : 1);
+          return ms > 1 && ms <= 600;
+        }),
+      );
+    expect(offenders(css, quick)).toEqual([]);
+  });
+
   it('pages do not shrink touch targets below the platform minimum (owner: platform)', () => {
     expect(
       offenders(css, (t) => /min-(height|width)\s*:\s*(1\d|2\d|3\d|4[0-3])px/.test(t)).length,

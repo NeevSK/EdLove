@@ -94,7 +94,7 @@
   font-weight: 600;
   cursor: pointer;
   align-self: flex-start;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .addBtn:hover {
@@ -112,7 +112,7 @@
   font-weight: 700;
   cursor: pointer;
   align-self: flex-end;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .saveBtn:hover {
@@ -129,7 +129,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .secondaryBtn:hover {

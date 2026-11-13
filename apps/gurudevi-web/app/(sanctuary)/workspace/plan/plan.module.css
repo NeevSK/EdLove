@@ -173,7 +173,7 @@
   color: var(--color-ink);
   font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease);
 }
 
 .textarea {
@@ -261,7 +261,7 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .primaryBtn:disabled {

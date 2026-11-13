@@ -238,7 +238,7 @@
   font-size: 14px;
   font-weight: 650;
   cursor: pointer;
-  transition: background-color 150ms ease, transform 150ms ease;
+  transition: background-color var(--w-dur-micro) var(--w-ease), transform var(--w-dur-micro) var(--w-ease);
 }
 
 .primaryAction:hover:not(:disabled) {
@@ -308,7 +308,7 @@
   font-size: 21px;
   line-height: 1;
   text-align: center;
-  transition: transform 160ms ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 .roleOption:has(input:checked) .roleSymbol {
@@ -557,7 +557,7 @@
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .useDetectedNameBtn:hover {

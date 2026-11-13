@@ -54,7 +54,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .pulseCard:hover {
@@ -103,7 +103,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   white-space: nowrap;
   margin-bottom: -2px;
 }
@@ -225,7 +225,7 @@
   align-items: center;
   gap: 0.4rem;
   text-decoration: none;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .btnPrimary:hover {
@@ -245,7 +245,7 @@
   align-items: center;
   gap: 0.4rem;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .btnSecondary:hover {

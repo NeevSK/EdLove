@@ -10,6 +10,7 @@
  * <html> (`data-world`, `data-mode`, optional `data-phase`). No flash, no JS.
  */
 
+import { resolveMotion } from './motion';
 import { alpha, rgbTriple } from './color';
 import { phaseTokens, resolveWorld } from './resolve';
 import { PHASE_START_HOUR, skyPaletteAt } from './scene/sky';
@@ -305,6 +306,17 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   }
 
   v['--w-settle'] = `${r.motion.settleMs}ms`;
+
+  // The world's motion for the web, at full level; verger's lower levels
+  // override these on <html> (kitCss). Pages use these, never their own ms.
+  const m = resolveMotion(w.definition.motion, 'rich');
+  v['--w-dur-micro'] = `${m.duration.micro}ms`;
+  v['--w-dur'] = `${m.duration.transition}ms`;
+  v['--w-dur-meaningful'] = `${m.duration.meaningful}ms`;
+  v['--w-dur-breathe'] = `${m.duration.breathe}ms`;
+  v['--w-ease'] = `cubic-bezier(${m.easing.join(',')})`;
+  v['--w-travel'] = `${m.from.x || m.from.y}px`;
+  v['--w-press'] = String(m.press);
 
   // Material: inner light, wash, grain, tinted shadow, and living light per moment.
   const mat = r.material;

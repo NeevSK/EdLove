@@ -125,7 +125,7 @@
   font-style: italic;
   color: var(--w-lamp-deep);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .seedPrompt:hover {
@@ -146,7 +146,7 @@
   font-weight: 600;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .triggerPill:hover {

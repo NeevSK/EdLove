@@ -77,7 +77,7 @@
   font-family: inherit;
   font-size: 0.875rem;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease);
   box-sizing: border-box;
 }
 
@@ -126,7 +126,7 @@
   font-size: 0.9rem;
   border: none;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .submitBtn:hover {

@@ -69,7 +69,7 @@
   font-weight: 600;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .fullscreenBtn:hover {

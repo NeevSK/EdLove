@@ -8,7 +8,7 @@
 .presenceStrip {
   padding: 0.875rem 1.25rem !important;
   cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .presenceStrip:hover {
@@ -70,7 +70,7 @@
 
 .clickableCard {
   cursor: pointer;
-  transition: transform 180ms ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 .clickableCard:hover {

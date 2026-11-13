@@ -144,7 +144,7 @@
   height: 100%;
   background: linear-gradient(90deg, var(--w-lamp), var(--w-lamp));
   border-radius: 999px;
-  transition: width 0.3s ease;
+  transition: width var(--w-dur) var(--w-ease);
   color: var(--w-on-lamp);
 }
 
@@ -159,7 +159,7 @@
   font-weight: 700;
   cursor: pointer;
   align-self: flex-start;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .submitBtn:hover {

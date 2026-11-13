@@ -61,7 +61,7 @@
   border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
   background: transparent;
   cursor: pointer;
-  transition: all 160ms ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .levelEmoji {

@@ -45,7 +45,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .exitLink:hover {
@@ -80,7 +80,7 @@
   overflow: hidden;
   text-align: center;
   min-height: 24rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .scannerCardIdle {

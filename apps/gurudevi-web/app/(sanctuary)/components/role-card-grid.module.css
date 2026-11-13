@@ -23,7 +23,7 @@
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: all 160ms ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   min-height: 64px;
 }
 

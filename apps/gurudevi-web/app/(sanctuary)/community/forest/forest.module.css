@@ -80,7 +80,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  transition: transform 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 .treeCard:hover {
@@ -133,7 +133,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .nurtureBtn:hover {

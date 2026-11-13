@@ -34,7 +34,7 @@
   font-size: 0.875rem;
   color: color-mix(in srgb, var(--w-ink) 60%, transparent);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color var(--w-dur-micro) var(--w-ease);
 }
 
 .backLink:hover {
@@ -104,7 +104,7 @@
   background: color-mix(in srgb, var(--w-ink) 3%, transparent);
   color: color-mix(in srgb, var(--w-ink) 65%, transparent);
   border: 1px solid color-mix(in srgb, var(--w-ink) 6%, transparent);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--w-dur-micro) var(--w-ease);
   white-space: nowrap;
 }
 
@@ -162,7 +162,7 @@
   padding: 2.5rem 1.5rem;
   text-align: center;
   background: color-mix(in srgb, var(--w-ink) 2%, transparent);
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   cursor: pointer;
   margin-bottom: 1.5rem;
 }
@@ -268,7 +268,7 @@
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .btnPrimary:hover {
@@ -288,7 +288,7 @@
   border: 1px solid color-mix(in srgb, var(--w-ink) 10%, transparent);
   cursor: pointer;
   font-size: 0.9rem;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .btnSecondary:hover {

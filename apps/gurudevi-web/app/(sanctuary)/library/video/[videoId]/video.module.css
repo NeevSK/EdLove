@@ -11,7 +11,7 @@
   gap: 1.5rem;
   font-family: var(--font-ui-grotesque, 'Outfit', -apple-system, sans-serif);
   color: var(--color-ink);
-  transition: all 0.3s ease;
+  transition: all var(--w-dur) var(--w-ease);
 }
 
 .theaterShellWide {
@@ -136,7 +136,7 @@
   background: color-mix(in srgb, var(--w-ink) 20%, transparent);
   outline: none;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background var(--w-dur-micro) var(--w-ease);
 }
 
 .scrubber::-webkit-slider-thumb {
@@ -148,7 +148,7 @@
   background: var(--color-action);
   cursor: pointer;
   box-shadow: 0 0 6px color-mix(in srgb, var(--w-shadow-tint) 40%, transparent);
-  transition: transform 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 .scrubber::-webkit-slider-thumb:hover {
@@ -192,7 +192,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .ctrlBtn:hover {
@@ -221,7 +221,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .speedPill:hover {
@@ -280,7 +280,7 @@
   font-size: 0.85rem;
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .chapterItem:hover {

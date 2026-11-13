@@ -56,7 +56,7 @@
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 9999px;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .closeBtn:hover {
@@ -75,7 +75,7 @@
   height: 4px;
   border-radius: 9999px;
   background: var(--w-raised);
-  transition: all 0.3s ease;
+  transition: all var(--w-dur) var(--w-ease);
 }
 
 .stepDotActive {
@@ -114,7 +114,7 @@
   border: 1px solid var(--w-raised);
   background: var(--w-raised);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .energyBtn:hover {
@@ -166,7 +166,7 @@
   border-radius: 9999px;
   background: radial-gradient(circle, color-mix(in srgb, var(--w-lamp) 25%, transparent) 0%, color-mix(in srgb, var(--w-lamp) 5%, transparent) 70%, transparent 100%);
   border: 1.5px solid color-mix(in srgb, var(--w-lamp) 35%, transparent);
-  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 4s var(--w-ease);
   color: var(--w-on-lamp);
 }
 
@@ -182,7 +182,7 @@
   color: var(--w-on-lamp);
   font-size: 1.5rem;
   box-shadow: 0 0 24px color-mix(in srgb, var(--w-lamp) 40%, transparent);
-  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 4s var(--w-ease);
 }
 
 .breathPhaseLabel {
@@ -215,7 +215,7 @@
   font-weight: 500;
   color: var(--w-ink);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .intentionChip:hover {
@@ -241,7 +241,7 @@
   font-weight: 700;
   border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .completeBtn:hover {

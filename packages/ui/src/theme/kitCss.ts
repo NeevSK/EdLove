@@ -783,6 +783,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 /* Blur costs a low-end phone a lot. Verger decides: when it says the device can only afford
    reduced or essential visuals, no surface blurs what is behind it. Pages never gate it themselves. */
 html[data-visual-quality="reduced"] *,html[data-visual-quality="essential"] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* Motion: pages time transitions with the world (--w-dur*, --w-ease); at verger's essential level every world moves at the base tempo, with fades only. */
+html[data-visual-quality="essential"]{--w-dur-micro:150ms!important;--w-dur:240ms!important;--w-dur-meaningful:520ms!important;--w-ease:cubic-bezier(.23,1,.32,1)!important;--w-travel:0px!important;--w-press:.98!important}
 /* Touch size: on a touch screen nothing you press is smaller than the platform minimum
    (44px, Apple and WCAG 2.5.5; the phone app uses 48 on Android). One rule for every page; pages
    never set their own. Inline text links are exempt, as WCAG allows. */

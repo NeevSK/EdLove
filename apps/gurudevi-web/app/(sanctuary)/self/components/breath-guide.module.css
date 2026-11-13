@@ -61,15 +61,15 @@
     0 0 40px -8px color-mix(in srgb, var(--w-lamp) 25%, transparent),
     inset 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 80%, transparent);
   transition:
-    transform 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.8s ease,
-    box-shadow 0.8s ease;
+    transform 1.2s var(--w-ease),
+    border-color 0.8s var(--w-ease),
+    box-shadow 0.8s var(--w-ease);
   z-index: 2;
 }
 
 .orbIcon {
   font-size: 2.25rem;
-  transition: transform 0.6s ease;
+  transition: transform var(--w-dur-meaningful) var(--w-ease);
 }
 
 .orbSeconds {
@@ -135,7 +135,7 @@
   font-weight: 600;
   color: var(--lotus);
   letter-spacing: -0.02em;
-  transition: color 0.4s ease;
+  transition: color var(--w-dur) var(--w-ease);
 }
 
 .idleHint {
@@ -159,7 +159,7 @@
   height: 100%;
   background: var(--lotus);
   border-radius: 9999px;
-  transition: width 0.3s ease;
+  transition: width var(--w-dur) var(--w-ease);
 }
 
 .cycleText {
@@ -185,7 +185,7 @@
   letter-spacing: 0.04em;
   cursor: pointer;
   box-shadow: 0 4px 16px -2px color-mix(in srgb, var(--w-lamp) 40%, transparent);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .primaryButton:hover {

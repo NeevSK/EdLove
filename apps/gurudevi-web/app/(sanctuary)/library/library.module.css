@@ -306,7 +306,7 @@
   color: var(--ink-soft);
   font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .returnOverviewButton:hover {
@@ -359,7 +359,7 @@
   color: var(--ink);
   text-align: left;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .catalogRailItem:hover {
@@ -395,7 +395,7 @@
   font-size: 0.95rem;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .catalogRailPinButton:hover {
@@ -481,7 +481,7 @@
   border-radius: 1rem;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--paper-light) 65%, transparent);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), border-color var(--w-dur-micro) var(--w-ease);
 }
 
 .collectionCard:hover {
@@ -523,7 +523,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .categoryPill:hover {
@@ -600,7 +600,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .actionBtn:hover {
@@ -694,7 +694,7 @@
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 650;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .heroPrimaryBtn:hover {
@@ -747,7 +747,7 @@
   font-weight: 600;
   text-decoration: none;
   opacity: 0.85;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .externalLinkAnchor:hover {

@@ -64,7 +64,7 @@
   background: var(--color-paper-light);
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .dutyItemUrgent {
@@ -148,7 +148,7 @@
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-ink);
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .btnCheckIn:hover {

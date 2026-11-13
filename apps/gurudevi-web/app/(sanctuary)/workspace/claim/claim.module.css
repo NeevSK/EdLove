@@ -68,7 +68,7 @@
   letter-spacing: 0.08em;
   background: var(--w-raised);
   color: var(--w-ink);
-  transition: border-color 0.15s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease);
 }
 
 .input:focus {
@@ -85,7 +85,7 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: background var(--w-dur-micro) var(--w-ease), transform var(--w-dur-micro) var(--w-ease);
   white-space: nowrap;
 }
 
@@ -198,7 +198,7 @@
   font-weight: 600;
   text-decoration: none;
   font-size: 0.95rem;
-  transition: background 0.15s ease;
+  transition: background var(--w-dur-micro) var(--w-ease);
 }
 
 .primaryLink:hover {
@@ -214,7 +214,7 @@
   font-weight: 600;
   text-decoration: none;
   font-size: 0.95rem;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .secondaryLink:hover {

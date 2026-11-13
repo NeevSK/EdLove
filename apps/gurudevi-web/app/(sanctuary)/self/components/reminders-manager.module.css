@@ -99,7 +99,7 @@
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .presetChip:hover {
@@ -182,7 +182,7 @@
   font-weight: 600;
   cursor: pointer;
   color: var(--color-text-secondary);
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .toggleBtnActive {
@@ -276,7 +276,7 @@
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .desktopNotifBtn:hover {
@@ -347,7 +347,7 @@
   border: 1px solid var(--color-line, var(--w-line));
   background: var(--color-surface);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .doneBtn {

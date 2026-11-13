@@ -28,7 +28,7 @@
   font-weight: 600;
   color: var(--w-danger);
   text-decoration: none;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .backLink:hover {

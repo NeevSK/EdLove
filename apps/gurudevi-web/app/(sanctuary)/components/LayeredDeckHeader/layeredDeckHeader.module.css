@@ -5,7 +5,7 @@
   width: 100%;
   flex-shrink: 0;
   z-index: 25;
-  transition: margin-bottom 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: margin-bottom var(--w-dur-meaningful) var(--w-ease);
   will-change: margin-bottom;
 }
 
@@ -13,9 +13,9 @@
   width: 100%;
   position: relative;
   transition:
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    transform var(--w-dur-meaningful) var(--w-ease),
+    opacity var(--w-dur) var(--w-ease),
+    box-shadow var(--w-dur-meaningful) var(--w-ease);
   will-change: transform, opacity;
 }
 
@@ -74,9 +74,9 @@
   visibility: hidden;
   pointer-events: none;
   transition:
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0.42s step-end;
+    transform var(--w-dur-meaningful) var(--w-ease),
+    opacity var(--w-dur) var(--w-ease),
+    visibility var(--w-dur-meaningful) step-end;
 }
 
 .deckRoot[data-collapsed="true"] .layer2 {
@@ -85,9 +85,9 @@
   visibility: hidden;
   pointer-events: none;
   transition:
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0.42s step-end;
+    transform var(--w-dur-meaningful) var(--w-ease),
+    opacity var(--w-dur) var(--w-ease),
+    visibility var(--w-dur-meaningful) step-end;
 }
 
 .deckRoot[data-collapsed="true"] .layer3 {

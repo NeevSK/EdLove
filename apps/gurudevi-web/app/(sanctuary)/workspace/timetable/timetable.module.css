@@ -52,7 +52,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   white-space: nowrap;
 }
 
@@ -196,7 +196,7 @@
   height: 100%;
   background: var(--color-action);
   border-radius: 4px;
-  transition: width 0.25s ease;
+  transition: width var(--w-dur) var(--w-ease);
 }
 
 .prepList {
@@ -214,7 +214,7 @@
   background: color-mix(in srgb, var(--w-raised) 60%, transparent);
   border: 1px solid color-mix(in srgb, var(--w-ink-soft) 10%, transparent);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .prepItem:hover {
@@ -266,7 +266,7 @@
   font-weight: 700;
   color: var(--color-action);
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease);
 }
 
 .attendanceActionLink:hover {

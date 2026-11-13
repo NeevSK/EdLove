@@ -21,7 +21,7 @@
   font-weight: 600;
   list-style: none;
   user-select: none;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .actions summary::-webkit-details-marker {

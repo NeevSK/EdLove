@@ -54,7 +54,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .metricCard:hover {
@@ -102,7 +102,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   margin-bottom: -2px;
 }
 
@@ -158,7 +158,7 @@
   font-weight: 550;
   color: var(--color-ink-soft, var(--w-ink-soft));
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .filterButton:hover {
@@ -304,7 +304,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .btnPrimary:hover {
@@ -323,7 +323,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  transition: background 0.15s ease;
+  transition: background var(--w-dur-micro) var(--w-ease);
 }
 
 .btnDanger:hover {
@@ -476,7 +476,7 @@
   color: var(--color-ink);
   box-sizing: border-box;
   font-family: inherit;
-  transition: border-color 0.15s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease);
 }
 
 .input:focus,

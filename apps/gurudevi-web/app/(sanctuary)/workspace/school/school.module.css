@@ -187,7 +187,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--w-danger) 25%, transparent);
   text-decoration: none;
 }
@@ -209,7 +209,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   text-decoration: none;
 }
 
@@ -239,7 +239,7 @@
   flex-direction: column;
   gap: 0.35rem;
   box-shadow: 0 4px 16px -4px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
-  transition: transform 0.2s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 [data-appearance="night"] .vitalCard {
@@ -294,7 +294,7 @@
   font-weight: 700;
   color: var(--color-ink-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   white-space: nowrap;
 }
 
@@ -388,7 +388,7 @@
   border: 1px solid color-mix(in srgb, var(--w-ink) 6%, transparent);
   border-radius: 20px;
   padding: 1.25rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 [data-appearance="night"] .rollItem {
@@ -618,7 +618,7 @@
   font-size: 0.92rem;
   background: var(--w-raised);
   color: var(--w-ink);
-  transition: border-color 0.2s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease);
 }
 
 [data-appearance="night"] .inputField {
@@ -663,8 +663,8 @@
   gap: 1rem;
   box-shadow: 0 4px 16px -4px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    transform var(--w-dur-micro) var(--w-ease),
+    box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .articleCard:hover {
@@ -770,7 +770,7 @@
   background: var(--w-danger);
   border-radius: 8px;
   text-decoration: none;
-  transition: background 0.15s ease;
+  transition: background var(--w-dur-micro) var(--w-ease);
 }
 
 .authorDeskLink:hover {

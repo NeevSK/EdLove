@@ -51,7 +51,7 @@
   border: 1px solid color-mix(in srgb, var(--w-ink) 12%, transparent);
   background-color: color-mix(in srgb, var(--w-raised) 65%, transparent);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--w-dur-micro) var(--w-ease);
   text-align: left;
 }
 
@@ -229,7 +229,7 @@
   font-size: 13px;
   color: var(--w-ink-soft);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .anotherAccountBtn:hover {
@@ -251,7 +251,7 @@
   font-weight: 600;
   color: var(--w-lamp-deep);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -278,7 +278,7 @@
   padding: 4px 6px;
   border-radius: 6px;
   line-height: 1;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .removeAccountBtn:hover {

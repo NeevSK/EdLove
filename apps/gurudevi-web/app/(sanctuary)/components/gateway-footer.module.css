@@ -36,7 +36,7 @@
 .footerLinks a {
   color: inherit;
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease);
 }
 
 .footerLinks a:hover {
@@ -70,7 +70,7 @@
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 2.5px;
-  transition: color 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease);
 }
 
 .edloveLink:hover {

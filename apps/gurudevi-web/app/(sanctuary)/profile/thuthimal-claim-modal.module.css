@@ -111,7 +111,7 @@
   font-weight: 650;
   font-size: 0.9375rem;
   cursor: pointer;
-  transition: opacity 160ms ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .primaryBtn:disabled {

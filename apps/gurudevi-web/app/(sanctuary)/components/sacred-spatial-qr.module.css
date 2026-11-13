@@ -19,7 +19,7 @@
 .cardFlip {
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.8s var(--w-ease);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,7 +95,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform var(--w-dur) var(--w-ease), box-shadow var(--w-dur) var(--w-ease);
 }
 
 .mandalaSurface:hover {
@@ -134,7 +134,7 @@
   background: color-mix(in srgb, var(--w-raised) 90%, transparent);
   color: var(--w-ink);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   backdrop-filter: blur(8px);
 }
 

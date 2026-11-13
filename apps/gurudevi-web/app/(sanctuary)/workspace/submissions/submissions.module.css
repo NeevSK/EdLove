@@ -70,7 +70,7 @@
   text-align: center;
   background: var(--color-paper);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -119,7 +119,7 @@
   font-weight: 700;
   cursor: pointer;
   align-self: flex-start;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .submitBtn:hover {

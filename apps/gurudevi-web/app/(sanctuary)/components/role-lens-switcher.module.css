@@ -92,7 +92,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: all 0.15s ease-out;
+  transition: all var(--w-dur-micro) var(--w-ease);
   line-height: 1.2;
 }
 

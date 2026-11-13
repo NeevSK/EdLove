@@ -77,7 +77,7 @@
   background: var(--paper-light);
   color: var(--ink-soft);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .closeButton:hover {
@@ -109,7 +109,7 @@
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .tabButton:hover {
@@ -180,7 +180,7 @@
   font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .worldChipsList {
@@ -201,7 +201,7 @@
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .worldChip:hover {
@@ -246,7 +246,7 @@
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--paper-light) 50%, transparent);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   text-align: center;
 }
 
@@ -287,7 +287,7 @@
   background-size: cover;
   background-position: center;
   box-shadow: 0 2px 6px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .wallpaperCard:hover {
@@ -329,7 +329,7 @@
   display: grid;
   place-items: center;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .wallpaperCard:hover .wallpaperDeleteBtn {
@@ -353,7 +353,7 @@
   border-radius: 0.6rem;
   background: var(--paper-light);
   box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease), border-color var(--w-dur-micro) var(--w-ease);
   touch-action: pan-y;
   cursor: grab;
   user-select: none;
@@ -438,7 +438,7 @@
   display: grid;
   place-items: center;
   font-size: 0.8rem;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .furnitureBtn:hover:not(:disabled) {
@@ -505,7 +505,7 @@
   cursor: pointer;
   padding: 0.35rem 0.5rem;
   border-radius: 0.35rem;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .resetBtn:hover {
