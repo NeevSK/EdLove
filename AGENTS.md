@@ -83,6 +83,8 @@ and unresolved product decisions honestly.
 
 **Client runtime plan:** [`docs/architecture/2026-11-12-client-runtime-foundation-plan.md`](docs/architecture/2026-11-12-client-runtime-foundation-plan.md) is the whole client picture, from contracts (Zod is the source of truth) through transport, errors, retry, outbox, queries, feedback, motion and journeys, at baseline, production and enterprise level, with the order of work. Build from the bottom layer up.
 
+**Data stack mental model:** [`docs/architecture/2026-11-13-data-stack-mental-model.md`](docs/architecture/2026-11-13-data-stack-mental-model.md) says where Supabase, the API, ZenStack, Zod, PowerSync (Service, SDK, SQLite), Drizzle, TanStack Query, Zustand/MMKV and the outbox each sit, what goes to PowerSync and what doesn't, and how reads and writes flow end to end. Read it before wiring anything that stores, syncs or fetches data.
+
 **`*.web.ts(x)` outside `apps/gurudevi-web` are reference only.** The web app is `apps/gurudevi-web`. Lint, type checks, tests and the audits skip them, except the live files in `tooling/live-web-files.json` (shared code imports those by name). Don't build on a reference file. If you add or remove an import of a `.web` file, run `node scripts/check-reference-only.mjs`; the ratchet fails while the list is out of date.
 
 **Platform structure (read before any API, package or screen design):**
