@@ -58,6 +58,8 @@ import { FLOOR_PICTURES, FLOOR_PICTURES_WIDE } from '@/generated/floorPictures';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 import { GurudeviVerger } from '@/runtime/GurudeviVerger';
+import { SOUND_CUES } from '@/interaction/soundCues';
+import { SoundFeedbackProvider } from '@/interaction/soundFeedback';
 import WelcomeConceptPreview from '@/screens/WelcomeConceptPreview';
 import { SanctuaryPulseOverlay } from '@/somatic/SanctuaryPulseOverlay';
 import { useSomaticShake } from '@/somatic/useSomaticShake';
@@ -176,53 +178,56 @@ export function EntryShell() {
                                 <FABProvider>
                                   <MascotProvider config={fireflyMascotConfig}>
                                     <LayoutLoopSentinel name="RootShell" style={styles.root}>
+                                      {/* One sound player for the app; the shared feedback engine decides when it plays. */}
                                       {/* One floor under every screen: the world draws it, verger sets how richly. */}
-                                      <WorldStage>
-                                        <AppVersionGateOverlay />
-                                        <GuestPersistenceNotice />
-                                        <GuestConversionBoundary />
-                                        <PasswordRecoveryBoundary />
-                                        <SessionRouteGate
-                                          appServices={<AuthenticatedAppServices />}
-                                        >
-                                          <Stack
-                                            screenOptions={{
-                                              headerShown: false,
-                                              contentStyle: { backgroundColor: 'transparent' },
-                                            }}
+                                      <SoundFeedbackProvider sources={SOUND_CUES}>
+                                        <WorldStage>
+                                          <AppVersionGateOverlay />
+                                          <GuestPersistenceNotice />
+                                          <GuestConversionBoundary />
+                                          <PasswordRecoveryBoundary />
+                                          <SessionRouteGate
+                                            appServices={<AuthenticatedAppServices />}
                                           >
-                                            <Stack.Screen name="index" />
-                                            <Stack.Screen name="welcome" />
-                                            <Stack.Screen name="auth" />
-                                            <Stack.Screen name="account-recovery" />
-                                            <Stack.Screen name="onboarding" />
-                                            <Stack.Screen name="public-form/[slug]" />
-                                            <Stack.Screen name="verger-lab" />
-                                            <Stack.Screen name="verger-diagnostics" />
-                                            <Stack.Screen name="(tabs)" />
-                                            <Stack.Screen
-                                              name="(modal)"
-                                              options={{ presentation: 'modal' }}
-                                            />
-                                          </Stack>
-                                        </SessionRouteGate>
-                                        <SanctuaryPulseOverlay
-                                          visible={isBreathingOpen}
-                                          onDismiss={() => setBreathingOpen(false)}
-                                          isPlayfulMode={true}
-                                          onSessionComplete={(seconds) => {
-                                            void inMemoryHealthAdapter.recordMindfulSession(
-                                              seconds,
-                                            );
-                                            sensoryFeedback.emit('success');
-                                          }}
-                                        />
-                                        <WorldMomentHost />
-                                        <ToastHost bottomOffset={120} />
-                                        {/* Typing: our keypad for numbers, and the bar above the phone's keyboard. */}
-                                        <KeypadHost />
-                                        <TypingBar />
-                                      </WorldStage>
+                                            <Stack
+                                              screenOptions={{
+                                                headerShown: false,
+                                                contentStyle: { backgroundColor: 'transparent' },
+                                              }}
+                                            >
+                                              <Stack.Screen name="index" />
+                                              <Stack.Screen name="welcome" />
+                                              <Stack.Screen name="auth" />
+                                              <Stack.Screen name="account-recovery" />
+                                              <Stack.Screen name="onboarding" />
+                                              <Stack.Screen name="public-form/[slug]" />
+                                              <Stack.Screen name="verger-lab" />
+                                              <Stack.Screen name="verger-diagnostics" />
+                                              <Stack.Screen name="(tabs)" />
+                                              <Stack.Screen
+                                                name="(modal)"
+                                                options={{ presentation: 'modal' }}
+                                              />
+                                            </Stack>
+                                          </SessionRouteGate>
+                                          <SanctuaryPulseOverlay
+                                            visible={isBreathingOpen}
+                                            onDismiss={() => setBreathingOpen(false)}
+                                            isPlayfulMode={true}
+                                            onSessionComplete={(seconds) => {
+                                              void inMemoryHealthAdapter.recordMindfulSession(
+                                                seconds,
+                                              );
+                                              sensoryFeedback.emit('success');
+                                            }}
+                                          />
+                                          <WorldMomentHost />
+                                          <ToastHost bottomOffset={120} />
+                                          {/* Typing: our keypad for numbers, and the bar above the phone's keyboard. */}
+                                          <KeypadHost />
+                                          <TypingBar />
+                                        </WorldStage>
+                                      </SoundFeedbackProvider>
                                     </LayoutLoopSentinel>
                                   </MascotProvider>
                                 </FABProvider>
