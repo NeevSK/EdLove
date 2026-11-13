@@ -34,6 +34,19 @@ export {
   tallyFor,
 } from './live';
 export {
+  createFrameReader,
+  DEFAULT_TRANSPORT_POLICY,
+  encodeFrame,
+  type LiveTransport,
+  MAX_FRAME_CHARS,
+  onLinkStatus,
+  type TransportAvailability,
+  type TransportKind,
+  type TransportPolicy,
+  type TransportStatus,
+  transportsToTry,
+} from './liveTransport';
+export {
   type ActivityMode,
   assessmentConfigFor,
   isRevealed,
