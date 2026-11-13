@@ -17,6 +17,7 @@ import { CreateAccountGuidanceModal } from './CreateAccountGuidanceModal';
 import styles from './profile.module.css';
 import { ThuthimalClaimModal } from './ThuthimalClaimModal';
 import { WebDeviceAccountModal } from './WebDeviceAccountModal';
+import { acceptAttributeFor, checkFile } from '@repo/core/logic/files/filePolicy';
 
 const FALLBACK_EXPLORE_PROFILE = {
   id: 'guest-explorer-profile',
@@ -286,8 +287,8 @@ export function ProfileFloor({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Avatar image must be smaller than 2MB.');
+    if (!checkFile({ name: file.name, mime: file.type, size: file.size }, 'avatar').ok) {
+      alert('Choose a PNG, JPEG or WebP image smaller than 2 MB.');
       return;
     }
 
@@ -580,7 +581,7 @@ export function ProfileFloor({
                       <input
                         id="avatar-file-input"
                         type="file"
-                        accept="image/png,image/jpeg,image/webp"
+                        accept={acceptAttributeFor('avatar')}
                         style={{ display: 'none' }}
                         onChange={handleAvatarFile}
                       />

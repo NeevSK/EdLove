@@ -1,6 +1,9 @@
 'use client';
 
 import type { WorkspaceWallpaper } from '@repo/core/types';
+import { FILE_POLICY } from '@repo/core/logic/files/filePolicy';
+
+const WALLPAPER_IMAGE = FILE_POLICY.wallpaper.image ?? { quality: 0.82, crop: false };
 
 const DB_NAME = 'SanctuaryWallpaperDB';
 const DB_VERSION = 1;
@@ -37,14 +40,14 @@ function openDatabase(): Promise<IDBDatabase> {
 }
 
 /**
- * Downsamples user uploaded images client-side to 1920x1080 max WebP.
+ * Downsamples user uploaded images client-side to the wallpaper file policy (1920x1080 WebP).
  * Prevents memory bloat and protects GPU texture pipelines.
  */
 export async function downsampleImageFile(
   file: File,
-  maxWidth = 1920,
-  maxHeight = 1080,
-  quality = 0.82,
+  maxWidth = WALLPAPER_IMAGE.maxWidth ?? 1920,
+  maxHeight = WALLPAPER_IMAGE.maxHeight ?? 1080,
+  quality = WALLPAPER_IMAGE.quality,
 ): Promise<{ dataUrl: string; width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

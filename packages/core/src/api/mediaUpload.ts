@@ -1,6 +1,6 @@
 import type { WallpaperUploadMetadata } from '@repo/core/api/mediaUpload.contract';
 import { orpcClient } from '@repo/core/api/orpcClient';
-import { validateMediaUpload, WALLPAPER_UPLOAD_POLICY } from '@repo/core/lib/mediaUploadPolicy';
+import { assertFileAllowed } from '@repo/core/logic/files/filePolicy';
 
 export interface UploadedWallpaperAsset {
   provider: 'cloudinary';
@@ -94,8 +94,10 @@ function isAmbiguousRegistrationFailure(error: unknown): boolean {
 }
 
 export async function uploadWallpaper(source: Blob, metadata: WallpaperUploadMetadata) {
-  const sourceMetadata = { ...metadata, byteLength: source.size };
-  validateMediaUpload(sourceMetadata, WALLPAPER_UPLOAD_POLICY);
+  assertFileAllowed(
+    { mime: metadata.mimeType, size: source.size, width: metadata.width, height: metadata.height },
+    'wallpaper',
+  );
   const intent = readWallpaperUploadIntent(
     await orpcClient.media.requestWallpaperUpload({ body: metadata }),
   );

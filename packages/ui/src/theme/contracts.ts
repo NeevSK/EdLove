@@ -7,6 +7,7 @@
  * both, and an agent that learns one set has learned the other.
  */
 
+import type { FileKind, FileRef } from '@repo/core/logic/files/fileKind';
 import type { ComponentType, ReactNode } from 'react';
 import type { KitSize } from '../tokens/sizes';
 import type { SpaceDensity, SpaceRelation } from '../tokens/space';
@@ -204,29 +205,9 @@ export interface CarouselContract<T> {
   onPageChange?: (index: number) => void;
 }
 
-/** What kind of file something is (see `fileKindOf` in components/shared/files). */
-export type FileKind =
-  | 'image'
-  | 'audio'
-  | 'video'
-  | 'pdf'
-  | 'document'
-  | 'sheet'
-  | 'slides'
-  | 'markdown'
-  | 'text'
-  | 'archive'
-  | 'other';
-
-/** A file a component can show: where it is and what it is. */
-export interface FileRef {
-  name: string;
-  uri: string;
-  /** MIME type when known; otherwise the extension decides. */
-  mime?: string;
-  /** Bytes. */
-  size?: number;
-}
+// What kind of file something is, and a file a component can show: owned by core with the
+// file policy (`@repo/core/logic/files`).
+export type { FileKind, FileRef } from '@repo/core/logic/files/fileKind';
 
 /**
  * Long-form text in Markdown. The kit sets it in the world's prose; which

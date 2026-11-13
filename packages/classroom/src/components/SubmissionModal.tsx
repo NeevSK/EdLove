@@ -30,6 +30,7 @@ import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { confirmAction } from '@repo/ui/utils/dialogs';
 
 import * as ImagePicker from 'expo-image-picker';
+import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
@@ -76,16 +77,8 @@ export default function SubmissionModal({
       if (!(await requestPermission(useCamera))) return;
 
       const result = useCamera
-        ? await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 0.7,
-          })
-        : await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 0.7,
-          });
+        ? await ImagePicker.launchCameraAsync(imagePickerOptionsFor('submission'))
+        : await ImagePicker.launchImageLibraryAsync(imagePickerOptionsFor('submission'));
 
       if (!result.canceled && result.assets?.[0]?.uri) {
         setPhotoUri(result.assets[0].uri);

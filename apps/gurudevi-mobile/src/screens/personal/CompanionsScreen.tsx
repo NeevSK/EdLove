@@ -29,6 +29,7 @@ import { clearestOn } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
 import { useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { PageFrame } from '@/components/shell/PageFrame';
@@ -60,12 +61,7 @@ function keepPhoto(uri: string): string {
 }
 
 async function pickPhoto(): Promise<string | undefined> {
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ['images'],
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 0.6,
-  });
+  const result = await ImagePicker.launchImageLibraryAsync(imagePickerOptionsFor('avatar'));
   const asset = result.canceled ? undefined : result.assets[0];
   return asset ? keepPhoto(asset.uri) : undefined;
 }

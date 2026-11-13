@@ -17,6 +17,7 @@ import {
 } from 'expo-audio';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
+import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
 import { useCallback } from 'react';
 import { View } from 'react-native';
 
@@ -72,11 +73,8 @@ async function pickImage(source: 'camera' | 'library'): Promise<CaptureResult<Fi
       ? await ImagePicker.requestCameraPermissionsAsync()
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!permission.granted) return { status: 'denied' };
-  const options: ImagePicker.ImagePickerOptions = {
-    mediaTypes: ['images'],
-    // Compressed before it ever leaves the phone: school data plans are small.
-    quality: 0.7,
-  };
+  // Compressed before it ever leaves the phone (school data plans are small): file policy.
+  const options: ImagePicker.ImagePickerOptions = imagePickerOptionsFor('attachment');
   const result =
     source === 'camera'
       ? await ImagePicker.launchCameraAsync(options)

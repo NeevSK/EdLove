@@ -5,6 +5,7 @@ import React, { useRef, useState } from 'react';
 import { useAcademicDomain } from '@/lib/domain';
 import { submitBrowserAssignment } from '../../../../lib/workspace/assignmentSubmissions';
 import styles from './submissions.module.css';
+import { acceptAttributeFor } from '@repo/core/logic/files/filePolicy';
 
 interface SubmissionsFloorProps {
   accountId: string;
@@ -163,7 +164,7 @@ export function SubmissionsFloor({ accountId, authSubjectId, displayName, capaci
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".pdf,.png,.jpg,.jpeg,.docx,.zip"
+                accept={acceptAttributeFor('submission')}
                 style={{ display: 'none' }}
                 onChange={handleFileChange}
               />

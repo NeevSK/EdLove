@@ -36,6 +36,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import type { FloorAtmosphereKind } from './FloorAtmosphere';
 import styles from './floor-studio.module.css';
+import { acceptAttributeFor } from '@repo/core/logic/files/filePolicy';
 
 export { PRESET_WALLPAPERS };
 
@@ -503,7 +504,7 @@ export function FloorStudioDrawer({
                     {/* Upload Custom Dropzone */}
                     <label className={styles.dropzone} style={{ marginTop: '0.6rem' }}>
                       <input
-                        accept="image/png,image/jpeg,image/webp"
+                        accept={acceptAttributeFor('wallpaper')}
                         className={styles.fileInputHidden}
                         disabled={isUploading}
                         onChange={handleFileUpload}

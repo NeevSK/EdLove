@@ -276,13 +276,29 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
 
 ### L6 Media and files
 
-- **Today.** `lib/mediaUploadPolicy.ts` in core; expo-image, expo-video, expo-document-picker,
-  expo-image-picker, expo-file-system. Not checked: whether every upload goes through the policy.
-- **Baseline.** One policy for accepted types, size limits and image compression; uploads go
-  through the outbox (L4) so they survive going offline; one viewer per media kind.
+- **Done (2026-11-13): one file policy.** `core/logic/files/filePolicy.ts` `FILE_POLICY` per purpose
+  (avatar, wallpaper, submission, scan, attachment): accepted kinds and types, size, count and pixel
+  limits, and how an image is prepared (capture quality, crop, square, downsample size and format).
+  `checkFile` / `checkFiles` return OK or a refusal code (the codes wallpaper uploads already used);
+  `assertFileAllowed` throws for upload code; `fileRulesFor` gives the kit's `FileField` its rules;
+  `acceptAttributeFor` gives web inputs theirs; `imagePickerOptionsFor` gives every picker its
+  settings. File kinds (`FileKind`, `FileRef`, `fileKindOf`) moved to `core/logic/files/fileKind.ts`;
+  the kit re-exports them. `lib/mediaUploadPolicy.ts` moved into the policy.
+- **Wired.** Mobile: the capture adapter, submission photos, avatar, companions, QR and OCR scanners
+  (and the scanner's downsample). Web: avatar (the 2 MB rule), wallpaper (accept, downsample),
+  submissions (accept). The deprecated `ImagePicker.MediaTypeOptions` is gone (6 uses). Values are
+  what each path used, except companions, which moved from 0.6 to the avatar quality (0.9).
+  "Policy default" values (submissions: 20 MB, 5 files) had no limit before.
+- **Defects found, not fixed (decisions or server side).**
+  - `adapters/storage/supabase.adapter.ts` uploads the file's URI string, not its bytes (`fileUri as
+    any`), to a public bucket at `uploads/<timestamp>`, with no account in the path. Avatar upload on
+    mobile goes through it.
+  - `api/mediaUpload.ts` (wallpaper to Cloudinary) has no caller and uses the legacy `orpcClient`.
+  - No upload reaches the server through v1; web submissions say so on screen.
+- **Next (baseline).** Uploads as v1 upload intents (the server signs where the bytes go and
+  checks the same policy) carried by the outbox, so they survive going offline; one viewer per
+  media kind. Neev: buckets, privacy (public or signed URLs) and the v1 upload procedure.
 - **Production.** Resumable uploads, processing states, local cache cleanup.
-- **Enterprise.** Scanning, retention, compliance.
-
 ### L7 Feedback
 
 - **Today.** `ui/theme/feedback.ts` exists; haptics imported directly in 16 files; toasts fired from
