@@ -24,20 +24,20 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
             HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-            COMMITS=$(git log --format="%H" $BASE_SHA..$HEAD_SHA)
+            COMMITS=$(git log --format="%H" "$BASE_SHA..$HEAD_SHA")
           else
             COMMITS=$(git log --format="%H" -1)
           fi
 
           FAILED=0
           for SHA in $COMMITS; do
-            if ! git log --format="%s%n%b" -1 $SHA | grep -q "Signed-off-by:"; then
+            if ! git log --format="%s%n%b" -1 "$SHA" | grep -q "Signed-off-by:"; then
               echo "::error file=commit $SHA::Missing DCO sign-off in commit $SHA"
               FAILED=1
             fi
           done
 
-          if [ $FAILED -ne 0 ]; then
+          if [ "$FAILED" -ne 0 ]; then
             echo "❌ Some commits are missing DCO sign-off. Use 'git commit -s' to sign off."
             exit 1
           fi
