@@ -31,23 +31,6 @@ export const accountNavigation = [
   { id: 'settings', href: '/settings', label: 'Settings', symbol: '⚙' },
 ] as const satisfies readonly SanctuaryNavItem[];
 
-export const workspaceNavigation = [
-  { id: 'attendance', href: '/workspace', label: 'Attendance', symbol: '◷' },
-  { id: 'submissions', href: '/workspace/submissions', label: 'Submissions', symbol: '📥' },
-  { id: 'climate', href: '/workspace/climate', label: 'Climate Sensing', symbol: '⛅' },
-  { id: 'tuition', href: '/workspace/tuition', label: 'Tuition & Fees', symbol: '💳' },
-  { id: 'kiosk', href: '/workspace/kiosk', label: 'Doorway Kiosk', symbol: '⛶' },
-  { id: 'badges', href: '/workspace/badges', label: 'ID Badges', symbol: '📇' },
-  { id: 'claim', href: '/workspace/claim', label: 'Claim Spot', symbol: '🎓' },
-  { id: 'school', href: '/workspace/school', label: 'School Profile', symbol: '🏛' },
-  { id: 'editorial', href: '/workspace/editorial', label: 'Editorial Commons', symbol: '✒' },
-  { id: 'plan', href: '/workspace/plan', label: 'Plan & Notices', symbol: '✉' },
-  { id: 'notices', href: '/workspace/notices', label: 'Circulars', symbol: '📢' },
-  { id: 'events', href: '/workspace/events', label: 'Events ERP', symbol: '◈' },
-  { id: 'timetable', href: '/workspace/timetable', label: 'Timetable', symbol: '▦' },
-  { id: 'gradebook', href: '/workspace/gradebook', label: 'Gradebook', symbol: '▥' },
-] as const;
-
 export const advancedTools = ['Agent Lab', 'Editorial', 'UI Showcase', 'Icon Lab'] as const;
 
 export const quickAccessDestinations = [

@@ -1,26 +1,11 @@
 import type { ReactNode } from 'react';
 import { notificationFeed } from '../../app/(sanctuary)/notifications/notificationFeed';
 import { getExploreSampleAnnouncements } from '../../lib/community/announcements-contract';
-import {
-  EXPLORE_CAPACITIES,
-  getExploreCapacityMeta,
-  isExploreCapacity,
-  setExploreCapacity,
-  useExploreCapacity,
-} from '../../lib/explore/exploreCapacity';
+import { getExploreCapacityMeta, useExploreCapacity } from '../../lib/explore/exploreCapacity';
 import { AccessScope } from './access';
 import { EXPLORE_COMMUNITY_GROUPS } from '../../app/(sanctuary)/community/exploreGroups';
 import { resolveSurfaceUrl } from '../../lib/surface-urls';
-import type { Roles } from './session';
 import type { AccountHome, Sources } from './sources';
-
-/** Every role a visitor can try. */
-export const roles: Roles = {
-  choices: EXPLORE_CAPACITIES.map((meta) => ({ capacity: meta.id, label: meta.label })),
-  choose: (capacity: string) => {
-    if (isExploreCapacity(capacity)) setExploreCapacity(capacity);
-  },
-};
 
 /** A visitor with no account: the persona they chose to try, kept on this device. */
 export function Surface({ children }: { readonly children: ReactNode }) {
@@ -33,7 +18,6 @@ export function Surface({ children }: { readonly children: ReactNode }) {
     capacity,
     primaryCapacity: capacity,
     roleLabel: getExploreCapacityMeta(capacity).roleTitle,
-    roles,
   } as const;
   return <AccessScope access={{ kind: 'ready', session }}>{children}</AccessScope>;
 }

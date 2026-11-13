@@ -1,5 +1,6 @@
 'use client';
 
+import { isOfferedTo } from '../workspace/workspaceFeatureRegistry';
 import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@repo/ui/components/web';
 import {
@@ -124,9 +125,16 @@ interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
   navigationPrefix?: string;
+  /** The person's capacity: Workspace commands come only from its floor. */
+  capacity?: string | null;
 }
 
-export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: CommandPaletteProps) {
+export function CommandPalette({
+  isOpen,
+  onClose,
+  navigationPrefix = '',
+  capacity,
+}: CommandPaletteProps) {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -135,6 +143,7 @@ export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: Comma
   const listId = useId();
 
   const filteredCommands = defaultCommands.filter((cmd) => {
+    if (cmd.href && !isOfferedTo(capacity, cmd.href)) return false;
     if (!query.trim()) return true;
     const q = query.toLowerCase();
     return (

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { z } from 'zod';
 import { WorkspaceFloor } from '../../../../app/(sanctuary)/workspace/WorkspaceFloor';
-import { Notice } from '../../../surface/audience';
+import { Notice } from '../../../surface/Notice';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/')({

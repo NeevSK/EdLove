@@ -11,7 +11,6 @@ import { resolveSanctuaryDevSession } from '../../lib/sanctuary/devSession';
 import { createBrowserSupabaseClient } from '../../lib/supabase/browser';
 import { ACTIVE_BOND_COOKIE, authoritativeFacts, readV1Entry } from '../../lib/sanctuary/v1Entry';
 import { type Access, AccessScope } from './access';
-import type { Roles } from './session';
 import type { AccountHome, Sources } from './sources';
 
 /** A signed-in person: Supabase proves who they are, Sanctuary says what they may do. */
@@ -146,6 +145,3 @@ async function accessToken(): Promise<string | undefined> {
 }
 
 export const accountHome: AccountHome = { kind: 'here' };
-
-/** An account changes role by changing bond, outside the page. */
-export const roles: Roles | undefined = undefined;

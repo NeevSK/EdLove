@@ -1,8 +1,8 @@
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useLayoutEffect, useRef } from 'react';
 
-/** The account steps a screen can send someone to while their access is not ready. */
-type AccountStep = '/welcome' | '/onboarding' | '/account-recovery' | '/recovery';
+/** Where a screen can send someone it should not show: an account step, or their own Workspace. */
+type Destination = '/welcome' | '/onboarding' | '/account-recovery' | '/recovery' | '/workspace';
 
 /**
  * Sends the person to an account step, once, with the address they were on when it was decided.
@@ -10,7 +10,7 @@ type AccountStep = '/welcome' | '/onboarding' | '/account-recovery' | '/recovery
  * the current location is already the destination: a `returnTo` read from it nests the step inside
  * itself on every render until the tab runs out of memory.
  */
-export function GoTo({ to, returnTo }: Readonly<{ to: AccountStep; returnTo?: string }>) {
+export function GoTo({ to, returnTo }: Readonly<{ to: Destination; returnTo?: string }>) {
   const navigate = useNavigate();
   const sent = useRef(false);
   useLayoutEffect(() => {

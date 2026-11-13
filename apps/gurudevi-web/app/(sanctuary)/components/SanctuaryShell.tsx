@@ -33,7 +33,11 @@ import {
   withSanctuaryRoutePrefix,
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
-import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatureRegistry';
+import {
+  isOfferedTo,
+  WEB_WORKSPACE_FEATURES,
+  workspaceFeatureAt,
+} from '../workspace/workspaceFeatureRegistry';
 import {
   ActionFab,
   FabMenu,
@@ -162,8 +166,12 @@ export function SanctuaryShell({
     ];
   }, [navigationPrefix, router]);
   const quickAccessOptions = useMemo(
-    () => quickAccessDestinations.filter((destination) => !isExploreMode || destination.explore),
-    [isExploreMode],
+    () =>
+      quickAccessDestinations.filter(
+        (destination) =>
+          (!isExploreMode || destination.explore) && isOfferedTo(activeCapacity, destination.href),
+      ),
+    [activeCapacity, isExploreMode],
   );
   const [quickAccessIds, setQuickAccessIds] = useState<QuickAccessId[]>(() =>
     isExploreMode
@@ -369,7 +377,7 @@ export function SanctuaryShell({
 
   const openQuickAccessDestination = useCallback(
     (href: string) => {
-      const feature = WORKSPACE_FEATURES.find((item) => item.href === href);
+      const feature = workspaceFeatureAt(href);
       const route = feature?.id === 'attendance' ? '/workspace?task=attendance' : href;
       if (feature) {
         const result = workspaceWorkbench.open({
@@ -609,9 +617,10 @@ export function SanctuaryShell({
             {pathname.startsWith('/workspace/') ? (
               <WorkspaceRouteTabs
                 pathname={pathname}
+                capacity={activeCapacity}
                 isExploreMode={isExploreMode}
                 onOpenQuickAccessItem={(item) => {
-                  const feature = WORKSPACE_FEATURES.find((candidate) => candidate.id === item.id);
+                  const feature = WEB_WORKSPACE_FEATURES.find((candidate) => candidate.id === item.id);
                   if (feature) openQuickAccessDestination(feature.href);
                 }}
               />
@@ -805,6 +814,7 @@ export function SanctuaryShell({
       />
 
       <CommandPalette
+        capacity={activeCapacity}
         isOpen={commandPaletteOpen}
         navigationPrefix={navigationPrefix}
         onClose={() => setCommandPaletteOpen(false)}

@@ -1,7 +1,7 @@
 import { GoTo } from '../surface/navigation';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
-import { AudienceGate } from '../surface/audience';
+import { FloorGate } from '../surface/floor';
 import { SanctuaryShell } from '../../app/(sanctuary)/components/SanctuaryShell';
 import { unreadCount } from '../../app/(sanctuary)/notifications/notificationFeed';
 import { useAccess } from '../surface/access';
@@ -45,12 +45,12 @@ function Frame({ session }: { readonly session: Session }) {
       navigationPrefix=""
       showAccountNavigation
       isExploreMode={session.surface === 'explore'}
-      activeCapacity={session.surface === 'explore' ? undefined : session.capacity}
+      activeCapacity={session.capacity}
       unreadNotifications={unreadCount(notifications)}
     >
-      <AudienceGate>
+      <FloorGate>
         <Outlet />
-      </AudienceGate>
+      </FloorGate>
     </SanctuaryShell>
   );
 }

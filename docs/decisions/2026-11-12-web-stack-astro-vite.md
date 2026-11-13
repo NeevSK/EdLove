@@ -185,11 +185,11 @@ Rules that keep it one app:
   in place while people move between places. `_account` holds sign-in, recovery, onboarding and the
   email-link routes; where accounts live elsewhere (`accountHome`: Explore) it opens the same address
   on sanctuary. `_dev` holds labs and the kit, which are not found in a production build.
-- A place only some roles may open says so in its route: `...forAudience(staff, '…')`, with the
-  rules in `lib/sanctuary/capacityAccess.ts`. One rule serves both surfaces: `_app` shows the place,
-  a restricted notice, or (where the session can switch roles, as Explore can) an offer to view it
-  as a role that can; a place none of the surface's roles can open is not found before it loads.
-  The API is what enforces access; this decides what the screen shows.
+- What a person is offered follows [places, roles and features](../architecture/places-roles-and-features.md):
+  each capacity has its own Workspace floor (`@repo/core/logic/places/workspaceCatalog`), every menu
+  lists that floor, and `FloorGate` in `_app` sends a link to another floor's feature to the
+  person's own Workspace. Nothing on screen says a place is not for someone. The API is what
+  enforces access; this decides what the screen offers.
 - A new kind of data gets a `Source` in `Sources`, with an Explore answer and an API answer, before a
   screen reads it.
 - `check-web-stack` counts the screens that still ask (`isExplore`, `mode === 'explore'`, ...): 147 on
@@ -359,10 +359,10 @@ Open (engineering):
 ## Decided by the owner (13 Nov)
 
 - **Explore is for the people a school is made of:** teacher, student, principal and guardian. The
-  founder and researcher personas are gone. Each place shows to the roles it is for, under the same
-  rule as sanctuary accounts: a teacher who opens tuition is told it is for school leaders and
-  guardians, and offered *View as School Leader*. A place none of the four can open (founder
-  command, the labs) does not exist on Explore: it is not found.
+  founder and researcher personas are gone. A visitor sees their persona's Workspace floor, as an
+  account sees its capacity's; a link to another floor's feature opens their own Workspace.
+- **Every capacity has its own Workspace floor** (owner, 13 Nov), developers and section heads
+  included; founder, principal and teacher come first. Self features are for everyone for now.
 - **Every contact address is `@gurudevi.lk`,** including the mobile help sheet, which now reads the
   shared definition. EdLove's own addresses (`@edlove.org`) belong to that site and are unchanged.
 

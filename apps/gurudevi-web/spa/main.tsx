@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { getQueryClient } from '../lib/query/getQueryClient';
 import '../app/styles.css';
 import { routeTree } from './generated/routeTree.gen';
-import { accountHome, roles, Surface, sources } from '#surface';
+import { accountHome, Surface, sources } from '#surface';
 import { QueryProvider } from '../lib/query/QueryProvider';
 
 // `#surface` is the surface this build serves (spa/surface/explore.tsx or account.tsx, chosen in
@@ -13,7 +13,7 @@ import { QueryProvider } from '../lib/query/QueryProvider';
 // data comes from change.
 const router = createRouter({
   routeTree,
-  context: { queryClient: getQueryClient(), sources, accountHome, roles },
+  context: { queryClient: getQueryClient(), sources, accountHome },
   defaultPreload: 'intent',
   // Loaders read through the query cache, so the router never holds a second copy of the data.
   defaultPreloadStaleTime: 0,

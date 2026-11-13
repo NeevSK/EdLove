@@ -6,24 +6,24 @@ import { ScrollArea } from '@repo/ui/components/web';
 import { useTranslation } from '@/lib/i18n';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useWorkbenchScope } from '../../../lib/workbench/WorkbenchScope';
-import type { WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
 import styles from './workspace-nav.module.css';
-import { filterWorkspaceFeatures, WORKSPACE_FEATURES } from './workspaceFeatureRegistry';
+import { type WorkspaceFeatureItem, workspaceFeaturesFor } from './workspaceFeatureRegistry';
 
 interface WorkspaceNavProps {
   activeId?: string;
-  roleFilter?: WorkspaceRoleFilter;
+  /** The person's capacity: the nav lists the features on its Workspace floor. */
+  capacity: string | null | undefined;
 }
 
-export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<WorkspaceNavProps>) {
+export function WorkspaceNav({ activeId, capacity }: Readonly<WorkspaceNavProps>) {
   const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
   const workbench = useDomainWorkbench('workspace', { usageScope: useWorkbenchScope() });
   const [capacityMessage, setCapacityMessage] = useState('');
-  const visibleItems = filterWorkspaceFeatures(WORKSPACE_FEATURES, roleFilter);
+  const visibleItems = workspaceFeaturesFor(capacity);
 
-  function openFeature(item: (typeof WORKSPACE_FEATURES)[number]) {
+  function openFeature(item: WorkspaceFeatureItem) {
     const route = item.id === 'attendance' ? '/workspace?task=attendance' : item.href;
     const localizedTitle = t(`workspace.features.${item.id}`);
     const displayTitle = localizedTitle !== `workspace.features.${item.id}` ? localizedTitle : item.label;

@@ -24,18 +24,7 @@ export interface Session {
     entityType: string;
     roles: readonly string[];
   }>;
-  /**
-   * Other roles this person can switch to here. A visitor to Explore can try any of them; an account
-   * changes role by changing bond, which is not offered from inside a page.
-   */
-  readonly roles?: Roles;
 }
-
-/** Roles a person can switch between without leaving the page. */
-export type Roles = Readonly<{
-  choices: readonly Readonly<{ capacity: string; label: string }>[];
-  choose: (capacity: string) => void;
-}>;
 
 const SessionContext = createContext<Session | null>(null);
 
