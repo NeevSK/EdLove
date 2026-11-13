@@ -53,15 +53,22 @@ An attempt is a list of steps, append-only and keyed by ids made on the device:
   - Long ticks count as seeks, going backwards is always free, and answered cues don't reopen when rewatching.
   - Every behaviour is a policy (`DEFAULT_CUE_POLICY`).
   - It works with any player: `expo-video` on mobile, `<video>` on the web.
-- **Not built yet:** in a post (poll), in a relation's thread (shared to one learner), in a reading (at a place in a document), and live in class (everyone at once, with the teacher pacing). Live needs a realtime or local-network decision first.
+- **Live in class** (`live.ts`, `liveTransport.ts`): the teacher's device hosts, opens a question, takes everyone's answers, closes it when time is up and reveals the counts.
+  - The host holds the only state. Snapshots carry a sequence number, and deadlines travel as time remaining, so wrong device clocks still agree.
+  - Answers are checked, acknowledged and idempotent. Unacknowledged answers are resent after a reconnect, and every answer is also kept in the participant's own journal for normal sync.
+  - Messages stay under 200 bytes.
+  - Transports are tried in order: `internet`, then `local-network` (school Wi-Fi or the teacher's own hotspot, found by mDNS, works between Android and iPhone), then `nearby` (Bluetooth and Wi-Fi Direct, only when the class is all one platform, because Google Nearby and Apple Multipeer don't connect across).
+  - Candidate adapters, not yet added: `react-native-tcp-socket` 6.4.3 with `react-native-zeroconf` 0.17.7, and `expo-nearby-connections` 1.1.1 (needs Nitro Modules).
+- **Not built yet:** in a post (poll), in a relation's thread (shared to one learner), and in a reading (at a place in a document).
 
 ## Not built yet
 
 1. **The runner reads a `ModePolicy`.** `QuizRunner` takes the policy and writes journal steps (`hintsUsed` reaches marking today but is dropped from `QuizAttempt`).
 2. **The video host:** a native overlay on `expo-video` and a web overlay on `<video>`, both driving `advanceCues`.
 3. **New interaction kinds the engine lacks:** ordering, matching, drag the words, mark the words, hotspot on an image. Each needs a rubric kind and a native and a web control.
-4. **The H5P converter:** `content.json` of the question types into a `FormSchema`, with the WebView player (`@repo/library/h5p`) as the fallback for everything else.
+4. **The live transports** in the app, behind `LiveTransport`, and the host and participant screens.
+5. **The H5P converter:** `content.json` of the question types into a `FormSchema`, with the WebView player (`@repo/library/h5p`) as the fallback for everything else.
 
 ## Evidence
 
-G1 only: `vitest run src/activity src/quiz` passes 51 tests (19 new). tsc shows no errors in these files (44 pre-existing errors elsewhere in the package). The tests prove the rules under substituted time and answers. They don't prove a real player, a device or the screens.
+G1 only: `vitest run src/activity src/quiz` passes 65 tests. tsc shows no errors in these files (44 pre-existing errors elsewhere in the package). The tests prove the rules under substituted time and answers. They don't prove a real player, a device or the screens.
