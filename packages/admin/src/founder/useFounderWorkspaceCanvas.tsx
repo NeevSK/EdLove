@@ -1,13 +1,13 @@
 import { View, Text, Pressable } from 'react-native';
 import { useDomainRollout } from '@repo/core/hooks';
-import { WORKSPACE_CANVAS_ZONES } from '@repo/core/logic';
+import { areasOfSurfaces, nextAreaOf } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 import type {
   ResolvedWorkspaceSurface,
   School,
   WorkspaceSurfaceDefinition,
   WorkspaceSwitcherTarget,
-  WorkspaceZoneId,
+  AreaId,
 } from '@repo/core/types';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';
 import {
@@ -80,11 +80,6 @@ type FounderEcosystemStats = {
   submissions_7d: number;
 } | null;
 
-function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
-  const currentIndex = WORKSPACE_CANVAS_ZONES.indexOf(zone);
-  const nextIndex = (currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
-  return WORKSPACE_CANVAS_ZONES[nextIndex] as WorkspaceZoneId;
-}
 
 function StatPill({ label, value }: { label: string; value: string | number }) {
   return (
@@ -749,7 +744,7 @@ export function FounderWorkspaceCanvas({
     order: FounderWorkspaceSurfaceId[];
     hidden: FounderWorkspaceSurfaceId[];
     pinned: FounderWorkspaceSurfaceId[];
-    zoneBySurface: Partial<Record<FounderWorkspaceSurfaceId, WorkspaceZoneId>>;
+    zoneBySurface: Partial<Record<FounderWorkspaceSurfaceId, AreaId>>;
     workspaceId: string;
     userId: string;
     updatedAt: string;
@@ -757,7 +752,7 @@ export function FounderWorkspaceCanvas({
   surfaces: FounderResolvedSurface[];
   onToggleHidden: (id: FounderWorkspaceSurfaceId, hidden: boolean) => void;
   onTogglePinned: (id: FounderWorkspaceSurfaceId, pinned: boolean) => void;
-  onMoveToNextZone: (id: FounderWorkspaceSurfaceId, zone: WorkspaceZoneId) => void;
+  onMoveToNextZone: (id: FounderWorkspaceSurfaceId, zone: AreaId) => void;
 }) {
   if (!layout) return null;
 
@@ -779,7 +774,7 @@ export function FounderWorkspaceCanvas({
       getSurfaceMetadata={(surface) => (surface as FounderResolvedSurface).metadata}
       renderSurfaceActions={(surface) => {
         const typedSurface = surface as FounderResolvedSurface;
-        const nextZone = getNextZone(typedSurface.zone);
+        const nextZone = nextAreaOf(typedSurface.zone, areasOfSurfaces(surfaces));
 
         return (
           <View className="flex-row items-center flex-wrap gap-3">

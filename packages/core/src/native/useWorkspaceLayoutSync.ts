@@ -28,7 +28,7 @@ import type {
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
-  WorkspaceZoneId,
+  AreaId,
 } from '@repo/core/types';
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
@@ -102,7 +102,7 @@ export interface UseWorkspaceLayoutSyncResult<
   setSurfaceHidden: (surfaceId: TSurfaceId, hidden: boolean) => void;
   setSurfacePinned: (surfaceId: TSurfaceId, pinned: boolean) => void;
   toggleSurfacePinned: (surfaceId: TSurfaceId) => void;
-  setSurfaceZone: (surfaceId: TSurfaceId, zone: WorkspaceZoneId) => void;
+  setSurfaceZone: (surfaceId: TSurfaceId, zone: AreaId) => void;
   setAppearance: (appearance: NonNullable<WorkspaceLayout<TSurfaceId>['appearance']>) => void;
   resetAppearance: () => void;
   setGroupOrder: (groupOrder: string[]) => void;

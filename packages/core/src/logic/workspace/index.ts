@@ -10,7 +10,8 @@ export {
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
-  WORKSPACE_CANVAS_ZONES,
+  areasOfSurfaces,
+  nextAreaOf,
 } from '@repo/core/logic/workspace/canvas';
 export {
   buildWorkspaceLayoutStorageKey,

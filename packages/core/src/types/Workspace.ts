@@ -1,4 +1,10 @@
-export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'private';
+/**
+ * An area on a room's floor. There is no fixed set: each room names its own
+ * areas in its furniture list (a room may call one "Today" and mark it smart).
+ * Saved layouts written with the old five zones still load, because those
+ * names are just strings a room may or may not use.
+ */
+export type AreaId = string;
 
 export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night' | 'none';
 export type WorkspaceAppearanceMotion = 'off' | 'subtle';
@@ -93,7 +99,7 @@ export interface WorkspaceSurfaceDefinition<
   workspaceId: string;
   capabilityKey: TCapabilityKey;
   ownerPackage: WorkspaceOwnerPackage;
-  defaultZone: WorkspaceZoneId;
+  defaultZone: AreaId;
   defaultOrder: number;
   title?: string;
   hiddenByDefault?: boolean;
@@ -111,7 +117,7 @@ export interface WorkspaceLayout<TSurfaceId extends string = string> {
   order: TSurfaceId[];
   hidden: TSurfaceId[];
   pinned: TSurfaceId[];
-  zoneBySurface: Partial<Record<TSurfaceId, WorkspaceZoneId>>;
+  zoneBySurface: Partial<Record<TSurfaceId, AreaId>>;
   groupOrder?: string[];
   isDefault?: boolean;
   surfaceMetadata?: Record<string, unknown>;
@@ -181,7 +187,7 @@ export interface ResolvedWorkspaceSurface<
   title: string;
   pinned: boolean;
   hidden: boolean;
-  zone: WorkspaceZoneId;
+  zone: AreaId;
   order: number;
   subtitle?: string;
   summary?: string;
