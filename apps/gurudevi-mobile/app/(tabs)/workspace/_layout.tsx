@@ -4,6 +4,13 @@ import { Stack } from 'expo-router';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
+/**
+ * The overview sits under every screen of this stack, so a deep link into one of them still has
+ * somewhere to go back to (expo-router 58 `anchor`; pass `withAnchor` when navigating in from
+ * another stack).
+ */
+export const unstable_settings = { anchor: 'index' };
+
 export default function WorkspaceLayout() {
   // Pages show the world's floor behind them; a modal sits over a page, so it wears the ground.
   const modal = {
