@@ -1,6 +1,7 @@
 export * from './arrange';
 export * from './bridge';
 export * from './config';
+export * from './controls';
 export * from './hierarchy';
 export * from './layout';
 export * from './lint';

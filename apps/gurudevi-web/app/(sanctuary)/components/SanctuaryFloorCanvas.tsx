@@ -28,6 +28,7 @@ import { FloorErrorBoundary } from './FloorErrorBoundary';
 import { FloorReception } from './FloorReception';
 import { FloorStudioDrawer, type FurnitureDefinition } from './FloorStudioDrawer';
 import { GroundLayers, sceneRoomOf } from './GroundLayers';
+import { RoomFloorBody, type RoomFloorProps } from './RoomFloorBody';
 import { WorkspaceLayoutRecoveryControl } from './WorkspaceLayoutRecoveryControl';
 
 export type SanctuaryFloorCanvasRenderProps = {
@@ -75,7 +76,12 @@ export interface SanctuaryFloorCanvasProps {
   renderExtra?: () => React.ReactNode;
   customScene?: React.ReactNode;
   customSvg?: React.ReactNode;
-  children: React.ReactNode | ((props: SanctuaryFloorCanvasRenderProps) => React.ReactNode);
+  /**
+   * The room drawn by the floor engine (one engine for web and phone, following the world).
+   * When given, it is drawn in place of `children`; rooms move over one at a time.
+   */
+  floor?: RoomFloorProps;
+  children?: React.ReactNode | ((props: SanctuaryFloorCanvasRenderProps) => React.ReactNode);
 }
 
 export function SanctuaryFloorCanvas({
@@ -105,6 +111,7 @@ export function SanctuaryFloorCanvas({
   showPageActions = true,
   customScene,
   customSvg,
+  floor,
   children,
 }: Readonly<SanctuaryFloorCanvasProps>) {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
@@ -332,17 +339,21 @@ export function SanctuaryFloorCanvas({
       <FloorErrorBoundary
         fallbackTitle={`${domain.charAt(0).toUpperCase() + domain.slice(1)} Floor Experience Temporarily Paused`}
       >
-        {typeof children === 'function'
-          ? (children as (props: SanctuaryFloorCanvasRenderProps) => React.ReactNode)({
-              isModuleVisible: (id: string) => {
-                if (furnitureItems.length === 0) return true;
-                return activeGroupOrder.length === 0 || activeGroupOrder.includes(id);
-              },
-              stagedItems: furnitureItems,
-              isArrangeMode,
-              toggleArrangeMode: () => setIsArrangeMode((prev) => !prev),
-            })
-          : children}
+        {floor ? (
+          <RoomFloorBody worldId={activeWorld} {...floor} />
+        ) : typeof children === 'function' ? (
+          (children as (props: SanctuaryFloorCanvasRenderProps) => React.ReactNode)({
+            isModuleVisible: (id: string) => {
+              if (furnitureItems.length === 0) return true;
+              return activeGroupOrder.length === 0 || activeGroupOrder.includes(id);
+            },
+            stagedItems: furnitureItems,
+            isArrangeMode,
+            toggleArrangeMode: () => setIsArrangeMode((prev) => !prev),
+          })
+        ) : (
+          children
+        )}
       </FloorErrorBoundary>
 
       <FloorStudioDrawer
