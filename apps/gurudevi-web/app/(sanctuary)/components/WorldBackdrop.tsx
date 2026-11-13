@@ -28,7 +28,7 @@ const FOCUS_ROUTES: readonly RegExp[] = [
   /^\/school\/[^/]+\/articles\//,
 ];
 
-/** The rooms themselves: built from cards, so they keep the full scene with no veil. */
+/** The rooms themselves: their front floors keep the full scene (presence 'full'). */
 const ROOM_ROUTES: readonly RegExp[] = [/^\/(self|workspace|community|library)\/?$/];
 
 export function groundStageOf(pathname: string): GroundStage {
@@ -71,6 +71,7 @@ export function WorldBackdrop({ isExplore = false }: Readonly<{ isExplore?: bool
       data-ground-drawn={plan.surface}
       data-ground-liveliness={policy.liveliness}
       data-ground-stage={stage}
+      data-ground-presence={plan.presence}
       data-ground-strength={policy.strength[stage]}
       data-testid="world-backdrop"
       style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}

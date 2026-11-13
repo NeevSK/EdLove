@@ -8,13 +8,16 @@ import type {
 import { describe, expect, it } from 'vitest';
 import {
   GROUND_OPTIONS,
+  GROUND_PRESENCE_VEILS,
   type GroundAllowance,
   type GroundStage,
   type GroundTexture,
   groundControls,
   groundPolicyOf,
+  groundPresenceOf,
   NOTHING_ALLOWED,
   planGround,
+  veilStrength,
 } from './groundPlan';
 
 const photo = (id: string): WorkspaceWallpaper => ({
@@ -102,7 +105,8 @@ describe('every combination of floor settings gives a plan that can be drawn', (
           // What was asked is kept, so the studio still shows the person's choice.
           expect(plan.asked, where).toBe(look.groundMode ?? (look.wallpaper ? 'image' : 'live'));
           // Rooms keep the full scene; no veil.
-          expect(plan.veil, where).toBe(0);
+          expect(plan.presence, where).toBe('full');
+          expect(plan.veil, where).toEqual([]);
           // Anything turned down says why.
           if (plan.asked === 'image' && plan.surface !== 'photo')
             expect(plan.notes.length, where).toBeGreaterThan(0);
@@ -141,7 +145,8 @@ describe('every combination of floor settings gives a plan that can be drawn', (
       expect(['none', 'washi-grain']).toContain(plan.texture);
       expect(plan.breathe).toBe(false);
       expect(plan.dim).toBe(plan.surface === 'photo');
-      expect(plan.veil).toBe(plan.surface === 'paper' ? 0 : 0.65);
+      expect(plan.presence).toBe('quiet');
+      expect(plan.veil).toEqual(plan.surface === 'paper' ? [] : GROUND_PRESENCE_VEILS.quiet);
       // Same world: the person's choice of ground and photo is kept.
       expect(plan.asked).toBe(planGround(look, [B], allow).asked);
       expect(plan.photo).toEqual(planGround(look, [B], allow).photo);
@@ -184,17 +189,38 @@ describe('every combination of floor settings gives a plan that can be drawn', (
       for (const stage of stages) {
         const plan = planGround(sky, [], allow, undefined, stage, policy);
         expect(plan.surface).toBe('still');
-        // A calm room keeps no veil (its cards carry the words); other screens keep the reading veil.
-        expect(plan.veil).toBe(stage === 'room' ? 0 : 0.65);
+        expect(plan.presence).toBe('quiet');
+        expect(plan.veil).toEqual(GROUND_PRESENCE_VEILS.quiet);
       }
     });
 
-    it('lively keeps the full ground everywhere, but never thins the reading veil', () => {
+    it('lively keeps the moving ground on reading screens too, still with the band veil under words', () => {
       const policy = groundPolicyOf({ liveliness: 'lively' });
       const focus = planGround(sky, [], allow, undefined, 'focus', policy);
       expect(focus.surface).toBe('live');
-      expect(focus.veil).toBe(0.65);
-      expect(planGround(sky, [], allow, undefined, 'screen', policy).veil).toBe(0.45);
+      expect(focus.presence).toBe('band');
+      expect(veilStrength(focus.veil)).toBeGreaterThanOrEqual(0.9);
+    });
+
+    it('presence is one rule: rooms full, other screens band, calm quiet (same as the phone)', () => {
+      const balanced = groundPolicyOf({});
+      expect(groundPresenceOf('room', balanced)).toBe('full');
+      expect(groundPresenceOf('screen', balanced)).toBe('band');
+      expect(groundPresenceOf('focus', balanced)).toBe('quiet');
+      for (const stage of stages) {
+        expect(groundPresenceOf(stage, groundPolicyOf({ liveliness: 'calm' }))).toBe('quiet');
+      }
+    });
+
+    it('veils only thicken from full to band to quiet at the reading area (below the header)', () => {
+      const at = (veil: readonly (readonly [number, number])[], y: number) => {
+        let alpha = 0;
+        for (const [pos, a] of veil) if (pos <= y) alpha = a;
+        return alpha;
+      };
+      expect(GROUND_PRESENCE_VEILS.full).toEqual([]);
+      expect(at(GROUND_PRESENCE_VEILS.quiet, 0)).toBeGreaterThan(at(GROUND_PRESENCE_VEILS.band, 0));
+      expect(at(GROUND_PRESENCE_VEILS.band, 0.5)).toBeGreaterThanOrEqual(0.9);
     });
 
     it('the device allowance still applies under every choice', () => {

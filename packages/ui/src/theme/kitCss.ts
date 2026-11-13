@@ -370,6 +370,7 @@ const BASE_CSS = `
 .gd-living-ground[data-atmosphere="ambient"]::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,color-mix(in srgb, var(--w-glow) 15%, transparent) 0%,transparent 100%);opacity:0.55;pointer-events:none;z-index:0}
 .gd-living-ground-surface{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
 .gd-living-ground-surface .gd-light-texture{display:block;opacity:var(--w-living-texture-opacity,0.48);mix-blend-mode:multiply}
+.gd-living-ground[data-ground-drawn] .gd-living-ground-surface .gd-paper-rect{display:none!important}
 .gd-living-ground-surface .gd-dark-texture{display:none}
 .gd-living-ground-surface .gd-living-vein-group,.gd-living-ground-surface .gd-world-motif{opacity:var(--w-vein-opacity,0.38)}
 .gd-living-ground-surface :is(.gd-vein-shadow,.gd-motif-shadow){stroke:color-mix(in srgb, var(--w-ink) 16%, transparent);fill:none}

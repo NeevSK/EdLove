@@ -98,4 +98,22 @@ describe('every screen stands on the world ground, drawn once by the shell', () 
     expect(backdrop.dataset.groundLiveliness).toBe('balanced');
     expect(backdrop.dataset.groundStrength).toBe('calm');
   });
+
+  it('presence follows the one shared rule: room full, screen band, reading quiet', () => {
+    for (const [path, presence] of [
+      ['/self', 'full'],
+      ['/profile', 'band'],
+      ['/library/reader/abc', 'quiet'],
+    ] as const) {
+      pathname = path;
+      render(<WorldBackdrop />);
+      const backdrop = screen.getByTestId('world-backdrop');
+      expect(backdrop.dataset.groundPresence, path).toBe(presence);
+      const veil = backdrop.querySelector<HTMLElement>('[data-layer="ground-veil"]');
+      // Before verger is read the ground is the world's paper, which needs no veil.
+      if (backdrop.dataset.groundDrawn === 'paper') expect(veil).toBeNull();
+      cleanup();
+    }
+  });
 });
+
