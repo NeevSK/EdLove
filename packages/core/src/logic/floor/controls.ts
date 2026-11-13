@@ -21,3 +21,18 @@ export function floorControlsOf(experience: GurudeviExperience | null | undefine
       : 'none';
   return { detail: DETAIL[experience.quality], motion };
 }
+
+/** The phone stage's tier (verger's reading as the phone shell keeps it). */
+export type FloorStageTier = 'rich' | 'middle' | 'floor' | 'bare';
+
+const STAGE: Record<FloorStageTier, FloorControls> = {
+  rich: { detail: 'rich', motion: 'full' },
+  middle: { detail: 'balanced', motion: 'reduced' },
+  floor: { detail: 'essential', motion: 'reduced' },
+  bare: { detail: 'essential', motion: 'none' },
+};
+
+/** The same dials read from the phone's stage tier. */
+export function floorControlsOfStage(tier: FloorStageTier | string | undefined): FloorControls {
+  return STAGE[tier as FloorStageTier] ?? { detail: 'balanced', motion: 'reduced' };
+}

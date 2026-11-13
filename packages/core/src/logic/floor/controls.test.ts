@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { GurudeviExperience } from '../../verger/experience';
-import { floorControlsOf } from './controls';
+import { floorControlsOf, floorControlsOfStage } from './controls';
 
 const exp = (over: Partial<GurudeviExperience>) => over as GurudeviExperience;
 
@@ -18,5 +18,10 @@ describe('floorControlsOf: verger sets the floor dials on both platforms', () =>
         exp({ quality: 'essential', allowRichAnimation: false, allowSubtleAnimation: false }),
       ),
     ).toEqual({ detail: 'essential', motion: 'none' });
+  });
+  it('reads the phone stage tier the same way', () => {
+    expect(floorControlsOfStage('rich')).toEqual({ detail: 'rich', motion: 'full' });
+    expect(floorControlsOfStage('bare')).toEqual({ detail: 'essential', motion: 'none' });
+    expect(floorControlsOfStage(undefined)).toEqual({ detail: 'balanced', motion: 'reduced' });
   });
 });
