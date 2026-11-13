@@ -2,8 +2,8 @@ import { View, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native';
 import { Cloud, FileSpreadsheet, FileText, Layers, Plus, ScanLine } from '@repo/ui/icons';
-import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export type ToolKind = 'spreadsheet' | 'pdf' | 'ocr' | 'imageToPdf' | 'cloudExport';
 
@@ -26,7 +26,7 @@ interface ToolsHubItem {
 
 function ToolsHubScreen({ importByKind }: ToolsHubScreenProps) {
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
 
   const tools: ToolsHubItem[] = [
     {
@@ -51,7 +51,7 @@ function ToolsHubScreen({ importByKind }: ToolsHubScreenProps) {
         </View>
         <View className="gap-3">
           {tools.map((tool) => (
-            <Pressable key={tool.key} onPress={() => router.push(tool.href)} className="w-full">
+            <Pressable key={tool.key} onPress={() => router.follow(tool.href, 'library-tools')} className="w-full">
               <View className="flex-row items-center gap-3 rounded-generous border border-phase-border bg-phase-surface p-4 active:opacity-80">
                 <View
                   style={{ backgroundColor: `${tool.accent}22` }}

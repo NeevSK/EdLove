@@ -4,7 +4,7 @@ import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import { useAuthorityStatus } from '@repo/core/logic/permissions/hooks/useAuthority';
 import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { GoTo } from '@/navigation/GoTo';
+import { GoTo } from '@repo/ui/components/native/navigation';
 import { resolveWorkspaceRoute } from '@/lib/workspace/routeResolution';
 
 export { RouteErrorBoundary as ErrorBoundary };

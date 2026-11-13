@@ -3,6 +3,7 @@ import { resolveTemporalCoordinates, resolveTemporalIntent } from '@repo/core/lo
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import { Link, useRouter } from '@tanstack/react-router';
+import { useNavigator } from '../../../lib/navigation/useNavigator';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
 import {
@@ -127,6 +128,7 @@ export function WorkspaceFloor({
   task: requestedTask,
 }: WorkspaceFloorProps) {
   const router = useRouter();
+  const navigator = useNavigator();
   const exploreCapacity = useExploreCapacity();
   const normalizedCapacity = (mode === 'explore' && !isDevPreview ? exploreCapacity : capacity)?.toLowerCase();
   const voice = workspaceVoice(normalizedCapacity);
@@ -464,7 +466,7 @@ export function WorkspaceFloor({
       setError('Close another Workspace task before opening this tool.');
       return;
     }
-    void router.navigate({ href: feature.href });
+    navigator.follow(feature.href, 'workspace-feature');
   }
 
   function focusTask(task: WorkbenchTaskDescriptor) {
@@ -473,7 +475,7 @@ export function WorkspaceFloor({
       setOverview(false);
       return;
     }
-    if (task.route !== '/workspace') void router.navigate({ href: task.route });
+    if (task.route !== '/workspace') navigator.follow(task.route, 'workspace-task');
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {

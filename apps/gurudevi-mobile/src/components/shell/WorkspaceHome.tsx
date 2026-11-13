@@ -28,7 +28,7 @@ import { WorldEnter } from '@repo/ui/theme/native';
 import type { ComponentType } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const kit = (Glyph: unknown) => Glyph as ComponentType<KitIconProps>;
 

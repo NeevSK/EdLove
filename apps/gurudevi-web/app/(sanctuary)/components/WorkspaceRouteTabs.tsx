@@ -5,6 +5,7 @@ import {
   toIsoDate,
 } from '@repo/core/logic/workbench';
 import { useRouter } from '@tanstack/react-router';
+import { useNavigator } from '../../../lib/navigation/useNavigator';
 import { useEffect, useMemo } from 'react';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
@@ -28,6 +29,7 @@ export function WorkspaceRouteTabs({
   onOpenQuickAccessItem: (item: QuickAccessItem) => void;
 }>) {
   const router = useRouter();
+  const navigator = useNavigator();
   const usageScope = isExploreMode ? 'explore' : 'sanctuary';
   const features = useMemo(() => workspaceFeaturesFor(capacity), [capacity]);
   const items = features.map((feature) => feature.id);
@@ -80,7 +82,7 @@ export function WorkspaceRouteTabs({
 
   function focusTask(task: WorkbenchTaskDescriptor) {
     workbench.focus(task.taskKey);
-    if (pathname !== task.route) void router.navigate({ href: task.route });
+    if (pathname !== task.route) navigator.follow(task.route, 'workspace-task');
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {
@@ -92,7 +94,7 @@ export function WorkspaceRouteTabs({
     }
     if (result.kind === 'focused-task') {
       const nextTask = result.state.tasks.find((item) => item.taskKey === result.taskKey);
-      if (nextTask) void router.navigate({ href: nextTask.route });
+      if (nextTask) navigator.follow(nextTask.route, 'workspace-task');
     }
   }
 

@@ -72,7 +72,7 @@ This table lives in `NAVIGATION_POLICY.presentation`.
 
 ## One checked way to move (mobile)
 
-Every screen change on mobile goes through `useNavigator()` (`apps/gurudevi-mobile/src/navigation/navigator.ts`). `useFlowNavigator` and `<GoTo>` are built on it. It has the expo-router method names, so moving a screen onto it is a one-line change.
+Every native screen change, in the app and in the shared packages, goes through `useNavigator()` from `@repo/ui/components/native/navigation`. That is its own export path, so importing it doesn't load the whole kit. `useFlowNavigator` (mobile) and `<GoTo>` are built on it. It has the expo-router method names, so moving a screen onto it is a one-line change.
 
 | Call | For | Checked by |
 | --- | --- | --- |
@@ -97,9 +97,25 @@ A refused destination never reaches the router. It is reported with its path onl
 
 **Deep links** (`app/+native-intent.tsx`) keep their allowlist. An allowed prefix must also land on a real screen, otherwise the link fails closed to `/` without stashing a pending intent. Failures are reported instead of logged.
 
-**Ratchet:** `directRouterUse` in `tooling/ratchet.json` counts expo-router `router`, `useRouter` and `<Redirect>` imports outside `src/navigation`. It is 35 today, all in the shared feature packages (library, classroom, admin, ai, community, profile, the legacy UI and the retired `self`). The app itself has none, and the count only goes down. Packages can adopt the navigator once it moves into a shared native package. That needs `expo-router` as a dependency of that package and a `.tsx` export, which is a dependency decision.
+**Ratchets** (`tooling/ratchet.json`, both only go down):
+- `directRouterUse` counts expo-router `router`, `useRouter` and `<Redirect>` imports outside the kit's navigation folder. It is **14**: the retired `@repo/self` family, left alone; the old `safeBack` helper in `@repo/ui/utils/navigation`, now used only by `.web` reference files; and live `.web` files. The app and the live package screens have 0.
+- `uncheckedWebNavigation` counts web `navigate({ href: value })` calls outside `lib/navigation`. It is **2**, both in the private `components/workbench` playground.
 
-**Found while moving call sites:**
+## Places, not screen names
+
+Code that sends someone to a place names the place (`Place`, in `types/Place.ts`), and `PLACE_ROUTES` (`logic/places/placeRoutes.ts`) says where it is on each platform. The table is typed against both route catalogues and tested to land on a real screen. The workspace switcher's targets used to be React Navigation screen names (`'FounderDashboard'`, `'Classroom'`). They are now `{ kind: 'place', place: 'workspace' }`: switching a perspective chooses the floor Workspace shows, one per capacity (`workspaceCatalog`). The mobile shell's overview map uses the same table.
+
+## expo-router runs on React Navigation; app code doesn't speak it
+
+expo-router is built on React Navigation. It ships its own copy (`expo-router/react-navigation`), and since SDK 56 apps must not import `@react-navigation/*` themselves. That engine stays: stacks, tabs, `useFocusEffect`, `useIsFocused`, `usePreventRemove`, and `useNavigation()` for events and options (the SDK 58 guide keeps it for those). What is retired is the React Navigation style in app code: screen names, `navigation.navigate('Name', { screen, params })` and nested-state params. In SDK 58 `screen`, `params` and `initial` are ordinary params. None remain. The shared settings screen's `navigation` prop, which no caller passed, is gone with its `navigate('Community', { screen: 'UserProfile' })` branches.
+
+## The web
+
+Literal links use TanStack Router's typed `<Link to>` and `navigate({ to })`. A destination known only at runtime (a workspace task's route, a feature's href, a sign-in `returnTo`) goes through `useNavigator().follow(raw, source, op)` in `apps/gurudevi-web/lib/navigation`. That is the same `checkInternalHref` (web catalogue), with the same path-only reports and view transitions by policy. The web `useFlowNavigator` is built on it. `safeReturnPath` keeps the deep-link allowlist and now also requires a page that exists.
+
+**Tests resolve like Metro.** The mobile vitest config sets `resolve.dedupe: ['expo-router']`. Metro resolves one copy from the app (`disableHierarchicalLookup`), but a shared package would otherwise resolve its own copy in tests, and the test's mock would miss it.
+
+**Found while moving call sites** (the app first, then the packages: the profile `full`, `public`, `privacy-ledger` and `mute-hub` screens, five `/library/tools/*` screens, `/community/chat/[groupId]` and `/trube-lab` have no mobile screen; each now goes through `follow`, refused and reported until its screen exists):
 - The workspace switcher pushes React Navigation screen names (`'FounderDashboard'`, `'Classroom'`) as paths. They never resolved under expo-router; now they are refused and reported instead of opening the unmatched screen. Mapping each to a route is product data.
 - The push-notification handler navigated to the payload's path behind `as Href`. It now goes through `follow(..., 'notification')`.
 - The entry gate replayed pending intents to `/qr`, which no longer exists on mobile, and to arbitrary paths. Both are now checked.

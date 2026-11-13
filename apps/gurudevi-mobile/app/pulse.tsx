@@ -6,7 +6,7 @@ import { Button, Text } from '@repo/ui/components/native';
 import { alpha } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
 import { View } from 'react-native';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 

@@ -23,11 +23,12 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { v7 as uuidv7 } from 'uuid';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const ANNOTATION_COLORS: {
   color: 'yellow' | 'green' | 'blue' | 'pink' | 'orange' | 'purple';
@@ -60,7 +61,7 @@ interface ReaderScreenParams {
 export default function ReaderScreen() {
   const { resourceId, title, url, type = 'pdf' } = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
   const user = useAuthStore((s) => s.user);
   const { context } = usePermissions();
   const userId = user?.id || context.userId;

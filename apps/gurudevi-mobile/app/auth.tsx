@@ -2,7 +2,7 @@ import { WorldLoading } from '@repo/ui/components/native';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Suspense, useCallback } from 'react';
 import AuthScreen from '../src/screens/AuthScreen';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 

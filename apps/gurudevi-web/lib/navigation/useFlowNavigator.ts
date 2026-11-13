@@ -12,6 +12,7 @@ import {
 import { captureException } from '@repo/core/monitoring';
 import { useCanGoBack, useRouter } from '@tanstack/react-router';
 import { useMemo, useSyncExternalStore } from 'react';
+import { useNavigator } from './useNavigator';
 
 type StepOptions = Pick<NavigationContext, 'params' | 'condition'>;
 
@@ -35,16 +36,14 @@ const regularOnServer = (): SizeClass => 'regular';
  */
 export function useFlowNavigator() {
   const router = useRouter();
+  const navigator = useNavigator();
   const canGoBack = useCanGoBack();
   const sizeClass = useSyncExternalStore(subscribe, sizeClassNow, regularOnServer);
 
   return useMemo(() => {
-    const go = (op: NavigationOp, href: string) =>
-      void router.navigate({
-        href,
-        replace: op !== 'push',
-        viewTransition: NAVIGATION_POLICY.web.viewTransitions,
-      });
+    // Flow routes were checked by the resolver; the navigator checks again, so every destination
+    // passes the one guard before the router sees it.
+    const go = (op: NavigationOp, href: string) => navigator.follow(href, 'flow', op);
 
     const resolve = (flowId: FlowId, stepId: string, options: StepOptions) =>
       resolveFlowStep(flowId, stepId, { platform: 'web', sizeClass, ...options });
@@ -77,12 +76,12 @@ export function useFlowNavigator() {
       /** Loads a step's code and data before the person commits, as a link does on hover. */
       prefetch(flowId: FlowId, stepId: string, options: StepOptions = {}) {
         const resolved = resolve(flowId, stepId, options);
-        if (resolved.kind === 'go') void router.preloadRoute({ to: resolved.href });
+        if (resolved.kind === 'go') navigator.warm(resolved.href);
       },
       /** Back within the app; a no-op on the first page of the tab. */
       back() {
         if (canGoBack) router.history.back();
       },
     };
-  }, [router, canGoBack, sizeClass]);
+  }, [router, navigator, canGoBack, sizeClass]);
 }

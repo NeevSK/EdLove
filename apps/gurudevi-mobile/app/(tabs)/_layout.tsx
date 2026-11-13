@@ -74,7 +74,9 @@ import { useShellVariant } from '@/lib/navigation/shellVariant';
 import { useShellProbe } from '@/lib/navigation/useShellProbe';
 import { getNativeShellConfig } from '@/lib/responsiveShell';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
-import { useNavigator } from '@/navigation/navigator';
+import { PLACE_ROUTES } from '@repo/core/logic/places/placeRoutes';
+import type { WorkspaceSwitcherTarget } from '@repo/core/types/Workspace';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const EMPTY_DOMAIN_TABS: readonly string[] = [];
 
@@ -257,7 +259,7 @@ function TabsLayoutContent() {
   }, [title]);
 
   const handleSelectWorkspaceTarget = useCallback(
-    (target: any) => {
+    (target: WorkspaceSwitcherTarget) => {
       if (isLocalGuest) {
         showToast('Create an account to access shared workspaces.', 'info');
         return;
@@ -266,13 +268,7 @@ function TabsLayoutContent() {
       if (target.perspectiveId) {
         switchPerspective(target.perspectiveId);
       }
-      if (target.destination?.kind === 'route') {
-        // Destinations still carry screen names from React Navigation; the navigator refuses any that
-        // are not a path to a screen, and reports them, instead of opening an unmatched route.
-        router.follow(target.destination.name, 'workspace-switcher');
-      } else if (target.destination?.kind === 'tab') {
-        router.follow(`/(tabs)/${target.destination.name}`, 'workspace-switcher');
-      }
+      if (target.destination) router.push(PLACE_ROUTES.mobile[target.destination.place]);
     },
     [isLocalGuest, showToast, switchPerspective, router],
   );
@@ -349,17 +345,7 @@ function TabsLayoutContent() {
     setChromeVisible(true);
   }, [pathname, setChromeVisible]);
   const returnToDomainOverview = useCallback(() => {
-    const overviewRoute: Record<
-      typeof currentDomain,
-      '/workspace' | '/self' | '/library' | '/community' | '/profile'
-    > = {
-      workspace: '/workspace',
-      self: '/self',
-      library: '/library',
-      community: '/community',
-      profile: '/profile',
-    };
-    router.replace(overviewRoute[currentDomain]);
+    router.replace(PLACE_ROUTES.mobile[currentDomain]);
   }, [currentDomain, router]);
 
   // The shell's shape, chosen by the person in "You"; the rooms move to a rail on wide screens.

@@ -1,7 +1,6 @@
 ﻿import { View, Text, Pressable } from 'react-native';
 import { BookOpenText, MessagesSquare, School } from '@repo/ui/icons';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 import type React from 'react';
 import { GuardianRoomShell } from '@repo/admin/screens/guardian/GuardianRoomShell';
@@ -35,14 +34,14 @@ function BridgeCard({
 }
 
 export default function GuardianCommunicationBridgeScreen() {
-  const router = useRouter();
+  const router = useNavigator();
 
   return (
     <GuardianRoomShell
       eyebrow="School-Home Bridge"
       title="Communication Bridge"
       description="This room helps the guardian move from awareness into the right school, community, and resource spaces without losing context."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => router.back('/workspace')}
     >
       <View className="gap-3">
         <BridgeCard

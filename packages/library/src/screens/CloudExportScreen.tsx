@@ -17,17 +17,18 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking } from 'react-native';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 type Provider = 'google' | 'microsoft';
 
 export default function CloudExportScreen() {
   const params = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
   const { bytes, loading, error, detected } = useLoadedBytes(params);
 
   const [provider, setProvider] = useState<Provider>('google');

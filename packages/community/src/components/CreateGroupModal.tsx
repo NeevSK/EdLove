@@ -5,9 +5,10 @@ import EntityModal from '@repo/ui/components/EntityModal';
 import { Button, Dialog } from '@repo/ui/components/native';
 import { CircleCheck } from '@repo/ui/icons';
 import { hapticSuccess } from '@repo/ui/utils';
-import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { buildHref } from '@repo/core/routing/internalHref';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const router = useNavigator();
   const { t } = useTranslation();
   const [createdGroup, setCreatedGroup] = useState<any>(null);
 
@@ -66,7 +68,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   const handleEnterCircle = () => {
     onClose();
     if (createdGroup?.id) {
-      router.push(`/community/chat/${createdGroup.id}` as any);
+      router.follow(buildHref('/community/chat/[groupId]', { groupId: createdGroup.id }), 'community');
     }
   };
 

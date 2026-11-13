@@ -1,3 +1,5 @@
+import type { Place } from '@repo/core/types/Place';
+
 export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'private';
 
 export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night' | 'none';
@@ -46,15 +48,15 @@ export type WorkspaceSwitcherTargetId =
   | 'personal'
   | 'commercial';
 
-export type WorkspaceSwitcherDestination =
-  | {
-      kind: 'route';
-      name: string;
-    }
-  | {
-      kind: 'tab';
-      name: string;
-    };
+/**
+ * Where a switcher target takes the person: always a place, never a screen name. Switching a
+ * perspective chooses which floor Workspace shows (one floor per capacity,
+ * `logic/places/workspaceCatalog`); `PLACE_ROUTES` says where the place is on each platform.
+ */
+export type WorkspaceSwitcherDestination = {
+  readonly kind: 'place';
+  readonly place: Place;
+};
 
 export interface WorkspaceSwitcherTarget {
   id: WorkspaceSwitcherTargetId;

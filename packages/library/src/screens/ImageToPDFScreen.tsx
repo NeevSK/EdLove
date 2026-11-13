@@ -4,9 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native';
 import { ArrowLeft, Layers, Save } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const FIT_MODES = ['contain', 'cover', 'fill', 'width', 'height'] as const;
 
@@ -23,7 +24,7 @@ interface ConvertResult {
 export default function ImageToPDFScreen() {
   const params = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
 
   const imageUris = useMemo(() => {
     const raw = typeof params.uris === 'string' ? params.uris.split(',') : [];

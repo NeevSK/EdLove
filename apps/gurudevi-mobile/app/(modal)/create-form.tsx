@@ -3,7 +3,7 @@ import { FormBuilderScreen } from '@repo/form-builder';
 import type { FormSchema } from '@repo/form-builder/engine';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { useCallback, useMemo } from 'react';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 

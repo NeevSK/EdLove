@@ -27,7 +27,6 @@ import {
 } from '@repo/ui/icons';
 import { useFeedback } from '@repo/ui/theme/native/feedback';
 import { useWorldContext } from '@repo/ui/theme/native/WorldContext';
-import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +38,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export type AIScreenTab = 'chat' | 'agent';
 
@@ -78,6 +78,7 @@ export default function AIScreen({
   onClose,
   classroomContext,
 }: AIScreenProps) {
+  const router = useNavigator();
   const params = useLocalSearchParams<{ tab?: string; mode?: string; threadId?: string }>();
   const { language } = useWorldContext();
   const feedback = useFeedback();
@@ -134,9 +135,9 @@ export default function AIScreen({
     if (onClose) {
       onClose();
     } else {
-      safeBack('/(tabs)/self');
+      router.back('/(tabs)/self');
     }
-  }, [feedback, onClose]);
+  }, [feedback, onClose, router]);
 
   const toggleIncognito = () => {
     feedback('select');

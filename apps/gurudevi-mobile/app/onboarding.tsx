@@ -36,7 +36,7 @@ import { PreferredNameEntry } from '@/components/PreferredNameEntry';
 import { RoleCardGrid } from '@/components/RoleCardGrid';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 import { v1Client } from '@/lib/v1Client';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 

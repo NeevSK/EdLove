@@ -1,11 +1,10 @@
 import { View, Text } from 'react-native';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
 import { getAdminAuditEntries } from '@repo/admin/admin/adminControl';
 import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export default function AdminAuditLog({ onBack }: { onBack?: () => void } = {}) {
-  const router = useRouter();
+  const router = useNavigator();
   const entries = getAdminAuditEntries();
 
   return (
@@ -14,7 +13,7 @@ export default function AdminAuditLog({ onBack }: { onBack?: () => void } = {}) 
       title="Accountability log"
       description="Review recent operator context, approvals, and cross-tenant signals so every action stays attributable."
       caution="This room is about accountability. If a change cannot be explained in the log, it should not be shipped."
-      onBack={() => (onBack ? onBack() : safeBack('/workspace'))}
+      onBack={() => (onBack ? onBack() : router.back('/workspace'))}
       stats={[
         {
           label: 'Entries',

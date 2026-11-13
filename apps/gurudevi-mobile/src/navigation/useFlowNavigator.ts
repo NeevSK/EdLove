@@ -12,7 +12,7 @@ import {
 import { captureException } from '@repo/core/monitoring';
 import { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
-import { useNavigator } from './navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 type StepOptions = Pick<NavigationContext, 'params' | 'condition'>;
 

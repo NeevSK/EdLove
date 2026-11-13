@@ -1,4 +1,4 @@
-import { GoTo } from '@/navigation/GoTo';
+import { GoTo } from '@repo/ui/components/native/navigation';
 import { KitGalleryNative } from './KitGalleryNative';
 
 /**

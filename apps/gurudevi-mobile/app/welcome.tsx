@@ -6,7 +6,7 @@ import { Suspense, useCallback } from 'react';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 import { WelcomeScreen } from '@/screens/WelcomeScreen';
 import { DevelopmentScreenInteractiveMarker } from '@/telemetry/DevelopmentScreenInteractiveMarker';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 

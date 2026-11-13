@@ -73,7 +73,7 @@ import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ComfortPresets } from '@/components/comfort/ComfortPresets';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 type SceneWeather = NonNullable<StagePreview['weather']>;
 type BarLayout = 'floating' | 'docked' | 'rail';

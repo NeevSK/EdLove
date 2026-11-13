@@ -105,14 +105,26 @@ function countHandBuiltMachinePersistence() {
   return runRgCount('restoreActor\\(', ['-g', '!packages/core/src/store/persistedActor.ts']);
 }
 
-// Every screen change goes through the checked navigator (apps/gurudevi-mobile/src/navigation, model:
+// Every screen change goes through the checked navigator (@repo/ui/components/native/navigation, model:
 // docs/architecture/2026-11-13-navigation-mental-model.md): it refuses anything that isn't an in-app
 // path to a screen that exists. Importing expo-router's imperative router or <Redirect> elsewhere
 // bypasses that check. Legacy packages still do; the count only goes down.
 function countDirectRouterUse() {
   return runRgCount("import \\{[^}]*\\b(router|useRouter|Redirect)\\b[^}]*\\} from 'expo-router'", [
     '-g',
-    '!apps/gurudevi-mobile/src/navigation/**',
+    '!packages/ui/src/components/native/navigation/**',
+  ]);
+}
+
+// On the web, a destination known only at runtime goes through useNavigator().follow
+// (apps/gurudevi-web/lib/navigation), which checks it; `navigate({ href: value })` elsewhere does not.
+// Literal hrefs and typed `to` are checked by the compiler and are not counted.
+function countUncheckedWebNavigation() {
+  return runRgCount("navigate\\(\\{\\s*href:\\s*[^'\\s`]", [
+    '-g',
+    'apps/gurudevi-web/**/*.{ts,tsx}',
+    '-g',
+    '!apps/gurudevi-web/lib/navigation/**',
   ]);
 }
 
@@ -305,6 +317,7 @@ function measureMetrics() {
     ...countMachineDefinitionIssues(),
     handBuiltMachinePersistence: countHandBuiltMachinePersistence(),
     directRouterUse: countDirectRouterUse(),
+    uncheckedWebNavigation: countUncheckedWebNavigation(),
     directEffectRuns: countDirectEffectRuns(),
     tierImportViolations: countTierImportViolations(),
     unplacedFiles: countUnplacedFiles(),
@@ -357,6 +370,7 @@ function main() {
     deprecatedMachineOptions: 'createMachine(config, options) (deprecated)',
     handBuiltMachinePersistence: 'restoreActor outside startPersistedActor',
     directRouterUse: 'expo-router router/useRouter/Redirect outside the navigator',
+    uncheckedWebNavigation: 'Web navigate({ href: value }) outside the navigator',
     directEffectRuns: 'Effect.run* outside the app runtime',
     tierImportViolations: 'Tier import violations (core)',
     unplacedFiles: 'Files with no tier (core)',

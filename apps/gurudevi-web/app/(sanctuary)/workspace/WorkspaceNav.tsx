@@ -1,4 +1,5 @@
-import { useLocation, useRouter } from '@tanstack/react-router';
+import { useLocation } from '@tanstack/react-router';
+import { useNavigator } from '../../../lib/navigation/useNavigator';
 import { useState } from 'react';
 import { ScrollArea } from '@repo/ui/components/web';
 import { useTranslation } from '@/lib/i18n';
@@ -16,7 +17,7 @@ interface WorkspaceNavProps {
 export function WorkspaceNav({ activeId, capacity }: Readonly<WorkspaceNavProps>) {
   const { t } = useTranslation();
   const pathname = useLocation({ select: (location) => location.pathname });
-  const router = useRouter();
+  const navigator = useNavigator();
   const workbench = useDomainWorkbench('workspace', { usageScope: useWorkbenchScope() });
   const [capacityMessage, setCapacityMessage] = useState('');
   const visibleItems = workspaceFeaturesFor(capacity);
@@ -38,7 +39,7 @@ export function WorkspaceNav({ activeId, capacity }: Readonly<WorkspaceNavProps>
       return;
     }
     setCapacityMessage('');
-    if (pathname !== route) void router.navigate({ href: route });
+    if (pathname !== route) navigator.follow(route, 'workspace-nav');
   }
 
   return (

@@ -8,7 +8,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { getSelfRegistry } from '@/navigation/registries/selfRegistry';
 import type { MobileFeatureItem } from '@/navigation/registries/types';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const EMPTY_AVAILABLE_BONDS: readonly Bond[] = [];
 const EMPTY_PINNED_IDS: string[] = [];

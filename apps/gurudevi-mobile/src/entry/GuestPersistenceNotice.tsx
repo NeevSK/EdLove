@@ -11,7 +11,7 @@ import type { KitIconProps } from '@repo/ui/theme';
 import { usePathname } from 'expo-router';
 import { type ComponentType, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 /**
  * Nudges a guest to sign in on the lease's reminder days, and on every launch after the

@@ -3,7 +3,7 @@ import { storage } from '@repo/core/native';
 import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 import { dispatchDeepLink } from '@/lib/deepLinks/dispatchDeepLink';
 import { trackDeepLink } from '@/lib/deepLinks/trackDeepLink';

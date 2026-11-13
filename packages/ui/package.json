@@ -122,6 +122,11 @@
       "import": "./src/components/native/index.ts",
       "default": "./src/components/native/index.ts"
     },
+    "./components/native/navigation": {
+      "types": "./src/components/native/navigation/index.ts",
+      "import": "./src/components/native/navigation/index.ts",
+      "default": "./src/components/native/navigation/index.ts"
+    },
     "./components/web": {
       "types": "./src/components/web/index.ts",
       "import": "./src/components/web/index.ts",

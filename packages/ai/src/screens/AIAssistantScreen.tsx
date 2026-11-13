@@ -11,8 +11,6 @@ import { ChevronLeft, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { Platform, StyleSheet } from 'react-native';
@@ -24,9 +22,10 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export default function AIAssistantScreen() {
-  const router = useRouter();
+  const router = useNavigator();
   const { gradientNodes, glass, text } = useTheme();
   const { t } = useTranslation();
   const { result: aiFeature } = useDomainFeature('ai-assistant');
@@ -73,7 +72,7 @@ export default function AIAssistantScreen() {
           <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}>
             <Pressable
               accessibilityRole="button"
-              onPress={() => safeBack('/self')}
+              onPress={() => router.back('/self')}
               style={[styles.backButton, { backgroundColor: glass.surface.bg }]}
             >
               <ChevronLeft color={text.primary} size={24} />

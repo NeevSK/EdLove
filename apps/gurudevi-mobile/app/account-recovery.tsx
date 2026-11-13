@@ -4,7 +4,7 @@ import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoun
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useCallback, useState } from 'react';
 import { AccountRecoveryScreen } from '@/screens/AccountRecoveryScreen';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 

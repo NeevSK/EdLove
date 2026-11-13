@@ -7,7 +7,7 @@ import {
   setShellVariantOverride,
   useShellVariant,
 } from '@/lib/navigation/shellVariant';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const percent = (share: number) => `${Math.round(share * 100)}%`;
 const ms = (value: number | null) => (value === null ? '–' : `${value} ms`);

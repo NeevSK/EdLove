@@ -1,4 +1,5 @@
 import { Link, useLocation, useRouter } from '@tanstack/react-router';
+import { useNavigator } from '../../../lib/navigation/useNavigator';
 import {
   type DragEvent,
   type ReactNode,
@@ -89,6 +90,7 @@ export function SanctuaryShell({
   useInactivitySentinel(!isExploreMode);
   const pathname = useLocation({ select: (location) => location.pathname });
   const router = useRouter();
+  const navigator = useNavigator();
   const workspaceUsageScope = isExploreMode ? 'explore' : 'sanctuary';
   const workspaceWorkbench = useDomainWorkbench('workspace', { usageScope: workspaceUsageScope });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -388,9 +390,9 @@ export function SanctuaryShell({
         return;
       }
       setQuickAccessNotice('');
-      if (pathname !== route) void router.navigate({ href: route });
+      if (pathname !== route) navigator.follow(route, 'shell-nav');
     },
-    [pathname, router, workspaceWorkbench],
+    [pathname, navigator, workspaceWorkbench],
   );
 
   const openQuickAccessDestination = useCallback(

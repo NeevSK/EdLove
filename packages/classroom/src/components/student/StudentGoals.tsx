@@ -1,11 +1,11 @@
 import { Target } from '@repo/ui/icons';
 import { useWorld } from '@repo/ui/theme/native';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export const StudentGoals = ({ goals, loading }: { goals: any[]; loading: boolean }) => {
-  const router = useRouter();
+  const router = useNavigator();
   const { tokens } = useWorld();
 
   return (

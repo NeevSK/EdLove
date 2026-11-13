@@ -1,5 +1,4 @@
-import { renderHook } from '@testing-library/react';
-import { render } from '@testing-library/react';
+import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const router = vi.hoisted(() => ({
@@ -15,10 +14,26 @@ const capture = vi.hoisted(() => vi.fn());
 vi.mock('expo-router', () => ({ useRouter: () => router, Redirect: redirect }));
 vi.mock('@repo/core/monitoring', () => ({ captureException: capture }));
 
-import { GoTo } from '@/navigation/GoTo';
-import { useNavigator } from '@/navigation/navigator';
+import { GoTo, type Navigator, useNavigator } from '../navigation';
 
-describe('useNavigator (mobile) / G3 hook, real catalogue and guard, router substituted', () => {
+/** The hook's value from one render, through the renderer this package's tests use. */
+function renderHook(_hook: typeof useNavigator) {
+  const result: { current: Navigator } = { current: undefined as never };
+  function Probe() {
+    result.current = useNavigator();
+    return null;
+  }
+  act(() => {
+    create(<Probe />);
+  });
+  return { result };
+}
+const render = (element: React.ReactElement) =>
+  act(() => {
+    create(element);
+  });
+
+describe('useNavigator (native kit) / G3 hook, real catalogue and guard, router substituted', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('navigates to a screen that exists, with or without its group', () => {

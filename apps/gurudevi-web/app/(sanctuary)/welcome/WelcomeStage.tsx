@@ -1,5 +1,6 @@
 import { resolveSurfaceUrl } from '../../../lib/surface-urls';
-import { Link, useRouter } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
+import { useNavigator } from '../../../lib/navigation/useNavigator';
 import { useState } from 'react';
 import { LivingGround } from '@repo/ui/components/web';
 import { type ExploreCapacity, setExploreCapacity } from '../../../lib/explore/exploreCapacity';
@@ -17,7 +18,7 @@ type WelcomeStageProps = Readonly<{
 }>;
 
 export function WelcomeStage(props?: WelcomeStageProps) {
-  const router = useRouter();
+  const navigator = useNavigator();
   const mode = props?.mode ?? 'explore';
   const returnTo = props?.returnTo;
   const signInSearch = returnTo ? { returnTo } : {};
@@ -37,7 +38,7 @@ export function WelcomeStage(props?: WelcomeStageProps) {
     }
     const targetUrl =
       exploreSelfUrl + (exploreSelfUrl.includes('?') ? '&intro=complete' : '?intro=complete');
-    void router.navigate({ href: targetUrl, replace: true });
+    navigator.follow(targetUrl, 'welcome', 'replace');
   }
   return (
     <LivingGround atmosphere="canopy" dither className={styles.viewport}>

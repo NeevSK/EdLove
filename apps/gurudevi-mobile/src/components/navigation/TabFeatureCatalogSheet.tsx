@@ -10,7 +10,7 @@ import {
   type MobileFeatureItem,
 } from '@/navigation/registries';
 import { buildHref } from '@repo/core/routing/internalHref';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export interface TabFeatureCatalogSheetProps {
   isOpen: boolean;

@@ -16,7 +16,8 @@ vi.mock('./browserAuth', async (importOriginal) => {
 
 /** Where sign-in sent the person, read from the router the screen runs in. */
 let router: TestRouter;
-const replacedWith = (href: string) => ({ href, replace: true });
+// Route changes cross-fade by navigation policy (NAVIGATION_POLICY.web.viewTransitions).
+const replacedWith = (href: string) => ({ href, replace: true, viewTransition: true });
 
 describe('PhoneOtpEntry', () => {
   beforeEach(() => {

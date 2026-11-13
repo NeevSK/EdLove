@@ -24,7 +24,7 @@ import {
   type ScreenFab,
 } from './roomActions';
 import { buildHref } from '@repo/core/routing/internalHref';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export interface RoomFabProps {
   room: Room;

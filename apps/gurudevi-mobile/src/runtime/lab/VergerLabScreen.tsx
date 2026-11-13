@@ -14,7 +14,7 @@ import { useVergerLab } from '@repo/verger-react';
 import { FlashList } from '@shopify/flash-list';
 import { useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useNavigator } from '@/navigation/navigator';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const LEVERS = GURUDEVI_MOBILE_HOST.levers;
 
