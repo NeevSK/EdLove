@@ -1,7 +1,7 @@
 'use client';
 
 import type { SceneGroundMode, WorkspaceWallpaper } from '@repo/core/types';
-import { experienceOf, wallpaperAllowed } from '@repo/core/verger';
+import { experienceOf } from '@repo/core/verger';
 import { DEFAULT_WORLD, groundLimitsOf, isWorldId, phaseTokens, WORLDS } from '@repo/ui/theme';
 import {
   daylightAt,
@@ -54,13 +54,10 @@ export function WorldGroundSurface({
   className,
   style,
 }: Readonly<WorldGroundSurfaceProps>) {
-  // Verger decides what the scene may spend, as `useScene` does on the phone.
+  // Verger decides what the scene may spend (its tier), as `useScene` does on the phone. Whether a
+  // photo may load is decided once, by the floor engine (`planGround`): it sends 'quiet' when not.
   const view = useGurudeviView();
-  // A photo verger will not load (low tier, power saver, metered data) would leave the floor
-  // bare: the world's quiet paper stands in for it instead.
-  const photoShown = view !== null && wallpaperAllowed(view.experience, view.reading);
-  const groundMode: SceneGroundMode =
-    requestedMode === 'image' && !photoShown ? 'quiet' : requestedMode;
+  const groundMode: SceneGroundMode = requestedMode;
   const { resolvedMode } = useWorldTheme();
 
   // Clock state for live diurnal updates

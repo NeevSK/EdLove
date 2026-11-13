@@ -88,10 +88,15 @@ export interface GroundPlan {
   /** A calmer ground for screens where people read or work: the photo shows more faintly. */
   dim: boolean;
   /**
-   * How much of the world's own paper is laid over the ground (0 to 1), so words placed straight
-   * on the floor (titles, small print between cards) stay readable on a sky or a photo.
+   * How present the ground is on this screen (the scene engine's `ScenePresence`): full, a band
+   * behind the header, or quiet. Web and phone draw the same veil for it (`GROUND_PRESENCE_VEILS`).
    */
-  veil: number;
+  presence: GroundPresence;
+  /**
+   * The world's paper laid over the ground, top to bottom, so words placed straight on the floor
+   * stay readable on a sky or a photo. Empty: no veil.
+   */
+  veil: GroundVeil;
   notes: GroundNote[];
 }
 
@@ -134,15 +139,48 @@ export const GROUND_STAGE_DEFAULTS: Readonly<Record<GroundStage, GroundStrength>
   GROUND_LIVELINESS_DIALS.balanced;
 
 /**
- * The paper veil per kind of screen. Rooms are built from cards and keep the full scene; other
- * screens put more words straight on the floor; reading and work screens most of all. This is a
- * readability floor (the world's limit), so no choice lowers it.
+ * How present the ground is: the scene engine's own words (`ScenePresence` in
+ * `@repo/ui/theme/scene`), shared by web and phone.
+ * - full: the whole scene (a room's front floor);
+ * - band: the scene shows behind the header and fades under the world's paper below it;
+ * - quiet: still, under a veil that never hides it completely.
  */
-export const GROUND_VEIL_DEFAULTS: Readonly<Record<GroundStage, number>> = {
-  room: 0,
-  screen: 0.45,
-  focus: 0.65,
+export type GroundPresence = 'full' | 'band' | 'quiet';
+
+/** The one rule from kind of screen and policy to presence. Both apps call it. */
+export function groundPresenceOf(
+  stage: GroundStage,
+  policy: Pick<GroundPolicy, 'strength'> = DEFAULT_GROUND_POLICY,
+): GroundPresence {
+  if (policy.strength[stage] === 'calm') return 'quiet';
+  return stage === 'room' ? 'full' : 'band';
+}
+
+/** A veil as gradient stops from the top of the screen: [position 0..1, paper alpha 0..1]. */
+export type GroundVeil = readonly (readonly [number, number])[];
+
+/**
+ * The paper veil per presence, the same on web and phone. A readability floor: no choice thins
+ * it. Band keeps the scene clear behind the header and lays paper under the content below.
+ */
+export const GROUND_PRESENCE_VEILS: Readonly<Record<GroundPresence, GroundVeil>> = {
+  full: [],
+  band: [
+    [0, 0.1],
+    [0.12, 0.55],
+    [0.22, 0.9],
+    [1, 0.94],
+  ],
+  quiet: [
+    [0, 0.72],
+    [1, 0.72],
+  ],
 };
+
+/** The strongest paper a veil lays anywhere (0 when there is none). */
+export function veilStrength(veil: GroundVeil): number {
+  return veil.reduce((max, [, alpha]) => Math.max(max, alpha), 0);
+}
 
 /** Why the policy came out as it did, so a settings screen can say so. */
 export type GroundPolicyReason = 'chosen' | 'device-essential';
@@ -151,14 +189,12 @@ export type GroundPolicyReason = 'chosen' | 'device-essential';
 export interface GroundPolicy {
   readonly liveliness: GroundLiveliness;
   readonly strength: Readonly<Record<GroundStage, GroundStrength>>;
-  readonly veil: Readonly<Record<GroundStage, number>>;
   readonly reason: GroundPolicyReason;
 }
 
 export const DEFAULT_GROUND_POLICY: GroundPolicy = {
   liveliness: DEFAULT_GROUND_LIVELINESS,
   strength: GROUND_LIVELINESS_DIALS[DEFAULT_GROUND_LIVELINESS],
-  veil: GROUND_VEIL_DEFAULTS,
   reason: 'chosen',
 };
 
@@ -167,7 +203,7 @@ export const DEFAULT_GROUND_POLICY: GroundPolicy = {
  * it. A device verger has put at essential quality (safe mode, a power cut, "Lighter" detail on a
  * struggling device) gets the calm ground on every screen but the rooms; rooms already lose their
  * costly parts through the allowance. Unknown verger (server, first paint) changes nothing. The
- * veil is the world's readability floor, so no choice thins it.
+ * veil comes from presence (`GROUND_PRESENCE_VEILS`), a readability floor no choice thins.
  */
 export function groundPolicyOf(input: {
   liveliness?: GroundLiveliness | null;
@@ -182,15 +218,14 @@ export function groundPolicyOf(input: {
     return {
       liveliness,
       strength: { ...chosen, screen: 'calm', focus: 'calm' },
-      veil: GROUND_VEIL_DEFAULTS,
       reason: 'device-essential',
     };
   }
-  return { liveliness, strength: chosen, veil: GROUND_VEIL_DEFAULTS, reason: 'chosen' };
+  return { liveliness, strength: chosen, reason: 'chosen' };
 }
 
 /** The same world, quieter: no moving sky, no slideshow, no animated texture, a fainter photo. */
-export function calmPlan(plan: GroundPlan, veil: number = GROUND_VEIL_DEFAULTS.focus): GroundPlan {
+export function calmPlan(plan: GroundPlan): GroundPlan {
   return {
     ...plan,
     surface: plan.surface === 'live' ? 'still' : plan.surface,
@@ -198,7 +233,8 @@ export function calmPlan(plan: GroundPlan, veil: number = GROUND_VEIL_DEFAULTS.f
     texture: plan.texture === 'none' ? 'none' : 'washi-grain',
     breathe: false,
     dim: plan.surface === 'photo',
-    veil: plan.surface === 'paper' ? 0 : Math.max(plan.veil, veil),
+    presence: 'quiet',
+    veil: plan.surface === 'paper' ? [] : GROUND_PRESENCE_VEILS.quiet,
   };
 }
 
@@ -234,6 +270,7 @@ export function planGround(
   policy: GroundPolicy = DEFAULT_GROUND_POLICY,
 ): GroundPlan {
   const notes: GroundNote[] = [];
+  const presence = groundPresenceOf(stage, policy);
   const asked: SceneGroundMode = look.groundMode ?? (look.wallpaper ? 'image' : 'live');
 
   let surface: GroundSurface = asked === 'image' ? 'photo' : asked === 'quiet' ? 'paper' : asked;
@@ -290,13 +327,12 @@ export function planGround(
     texture,
     breathe: onPhoto && allow.subtleMotion,
     dim: false,
+    presence,
     // Paper needs no veil: it is the world's paper already.
-    veil: surface === 'paper' ? 0 : policy.veil[stage],
+    veil: surface === 'paper' ? [] : GROUND_PRESENCE_VEILS[presence],
     notes,
   };
-  if (policy.strength[stage] !== 'calm') return plan;
-  // A calm room keeps its own veil (none); other screens take at least the reading veil.
-  return calmPlan(plan, stage === 'room' ? policy.veil.room : policy.veil.focus);
+  return presence === 'quiet' ? calmPlan(plan) : plan;
 }
 
 /** Which Floor Studio settings mean something for this look. Same answer on web and phone. */
