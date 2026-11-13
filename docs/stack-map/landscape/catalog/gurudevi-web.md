@@ -26,8 +26,8 @@ Canonical browser Gurudevi — unified Next.js 16 application for public marketi
 @supabase/ssr
 @tanstack/react-pacer
 @tanstack/react-query
+@tanstack/react-router
 lucide-react
-next
 qrcode
 react
 react-dom
@@ -35,24 +35,27 @@ xstate
 zod
 ```
 
-## Dev tooling (16)
+## Dev tooling (19)
 
 ```text
 @playwright/test
 @repo/eslint-config
 @repo/typescript-config
 @tailwindcss/postcss
+@tanstack/router-plugin
 @testing-library/react
 @testing-library/user-event
 @types/node
 @types/qrcode
 @types/react
 @types/react-dom
+@vitejs/plugin-react
 dotenv
 eslint
 postcss
 tailwindcss
 typescript
+vite
 vitest
 ```
 
