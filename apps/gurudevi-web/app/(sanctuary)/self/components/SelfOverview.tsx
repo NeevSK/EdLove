@@ -7,7 +7,7 @@ import {
   isFeatureApplicableToRole,
   isFeatureForCapacity,
   isUniversalFeature,
-  scoreFeatureForRoles,
+  scoreFeature,
   type SelfCategory,
 } from '../../../../lib/canvas/useSelfCanvas';
 import { useSanctuaryHealth } from '../../../../lib/sanctuary/selfBrowserAdapters';
@@ -606,12 +606,12 @@ export function SelfOverview({
 
   const sortedFilteredManifest = useMemo(() => {
     return [...filteredManifest].sort((a, b) => {
-      const scoreA = scoreFeatureForRoles(a, effectiveRoles, phase, {
+      const scoreA = scoreFeature(a, phase, {
         isPinned: pinnedSet.has(a.id),
         lastUsedAt: usage[a.id]?.lastUsedAt,
         count: usage[a.id]?.count,
       });
-      const scoreB = scoreFeatureForRoles(b, effectiveRoles, phase, {
+      const scoreB = scoreFeature(b, phase, {
         isPinned: pinnedSet.has(b.id),
         lastUsedAt: usage[b.id]?.lastUsedAt,
         count: usage[b.id]?.count,
@@ -620,7 +620,7 @@ export function SelfOverview({
       if (diff !== 0) return diff;
       return a.defaultOrder - b.defaultOrder;
     });
-  }, [filteredManifest, effectiveRoles, phase, pinnedSet, usage]);
+  }, [filteredManifest, phase, pinnedSet, usage]);
 
   const primaryPinned = pinnedFeatures[0];
 

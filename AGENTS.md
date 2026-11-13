@@ -86,6 +86,8 @@ and unresolved product decisions honestly.
 
 **`*.web.ts(x)` outside `apps/gurudevi-web` are reference only.** The web app is `apps/gurudevi-web`. Lint, type checks, tests and the audits skip them, except the live files in `tooling/live-web-files.json` (shared code imports those by name). Don't build on a reference file. If you add or remove an import of a `.web` file, run `node scripts/check-reference-only.mjs`; the ratchet fails while the list is out of date.
 
+**Places, roles and features (read before any navigation, catalog or screen work):** [`docs/architecture/places-roles-and-features.md`](docs/architecture/places-roles-and-features.md) is the one model for how a role becomes what a person sees: one word per idea, Workspace as a floor per role, every other place one floor whose features differ by role, yes/no role relevance, capabilities from the server, and nothing on screen for what a person does not have.
+
 **Platform structure (read before any API, package or screen design):**
 [`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) is the
 top-down map: channels, places (tabs), business domains, platform services, runtime,

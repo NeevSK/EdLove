@@ -149,7 +149,6 @@ export function resolveSelfFeatureManifest(
   };
 }
 
-export {
-  createSelfAccessContext,
-  type CreateSelfAccessContextOptions,
-};
+export { createSelfAccessContext, type CreateSelfAccessContextOptions };
+
+export { SELF_VIEW_ROLES, type SelfViewRole } from '@repo/self/screens/self/roleResolution';

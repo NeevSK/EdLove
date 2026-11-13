@@ -4,6 +4,7 @@ import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import {
   createSelfAccessContext,
   resolveSelfFeatureManifest,
+  SELF_VIEW_ROLES,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -71,45 +72,19 @@ export function getCircadianPhase(): 'morning' | 'afternoon' | 'night' {
   return 'night';
 }
 
+/** Whether a Self feature is for this role (the catalog's yes or no). No role means any. */
 export function isFeatureApplicableToRole(
   feature: SelfFeatureManifestItem,
   role?: string,
 ): boolean {
   if (!role || role === 'all') return true;
-  const weights = feature.roleWeights;
-  if (!weights || Object.keys(weights).length === 0) return true;
-  const normalized = role.toLowerCase() as keyof typeof weights;
-  const weight = weights[normalized];
-  return typeof weight === 'number' && weight > 0;
+  const normalized = role.toLowerCase();
+  return feature.roles.some((candidate) => candidate === normalized);
 }
 
+/** A feature for every role. */
 export function isUniversalFeature(feature: SelfFeatureManifestItem): boolean {
-  // 1. Universal practice domains & core personal reflection
-  const universalDomains = ['pulse', 'care', 'reflection', 'journey'];
-  if (feature.domain && universalDomains.includes(feature.domain)) return true;
-
-  // 2. Canonical Cedar resources open to any human irrespective of institutional standing
-  const universalResources: readonly string[] = [
-    'FireJournal',
-    'MoodLog',
-    'Wellbeing',
-    'JoyMoments',
-    'GratitudeEntries',
-    'EnergyForecasts',
-    'LearningReflection',
-    'User',
-  ];
-  const cedarResource = (feature as any).cedar?.resource;
-  if (cedarResource && universalResources.includes(cedarResource)) return true;
-
-  // 3. Fallback: if all four major educational capacities (teacher, student, principal, guardian) have weights > 0
-  const weights = feature.roleWeights;
-  if (!weights || Object.keys(weights).length === 0) return true;
-  const primaryRoles = ['teacher', 'student', 'principal', 'guardian'] as const;
-  return primaryRoles.every((r) => {
-    const w = weights[r];
-    return typeof w === 'number' && w > 0;
-  });
+  return SELF_VIEW_ROLES.every((role) => feature.roles.includes(role));
 }
 
 export function isFeatureForCapacity(
@@ -137,46 +112,18 @@ export function isFeatureForCapacity(
   return false;
 }
 
-export function scoreFeatureForRoles(
+/** How strongly to suggest a feature now: the time of day it suits, and the person's own use. */
+export function scoreFeature(
   feature: SelfFeatureManifestItem,
-  roles: readonly string[],
   phase: 'morning' | 'afternoon' | 'night',
   usageInfo?: { lastUsedAt?: number | string; count?: number; isPinned?: boolean },
-  primaryRole?: string,
 ): number {
-  const activeRoles = roles.length > 0 ? roles : ['teacher'];
-
   // 1. Time-of-day alignment: +50 priority if it matches current circadian phase
   const isTimeMatch = feature.timing?.preferredPhase === phase;
   const timeBonus = isTimeMatch ? 50 : 0;
 
-  // 2. Role membership:
-  // Primary capacity focus (>= 80): +30
-  // Primary capacity affinity (> 0): +20
-  // Secondary capacity focus (>= 80): +15
-  // Secondary capacity affinity (> 0): +10
-  // Universal practice baseline: +10
-  let roleBonus = 0;
-  if (primaryRole) {
-    const pw = feature.roleWeights?.[primaryRole.toLowerCase() as keyof typeof feature.roleWeights];
-    if (typeof pw === 'number') {
-      if (pw >= 80) roleBonus = Math.max(roleBonus, 30);
-      else if (pw > 0) roleBonus = Math.max(roleBonus, 20);
-    }
-  }
-
-  for (const r of activeRoles) {
-    if (primaryRole && r.toLowerCase() === primaryRole.toLowerCase()) continue;
-    const w = feature.roleWeights?.[r.toLowerCase() as keyof typeof feature.roleWeights];
-    if (typeof w === 'number') {
-      if (w >= 80) roleBonus = Math.max(roleBonus, 15);
-      else if (w > 0) roleBonus = Math.max(roleBonus, 10);
-    }
-  }
-
-  if (isUniversalFeature(feature)) {
-    roleBonus = Math.max(roleBonus, 10);
-  }
+  // 2. Role decides whether a feature is offered, never where it sits
+  // (docs/architecture/places-roles-and-features.md, rule 8).
 
   // 3. Pinned & recent usage priority
   let usageBonus = 0;
@@ -193,7 +140,7 @@ export function scoreFeatureForRoles(
     usageBonus += Math.min(usageInfo.count, 5);
   }
 
-  return timeBonus + roleBonus + usageBonus;
+  return timeBonus + usageBonus;
 }
 
 export interface UseSelfCanvasOptions {
@@ -317,9 +264,7 @@ export function useSelfCanvas({
     }
     for (const [, list] of map) {
       list.sort((a, b) => {
-        const diff =
-          scoreFeatureForRoles(b, activeRoles, phase, undefined, role) -
-          scoreFeatureForRoles(a, activeRoles, phase, undefined, role);
+        const diff = scoreFeature(b, phase) - scoreFeature(a, phase);
         if (diff !== 0) return diff;
         return a.defaultOrder - b.defaultOrder;
       });
@@ -329,9 +274,7 @@ export function useSelfCanvas({
 
   const sortedManifestAll = useMemo(() => {
     return [...manifest.all].sort((a, b) => {
-      const diff =
-        scoreFeatureForRoles(b, activeRoles, phase, undefined, role) -
-        scoreFeatureForRoles(a, activeRoles, phase, undefined, role);
+      const diff = scoreFeature(b, phase) - scoreFeature(a, phase);
       if (diff !== 0) return diff;
       return a.defaultOrder - b.defaultOrder;
     });
