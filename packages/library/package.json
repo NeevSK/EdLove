@@ -40,6 +40,11 @@
       "import": "./src/entrypoints/map.ts",
       "default": "./src/entrypoints/map.ts"
     },
+    "./h5p": {
+      "types": "./src/h5p/index.ts",
+      "import": "./src/h5p/index.ts",
+      "default": "./src/h5p/index.ts"
+    },
     "./tools": {
       "types": "./src/entrypoints/tools.ts",
       "import": "./src/entrypoints/tools.ts",
@@ -111,7 +116,8 @@
     "sheetjs": "^2.0.0",
     "tesseract.js": "^7.0.0",
     "uuid": "^14.0.3",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
