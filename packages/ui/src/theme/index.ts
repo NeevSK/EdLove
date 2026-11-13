@@ -10,6 +10,7 @@
 
 export { buildRecipes } from './build';
 export * from './color';
+export * from './contracts';
 export * from './miniChart';
 export * from './taskToolbar';
 export {
