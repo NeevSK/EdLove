@@ -143,6 +143,20 @@ export const FlowFallbackEdgeSchema = z.object({
   ]),
 });
 
+/**
+ * How a step appears (L9). `push` and `replace` move to a screen (replace: the person can't come
+ * back to it, as after a finished flow); `sheet` rises over the current screen; `modal` takes
+ * the whole screen for a task that must finish or be cancelled; `panel` opens beside the current
+ * screen where there is room. On mobile a route's sheet or modal is declared in its layout.
+ */
+export const FlowPresentationSchema = z.enum(['push', 'replace', 'sheet', 'modal', 'panel']);
+
+/** Presentation per size class: `compact` (phones) and `regular` (tablets, desktop). */
+export const FlowStepPresentationSchema = z.object({
+  compact: FlowPresentationSchema.optional(),
+  regular: FlowPresentationSchema.optional(),
+});
+
 export const FlowNodeStepSchema = z.object({
   stepId: z.string().min(1),
   title: z.string().min(1),
@@ -157,6 +171,8 @@ export const FlowNodeStepSchema = z.object({
   webRoute: z.string().min(1),
   primaryAction: z.string().min(1),
   fallbacks: z.array(FlowFallbackEdgeSchema).default([]),
+  /** Overrides the default for the step's purpose (`navigator.ts` `DEFAULT_PRESENTATION`). */
+  presentation: FlowStepPresentationSchema.optional(),
 });
 
 // Product contract and traceability metadata; these declarations do not grant authority.
@@ -302,4 +318,6 @@ export type FlowTrigger = z.infer<typeof FlowTriggerSchema>;
 export type FlowFallbackCondition = z.infer<typeof FlowFallbackConditionSchema>;
 export type FlowFallbackEdge = z.infer<typeof FlowFallbackEdgeSchema>;
 export type FlowNodeStep = z.infer<typeof FlowNodeStepSchema>;
+export type FlowPresentation = z.infer<typeof FlowPresentationSchema>;
+export type FlowStepPresentation = z.infer<typeof FlowStepPresentationSchema>;
 export type FeatureJTBDGraph = z.infer<typeof FeatureJTBDGraphSchema>;

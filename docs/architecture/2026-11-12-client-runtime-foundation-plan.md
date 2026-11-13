@@ -339,6 +339,13 @@ second registry.
   react-native-screens 4.30 ship native sheets (`presentation: 'formSheet'`, `sheetAllowedDetents`);
   there is no sheet library and no sheet in use. The skill itself notes that `audit-flow-dag.mjs`
   only inventories files and proves nothing about links, cycles or reachability.
+- **Status (2026-11-13).** Baseline foundation landed, see the
+  [navigation mental model](2026-11-13-navigation-mental-model.md). It includes a generated route
+  catalogue (`scripts/route-catalog.mjs`), a route matcher, and `checkFlowRoutes`. That check found
+  46 broken references, now ratcheted in `flowRoutes.test.ts`. It also includes optional `presentation`
+  on steps, with defaults by purpose and size class, the pure `resolveFlowStep`, and a
+  `useFlowNavigator` adapter in each app. Not done yet: moving call sites onto the adapter, the
+  ratchet on direct router use, `back`, `transition`, `prefetch`, and layouts declaring sheets.
 - **Baseline: a flow step is the intent.** A screen asks for a step, not a route:
   `open(teacherRollCallFlow, 'select_roster', { sectionId })`. Each `FlowNodeStep` gains what it
   is missing:
