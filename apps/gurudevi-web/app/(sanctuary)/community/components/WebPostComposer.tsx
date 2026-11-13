@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import type { CommunityPostView } from '@repo/core/types/communityView';
 import styles from '../community.module.css';

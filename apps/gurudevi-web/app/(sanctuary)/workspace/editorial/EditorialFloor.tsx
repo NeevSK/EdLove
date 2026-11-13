@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   type EditorialContentKind,
@@ -165,7 +163,7 @@ export function EditorialFloor({
             ))}
           </select>
           <Link
-            href={`/school/${schoolId}`}
+            to="/school/$id" params={{ id: schoolId }}
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -433,7 +431,7 @@ export function EditorialFloor({
                   <td>
                     {d.status === 'published' && d.slug ? (
                       <Link
-                        href={`/school/ananda-college/articles/${d.slug}`}
+                        to="/school/$id/articles/$slug" params={{ id: 'ananda-college', slug: d.slug }}
                         className={styles.publicLink}
                       >
                         View on Commons ↗
@@ -562,7 +560,7 @@ export function EditorialFloor({
             <span>
               <strong>Wildcard Edge Routing:</strong> Articles published here are immediately
               available on{' '}
-              <Link href="/school/ananda" className={styles.publicLink}>
+              <Link to="/school/$id" params={{ id: 'ananda' }} className={styles.publicLink}>
                 ananda.gurudevi.app
               </Link>{' '}
               via Cloudflare SWR caching.
@@ -606,7 +604,7 @@ export function EditorialFloor({
                       {article.subEntityName}
                     </span>
                     <Link
-                      href={`/school/ananda-college/articles/${article.slug ?? article.id}`}
+                      to="/school/$id/articles/$slug" params={{ id: 'ananda-college', slug: article.slug ?? article.id }}
                       className={styles.publicLink}
                       style={{ fontSize: '0.85rem' }}
                     >

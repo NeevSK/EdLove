@@ -1,5 +1,3 @@
-'use client';
-
 import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';

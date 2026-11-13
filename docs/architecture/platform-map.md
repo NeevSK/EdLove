@@ -165,6 +165,7 @@ where they exist. Our own API should be clean enough to serve as an example. See
 
 | Question | Document |
 | --- | --- |
+| How roles become what people see: places, floors, catalogs, features | [Places, roles and features](places-roles-and-features.md) |
 | The first path that must run, and when each layer becomes mandatory | [Arrive journey](arrive-journey.md) |
 | How is it cut into modules, and how are modules added, removed and connected? | [Module structure](module-structure.md) |
 | Every domain, subdomain, platform module and channel, with status | [Domain index](domains/README.md) |

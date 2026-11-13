@@ -1,7 +1,5 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@repo/ui/components/web';
+import { linkOptions, useRouter } from '@tanstack/react-router';
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   useCallback,
@@ -10,25 +8,18 @@ import {
   useRef,
   useState,
 } from 'react';
+import { isOfferedTo } from '../workspace/workspaceFeatureRegistry';
 
-export type CommandItem = Readonly<{
-  id: string;
-  title: string;
-  description: string;
-  symbol: string;
-  section: 'Navigation' | 'Academic' | 'Tools' | 'Account';
-  href?: string;
-  action?: () => void;
-}>;
+type CommandSection = 'Navigation' | 'Academic' | 'Tools' | 'Account';
 
-const defaultCommands: readonly CommandItem[] = [
+const commands = [
   {
     id: 'nav-self',
     title: 'Self Floor',
     description: 'Personal reflection, fire journal, and wellbeing practice',
     symbol: '♥',
     section: 'Navigation',
-    href: '/self',
+    link: linkOptions({ to: '/self' }),
   },
   {
     id: 'nav-workspace',
@@ -36,7 +27,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Classroom attendance, circles, and active duties',
     symbol: '◇',
     section: 'Navigation',
-    href: '/workspace',
+    link: linkOptions({ to: '/workspace' }),
   },
   {
     id: 'nav-community',
@@ -44,7 +35,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'School forest, peer circles, and shared spaces',
     symbol: '○',
     section: 'Navigation',
-    href: '/community',
+    link: linkOptions({ to: '/community' }),
   },
   {
     id: 'nav-library',
@@ -52,7 +43,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Curricula, pedagogical books, and shared materials',
     symbol: '▤',
     section: 'Navigation',
-    href: '/library',
+    link: linkOptions({ to: '/library' }),
   },
   {
     id: 'academic-gradebook',
@@ -60,7 +51,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Student competencies, evaluations, and grading matrix',
     symbol: '📊',
     section: 'Academic',
-    href: '/workspace/gradebook',
+    link: linkOptions({ to: '/workspace/gradebook' }),
   },
   {
     id: 'academic-timetable',
@@ -68,7 +59,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Weekly schedule, periods, and room assignments',
     symbol: '📅',
     section: 'Academic',
-    href: '/workspace/timetable',
+    link: linkOptions({ to: '/workspace/timetable' }),
   },
   {
     id: 'ai-tutii-dm',
@@ -76,7 +67,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Direct mentor conversation with persistent memory and guidance',
     symbol: '✨',
     section: 'Tools',
-    href: '/community?pillar=messages&dm=tutii',
+    link: linkOptions({ to: '/community', search: { pillar: 'messages', dm: 'tutii' } }),
   },
   {
     id: 'ai-workspace',
@@ -84,7 +75,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Multi-turn agent reasoning, tool proposals, and human-in-the-loop plans',
     symbol: '⚡',
     section: 'Tools',
-    href: '/community?pillar=messages',
+    link: linkOptions({ to: '/community', search: { pillar: 'messages' } }),
   },
   {
     id: 'ai-incognito',
@@ -92,7 +83,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Zero-trace, non-persisted inquiry with instant ephemeral scratchpad',
     symbol: '🕶️',
     section: 'Tools',
-    href: '/community?pillar=messages&mode=incognito',
+    link: linkOptions({ to: '/community', search: { pillar: 'messages', mode: 'incognito' } }),
   },
   {
     id: 'tools-agent-lab',
@@ -100,7 +91,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Durable Agent scenario executions and runtime traces',
     symbol: '✦',
     section: 'Tools',
-    href: '/agent-lab',
+    link: linkOptions({ to: '/agent-lab' }),
   },
   {
     id: 'tools-icon-lab',
@@ -108,7 +99,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Brand design tokens, icons, and APCA contrast inspector',
     symbol: '🎨',
     section: 'Tools',
-    href: '/icon-lab',
+    link: linkOptions({ to: '/icon-lab' }),
   },
   {
     id: 'account-profile',
@@ -116,17 +107,31 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Account settings, institutional bonds, and privacy',
     symbol: '◉',
     section: 'Account',
-    href: '/profile',
+    link: linkOptions({ to: '/profile' }),
   },
-];
+] satisfies readonly Readonly<{
+  id: string;
+  title: string;
+  description: string;
+  symbol: string;
+  section: CommandSection;
+  link: { to: string };
+}>[];
+
+type CommandItem = (typeof commands)[number];
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  navigationPrefix?: string;
+  /** The person's capacity: Workspace commands come only from its floor. */
+  capacity?: string | null;
 }
 
-export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: CommandPaletteProps) {
+export function CommandPalette({
+  isOpen,
+  onClose,
+  capacity,
+}: CommandPaletteProps) {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -134,7 +139,8 @@ export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: Comma
   const listRef = useRef<HTMLUListElement>(null);
   const listId = useId();
 
-  const filteredCommands = defaultCommands.filter((cmd) => {
+  const filteredCommands = commands.filter((cmd) => {
+    if (!isOfferedTo(capacity, cmd.link.to)) return false;
     if (!query.trim()) return true;
     const q = query.toLowerCase();
     return (
@@ -159,14 +165,9 @@ export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: Comma
   const executeCommand = useCallback(
     (cmd: CommandItem) => {
       onClose();
-      if (cmd.action) {
-        cmd.action();
-      } else if (cmd.href) {
-        const fullHref = `${navigationPrefix}${cmd.href}`;
-        router.push(fullHref);
-      }
+      void router.navigate(cmd.link);
     },
-    [navigationPrefix, onClose, router],
+    [onClose, router],
   );
 
   function handleKeyDown(event: ReactKeyboardEvent) {

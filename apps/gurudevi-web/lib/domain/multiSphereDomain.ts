@@ -1,5 +1,3 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/logic/modes/sandboxDataset';
 import { storage } from '@repo/core/lib/storage.adapter';
 import { useCallback, useEffect, useState } from 'react';

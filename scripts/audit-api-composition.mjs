@@ -26,6 +26,10 @@ const admittedHostFiles = new Set([
   'apps/sanctuary-api/src/node-server.ts',
   'apps/sanctuary-api/src/platform.ts',
   'apps/sanctuary-api/src/security/security.ts',
+  // The short-lived PowerSync token (identity.syncGrant).
+  'apps/sanctuary-api/src/security/syncGrant.ts',
+  // The account's own deletion request (identity.deletion), moved from the retired Next server.
+  'apps/sanctuary-api/src/security/accountDeletion.ts',
   'apps/sanctuary-api/src/operations/store.ts',
   'apps/sanctuary-api/src/operations/dispatcher.ts',
   'apps/sanctuary-api/src/modules/catalog.ts',
@@ -214,6 +218,11 @@ export function auditComposition(files) {
             entry: nativeProcedure,
             createInitialBond: nativeProcedure,
             syncGrant: nativeProcedure,
+            deletion: {
+              status: nativeProcedure,
+              request: nativeProcedure,
+              cancel: nativeProcedure,
+            },
           },
           authority: { refreshSnapshot: nativeProcedure },
         }) ||
@@ -274,6 +283,11 @@ export function auditComposition(files) {
             entry: (node) => nativeHandler(node, 'identity.entry'),
             createInitialBond: (node) => nativeHandler(node, 'identity.createInitialBond'),
             syncGrant: (node) => nativeHandler(node, 'identity.syncGrant'),
+            deletion: {
+              status: (node) => nativeHandler(node, 'identity.deletion.status'),
+              request: (node) => nativeHandler(node, 'identity.deletion.request'),
+              cancel: (node) => nativeHandler(node, 'identity.deletion.cancel'),
+            },
           },
           authority: {
             refreshSnapshot: (node) => nativeHandler(node, 'authority.refreshSnapshot'),
@@ -344,6 +358,8 @@ export function auditComposition(files) {
           executeAccountCommand: (node) =>
             accessPath(node)?.join('.') === 'options.platform.executeAccountCommand',
           syncGrants: (node) => accessPath(node)?.join('.') === 'options.platform.syncGrants',
+          withAccountData: (node) =>
+            accessPath(node)?.join('.') === 'options.platform.withAccountData',
         });
       if (nativeCalls.length !== 1 || !projection)
         add(

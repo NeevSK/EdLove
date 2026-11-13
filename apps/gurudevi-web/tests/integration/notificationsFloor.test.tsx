@@ -2,6 +2,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NotificationsFloor } from '@/app/(sanctuary)/notifications/NotificationsFloor';
+import { notificationFeed } from '@/app/(sanctuary)/notifications/notificationFeed';
 
 describe('NotificationsFloor Integration (G1 boundary / jsdom)', () => {
   beforeEach(() => {
@@ -14,20 +15,26 @@ describe('NotificationsFloor Integration (G1 boundary / jsdom)', () => {
   });
 
   it('renders within SanctuaryFloorCanvas with notifications title and Floor Studio trigger', () => {
-    render(<NotificationsFloor displayName="Aria Star" />);
+    render(
+      <NotificationsFloor displayName="Aria Star" notifications={notificationFeed('sanctuary')} />,
+    );
 
     // Check title and unread header text
     expect(screen.getByRole('heading', { level: 1, name: /notifications center/i })).toBeTruthy();
     expect(screen.getByText(/unread announcements/i)).toBeTruthy();
 
     // Check Floor Studio button is mounted
-    const studioButton = screen.getByRole('button', { name: /customize this notifications floor/i });
+    const studioButton = screen.getByRole('button', {
+      name: /customize this notifications floor/i,
+    });
     expect(studioButton).toBeTruthy();
   });
 
   it('filters notifications by category and allows marking all read', async () => {
     const user = userEvent.setup();
-    render(<NotificationsFloor displayName="Aria Star" />);
+    render(
+      <NotificationsFloor displayName="Aria Star" notifications={notificationFeed('sanctuary')} />,
+    );
 
     // Initially contains multiple notices
     expect(screen.getByText(/Attendance marked for Forest Learning Circle/i)).toBeTruthy();
@@ -53,7 +60,12 @@ describe('NotificationsFloor Integration (G1 boundary / jsdom)', () => {
   });
 
   it('renders guest notifications when isExplore is true', () => {
-    render(<NotificationsFloor displayName="Guest Explorer" isExplore={true} />);
+    render(
+      <NotificationsFloor
+        displayName="Guest Explorer"
+        notifications={notificationFeed('explore')}
+      />,
+    );
 
     expect(screen.getByText(/Welcome to Gurudevi Guest House/i)).toBeTruthy();
     expect(screen.getByText(/Local-First PDPA Privacy Invariant/i)).toBeTruthy();

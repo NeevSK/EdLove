@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import styles from './contribute.module.css';
@@ -77,7 +75,7 @@ export function ContributeDesk({ displayName, capacity }: Readonly<ContributeDes
     <div className={styles.container}>
       <header className={styles.headerBar}>
         <div className={styles.titleArea}>
-          <Link href="/library" className={styles.backLink}>
+          <Link to="/library" className={styles.backLink}>
             ← Back to Sanctuary Library
           </Link>
           <h1>Contribute Curricular Material</h1>

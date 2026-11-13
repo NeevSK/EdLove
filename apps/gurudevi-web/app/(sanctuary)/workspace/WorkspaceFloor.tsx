@@ -1,19 +1,15 @@
-'use client';
-
 import { resolvePracticeAvailability } from '@repo/core/logic/registry/capabilityManifest';
 import { resolveTemporalCoordinates, resolveTemporalIntent } from '@repo/core/logic/workbench';
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
 import {
   useWorkspaceDomain,
   type WorkspaceAttendanceReadScope,
 } from '../../../lib/domain/hooks/useWorkspaceDomain';
-import { setExploreCapacity, useExploreCapacity } from '../../../lib/explore/exploreCapacity';
-import { setDevPreviewCapacity } from '../../../lib/sanctuary/devPreviewCapacity';
+import { useExploreCapacity } from '../../../lib/explore/exploreCapacity';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import {
@@ -38,7 +34,6 @@ import { identifyHallwayDrift } from '../../../lib/workspace/attendanceInsights'
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { LivingCard } from '../components/LivingCard';
 import { MorningSituationalBrief } from '../components/MorningSituationalBrief';
-import { RoleLensSwitcher, type WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import { DateTimeCombo } from '@repo/ui/components/web';
 import { timeGreeting } from '../../../lib/timeGreeting';
@@ -46,9 +41,11 @@ import { TaskStrip } from '../components/TaskStrip';
 import { TeacherWorkspaceFloor } from './TeacherWorkspaceFloor';
 import styles from './workspace.module.css';
 import {
-  filterWorkspaceFeatures,
   getWorkspaceOverviewPosture,
-  WORKSPACE_FEATURES,
+  WEB_WORKSPACE_FEATURES,
+  type WorkspaceFeatureItem,
+  workspaceFeaturesFor,
+  workspaceVoice,
 } from './workspaceFeatureRegistry';
 
 type AuthorizedEntryScope = Readonly<{ bondId: string; entityId: string }>;
@@ -60,6 +57,8 @@ type WorkspaceFloorProps = Readonly<{
   displayName?: string;
   scope?: AuthorizedEntryScope;
   isDevPreview?: boolean;
+  /** A task a link asked to open (`/workspace?task=attendance`). */
+  task?: 'attendance';
 }>;
 
 const WORKSPACE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
@@ -125,78 +124,20 @@ export function WorkspaceFloor({
   displayName = 'Guest Explorer',
   scope,
   isDevPreview = false,
+  task: requestedTask,
 }: WorkspaceFloorProps) {
   const router = useRouter();
   const exploreCapacity = useExploreCapacity();
   const normalizedCapacity = (mode === 'explore' && !isDevPreview ? exploreCapacity : capacity)?.toLowerCase();
-  const defaultRole: WorkspaceRoleFilter =
-    normalizedCapacity === 'student'
-      ? 'student'
-      : normalizedCapacity === 'principal' || normalizedCapacity === 'admin'
-        ? 'principal'
-        : normalizedCapacity === 'guardian' || normalizedCapacity === 'parent'
-          ? 'guardian'
-          : 'teacher';
+  const voice = workspaceVoice(normalizedCapacity);
+  const features = workspaceFeaturesFor(normalizedCapacity);
 
-  const [activeRole, setActiveRole] = useState<WorkspaceRoleFilter>(defaultRole);
-  const roleLensKey = `sanctuary-role-lens:workspace:${subjectId ?? 'guest'}:${scope?.bondId ?? 'unselected'}`;
-
+  const [overview, setOverview] = useState(requestedTask !== 'attendance');
+  // A link asking for a task opens it, also when the Workspace is already showing.
   useEffect(() => {
-    if (mode === 'explore') return;
-    setActiveRole(defaultRole);
-    try {
-      const stored = window.localStorage.getItem(roleLensKey);
-      if (
-        stored &&
-        ['all', 'common', 'teacher', 'student', 'principal', 'guardian'].includes(stored)
-      ) {
-        setActiveRole(stored as WorkspaceRoleFilter);
-      }
-    } catch {
-      return;
-    }
-  }, [defaultRole, mode, roleLensKey]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setOverview(new URLSearchParams(window.location.search).get('task') !== 'attendance');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (mode === 'explore') setActiveRole(defaultRole);
-  }, [defaultRole, mode]);
-
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('task') === 'attendance') {
-      setOverview(false);
-    }
-  }, []);
-
-  const handleRoleChange = useCallback(
-    (role: WorkspaceRoleFilter) => {
-      setActiveRole(role);
-      if (mode === 'explore') {
-        if (
-          role === 'teacher' ||
-          role === 'student' ||
-          role === 'principal' ||
-          role === 'guardian'
-        ) {
-          if (isDevPreview) setDevPreviewCapacity(role);
-          else setExploreCapacity(role);
-        }
-        return;
-      }
-      try {
-        window.localStorage.setItem(roleLensKey, role);
-      } catch {}
-    },
-    [mode, roleLensKey, isDevPreview],
-  );
-
-  const [overview, setOverview] = useState(true);
-  const workspaceFeatureIds = WORKSPACE_FEATURES.map((feature) => feature.id);
+    if (requestedTask === 'attendance') setOverview(false);
+  }, [requestedTask]);
+  const workspaceFeatureIds = features.map((feature) => feature.id);
   const quickAccessScope = mode === 'explore' ? 'explore' : 'sanctuary';
   const quickAccess = useQuickAccessPreferences(
     'workspace',
@@ -260,12 +201,10 @@ export function WorkspaceFloor({
     () => resolveTemporalCoordinates(date, { domain: 'workspace' }),
     [date],
   );
-  const effectiveRole: WorkspaceRoleFilter =
-    activeRole === 'all' || activeRole === 'common' ? defaultRole : activeRole;
 
   const posture = useMemo(
-    () => getWorkspaceOverviewPosture(effectiveRole, coordinates.intent, coordinates.dateLabel),
-    [effectiveRole, coordinates.intent, coordinates.dateLabel],
+    () => getWorkspaceOverviewPosture(voice, coordinates.intent, coordinates.dateLabel),
+    [voice, coordinates.intent, coordinates.dateLabel],
   );
   const [loadState, setLoadState] = useState<LoadState>(mode === 'explore' ? 'ready' : 'loading');
   const accountReadState: LoadState =
@@ -508,7 +447,7 @@ export function WorkspaceFloor({
     setOverview(false);
   }
 
-  function openWorkspaceFeature(feature: (typeof WORKSPACE_FEATURES)[number]) {
+  function openWorkspaceFeature(feature: WorkspaceFeatureItem) {
     if (feature.id === 'attendance') {
       openAttendance();
       return;
@@ -525,7 +464,7 @@ export function WorkspaceFloor({
       setError('Close another Workspace task before opening this tool.');
       return;
     }
-    router.push(feature.href);
+    void router.navigate({ href: feature.href });
   }
 
   function focusTask(task: WorkbenchTaskDescriptor) {
@@ -534,7 +473,7 @@ export function WorkspaceFloor({
       setOverview(false);
       return;
     }
-    if (task.route !== '/workspace') router.push(task.route);
+    if (task.route !== '/workspace') void router.navigate({ href: task.route });
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {
@@ -543,9 +482,9 @@ export function WorkspaceFloor({
     setOverview(returnToHome || result.kind === 'overview');
     if (
       task.featureId === attendanceTask.featureId &&
-      new URLSearchParams(window.location.search).has('task')
+      requestedTask !== undefined
     ) {
-      router.replace('/workspace');
+      void router.navigate({ to: '/workspace', replace: true });
     }
   }
 
@@ -798,8 +737,8 @@ export function WorkspaceFloor({
         onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
         onOpenOverview={() => {
           setOverview(true);
-          if (new URLSearchParams(window.location.search).has('task')) {
-            router.replace('/workspace');
+          if (requestedTask !== undefined) {
+            void router.navigate({ to: '/workspace', replace: true });
           }
           requestAnimationFrame(() =>
             document.getElementById('workspace-catalog-title')?.scrollIntoView({
@@ -808,7 +747,7 @@ export function WorkspaceFloor({
             }),
           );
         }}
-        quickAccessItems={WORKSPACE_FEATURES.map((item) => ({
+        quickAccessItems={features.map((item) => ({
           id: item.id,
           label: item.label,
           emoji: item.symbol,
@@ -817,7 +756,7 @@ export function WorkspaceFloor({
         quickAccessUsage={quickAccess.usage}
         quickAccessPinLimit={quickAccess.pinLimit}
         onOpenQuickAccessItem={(item) => {
-          const feature = WORKSPACE_FEATURES.find((candidate) => item.id === candidate.id);
+          const feature = features.find((candidate) => item.id === candidate.id);
           if (feature) {
             openWorkspaceFeature(feature);
             return;
@@ -825,14 +764,7 @@ export function WorkspaceFloor({
         }}
         onToggleQuickAccessPin={quickAccess.togglePin}
         overviewActive={overview}
-        tasks={workbench.state.tasks}
-        trailingContent={
-          <RoleLensSwitcher
-            activeRole={activeRole}
-            onRoleChange={handleRoleChange}
-            presentation="menu"
-          />
-        }
+        tasks={workbench.state.tasks.filter((task) => workspaceFeatureIds.some((id) => id === task.featureId))}
       />
 
       {error ? (
@@ -880,7 +812,7 @@ export function WorkspaceFloor({
 
       {overview ? (
         <div className={styles.featureContentIn} key="workspace-home">
-          {effectiveRole === 'teacher' ? (
+          {voice === 'teacher' ? (
             <TeacherWorkspaceFloor
               displayName={displayName}
               isExplore={mode === 'explore'}
@@ -912,16 +844,16 @@ export function WorkspaceFloor({
           <LivingCard
             className={styles.overview}
             variant={
-              effectiveRole === 'student'
+              voice === 'student'
                 ? 'lotus'
-                : effectiveRole === 'principal'
+                : voice === 'principal'
                   ? 'glass'
                   : 'vellum'
             }
             elevation="floating"
             style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
           >
-            {effectiveRole === 'principal' ? (
+            {voice === 'principal' ? (
               <MorningSituationalBrief schoolId={scope?.entityId ?? 'default-school'} />
             ) : null}
 
@@ -931,7 +863,7 @@ export function WorkspaceFloor({
               <p>{posture.description}</p>
             </div>
 
-            {effectiveRole === 'principal' &&
+            {voice === 'principal' &&
             coordinates.intent !== 'plan' ? (
               <>
                 {accountReadState === 'loading' && mode === 'account' ? (
@@ -956,36 +888,36 @@ export function WorkspaceFloor({
             ) : null}
 
             <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              {effectiveRole === 'student' ? (
+              {voice === 'student' ? (
                 <>
-                  <Link href="/self/attendance" className={styles.primary}>
+                  <Link to="/workspace/attendance" className={styles.primary}>
                     {posture.actionText}
                   </Link>
-                  <Link href="/workspace/timetable" className={styles.secondary}>
+                  <Link to="/workspace/timetable" className={styles.secondary}>
                     View timetable
                   </Link>
-                  <Link href="/self" className={styles.secondary}>
+                  <Link to="/self" className={styles.secondary}>
                     Quiet journal
                   </Link>
                 </>
-              ) : effectiveRole === 'guardian' ? (
+              ) : voice === 'guardian' ? (
                 <>
-                  <Link href="/workspace" className={styles.primary}>
+                  <Link to="/workspace" className={styles.primary}>
                     {posture.actionText}
                   </Link>
-                  <Link href="/community" className={styles.secondary}>
+                  <Link to="/community" className={styles.secondary}>
                     Community dialogues
                   </Link>
-                  <Link href="/library" className={styles.secondary}>
+                  <Link to="/library" className={styles.secondary}>
                     Family guides
                   </Link>
                 </>
-              ) : effectiveRole === 'principal' && coordinates.intent === 'plan' ? (
+              ) : voice === 'principal' && coordinates.intent === 'plan' ? (
                 <>
-                  <Link href="/workspace/events" className={styles.primary}>
+                  <Link to="/workspace/events" className={styles.primary}>
                     {posture.actionText}
                   </Link>
-                  <Link href="/workspace/school" className={styles.secondary}>
+                  <Link to="/workspace/school" className={styles.secondary}>
                     School profile
                   </Link>
                 </>
@@ -1035,7 +967,7 @@ export function WorkspaceFloor({
             {mode === 'account' &&
             accountReadState === 'ready' &&
             visibleClassrooms.length === 0 &&
-            effectiveRole === 'principal' ? (
+            voice === 'principal' ? (
               <div className={styles.muted} role="status">
                 <p><strong>Your classroom workspace is ready to begin.</strong></p>
                 <p>
@@ -1052,14 +984,10 @@ export function WorkspaceFloor({
           <section aria-labelledby="workspace-catalog-title" className={styles.workspaceCatalog}>
             <p className={styles.eyebrow}>Workspace tools</p>
             <h2 id="workspace-catalog-title">
-              {activeRole === 'all'
-                ? 'All workspace operations'
-                : activeRole === 'common'
-                  ? 'Universal tools'
-                  : `${activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} tools`}
+              Your tools
             </h2>
             <div className={styles.workspaceGrid}>
-              {filterWorkspaceFeatures(WORKSPACE_FEATURES, activeRole).map((feature) => (
+              {features.map((feature) => (
                 <LivingCard
                   as="article"
                   className={styles.workspaceCard}
@@ -1080,7 +1008,7 @@ export function WorkspaceFloor({
                         {feature.symbol}
                       </span>
                       <span className={styles.roleTag}>
-                        {feature.isCommon ? 'Common' : feature.roles.join(' · ')}
+                        {feature.category}
                       </span>
                     </div>
                     <h3
@@ -1169,7 +1097,7 @@ export function WorkspaceFloor({
                     <h2 id="attendance-title">{classroom?.name ?? 'Daily attendance'}</h2>
                     {classroom?.id ? (
                       <Link
-                        href={`/workspace/classroom/${encodeURIComponent(classroom.id)}`}
+                        to="/workspace/classroom/$id" params={{ id: classroom.id }}
                         style={{
                           fontSize: '0.85rem',
                           fontWeight: 600,
@@ -1324,10 +1252,10 @@ export function WorkspaceFloor({
                           flexWrap: 'wrap',
                         }}
                       >
-                        <Link href="/workspace/badges" className={styles.kioskLink}>
+                        <Link to="/workspace/badges" className={styles.kioskLink}>
                           📇 Print Class Badges
                         </Link>
-                        <Link href="/workspace/kiosk" className={styles.kioskLink}>
+                        <Link to="/workspace/kiosk" className={styles.kioskLink}>
                           Open Doorway Kiosk Scanner →
                         </Link>
                       </div>
@@ -1414,13 +1342,13 @@ export function WorkspaceFloor({
                 aria-labelledby="workspace-task-title"
               >
                 <span aria-hidden="true" className={styles.workspaceTaskEmoji}>
-                  {WORKSPACE_FEATURES.find((feature) => feature.id === focused?.featureId)
+                  {WEB_WORKSPACE_FEATURES.find((feature) => feature.id === focused?.featureId)
                     ?.symbol ?? '✨'}
                 </span>
                 <p className={styles.eyebrow}>Workspace task</p>
                 <h2 id="workspace-task-title">{focused?.title ?? 'Workspace feature'}</h2>
                 <p>
-                  {WORKSPACE_FEATURES.find((feature) => feature.id === focused?.featureId)
+                  {WEB_WORKSPACE_FEATURES.find((feature) => feature.id === focused?.featureId)
                     ?.description ?? 'Open a workspace tool to continue.'}
                 </p>
                 {mode === 'explore' ? (
@@ -1430,7 +1358,7 @@ export function WorkspaceFloor({
                   </p>
                 ) : null}
                 {focused?.route ? (
-                  <Link className={styles.catalogOpenButton} href={focused.route}>
+                  <Link className={styles.catalogOpenButton} to={focused.route}>
                     Open full tool →
                   </Link>
                 ) : null}

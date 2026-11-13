@@ -1,7 +1,6 @@
-'use client';
-
-import Link from 'next/link';
-import { EDLOVE_URL, EXTERNAL_LINK_PROPS, resolveSurfaceUrl } from '../../../lib/surface-urls';
+import { Link } from '@tanstack/react-router';
+import { EDLOVE_URL } from '@repo/core/site';
+import { EXTERNAL_LINK_PROPS, resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { SriLankaFlag } from '../../components/SriLankaFlag';
 import { useTranslation } from '../../../lib/i18n';
 
@@ -9,7 +8,7 @@ import { useTranslation } from '../../../lib/i18n';
  * GatewayFooter — Spacious, elegant, perfectly centered footer across Gurudevi Web gateway & auth flows.
  *
  * Modernized 2026 architecture:
- * - Next.js 16 Link primitives with automatic client-side prefetching
+ * - Router links for in-app pages; plain links for the public site's legal pages
  * - Balanced flex layout with generous horizontal and vertical breathing room (no left-heavy clumps)
  * - Semantic navigation links with smooth saffron transitions
  * - Official precision Sri Lanka vector flag (1:2 aspect ratio)
@@ -38,13 +37,13 @@ export function GatewayFooter() {
         className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[12.5px] font-medium tracking-wide text-center"
       >
         {legalLinks.map((item) => (
-          <Link
+          <a
             key={item.href}
             href={item.href}
             className="text-[var(--ink-soft)] hover:text-[var(--color-sanctuary-saffron)] transition-colors duration-150 underline-offset-4 hover:underline py-0.5 whitespace-nowrap"
           >
             {item.label}
-          </Link>
+          </a>
         ))}
       </nav>
 

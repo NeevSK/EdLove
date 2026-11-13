@@ -1,5 +1,3 @@
-'use client';
-
 import { useQuery } from '@tanstack/react-query';
 import { fetchInteractionCountForView } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './progress-tree.module.css';

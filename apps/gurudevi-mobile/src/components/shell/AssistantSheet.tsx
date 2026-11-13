@@ -7,6 +7,7 @@
  * - Help and support: the help pages and a person to write to.
  */
 
+import { GURUDEVI_SUPPORT_EMAIL } from '@repo/core/config/publicUrls';
 import { Group, LinkRow, Row, Sheet, Text } from '@repo/ui/components/native';
 import { Mascot } from '@repo/ui/components/Mascot';
 import { useWorld } from '@repo/ui/theme/native';
@@ -124,8 +125,8 @@ export function AssistantSheet({
             <LinkRow label="Help pages" href="https://gurudevi.app/help" external />
             <LinkRow
               label="Write to us"
-              detail="help@gurudevi.app"
-              href="mailto:help@gurudevi.app"
+              detail={GURUDEVI_SUPPORT_EMAIL}
+              href={`mailto:${GURUDEVI_SUPPORT_EMAIL}`}
               external
             />
           </Group>

@@ -1,9 +1,7 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { MockVideoChapter as Chapter } from '@repo/core/api/library';
 import { orpcClient } from '@repo/core/api/orpcClient';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './video.module.css';
 
@@ -240,7 +238,7 @@ export function VideoPlayerDesk({
     >
       <header className={styles.theaterHeader}>
         <div className={styles.titleArea}>
-          <Link className={styles.backLink} href="/library">
+          <Link className={styles.backLink} to="/library">
             ← Back to Sanctuary Library
           </Link>
           <h1 className={styles.lectureHeading}>{videoTitle}</h1>

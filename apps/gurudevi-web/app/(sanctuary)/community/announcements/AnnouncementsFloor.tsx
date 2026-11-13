@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import type { CommunityAnnouncement } from '../../../../lib/community/announcements-contract';
 import styles from '../community.module.css';
@@ -41,7 +39,7 @@ export function AnnouncementsFloor({
       {/* Subnav Navigation */}
       <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <Link
-          href="/community"
+          to="/community"
           style={{
             padding: '0.4rem 1rem',
             borderRadius: '9999px',

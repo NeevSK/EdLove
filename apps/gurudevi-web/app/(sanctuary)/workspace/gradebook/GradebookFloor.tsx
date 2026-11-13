@@ -1,6 +1,4 @@
-﻿'use client';
-
-import { useEffect, useId, useState } from 'react';
+﻿import { useEffect, useId, useState } from 'react';
 import { useAcademicDomain } from '@/lib/domain/hooks/useAcademicDomain';
 import type { GradebookStudent } from '@/lib/domain/ports/academic.port';
 import { ScrollArea } from '@repo/ui/components/web';

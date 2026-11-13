@@ -1,13 +1,15 @@
 /**
- * Gurudevi Host Routing Engine
+ * Gurudevi's hosts and what each serves.
  *
- * Partitions the single Next.js web application into three distinct surfaces:
- * 1. Public / Marketing: gurudevi.app (or localhost:3000 / public.localhost:3000) -> app/(marketing)
- * 2. Sanctuary Web: sanctuary.gurudevi.app (or sanctuary.localhost:3000) -> app/(sanctuary)
- * 3. Explore Web: explore.gurudevi.app (or explore.localhost:3000) -> app/(sanctuary) guest showcase
+ * `classifyGurudeviHost` tells a screen which host it runs on: gurudevi.app (the Astro public
+ * site), sanctuary.gurudevi.app, explore.gurudevi.app or a school's own subdomain. Locally,
+ * RFC 6761 `*.localhost` names stand in for them without editing hosts files.
  *
- * Local development leverages RFC 6761 (*.localhost) to permit zero-OS-hack
- * testing without editing /etc/hosts or dealing with SSL port collisions.
+ * `resolveHostRouting` is the routing a host applies to a path. The app hosts serve the built
+ * app as files, so nothing applies it there; it remains the specification for school
+ * subdomains (`<school>.gurudevi.app` opening that school's page, badge and share card), which
+ * waits on the owner's decision about serving them
+ * (docs/decisions/2026-11-12-web-stack-astro-vite.md).
  */
 
 export const PUBLIC_GURUDEVI_HOST = 'gurudevi.app';

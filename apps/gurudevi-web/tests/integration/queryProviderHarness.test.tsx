@@ -32,7 +32,7 @@ class TestErrorBoundary extends Component<
 /**
  * G3 Component Mounting & Provider Integration Harness
  *
- * Grounded in React 19 Next.js 16 App Router lifecycle:
+ * Grounded in the React 19 component lifecycle:
  * - Verifies real component tree mounting within QueryProvider and AuthProvider.
  * - Asserts stable isomorphic QueryClient instance across component re-renders.
  * - Verifies query loading, success rendering, and mutation invalidation in the real DOM.

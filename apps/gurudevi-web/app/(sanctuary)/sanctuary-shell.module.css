@@ -1307,3 +1307,17 @@
     filter: none;
   }
 }
+
+/* Main navigation placement: in the header deck on wider screens, a bottom bar on phones.
+   Kept last so these win the equal-specificity rules above. */
+.shell .horizontalNavigation[data-placement="bottom"] {
+  display: none;
+}
+@media (max-width: 48rem) {
+  .shell .horizontalNavigation[data-placement="deck"] {
+    display: none;
+  }
+  .shell .horizontalNavigation[data-placement="bottom"] {
+    display: flex;
+  }
+}

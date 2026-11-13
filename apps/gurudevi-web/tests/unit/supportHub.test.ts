@@ -4,14 +4,10 @@ import {
   FUNCTIONALITY_GUIDES,
   SUPPORT_CONTACT_CHANNELS,
   SUPPORT_FAQS,
+  SUPPORT_PAGE,
   SURFACE_COMPARISON,
-} from '../../app/(marketing)/(support)/supportData';
-import { metadata } from '../../app/(marketing)/(support)/support/page';
-import {
-  GRATITUDE_EMAIL,
-  INSTITUTIONAL_EMAIL,
-  SUPPORT_EMAIL,
-} from '../../app/seo';
+} from '../../app/(sanctuary)/(support)/supportData';
+import { CONTACT_EMAILS } from '@repo/core/site';
 import {
   EXPLORE_GURUDEVI_HOST,
   PUBLIC_GURUDEVI_HOST,
@@ -152,10 +148,10 @@ describe('Support Hub & Functionality Guide Suite', () => {
   });
 
   describe('Contact Channels & SLA Alignment', () => {
-    it('configures canonical support, institutional, and gratitude channels with official .lk domain', () => {
-      expect(SUPPORT_EMAIL).toBe('support@gurudevi.lk');
-      expect(INSTITUTIONAL_EMAIL).toBe('institutional@gurudevi.lk');
-      expect(GRATITUDE_EMAIL).toBe('gratitude@gurudevi.lk');
+    it('configures canonical support, institutional, and gratitude channels on the official gurudevi.lk domain', () => {
+      expect(CONTACT_EMAILS.support).toBe('support@gurudevi.lk');
+      expect(CONTACT_EMAILS.institutional).toBe('institutional@gurudevi.lk');
+      expect(CONTACT_EMAILS.gratitude).toBe('gratitude@gurudevi.lk');
 
       const emails = SUPPORT_CONTACT_CHANNELS.map((c) => c.email);
       expect(emails).toContain('support@gurudevi.lk');
@@ -191,9 +187,9 @@ describe('Support Hub & Functionality Guide Suite', () => {
 
   describe('Support Page Metadata', () => {
     it('publishes descriptive search and agentic discovery metadata', () => {
-      expect(metadata.title).toContain('Support');
-      expect(metadata.description).toContain('Explore');
-      expect(metadata.description).toContain('Sanctuary');
+      expect(SUPPORT_PAGE.title).toContain('Support');
+      expect(SUPPORT_PAGE.description).toContain('Explore');
+      expect(SUPPORT_PAGE.description).toContain('Sanctuary');
     });
   });
 });

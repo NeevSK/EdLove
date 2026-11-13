@@ -1,5 +1,3 @@
-'use client';
-
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
@@ -30,7 +28,7 @@ import {
   Sparkles,
   Video,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';

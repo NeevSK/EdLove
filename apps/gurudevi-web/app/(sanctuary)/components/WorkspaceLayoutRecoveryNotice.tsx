@@ -1,5 +1,3 @@
-'use client';
-
 import styles from './workspace-layout-recovery.module.css';
 
 export interface WorkspaceLayoutRecoveryNoticeProps {

@@ -1,0 +1,108 @@
+---
+import { LANGUAGES, localePath, surfaceUrl, translator, type SupportedLocale } from '../site';
+import LanguageSwitch from '../islands/LanguageSwitch';
+
+interface Props {
+  locale: SupportedLocale;
+  path: string;
+}
+const { locale, path } = Astro.props;
+const t = translator(locale);
+const home = localePath(locale, '/');
+const navItems = [
+  { name: t('nav.ecology'), href: '/about' },
+  { name: t('nav.workspaces'), href: `${home}#workspaces` },
+  { name: t('nav.roadmap'), href: `${home}#roadmap` },
+  { name: t('nav.journal'), href: '/journal' },
+  { name: t('nav.faq'), href: '/faq' },
+  { name: t('nav.support'), href: '/support' },
+];
+const platform = surfaceUrl('explore', '/self');
+const languageHrefs = Object.fromEntries(LANGUAGES.map((l) => [l.code, localePath(l.code, path)]));
+---
+<header class="site-header">
+  <a
+    class="sr-only absolute left-4 top-4 z-50 rounded bg-charcoal-truth px-4 py-3 font-ui-grotesque text-sm font-bold text-sacred-white focus:not-sr-only focus:outline-3 focus:outline-offset-4 focus:outline-teal-water"
+    href="#main-content">{t('nav.skipToContent')}</a
+  >
+
+  <div class="site-header__inner">
+    <a class="brand" href={home} aria-label="Gurudevi home">
+      <img src="/gurudevi-mark.svg" alt="" width="28" height="28" fetchpriority="high" />
+      <span>{t('brand.name')}</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      {navItems.map((item) => <a href={item.href}>{item.name}</a>)}
+    </nav>
+
+    <div class="header-actions">
+      <!-- The one React island: the kit picker. It is hidden below 640px, so phones never download React for it. -->
+      <LanguageSwitch
+        client:media="(min-width: 640px)"
+        value={locale}
+        hrefs={languageHrefs}
+        label={t('nav.chooseLanguage')}
+        className="hidden sm:inline-flex"
+      />
+      <a class="header-platform" href={platform}>{t('nav.openPlatform')} <span aria-hidden="true">↗</span></a>
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        data-menu-open
+      >
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu__top">
+      <span class="eyebrow">{t('brand.name')}</span>
+      <button id="menu-close" type="button" aria-label="Close navigation menu" data-menu-close>
+        {t('nav.close')}
+      </button>
+    </div>
+    <nav aria-label="Mobile navigation">
+      {navItems.map((item) => <a href={item.href} data-menu-close>{item.name}</a>)}
+      <a href={platform} data-menu-close>{t('nav.openPlatform')} ↗</a>
+      <div
+        class="mt-6 flex flex-wrap gap-4 border-t border-line pt-5 font-sans text-sm"
+        aria-label={t('nav.chooseLanguage')}
+      >
+        {
+          LANGUAGES.map((lang) => (
+            <a
+              href={languageHrefs[lang.code]}
+              lang={lang.code}
+              class={`font-semibold ${locale === lang.code ? 'underline underline-offset-4' : 'text-ink-soft'}`}
+            >
+              {lang.nativeLabel}
+            </a>
+          ))
+        }
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // The menu needs a few lines of DOM, not a framework.
+  const menu = document.getElementById('mobile-menu');
+  const opener = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  function setOpen(open: boolean) {
+    menu?.classList.toggle('is-open', open);
+    menu?.setAttribute('aria-hidden', String(!open));
+    opener?.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('overflow-hidden', open);
+  }
+  opener?.addEventListener('click', () => setOpen(true));
+  for (const el of document.querySelectorAll('[data-menu-close]')) el.addEventListener('click', () => setOpen(false));
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+</script>

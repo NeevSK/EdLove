@@ -1,5 +1,3 @@
-'use client';
-
 import { Activity, Bell, Check, Clock, Droplets, Heart, Sparkles, Wind } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';

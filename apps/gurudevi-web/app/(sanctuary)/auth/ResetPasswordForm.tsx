@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { resolveSecurityOwner, type SecurityOwner } from '@/lib/sanctuary/securityClient';
 import { useSecurityControls } from '@/lib/sanctuary/useSecurityControls';
@@ -45,7 +43,7 @@ export function ResetPasswordForm({ returnTo }: Readonly<{ returnTo: string }>) 
   if (message)
     return (
       <p role="alert">
-        {message} <Link href="/recovery">Request recovery</Link>
+        {message} <Link to="/recovery">Request recovery</Link>
       </p>
     );
   if (!owner) return <p role="status">Verifying your recovery session…</p>;
@@ -94,7 +92,7 @@ function VerifiedPasswordForm({
     return (
       <div>
         <p role="status">Password changed successfully.</p>
-        <Link href={safeReturnPath(returnTo)}>Continue to your account</Link>
+        <a href={safeReturnPath(returnTo)}>Continue to your account</a>
       </div>
     );
   const factors = security.snapshot?.factors ?? [];

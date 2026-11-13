@@ -7,6 +7,15 @@
 
 export type ScreenRole = 'class_teacher' | 'subject_teacher' | 'principal' | 'student' | 'guardian';
 
+/** Every screen role, for checking a role named in a link. */
+export const SCREEN_ROLE_IDS = [
+  'class_teacher',
+  'subject_teacher',
+  'principal',
+  'student',
+  'guardian',
+] as const satisfies readonly ScreenRole[];
+
 export type ScreenCategory =
   | 'attendance'
   | 'academics'
@@ -84,7 +93,7 @@ export const FUNCTIONAL_SCREENS: readonly ScreenEntry[] = [
       'Individual student presence logs, detecting consecutive absence patterns (Pattern 5 gate) and tracking medical certificates or parent notes.',
     roles: ['class_teacher', 'principal', 'student', 'guardian'],
     category: 'attendance',
-    webRoute: '/self/attendance',
+    webRoute: '/workspace/attendance',
     mobileRoute: '/(tabs)/workspace/classroom/student/[classroomId]',
     legacyPoeticName: 'Presence Pulse / Hallway Drift Sensor',
   },

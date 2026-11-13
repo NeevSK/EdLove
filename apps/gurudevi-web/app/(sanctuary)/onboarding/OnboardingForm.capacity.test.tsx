@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { render } from '@/tests/support/render';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../auth/browserAuth', () => ({ browserAuthRuntime: () => null }));

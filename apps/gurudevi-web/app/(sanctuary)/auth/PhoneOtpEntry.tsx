@@ -1,7 +1,5 @@
-'use client';
-
 import { requestPhoneOtp, verifyPhoneOtp } from '@repo/core/lib/security/phoneAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@tanstack/react-router';
 import { type FormEvent, useRef, useState } from 'react';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
 
@@ -34,8 +32,8 @@ export function PhoneOtpEntry({ returnTo }: Readonly<{ returnTo: string }>) {
       }
       await verifyPhoneOtp(runtime.client.auth, { phone: challengedPhone, token });
       const destination = safeReturnPath(returnTo);
-      router.replace(destination);
-      router.refresh();
+      void router.navigate({ href: destination, replace: true });
+      void router.invalidate();
     } catch {
       setError('We could not complete phone sign-in. Check the details and try again.');
     } finally {

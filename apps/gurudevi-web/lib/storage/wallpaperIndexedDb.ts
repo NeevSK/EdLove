@@ -1,5 +1,3 @@
-'use client';
-
 import type { WorkspaceWallpaper } from '@repo/core/types';
 import { FILE_POLICY } from '@repo/core/logic/files/filePolicy';
 

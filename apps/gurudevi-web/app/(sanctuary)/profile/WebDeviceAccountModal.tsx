@@ -1,7 +1,5 @@
-'use client';
-
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import {
   type DeviceAccountRecord,
   getDeviceAccounts,
@@ -74,7 +72,7 @@ export function WebDeviceAccountModal({
                 <span className={styles.capacityBadge}>{acc.capacity}</span>
                 {!isActive ? (
                   <Link
-                    href={`/sign-in?returnTo=${encodeURIComponent('/profile')}`}
+                    to="/sign-in" search={{ returnTo: '/profile' }}
                     className={styles.switchBtn}
                   >
                     Switch
@@ -102,7 +100,7 @@ export function WebDeviceAccountModal({
       </div>
 
       <div className={styles.footerRow}>
-        <Link href="/sign-in" className={styles.addAccountBtn}>
+        <Link to="/sign-in" className={styles.addAccountBtn}>
           + Sign in to another account on this browser
         </Link>
       </div>

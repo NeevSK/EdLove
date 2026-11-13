@@ -1,5 +1,3 @@
-'use client';
-
 import { storage } from '@repo/core/lib/storage.adapter';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import { useCallback, useEffect, useState } from 'react';

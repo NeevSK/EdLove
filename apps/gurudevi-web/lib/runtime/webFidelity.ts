@@ -1,5 +1,3 @@
-'use client';
-
 import type { FidelityPreference } from '@repo/core/verger';
 import { useSyncExternalStore } from 'react';
 

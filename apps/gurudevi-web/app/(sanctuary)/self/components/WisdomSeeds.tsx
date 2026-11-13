@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import { useWisdom } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './wisdom-seeds.module.css';

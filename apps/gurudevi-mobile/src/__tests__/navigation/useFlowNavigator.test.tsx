@@ -1,10 +1,17 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const router = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn(), canGoBack: vi.fn(() => true) }));
+const router = vi.hoisted(() => ({
+  push: vi.fn(),
+  replace: vi.fn(),
+  dismissTo: vi.fn(),
+  prefetch: vi.fn(),
+  back: vi.fn(),
+  canGoBack: vi.fn(() => true),
+}));
 const width = vi.hoisted(() => ({ value: 390 }));
 const capture = vi.hoisted(() => vi.fn());
-vi.mock('expo-router', () => ({ router }));
+vi.mock('expo-router', () => ({ useRouter: () => router }));
 vi.mock('react-native', () => ({
   useWindowDimensions: () => ({ width: width.value, height: 800, scale: 2, fontScale: 1 }),
 }));
@@ -30,13 +37,23 @@ describe('useFlowNavigator (mobile) / G3 hook, real resolver, router substituted
     width.value = 390;
   });
 
-  it('replaces at the end of a flow, then lands on its completion', () => {
+  it('replaces into the last step, then dismisses to the completion without leaving the flow behind', () => {
     const { result } = renderHook(() => useFlowNavigator());
     result.current.next('flow:entry:mobile', 'onboarding');
     expect(router.replace).toHaveBeenCalledWith('/(tabs)/workspace');
     vi.clearAllMocks();
     expect(result.current.next('flow:entry:mobile', 'workspace_floor')).toBeNull();
-    expect(router.replace).toHaveBeenCalledTimes(1);
+    expect(router.dismissTo).toHaveBeenCalledTimes(1);
+    expect(router.replace).not.toHaveBeenCalled();
+  });
+
+  it('prefetches a reachable step and stays quiet for one that is not', () => {
+    const { result } = renderHook(() => useFlowNavigator());
+    result.current.prefetch('flow:entry:mobile', 'auth_gate');
+    expect(router.prefetch).toHaveBeenCalledWith('/auth');
+    result.current.prefetch('flow:teacher:roll_call', 'batch_mark');
+    expect(router.prefetch).toHaveBeenCalledTimes(1);
+    expect(capture).not.toHaveBeenCalled();
   });
 
   it('does not navigate to a step that has no route, and reports it', () => {

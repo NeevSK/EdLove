@@ -1,5 +1,3 @@
-'use client';
-
 import { planBridgeAPI } from '@repo/core/api/planBridge';
 import type { PlanNotice } from '@repo/core/api/planBridge.orpc.contract';
 import { DEFAULT_SCHOOL_TIMEZONE, formatLocal } from '@repo/core/logic/modes/schedule';

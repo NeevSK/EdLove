@@ -1,7 +1,4 @@
-'use client';
-
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ApprovalCard,
@@ -25,7 +22,6 @@ export interface TutiiSidePanelProps {
   pathname: string;
   displayName: string;
   activeCapacity?: string | null;
-  navigationPrefix?: string;
 }
 
 type PanelTab = 'chat' | 'subtasks' | 'info';
@@ -44,7 +40,6 @@ export function TutiiSidePanel({
   pathname,
   displayName,
   activeCapacity,
-  navigationPrefix = '',
 }: Readonly<TutiiSidePanelProps>) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<PanelTab>('chat');
@@ -253,9 +248,8 @@ export function TutiiSidePanel({
   // Pop out to full community DM floor
   const handlePopOut = useCallback(() => {
     onClose();
-    const prefix = navigationPrefix ? navigationPrefix.replace(/\/+$/, '') : '';
-    router.push(prefix ? `${prefix}/community?pillar=messages&dm=tutii` : '/community?pillar=messages&dm=tutii');
-  }, [navigationPrefix, onClose, router]);
+    void router.navigate({ to: '/community', search: { pillar: 'messages', dm: 'tutii' } });
+  }, [onClose, router]);
 
   if (!isOpen) return null;
 
@@ -438,7 +432,8 @@ export function TutiiSidePanel({
 
               <div style={{ padding: '0.5rem' }}>
                 <Link
-                  href={navigationPrefix ? `${navigationPrefix.replace(/\/+$/, '')}/community?pillar=messages&dm=tutii` : '/community?pillar=messages&dm=tutii'}
+                  to="/community"
+                  search={{ pillar: 'messages', dm: 'tutii' }}
                   onClick={onClose}
                   style={{
                     display: 'flex',

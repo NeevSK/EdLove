@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
+import { createTestRouter, render, type TestRouter } from '@/tests/support/render';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PasswordlessEntry } from './PasswordlessEntry';
@@ -7,18 +8,22 @@ import { PhoneOtpEntry } from './PhoneOtpEntry';
 const browserAuthRuntime = vi.hoisted(() => vi.fn());
 const signInWithOtp = vi.hoisted(() => vi.fn());
 const verifyOtp = vi.hoisted(() => vi.fn());
-const replace = vi.hoisted(() => vi.fn());
-const refresh = vi.hoisted(() => vi.fn());
 
 vi.mock('./browserAuth', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./browserAuth')>();
   return { browserAuthRuntime, safeReturnPath: actual.safeReturnPath };
 });
-vi.mock('next/navigation', () => ({ useRouter: () => ({ replace, refresh }) }));
+
+/** Where sign-in sent the person, read from the router the screen runs in. */
+let router: TestRouter;
+const replacedWith = (href: string) => ({ href, replace: true });
 
 describe('PhoneOtpEntry', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    router = createTestRouter('/sign-in');
+    vi.spyOn(router, 'navigate');
+    vi.spyOn(router, 'invalidate');
     signInWithOtp.mockResolvedValue({ error: null });
     verifyOtp.mockResolvedValue({
       data: { session: { access_token: 'test-session' }, user: { id: 'provider-user' } },
@@ -29,7 +34,7 @@ describe('PhoneOtpEntry', () => {
 
   it('requests a code with account creation off by default and does not navigate', async () => {
     const user = userEvent.setup();
-    render(<PhoneOtpEntry returnTo="/workspace" />);
+    render(<PhoneOtpEntry returnTo="/workspace" />, { router });
     fireEvent.change(screen.getByLabelText('Phone number'), { target: { value: '+94771234567' } });
     await user.click(screen.getByRole('button', { name: 'Send a sign-in code' }));
 
@@ -38,12 +43,12 @@ describe('PhoneOtpEntry', () => {
       options: { channel: 'sms', shouldCreateUser: false },
     });
     expect((await screen.findByRole('status')).textContent).toMatch(/sms will arrive/i);
-    expect(replace).not.toHaveBeenCalled();
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   it('only requests account creation after the user checks it', async () => {
     const user = userEvent.setup();
-    render(<PhoneOtpEntry returnTo="/self" />);
+    render(<PhoneOtpEntry returnTo="/self" />, { router });
     fireEvent.change(screen.getByLabelText('Phone number'), { target: { value: '+94771234567' } });
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Send a sign-in code' }));
@@ -55,21 +60,22 @@ describe('PhoneOtpEntry', () => {
 
   it('verifies an actual provider session before navigating to the safe return path', async () => {
     const user = userEvent.setup();
-    render(<PhoneOtpEntry returnTo="/workspace" />);
+    render(<PhoneOtpEntry returnTo="/workspace" />, { router });
     fireEvent.change(screen.getByLabelText('Phone number'), { target: { value: '+94771234567' } });
     await user.click(screen.getByRole('button', { name: 'Send a sign-in code' }));
     fireEvent.change(await screen.findByLabelText('SMS code'), { target: { value: '123456' } });
     await user.click(screen.getByRole('button', { name: 'Verify code' }));
 
     expect(verifyOtp).toHaveBeenCalledWith({ phone: '+94771234567', token: '123456', type: 'sms' });
-    expect(replace).toHaveBeenCalledWith('/workspace');
-    expect(refresh).toHaveBeenCalledOnce();
+    expect(router.navigate).toHaveBeenCalledWith(replacedWith('/workspace'));
+    expect(router.history.location.pathname).toBe('/workspace');
+    expect(router.invalidate).toHaveBeenCalledOnce();
   });
 
   it('retains the draft and allows retry after a request failure', async () => {
     const user = userEvent.setup();
     signInWithOtp.mockRejectedValueOnce(new Error('private provider details'));
-    render(<PhoneOtpEntry returnTo="/self" />);
+    render(<PhoneOtpEntry returnTo="/self" />, { router });
     fireEvent.change(screen.getByLabelText('Phone number'), { target: { value: '+94771234567' } });
     await user.click(screen.getByRole('button', { name: 'Send a sign-in code' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(
@@ -92,7 +98,7 @@ describe('PhoneOtpEntry', () => {
         data: { session: { access_token: 'test-session' }, user: { id: 'provider-user' } },
         error: null,
       });
-    render(<PhoneOtpEntry returnTo="https://attacker.example/steal" />);
+    render(<PhoneOtpEntry returnTo="https://attacker.example/steal" />, { router });
     fireEvent.change(screen.getByLabelText('Phone number'), { target: { value: '+94771234567' } });
     await user.click(screen.getByRole('button', { name: 'Send a sign-in code' }));
     const code = await screen.findByLabelText('SMS code');
@@ -103,11 +109,11 @@ describe('PhoneOtpEntry', () => {
     );
     expect(screen.getByRole('alert').textContent).not.toContain('private provider details');
     expect((screen.getByLabelText('SMS code') as HTMLInputElement).value).toBe('123456');
-    expect(replace).not.toHaveBeenCalled();
+    expect(router.navigate).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole('button', { name: 'Verify code' }));
-    expect(replace).toHaveBeenCalledWith('/self');
-    expect(replace).not.toHaveBeenCalledWith('https://attacker.example/steal');
+    expect(router.navigate).toHaveBeenCalledWith(replacedWith('/self'));
+    expect(router.history.location.href).toBe('/self');
   });
 
   it('blocks duplicate requests while pending', async () => {
@@ -118,7 +124,7 @@ describe('PhoneOtpEntry', () => {
           settleRequest = resolve;
         }),
     );
-    render(<PhoneOtpEntry returnTo="/self" />);
+    render(<PhoneOtpEntry returnTo="/self" />, { router });
     fireEvent.change(screen.getByLabelText('Phone number'), { target: { value: '+94771234567' } });
     const form = screen.getByLabelText('Phone number').closest('form');
     if (!(form instanceof HTMLFormElement)) throw new Error('Expected phone form');
@@ -132,7 +138,7 @@ describe('PhoneOtpEntry', () => {
 
   it('clears a previous challenge when the phone number changes', async () => {
     const user = userEvent.setup();
-    render(<PhoneOtpEntry returnTo="/self" />);
+    render(<PhoneOtpEntry returnTo="/self" />, { router });
     const phoneInput = screen.getByLabelText('Phone number');
     fireEvent.change(phoneInput, { target: { value: '+94771234567' } });
     await user.click(screen.getByRole('button', { name: 'Send a sign-in code' }));
@@ -145,7 +151,7 @@ describe('PhoneOtpEntry', () => {
   it('shows a safe error when the browser auth runtime is missing', async () => {
     browserAuthRuntime.mockReturnValue(null);
     const user = userEvent.setup();
-    render(<PhoneOtpEntry returnTo="/self" />);
+    render(<PhoneOtpEntry returnTo="/self" />, { router });
     await user.type(screen.getByLabelText('Phone number'), '+94771234567');
     await user.click(screen.getByRole('button', { name: 'Send a sign-in code' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(

@@ -1,5 +1,6 @@
 import {
   deriveRolesFromCapabilities,
+  RolePolicy,
   resolveAccessibleFeatures,
 } from '@repo/self/features/accessPolicy';
 import { FEATURE_CATALOG } from '@repo/self/features/featureCatalog';
@@ -29,7 +30,7 @@ describe('AccessPolicy composite', () => {
     });
     expect(teacher.some((f) => f.id === 'daily_rhythm')).toBe(true);
   });
-  it('multi-role affinity', () => {
+  it("offers a feature related to any of the person's roles", () => {
     const both = resolveAccessibleFeatures({
       userId: 'u',
       capabilities: [
@@ -42,8 +43,21 @@ describe('AccessPolicy composite', () => {
       citizenshipLevel: 3,
       roles: ['teacher', 'guardian'] as never,
     });
-    const pulse = both.find((f) => f.id === 'daily_pulse');
-    expect(pulse?.roleAffinity).toBeGreaterThanOrEqual(60);
+    expect(both.some((f) => f.id === 'daily_pulse')).toBe(true);
+  });
+
+  it("withholds a feature that is not for any of the person's roles, whatever they may do", () => {
+    const forPrincipals = { ...FEATURE_CATALOG.daily_pulse!, roles: ['principal'] as const };
+    const policy = new RolePolicy();
+    const context = {
+      ...base,
+      capabilities: forPrincipals.requiredCapabilities,
+      citizenshipLevel: 3,
+    };
+    expect(policy.isAllowed(forPrincipals, { ...context, roles: ['teacher', 'guardian'] })).toBe(
+      false,
+    );
+    expect(policy.isAllowed(forPrincipals, { ...context, roles: ['principal'] })).toBe(true);
   });
 
   it('derives the base role from capacity without granting an operation', () => {

@@ -1,12 +1,14 @@
-'use client';
-
 import type { WorkbenchTaskDescriptor } from '@repo/core/types';
-import { resolveTemporalCoordinates, resolveTemporalIntent, toIsoDate } from '@repo/core/logic/workbench';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import {
+  resolveTemporalCoordinates,
+  resolveTemporalIntent,
+  toIsoDate,
+} from '@repo/core/logic/workbench';
+import { useRouter } from '@tanstack/react-router';
+import { useEffect, useMemo } from 'react';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
-import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatureRegistry';
+import { workspaceFeaturesFor } from '../workspace/workspaceFeatureRegistry';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import type { QuickAccessItem } from './QuickAccessRail';
 import { TaskStrip } from './TaskStrip';
@@ -15,16 +17,20 @@ import styles from './task-strip.module.css';
 
 export function WorkspaceRouteTabs({
   pathname,
+  capacity,
   isExploreMode,
   onOpenQuickAccessItem,
 }: Readonly<{
   pathname: string;
+  /** The person's capacity: the strip offers only the features on its Workspace floor. */
+  capacity: string | null | undefined;
   isExploreMode: boolean;
   onOpenQuickAccessItem: (item: QuickAccessItem) => void;
 }>) {
   const router = useRouter();
   const usageScope = isExploreMode ? 'explore' : 'sanctuary';
-  const items = WORKSPACE_FEATURES.map((feature) => feature.id);
+  const features = useMemo(() => workspaceFeaturesFor(capacity), [capacity]);
+  const items = features.map((feature) => feature.id);
   const quickAccess = useQuickAccessPreferences(
     'workspace',
     usageScope,
@@ -34,9 +40,10 @@ export function WorkspaceRouteTabs({
   );
   const workbench = useDomainWorkbench('workspace', { usageScope });
   const today = toIsoDate(new Date());
-  const selectedDate = workbench.state.temporalHorizon?.anchor.kind === 'date'
-    ? workbench.state.temporalHorizon.anchor.date
-    : today;
+  const selectedDate =
+    workbench.state.temporalHorizon?.anchor.kind === 'date'
+      ? workbench.state.temporalHorizon.anchor.date
+      : today;
   const coordinates = resolveTemporalCoordinates(selectedDate, { domain: 'workspace' });
 
   function selectDate(date: string) {
@@ -48,7 +55,9 @@ export function WorkspaceRouteTabs({
   }
 
   useEffect(() => {
-    const feature = WORKSPACE_FEATURES.find(
+    // Only a feature on the person's floor becomes a task; any other route is on its way back to
+    // their Workspace (FloorGate) and must leave nothing behind in the strip.
+    const feature = features.find(
       (candidate) => candidate.id !== 'attendance' && candidate.href === pathname,
     );
     if (!feature) return;
@@ -67,23 +76,23 @@ export function WorkspaceRouteTabs({
       temporalBinding: { kind: 'follow-domain' },
       localStatePolicy: 'restore-permitted',
     });
-  }, [pathname, workbench]);
+  }, [features, pathname, workbench]);
 
   function focusTask(task: WorkbenchTaskDescriptor) {
     workbench.focus(task.taskKey);
-    if (pathname !== task.route) router.push(task.route);
+    if (pathname !== task.route) void router.navigate({ href: task.route });
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {
     const result = workbench.close(task.taskKey);
     if (pathname !== task.route) return;
     if (result.kind === 'overview') {
-      router.push('/workspace');
+      void router.navigate({ href: '/workspace' });
       return;
     }
     if (result.kind === 'focused-task') {
       const nextTask = result.state.tasks.find((item) => item.taskKey === result.taskKey);
-      if (nextTask) router.push(nextTask.route);
+      if (nextTask) void router.navigate({ href: nextTask.route });
     }
   }
 
@@ -95,8 +104,8 @@ export function WorkspaceRouteTabs({
         onCloseTask={closeTask}
         onFocusTask={focusTask}
         onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
-        onOpenOverview={() => router.push('/workspace')}
-        quickAccessItems={WORKSPACE_FEATURES.map((feature) => ({
+        onOpenOverview={() => void router.navigate({ href: '/workspace' })}
+        quickAccessItems={features.map((feature) => ({
           id: feature.id,
           label: feature.label,
           emoji: feature.symbol,
@@ -107,7 +116,7 @@ export function WorkspaceRouteTabs({
         onOpenQuickAccessItem={onOpenQuickAccessItem}
         onToggleQuickAccessPin={quickAccess.togglePin}
         overviewActive={pathname === '/workspace'}
-        tasks={workbench.state.tasks}
+        tasks={workbench.state.tasks.filter((task) => items.some((id) => id === task.featureId))}
       />
       <DateTimeCombo
         formFactor="auto"

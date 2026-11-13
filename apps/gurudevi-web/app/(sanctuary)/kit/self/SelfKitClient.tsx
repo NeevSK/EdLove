@@ -1,7 +1,5 @@
-'use client';
-
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import {
   Compass,
   ChevronDown,
@@ -228,7 +226,7 @@ export function SelfKitClient() {
 
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <Link
-              href="/kit"
+              to="/kit"
               style={{
                 fontSize: '0.78rem',
                 fontWeight: 600,

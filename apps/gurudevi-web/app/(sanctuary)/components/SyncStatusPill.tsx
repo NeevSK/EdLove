@@ -1,5 +1,3 @@
-'use client';
-
 import { GURUDEVI_SANCTUARY_URL } from '@repo/core/config/publicUrls';
 import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useEffect, useState } from 'react';

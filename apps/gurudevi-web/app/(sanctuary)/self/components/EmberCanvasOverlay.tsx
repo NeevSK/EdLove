@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useRef } from 'react';
 import styles from './ember-canvas-overlay.module.css';
 

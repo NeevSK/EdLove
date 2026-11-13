@@ -30,12 +30,13 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 
 ## 1. Monorepo Map & Sacred Architectural Boundaries
 
-### The Three Apps (Know Which You're In)
+### The Apps (Know Which You're In)
 
 | App | Purpose | Framework | **Build In** |
 | :--- | :--- | :--- | :--- |
 | **`apps/gurudevi-mobile`** | **Native iOS/Android** - flagship mobile | Expo 58 (RN 0.88, New Arch) | ✅ Mobile features |
-| **`apps/gurudevi-web`** | **Unified Web Platform** - EdLove Foundation + Gurudevi Sanctuary + Research Atlas | Next.js 16 (App Router, Tailwind v4, Turbopack) | ✅ **Primary web target** |
+| **`apps/gurudevi-web`** | **Gurudevi web app** - `sanctuary.gurudevi.app` and `explore.gurudevi.app` | Vite + React + TanStack Router (`spa/`), static on Cloudflare Pages ([decision](docs/decisions/2026-11-12-web-stack-astro-vite.md)) | ✅ **Web app** |
+| **`apps/gurudevi-public`** | **Public site** - `gurudevi.app`: pages, journal, legal, SEO and agent files | Astro, static; React islands only where a page is interactive | ✅ **Public pages** |
 | `apps/sanctuary-api` | Sanctuary API | Node.js/Hono | ✅ Active |
 
 ### Domain Packages (Shared Logic Only)
@@ -88,6 +89,8 @@ and unresolved product decisions honestly.
 **Navigation mental model:** [`docs/architecture/2026-11-13-navigation-mental-model.md`](docs/architecture/2026-11-13-navigation-mental-model.md) separates places (routes), journeys (flows), open work (workbench tasks) and presentation, and describes the navigator: a screen calls `useFlowNavigator().open(flowId, stepId, params)`, not `router.push`. Run `node scripts/route-catalog.mjs` after adding or removing a route.
 
 **`*.web.ts(x)` outside `apps/gurudevi-web` are reference only.** The web app is `apps/gurudevi-web`. Lint, type checks, tests and the audits skip them, except the live files in `tooling/live-web-files.json` (shared code imports those by name). Don't build on a reference file. If you add or remove an import of a `.web` file, run `node scripts/check-reference-only.mjs`; the ratchet fails while the list is out of date.
+
+**Places, roles and features (read before any navigation, catalog or screen work):** [`docs/architecture/places-roles-and-features.md`](docs/architecture/places-roles-and-features.md) is the one model for how a role becomes what a person sees: one word per idea, Workspace as a floor per role, every other place one floor whose features differ by role, yes/no role relevance, capabilities from the server, and nothing on screen for what a person does not have.
 
 **Platform structure (read before any API, package or screen design):**
 [`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) is the
@@ -144,7 +147,7 @@ for migrations, the signed `canonical_account_id` claim, and real-database proof
 | ❌ NEVER | ✅ INSTEAD |
 | :--- | :--- |
 | Import `*.web.tsx` in `gurudevi-web` | Build browser-native in `apps/gurudevi-web` |
-| Import legacy `@repo/ui` (primitives, `components/ui`, flat `components/*`) in Next.js | Use `@repo/ui/components/web`, `@repo/ui/theme`, `@repo/ui/theme/web` |
+| Import legacy `@repo/ui` (primitives, `components/ui`, flat `components/*`) in the web app | Use `@repo/ui/components/web`, `@repo/ui/theme`, `@repo/ui/theme/web` |
 | Import Expo/RN/PowerSync in `gurudevi-web` | Use `@repo/core/web-auth`, `@repo/core/web-authorized-entry` |
 | Build reusable UI ad hoc in an app (hand-made buttons, pills, fields) | Add it to `@repo/ui/components/web` and `/native` with the same props |
 | Import native storage (MMKV) in `@repo/core` | Use `storageDriver` polyfill proxy (zero native pollution) |
@@ -341,7 +344,7 @@ Never write the unqualified claim **"tests passed"**. A test result is valid onl
 | **G1** | Boundary Mock | Vitest, Jest | External APIs/storage substituted |
 | **G2** | Scenario Contract | Multi-step stateful flow | Network/storage substituted |
 | **G3** | Component Mounting | Real React component tree | Native bridge substituted |
-| **G4** | Platform Bundling | Metro/Next.js bundler + DOM | Real CSS and bundler |
+| **G4** | Platform Bundling | Metro/Vite bundler + DOM | Real CSS and bundler |
 | **G5** | Physical Device | Physical Android/iOS device | Real OS native threads |
 | **R1** | Production Canary | Production canary traffic | Real live systems |
 

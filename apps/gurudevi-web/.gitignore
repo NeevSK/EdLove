@@ -1,1 +1,3 @@
 .vercel
+# Explore's route tree is a build artifact (vite.config.ts); the typed tree is routeTree.gen.ts.
+spa/generated/routeTree.explore.gen.ts

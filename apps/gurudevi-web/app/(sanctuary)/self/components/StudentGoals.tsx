@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import { useStudentGoals } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './student-goals.module.css';

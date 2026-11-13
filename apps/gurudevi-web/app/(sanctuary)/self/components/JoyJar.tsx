@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import { useJoyJar } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './joy-jar.module.css';

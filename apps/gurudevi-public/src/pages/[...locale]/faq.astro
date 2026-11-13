@@ -1,0 +1,24 @@
+---
+import { Faq } from '../../components/faq/Faq';
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import { LOCALIZED_MARKETING } from '../../content/localized';
+import type { SupportedLocale } from '../../site';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: undefined } },
+    { params: { locale: 'si' } },
+    { params: { locale: 'ta' } },
+  ];
+}
+const locale = (Astro.params.locale ?? 'en') as SupportedLocale;
+const page = locale === 'en' ? null : LOCALIZED_MARKETING[locale].pages.faq;
+---
+<PublicLayout
+  locale={locale}
+  path="/faq"
+  title={page?.title ?? 'FAQ'}
+  description={page?.description ?? 'Clear answers about Gurudevi, its people, and its multi-year horizon.'}
+>
+  <Faq locale={locale} />
+</PublicLayout>

@@ -1,5 +1,13 @@
 import { implement, ORPCError } from '@orpc/server';
 import { appContract } from '@repo/core/api/v1/contract';
+import type { PoolClient } from 'pg';
+import type { Platform } from '../platform';
+import type { AuthenticatedIdentity } from '../security/security';
+import {
+  cancelAccountDeletion,
+  readAccountDeletion,
+  requestAccountDeletion,
+} from '../security/accountDeletion';
 import type { APIContext } from './context';
 
 const api = implement(appContract)
@@ -8,6 +16,27 @@ const api = implement(appContract)
     if (!context.identity || !context.platform) throw new ORPCError('UNAUTHORIZED');
     return next({ context: { identity: context.identity, platform: context.platform } });
   });
+
+/** Account-only work as the account itself; a database failure reads as unavailable, never as detail. */
+export async function asAccount<T>(
+  context: {
+    identity: AuthenticatedIdentity;
+    platform: Pick<Platform, 'withAccountData'>;
+  },
+  signal: AbortSignal | undefined,
+  work: (db: PoolClient) => Promise<T>,
+): Promise<T> {
+  try {
+    return await context.platform.withAccountData(
+      context.identity,
+      signal ?? AbortSignal.timeout(5000),
+      work,
+    );
+  } catch (error) {
+    if (error instanceof ORPCError) throw error;
+    throw new ORPCError('SERVICE_UNAVAILABLE');
+  }
+}
 
 export const router = api.router({
   identity: {
@@ -36,6 +65,17 @@ export const router = api.router({
       if (!grants) throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Sync is not configured.' });
       return grants.issue(context.identity);
     }),
+    deletion: {
+      status: api.identity.deletion.status.handler(({ context, signal }) =>
+        asAccount(context, signal, readAccountDeletion),
+      ),
+      request: api.identity.deletion.request.handler(({ context, signal }) =>
+        asAccount(context, signal, requestAccountDeletion),
+      ),
+      cancel: api.identity.deletion.cancel.handler(({ context, signal }) =>
+        asAccount(context, signal, cancelAccountDeletion),
+      ),
+    },
   },
   authority: {
     refreshSnapshot: api.authority.refreshSnapshot.handler(({ input, context, signal }) =>

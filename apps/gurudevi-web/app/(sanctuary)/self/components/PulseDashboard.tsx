@@ -1,5 +1,3 @@
-'use client';
-
 import { BookOpen, Calendar, CircleCheck, Clock, Sparkles } from 'lucide-react';
 import { useSanctuaryHealth } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './pulse-dashboard.module.css';

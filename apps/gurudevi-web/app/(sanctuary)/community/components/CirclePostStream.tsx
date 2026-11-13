@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useMemo, useState } from 'react';
 import type { CommunityGroupView } from '@repo/core/types/communityView';
 import { getExploreSamplePosts } from '../../../../lib/community/posts-contract';
@@ -93,7 +91,7 @@ export function CirclePostStream({
         <div className={styles.circleStreamActions}>
           {selectedGroup ? (
             <Link
-              href={`/community/chat/${selectedGroup.id}`}
+              to="/community/chat/$groupId" params={{ groupId: selectedGroup.id }}
               className={styles.openChatButton}
             >
               💬 Open Circle Chat ↗

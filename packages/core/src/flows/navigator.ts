@@ -1,5 +1,9 @@
 import { FLOW_REGISTRY, type FlowId } from '@repo/core/flows';
-import { WORKSPACE_COMPACT_BREAKPOINT } from '@repo/core/logic/workspace/layoutSync';
+import {
+  NAVIGATION_POLICY,
+  type NavigationOp,
+  type SizeClass,
+} from '@repo/core/flows/navigationPolicy';
 import { fillRoute, findRoute, type RoutePlatform } from '@repo/core/routing/routeMatch';
 import type {
   FeatureJTBDGraph,
@@ -17,31 +21,13 @@ import type {
  * step's purpose, unless the step says otherwise.
  */
 
-/** Phones are compact; tablets and desktop are regular. */
-export type SizeClass = 'compact' | 'regular';
+export type { NavigationOp, SizeClass } from '@repo/core/flows/navigationPolicy';
+export { sizeClassOf } from '@repo/core/flows/navigationPolicy';
 
-/** The size class for a window width, at the workspace's one breakpoint. */
-export const sizeClassOf = (width: number): SizeClass =>
-  width >= WORKSPACE_COMPACT_BREAKPOINT ? 'regular' : 'compact';
-
-/** The presentation a step gets by its purpose, per size class. A step's `presentation` overrides. */
-export const DEFAULT_PRESENTATION: Record<
-  FlowNodeStep['purpose'],
-  Record<SizeClass, FlowPresentation>
-> = {
-  on_ramp: { compact: 'push', regular: 'push' },
-  input_form: { compact: 'push', regular: 'push' },
-  // Confirming happens over what is being confirmed.
-  preview_confirm: { compact: 'sheet', regular: 'modal' },
-  // Detail opens beside the list where there is room.
-  sub_detail: { compact: 'push', regular: 'panel' },
-  // A finished flow is not somewhere to go back to.
-  terminal_success: { compact: 'replace', regular: 'replace' },
-};
+/** The presentation a step gets by its purpose, per size class (the policy's table). */
+export const DEFAULT_PRESENTATION = NAVIGATION_POLICY.presentation;
 
 /** How the router gets there. `sheet`, `modal` and `panel` push a route whose layout presents it. */
-export type NavigationOp = 'push' | 'replace';
-
 const OP: Record<FlowPresentation, NavigationOp> = {
   push: 'push',
   sheet: 'push',
@@ -93,8 +79,16 @@ export type ResolvedStep =
 const routeOf = (step: FlowNodeStep, platform: RoutePlatform) =>
   platform === 'mobile' ? step.mobileRoute : step.webRoute;
 
-export function presentationOf(step: FlowNodeStep, sizeClass: SizeClass): FlowPresentation {
-  return step.presentation?.[sizeClass] ?? DEFAULT_PRESENTATION[step.purpose][sizeClass];
+/** A step's presentation here: its own override, else its purpose's; a panel stands in where there is no split layout. */
+export function presentationOf(
+  step: FlowNodeStep,
+  sizeClass: SizeClass,
+  platform: RoutePlatform = 'mobile',
+): FlowPresentation {
+  const asked = step.presentation?.[sizeClass] ?? DEFAULT_PRESENTATION[step.purpose][sizeClass];
+  return asked === 'panel' && !NAVIGATION_POLICY.panels[platform]
+    ? NAVIGATION_POLICY.panelStandIn
+    : asked;
 }
 
 function flowOf(flowId: FlowId): FeatureJTBDGraph {
@@ -168,7 +162,7 @@ export function resolveFlowStep(
   if (!route)
     return { kind: 'unavailable', flowId, stepId, reason: 'route_missing', detail: pattern };
 
-  const presentation = presentationOf(step, context.sizeClass);
+  const presentation = presentationOf(step, context.sizeClass, context.platform);
   return {
     kind: 'go',
     flowId,
@@ -187,11 +181,11 @@ export function nextStepOf(flowId: FlowId, stepId: string): string | null {
   return index >= 0 ? (nodes[index + 1]?.stepId ?? null) : null;
 }
 
-/** Where a finished flow lands. Replaces, so back doesn't return into the flow. */
+/** Where a finished flow lands, so back doesn't return into the flow (the policy's `completion`). */
 export function resolveFlowCompletion(
   flowId: FlowId,
   platform: RoutePlatform,
-): { readonly href: string; readonly op: 'replace' } | null {
+): { readonly href: string; readonly op: NavigationOp } | null {
   const href = flowOf(flowId).completion.nextCircadianRoute;
-  return findRoute(href, platform) ? { href, op: 'replace' } : null;
+  return findRoute(href, platform) ? { href, op: NAVIGATION_POLICY.completion } : null;
 }

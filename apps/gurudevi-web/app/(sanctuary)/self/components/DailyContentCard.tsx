@@ -1,5 +1,3 @@
-'use client';
-
 import { Lightbulb, Sparkles } from 'lucide-react';
 
 interface DailyContentCardProps {

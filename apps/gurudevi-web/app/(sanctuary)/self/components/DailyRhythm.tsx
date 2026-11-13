@@ -1,5 +1,3 @@
-'use client';
-
 import { Calendar, Clock, MapPin, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { type Period, useTimetable } from '../../../../lib/sanctuary/selfBrowserAdapters';

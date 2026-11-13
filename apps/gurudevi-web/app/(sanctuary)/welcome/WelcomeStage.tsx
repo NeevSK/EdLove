@@ -1,8 +1,5 @@
-'use client';
-
 import { resolveSurfaceUrl } from '../../../lib/surface-urls';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { LivingGround } from '@repo/ui/components/web';
 import { type ExploreCapacity, setExploreCapacity } from '../../../lib/explore/exploreCapacity';
@@ -23,7 +20,7 @@ export function WelcomeStage(props?: WelcomeStageProps) {
   const router = useRouter();
   const mode = props?.mode ?? 'explore';
   const returnTo = props?.returnTo;
-  const signInHref = returnTo ? `/sign-in?returnTo=${encodeURIComponent(returnTo)}` : '/sign-in';
+  const signInSearch = returnTo ? { returnTo } : {};
   const isSanctuaryMode = mode === 'sanctuary';
   const [exploreStep, setExploreStep] = useState<'welcome' | 'orientation' | 'role'>('welcome');
   const [selectedRole, setSelectedRole] = useState<ExploreCapacity>('teacher');
@@ -40,7 +37,7 @@ export function WelcomeStage(props?: WelcomeStageProps) {
     }
     const targetUrl =
       exploreSelfUrl + (exploreSelfUrl.includes('?') ? '&intro=complete' : '?intro=complete');
-    router.replace(targetUrl);
+    void router.navigate({ href: targetUrl, replace: true });
   }
   return (
     <LivingGround atmosphere="canopy" dither className={styles.viewport}>
@@ -53,7 +50,6 @@ export function WelcomeStage(props?: WelcomeStageProps) {
         <div className={styles.stageContent}>
           <div className={styles.heroVisualPane}>
             <div className={styles.exploreFloatingMascotFrame}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/mascot/firefly-guide-welcome-light-cutout-v2.webp"
                 alt="Tutii the firefly guide floating warmly with a lantern."
@@ -77,7 +73,7 @@ export function WelcomeStage(props?: WelcomeStageProps) {
                 </p>
 
                 <div className={styles.editorialActionRow}>
-                  <Link href={signInHref} className={styles.primaryBtn} autoFocus>
+                  <Link to="/sign-in" search={signInSearch} className={styles.primaryBtn} autoFocus>
                     <span>Sign in to Sanctuary</span>
                     <span aria-hidden="true">→</span>
                   </Link>
@@ -101,30 +97,30 @@ export function WelcomeStage(props?: WelcomeStageProps) {
                       ⚡ <strong>Local Dev Quick Launch</strong> (Direct role entry):
                     </p>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <Link
+                      <a
                         href="/workspace?mode=sanctuary&dev=true&role=teacher"
                         className={styles.editorialBackBtn}
                       >
                         🧑‍🏫 Teacher
-                      </Link>
-                      <Link
+                      </a>
+                      <a
                         href="/workspace?mode=sanctuary&dev=true&role=student"
                         className={styles.editorialBackBtn}
                       >
                         🎒 Student
-                      </Link>
-                      <Link
+                      </a>
+                      <a
                         href="/workspace?mode=sanctuary&dev=true&role=principal"
                         className={styles.editorialBackBtn}
                       >
                         🏫 Principal
-                      </Link>
-                      <Link
+                      </a>
+                      <a
                         href="/workspace?mode=sanctuary&dev=true&role=guardian"
                         className={styles.editorialBackBtn}
                       >
                         👨‍👩‍👧 Guardian
-                      </Link>
+                      </a>
                     </div>
                   </div>
                 ) : null}
@@ -164,7 +160,7 @@ export function WelcomeStage(props?: WelcomeStageProps) {
                     <span>One more thing</span>
                     <span aria-hidden="true">→</span>
                   </button>
-                  <Link className={styles.editorialSanctuaryLink} href={signInHref}>
+                  <Link className={styles.editorialSanctuaryLink} to="/sign-in" search={signInSearch}>
                     Sign in to Sanctuary
                   </Link>
                 </div>

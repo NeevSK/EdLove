@@ -7,6 +7,7 @@ import {
   resolveFlowCompletion,
   resolveFlowStep,
 } from './navigator';
+import { NAVIGATION_POLICY } from './navigationPolicy';
 
 const phone = { platform: 'mobile', sizeClass: 'compact' } as const;
 const desktop = { platform: 'web', sizeClass: 'regular' } as const;
@@ -34,16 +35,23 @@ describe('flow navigator / G1, real flow registry and route catalogue', () => {
       ['sub_detail', 'push', 'panel'],
       ['terminal_success', 'replace', 'replace'],
     ] as const)(
-      'a %s step is %s on a phone and %s on a tablet or desktop',
+      'a %s step asks to be %s on a phone and %s on a tablet or desktop',
       (purpose, compact, regular) => {
-        expect(presentationOf(step(purpose), 'compact')).toBe(compact);
-        expect(presentationOf(step(purpose), 'regular')).toBe(regular);
+        expect(DEFAULT_PRESENTATION[purpose]).toEqual({ compact, regular });
       },
     );
 
+    it('shows a panel as the policy stand-in while no split layout exists', () => {
+      expect(NAVIGATION_POLICY.panels).toEqual({ mobile: false, web: false });
+      expect(presentationOf(step('sub_detail'), 'regular', 'web')).toBe(
+        NAVIGATION_POLICY.panelStandIn,
+      );
+      expect(presentationOf(step('preview_confirm'), 'regular', 'web')).toBe('modal');
+    });
+
     it('lets a step override its purpose, per size class', () => {
-      const confirm = step('preview_confirm', { regular: 'panel' });
-      expect(presentationOf(confirm, 'regular')).toBe('panel');
+      const confirm = step('preview_confirm', { regular: 'replace' });
+      expect(presentationOf(confirm, 'regular')).toBe('replace');
       expect(presentationOf(confirm, 'compact')).toBe(DEFAULT_PRESENTATION.preview_confirm.compact);
     });
   });
@@ -107,10 +115,11 @@ describe('flow navigator / G1, real flow registry and route catalogue', () => {
     expect(nextStepOf('flow:entry:mobile', 'workspace_floor')).toBeNull();
   });
 
-  it('lands a finished flow where it says, replacing', () => {
+  it('lands a finished flow where it says, without leaving the flow behind it', () => {
     expect(resolveFlowCompletion('flow:entry:mobile', 'mobile')).toEqual({
       href: expect.any(String),
-      op: 'replace',
+      op: NAVIGATION_POLICY.completion,
     });
+    expect(NAVIGATION_POLICY.completion).toBe('dismissTo');
   });
 });

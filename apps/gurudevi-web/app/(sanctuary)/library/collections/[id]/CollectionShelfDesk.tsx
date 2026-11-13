@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import { orpcClient } from '@repo/core/api/orpcClient';
@@ -138,7 +136,7 @@ export function CollectionShelfDesk({ id, displayName }: Readonly<CollectionShel
   return (
     <main className={styles.container}>
       <div className={styles.topBar}>
-        <Link href="/library" className={styles.backButton}>
+        <Link to="/library" className={styles.backButton}>
           ← Back to Library
         </Link>
         <span className={styles.userPosture}>Explorer: {displayName}</span>
@@ -201,11 +199,11 @@ export function CollectionShelfDesk({ id, displayName }: Readonly<CollectionShel
                 </div>
                 <div className={styles.itemAction}>
                   {res.type === 'Video' ? (
-                    <Link href={`/library/video/${res.id}`} className={styles.launchButton}>
+                    <Link to="/library/video/$videoId" params={{ videoId: res.id }} className={styles.launchButton}>
                       Watch Lecture 🎬
                     </Link>
                   ) : (
-                    <Link href={`/library/reader/${res.id}`} className={styles.launchButton}>
+                    <Link to="/library/reader/$bookId" params={{ bookId: res.id }} className={styles.launchButton}>
                       Open Reader 📖
                     </Link>
                   )}

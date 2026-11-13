@@ -1,5 +1,3 @@
-'use client';
-
 export {
   SceneImageLayer,
   SceneImageLayer as WorkspaceWallpaperLayer,

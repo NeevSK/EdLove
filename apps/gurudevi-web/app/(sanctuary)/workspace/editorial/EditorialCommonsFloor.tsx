@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import {
   CANONICAL_EDITORIAL_DRAFTS,
@@ -26,7 +24,7 @@ export function EditorialCommonsFloor({ mode }: EditorialCommonsFloorProps) {
       <header className={styles.header}>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>Editorial Commons</h1>
-          <Link href="/workspace" className={styles.backLink}>
+          <Link to="/workspace" className={styles.backLink}>
             ← Workspace
           </Link>
         </div>

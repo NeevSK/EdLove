@@ -1,5 +1,3 @@
-'use client';
-
 import { Check, Mic, Play, Square, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { saveVoiceJournalRecord } from '../../../../lib/sanctuary/selfBrowserAdapters';

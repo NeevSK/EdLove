@@ -7,7 +7,8 @@ import {
   VERGER_LAB_PATCH_KEY,
   VERGER_LAB_POLICY_KEY,
 } from '@repo/core/verger';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { render } from '@/tests/support/render';
 import { describe, expect, it } from 'vitest';
 import { applyWebLabPatch, applyWebLabTune, chooseWebLabPolicy, VergerLabClient } from '../../app/(sanctuary)/verger-lab/VergerLabClient';
 import { GurudeviWebVerger } from '../../lib/runtime/GurudeviWebVerger';

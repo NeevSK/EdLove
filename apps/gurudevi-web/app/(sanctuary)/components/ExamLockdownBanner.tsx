@@ -1,5 +1,3 @@
-'use client';
-
 import { Shield, ShieldAlert } from 'lucide-react';
 import styles from './exam-lockdown-banner.module.css';
 import { useExamLockdown, type ExamViolation } from '@/lib/sanctuary/useExamLockdown';

@@ -1,11 +1,9 @@
-﻿'use client';
-
-import { useMemo, useState, useEffect, useRef, type MouseEvent, type WheelEvent } from 'react';
-import Link from 'next/link';
+﻿import { useMemo, useState, useEffect, useRef, type MouseEvent, type WheelEvent } from 'react';
+import { Link } from '@tanstack/react-router';
 import { ScrollArea } from '@repo/ui/components/web';
 import architectureData from './architectureData.json';
 import toolsMetaModelData from './toolsMetaModelData.json';
-import { getFileSourceAction, type FileSourceResult } from './actions';
+import type { FileSourceResult } from '../../../lib/dev/architectureSource';
 
 interface FileNode {
   path: string;
@@ -287,7 +285,7 @@ export function ArchitectureClient() {
       return;
     }
 
-    // 2. Fallback to API route
+    // 2. The dev server reads it from the repository
     setSourceLoading(true);
     fetch(`/api/architecture/source?path=${encodeURIComponent(filePath)}`)
       .then(async (res) => {
@@ -301,28 +299,15 @@ export function ArchitectureClient() {
         }
       })
       .catch(() => {
-        // 3. Fallback to Server Action
-        getFileSourceAction(filePath)
-          .then((res) => {
-            if (res && res.content) {
-              setSourceData(res);
-              if (focusSymbol && res.content) {
-                const lines = res.content.split('\n');
-                const idx = lines.findIndex((l: string) => l.includes(focusSymbol));
-                if (idx !== -1) setTargetHighlightLine(idx + 1);
-              }
-            } else {
-              setSourceData({
-                path: filePath,
-                filename: filePath.split('/').pop() || '',
-                loc: 0,
-                sizeBytes: 0,
-                content: '',
-                error: 'Could not load file from substrate',
-              });
-            }
-          })
-          .finally(() => setSourceLoading(false));
+        // Only the dev server can read the repository; a built site has just the embedded content.
+        setSourceData({
+          path: filePath,
+          filename: filePath.split('/').pop() || '',
+          loc: 0,
+          sizeBytes: 0,
+          content: '',
+          error: 'Source is available only in local development',
+        });
       })
       .finally(() => setSourceLoading(false));
   };
@@ -499,7 +484,7 @@ export function ArchitectureClient() {
 
           {/* Lab Link */}
           <Link
-            href="/architecture-lab"
+            to="/architecture-lab"
             className="flex items-center gap-1.5 rounded-lg border border-amber-600/80 bg-amber-950/40 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-900/60 hover:text-white transition shadow"
           >
             <span>🧪 Architecture Lab &amp; Simulator</span>

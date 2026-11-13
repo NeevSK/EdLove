@@ -1,5 +1,3 @@
-'use client';
-
 import { History, Send } from 'lucide-react';
 import { useState } from 'react';
 import { useDecisionJournal } from '../../../../lib/sanctuary/selfBrowserAdapters';

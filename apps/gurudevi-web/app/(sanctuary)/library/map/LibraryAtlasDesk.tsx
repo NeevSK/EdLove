@@ -1,5 +1,3 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type {
   MockKnowledgeTopology as TopologyData,
@@ -22,7 +20,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './map.module.css';
 
@@ -97,7 +95,7 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
         <div className={styles.titleArea}>
           <div style={{ marginBottom: '0.25rem' }}>
             <Link
-              href="/library"
+              to="/library"
               style={{
                 fontSize: '0.75rem',
                 fontWeight: 650,
@@ -307,7 +305,7 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
                 {selectedNode.type === 'resource' && (
                   <div style={{ marginTop: '0.5rem' }}>
                     <Link
-                      href={`/library/reader/${selectedNode.id}`}
+                      to="/library/reader/$bookId" params={{ bookId: selectedNode.id }}
                       style={{
                         display: 'block',
                         textAlign: 'center',

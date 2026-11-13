@@ -1,5 +1,3 @@
-'use client';
-
 import {
   CANONICAL_NAME_PROMPTS,
   PREFERRED_NAME_MAX_LENGTH,

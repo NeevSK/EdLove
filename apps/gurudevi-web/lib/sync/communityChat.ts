@@ -1,5 +1,3 @@
-'use client';
-
 import { storage } from '@repo/core/lib/storage.adapter';
 import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useOfflineStatus } from '@repo/core/offline/resilience.adapter';

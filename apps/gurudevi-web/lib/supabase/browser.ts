@@ -1,5 +1,3 @@
-'use client';
-
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { secureApiFetch } from '@repo/core/api/transportSecurity';
 import { createBrowserClient } from '@supabase/ssr';

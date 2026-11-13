@@ -1,8 +1,6 @@
-'use client';
-
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { parseInstitutionalQR } from '@repo/core/logic/utils/institutionalQrParser';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   type AccountAttendanceDraftScope,
@@ -385,10 +383,10 @@ export function KioskFloor({ mode, subjectId, scope }: KioskFloorProps) {
               ))}
             </select>
           ) : null}
-          <Link href="/workspace/badges" className={styles.exitLink}>
+          <Link to="/workspace/badges" className={styles.exitLink}>
             📇 Print Badges
           </Link>
-          <Link href="/workspace" className={styles.exitLink}>
+          <Link to="/workspace" className={styles.exitLink}>
             ← Roll Call
           </Link>
         </div>

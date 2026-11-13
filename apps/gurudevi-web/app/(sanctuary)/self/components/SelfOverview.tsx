@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import type { SelfFeatureManifestItem } from '@repo/self/features/catalog';
@@ -7,7 +5,7 @@ import {
   isFeatureApplicableToRole,
   isFeatureForCapacity,
   isUniversalFeature,
-  scoreFeatureForRoles,
+  scoreFeature,
   type SelfCategory,
 } from '../../../../lib/canvas/useSelfCanvas';
 import { useSanctuaryHealth } from '../../../../lib/sanctuary/selfBrowserAdapters';
@@ -407,12 +405,9 @@ export function SelfOverview({
 
   const isDevMode =
     isDevRun ??
-    (process.env.NODE_ENV !== 'production' ||
-      isExploreMode ||
-      (typeof window !== 'undefined' &&
-        (window.location.hostname === 'localhost' ||
-          window.location.hostname === '127.0.0.1' ||
-          new URLSearchParams(window.location.search).has('dev'))));
+    // Perspective switching is for development and for Explore's personas; a URL cannot turn it
+    // on in a production account.
+    (import.meta.env.DEV || isExploreMode);
 
   // In dev run, allow developer to switch perspectives dynamically.
   // In normal production, stays null so user automatically sees their curated view (primary + other + universal).
@@ -606,12 +601,12 @@ export function SelfOverview({
 
   const sortedFilteredManifest = useMemo(() => {
     return [...filteredManifest].sort((a, b) => {
-      const scoreA = scoreFeatureForRoles(a, effectiveRoles, phase, {
+      const scoreA = scoreFeature(a, phase, {
         isPinned: pinnedSet.has(a.id),
         lastUsedAt: usage[a.id]?.lastUsedAt,
         count: usage[a.id]?.count,
       });
-      const scoreB = scoreFeatureForRoles(b, effectiveRoles, phase, {
+      const scoreB = scoreFeature(b, phase, {
         isPinned: pinnedSet.has(b.id),
         lastUsedAt: usage[b.id]?.lastUsedAt,
         count: usage[b.id]?.count,
@@ -620,7 +615,7 @@ export function SelfOverview({
       if (diff !== 0) return diff;
       return a.defaultOrder - b.defaultOrder;
     });
-  }, [filteredManifest, effectiveRoles, phase, pinnedSet, usage]);
+  }, [filteredManifest, phase, pinnedSet, usage]);
 
   const primaryPinned = pinnedFeatures[0];
 

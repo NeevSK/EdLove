@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import type { RefObject } from 'react';
 import type { QuickAccessUsage } from '../../../lib/workbench/quickAccessPreferences';

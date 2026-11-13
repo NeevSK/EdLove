@@ -1,5 +1,3 @@
-'use client';
-
 import type { FloorWallpaperConfig, WorkspaceWallpaper } from '@repo/core/types';
 import { wallpaperAllowed } from '@repo/core/verger';
 import { useCallback, useEffect, useRef, useState } from 'react';

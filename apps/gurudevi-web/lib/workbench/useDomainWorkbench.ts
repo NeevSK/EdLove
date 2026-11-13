@@ -1,5 +1,3 @@
-'use client';
-
 import type {
   CloseWorkbenchTaskResult,
   OpenWorkbenchTaskResult,
@@ -102,33 +100,23 @@ export function useDomainWorkbench(
     };
   }, [domain, store]);
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    /** Runs a store operation and tells other workbenches only if it changed the state. */
+    const changing = <T>(operation: () => T): T => {
+      const before = store.getSnapshot();
+      const result = operation();
+      if (store.getSnapshot() !== before) notifyWorkbenchChanged(domain);
+      return result;
+    };
+    return {
       state,
-      open: (task: TaskInputForDomain) => {
-        const result = store.open(task);
-        notifyWorkbenchChanged(domain);
-        return result;
-      },
-      focus: (taskKey: string) => {
-        const result = store.focus(taskKey);
-        notifyWorkbenchChanged(domain);
-        return result;
-      },
-      close: (taskKey: string) => {
-        const result = store.close(taskKey);
-        notifyWorkbenchChanged(domain);
-        return result;
-      },
-      reorder: (taskKey: string, destinationIndex: number) => {
-        store.reorder(taskKey, destinationIndex);
-        notifyWorkbenchChanged(domain);
-      },
-      setTemporalHorizon: (horizon: DomainTemporalHorizon | null) => {
-        store.setTemporalHorizon(horizon);
-        notifyWorkbenchChanged(domain);
-      },
-    }),
-    [domain, state, store],
-  );
+      open: (task: TaskInputForDomain) => changing(() => store.open(task)),
+      focus: (taskKey: string) => changing(() => store.focus(taskKey)),
+      close: (taskKey: string) => changing(() => store.close(taskKey)),
+      reorder: (taskKey: string, destinationIndex: number) =>
+        changing(() => store.reorder(taskKey, destinationIndex)),
+      setTemporalHorizon: (horizon: DomainTemporalHorizon | null) =>
+        changing(() => store.setTemporalHorizon(horizon)),
+    };
+  }, [domain, state, store]);
 }

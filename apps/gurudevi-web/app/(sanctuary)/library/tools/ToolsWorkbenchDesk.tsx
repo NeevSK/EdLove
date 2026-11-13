@@ -1,5 +1,3 @@
-'use client';
-
 import {
   TOOLS_SAMPLE_BUNDLE_ITEMS,
   TOOLS_SAMPLE_CSV,
@@ -26,7 +24,7 @@ import {
   Plus,
   Trash2,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useMemo, useState } from 'react';
 import styles from './tools.module.css';
 
@@ -184,7 +182,7 @@ export function ToolsWorkbenchDesk({ displayName }: Readonly<ToolsWorkbenchDeskP
     <main className={styles.container}>
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <Link href="/library" className={styles.backLink}>
+          <Link to="/library" className={styles.backLink}>
             ← Back to Sanctuary Library
           </Link>
           <div className={styles.badge}>Knowledge Tools Hub</div>

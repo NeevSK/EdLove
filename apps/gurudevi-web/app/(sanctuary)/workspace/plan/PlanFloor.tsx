@@ -1,5 +1,3 @@
-'use client';
-
 import { planBridgeAPI } from '@repo/core/api/planBridge';
 import {
   type CalendarEventType,

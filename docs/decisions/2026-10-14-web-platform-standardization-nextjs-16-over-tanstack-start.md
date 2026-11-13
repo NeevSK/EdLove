@@ -1,12 +1,15 @@
 ---
 title: "ADR: Web Platform Standardization on Next.js 16.4 over TanStack Start"
-status: accepted
+status: superseded
+superseded_by: 2026-11-12-web-stack-astro-vite.md
 date: 2026-10-14
 owners: [Naveen, Polymath Architecture & Platform Team]
 tags: [nextjs, tanstack-start, architecture, offline-first, web, decision-record, anti-island-law]
 ---
 
 # ADR: Web Platform Standardization on Next.js 16.4 over TanStack Start
+
+> **Superseded 2026-11-12** by [Web stack: Astro for public pages, Vite + TanStack Router for the app](2026-11-12-web-stack-astro-vite.md). Several facts below were checked and do not hold (edlove-web is Astro; the COOP/COEP headers are not in `next.config.ts`; `useOffline` is not enabled and is experimental). Kept for history.
 
 ## 1. Context & Problem Statement
 
