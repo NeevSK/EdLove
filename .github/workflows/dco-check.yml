@@ -1,10 +1,9 @@
 name: DCO Check
 
+# Turned off 2026-11-13 at Neev's request: commits no longer need a
+# Signed-off-by line. Run by hand from the Actions tab if ever needed.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-  push:
-    branches: [main-dev]
+  workflow_dispatch:
 
 permissions:
   contents: read
