@@ -5,6 +5,11 @@ import {
   getCapabilitiesForCapacity,
   resolvePracticeAvailability,
 } from '@repo/core/logic/registry/capabilityManifest';
+import {
+  TIMELESS,
+  type TimeProfile,
+  timeProfileFromCapabilities,
+} from '@repo/core/logic/registry/timeProfile';
 import type { WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
 
 export interface WorkspaceFeatureItem {
@@ -21,6 +26,8 @@ export interface WorkspaceFeatureItem {
     hasReview: boolean;
     hasPlan: boolean;
   };
+  /** Full time lens profile (home mode and past rule); modes agree with temporalCapabilities. */
+  time: TimeProfile;
 }
 
 export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
@@ -35,17 +42,20 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     category: 'operations',
     capabilityId: 'attendance',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'sealed'),
   },
   {
     id: 'qr_scanner',
     label: 'QR Scanner',
     href: '/qr',
     symbol: '📷',
-    description: 'Scan classroom enrollment codes, attendance badges, or resource tokens directly in browser.',
+    description:
+      'Scan classroom enrollment codes, attendance badges, or resource tokens directly in browser.',
     roles: ['teacher', 'student', 'principal', 'guardian'],
     isCommon: true,
     category: 'operations',
     temporalCapabilities: { hasReview: false, hasPlan: false },
+    time: TIMELESS,
   },
   {
     id: 'timetable',
@@ -57,6 +67,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: true,
     category: 'academics',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'plan', 'editable'),
   },
   {
     id: 'notices',
@@ -69,6 +80,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     category: 'communications',
     capabilityId: 'family_bridge',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'sealed'),
   },
   {
     id: 'submissions',
@@ -81,6 +93,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     category: 'academics',
     capabilityId: 'learning_studio',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'sealed'),
   },
   {
     id: 'climate',
@@ -93,6 +106,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     category: 'operations',
     capabilityId: 'climate_sensing',
     temporalCapabilities: { hasReview: true, hasPlan: false },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: false }, 'current', 'sealed'),
   },
   {
     id: 'tuition',
@@ -104,6 +118,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'institutional',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'sealed'),
   },
   {
     id: 'gradebook',
@@ -115,6 +130,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'academics',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'review', 'sealed'),
   },
   {
     id: 'plan',
@@ -126,6 +142,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'academics',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'plan', 'editable'),
   },
   {
     id: 'kiosk',
@@ -137,6 +154,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'institutional',
     temporalCapabilities: { hasReview: true, hasPlan: false },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: false }, 'current', 'sealed'),
   },
   {
     id: 'badges',
@@ -148,6 +166,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'institutional',
     temporalCapabilities: { hasReview: false, hasPlan: false },
+    time: TIMELESS,
   },
   {
     id: 'workforce',
@@ -159,6 +178,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'institutional',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'sealed'),
   },
   {
     id: 'school',
@@ -170,6 +190,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'institutional',
     temporalCapabilities: { hasReview: false, hasPlan: false },
+    time: TIMELESS,
   },
   {
     id: 'events',
@@ -181,6 +202,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'institutional',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'plan', 'sealed'),
   },
   {
     id: 'claim',
@@ -192,29 +214,34 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'operations',
     temporalCapabilities: { hasReview: false, hasPlan: false },
+    time: TIMELESS,
   },
   {
     id: 'guardian',
     label: 'Guardian Portal',
     href: '/workspace/guardian',
     symbol: '🛡️',
-    description: 'Enrolled learner presence, academic progress, and institutional communications bridge.',
+    description:
+      'Enrolled learner presence, academic progress, and institutional communications bridge.',
     roles: ['guardian', 'principal'],
     isCommon: true,
     category: 'communications',
     capabilityId: 'family_bridge',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'sealed'),
   },
   {
     id: 'principal',
     label: 'Principal Command Center',
     href: '/admin/principal',
     symbol: '🏛️',
-    description: 'Executive situational intelligence, curriculum pacing, and institutional faculty oversight.',
+    description:
+      'Executive situational intelligence, curriculum pacing, and institutional faculty oversight.',
     roles: ['principal'],
     isCommon: true,
     category: 'institutional',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'sealed'),
   },
   {
     id: 'editorial',
@@ -226,6 +253,7 @@ export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
     isCommon: false,
     category: 'communications',
     temporalCapabilities: { hasReview: true, hasPlan: true },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'append'),
   },
 ] as const;
 
@@ -235,10 +263,7 @@ export function getCoreCapabilityForFeature(featureId: string): CapabilityDeclar
   return declaredCapability(item.capabilityId);
 }
 
-export function isPracticeAvailableForRole(
-  featureId: string,
-  role?: WorkspaceRoleFilter,
-): boolean {
+export function isPracticeAvailableForRole(featureId: string, role?: WorkspaceRoleFilter): boolean {
   const item = WORKSPACE_FEATURES.find((f) => f.id === featureId);
   if (!item?.capabilityId) return true;
   const effectiveRole = role && role !== 'all' && role !== 'common' ? role : undefined;
@@ -326,7 +351,8 @@ export function getWorkspaceOverviewPosture(
       return {
         eyebrow: 'Overview · Family Circle',
         title: 'Daily Family Space & Presence',
-        description: 'Check in on your child’s learning circle, dialogue with educators, and family notices.',
+        description:
+          'Check in on your child’s learning circle, dialogue with educators, and family notices.',
         actionText: 'Open Family Space',
         badgeText: 'Live Practice',
       };
