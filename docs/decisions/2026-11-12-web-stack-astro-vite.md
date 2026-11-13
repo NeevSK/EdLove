@@ -185,9 +185,11 @@ Rules that keep it one app:
   in place while people move between places. `_account` holds sign-in, recovery, onboarding and the
   email-link routes; where accounts live elsewhere (`accountHome`: Explore) it opens the same address
   on sanctuary. `_dev` holds labs and the kit, which are not found in a production build.
-- A floor that only some capacities may open is wrapped in `CapacityGate` with a named rule from
-  `lib/sanctuary/capacityAccess.ts`. Explore shows every floor as the visitor's persona; the API is
-  what enforces access.
+- A place only some roles may open says so in its route: `...forAudience(staff, '…')`, with the
+  rules in `lib/sanctuary/capacityAccess.ts`. One rule serves both surfaces: `_app` shows the place,
+  a restricted notice, or (where the session can switch roles, as Explore can) an offer to view it
+  as a role that can; a place none of the surface's roles can open is not found before it loads.
+  The API is what enforces access; this decides what the screen shows.
 - A new kind of data gets a `Source` in `Sources`, with an Explore answer and an API answer, before a
   screen reads it.
 - `check-web-stack` counts the screens that still ask (`isExplore`, `mode === 'explore'`, ...): 147 on
@@ -273,15 +275,98 @@ no requests to the sanctuary host.
 - `tests/unit/supportHub.test.ts` "serves own support page directly on explore" fails on the base
   branch as well.
 
-## Open product questions (the owner decides; the design keeps both open)
+## The next shape of the seam: one client, two implementations of the contract
 
-- **Which pages Explore serves.** Next served only `/welcome` and `/self` on `explore.gurudevi.app` in
-  production (everything else returned 404) to keep session-carrying server pages off the demo host.
-  The Vite Explore build has no such pages and serves every floor, following the one-app rule. If
-  some floors should stay off Explore, that is a list in one place, not a branch per page.
-- **Capacity gates in Explore.** Explore shows gated floors (tuition, kiosk, founder command, ...) to
-  every persona, as the old Explore pages did. Applying the gates to the persona is one line in
-  `CapacityGate`.
+Today the surfaces differ in a hand-written list of `Sources`, and 146 places inside floors still
+pick sample data themselves. Both are a second description of the API that can drift from it.
+
+The v1 API is contract-first already: `appContract` lives in `@repo/core/api/v1/contract.ts` and the
+server is `implement(appContract)`. So Explore can be **a second implementation of the same
+contract**, a sample school that runs in the browser, and the app gets one client of one type
+(`AppContractClient`) on both surfaces:
+
+| | Sanctuary | Explore |
+| --- | --- | --- |
+| Client | `createORPCClient(RPCLink)` over HTTPS | `createRouterClient(sampleSchool)` in the page |
+| Who is here | `identity.entry` from the API | `identity.entry` from the sample school (the four personas are its bonds) |
+| Data | Postgres, through the API | sample data, kept in IndexedDB |
+| Screens | `v1.x.queryOptions()` | the same line |
+
+What it buys:
+- **Drift cannot compile.** `implement(appContract).router({...})` requires every procedure, so a
+  procedure added to the contract fails the Explore build until the sample school answers it, and
+  the contract's own schemas validate every input and output on Explore too.
+- **The surface collapses to one value:** the client. Sources, `accountHome`-style switches and the
+  floors' sample-data branches go; the session comes from `identity.entry` on both, so the access
+  ladder is the same code too.
+- **Mobile can use it** for a no-account mode: the sample school lives in `@repo/core`.
+- **Isolation by construction.** A visitor's account id is minted with the `nonProduction` origin
+  (`edloveUuidV8`), so no real API accepts it; Explore cannot sign an authority snapshot, so nothing
+  it produces verifies anywhere.
+
+Measured with a spike on 13 Nov (removed afterwards): the sample school implementing `appContract`
+type-checks as an `AppContractClient`, validates through the contract (an empty display name is
+rejected), runs in a browser bundle with no Node built-ins, and adds about 7 KB gzipped beyond the
+oRPC client and Zod the app already ships.
+
+The same pattern exists elsewhere: tRPC's `localLink` calls a router in-process without HTTP, and
+oRPC documents `createRouterClient` for the same purpose. Products that offer a no-account mode
+(Actual Budget runs fully in the browser with no server) keep one codebase and swap where the data
+lives. Two lessons from others: Stripe moved from a test mode that shared settings with live mode
+to fully isolated sandboxes, because shared state leaked between them; and demos built by patching
+`fetch` (MSW, mock routers) drift from the real API, since nothing checks them against it. A
+contract implementation is checked by the compiler.
+
+Order: the contract grows as v1 procedures land (only identity and authority exist today); each new
+procedure gets its sample-school answer in the same change, and a floor moves from local sample
+data to the query when both exist. Until then `Sources` stays as the bridge.
+
+## Security review (13 Nov)
+
+Fixed now:
+- **The Vite builds sent no security headers.** Next's proxy set the CSP (which is what made the
+  browser refuse any Explore connection to the backend), framing protection and HSTS; a static build
+  has no proxy. The headers are now one definition (`lib/security/responseHeaders.ts`) used by the
+  proxy and written by each Vite build to `_headers`, with `_redirects` for direct links. Explore's
+  CSP allows connections to its own origin only. The Vite builds have no inline scripts, so their
+  `script-src` drops `'unsafe-inline'`, stricter than Next. Checked in Chrome with those headers:
+  no violations on seven Explore places; the only outside requests are Google Fonts.
+- **Sign-out could not complete in the client build:** it asked a Next route to clear server cookies.
+  The client build has none (the browser client holds the session and clears it); it now skips that
+  step there and still refuses to finish while the local session remains (two tests).
+- **Verger Lab** was open in production after the move (its page was development-only); it is in
+  `_dev` again.
+
+Checked and sound:
+- Explore's build blanks every backend setting; the dev preview's reader is not in the production
+  bundle; no sourcemaps ship; return paths go through `safeReturnPath`; the API re-checks the bond
+  named in every command, so the client's bond cookie only selects.
+
+Open (engineering):
+- The Explore bundle still contains backend client code (`supabaseClient` in `@repo/core` creates a
+  client with a placeholder URL in the browser). The CSP now stops it from connecting; the code
+  should still leave the bundle (the ratchet list reaches empty).
+- The session token is readable by page script (Supabase browser cookies), as in every SPA using
+  bearer tokens. The CSP is the main defence against script injection; keep third-party script at
+  zero, self-host fonts, and keep access tokens short-lived.
+- Shared school computers: sign-out clears the session and `sessionStorage`, not account data in
+  `localStorage` (workbench, appearance). Which data may stay is the open product question below.
+- The headers need a host that reads `_headers` (Cloudflare Pages does, and already serves the mobile
+  web build; GitHub Pages does not). No workflow deploys the Vite builds yet; the one that does must
+  publish them to such a host, and a check after deploy should read the live headers back.
+- `@orpc/*` is a beta (2.0.0-beta.50) in production paths; pin it and read its changelog per bump.
+
+## Decided by the owner (13 Nov)
+
+- **Explore is for the people a school is made of:** teacher, student, principal and guardian. The
+  founder and researcher personas are gone. Each place shows to the roles it is for, under the same
+  rule as sanctuary accounts: a teacher who opens tuition is told it is for school leaders and
+  guardians, and offered *View as School Leader*. A place none of the four can open (founder
+  command, the labs) does not exist on Explore: it is not found.
+- **Every contact address is `@gurudevi.lk`,** including the mobile help sheet, which now reads the
+  shared definition. EdLove's own addresses (`@edlove.org`) belong to that site and are unchanged.
+
+## Open product questions (the owner decides; the design keeps both open)
 
 - **Safe try for signed-in people:** inside sanctuary, or by sending them to Explore. Built as a data
   mode the app can switch into, either placement uses the same mechanism.

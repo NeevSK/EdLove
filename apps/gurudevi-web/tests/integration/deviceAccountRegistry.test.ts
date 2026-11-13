@@ -23,7 +23,7 @@ describe('Unit/Integration: Web Device Account Registry & Kiosk Isolation', () =
     it('masks standard student emails correctly', () => {
       expect(maskEmail('kasun@colombo.edu.lk')).toBe('k***n@colombo.edu.lk');
       expect(maskEmail('an@colombo.edu.lk')).toBe('a***@colombo.edu.lk');
-      expect(maskEmail('scholar@gurudevi.app')).toBe('s*****r@gurudevi.app');
+      expect(maskEmail('scholar@gurudevi.lk')).toBe('s*****r@gurudevi.lk');
     });
 
     it('returns raw string if not an email', () => {

@@ -69,3 +69,12 @@ export const steward: CapacityRule = (holder) =>
   [holder.capacity, ...(holder.activeScope?.roles ?? [])].some(
     (capacity) => isSovereignSteward(capacity) || isSovereignSteward(capacity.toLowerCase()),
   );
+
+/** People who build Gurudevi: developers and founders. */
+export const builders = rule(['developer', 'founder'], ['developer', 'founder']);
+
+/** Who a place is for, and what someone else is told when they open it. */
+export interface Audience {
+  readonly allows: CapacityRule;
+  readonly restricted: string;
+}

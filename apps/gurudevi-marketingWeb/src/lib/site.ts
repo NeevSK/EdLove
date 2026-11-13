@@ -202,9 +202,9 @@ export const SOCIAL_LINKS = {
 } as const;
 
 export const CONTACT_EMAILS = {
-  support: publicEmail('PUBLIC_GURUDEVI_SUPPORT_EMAIL', 'support@gurudevi.app'),
-  gratitude: publicEmail('PUBLIC_GURUDEVI_GRATITUDE_EMAIL', 'gratitude@gurudevi.app'),
-  institutional: publicEmail('PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL', 'institutional@gurudevi.app'),
+  support: publicEmail('PUBLIC_GURUDEVI_SUPPORT_EMAIL', 'support@gurudevi.lk'),
+  gratitude: publicEmail('PUBLIC_GURUDEVI_GRATITUDE_EMAIL', 'gratitude@gurudevi.lk'),
+  institutional: publicEmail('PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL', 'institutional@gurudevi.lk'),
 } as const;
 
 function publicEmail(name: string, fallback: string): string {

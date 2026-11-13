@@ -43,6 +43,21 @@ describe('G1 browser sign-out with substituted provider and cookie boundary', ()
     expect(mock.clear).toHaveBeenCalledTimes(1);
     expect(mock.replace).toHaveBeenCalledWith('/');
   });
+  it('in the client build, asks no server for cookies and still requires the local session gone', async () => {
+    vi.stubEnv('GURUDEVI_SESSION_COOKIES', 'browser');
+    await executeSovereignSignOut('/');
+    expect(globalThis.fetch).not.toHaveBeenCalledWith('/auth/signout', expect.anything());
+    expect(mock.signOut).toHaveBeenCalledWith({ scope: 'local' });
+    expect(mock.replace).toHaveBeenCalledWith('/');
+  });
+  it('in the client build, still refuses to finish while the local session remains', async () => {
+    vi.stubEnv('GURUDEVI_SESSION_COOKIES', 'browser');
+    mock.session
+      .mockReset()
+      .mockResolvedValue({ data: { session: { access_token: 'synthetic-access' } }, error: null });
+    await expect(executeSovereignSignOut('/')).rejects.toMatchObject({ localCleanupComplete: false });
+    expect(mock.replace).not.toHaveBeenCalled();
+  });
   it('cleans an already signed-out device without inventing a revocation request', async () => {
     mock.session.mockReset().mockResolvedValue({ data: { session: null }, error: null });
     await executeSovereignSignOut('/');

@@ -1,3 +1,4 @@
+import { connectOrigins } from '../security/responseHeaders';
 import { supabaseConfig } from '../supabase/config';
 import { refreshSupabaseSession } from '../supabase/proxy';
 import type { NextRequest, NextResponse } from 'next/server';
@@ -20,7 +21,7 @@ import type { NextRequest, NextResponse } from 'next/server';
  */
 export const PLATFORM_SESSION_COOKIE_PREFIXES = [
   // Vendor-specific adapters (can be swapped or extended)
-  'sb-',               // Supabase SSR session token & refresh token
+  'sb-', // Supabase SSR session token & refresh token
   // Generic / Custom Auth provider tokens
   'auth-',
   'session-',
@@ -46,37 +47,10 @@ export function isPlatformSessionCookie(name: string): boolean {
  * vendor hostnames.
  */
 export function resolveSanctuaryConnectOrigins(): readonly string[] {
-  const origins = new Set<string>();
-
-  // 1. Auth provider backend (e.g. Supabase, self-hosted auth, or third party)
-  const authConfig = supabaseConfig();
-  if (authConfig?.url) {
-    try {
-      const parsed = new URL(authConfig.url);
-      origins.add(parsed.origin);
-      // If HTTPS, also permit the matching WebSocket origin for real-time channels
-      if (parsed.protocol === 'https:') {
-        origins.add(`wss://${parsed.host}`);
-      } else if (parsed.protocol === 'http:') {
-        origins.add(`ws://${parsed.host}`);
-      }
-    } catch {
-      // Ignore invalid URL
-    }
-  }
-
-  // 2. Sanctuary API (Render API / Hono / oRPC)
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
-  if (apiUrl) {
-    try {
-      const parsed = new URL(apiUrl);
-      origins.add(parsed.origin);
-    } catch {
-      // Ignore invalid URL
-    }
-  }
-
-  return Array.from(origins);
+  return connectOrigins({
+    authUrl: supabaseConfig()?.url,
+    apiUrl: process.env.NEXT_PUBLIC_API_URL,
+  });
 }
 
 /**

@@ -73,19 +73,24 @@ export async function executeSovereignSignOut(redirectTo = '/'): Promise<void> {
   }
   const remoteRevocationRequired = !sessionRead || Boolean(token);
 
-  // 2. Clear local Next.js HTTP-only session cookies
-  try {
-    const response = await fetch('/auth/signout', {
-      method: 'POST',
-      credentials: 'same-origin',
-      cache: 'no-store',
-      redirect: 'error',
-      signal: AbortSignal.timeout(5000),
-    });
-    cookiesCleared = response.ok;
-    if (response.body) await response.body.cancel();
-  } catch {
-    cookiesCleared = false;
+  // 2. Clear the HTTP-only session cookies a server set (Next). The client build keeps its session
+  // in cookies the browser client writes itself, which step 3 clears; it has no server to ask.
+  if (process.env.GURUDEVI_SESSION_COOKIES === 'browser') {
+    cookiesCleared = true;
+  } else {
+    try {
+      const response = await fetch('/auth/signout', {
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        redirect: 'error',
+        signal: AbortSignal.timeout(5000),
+      });
+      cookiesCleared = response.ok;
+      if (response.body) await response.body.cancel();
+    } catch {
+      cookiesCleared = false;
+    }
   }
 
   // 3. Clear Supabase local client session if present

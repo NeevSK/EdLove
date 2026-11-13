@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { securityHeaders } from './lib/security/responseHeaders';
 import {
   classifyGurudeviHost,
   EXPLORE_GURUDEVI_HOST,
@@ -25,10 +26,7 @@ import {
  * auth provider changes (e.g. from Supabase to custom JWT, oRPC, or Auth0), the
  * amputation logic remains completely decoupled and functional.
  */
-function clearSanctuarySessionCookies(
-  request: NextRequest,
-  response: NextResponse,
-): NextResponse {
+function clearSanctuarySessionCookies(request: NextRequest, response: NextResponse): NextResponse {
   const cookieNames = request.cookies
     .getAll()
     .map((c) => c.name)
@@ -115,40 +113,12 @@ function applySecurityHeaders(
   isExploreSurface = false,
   isLocal = false,
 ): NextResponse {
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
-
-  // Hexagonal CSP: dynamically resolved from registered adapters
-  const dynamicOrigins = isExploreSurface
-    ? []
-    : resolveSanctuaryConnectOrigins();
-
-  // In local preview/development, permit ws: for Next.js Fast Refresh and HMR websockets
-  const devConnect = isLocal ? ['ws:', 'http:'] : [];
-  const connectSrc = ["'self'", ...dynamicOrigins, ...devConnect].join(' ');
-
-  // Next.js development requires 'unsafe-eval' for source maps, Fast Refresh & React DevTools.
-  // In production builds, 'unsafe-eval' is omitted.
-  const scriptSrc = isLocal || process.env.NODE_ENV === 'development'
-    ? "'self' 'unsafe-inline' 'unsafe-eval'"
-    : "'self' 'unsafe-inline'";
-
-  const csp = [
-    "default-src 'self'",
-    `script-src ${scriptSrc}`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    `connect-src ${connectSrc}`,
-    "img-src 'self' data: https:",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-  ].join('; ');
-
-  response.headers.set('Content-Security-Policy', csp);
+  const headers = securityHeaders({
+    connect: isExploreSurface ? [] : resolveSanctuaryConnectOrigins(),
+    inlineScripts: true,
+    development: isLocal || process.env.NODE_ENV === 'development',
+  });
+  for (const [name, value] of Object.entries(headers)) response.headers.set(name, value);
 
   return response;
 }

@@ -29,8 +29,8 @@ import { Route as AppNotificationsRouteImport } from './../routes/_app/notificat
 import { Route as AppSelfRouteImport } from './../routes/_app/self'
 import { Route as AppSettingsRouteImport } from './../routes/_app/settings'
 import { Route as AppSupportRouteImport } from './../routes/_app/support'
-import { Route as AppVergerLabRouteImport } from './../routes/_app/verger-lab'
 import { Route as DevArchitectureRouteImport } from './../routes/_dev/architecture'
+import { Route as DevVergerLabRouteImport } from './../routes/_dev/verger-lab'
 import { Route as CCodeRouteImport } from './../routes/c/$code'
 import { Route as AccountAuthCallbackRouteImport } from './../routes/_account/auth/callback'
 import { Route as AccountAuthCompleteRouteImport } from './../routes/_account/auth/complete'
@@ -179,14 +179,14 @@ const AppSupportRoute = AppSupportRouteImport.update({
   path: '/support',
   getParentRoute: () => AppRoute,
 } as any)
-const AppVergerLabRoute = AppVergerLabRouteImport.update({
-  id: '/verger-lab',
-  path: '/verger-lab',
-  getParentRoute: () => AppRoute,
-} as any)
 const DevArchitectureRoute = DevArchitectureRouteImport.update({
   id: '/architecture',
   path: '/architecture',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevVergerLabRoute = DevVergerLabRouteImport.update({
+  id: '/verger-lab',
+  path: '/verger-lab',
   getParentRoute: () => DevRoute,
 } as any)
 const CCodeRoute = CCodeRouteImport.update({
@@ -460,8 +460,8 @@ export interface FileRoutesByFullPath {
   '/self': typeof AppSelfRoute
   '/settings': typeof AppSettingsRoute
   '/support': typeof AppSupportRoute
-  '/verger-lab': typeof AppVergerLabRoute
   '/architecture': typeof DevArchitectureRoute
+  '/verger-lab': typeof DevVergerLabRoute
   '/c/$code': typeof CCodeRoute
   '/auth/callback': typeof AccountAuthCallbackRoute
   '/auth/complete': typeof AccountAuthCompleteRoute
@@ -531,8 +531,8 @@ export interface FileRoutesByTo {
   '/self': typeof AppSelfRoute
   '/settings': typeof AppSettingsRoute
   '/support': typeof AppSupportRoute
-  '/verger-lab': typeof AppVergerLabRoute
   '/architecture': typeof DevArchitectureRoute
+  '/verger-lab': typeof DevVergerLabRoute
   '/c/$code': typeof CCodeRoute
   '/auth/callback': typeof AccountAuthCallbackRoute
   '/auth/complete': typeof AccountAuthCompleteRoute
@@ -606,8 +606,8 @@ export interface FileRoutesById {
   '/_app/self': typeof AppSelfRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/support': typeof AppSupportRoute
-  '/_app/verger-lab': typeof AppVergerLabRoute
   '/_dev/architecture': typeof DevArchitectureRoute
+  '/_dev/verger-lab': typeof DevVergerLabRoute
   '/c/$code': typeof CCodeRoute
   '/_account/auth/callback': typeof AccountAuthCallbackRoute
   '/_account/auth/complete': typeof AccountAuthCompleteRoute
@@ -679,8 +679,8 @@ export interface FileRouteTypes {
     | '/self'
     | '/settings'
     | '/support'
-    | '/verger-lab'
     | '/architecture'
+    | '/verger-lab'
     | '/c/$code'
     | '/auth/callback'
     | '/auth/complete'
@@ -750,8 +750,8 @@ export interface FileRouteTypes {
     | '/self'
     | '/settings'
     | '/support'
-    | '/verger-lab'
     | '/architecture'
+    | '/verger-lab'
     | '/c/$code'
     | '/auth/callback'
     | '/auth/complete'
@@ -824,8 +824,8 @@ export interface FileRouteTypes {
     | '/_app/self'
     | '/_app/settings'
     | '/_app/support'
-    | '/_app/verger-lab'
     | '/_dev/architecture'
+    | '/_dev/verger-lab'
     | '/c/$code'
     | '/_account/auth/callback'
     | '/_account/auth/complete'
@@ -1036,18 +1036,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSupportRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/verger-lab': {
-      id: '/_app/verger-lab'
-      path: '/verger-lab'
-      fullPath: '/verger-lab'
-      preLoaderRoute: typeof AppVergerLabRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_dev/architecture': {
       id: '/_dev/architecture'
       path: '/architecture'
       fullPath: '/architecture'
       preLoaderRoute: typeof DevArchitectureRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/_dev/verger-lab': {
+      id: '/_dev/verger-lab'
+      path: '/verger-lab'
+      fullPath: '/verger-lab'
+      preLoaderRoute: typeof DevVergerLabRouteImport
       parentRoute: typeof DevRoute
     }
     '/c/$code': {
@@ -1434,7 +1434,6 @@ interface AppRouteChildren {
   AppSelfRoute: typeof AppSelfRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppSupportRoute: typeof AppSupportRoute
-  AppVergerLabRoute: typeof AppVergerLabRoute
   AppAdminAnalyticsRoute: typeof AppAdminAnalyticsRoute
   AppAdminDocumentsRoute: typeof AppAdminDocumentsRoute
   AppAdminFounderRoute: typeof AppAdminFounderRoute
@@ -1485,7 +1484,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppSelfRoute: AppSelfRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppSupportRoute: AppSupportRoute,
-  AppVergerLabRoute: AppVergerLabRoute,
   AppAdminAnalyticsRoute: AppAdminAnalyticsRoute,
   AppAdminDocumentsRoute: AppAdminDocumentsRoute,
   AppAdminFounderRoute: AppAdminFounderRoute,
@@ -1532,6 +1530,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface DevRouteChildren {
   DevArchitectureRoute: typeof DevArchitectureRoute
+  DevVergerLabRoute: typeof DevVergerLabRoute
   DevKitFloorRedesignRoute: typeof DevKitFloorRedesignRoute
   DevKitSelfRoute: typeof DevKitSelfRoute
   DevKitIndexRoute: typeof DevKitIndexRoute
@@ -1539,6 +1538,7 @@ interface DevRouteChildren {
 
 const DevRouteChildren: DevRouteChildren = {
   DevArchitectureRoute: DevArchitectureRoute,
+  DevVergerLabRoute: DevVergerLabRoute,
   DevKitFloorRedesignRoute: DevKitFloorRedesignRoute,
   DevKitSelfRoute: DevKitSelfRoute,
   DevKitIndexRoute: DevKitIndexRoute,

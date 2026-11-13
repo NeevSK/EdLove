@@ -14,7 +14,7 @@ beforeEach(() => vi.mocked(haptic).mockClear());
 describe('settings links', { tags: ['unit'] }, () => {
   it('opens web, mail and phone addresses only', () => {
     expect(safeLinkUrl('https://gurudevi.app/help')).toBe('https://gurudevi.app/help');
-    expect(safeLinkUrl('mailto:help@gurudevi.app')).toBe('mailto:help@gurudevi.app');
+    expect(safeLinkUrl('mailto:support@gurudevi.lk')).toBe('mailto:support@gurudevi.lk');
     expect(safeLinkUrl('tel:+94112345678')).toBe('tel:+94112345678');
     expect(safeLinkUrl('javascript:alert(1)')).toBeNull();
     expect(safeLinkUrl('mailto:a b@x')).toBeNull();

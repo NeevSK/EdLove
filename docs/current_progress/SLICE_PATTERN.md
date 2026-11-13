@@ -316,7 +316,7 @@ test.describe('<Slice> G3 E2E', () => {
   test.beforeEach(async ({ page }) => {
     // Sign in
     await page.goto('/sign-in?returnTo=/%2Fmy-slice');
-    await page.fill('#email', 'e2e-test@gurudevi.app');
+    await page.fill('#email', 'e2e-test@gurudevi.lk');
     await page.fill('#password', 'TestPassword123!');
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await page.waitForURL(/\/my-slice/);

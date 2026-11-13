@@ -4,7 +4,8 @@ import { useSyncExternalStore } from 'react';
 import type { SectorKind } from '@repo/core/types/Perspective';
 import type { CivicRoleId } from '@repo/core/types/CivicRole';
 
-export type ExploreCapacity = 'teacher' | 'principal' | 'student' | 'guardian' | 'founder' | 'researcher';
+/** The roles a visitor can try in Explore: the people a school is made of. */
+export type ExploreCapacity = 'teacher' | 'principal' | 'student' | 'guardian';
 
 export const DEFAULT_EXPLORE_CAPACITY: ExploreCapacity = 'teacher';
 export const DEFAULT_EXPLORE_SECTOR: SectorKind = 'institutional';
@@ -87,34 +88,6 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
       self: 'Family Wellbeing & Shared Reflections',
       community: 'Parent-Teacher Council & Community Dialogues',
       library: 'Family Guides & Pedagogical Principles',
-    },
-  },
-  {
-    id: 'founder',
-    label: 'Platform Founder',
-    roleTitle: 'Platform Founder & Steward',
-    defaultSector: 'personal',
-    description:
-      'Sovereign Architecture: regenerative school systems, network-wide sync governance, and foundational charters.',
-    domainOverview: {
-      workspace: 'Sovereign Core · Multi-school topologies & network ledgers',
-      self: 'Foundational Vision · Stewardship Reflections & Solitude Journal',
-      community: 'Global Sanctuary Council & Steward Roundtables',
-      library: 'Foundational Charters & Architectural Specifications',
-    },
-  },
-  {
-    id: 'researcher',
-    label: 'Cognitive Scientist',
-    roleTitle: 'Cognitive Scientist & Researcher',
-    defaultSector: 'community',
-    description:
-      'Research Atlas: attentional dynamics, contemplative bio-acoustics, and evidence-grounded pedagogy.',
-    domainOverview: {
-      workspace: 'Research Atlas · Attention analytics & observational data',
-      self: 'Empirical Inquiry · Research Notebook & Hypotheses',
-      community: 'Cognitive Science Colloquium & Peer Review Circles',
-      library: 'Scientific Preprints, Field Monographs & Datasets',
     },
   },
 ] as const;
