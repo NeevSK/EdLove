@@ -474,27 +474,37 @@ under each value.
   (L7) carries the PJC transition ID whose feedback it renders. A check can then report PJC
   transitions with no runtime implementation, and runtime steps with no spec.
 
-## 6. School creation: what is real (2026-11-12)
+## 6. School creation: resolved (2026-11-13)
 
-| Piece | What it does | Wired? |
+**The main path is connecting, not creating** (Neev). Institutional schools (government and the
+like) already exist in the national registry (`EduSchool`, with the official classification in
+`constants/SriLankanSchools.ts`). A principal chooses one and asks to connect, or accepts an
+invitation, and the request waits for review: PJC `feature:admin.school_connection`. Creating a
+school from scratch is the secondary path, for commercial schools (private, international, tuition).
+
+| Piece | State |
+| --- | --- |
+| One contract (`core/logic/schemas/school.schema.ts`) | `SchoolKindSchema` (institutional, commercial; more, such as sanctuary, when they exist) and `SchoolLevelSchema` (the union of both machines' lists, Neev's choice). Both machines use it; neither keeps its own enum. Kind has no `School` column yet (L0) |
+| `classroom/machines/schoolProvisioningMachine.ts` | The commercial creation machine. Runs its own server calls through two ports (`checkHandle`, `provision`). Creation is **one** server command, with the school, the founder bond and the group made together; the idempotency key is made once per submission and reused on retry. Until v1 admits `school.handleAvailable` and `school.provision`, it fails as not admitted: no direct database writes. Before, nothing ever checked the handle, and the runner made three separate client writes |
+| `admin/machines/principalSetupMachine.ts` | Kept separate (Neev). It collects a profile and shows "activated" without creating anything; it is not reached from any app |
+| `core/hooks/useSchoolCreation.ts` | Kept for later (Neev): the draft's location, demographics and grade fields aren't in the `School` model; the registry (`EduSchool`) holds them for institutional schools |
+| Owed (API, Neev) | v1: registry search, connection request and invitation accept (the main path); `school.handleAvailable` and `school.provision` (commercial) |
+
+## 6a. Machines audit (2026-11-13)
+
+All 19 machines resolve XState 6.0.0-beta.2; no deprecated API is in use. The real defect was
+different: **16 machines did not run their own work**. Screens ran it through exported
+`execute*Effect` helpers and fed the results back as `SET_*` events. A machine that runs its work
+through `setup({ actors })` + `invoke` owns its whole flow, cancels it when the state is left,
+and is tested with `machine.provide({ actors })`. That is where `setup()` earns its place.
+
+| Machine | Reached from an app | Done |
 | --- | --- | --- |
-| `core/hooks/useSchoolCreation.ts` (since 2026-02) | The wizard **draft**: five steps (basic info, location, demographics, hierarchy), held in `useReducer` and persisted to device storage through two effects. No submit. | No: only re-exported from barrels |
-| `classroom/machines/schoolProvisioningMachine.ts` (since 2026-10-28) | The **submission**: details → verify the handle → provision on the backend (create the school, the founder bond, an optional community group, via Effect) → activated or error | No: only the barrel and its own test |
-| `admin/components/school/Step*.tsx` and `gurudevi-mobile/src/components/school/Step*.tsx` | The four step UIs, in two copies | No importers |
-| `admin/components/school/CreateSchoolModal.tsx`, `app/school-creation.tsx`, `SchoolCreationScreen.tsx` | The screens that used the hook and the old API | Deleted in `308aa4f35` (2026-11-06, the Arrive journey). Arrive's rule: a caller of retired API moves to v1 or is removed. Backup: `backup/wip-snapshot-20261106` |
-| v1 API | Has `identity.createInitialBond`; **no school-creation procedure** | — |
-| PJC `journey:founder.charter_school_hub` | Outcome: the school row, its community group and a claim token. Its binding still points at the deleted modal | Spec only |
+| `ui/guestDataSyncMachine` | Yes (mobile guest conversion) | Moved: invokes the summary (async logic, aborted on close) and the transfer (callback logic, progress sent back). The modal sends `START_LOADING` / `START_SYNC` |
+| `classroom/schoolProvisioningMachine` | No | Moved (section 6) |
+| `ui/authOrchestrationMachine` | Yes (mobile sign-in) | **For Neev's approval.** The screen runs four sign-in methods and PIN itself and drives the machine through an `action: any` shim. The machine's own `executePasswordAuthEffect` is a second copy of the steps, used only by its test. The target is the machine owning sign-in through invoked actors, but it is the most account-sensitive flow and is only testable with mocks here |
+| `ui/mediaPlaybackMachine` | Yes (library video) | Correct: native video callbacks are real-world events. Its position-saving helpers are used only by tests, so playback position is not saved (unwired feature) |
+| `self/*` (wind-down and others) | No: their screens import the removed self data layer | Left alone (gone family) |
+| `sanctuaryPulse`, `roleJourney`, `principalSetup` | Pulse yes; the others no | No async work to move |
+| The other 10 | No consumers | Left in place; moved when wired |
 
-They are not parallel. They are the two halves of one journey: the hook is the draft, the machine
-is the submission. Nothing can create a school today, by design, until v1 has the procedure. What
-emerges, for Neev to confirm when the journey is rebuilt:
-
-- the **draft** becomes a persisted store slice (versioned, like the other 17), replacing the
-  reducer-plus-effects persistence, which is anti-pattern 7 in the state doc;
-- the **submission** stays a machine. It passes the admission test: several dependent server writes,
-  partial failure and a defined error state. It moves to `setup()` and its writes go through the L4
-  outbox, with the idempotency key from creation;
-- the **steps** become one copy, as flow steps (L9) linked to the PJC journey;
-- the server call waits for the v1 procedure (API side, Neev's).
-
-Nothing is deleted or rewritten until then: both files stay as they are.

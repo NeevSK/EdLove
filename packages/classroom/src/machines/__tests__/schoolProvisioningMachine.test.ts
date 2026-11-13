@@ -1,14 +1,15 @@
 import {
   clearSchoolDraftSnapshot,
   createSchoolProvisioningActor,
-  executeSchoolProvisioningEffect,
+  type ProvisionSchoolInput,
+  type ProvisionSchoolResult,
   resolveSchoolDraftKey,
   restoreSchoolDraftSnapshot,
   saveSchoolDraftSnapshot,
   schoolProvisioningMachine,
 } from '@repo/classroom/machines/schoolProvisioningMachine';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createActor } from 'xstate';
+import { describe, expect, it, vi } from 'vitest';
+import { createAsyncLogic, waitFor } from 'xstate';
 
 vi.mock('@repo/core/lib/storage.adapter', () => {
   const store = new Map<string, string>();
@@ -30,114 +31,126 @@ vi.mock('@repo/core/lib/storage.adapter', () => {
   };
 });
 
-describe('SchoolProvisioningMachine v6 (XState v6 + Effect-TS v4)', () => {
+/** The machine with its two server calls provided: no network. */
+function withPorts(
+  available: (handle: string) => Promise<boolean> = async () => true,
+  provision: (input: ProvisionSchoolInput) => Promise<ProvisionSchoolResult> = async () => ({
+    schoolId: 'sch-1',
+    groupId: 'grp-1',
+  }),
+) {
+  return schoolProvisioningMachine.provide({
+    actors: {
+      checkHandle: createAsyncLogic<boolean, { handle: string }>({
+        run: ({ input }) => available(input.handle),
+      }),
+      provision: createAsyncLogic<ProvisionSchoolResult, ProvisionSchoolInput>({
+        run: ({ input }) => provision(input),
+      }),
+    },
+  });
+}
+
+function submitted(machine = withPorts()) {
+  const actor = createSchoolProvisioningActor(undefined, machine);
+  actor.send({ type: 'SET_DETAILS', name: 'Royal College' });
+  actor.send({ type: 'SET_TYPE', schoolType: 'secondary' });
+  actor.send({ type: 'SUBMIT' });
+  return actor;
+}
+
+describe('schoolProvisioningMachine / G1, real XState, server calls provided', () => {
   it('starts in details with clean context', () => {
-    const actor = createSchoolProvisioningActor();
-    const snapshot = actor.getSnapshot();
-
+    const snapshot = createSchoolProvisioningActor(undefined, withPorts()).getSnapshot();
     expect(snapshot.value).toBe('details');
-    expect(snapshot.context.name).toBe('');
-    expect(snapshot.context.handle).toBe('');
-    expect(snapshot.context.type).toBe('mixed');
-    expect(snapshot.context.error).toBeNull();
+    expect(snapshot.context).toMatchObject({
+      name: '',
+      type: 'mixed',
+      schoolId: null,
+      idempotencyKey: null,
+    });
   });
 
-  it('rejects empty school name on SUBMIT', () => {
-    const actor = createSchoolProvisioningActor();
+  it('rejects an empty school name on SUBMIT', () => {
+    const actor = createSchoolProvisioningActor(undefined, withPorts());
     actor.send({ type: 'SUBMIT' });
-
-    const snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('details');
-    expect(snapshot.context.error).toBe('School name is required');
+    expect(actor.getSnapshot()).toMatchObject({
+      value: 'details',
+      context: { error: 'School name is required' },
+    });
   });
 
-  it('auto-derives slug handle when omitted', () => {
-    const actor = createSchoolProvisioningActor();
-    actor.send({ type: 'SET_DETAILS', name: 'Lotus Wisdom Academy' });
-
-    const snapshot = actor.getSnapshot();
-    expect(snapshot.context.name).toBe('Lotus Wisdom Academy');
-    expect(snapshot.context.handle).toBe('lotus-wisdom-academy');
+  it('derives a slug handle when none is given', () => {
+    const actor = createSchoolProvisioningActor(undefined, withPorts());
+    actor.send({ type: 'SET_DETAILS', name: 'Ananda College Colombo' });
+    expect(actor.getSnapshot().context.handle).toBe('ananda-college-colombo');
   });
 
-  it('advances to verifying_handle on valid name', () => {
-    const actor = createSchoolProvisioningActor();
-    actor.send({ type: 'SET_DETAILS', name: 'Sanctuary College' });
-    actor.send({ type: 'SUBMIT' });
-
+  it('checks the handle, provisions once with the submission key, and activates', async () => {
+    const provision = vi.fn(async () => ({ schoolId: 'sch-9', groupId: 'grp-9' }));
+    const actor = submitted(withPorts(async () => true, provision));
     expect(actor.getSnapshot().value).toBe('verifying_handle');
-  });
-
-  it('bounces back to details when handle is already claimed', () => {
-    const actor = createSchoolProvisioningActor();
-    actor.send({ type: 'SET_DETAILS', name: 'Colombo Central' });
-    actor.send({ type: 'SUBMIT' });
-    expect(actor.getSnapshot().value).toBe('verifying_handle');
-
-    actor.send({ type: 'HANDLE_VERIFIED', available: false });
-
-    const snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('details');
-    expect(snapshot.context.error).toContain('already claimed');
-  });
-
-  it('provisions backend and reaches activated state', () => {
-    const actor = createSchoolProvisioningActor();
-    actor.send({ type: 'SET_DETAILS', name: 'Ananda Vidyalaya', handle: 'ananda-vid' });
-    actor.send({ type: 'SET_TYPE', schoolType: 'secondary' });
-    actor.send({ type: 'SUBMIT' });
-    actor.send({ type: 'HANDLE_VERIFIED', available: true });
-
-    expect(actor.getSnapshot().value).toBe('provisioning_backend');
-
-    actor.send({
-      type: 'PROVISION_SUCCESS',
-      schoolId: 'school-ananda-001',
-      groupId: 'group-hq-001',
+    const done = await waitFor(actor, (s) => s.status === 'done');
+    expect(done.context).toMatchObject({
+      schoolId: 'sch-9',
+      groupId: 'grp-9',
+      groupCreationFailed: false,
     });
-
-    const snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('activated');
-    expect(snapshot.status).toBe('done');
-    expect(snapshot.context.schoolId).toBe('school-ananda-001');
-    expect(snapshot.context.groupId).toBe('group-hq-001');
-    expect(snapshot.context.groupCreationFailed).toBe(false);
+    expect(provision).toHaveBeenCalledWith({
+      name: 'Royal College',
+      handle: 'royal-college',
+      type: 'secondary',
+      idempotencyKey: done.context.idempotencyKey,
+    });
+    expect(done.context.idempotencyKey).toEqual(expect.any(String));
   });
 
-  it('tolerates community group creation failure without failing school activation', () => {
-    const actor = createSchoolProvisioningActor();
-    actor.send({ type: 'SET_DETAILS', name: 'Nalanda College' });
+  it('sends the person back to details when the handle is taken', async () => {
+    const actor = submitted(withPorts(async () => false));
+    const back = await waitFor(actor, (s) => s.matches('details') && s.context.error !== null);
+    expect(back.context.error).toBe('Handle "royal-college" is already claimed. Choose another.');
+  });
+
+  it('keeps the school active when only its community group failed', async () => {
+    const actor = submitted(
+      withPorts(undefined, async () => ({ schoolId: 'sch-1', groupFailed: true })),
+    );
+    const done = await waitFor(actor, (s) => s.status === 'done');
+    expect(done.context).toMatchObject({
+      schoolId: 'sch-1',
+      groupId: null,
+      groupCreationFailed: true,
+    });
+  });
+
+  it('retries a failed creation with the same key, so the server never makes two schools', async () => {
+    const provision = vi
+      .fn<(input: ProvisionSchoolInput) => Promise<ProvisionSchoolResult>>()
+      .mockRejectedValueOnce(new Error('Gateway timeout'))
+      .mockResolvedValue({ schoolId: 'sch-2' });
+    const actor = submitted(withPorts(undefined, provision));
+    const failed = await waitFor(actor, (s) => s.matches('error'));
+    expect(failed.context.error).toBe('Gateway timeout');
+    actor.send({ type: 'RETRY' });
+    await waitFor(actor, (s) => s.status === 'done');
+    const [first, second] = provision.mock.calls.map(([input]) => input.idempotencyKey);
+    expect(second).toBe(first);
+  });
+
+  it('makes a new key when the form changes after a failure', async () => {
+    const actor = submitted(withPorts(undefined, async () => Promise.reject(new Error('down'))));
+    const failed = await waitFor(actor, (s) => s.matches('error'));
+    const firstKey = failed.context.idempotencyKey;
+    actor.send({ type: 'RESET' });
+    actor.send({ type: 'SET_DETAILS', name: 'Royal College Colombo' });
     actor.send({ type: 'SUBMIT' });
-    actor.send({ type: 'HANDLE_VERIFIED', available: true });
-
-    actor.send({
-      type: 'PROVISION_SUCCESS',
-      schoolId: 'school-nalanda-002',
-      groupFailed: true,
-    });
-
-    const snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('activated');
-    expect(snapshot.context.groupCreationFailed).toBe(true);
+    expect(actor.getSnapshot().context.idempotencyKey).not.toBe(firstKey);
   });
 
-  it('guards against ghost dispatches in executeSchoolProvisioningEffect', async () => {
-    const actor = createSchoolProvisioningActor();
-    (actor as any).stop?.();
-
-    const mockDeps = {
-      createSchool: vi.fn(),
-      createFounderBond: vi.fn(),
-    };
-
-    const result = await executeSchoolProvisioningEffect({
-      userId: 'founder-101',
-      deps: mockDeps,
-      actor,
-    });
-
-    expect(mockDeps.createSchool).not.toHaveBeenCalled();
-    expect(result._tag).toBe('Success');
+  it('cannot create anything until v1 admits the procedures', async () => {
+    const actor = submitted(schoolProvisioningMachine);
+    const failed = await waitFor(actor, (s) => s.matches('error'));
+    expect(failed.context.error).toBe('school.handleAvailable is not available yet.');
   });
 
   it('saves and restores provisioning draft using partitioned key standard', async () => {

@@ -1,17 +1,12 @@
 import { storage } from '@repo/core/lib/storage.adapter';
+import { type SchoolLevel, SchoolLevelSchema } from '@repo/core/logic/schemas/school.schema';
 import { startPersistedActor } from '@repo/core/store/persistedActor';
 import { setup } from 'xstate';
 import { z } from 'zod';
 
-export const SchoolTypeEnum = z.enum([
-  'k12',
-  'primary',
-  'secondary',
-  'higher_ed',
-  'sanctuary',
-]);
-
-export type SchoolType = z.infer<typeof SchoolTypeEnum>;
+// The stage of schooling, from the one school contract in core.
+export const SchoolTypeEnum = SchoolLevelSchema;
+export type SchoolType = SchoolLevel;
 
 export const PrincipalSetupContextSchema = z.object({
   schoolName: z.string(),

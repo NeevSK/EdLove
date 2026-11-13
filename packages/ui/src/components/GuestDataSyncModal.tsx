@@ -1,11 +1,6 @@
 import { GuestDataSync } from '@repo/core/native/guestDataSync';
 import { useMachineActor } from '@repo/core/hooks/useMachineActor';
-import {
-  createGuestDataSyncActor,
-  executeFetchGuestDataSummaryEffect,
-  executeGuestDataSyncEffect,
-  type SyncSummary,
-} from '@repo/ui/machines/guestDataSyncMachine';
+import { createGuestDataSyncActor } from '@repo/ui/machines/guestDataSyncMachine';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Check, CircleAlert, TriangleAlert } from '@repo/ui/icons';
@@ -37,10 +32,7 @@ export default function GuestDataSyncModal({
   onDiscard,
 }: GuestDataSyncModalProps) {
   const { t } = useTranslation();
-  const { actor, snapshot } = useMachineActor(
-    () => createGuestDataSyncActor({ userId }),
-    [userId],
-  );
+  const { actor, snapshot } = useMachineActor(() => createGuestDataSyncActor({ userId }), [userId]);
   const state = useMemo(
     () => ({
       status: snapshot.value as SyncStatus,
@@ -52,36 +44,21 @@ export default function GuestDataSyncModal({
   );
   const transferAvailability = GuestDataSync.getTransferAvailability();
 
-  const fetchSyncSummary = useCallback(async () => {
-    await executeFetchGuestDataSummaryEffect(actor, async () => {
-      const summary = await GuestDataSync.getGuestDataSummary();
-      return {
-        timetablePeriods: summary.timetablePeriods,
-        moodLogs: summary.moodLogs,
-        journalEntries: summary.journalEntries,
-        students: summary.students,
-        total: summary.total,
-      };
-    });
-  }, [actor]);
-
+  // Opening counts what is on the device; closing resets (and aborts a count in flight).
   useEffect(() => {
-    if (isOpen) {
-      void fetchSyncSummary();
-    } else {
-      actor.send({ type: 'RESET' });
-    }
-  }, [isOpen, fetchSyncSummary, actor]);
+    actor.send({ type: isOpen ? 'START_LOADING' : 'RESET' });
+  }, [isOpen, actor]);
 
-  const handleSync = useCallback(async () => {
-    const result = await executeGuestDataSyncEffect(actor, userId, (uid, onProg) =>
-      GuestDataSync.syncAllData(uid, onProg),
-    );
+  // Once the transfer completes, give the person a moment to read the result.
+  useEffect(() => {
+    if (snapshot.status !== 'done') return undefined;
+    const timer = setTimeout(onSyncComplete, 2000);
+    return () => clearTimeout(timer);
+  }, [snapshot.status, onSyncComplete]);
 
-    if (result.success) {
-      setTimeout(onSyncComplete, 2000);
-    }
-  }, [actor, userId, onSyncComplete]);
+  const handleSync = useCallback(() => {
+    actor.send({ type: 'START_SYNC' });
+  }, [actor]);
 
   const handleSkip = useCallback(() => {
     if (state.summary.total > 0 && (state.status === 'ready' || state.status === 'error')) {
@@ -126,13 +103,7 @@ export default function GuestDataSyncModal({
               Discard
             </SanctuaryButton>
             {transferAvailability.isAvailable ? (
-              <SanctuaryButton
-                action="primary"
-                onPress={() => {
-                  void handleSync();
-                }}
-                className="flex-1"
-              >
+              <SanctuaryButton action="primary" onPress={handleSync} className="flex-1">
                 {t('sync.syncButton') || 'Transfer data'}
               </SanctuaryButton>
             ) : null}

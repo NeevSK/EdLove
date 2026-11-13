@@ -1,28 +1,33 @@
+import { UnavailableError } from '@repo/core/effect/Errors';
 import { buildPartitionedKey, storage } from '@repo/core/lib/storage.adapter';
-import { Cause, Effect, Exit } from 'effect';
-import { type ActorRefFrom, createActor, createMachine, types } from 'xstate';
+import { type SchoolLevel, SchoolLevelSchema } from '@repo/core/logic/schemas/school.schema';
+import { type ActorRefFrom, createActor, createAsyncLogic, setup, types } from 'xstate';
 import { z } from 'zod';
 
-export const SchoolTypeEnum = z.enum([
-  'primary',
-  'secondary',
-  'mixed',
-  'k12',
-  'vocational',
-]);
-
-export type SchoolType = z.infer<typeof SchoolTypeEnum>;
+/**
+ * Creating a commercial school (private, international, tuition): the owner names it, the handle
+ * is checked, and the server creates it. Institutional schools are not created here; they come
+ * from the national registry and a principal connects to one (`feature:admin.school_connection`).
+ *
+ * The machine runs its own server calls (`checkHandle`, `provision`), so a screen only sends what
+ * the person did. Both are ports: until v1 has the procedures they fail as not admitted, and the
+ * screen that wires creation provides them with `schoolProvisioningMachine.provide({ actors })`.
+ * Creation is one server command, so a school, its founder bond and its community group are made
+ * together or not at all; the idempotency key is made once per submission and reused on retry.
+ */
 
 export const SchoolProvisioningContextSchema = z.object({
   name: z.string(),
   handle: z.string(),
-  type: SchoolTypeEnum,
+  type: SchoolLevelSchema,
   schoolId: z.string().nullable(),
   groupId: z.string().nullable(),
   groupCreationFailed: z.boolean(),
   error: z.string().nullable(),
   isEdit: z.boolean(),
   editingSchoolId: z.string().nullable(),
+  /** One per submission: a retry sends the same key, a changed form gets a new one. */
+  idempotencyKey: z.string().nullable(),
 });
 
 export type SchoolProvisioningContext = z.infer<typeof SchoolProvisioningContextSchema>;
@@ -37,121 +42,137 @@ export const initialSchoolProvisioningContext: SchoolProvisioningContext = {
   error: null,
   isEdit: false,
   editingSchoolId: null,
+  idempotencyKey: null,
 };
 
-export const schoolProvisioningMachine = createMachine({
-  id: 'schoolProvisioning',
+export interface ProvisionSchoolInput {
+  readonly name: string;
+  readonly handle: string;
+  readonly type: SchoolLevel;
+  readonly idempotencyKey: string;
+}
+
+export interface ProvisionSchoolResult {
+  readonly schoolId: string;
+  readonly groupId?: string;
+  /** The school exists but its community group could not be made; it can be added later. */
+  readonly groupFailed?: boolean;
+}
+
+const notAdmitted = (procedure: string) =>
+  new UnavailableError({
+    code: 'API_CAPABILITY_NOT_ADMITTED',
+    message: `${procedure} is not available yet.`,
+  });
+
+/** Whether a handle is free. Port: provide the v1 query when it exists. */
+export const checkSchoolHandle = createAsyncLogic<boolean, { handle: string }>({
+  run: async () => {
+    throw notAdmitted('school.handleAvailable');
+  },
+});
+
+/** Creates the school, its founder bond and its group in one command. Port: provide the v1 command. */
+export const provisionSchool = createAsyncLogic<ProvisionSchoolResult, ProvisionSchoolInput>({
+  run: async () => {
+    throw notAdmitted('school.provision');
+  },
+});
+
+const messageOf = (error: unknown) =>
+  error instanceof Error && error.message ? error.message : 'School provisioning failed';
+
+const slugOf = (name: string) => name.trim().toLowerCase().replace(/\s+/g, '-');
+
+export const schoolProvisioningMachine = setup({
   schemas: {
     context: SchoolProvisioningContextSchema,
+    input: types<Partial<SchoolProvisioningContext> | undefined>(),
     events: {
       SET_DETAILS: types<{ name: string; handle?: string }>(),
-      SET_TYPE: types<{ schoolType: SchoolType }>(),
+      SET_TYPE: types<{ schoolType: SchoolLevel }>(),
       SUBMIT: types<void>(),
-      HANDLE_VERIFIED: types<{ available: boolean }>(),
-      PROVISION_SUCCESS: types<{
-        schoolId: string;
-        groupId?: string;
-        groupFailed?: boolean;
-      }>(),
-      PROVISION_FAILED: types<{ error: string }>(),
       RETRY: types<void>(),
       RESET: types<void>(),
     },
   },
+  actors: { checkHandle: checkSchoolHandle, provision: provisionSchool },
+}).createMachine({
+  id: 'schoolProvisioning',
   initial: 'details',
-  context: ({ input }: { input?: Partial<SchoolProvisioningContext> }) => ({
-    ...initialSchoolProvisioningContext,
-    ...input,
-  }),
+  context: ({ input }) => ({ ...initialSchoolProvisioningContext, ...input }),
   states: {
     details: {
       on: {
         SET_DETAILS: ({ event, context }) => ({
-          target: 'details',
           context: {
             ...context,
             name: event.name,
-            handle:
-              event.handle !== undefined
-                ? event.handle
-                : event.name.trim().toLowerCase().replace(/\s+/g, '-'),
+            handle: event.handle ?? slugOf(event.name),
             error: null,
+            idempotencyKey: null,
           },
         }),
         SET_TYPE: ({ event, context }) => ({
-          target: 'details',
-          context: {
-            ...context,
-            type: event.schoolType,
-          },
+          context: { ...context, type: event.schoolType, idempotencyKey: null },
         }),
         SUBMIT: ({ context }) => {
           if (!context.name.trim()) {
-            return {
-              target: 'details',
-              context: {
-                ...context,
-                error: 'School name is required',
-              },
-            };
+            return { context: { ...context, error: 'School name is required' } };
           }
           return {
             target: 'verifying_handle',
             context: {
               ...context,
               error: null,
+              idempotencyKey: context.idempotencyKey ?? crypto.randomUUID(),
             },
           };
         },
       },
     },
     verifying_handle: {
-      on: {
-        HANDLE_VERIFIED: ({ event, context }) => {
-          if (!event.available) {
-            return {
-              target: 'details',
-              context: {
-                ...context,
-                error: `Handle "${context.handle}" is already claimed. Choose another.`,
+      invoke: {
+        src: 'checkHandle',
+        input: ({ context }) => ({ handle: context.handle }),
+        onDone: ({ context, event }) =>
+          event.output
+            ? { target: 'provisioning_backend', context: { ...context, error: null } }
+            : {
+                target: 'details',
+                context: {
+                  ...context,
+                  error: `Handle "${context.handle}" is already claimed. Choose another.`,
+                },
               },
-            };
-          }
-          return {
-            target: 'provisioning_backend',
-            context: {
-              ...context,
-              error: null,
-            },
-          };
-        },
-        PROVISION_FAILED: ({ event, context }) => ({
+        onError: ({ context, event }) => ({
           target: 'error',
-          context: {
-            ...context,
-            error: event.error,
-          },
+          context: { ...context, error: messageOf(event.error) },
         }),
       },
     },
     provisioning_backend: {
-      on: {
-        PROVISION_SUCCESS: ({ event, context }) => ({
+      invoke: {
+        src: 'provision',
+        input: ({ context }) => ({
+          name: context.name.trim(),
+          handle: context.handle,
+          type: context.type,
+          idempotencyKey: context.idempotencyKey ?? '',
+        }),
+        onDone: ({ context, event }) => ({
           target: 'activated',
           context: {
             ...context,
-            schoolId: event.schoolId,
-            groupId: event.groupId ?? null,
-            groupCreationFailed: event.groupFailed ?? false,
+            schoolId: event.output.schoolId,
+            groupId: event.output.groupId ?? null,
+            groupCreationFailed: event.output.groupFailed ?? false,
             error: null,
           },
         }),
-        PROVISION_FAILED: ({ event, context }) => ({
+        onError: ({ context, event }) => ({
           target: 'error',
-          context: {
-            ...context,
-            error: event.error,
-          },
+          context: { ...context, error: messageOf(event.error) },
         }),
       },
     },
@@ -162,139 +183,29 @@ export const schoolProvisioningMachine = createMachine({
       on: {
         RETRY: ({ context }) => ({
           target: 'provisioning_backend',
-          context: {
-            ...context,
-            error: null,
-          },
+          context: { ...context, error: null },
         }),
         RESET: ({ context }) => ({
           target: 'details',
-          context: {
-            ...context,
-            error: null,
-          },
+          context: { ...context, error: null },
         }),
       },
     },
   },
 });
 
-export type SchoolProvisioningMachine = typeof schoolProvisioningMachine;
-export type SchoolProvisioningActor = ActorRefFrom<SchoolProvisioningMachine>;
+/** The machine, or a copy with its server calls provided (`schoolProvisioningMachine.provide`). */
+export type SchoolProvisioningMachine =
+  | typeof schoolProvisioningMachine
+  | ReturnType<(typeof schoolProvisioningMachine)['provide']>;
+export type SchoolProvisioningActor = ActorRefFrom<typeof schoolProvisioningMachine>;
 
-/**
- * Creates and starts a School Provisioning Actor instance.
- */
+/** Creates and starts a school provisioning actor. Pass `machine` to run it with provided ports. */
 export function createSchoolProvisioningActor(
   initialContext?: Partial<SchoolProvisioningContext>,
+  machine: SchoolProvisioningMachine = schoolProvisioningMachine,
 ): SchoolProvisioningActor {
-  const actor = createActor(schoolProvisioningMachine, { input: initialContext });
-  actor.start();
-  return actor;
-}
-
-export interface SchoolProvisioningDependencies {
-  createSchool: (params: {
-    name: string;
-    handle: string;
-    type: SchoolType;
-    userId: string;
-  }) => Promise<{ id: string; name: string }>;
-  createFounderBond: (userId: string, schoolId: string) => Promise<void>;
-  createCommunityGroup?: (params: {
-    name: string;
-    description: string;
-    type: string;
-  }) => Promise<{ id: string }>;
-}
-
-/**
- * Effect-TS v4 runner for School Provisioning orchestration.
- * Enforces pre- and post-flight actor liveness guards.
- */
-export function executeSchoolProvisioningEffect(params: {
-  userId: string;
-  deps: SchoolProvisioningDependencies;
-  actor: SchoolProvisioningActor;
-}) {
-  const { userId, deps, actor } = params;
-
-  if (actor.getSnapshot().status === 'stopped') {
-    return Promise.resolve(Exit.void);
-  }
-
-  const { name, handle, type } = actor.getSnapshot().context;
-
-  const program = Effect.gen(function* () {
-    // 1. Create real school
-    const school = yield* Effect.tryPromise({
-      try: () => deps.createSchool({ name, handle, type, userId }),
-      catch: (err) => (err instanceof Error ? err : new Error(String(err))),
-    });
-
-    // 2. Bind founder bond
-    yield* Effect.tryPromise({
-      try: () => deps.createFounderBond(userId, school.id),
-      catch: (err) => (err instanceof Error ? err : new Error(String(err))),
-    });
-
-    // 3. Optional Community Group creation (with partial failure tolerance)
-    let groupId: string | undefined;
-    let groupFailed = false;
-
-    if (deps.createCommunityGroup) {
-      const groupResult = yield* Effect.tryPromise({
-        try: () =>
-          deps.createCommunityGroup!({
-            name: `${name.trim()} HQ`,
-            description: `Official community portal for ${name.trim()}`,
-            type: 'general',
-          }),
-        catch: () => null,
-      });
-
-      if (groupResult?.id) {
-        groupId = groupResult.id;
-      } else {
-        groupFailed = true;
-      }
-    }
-
-    return {
-      schoolId: school.id,
-      groupId,
-      groupFailed,
-    };
-  });
-
-  return Effect.runPromiseExit(program).then((exit) => {
-    if (actor.getSnapshot().status === 'stopped') {
-      return exit;
-    }
-
-    Exit.match(exit, {
-      onFailure: (cause) => {
-        const errOption = Cause.findErrorOption(cause);
-        const errorMsg =
-          errOption._tag === 'Some'
-            ? errOption.value instanceof Error
-              ? errOption.value.message
-              : String(errOption.value)
-            : 'School provisioning failed';
-        actor.send({ type: 'PROVISION_FAILED', error: errorMsg });
-      },
-      onSuccess: ({ schoolId, groupId, groupFailed }) => {
-        actor.send({
-          type: 'PROVISION_SUCCESS',
-          schoolId,
-          groupId,
-          groupFailed,
-        });
-      },
-    });
-
-    return exit;
-  });
+  return createActor(machine, { input: initialContext }).start();
 }
 
 /**
