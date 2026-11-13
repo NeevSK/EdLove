@@ -64,6 +64,8 @@ type SanctuaryShellProps = Readonly<{
   showAccountNavigation?: boolean;
   isExploreMode?: boolean;
   isDevPreview?: boolean;
+  /** An exam is running: the lockdown notice shows and the companion stays out of reach. */
+  examLockdown?: boolean;
   previewCapacity?: string;
 }>;
 
@@ -77,10 +79,13 @@ export function SanctuaryShell({
   unreadNotifications = 0,
   showAccountNavigation = true,
   isExploreMode = false,
-  isDevPreview = false,
+  isDevPreview: devPreviewRequested = false,
+  examLockdown = false,
   previewCapacity,
   activeCapacity,
 }: SanctuaryShellProps) {
+  // The capacity preview is a development tool; a production build leaves it out entirely.
+  const isDevPreview = import.meta.env.DEV && devPreviewRequested;
   useInactivitySentinel(!isExploreMode);
   const pathname = useLocation({ select: (location) => location.pathname });
   const router = useRouter();
@@ -762,12 +767,7 @@ export function SanctuaryShell({
             style={{ height: '100%', width: '100%' }}
           >
             <div className={styles.canvasFrame}>
-              {typeof window !== 'undefined' &&
-              (window.location.search.includes('exam=true') ||
-                window.location.search.includes('exam=1') ||
-                window.location.search.includes('lockdown=true')) ? (
-                <ExamLockdownBanner />
-              ) : null}
+              {examLockdown ? <ExamLockdownBanner /> : null}
               {quickAccessNotice ? (
                 <p className={styles.quickAccessNotice} role="status">
                   {quickAccessNotice}
@@ -793,12 +793,7 @@ export function SanctuaryShell({
           label="Tutii Companion & Subtasks"
           icon={TutiiFabIcon}
           onPress={() => setTutiiSidePanelOpen(true)}
-          hidden={
-            typeof window !== 'undefined' &&
-            (window.location.search.includes('exam=true') ||
-              window.location.search.includes('exam=1') ||
-              window.location.search.includes('lockdown=true'))
-          }
+          hidden={examLockdown}
         />
       </div>
 

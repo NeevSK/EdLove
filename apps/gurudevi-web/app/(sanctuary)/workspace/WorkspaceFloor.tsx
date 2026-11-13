@@ -57,6 +57,8 @@ type WorkspaceFloorProps = Readonly<{
   displayName?: string;
   scope?: AuthorizedEntryScope;
   isDevPreview?: boolean;
+  /** A task a link asked to open (`/workspace?task=attendance`). */
+  task?: 'attendance';
 }>;
 
 const WORKSPACE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
@@ -122,6 +124,7 @@ export function WorkspaceFloor({
   displayName = 'Guest Explorer',
   scope,
   isDevPreview = false,
+  task: requestedTask,
 }: WorkspaceFloorProps) {
   const router = useRouter();
   const exploreCapacity = useExploreCapacity();
@@ -129,19 +132,11 @@ export function WorkspaceFloor({
   const voice = workspaceVoice(normalizedCapacity);
   const features = workspaceFeaturesFor(normalizedCapacity);
 
+  const [overview, setOverview] = useState(requestedTask !== 'attendance');
+  // A link asking for a task opens it, also when the Workspace is already showing.
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setOverview(new URLSearchParams(window.location.search).get('task') !== 'attendance');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('task') === 'attendance') {
-      setOverview(false);
-    }
-  }, []);
-
-  const [overview, setOverview] = useState(true);
+    if (requestedTask === 'attendance') setOverview(false);
+  }, [requestedTask]);
   const workspaceFeatureIds = features.map((feature) => feature.id);
   const quickAccessScope = mode === 'explore' ? 'explore' : 'sanctuary';
   const quickAccess = useQuickAccessPreferences(
@@ -487,9 +482,9 @@ export function WorkspaceFloor({
     setOverview(returnToHome || result.kind === 'overview');
     if (
       task.featureId === attendanceTask.featureId &&
-      new URLSearchParams(window.location.search).has('task')
+      requestedTask !== undefined
     ) {
-      void router.navigate({ href: '/workspace', replace: true });
+      void router.navigate({ to: '/workspace', replace: true });
     }
   }
 
@@ -742,8 +737,8 @@ export function WorkspaceFloor({
         onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
         onOpenOverview={() => {
           setOverview(true);
-          if (new URLSearchParams(window.location.search).has('task')) {
-            void router.navigate({ href: '/workspace', replace: true });
+          if (requestedTask !== undefined) {
+            void router.navigate({ to: '/workspace', replace: true });
           }
           requestAnimationFrame(() =>
             document.getElementById('workspace-catalog-title')?.scrollIntoView({

@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin, runnerImport } from 'vite';
 import { androidAssetLinks, appleAppSiteAssociation } from './lib/appLinks';
 import { architectureSourcePlugin } from './lib/dev/architectureSource';
-import { connectOrigins, securityHeaders } from './lib/security/responseHeaders';
+import { connectOrigins, headersBlock, securityHeaders } from '@repo/core/security/responseHeaders';
 
 /**
  * Gurudevi's web app, built once per host (decision: docs/decisions/2026-11-12-web-stack-astro-vite.md).
@@ -23,16 +23,11 @@ function hostFiles(connect: readonly string[]): Plugin {
     name: 'gurudevi-host-files',
     apply: 'build',
     async generateBundle() {
-      const headers = Object.entries(
-        securityHeaders({ connect, development: false }),
-      )
-        .map(([name, value]) => `  ${name}: ${value}`)
-        .join('\n');
       this.emitFile({
         type: 'asset',
         fileName: '_headers',
         source: [
-          `/*\n${headers}`,
+          headersBlock(securityHeaders({ connect, development: false })),
           '/assets/*\n  Cache-Control: public, max-age=31536000, immutable',
           '/index.html\n  Cache-Control: no-cache',
           // Apple reads this file only as JSON, and it has no extension to say so.
@@ -79,7 +74,13 @@ export default defineConfig(({ mode }) => {
       tanstackRouter({
         target: 'react',
         routesDirectory: path.join(root, 'routes'),
-        generatedRouteTree: path.join(root, 'generated/routeTree.gen.ts'),
+        // Explore has no accounts, so its routes leave out sign-in and recovery entirely (their
+        // addresses forward to sanctuary from the root route). The full tree types every link.
+        generatedRouteTree: path.join(
+          root,
+          explore ? 'generated/routeTree.explore.gen.ts' : 'generated/routeTree.gen.ts',
+        ),
+        ...(explore ? { routeFileIgnorePattern: '^_account(\\.tsx)?$' } : {}),
         autoCodeSplitting: true,
       }),
       react(),
@@ -88,6 +89,14 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: [
         { find: /^@\//, replacement: `${__dirname}/` },
+        ...(explore
+          ? [
+              {
+                find: /^\.\/generated\/routeTree\.gen$/,
+                replacement: path.join(root, 'generated/routeTree.explore.gen.ts'),
+              },
+            ]
+          : []),
         // One surface per build: Explore's bundle never contains the account surface, and the reverse.
         {
           find: /^#surface$/,

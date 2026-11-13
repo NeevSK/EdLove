@@ -1,6 +1,7 @@
 import { GoTo } from '../surface/navigation';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
+import { z } from 'zod';
 import { FloorGate } from '../surface/floor';
 import { SanctuaryShell } from '../../app/(sanctuary)/components/SanctuaryShell';
 import { unreadCount } from '../../app/(sanctuary)/notifications/notificationFeed';
@@ -9,6 +10,12 @@ import { type Session, SessionScope } from '../surface/session';
 
 /** Every place inside Gurudevi: one shell, entered only when the surface says who is here. */
 export const Route = createFileRoute('/_app')({
+  // An exam link (`?exam=true` or `?lockdown=true`) keeps the shell to the exam: no companion,
+  // and the lockdown notice. Any other value means no exam.
+  validateSearch: z.object({
+    exam: z.union([z.literal(true), z.literal(1)]).optional().catch(undefined),
+    lockdown: z.literal(true).optional().catch(undefined),
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(context.sources.notifications()),
   component: AppLayout,
 });
@@ -39,8 +46,12 @@ function AppLayout() {
 function Frame({ session }: { readonly session: Session }) {
   const { sources } = Route.useRouteContext();
   const { data: notifications } = useSuspenseQuery(sources.notifications());
+  const examLockdown = Route.useSearch({
+    select: (search) => search.exam !== undefined || search.lockdown !== undefined,
+  });
   return (
     <SanctuaryShell
+      examLockdown={examLockdown}
       displayName={session.displayName}
       showAccountNavigation
       isExploreMode={session.surface === 'explore'}

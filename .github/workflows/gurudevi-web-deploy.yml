@@ -85,6 +85,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ matrix.site == 'sanctuary' && env.EXPO_PUBLIC_SUPABASE_URL || '' }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ matrix.site == 'sanctuary' && env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '' }}
           NEXT_PUBLIC_API_URL: ${{ matrix.site == 'sanctuary' && env.EXPO_PUBLIC_API_URL || '' }}
+          # The public status page reads the API's health, and its content policy allows exactly that.
+          PUBLIC_SANCTUARY_API_ORIGIN: ${{ matrix.site == 'public' && env.EXPO_PUBLIC_API_URL || '' }}
         run: ${{ matrix.build }}
 
       - name: Deploy to Cloudflare Pages
@@ -100,5 +102,15 @@ jobs:
             --commit-dirty=true
 
       - name: Check the live deployment
-        if: matrix.site != 'public'
         run: node scripts/check-live-headers.mjs "${{ steps.deploy.outputs.deployment-url }}" ${{ matrix.site }}
+
+      # Explore must never contact the backend: open its places in a browser and fail on any
+      # request that leaves its origin. The content policy blocks one; this shows none is tried.
+      - name: Install a browser for the Explore check
+        if: matrix.site == 'explore'
+        working-directory: apps/gurudevi-web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Check Explore stays on its own origin
+        if: matrix.site == 'explore'
+        run: node apps/gurudevi-web/scripts/check-explore-offline.mjs "${{ steps.deploy.outputs.deployment-url }}"

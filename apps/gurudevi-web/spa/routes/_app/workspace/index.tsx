@@ -7,7 +7,7 @@ import { useSession } from '../../../surface/session';
 export const Route = createFileRoute('/_app/workspace/')({
   head: () => ({ meta: [{ title: 'Workspace | Gurudevi Sanctuary' }] }),
   validateSearch: z.object({
-    task: z.string().optional(),
+    task: z.enum(['attendance']).optional().catch(undefined),
     classroom: z.string().optional(),
     date: z.string().optional(),
   }),
@@ -16,6 +16,7 @@ export const Route = createFileRoute('/_app/workspace/')({
 
 function WorkspaceScreen() {
   const { accountId, activeScope, capacity, displayName, surface } = useSession();
+  const { task } = Route.useSearch();
 
   if (activeScope?.entityType === 'PERSONAL_CLASSROOM') {
     return (
@@ -44,6 +45,7 @@ function WorkspaceScreen() {
       capacity={capacity}
       scope={activeScope}
       subjectId={accountId}
+      task={task}
     />
   );
 }

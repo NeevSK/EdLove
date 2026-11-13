@@ -263,12 +263,10 @@ no requests to the sanctuary host.
 
 - Five brand files (mark, favicon, flag, two Tutii cutouts) are in both sites' `public/`; they should
   become imports from `@repo/ui` assets.
-- The public site sends no security headers yet (no `_headers`); its islands need a CSP written for
-  Astro's hydration scripts before one is added.
-- Explore's build still contains the account routes (sign-in, recovery) and the founder floor as
-  split chunks, which carry the Supabase and API clients; Explore never loads them and its CSP
-  allows no connection, but the bundle ratchet still lists those clients. Explore's route tree
-  should leave them out.
+- Fonts come from Google on every site. Self-hosting needs the worlds' font definitions
+  (`Fraunces-VF`, `Newsreader-VF`) and the CSS fallbacks to agree on family names first; then the
+  policies drop both Google origins.
+- Pre-authentication rate limiting: Cloudflare rules in front of the API (its threat model has them).
 - The build-time env names still say `NEXT_PUBLIC_*` (shared with `@repo/core`); rename across core,
   web and the deploy job together.
 - The library reader's demo document (`/sample-curriculum.pdf`) does not exist, so its frame shows
@@ -365,6 +363,47 @@ Open (engineering):
   web build; GitHub Pages does not). No workflow deploys the Vite builds yet; the one that does must
   publish them to such a host, and a check after deploy should read the live headers back.
 - `@orpc/*` is a beta (2.0.0-beta.50) in production paths; pin it and read its changelog per bump.
+
+## Security and router review after Next (13 Nov, evening)
+
+Using what TanStack Router, Vite and Astro provide, rather than code of our own:
+
+- **Route-level error and not-found screens.** Next's `error.tsx` and `not-found.tsx` left with Next
+  and the Vite app had none (a failure showed the router's default). `defaultErrorComponent` and
+  `defaultNotFoundComponent` (`spa/surface/boundaries.tsx`, from the kit's `ErrorState` and
+  `EmptyState`) now cover every route; "Try again" resets the route and reloads its data.
+- **A tab on the previous release.** Each build names its files by content, so after a deploy an
+  open tab can ask for a chunk that no longer exists. Vite's `vite:preloadError` and the error
+  screen reload once into the new build (`lib/runtime/staleBuild.ts`, at most once a minute).
+- **Scroll.** `scrollRestoration` with `scrollToTopSelectors: ['#sanctuary-main']`: the shell's
+  scroll area outlives pages, so a new page used to open scrolled to wherever the last one was. Now
+  a new page starts at its top and Back returns to the exact place (checked in Chrome).
+- **Typed search everywhere it is read.** Exam lockdown (`?exam`, `?lockdown`) and the Workspace
+  task (`?task=attendance`) are validated by their routes and passed down; screens no longer parse
+  `window.location`. Typing the parent route surfaced three links carrying parameters their pages
+  never read (founder → school, classroom → gradebook, activity → events); they were dropped, with
+  behaviour unchanged.
+- **Explore's route tree has no account routes.** The router plugin builds Explore's tree without
+  `_account` (`routeFileIgnorePattern`); the root route forwards those addresses to sanctuary
+  (`ACCOUNT_PATHS`, kept equal to the routes by a test). The Supabase and API clients are still in
+  Explore's bundle because shared floors import them directly; they leave with the data migration
+  (the 17 direct calls and 142 surface branches).
+- **Development tools out of production builds.** The capacity preview and Self's perspective
+  switcher are gated by `import.meta.env.DEV`, so production builds drop them; `?dev` in a URL no
+  longer turns perspective switching on in a production account.
+- **The public site's policy.** Astro's `security.csp` hashes each page's inline scripts and styles
+  into a per-page policy (no `'unsafe-inline'`), with the shared directives from
+  `@repo/core/security/responseHeaders` (moved from the web app so all three hosts use one
+  definition). Framing and transport headers go to `_headers`. The status page may reach exactly
+  the API it reports on. Checked on the Pages runtime: no violations on eight pages, islands included.
+- **Explore checked in a browser.** `apps/gurudevi-web/scripts/check-explore-offline.mjs` opens
+  Explore's places and fails on any request off its origin; the deploy workflow runs it on each
+  Explore deployment, after `scripts/check-live-headers.mjs` (now also for the public site).
+
+Corrected: the API **does** limit requests per account (a PostgreSQL bucket,
+`API_ACCOUNT_REQUESTS_PER_MINUTE`, default 120, applied to every authenticated call, including
+account deletion) and bounds concurrent authentication work per instance. What it lacks is a limit
+before authentication; its threat model recommends Cloudflare rate-limiting rules in front of it.
 
 ## Next removed (13 Nov)
 

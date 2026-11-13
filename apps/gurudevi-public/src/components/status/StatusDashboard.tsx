@@ -16,6 +16,7 @@ import {
   Flame,
   Check,
 } from 'lucide-react';
+import { statusApiOrigin } from '../../lib/statusApi';
 
 interface ProbeResult {
   liveOk: boolean;
@@ -38,8 +39,7 @@ interface ServiceItem {
   endpoint?: string;
 }
 
-const API_BASE: string =
-  import.meta.env.PUBLIC_SANCTUARY_API_ORIGIN ?? 'https://sanctuary-api-tpj7.onrender.com';
+const API_BASE = statusApiOrigin(import.meta.env.PUBLIC_SANCTUARY_API_ORIGIN);
 
 export function StatusDashboard({ locale }: { readonly locale: SupportedLocale }) {
   const t = translator(locale);

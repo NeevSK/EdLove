@@ -49,7 +49,7 @@ export function CoCurricularWing({ activities }: CoCurricularWingProps): React.R
             </div>
 
             <div className={styles.actions}>
-              <Link to="/workspace/events" search={{ scope: act.id }} className={styles.btnAction}>
+              <Link to="/workspace/events" className={styles.btnAction}>
                 Open Activity Hub ➔
               </Link>
             </div>

@@ -27,5 +27,5 @@
     "spa/**/*.tsx",
     "vite.config.ts"
   ],
-  "exclude": ["node_modules", "dist-explore", "dist-sanctuary"]
+  "exclude": ["node_modules", "dist-explore", "dist-sanctuary", "spa/generated/routeTree.explore.gen.ts"]
 }

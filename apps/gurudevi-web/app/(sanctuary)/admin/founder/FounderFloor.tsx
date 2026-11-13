@@ -243,7 +243,7 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
                             Explore Portal ↗
                           </Link>
                           <Link
-                            to="/workspace/school" search={{ schoolId: sch.id }}
+                            to="/workspace/school"
                             style={{
                               flex: 1,
                               textAlign: 'center',

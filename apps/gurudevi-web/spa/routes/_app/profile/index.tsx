@@ -4,6 +4,8 @@ import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/profile/')({
   head: () => ({ meta: [{ title: 'Profile | Gurudevi Sanctuary' }] }),
+  // Hovering a link to Profile already asks where the account's deletion request stands.
+  loader: ({ context }) => context.queryClient.ensureQueryData(context.sources.accountDeletion()),
   component: ProfileScreen,
 });
 

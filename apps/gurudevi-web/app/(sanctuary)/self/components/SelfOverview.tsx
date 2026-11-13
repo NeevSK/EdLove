@@ -405,12 +405,9 @@ export function SelfOverview({
 
   const isDevMode =
     isDevRun ??
-    (process.env.NODE_ENV !== 'production' ||
-      isExploreMode ||
-      (typeof window !== 'undefined' &&
-        (window.location.hostname === 'localhost' ||
-          window.location.hostname === '127.0.0.1' ||
-          new URLSearchParams(window.location.search).has('dev'))));
+    // Perspective switching is for development and for Explore's personas; a URL cannot turn it
+    // on in a production account.
+    (import.meta.env.DEV || isExploreMode);
 
   // In dev run, allow developer to switch perspectives dynamically.
   // In normal production, stays null so user automatically sees their curated view (primary + other + universal).

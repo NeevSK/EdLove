@@ -31,3 +31,17 @@ export interface Commands {
 export type AccountHome =
   | { readonly kind: 'here' }
   | { readonly kind: 'elsewhere'; readonly origin: string };
+
+/**
+ * The addresses of `spa/routes/_account` (sign-in, recovery, onboarding, email links). A surface
+ * without accounts forwards them to its account home; a test keeps this list equal to the routes.
+ */
+export const ACCOUNT_PATHS = [
+  '/account-recovery',
+  '/auth/callback',
+  '/auth/complete',
+  '/onboarding',
+  '/recovery',
+  '/reset-password',
+  '/sign-in',
+] as const;

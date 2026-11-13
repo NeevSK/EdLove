@@ -64,7 +64,7 @@ export function ClassroomDetailFloor({
           <Link to="/workspace" className={styles.btnSecondary}>
             <ArrowLeft size={16} /> {t('classroom.returnRollCall')}
           </Link>
-          <Link to="/workspace/gradebook" search={{ classroom: classroomId }} className={styles.btnPrimary}>
+          <Link to="/workspace/gradebook" className={styles.btnPrimary}>
             <GraduationCap size={16} /> {t('classroom.openGradebook')}
           </Link>
         </div>
