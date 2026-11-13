@@ -18,6 +18,15 @@ export const InitialBondInput = z.strictObject({
   displayName: z.string().trim().min(1).max(80),
 });
 
+// A sync grant: the signed token a device presents to the PowerSync service, for one account.
+export const SyncGrant = z.strictObject({
+  accountId: z.string().refine(isEdloveAccountId),
+  endpoint: z.url(),
+  token: z.string().min(1),
+  expiresAt: z.number().int().positive(),
+});
+export type SyncGrant = z.infer<typeof SyncGrant>;
+
 const scope = z.strictObject({
   bondId: z.uuid(),
   entityId: z.string(),
@@ -48,6 +57,9 @@ export const appContract = {
     ),
     // The one way a signed-in person gets in. Returns the existing personal bond on retry.
     createInitialBond: foundation.input(InitialBondInput).output(scope),
+    // The short-lived token a device presents to the PowerSync service. Never outlives the
+    // session that asked for it; the device asks again when PowerSync needs a fresh one.
+    syncGrant: foundation.input(z.undefined()).output(SyncGrant),
   },
   authority: {
     // Issues the signed offline permission snapshot for one bond. The device stores it and

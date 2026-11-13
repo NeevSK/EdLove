@@ -39,11 +39,10 @@ vi.mock('@powersync/drizzle-driver', () => ({ wrapPowerSyncWithDrizzle: () => ({
 vi.mock('@repo/core/adapters/powersync/connectionLifecycle', () => ({
   connectPowerSyncRuntime: state.connect,
 }));
-vi.mock('@repo/core/adapters/powersync/SupabasePowerSyncConnector', () => ({
-  SupabasePowerSyncConnector: class {
-    constructor(_owner: string, allowed: () => boolean) {
-      state.admissions.push(allowed);
-    }
+vi.mock('@/lib/syncConnection', () => ({
+  createAccountSyncConnection: (_owner: string, allowed: () => boolean) => {
+    state.admissions.push(allowed);
+    return { powerSyncEndpoint: 'https://sync.test' };
   },
 }));
 vi.mock('@repo/core/platform/drivers/networkMonitor', () => ({

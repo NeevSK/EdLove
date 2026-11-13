@@ -213,6 +213,7 @@ export function auditComposition(files) {
             scopes: nativeProcedure,
             entry: nativeProcedure,
             createInitialBond: nativeProcedure,
+            syncGrant: nativeProcedure,
           },
           authority: { refreshSnapshot: nativeProcedure },
         }) ||
@@ -272,6 +273,7 @@ export function auditComposition(files) {
             scopes: (node) => nativeHandler(node, 'identity.scopes'),
             entry: (node) => nativeHandler(node, 'identity.entry'),
             createInitialBond: (node) => nativeHandler(node, 'identity.createInitialBond'),
+            syncGrant: (node) => nativeHandler(node, 'identity.syncGrant'),
           },
           authority: {
             refreshSnapshot: (node) => nativeHandler(node, 'authority.refreshSnapshot'),
@@ -341,6 +343,7 @@ export function auditComposition(files) {
           security: (node) => accessPath(node)?.join('.') === 'options.platform.security',
           executeAccountCommand: (node) =>
             accessPath(node)?.join('.') === 'options.platform.executeAccountCommand',
+          syncGrants: (node) => accessPath(node)?.join('.') === 'options.platform.syncGrants',
         });
       if (nativeCalls.length !== 1 || !projection)
         add(

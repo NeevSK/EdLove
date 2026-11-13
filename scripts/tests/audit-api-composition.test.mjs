@@ -9,9 +9,9 @@ const contract = 'packages/core/src/api/v1/contract.ts';
 const client = 'packages/core/src/api/v1/client.ts';
 function fixture() {
   return {
-    [app]: `import { RPCHandler } from '@orpc/server/fetch'; import { API_V1_PREFIX } from '@repo/core/api/v1/client'; import { router } from './router'; const handler = new RPCHandler(router); app.get('/health/live', f); app.get('/health/ready', f); app.all('/api/v1/*', c => handler.handle(c.req, { prefix: API_V1_PREFIX, context: { platform: options.platform && { security: options.platform.security, executeAccountCommand: options.platform.executeAccountCommand } } }));`,
-    [router]: `import { implement } from '@orpc/server'; import { appContract } from '@repo/core/api/v1/contract'; const api = implement(appContract).$context(); const router = api.router({ identity: { session: api.identity.session.handler(f), scopes: api.identity.scopes.handler(f), entry: api.identity.entry.handler(f), createInitialBond: api.identity.createInitialBond.handler(f) }, authority: { refreshSnapshot: api.authority.refreshSnapshot.handler(f) } });`,
-    [contract]: `import { oc, type RouterContract } from '@orpc/contract'; const foundation = oc.errors({}); export const appContract = { identity: { session: foundation.input(s).output(s), scopes: foundation.input(s).output(s), entry: foundation.input(s).output(s), createInitialBond: foundation.input(s).output(s) }, authority: { refreshSnapshot: foundation.input(s).output(s) } } satisfies RouterContract;`,
+    [app]: `import { RPCHandler } from '@orpc/server/fetch'; import { API_V1_PREFIX } from '@repo/core/api/v1/client'; import { router } from './router'; const handler = new RPCHandler(router); app.get('/health/live', f); app.get('/health/ready', f); app.all('/api/v1/*', c => handler.handle(c.req, { prefix: API_V1_PREFIX, context: { platform: options.platform && { security: options.platform.security, executeAccountCommand: options.platform.executeAccountCommand, syncGrants: options.platform.syncGrants } } }));`,
+    [router]: `import { implement } from '@orpc/server'; import { appContract } from '@repo/core/api/v1/contract'; const api = implement(appContract).$context(); const router = api.router({ identity: { session: api.identity.session.handler(f), scopes: api.identity.scopes.handler(f), entry: api.identity.entry.handler(f), createInitialBond: api.identity.createInitialBond.handler(f), syncGrant: api.identity.syncGrant.handler(f) }, authority: { refreshSnapshot: api.authority.refreshSnapshot.handler(f) } });`,
+    [contract]: `import { oc, type RouterContract } from '@orpc/contract'; const foundation = oc.errors({}); export const appContract = { identity: { session: foundation.input(s).output(s), scopes: foundation.input(s).output(s), entry: foundation.input(s).output(s), createInitialBond: foundation.input(s).output(s), syncGrant: foundation.input(s).output(s) }, authority: { refreshSnapshot: foundation.input(s).output(s) } } satisfies RouterContract;`,
     [client]: `import { RPCLink } from '@orpc/client/fetch'; import { createORPCClient } from '@orpc/client'; export const API_V1_PREFIX = '/api/v1'; const link = new RPCLink({ url: API_V1_PREFIX });`,
     'apps/sanctuary-api/src/core/context.ts': `export interface APIContext { requestId: string }`,
   };
@@ -28,7 +28,7 @@ test('admitted identity foundation passes without claiming business features', (
 test('rejects exposing the full platform or extra services to native handlers', () => {
   for (const replacement of [
     [
-      'options.platform && { security: options.platform.security, executeAccountCommand: options.platform.executeAccountCommand }',
+      'options.platform && { security: options.platform.security, executeAccountCommand: options.platform.executeAccountCommand, syncGrants: options.platform.syncGrants }',
       'options.platform',
     ],
     [

@@ -51,6 +51,10 @@ const environmentSchema = z
     API_BROWSER_ORIGINS: browserOrigins,
     // Ed25519 private key (PKCS#8 PEM) for offline permission snapshots; held in Doppler.
     SNAPSHOT_SIGNING_PRIVATE_KEY: z.string().trim().min(1).optional(),
+    // The PowerSync instance devices sync with, and the private ES256 JWK (JSON) that signs
+    // their sync grants; both held in Doppler. Without both, identity.syncGrant is unavailable.
+    POWERSYNC_URL: z.url().optional(),
+    POWERSYNC_SIGNING_JWK: z.string().trim().min(1).optional(),
   })
   .refine((config) => config.NODE_HEADERS_TIMEOUT_MS <= config.NODE_REQUEST_TIMEOUT_MS, {
     path: ['NODE_HEADERS_TIMEOUT_MS'],

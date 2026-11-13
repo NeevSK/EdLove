@@ -6,7 +6,7 @@ import type {
   SyncOptions,
   UploadOptions,
 } from '@powersync/common';
-import { SyncCredentialsSchema } from '@repo/core/api/syncCredentials';
+import { SyncGrant } from '@repo/core/api/v1/contract';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import { UnauthorizedError, UnavailableError } from '@repo/core/effect/Errors';
 import {
@@ -68,8 +68,9 @@ export function createSyncAuthenticator(
   return {
     async resolveCredentials({ abort }) {
       if (!isAllowed()) throw closed();
-      const parsed = SyncCredentialsSchema.safeParse(await fetchGrant(abort));
-      if (!parsed.success) throw new UnavailableError({ code: 'SYNC_GRANT_INVALID', cause: parsed.error });
+      const parsed = SyncGrant.safeParse(await fetchGrant(abort));
+      if (!parsed.success)
+        throw new UnavailableError({ code: 'SYNC_GRANT_INVALID', cause: parsed.error });
       const grant = parsed.data;
       if (!isAllowed()) throw closed();
       if (grant.accountId !== accountId)

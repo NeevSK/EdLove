@@ -31,6 +31,11 @@ export const router = api.router({
         signal ?? AbortSignal.timeout(5000),
       ),
     ),
+    syncGrant: api.identity.syncGrant.handler(({ context }) => {
+      const grants = context.platform.syncGrants;
+      if (!grants) throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Sync is not configured.' });
+      return grants.issue(context.identity);
+    }),
   },
   authority: {
     refreshSnapshot: api.authority.refreshSnapshot.handler(({ input, context, signal }) =>

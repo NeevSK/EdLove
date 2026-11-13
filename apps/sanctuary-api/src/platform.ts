@@ -24,6 +24,7 @@ import {
   createSecurity,
   type SecurityOptions,
 } from './security/security';
+import { createSyncGrants } from './security/syncGrant';
 
 export function createPlatform(
   config: ServerConfig,
@@ -57,6 +58,10 @@ export function createPlatform(
     lockTimeoutMs: config.DB_LOCK_TIMEOUT_MS,
     idleTransactionTimeoutMs: config.DB_IDLE_TRANSACTION_TIMEOUT_MS,
   });
+  const syncGrants =
+    config.POWERSYNC_URL && config.POWERSYNC_SIGNING_JWK
+      ? createSyncGrants({ endpoint: config.POWERSYNC_URL, signingJwk: config.POWERSYNC_SIGNING_JWK })
+      : undefined;
   const operations = new OperationStore(pool, {
     statementTimeoutMs: config.DB_STATEMENT_TIMEOUT_MS,
     lockTimeoutMs: config.DB_LOCK_TIMEOUT_MS,
@@ -582,6 +587,7 @@ export function createPlatform(
         }
       },
     },
+    syncGrants,
     operations,
     executeAccountCommand,
     readSensitive,

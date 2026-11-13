@@ -233,10 +233,10 @@ way up. It is proved with a synthetic table (`pipe_probe`), as the foundation ru
 | **Uploader**: oldest transaction first, one route per table, idempotency key `powersync:<installation>:<clientId>`, complete only when every change is settled | `syncPipe.ts` `createMutationUploader` | Built, G1 |
 | **Failure decision**: retry, wait for sign-in, reject (server wins) or stop, as a policy (`UPLOAD_POLICY`: conflict `serverWins` or `hold`, `maxDefectAttempts`) | `logic/sync/uploadDecision.ts` | Built, G1 |
 | Connection lifecycle: connect, status to the bus, first-sync timeout | `connectionLifecycle.ts` (now takes the SDK's `Authenticator` + `MutationUploader` form) | Built, G1 |
-| Rejections to the person | `onRejected` → `presentFailure` | Composition, at wiring |
-| **Sync grant** procedure (v1) | API | **Owed (Neev).** The pre-v1 `/api/auth/sync-credentials` went with the legacy routes. The client parses `SyncCredentialsSchema` |
+| Rejections to the person | `onRejected` → `presentFailure` (`apps/gurudevi-mobile/src/lib/syncConnection.ts`) | Built |
+| **Sync grant** procedure `identity.syncGrant` (v1) | `apps/sanctuary-api/src/security/syncGrant.ts`; contract `SyncGrant` | Built, G1 (real ES256 signing, verified with jose). Admitted in the composition audit. Lifetime: min(session, 5 min) |
 | **Upload commands** (v1, one per routed table) | API | Owed per table, when a table is admitted |
-| Connect call in the mobile provider | `PowerSyncProvider` via `runIfActive` | After the grant procedure exists |
+| Connect call in the mobile provider | `PowerSyncProvider` via `runIfActive` | Built, G3. Connects only when rollout (`isPowerSyncEnabled`, off by default), network (online) and read policy (`live`) all admit it, and the build has an instance; otherwise local data stays and nothing connects |
 
 Guarantees the tests hold:
 
@@ -248,9 +248,17 @@ Guarantees the tests hold:
 - A table with no route holds the queue rather than dropping it.
 - Nothing is sent after admission closes or the SDK aborts.
 
+To turn it on (configuration, all in Doppler):
+
+| Where | Setting |
+| --- | --- |
+| API | `POWERSYNC_URL` (the instance URL), `POWERSYNC_SIGNING_JWK` (the private ES256 JWK whose public half is in `powersync/service.yaml`, `kid` `gurudevi-sync-dev-…`). Without both, `identity.syncGrant` answers `SERVICE_UNAVAILABLE` |
+| Mobile | `EXPO_PUBLIC_POWERSYNC_URL` (the same instance) |
+| Rollout | `isPowerSyncEnabled` for the accounts trying it |
+
 ## 13. Order
 
-1. Pipe: client side done (section 12). Next is the v1 sync grant procedure (API).
+1. Pipe: built end to end in code (section 12). Not yet proved against a live instance.
 2. Confirm the PowerSync instance is live; connect in the mobile provider; DevTools on a device.
 3. The first passenger (attendance, section 6) is product work and comes after the pipe is proved
    on a device.

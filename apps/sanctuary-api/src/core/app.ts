@@ -294,6 +294,7 @@ export function createApp(procedures: Router<APIContext> = router, options: AppO
         platform: options.platform && {
           security: options.platform.security,
           executeAccountCommand: options.platform.executeAccountCommand,
+          syncGrants: options.platform.syncGrants,
         },
       },
     });
