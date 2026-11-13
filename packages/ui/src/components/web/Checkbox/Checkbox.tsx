@@ -3,13 +3,23 @@
 import { type InputHTMLAttributes, useEffect, useId, useRef } from 'react';
 import type { CheckboxContract } from '../../../theme/contracts';
 import { cx } from '../cx';
+import { feel } from '../feel';
 
 export interface CheckboxProps
   extends CheckboxContract,
     Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'checked' | 'onChange' | 'children'> {}
 
 /** One yes/no choice with its words beside it: a native checkbox, dressed by the world. */
-export function Checkbox({ checked, onChange, label, hint, disabled, className, id: idProp, ...rest }: CheckboxProps) {
+export function Checkbox({
+  checked,
+  onChange,
+  label,
+  hint,
+  disabled,
+  className,
+  id: idProp,
+  ...rest
+}: CheckboxProps) {
   const ref = useRef<HTMLInputElement>(null);
   const auto = useId();
   const id = idProp ?? `gd-check-${auto}`;
@@ -28,7 +38,10 @@ export function Checkbox({ checked, onChange, label, hint, disabled, className, 
         checked={checked === true}
         disabled={disabled}
         aria-describedby={hint ? `${id}-hint` : undefined}
-        onChange={(event) => onChange(event.target.checked)}
+        onChange={(event) => {
+          feel('select');
+          onChange(event.target.checked);
+        }}
         {...rest}
       />
       <span className="gd-choice-words">

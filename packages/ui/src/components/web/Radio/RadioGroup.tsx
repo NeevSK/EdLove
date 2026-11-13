@@ -3,6 +3,7 @@
 import { useId } from 'react';
 import type { RadioGroupContract } from '../../../theme/contracts';
 import { cx } from '../cx';
+import { feel } from '../feel';
 
 export interface RadioGroupProps<V extends string = string> extends RadioGroupContract<V> {
   className?: string;
@@ -38,7 +39,10 @@ export function RadioGroup<V extends string = string>({
               checked={option.value === value}
               disabled={option.disabled}
               aria-describedby={option.hint ? `${id}-hint` : undefined}
-              onChange={() => onChange(option.value)}
+              onChange={() => {
+                feel('select');
+                onChange(option.value);
+              }}
             />
             <span className="gd-choice-words">
               <label htmlFor={id} className="gd-text" data-kind="body">

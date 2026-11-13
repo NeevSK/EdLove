@@ -53,7 +53,8 @@ export function SettingsFloor({
   const groundPolicy = useGroundPolicy();
 
   // Sensory & Notification preferences (aligned with mobile AppSettingsScreen.shared)
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  // Sounds start off, as on the phone; the kit's feedback reads the same key.
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const [quietMode, setQuietMode] = useState(false);
   const [pushNotifications, setPushNotifications] = useState(true);
   const [dailyReflections, setDailyReflections] = useState(true);
@@ -167,8 +168,14 @@ export function SettingsFloor({
             if (s.language && typeof s.language === 'string') {
               setLanguage(s.language as 'en' | 'si' | 'ta');
             }
-            if (typeof s.soundEnabled === 'boolean') setSoundEnabled(s.soundEnabled);
-            if (typeof s.quietMode === 'boolean') setQuietMode(s.quietMode);
+            if (typeof s.soundEnabled === 'boolean') {
+              setSoundEnabled(s.soundEnabled);
+              localStorage.setItem('gurudevi_sound_enabled', String(s.soundEnabled));
+            }
+            if (typeof s.quietMode === 'boolean') {
+              setQuietMode(s.quietMode);
+              localStorage.setItem('gurudevi_quiet_mode', String(s.quietMode));
+            }
             if (isGroundLiveliness(s.groundLiveliness)) writeWebGroundLiveliness(s.groundLiveliness);
             if (typeof s.pushNotifications === 'boolean') setPushNotifications(s.pushNotifications);
             if (typeof s.dailyReflections === 'boolean') setDailyReflections(s.dailyReflections);

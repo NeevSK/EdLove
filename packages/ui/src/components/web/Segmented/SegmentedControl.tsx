@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import type { SegmentedContract } from '../../../theme/contracts';
 import { cx } from '../cx';
+import { feel } from '../feel';
 import { rovingNext } from '../roving';
 
 export interface SegmentedControlProps<V extends string = string> extends SegmentedContract<V> {
@@ -30,6 +31,7 @@ export function SegmentedControl<V extends string = string>({
       onKeyDown={(event) => {
         const next = rovingNext(event, options, value);
         if (next === null) return;
+        feel('select');
         onChange(next);
         refs.current[next]?.focus();
       }}
@@ -48,7 +50,10 @@ export function SegmentedControl<V extends string = string>({
             aria-checked={selected}
             tabIndex={selected ? 0 : -1}
             disabled={option.disabled}
-            onClick={() => onChange(option.value)}
+            onClick={() => {
+              feel('select');
+              onChange(option.value);
+            }}
           >
             {option.label}
           </button>
