@@ -776,6 +776,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-scrollarea-track[data-visibility="scrolling"]{opacity:0;transition:opacity 0.3s ease}
 .gd-scrollarea-track[data-visibility="scrolling"][data-moving="true"],
 .gd-scrollarea-track[data-visibility="scrolling"]:hover{opacity:0.85}
+/* Touch size: on a touch screen nothing you press is smaller than the platform minimum
+   (44px, Apple and WCAG 2.5.5; the phone app uses 48 on Android). One rule for every page; pages
+   never set their own. Inline text links are exempt, as WCAG allows. */
+:root{--gd-touch-min:44px}
+@media (pointer:coarse){
+:where(button,[role="button"],[role="tab"],[role="menuitem"],[role="switch"],[role="option"],select,summary,input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"])):not(.sr-only){min-block-size:var(--gd-touch-min)!important;min-inline-size:var(--gd-touch-min)!important}
+}
 /* Native scroll bars, one rule for every page (pages never style their own).
    Desktop: thin and world-coloured. Touch screens and phone width: none standing; the OS shows its
    own while moving. A row that scrolls sideways (tabs, chips, rails) declares .gd-strip and never
