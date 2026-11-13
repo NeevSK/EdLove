@@ -19,19 +19,19 @@
 .title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
   margin: 0;
 }
 
 .subtitle {
   font-size: 0.875rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   margin: 0.25rem 0 0;
 }
 
 .card {
-  background-color: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
   border-radius: 0.75rem;
   padding: 1.5rem;
   display: flex;
@@ -42,7 +42,7 @@
 .cardEyebrow {
   font-size: 0.875rem;
   font-weight: 650;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
 }
 
 .levelSelector {
@@ -58,7 +58,7 @@
   gap: 0.25rem;
   padding: 0.625rem 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
   background: transparent;
   cursor: pointer;
   transition: all 160ms ease;
@@ -71,7 +71,7 @@
 .levelLabel {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
 }
 
 .sliderBox {
@@ -83,7 +83,7 @@
 
 .rangeInput {
   width: 100%;
-  accent-color: var(--color-action, #a85022);
+  accent-color: var(--color-action);
   cursor: pointer;
 }
 
@@ -102,8 +102,8 @@
 
 .saveBtn {
   padding: 0.625rem 1.25rem;
-  background-color: var(--color-action, #a85022);
-  color: #ffffff;
+  background-color: var(--color-action);
+  color: var(--w-raised);
   border: none;
   border-radius: 0.5rem;
   font-weight: 650;
@@ -124,7 +124,7 @@
 .historyTitle {
   font-size: 0.875rem;
   font-weight: 650;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
@@ -137,8 +137,8 @@
 }
 
 .historyItem {
-  background-color: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   display: flex;
@@ -150,7 +150,7 @@
 
 .historyDate {
   font-size: 0.75rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
 }
 
 .historyEmoji {

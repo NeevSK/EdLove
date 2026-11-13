@@ -53,10 +53,10 @@
   border-radius: 9999px;
   background: radial-gradient(
     circle at 40% 35%,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(240, 230, 215, 0.7) 100%
+    color-mix(in srgb, var(--w-raised) 90%, transparent) 0%,
+    color-mix(in srgb, var(--w-raised) 70%, transparent) 100%
   );
-  border: 2px solid rgba(212, 132, 58, 0.4);
+  border: 2px solid color-mix(in srgb, var(--w-lamp) 40%, transparent);
   box-shadow:
     0 0 40px -8px rgba(212, 132, 58, 0.25),
     inset 0 2px 8px rgba(255, 255, 255, 0.8);
@@ -84,7 +84,7 @@
   position: absolute;
   inset: 0.5rem;
   border-radius: 9999px;
-  border: 1px solid rgba(212, 132, 58, 0.3);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
   pointer-events: none;
   animation: haloPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -93,7 +93,7 @@
   position: absolute;
   inset: -1rem;
   border-radius: 9999px;
-  border: 1px dashed rgba(212, 132, 58, 0.18);
+  border: 1px dashed color-mix(in srgb, var(--w-lamp) 18%, transparent);
   pointer-events: none;
   animation: haloRotate 20s linear infinite;
 }
@@ -179,7 +179,7 @@
   border-radius: 9999px;
   border: 1px solid var(--lotus);
   background: var(--lotus);
-  color: #fff;
+  color: var(--w-raised);
   font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -214,10 +214,10 @@
   border-radius: 1.5rem;
   background: radial-gradient(
     circle at 50% 25%,
-    color-mix(in srgb, #e8f5e9 70%, var(--paper-light)) 0%,
+    color-mix(in srgb, var(--w-raised) 70%, var(--paper-light)) 0%,
     var(--paper) 100%
   );
-  border: 1px solid color-mix(in srgb, #81c784 40%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--w-success) 40%, var(--line));
   box-shadow: 0 8px 30px -4px rgba(76, 175, 80, 0.12);
   max-width: 24rem;
 }

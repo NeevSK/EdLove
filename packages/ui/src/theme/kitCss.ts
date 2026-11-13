@@ -153,6 +153,8 @@ const BASE_CSS = `
 .gd-s-tip{width:3px;height:${s(0.15)};margin-left:1px;background:var(--w-ink)}
 .gd-perch{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .gd-dialog{padding:0;margin:auto;border:0;background:transparent;color:var(--w-ink);width:calc(100% - 48px);max-width:420px;overflow:visible}
+/* The one scrim behind every modal, drawer and sheet; pages use var(--gd-scrim), never their own tint. */
+:root{--gd-scrim:color-mix(in srgb, var(--w-ink) 42%, transparent)}[data-mode="dark"]{--gd-scrim:color-mix(in srgb, var(--w-ground) 72%, transparent)}
 .gd-dialog::backdrop{background:color-mix(in srgb, var(--w-ink) 42%, transparent)}
 [data-mode="dark"] .gd-dialog::backdrop,.gd-dialog[data-mode="dark"]::backdrop{background:color-mix(in srgb, var(--w-ground) 72%, transparent)}
 .gd-overlay-panel{display:flex;flex-direction:column;gap:12px;padding:20px;background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);color:var(--w-ink)}

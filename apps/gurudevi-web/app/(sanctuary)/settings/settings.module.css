@@ -10,18 +10,18 @@
 
 .headerBar {
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .headerBar h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .headerBar p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -44,8 +44,8 @@
 .settingSection {
   padding: 1.5rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
   box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
   display: flex;
   flex-direction: column;
@@ -55,7 +55,7 @@
 .sectionTitle {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
   display: flex;
   align-items: center;
@@ -64,7 +64,7 @@
 
 .sectionDescription {
   font-size: 0.85rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   margin: 0;
   line-height: 1.5;
 }
@@ -79,9 +79,9 @@
   min-height: 44px;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
-  background: var(--color-paper, #f7f2e8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
+  background: var(--color-paper);
+  color: var(--color-ink);
   cursor: pointer;
   text-align: left;
   transition: all 0.15s ease;
@@ -91,24 +91,24 @@
 }
 
 .optionCard:hover {
-  border-color: var(--color-action, #a85022);
+  border-color: var(--color-action);
 }
 
 .optionCard[data-selected="true"] {
-  border-color: var(--color-action, #a85022);
-  background: color-mix(in srgb, var(--color-paper, #f7f2e8) 90%, var(--color-action, #a85022));
-  box-shadow: 0 0 0 1px var(--color-action, #a85022);
+  border-color: var(--color-action);
+  background: color-mix(in srgb, var(--color-paper) 90%, var(--color-action));
+  box-shadow: 0 0 0 1px var(--color-action);
 }
 
 .optionLabel {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .optionSub {
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .toggleRow {
@@ -117,18 +117,18 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 0;
-  border-top: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
+  border-top: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 10%, transparent));
 }
 
 .toggleLabel {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .toggleDescription {
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .toggleButton {
@@ -136,9 +136,9 @@
   min-width: 44px;
   padding: 0.4rem 1rem;
   border-radius: 999px;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
-  background: var(--color-paper, #f7f2e8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
@@ -146,9 +146,9 @@
 }
 
 .toggleButton[data-active="true"] {
-  background: var(--color-action, #a85022);
-  color: #ffffff;
-  border-color: var(--color-action, #a85022);
+  background: var(--color-action);
+  color: var(--w-raised);
+  border-color: var(--color-action);
 }
 
 /* Sanctuary Spatial Studio & Live Preview */
@@ -165,9 +165,9 @@
   max-height: 380px;
   border-radius: 1rem;
   overflow: hidden;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  background: var(--color-paper, #f7f2e8);
+  background: var(--color-paper);
 }
 
 .previewInnerLayer {
@@ -188,10 +188,10 @@
 }
 
 .previewMockCard {
-  background: var(--paper-frost, rgba(254, 252, 248, 0.92));
+  background: var(--paper-frost, color-mix(in srgb, var(--w-raised) 92%, transparent));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--paper-border-frost, rgba(140, 110, 70, 0.16));
+  border: 1px solid var(--paper-border-frost, color-mix(in srgb, var(--w-lamp) 16%, transparent));
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
   max-width: 24rem;
@@ -202,13 +202,13 @@
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0 0 0.2rem;
 }
 
 .previewMockText {
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   margin: 0;
   line-height: 1.4;
 }
@@ -218,9 +218,9 @@
   bottom: 0.85rem;
   right: 0.85rem;
   z-index: 15;
-  background: rgba(20, 24, 28, 0.75);
+  background: color-mix(in srgb, var(--w-ink) 75%, transparent);
   backdrop-filter: blur(8px);
-  color: #ffffff;
+  color: var(--w-raised);
   font-size: 0.7rem;
   font-weight: 600;
   padding: 0.3rem 0.75rem;
@@ -239,7 +239,7 @@
 .studioSubgroupTitle {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
@@ -266,8 +266,8 @@
 }
 
 .customThumbCard[data-selected="true"] {
-  border-color: var(--color-action, #a85022);
-  box-shadow: 0 0 0 2px var(--color-action, #a85022);
+  border-color: var(--color-action);
+  box-shadow: 0 0 0 2px var(--color-action);
 }
 
 .customThumbDelete {
@@ -277,8 +277,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.65);
-  color: #fff;
+  background: color-mix(in srgb, var(--w-ink) 65%, transparent);
+  color: var(--w-raised);
   border: none;
   cursor: pointer;
   display: flex;
@@ -298,7 +298,7 @@
   width: 36px;
   height: 36px;
   padding: 0;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.3));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 30%, transparent));
   border-radius: 50%;
   cursor: pointer;
   background: none;
@@ -307,8 +307,8 @@
 .washChip {
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
-  background: var(--color-paper, #f7f2e8);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
+  background: var(--color-paper);
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
@@ -316,9 +316,9 @@
 }
 
 .washChip[data-selected="true"] {
-  background: var(--color-action, #a85022);
-  color: #ffffff;
-  border-color: var(--color-action, #a85022);
+  background: var(--color-action);
+  color: var(--w-raised);
+  border-color: var(--color-action);
 }
 
 .inputGroup {
@@ -335,16 +335,16 @@
   min-height: 42px;
   padding: 0.5rem 0.85rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  background: var(--color-paper, #f7f2e8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-family: inherit;
   font-size: 0.85rem;
   outline: none;
 }
 
 .textInput:focus {
-  border-color: var(--color-action, #a85022);
+  border-color: var(--color-action);
   box-shadow: 0 0 0 2px rgba(168, 80, 34, 0.15);
 }
 
@@ -352,9 +352,9 @@
   min-height: 42px;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-action, #a85022);
-  background: var(--color-action, #a85022);
-  color: #fff;
+  border: 1px solid var(--color-action);
+  background: var(--color-action);
+  color: var(--w-raised);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -369,38 +369,38 @@
   min-height: 42px;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  background: var(--color-paper, #f7f2e8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
 }
 
 .secondaryButton:hover {
-  border-color: var(--color-action, #a85022);
+  border-color: var(--color-action);
 }
 
 .dangerButton {
   min-height: 42px;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-danger, #b23b3b);
+  border: 1px solid var(--color-danger);
   background: transparent;
-  color: var(--color-danger, #b23b3b);
+  color: var(--color-danger);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
 }
 
 .dangerButton:hover {
-  background: rgba(178, 59, 59, 0.08);
+  background: color-mix(in srgb, var(--w-danger) 8%, transparent);
 }
 
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--gd-scrim);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -410,8 +410,8 @@
 }
 
 .modalCard {
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
   border-radius: 1rem;
   padding: 1.75rem;
   max-width: 26rem;
@@ -425,7 +425,7 @@
 .modalTitle {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.25rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 

@@ -4,9 +4,9 @@
   gap: 0.625rem;
   padding: 0.35rem 0.75rem;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.85);
+  background: color-mix(in srgb, var(--w-raised) 85%, transparent);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(2, 132, 199, 0.25);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, transparent);
   box-shadow: 0 4px 12px -2px rgba(2, 132, 199, 0.12);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   animation: gentlePulse 3s infinite ease-in-out;
@@ -15,17 +15,17 @@
 @keyframes gentlePulse {
   0%, 100% {
     box-shadow: 0 4px 12px -2px rgba(2, 132, 199, 0.12);
-    border-color: rgba(2, 132, 199, 0.25);
+    border-color: color-mix(in srgb, var(--w-lamp) 25%, transparent);
   }
   50% {
     box-shadow: 0 4px 18px 0px rgba(2, 132, 199, 0.22);
-    border-color: rgba(2, 132, 199, 0.45);
+    border-color: color-mix(in srgb, var(--w-lamp) 45%, transparent);
   }
 }
 
 .islandSerene {
-  background: rgba(255, 255, 255, 0.75);
-  border-color: rgba(16, 185, 129, 0.2);
+  background: color-mix(in srgb, var(--w-raised) 75%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 20%, transparent);
   box-shadow: 0 2px 8px -2px rgba(16, 185, 129, 0.1);
   animation: none;
 }
@@ -37,14 +37,14 @@
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 9999px;
-  background: rgba(2, 132, 199, 0.1);
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
   flex-shrink: 0;
 }
 
 .title {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--w-ink);
   white-space: nowrap;
 }
 
@@ -73,38 +73,38 @@
 }
 
 .doneBtn {
-  background: #ecfdf5;
-  color: #059669;
-  border-color: #a7f3d0;
+  background: var(--w-raised);
+  color: var(--w-lamp-deep);
+  border-color: var(--w-line);
 }
 
 .doneBtn:hover {
-  background: #d1fae5;
+  background: var(--w-raised);
 }
 
 .snoozeBtn {
-  background: #fffbeb;
-  color: #b45309;
-  border-color: #fde68a;
+  background: var(--w-raised);
+  color: var(--w-lamp-deep);
+  border-color: var(--w-lamp);
 }
 
 .snoozeBtn:hover {
-  background: #fef3c7;
+  background: var(--w-raised);
 }
 
 .passBtn {
   background: transparent;
-  color: #94a3b8;
+  color: var(--w-ink-soft);
 }
 
 .passBtn:hover {
-  color: #64748b;
-  background: rgba(0, 0, 0, 0.04);
+  color: var(--w-ink-soft);
+  background: color-mix(in srgb, var(--w-ink) 4%, transparent);
 }
 
 .sereneText {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #059669;
+  color: var(--w-lamp-deep);
   white-space: nowrap;
 }

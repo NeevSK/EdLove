@@ -18,8 +18,8 @@
   inset: 0;
   background: radial-gradient(
     ellipse at 50% 80%,
-    rgba(234, 88, 12, 0.22) 0%,
-    rgba(249, 115, 22, 0.1) 45%,
+    color-mix(in srgb, var(--w-lamp) 22%, transparent) 0%,
+    color-mix(in srgb, var(--w-lamp) 10%, transparent) 45%,
     transparent 80%
   );
   animation: heatPulse 1.2s ease-in-out infinite alternate;
