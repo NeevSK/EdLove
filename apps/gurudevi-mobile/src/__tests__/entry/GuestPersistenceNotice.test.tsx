@@ -83,7 +83,8 @@ describe('GuestPersistenceNotice (component-real)', () => {
       button.props.onPress();
     });
 
-    expect(mocks.push).toHaveBeenCalledWith('/auth');
+    // Arriving in another stack by push keeps its overview underneath (NAVIGATION_POLICY.mobile.withAnchor).
+    expect(mocks.push).toHaveBeenCalledWith('/auth', { withAnchor: true });
   });
 
   it('does not duplicate the notice on entry routes', async () => {

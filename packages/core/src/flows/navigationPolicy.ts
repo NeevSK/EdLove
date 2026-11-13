@@ -59,6 +59,12 @@ export const NAVIGATION_POLICY = {
 
   mobile: {
     /**
+     * Arriving in another stack puts that stack's anchor (its overview) under the destination, so
+     * back goes to the overview rather than out of the stack (expo-router 58 `withAnchor`; a no-op
+     * within the same stack).
+     */
+    withAnchor: true,
+    /**
      * Warm a step's screen when the person shows intent (focus, press-in), as links do on the
      * web. `router.prefetch` in expo-router 58.
      */

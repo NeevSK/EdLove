@@ -1,4 +1,4 @@
-import type { NavigationOp } from '@repo/core/flows/navigationPolicy';
+import { NAVIGATION_POLICY, type NavigationOp } from '@repo/core/flows/navigationPolicy';
 import { captureException } from '@repo/core/monitoring';
 import {
   buildHref,
@@ -49,7 +49,14 @@ export function useNavigator() {
         return { ok: false, reason: checked.reason };
       }
       // The one place a checked string becomes expo-router's `Href`.
-      router[op](checked.href as Href);
+      if (op === 'push') {
+        // Arriving in another stack by push keeps its overview underneath. Replace and dismissTo
+        // move within where the person already is (the entry gate's redirects land on the
+        // unanchored root), so they don't take it.
+        router.push(checked.href as Href, { withAnchor: NAVIGATION_POLICY.mobile.withAnchor });
+      } else {
+        router[op](checked.href as Href);
+      }
       return { ok: true, href: checked.href, route: checked.route };
     };
 

@@ -1,6 +1,9 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+/** Arriving in another stack keeps its overview underneath (NAVIGATION_POLICY.mobile.withAnchor). */
+const ANCHOR = { withAnchor: true };
+
 const router = vi.hoisted(() => ({
   push: vi.fn(),
   replace: vi.fn(),
@@ -25,7 +28,7 @@ describe('useFlowNavigator (mobile) / G3 hook, real resolver, router substituted
   it('pushes the step route and returns how it appears', () => {
     const { result } = renderHook(() => useFlowNavigator());
     const resolved = result.current.open('flow:entry:mobile', 'auth_gate');
-    expect(router.push).toHaveBeenCalledWith('/auth');
+    expect(router.push).toHaveBeenCalledWith('/auth', ANCHOR);
     expect(resolved).toMatchObject({ kind: 'go', presentation: 'push' });
     expect(result.current.sizeClass).toBe('compact');
   });

@@ -1,6 +1,9 @@
 import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+/** Arriving in another stack keeps its overview underneath (NAVIGATION_POLICY.mobile.withAnchor). */
+const ANCHOR = { withAnchor: true };
+
 const router = vi.hoisted(() => ({
   push: vi.fn(),
   replace: vi.fn(),
@@ -39,7 +42,7 @@ describe('useNavigator (native kit) / G3 hook, real catalogue and guard, router 
   it('navigates to a screen that exists, with or without its group', () => {
     const { result } = renderHook(() => useNavigator());
     expect(result.current.push('/settings')).toMatchObject({ ok: true, route: '/(tabs)/settings' });
-    expect(router.push).toHaveBeenCalledWith('/settings');
+    expect(router.push).toHaveBeenCalledWith('/settings', ANCHOR);
     result.current.replace('/(tabs)/workspace/inventory');
     expect(router.replace).toHaveBeenCalledWith('/(tabs)/workspace/inventory');
   });
@@ -47,7 +50,7 @@ describe('useNavigator (native kit) / G3 hook, real catalogue and guard, router 
   it('builds a dynamic href from a pattern and params, encoded', () => {
     const { result } = renderHook(() => useNavigator());
     result.current.push({ pathname: '/self/wisdom/[id]', params: { id: 'a/b', from: 'home' } });
-    expect(router.push).toHaveBeenCalledWith('/self/wisdom/a%2Fb?from=home');
+    expect(router.push).toHaveBeenCalledWith('/self/wisdom/a%2Fb?from=home', ANCHOR);
   });
 
   it.each([
