@@ -381,10 +381,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .sheet[open] { animation-duration: 0.01ms; }
-}
-
 @media (orientation: landscape) and (max-height: 34rem) {
   .sheet { inset-block-end: env(safe-area-inset-bottom); }
 }

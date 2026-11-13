@@ -24,9 +24,6 @@
   from { opacity: 0; transform: translateY(0.35rem); }
   to { opacity: 1; transform: translateY(0); }
 }
-@media (prefers-reduced-motion: reduce) {
-  .featureContentIn { animation: none; }
-}
 .heading {
   max-width: 52rem;
 }

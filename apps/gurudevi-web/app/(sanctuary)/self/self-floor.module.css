@@ -209,11 +209,6 @@
     transform: translateY(0);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .featureContentIn {
-    animation: none;
-  }
-}
 .arrival {
   /* Retained in DOM for aria-labelledby & assistive tech; visually consolidated into FloorReception */
   position: absolute;

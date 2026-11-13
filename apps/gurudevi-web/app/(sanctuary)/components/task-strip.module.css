@@ -577,10 +577,6 @@
   .temporalModeButton { min-height: 2.4rem; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .temporalModePaper { transition-duration: 0.01ms; }
-}
-
 @keyframes modalScaleUp {
   from {
     opacity: 0;

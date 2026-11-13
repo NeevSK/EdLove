@@ -75,8 +75,3 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .statusDot {
-    transition: none;
-  }
-}

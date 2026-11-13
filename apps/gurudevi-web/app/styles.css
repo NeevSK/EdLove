@@ -78,14 +78,6 @@ html[data-motion="subtle"],
   animation: sanctuary-floor-breathe 24s ease-in-out infinite alternate;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-motion="subtle"],
-  html[data-motion="subtle"],
-  [data-domain][data-motion="subtle"] {
-    animation: none;
-  }
-}
-
 @keyframes sanctuary-floor-breathe {
   from {
     background-position: 0% 0%;
@@ -394,17 +386,7 @@ a {
   border-radius: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
+/* Reduced motion: one rule in the kit (theme/kitCss.ts). */
 /* Eyebrow & typography utilities */
 .eyebrow {
   font-family: var(--font-ui-grotesque);

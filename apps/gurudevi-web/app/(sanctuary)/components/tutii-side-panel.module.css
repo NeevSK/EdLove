@@ -37,13 +37,6 @@
   to { transform: translateX(0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .backdrop,
-  .panel {
-    animation: none;
-  }
-}
-
 .header {
   flex-shrink: 0;
   display: flex;

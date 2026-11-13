@@ -478,22 +478,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .step,
-  .tutiiImage,
-  .voice {
-    animation: none;
-  }
-
-  .primaryAction {
-    transition: none;
-  }
-
-  .roleSymbol {
-    transition: none;
-  }
-}
-
 .detectedNameCard {
   margin-top: 18px;
   padding: 16px;

@@ -776,6 +776,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-scrollarea-track[data-visibility="scrolling"]{opacity:0;transition:opacity 0.3s ease}
 .gd-scrollarea-track[data-visibility="scrolling"][data-moving="true"],
 .gd-scrollarea-track[data-visibility="scrolling"]:hover{opacity:0.85}
+/* Reduced motion: one rule for every page. When the person or their device asks for less motion,
+   nothing moves; animations and transitions jump to their end. Pages never write their own block.
+   Waiting signs are left out: they hold a still pose of their own (see .gd-s above). */
+@media (prefers-reduced-motion:reduce){:where(*:not(.gd-s,.gd-s *)),:where(*:not(.gd-s *))::before,:where(*:not(.gd-s *))::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+/* Blur costs a low-end phone a lot. Verger decides: when it says the device can only afford
+   reduced or essential visuals, no surface blurs what is behind it. Pages never gate it themselves. */
+html[data-visual-quality="reduced"] *,html[data-visual-quality="essential"] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 /* Touch size: on a touch screen nothing you press is smaller than the platform minimum
    (44px, Apple and WCAG 2.5.5; the phone app uses 48 on Android). One rule for every page; pages
    never set their own. Inline text links are exempt, as WCAG allows. */

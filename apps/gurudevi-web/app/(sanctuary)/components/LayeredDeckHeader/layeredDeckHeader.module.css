@@ -144,9 +144,3 @@
    Accessibility: Reduced Motion
    ========================================================================= */
 
-@media (prefers-reduced-motion: reduce) {
-  .deckRoot,
-  .layer {
-    transition: none !important;
-  }
-}

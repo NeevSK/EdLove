@@ -56,12 +56,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .auroraMesh {
-    animation: none;
-  }
-}
-
 /* Celestial Embers GPU Canvas */
 .embersCanvas {
   position: absolute;
