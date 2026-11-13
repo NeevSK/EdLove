@@ -1609,3 +1609,8 @@
 
 
 
+
+/* The app shell draws the world's ground behind every screen: the floor itself stays clear. */
+.floor[data-ground-host="shell"] {
+  background: transparent !important;
+}

@@ -4,23 +4,23 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useCommunityCanvas } from '../../../lib/canvas/useCommunityCanvas';
+import { getExploreSampleAnnouncements } from '../../../lib/community/announcements-contract';
 import {
   COMMUNITY_GROUP_PAGE_SIZE,
   type CommunityGroup,
   type CommunityGroupsResult,
   parseCommunityGroupsResult,
 } from '../../../lib/community/groups-contract';
-import { getExploreSampleAnnouncements } from '../../../lib/community/announcements-contract';
 import {
   getExploreCapacityMeta,
   isExploreCapacity,
   useExploreCapacity,
 } from '../../../lib/explore/exploreCapacity';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import styles from './community.module.css';
 import { CirclePostStream } from './components/CirclePostStream';
@@ -206,14 +206,14 @@ export function CommunityFeedFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      storedAppearance={canvas.storedAppearance}
+      accountId={accountId}
       className={styles.floor}
       dataMode={mode}
       domain="community"
       furnitureItems={COMMUNITY_FURNITURE_ITEMS}
       groupOrder={
-        canvas.groupOrder.length > 0
-          ? (canvas.groupOrder as string[])
-          : ['search', 'circles']
+        canvas.groupOrder.length > 0 ? (canvas.groupOrder as string[]) : ['search', 'circles']
       }
       onReorderFurniture={(order) => canvas.setGroupOrder(order as any)}
       onTogglePinFurniture={(id) => canvas.togglePin(id as any)}
@@ -323,7 +323,8 @@ export function CommunityFeedFloor({
             background: 'var(--w-surface, var(--paper-light))',
             border: '1.5px solid var(--w-lamp, var(--accent))',
             borderRadius: 'var(--w-radius-md, 1rem)',
-            boxShadow: '0 4px 12px color-mix(in srgb, var(--w-lamp, var(--accent)) 10%, transparent)',
+            boxShadow:
+              '0 4px 12px color-mix(in srgb, var(--w-lamp, var(--accent)) 10%, transparent)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -343,7 +344,9 @@ export function CommunityFeedFloor({
             >
               Classroom Invitation Pass
             </span>
-            <p style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--w-ink, var(--ink))' }}>
+            <p
+              style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--w-ink, var(--ink))' }}
+            >
               Invitation Code:{' '}
               <code
                 style={{
@@ -366,7 +369,8 @@ export function CommunityFeedFloor({
               fontWeight: 600,
               fontSize: '0.85rem',
               textDecoration: 'none',
-              boxShadow: '0 2px 6px color-mix(in srgb, var(--w-action, var(--lotus)) 25%, transparent)',
+              boxShadow:
+                '0 2px 6px color-mix(in srgb, var(--w-action, var(--lotus)) 25%, transparent)',
             }}
           >
             Claim Desk Pass →
@@ -533,7 +537,13 @@ export function CommunityFeedFloor({
                                   <div className={styles.groupAnnouncementMeta}>
                                     <span>Issued by {a.authorName}</span>
                                     {a.isPinned && (
-                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                                      <span
+                                        style={{
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '0.25rem',
+                                        }}
+                                      >
                                         📌 Pinned
                                       </span>
                                     )}

@@ -202,6 +202,7 @@ export type {
   FeatureJourneySpec,
   FeatureLifecycleStage,
   FloorWallpaperConfig,
+  GroundScope,
   ResolvedWorkspaceSurface,
   SceneGroundMode,
   ScreenSequenceStep,

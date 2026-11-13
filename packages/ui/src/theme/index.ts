@@ -30,6 +30,15 @@ export {
   hapticFor,
   motionFor,
 } from './feedback';
+export * from './floorFit';
+export * from './groundLimits';
+export {
+  type CelebrationLevel,
+  type MomentShape,
+  momentOf,
+  momentPieces,
+  type WorldMomentStyle,
+} from './moments';
 export {
   type Bezier,
   CURVES,
@@ -52,9 +61,8 @@ export {
   STANDARD_ACCESS,
   scaleRecipes,
 } from './resolve';
+export { fitRadius, type RoomMark, roomMarkOf } from './shellMarks';
 export { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
-export type * from './types';
-export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS, worldName } from './worlds';
 export {
   type AspectClass,
   aspectClassOf,
@@ -66,20 +74,14 @@ export {
   shellLayoutOf,
   sizeClassOf,
 } from './size';
-export { fitRadius, type RoomMark, roomMarkOf } from './shellMarks';
-export {
-  type CelebrationLevel,
-  type MomentShape,
-  momentOf,
-  momentPieces,
-  type WorldMomentStyle,
-} from './moments';
 export {
   atLeast,
+  STAGE_TIERS,
   type Stage,
   type StageTier,
-  STAGE_TIERS,
   stageNamed,
   stageOf,
   stageTierOf,
 } from './stage';
+export type * from './types';
+export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS, worldName } from './worlds';

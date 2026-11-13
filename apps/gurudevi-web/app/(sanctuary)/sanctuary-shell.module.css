@@ -1173,6 +1173,10 @@
   .canvasFrame {
     min-height: 100%;
   }
+  /* Room for the bottom room tabs (fixed in the deck header's layer 3). */
+  .body {
+    padding-bottom: calc(3.45rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 @media (max-width: 26rem) {

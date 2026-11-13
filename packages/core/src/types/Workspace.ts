@@ -33,6 +33,13 @@ export interface FloorWallpaperConfig {
 
 export type SceneGroundMode = 'live' | 'still' | 'image' | 'quiet';
 
+/**
+ * Whose ground a saved appearance is. `world`: the one look every room follows. `room`: this
+ * room chose its own look. Saved appearances from before this field count as the room's own
+ * until a newer every-room change replaces them (see `logic/workspace/ground.ts`).
+ */
+export type GroundScope = 'world' | 'room';
+
 export interface WorkspaceAppearance {
   preset: WorkspaceAppearancePreset;
   motion: WorkspaceAppearanceMotion;
@@ -40,6 +47,12 @@ export interface WorkspaceAppearance {
   worldId?: string;
   wallpaper?: WorkspaceWallpaper | null;
   wallpaperConfig?: FloorWallpaperConfig | null;
+  /** The texture laid over the ground (web: washi grain, aurora mesh, embers, or none). */
+  atmosphere?: string;
+  /** Whose look this is: every room's (`world`) or one room's own (`room`). */
+  groundScope?: GroundScope;
+  /** When this look was last chosen (ISO time). Newer every-room looks replace older room looks. */
+  changedAt?: string;
 }
 
 export type WorkspaceSwitcherTargetId =

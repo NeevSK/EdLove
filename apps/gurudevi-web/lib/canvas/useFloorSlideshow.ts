@@ -94,7 +94,10 @@ export function useFloorSlideshow(
     [transitionToIndex],
   );
 
-  // Synchronize when config items or fallback changes
+  // Synchronize when the chosen photo, the items or the playback mode change. Outside a running
+  // slideshow the chosen photo is what shows (before, the first item of the list won, so picking a
+  // photo after a slideshow had been on never stuck).
+  const activeId = config?.activeId ?? null;
   useEffect(() => {
     if (mode === 'off') {
       setActiveWallpaper(null);
@@ -102,22 +105,28 @@ export function useFloorSlideshow(
       return;
     }
 
-    if (items.length > 0) {
-      const validIndex = Math.min(currentIndex, items.length - 1);
-      const chosen = items[validIndex] ?? items[0] ?? null;
+    if (mode !== 'slideshow' || items.length === 0) {
+      const chosen =
+        fallbackWallpaper ?? items.find((item) => item.publicId === activeId) ?? items[0] ?? null;
       setActiveWallpaper(chosen);
-    } else {
-      setActiveWallpaper(fallbackWallpaper ?? null);
+      return;
     }
-  }, [items, mode, fallbackWallpaper]);
+
+    const fromActive = activeId ? items.findIndex((item) => item.publicId === activeId) : -1;
+    const index = fromActive >= 0 ? fromActive : Math.min(currentIndex, items.length - 1);
+    setCurrentIndex(index);
+    setActiveWallpaper(items[index] ?? items[0] ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- currentIndex is advanced by the runner
+  }, [items, mode, fallbackWallpaper, activeId]);
 
   // Slideshow interval runner with visibilitychange sentinel
   useEffect(() => {
     if (!isSlideshowActive || items.length <= 1) return;
 
-    const intervalSeconds = config?.slideshowIntervalSeconds && config.slideshowIntervalSeconds > 0
-      ? config.slideshowIntervalSeconds
-      : DEFAULT_CADENCE_SECONDS;
+    const intervalSeconds =
+      config?.slideshowIntervalSeconds && config.slideshowIntervalSeconds > 0
+        ? config.slideshowIntervalSeconds
+        : DEFAULT_CADENCE_SECONDS;
 
     const intervalMs = intervalSeconds * 1000;
 
