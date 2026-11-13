@@ -1,14 +1,16 @@
 import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 import { ErrorState, WorldLoading } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { router, useGlobalSearchParams } from 'expo-router';
+import { useGlobalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { createNativeAuthCallbackUrl } from '@/entry/authCallbackUrl';
+import { useNavigator } from '@/navigation/navigator';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
 export default function AuthCallbackRoute() {
+  const router = useNavigator();
   const startedRef = useRef(false);
   const params = useGlobalSearchParams<Record<string, string | string[]>>();
   const [failureMessage, setFailureMessage] = useState<string | null>(null);

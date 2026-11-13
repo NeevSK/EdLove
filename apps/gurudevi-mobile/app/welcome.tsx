@@ -2,11 +2,11 @@ import { getOrCreateLocalGuestSession } from '@repo/core/native/localGuestSessio
 import { WorldLoading } from '@repo/ui/components/native';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { ObserveInteractiveMarker } from 'expo-observe';
-import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 import { WelcomeScreen } from '@/screens/WelcomeScreen';
 import { DevelopmentScreenInteractiveMarker } from '@/telemetry/DevelopmentScreenInteractiveMarker';
+import { useNavigator } from '@/navigation/navigator';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -16,7 +16,7 @@ function Fallback() {
 }
 
 export default function WelcomeRoute() {
-  const router = useRouter();
+  const router = useNavigator();
   const routeState = useBootstrapRouteState('/welcome');
 
   const handleLogin = useCallback(() => {

@@ -1,9 +1,8 @@
 import { WorldLoading } from '@repo/ui/components/native';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
 import AuthScreen from '../src/screens/AuthScreen';
+import { useNavigator } from '@/navigation/navigator';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -13,15 +12,15 @@ function Fallback() {
 }
 
 export default function AuthRoute() {
-  const router = useRouter();
+  const router = useNavigator();
 
   const handleSuccess = useCallback(async () => {
     // The session gate owns post-auth navigation.
   }, []);
 
   const handleBack = useCallback(() => {
-    safeBack('/welcome');
-  }, []);
+    router.back('/welcome');
+  }, [router]);
 
   const handleRecovery = useCallback(() => {
     router.push('/account-recovery');

@@ -70,6 +70,41 @@ A step can override either column. The operation is `replace` only when the pres
 `replace`. Every other presentation is a `push`, and the destination route decides how it looks.
 This table lives in `NAVIGATION_POLICY.presentation`.
 
+## One checked way to move (mobile)
+
+Every screen change on mobile goes through `useNavigator()` (`apps/gurudevi-mobile/src/navigation/navigator.ts`). `useFlowNavigator` and `<GoTo>` are built on it. It has the expo-router method names, so moving a screen onto it is a one-line change.
+
+| Call | For | Checked by |
+| --- | --- | --- |
+| `push('/settings')`, `replace(...)`, `dismissTo(...)` | hrefs written in code | the compiler (`AppHref`, from the catalogue) and `checkInternalHref` at runtime |
+| `push({ pathname: '/self/wisdom/[id]', params })` | dynamic routes | `RoutePattern` at compile time; `buildHref` encodes the segments and sends other params to the query |
+| `follow(raw, source, op?)` | strings that only exist at runtime: notification payloads, the entry gate's target, registry data | `checkInternalHref` at runtime, with `source` named in the report |
+| `back(fallback?)` | back; at the root, replaces to the fallback | `fallback` is typed |
+| `prefetch(to)`, `warm(raw)` | warming a screen before the person commits | silent when refused |
+| `<GoTo href>` | redirecting during render | the same check |
+
+**`checkInternalHref`** (`packages/core/src/routing/internalHref.ts`) is the floor that every destination passes. Deep links pass it too, after their own host and prefix allowlist. It accepts an href only if all of these hold:
+- it is an absolute in-app path: no scheme, no host, no `//`, no `/\`;
+- it has no markup, quote, `;`, backslash or control characters, and none of them percent-encoded;
+- it has no `.` or `..` segments, decoded or not;
+- it has no unfilled `[param]`;
+- it is at most 8 KB long;
+- it lands on a screen in the route catalogue.
+
+A refused destination never reaches the router. It is reported with its path only, never its query, because the query can carry codes or personal data. The reason comes back so the screen can respond.
+
+**Typed hrefs** (`packages/core/src/routing/routeHref.ts`) are template-literal types over the generated catalogue, so a link to a screen that doesn't exist fails the type check. expo-router's own generated route types are not used. On SDK 58 here, `regenerateDeclarations` writes `.expo/types/router.d.ts`, but its `declare module 'expo-router'` augments a namespace that `expo-router` only re-exports (`export type * from './typed-routes/types'`), so `__routes` stays empty and any string type-checks. A probe confirmed it.
+
+**Deep links** (`app/+native-intent.tsx`) keep their allowlist. An allowed prefix must also land on a real screen, otherwise the link fails closed to `/` without stashing a pending intent. Failures are reported instead of logged.
+
+**Ratchet:** `directRouterUse` in `tooling/ratchet.json` counts expo-router `router`, `useRouter` and `<Redirect>` imports outside `src/navigation`. It is 35 today, all in the shared feature packages (library, classroom, admin, ai, community, profile, the legacy UI and the retired `self`). The app itself has none, and the count only goes down. Packages can adopt the navigator once it moves into a shared native package. That needs `expo-router` as a dependency of that package and a `.tsx` export, which is a dependency decision.
+
+**Found while moving call sites:**
+- The workspace switcher pushes React Navigation screen names (`'FounderDashboard'`, `'Classroom'`) as paths. They never resolved under expo-router; now they are refused and reported instead of opening the unmatched screen. Mapping each to a route is product data.
+- The push-notification handler navigated to the payload's path behind `as Href`. It now goes through `follow(..., 'notification')`.
+- The entry gate replayed pending intents to `/qr`, which no longer exists on mobile, and to arbitrary paths. Both are now checked.
+- 12 `as any`, `as never` and `as Parameters<…>` casts on hrefs were removed. Every literal href in the app now type-checks against real screens.
+
 ## Presentation is a property of the route, not the call
 
 expo-router 58 has no API for opening a route as a sheet from the call site. A route is a sheet when
@@ -94,9 +129,8 @@ should survive a deep link, back, or state restoration.
   that point at screens which don't exist. They are listed in `flowRoutes.test.ts` as
   `KNOWN_BROKEN`. The test fails if a new one appears, and it also fails if a listed one is fixed
   but not removed from the list. The list can only shrink.
-- Direct router use on mobile: 52 `router.push`, `router.replace` and `router.navigate` calls. The
-  web moved off Next, and its links are typed against the route tree. None of these calls goes
-  through the navigator yet.
+- Direct router use: 0 in the mobile app (all 52 calls moved onto `useNavigator`), and 35 imports
+  in the shared packages, ratcheted. The web is typed against its route tree.
 - `routing/routeManifest.ts` is the deep-link allowlist. It is a separate list from the catalogue
   and isn't checked against it yet.
 
@@ -119,7 +153,7 @@ reversed by changing one value.
 
 | Question | Default | Why | To reverse |
 | --- | --- | --- | --- |
-| Typed routes | **Web: on** (TanStack Router types every `<Link to>` and `navigate({ to })` against the route tree). **Mobile: off for now.** | Turning on expo-router `experiments.typedRoutes` would flag all 52 existing hand-written hrefs at once. Flow steps are already checked by the catalogue. | Set `experiments.typedRoutes: true` in `app.json` once the call sites go through the navigator. |
+| Typed routes | **Web: on** (TanStack Router types every `<Link to>` and `navigate({ to })` against the route tree). **Mobile: on, through the catalogue** (`AppHref`, `RoutePattern`). | expo-router's generated types don't reach `Href` on SDK 58 here (see above) | Use `follow` for a destination that can't be typed |
 | Sheets | A route that a `sheet` step lands on declares `SHEET_SCREEN` (`formSheet`, detents ½ and full, grabber) in its layout | expo-router 58 decides presentation in the layout, not at the call | Change `NAVIGATION_POLICY.sheet`, or a step's own `presentation` |
 | Panels | `panels: { mobile: false, web: false }`, so a panel opens as a **push** | No domain has a split layout yet (`expo-router/unstable-split-view` on tablets, a nested outlet on the web) | Set `panels.<platform>: true` when the layout exists |
 | Finishing a flow | `completion: 'dismissTo'` | `dismissTo` goes back to the landing screen if it's in the history, or replaces the current screen, so the flow's screens never stay behind it. On the web it's a replace. | `completion: 'replace'` |
@@ -149,9 +183,9 @@ router-core 1.171) and the SDK 57→58 migration guide.
 
 ## What comes next
 
-1. A codemod that moves the mobile `router.push` and `router.replace` call sites that match flow steps
-   onto `useFlowNavigator`. Then a ratchet on direct router use outside the two adapters, and
-   typed routes on mobile.
+1. Done for the app: every mobile call site uses `useNavigator`, and `directRouterUse` is ratcheted.
+   Next is moving the navigator into a shared native package, so the 35 package sites can follow,
+   and re-pointing call sites that are really flow steps onto `useFlowNavigator`.
 2. Join workbench tasks to flow steps. An active task would record `(flowId, stepId, params)`, so
    resuming work is the same thing as resolving a step.
 3. Add `prefetch` (L5 `queryOptions`) and `transition` (L8) to steps. The navigator would call

@@ -5,7 +5,7 @@ import { useAuth } from '@repo/core/logic';
 import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntent.store';
 import { BrandPulse } from '@repo/ui';
 import { Mascot } from '@repo/ui/components/Mascot';
-import { type Href, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
+import { useGlobalSearchParams, usePathname } from 'expo-router';
 import { type ReactNode, useEffect, useState } from 'react';
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
@@ -13,6 +13,7 @@ import { recordDevelopmentTrace } from '@/boot/startupTelemetry';
 import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 import { getEntryNavigationAction } from '@/entry/entryNavigation';
 import { getEntryPresentation } from '@/entry/entryPresentation';
+import { useNavigator } from '@/navigation/navigator';
 
 export function SessionRouteGate({
   children,
@@ -21,7 +22,7 @@ export function SessionRouteGate({
   children: ReactNode;
   appServices?: ReactNode;
 }) {
-  const router = useRouter();
+  const router = useNavigator();
   const { ground, lamp } = useWorld().tokens;
   const pathname = usePathname();
   const params = useGlobalSearchParams<{ entry?: string }>();
@@ -158,7 +159,7 @@ export function SessionRouteGate({
       routeTarget: { decision, redirectTo },
     });
     if (action.consumePendingIntent) pendingIntentStore.getState().drainPendingIntent();
-    if (action.target) router.replace(action.target as any);
+    if (action.target) router.follow(action.target, 'entry-gate', 'replace');
   }, [isDevelopmentToolRoute, pathname, decision, redirectTo, router]);
 
   // Keep Expo Router's navigator mounted during admission and redirects. The
@@ -260,7 +261,7 @@ export function SessionRouteGate({
           variant="primary"
           accessibilityRole="button"
           accessibilityLabel={`Continue to ${destination}`}
-          onPress={() => router.replace(presentation.target as Href)}
+          onPress={() => router.follow(presentation.target, 'entry-gate', 'replace')}
           style={{ marginTop: 20 }}
         />
       </View>

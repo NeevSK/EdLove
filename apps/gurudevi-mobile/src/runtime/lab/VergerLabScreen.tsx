@@ -12,9 +12,9 @@ import {
 import { tokens } from '@repo/ui/tokens';
 import { useVergerLab } from '@repo/verger-react';
 import { FlashList } from '@shopify/flash-list';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useNavigator } from '@/navigation/navigator';
 
 const LEVERS = GURUDEVI_MOBILE_HOST.levers;
 
@@ -65,6 +65,7 @@ export async function applyLabTune(
  * its route renders nothing in a release.
  */
 export function VergerLabScreen() {
+  const router = useNavigator();
   const { verger, report } = useVergerLab(LEVERS);
   const [patchText, setPatchText] = useState('');
   const [tuneText, setTuneText] = useState('');

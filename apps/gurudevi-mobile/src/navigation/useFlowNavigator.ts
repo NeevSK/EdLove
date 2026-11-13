@@ -10,26 +10,28 @@ import {
   sizeClassOf,
 } from '@repo/core/flows/navigator';
 import { captureException } from '@repo/core/monitoring';
-import { type Href, useRouter } from 'expo-router';
 import { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
+import { useNavigator } from './navigator';
 
 type StepOptions = Pick<NavigationContext, 'params' | 'condition'>;
 
 /**
  * Navigates by flow step, not by route (L9). The step decides where it is and how it appears
  * (`@repo/core/flows/navigator`, choices in `navigationPolicy`); this carries it out with the
- * expo-router 58 router bound to this screen's root (`useRouter`, which SDK 58 prefers over the
- * module-level `router`). A sheet, modal or panel is pushed: its route's layout presents it. A step
- * that can't be reached is reported for developers and returned, so the screen can tell the person.
+ * checked navigator (`./navigator`, on expo-router 58's `useRouter`). A sheet, modal or panel is
+ * pushed: its route's layout presents it. A step that can't be reached is reported for developers
+ * and returned, so the screen can tell the person.
  */
 export function useFlowNavigator() {
-  const router = useRouter();
+  const navigator = useNavigator();
   const { width } = useWindowDimensions();
   const sizeClass = sizeClassOf(width);
 
   return useMemo(() => {
-    const go = (op: NavigationOp, href: string) => router[op](href as Href);
+    // Flow routes were checked against the catalogue by the resolver; the navigator checks again,
+    // so no path reaches the router without passing the one guard.
+    const go = (op: NavigationOp, href: string) => navigator.follow(href, 'flow', op);
 
     const resolve = (flowId: FlowId, stepId: string, options: StepOptions) =>
       resolveFlowStep(flowId, stepId, { platform: 'mobile', sizeClass, ...options });
@@ -66,12 +68,10 @@ export function useFlowNavigator() {
       prefetch(flowId: FlowId, stepId: string, options: StepOptions = {}) {
         if (!NAVIGATION_POLICY.mobile.prefetchOnIntent) return;
         const resolved = resolve(flowId, stepId, options);
-        if (resolved.kind === 'go') router.prefetch(resolved.href as Href);
+        if (resolved.kind === 'go') navigator.warm(resolved.href);
       },
       /** Back, or dismiss a sheet or modal; a no-op at the root. */
-      back() {
-        if (router.canGoBack()) router.back();
-      },
+      back: () => navigator.back(),
     };
-  }, [router, sizeClass]);
+  }, [navigator, sizeClass]);
 }

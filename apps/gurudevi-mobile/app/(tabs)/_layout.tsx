@@ -56,7 +56,7 @@ import {
 import { Box, Modal, ModalContent, Pressable } from '@repo/ui/primitives';
 import { useWorld } from '@repo/ui/theme/native';
 import { tokens } from '@repo/ui/tokens';
-import { router, useGlobalSearchParams, usePathname } from 'expo-router';
+import { useGlobalSearchParams, usePathname } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'expo-router/js-tabs';
 import { type ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
@@ -74,6 +74,7 @@ import { useShellVariant } from '@/lib/navigation/shellVariant';
 import { useShellProbe } from '@/lib/navigation/useShellProbe';
 import { getNativeShellConfig } from '@/lib/responsiveShell';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
+import { useNavigator } from '@/navigation/navigator';
 
 const EMPTY_DOMAIN_TABS: readonly string[] = [];
 
@@ -111,6 +112,7 @@ export default function TabsLayout() {
 }
 
 function TabsLayoutContent() {
+  const router = useNavigator();
   const pathname = usePathname();
   // The shell is dressed by the chosen world, like every screen inside it.
   const wornWorld = useWorld();
@@ -265,12 +267,14 @@ function TabsLayoutContent() {
         switchPerspective(target.perspectiveId);
       }
       if (target.destination?.kind === 'route') {
-        router.push(target.destination.name as any);
+        // Destinations still carry screen names from React Navigation; the navigator refuses any that
+        // are not a path to a screen, and reports them, instead of opening an unmatched route.
+        router.follow(target.destination.name, 'workspace-switcher');
       } else if (target.destination?.kind === 'tab') {
-        router.push(`/(tabs)/${target.destination.name}` as any);
+        router.follow(`/(tabs)/${target.destination.name}`, 'workspace-switcher');
       }
     },
-    [isLocalGuest, showToast, switchPerspective],
+    [isLocalGuest, showToast, switchPerspective, router],
   );
 
   const handleRedeemInviteCode = useCallback(
@@ -356,7 +360,7 @@ function TabsLayoutContent() {
       profile: '/profile',
     };
     router.replace(overviewRoute[currentDomain]);
-  }, [currentDomain]);
+  }, [currentDomain, router]);
 
   // The shell's shape, chosen by the person in "You"; the rooms move to a rail on wide screens.
   const headerLayout = useActiveSubTabsStore((s) => s.preferences.headerLayout) ?? 'greeting';
@@ -388,10 +392,10 @@ function TabsLayoutContent() {
   const { fidelityLevel, setFidelityLevel } = useFidelityOptional();
 
   const goBack = useCallback(() => {
-    if (currentDomain === 'self') router.push('/self' as any);
-    else if (currentDomain === 'workspace') router.push('/workspace' as any);
+    if (currentDomain === 'self') router.push('/self');
+    else if (currentDomain === 'workspace') router.push('/workspace');
     else router.back();
-  }, [currentDomain]);
+  }, [currentDomain, router]);
 
   const subTabs =
     showActiveSubTabs && (!isDomainRoot || domainTabs.length > 0) ? (
@@ -507,7 +511,7 @@ function TabsLayoutContent() {
             }
           : undefined,
     }),
-    [assistantChoice, currentDomain, setBreathingOpen, layout.aspect, layout.posture, unreadCount],
+    [assistantChoice, currentDomain, setBreathingOpen, layout.aspect, layout.posture, unreadCount, router],
   );
 
   // Space the floating action keeps above the rooms bar.
@@ -688,7 +692,7 @@ function TabsLayoutContent() {
         onClose={() => setAssistant({ open: false, guide: false })}
         room={currentDomain}
         mode={assistantChoice}
-        onAsk={() => router.push('/a-i-assistant' as any)}
+        onAsk={() => router.push('/a-i-assistant')}
       />
 
       <TabFeatureCatalogSheet

@@ -67,13 +67,13 @@ import {
   type WorldId,
   worldName,
 } from '@repo/ui/theme';
-import { router } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { type ComponentType, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ComfortPresets } from '@/components/comfort/ComfortPresets';
+import { useNavigator } from '@/navigation/navigator';
 
 type SceneWeather = NonNullable<StagePreview['weather']>;
 type BarLayout = 'floating' | 'docked' | 'rail';
@@ -130,6 +130,7 @@ function greetingAt(minute: number): string {
 }
 
 export function WorldShowcaseScreen() {
+  const router = useNavigator();
   useFloorPresence('full');
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();

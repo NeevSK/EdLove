@@ -1,4 +1,4 @@
-import { Redirect } from 'expo-router';
+import { GoTo } from '@/navigation/GoTo';
 import { KitGalleryNative } from './KitGalleryNative';
 
 /**
@@ -7,7 +7,7 @@ import { KitGalleryNative } from './KitGalleryNative';
  */
 export default function KitGalleryRoute() {
   if (!__DEV__) {
-    return <Redirect href="/" />;
+    return <GoTo href="/" />;
   }
 
   return <KitGalleryNative />;

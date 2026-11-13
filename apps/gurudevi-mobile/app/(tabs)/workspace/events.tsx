@@ -1,9 +1,9 @@
 import { Button, Divider, Group, NumberStepper, Surface, Text } from '@repo/ui/components/native';
-import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { MarkedLine, RoomPage } from '@/components/shell/RoomPage';
+import { useNavigator } from '@/navigation/navigator';
 
 const EVENTS = [
   {
@@ -24,7 +24,7 @@ const EVENTS = [
 
 export default function MobileEventsRoute() {
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
 
   // Daily midday meal: rations follow the morning headcount.
   const [headcount, setHeadcount] = useState(120);

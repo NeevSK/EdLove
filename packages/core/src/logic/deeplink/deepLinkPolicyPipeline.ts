@@ -1,11 +1,11 @@
 import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
 import { resolveQR } from '@repo/core/logic/utils/QRResolver';
+import { containsTraversal, hasUnsafeUrlText } from '@repo/core/routing/internalHref';
 import { isValidAppRoutePath } from '@repo/core/routing/routeManifest';
 import type { QRPayload } from '@repo/core/types/QRPayload';
 import { Effect, Schema } from 'effect';
 
 export const MAX_DEEP_LINK_LENGTH = 8192;
-const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
 
 const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
 export const ALLOWED_WEB_HOSTS = new Set([PLATFORM_HOST, 'gurudevi.app', 'sanctuary.gurudevi.app']);
@@ -130,15 +130,6 @@ export type RouteIntent =
   | { readonly kind: 'unsupported' }
   | { readonly kind: 'rejected'; readonly reason: DeepLinkValidationError['_tag'] };
 
-function containsTraversal(value: string): boolean {
-  try {
-    const path = decodeURIComponent(value).split(/[?#]/, 1)[0] ?? '';
-    return path.split('/').some((segment) => segment === '.' || segment === '..');
-  } catch {
-    return true;
-  }
-}
-
 function startsWithPathPrefix(pathname: string, prefixes: string[]): boolean {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
@@ -156,7 +147,7 @@ export const validateDeepLinkEffect = (
       );
     }
 
-    if (FORBIDDEN_URL_PATTERN.test(url)) {
+    if (hasUnsafeUrlText(url)) {
       return yield* Effect.fail(new DeepLinkForbiddenCharsError({ url }));
     }
 
@@ -296,7 +287,7 @@ export const decodeInstallReferrerEffect = (
       );
     }
 
-    if (FORBIDDEN_URL_PATTERN.test(rawReferrer)) {
+    if (hasUnsafeUrlText(rawReferrer)) {
       return yield* Effect.fail(new ReferrerForbiddenCharsError({ raw: rawReferrer }));
     }
 
@@ -361,7 +352,7 @@ export function normalizeAcceptedInternalRoute(path: string): string | null {
     path.length > MAX_DEEP_LINK_LENGTH ||
     !path.startsWith('/') ||
     path.startsWith('//') ||
-    FORBIDDEN_URL_PATTERN.test(path) ||
+    hasUnsafeUrlText(path) ||
     containsTraversal(path)
   ) {
     return null;

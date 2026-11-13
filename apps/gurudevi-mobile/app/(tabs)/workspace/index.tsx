@@ -4,7 +4,7 @@ import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import { useAuthorityStatus } from '@repo/core/logic/permissions/hooks/useAuthority';
 import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Redirect } from 'expo-router';
+import { GoTo } from '@/navigation/GoTo';
 import { resolveWorkspaceRoute } from '@/lib/workspace/routeResolution';
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -83,7 +83,7 @@ export default function WorkspaceDispatcher() {
 
   if (routeResolution.target.kind === 'commercial') {
     return (
-      <Redirect
+      <GoTo
         href={{
           pathname: '/workspace/commercial/[batchId]',
           params: { batchId: routeResolution.target.perspectiveId || 'active' },

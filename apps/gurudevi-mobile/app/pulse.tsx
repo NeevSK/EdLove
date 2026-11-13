@@ -1,12 +1,12 @@
 import { useUIStore } from '@repo/core/store';
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef } from 'react';
 import { Button, Text } from '@repo/ui/components/native';
 import { alpha } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
 import { View } from 'react-native';
+import { useNavigator } from '@/navigation/navigator';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -19,18 +19,14 @@ export { RouteErrorBoundary as ErrorBoundary };
  * to eliminate double-layer screen clutter.
  */
 export default function PulseRoute() {
-  const router = useRouter();
+  const router = useNavigator();
   const isBreathingOpen = useUIStore((s) => s.isBreathingOpen);
   const setBreathingOpen = useUIStore((s) => s.setBreathingOpen);
   const hasOpenedRef = useRef(false);
   const ground = useWorld().tokens.ground;
 
   const handleReturn = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
+    router.back('/');
   }, [router]);
 
   useEffect(() => {

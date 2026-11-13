@@ -27,7 +27,6 @@ import {
 import { useLanguageOptional, useThemeContextOptional } from '@repo/ui/context';
 import { worldName } from '@repo/ui/theme';
 import { useWorld, WorldEnter } from '@repo/ui/theme/native';
-import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -37,6 +36,7 @@ import { PreferredNameEntry } from '@/components/PreferredNameEntry';
 import { RoleCardGrid } from '@/components/RoleCardGrid';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
 import { v1Client } from '@/lib/v1Client';
+import { useNavigator } from '@/navigation/navigator';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -50,7 +50,7 @@ const LANGUAGES = [
 ] as const;
 
 export default function OnboardingRoute() {
-  const router = useRouter();
+  const router = useNavigator();
   const { refreshProfile } = useAuth();
   const routeState = useBootstrapRouteState('/onboarding');
   const world = useWorld();

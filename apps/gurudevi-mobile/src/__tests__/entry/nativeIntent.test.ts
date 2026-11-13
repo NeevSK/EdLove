@@ -63,6 +63,24 @@ describe('Expo Router +native-intent Middleware', () => {
     expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 
+  it('opens an allowed deep link to a screen that exists, and keeps it for after sign-in', async () => {
+    const result = await redirectSystemPath({
+      path: 'https://gurudevi.app/self/wisdom/w-7',
+      initial: true,
+    });
+    expect(result).toBe('/self/wisdom/w-7');
+    expect(pendingIntentStore.getState().getPendingIntent()?.targetPath).toBe('/self/wisdom/w-7');
+  });
+
+  it('fails closed for an allowed prefix that lands on no screen, without pending work', async () => {
+    const result = await redirectSystemPath({
+      path: 'https://gurudevi.app/workspace/no-such-place',
+      initial: true,
+    });
+    expect(result).toBe('/');
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
   it('fails closed and returns safe fallback route "/" for path traversal attempts', async () => {
     const result = await redirectSystemPath({
       path: 'gurudevi://auth/callback/../../admin/secret',

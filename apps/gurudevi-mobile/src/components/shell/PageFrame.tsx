@@ -12,11 +12,11 @@ import {
 import { ChevronLeft } from '@repo/ui/icons/native';
 import type { KitIconProps } from '@repo/ui/theme';
 import { useWorld } from '@repo/ui/theme/native';
-import { router } from 'expo-router';
 import type { ComponentType, ReactNode } from 'react';
 import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigator } from '@/navigation/navigator';
 
 export function PageFrame({
   title,
@@ -27,6 +27,7 @@ export function PageFrame({
   eyebrow?: string;
   children: ReactNode;
 }) {
+  const router = useNavigator();
   useFloorPresence('quiet');
   const insets = useSafeAreaInsets();
   // Width, height and the cutouts on both sides: the column holds its reading width either way up.
@@ -52,7 +53,7 @@ export function PageFrame({
           leading={{
             kind: 'back',
             label: 'Back',
-            onPress: () => (router.canGoBack() ? router.back() : router.replace('/self')),
+            onPress: () => router.back('/self'),
           }}
           icons={{ back: ChevronLeft as ComponentType<KitIconProps> }}
         />

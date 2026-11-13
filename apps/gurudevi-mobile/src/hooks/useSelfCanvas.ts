@@ -4,11 +4,11 @@ import { useAuthStore } from '@repo/core/store/useAuthStore';
 import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import { useResponsiveGrid } from '@repo/ui';
 import { tokens } from '@repo/ui/tokens';
-import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { getSelfRegistry } from '@/navigation/registries/selfRegistry';
 import type { MobileFeatureItem } from '@/navigation/registries/types';
+import { useNavigator } from '@/navigation/navigator';
 
 const EMPTY_AVAILABLE_BONDS: readonly Bond[] = [];
 const EMPTY_PINNED_IDS: string[] = [];
@@ -47,6 +47,7 @@ function resolveCategoryOrder<TId extends string>(
  * Treats the user as one whole person across all their capacities, decoupled from institutional tenancy.
  */
 export function useSelfCanvas() {
+  const router = useNavigator();
   const { width } = useWindowDimensions();
   const { columns, gutter } = useResponsiveGrid();
   const user = useAuthStore((state) => state.user);
@@ -150,7 +151,7 @@ export function useSelfCanvas() {
       });
       router.push({ pathname: '/self', params: { feature: feature.id } });
     },
-    [openTab],
+    [openTab, router],
   );
 
   return {

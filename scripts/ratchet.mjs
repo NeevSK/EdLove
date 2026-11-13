@@ -105,6 +105,17 @@ function countHandBuiltMachinePersistence() {
   return runRgCount('restoreActor\\(', ['-g', '!packages/core/src/store/persistedActor.ts']);
 }
 
+// Every screen change goes through the checked navigator (apps/gurudevi-mobile/src/navigation, model:
+// docs/architecture/2026-11-13-navigation-mental-model.md): it refuses anything that isn't an in-app
+// path to a screen that exists. Importing expo-router's imperative router or <Redirect> elsewhere
+// bypasses that check. Legacy packages still do; the count only goes down.
+function countDirectRouterUse() {
+  return runRgCount("import \\{[^}]*\\b(router|useRouter|Redirect)\\b[^}]*\\} from 'expo-router'", [
+    '-g',
+    '!apps/gurudevi-mobile/src/navigation/**',
+  ]);
+}
+
 // Programs run outside the shared runtime skip its services and logging (packages/core/src/effect/AppRuntime.ts).
 function countDirectEffectRuns() {
   return runRgCount('Effect\\.run(Promise|PromiseExit|Fork|Sync|SyncExit)\\(');
@@ -293,6 +304,7 @@ function measureMetrics() {
     authorityStoreReads: countAuthorityStoreReads(),
     ...countMachineDefinitionIssues(),
     handBuiltMachinePersistence: countHandBuiltMachinePersistence(),
+    directRouterUse: countDirectRouterUse(),
     directEffectRuns: countDirectEffectRuns(),
     tierImportViolations: countTierImportViolations(),
     unplacedFiles: countUnplacedFiles(),
@@ -344,6 +356,7 @@ function main() {
     machinesWithoutEventSchemas: 'Machines without event schemas',
     deprecatedMachineOptions: 'createMachine(config, options) (deprecated)',
     handBuiltMachinePersistence: 'restoreActor outside startPersistedActor',
+    directRouterUse: 'expo-router router/useRouter/Redirect outside the navigator',
     directEffectRuns: 'Effect.run* outside the app runtime',
     tierImportViolations: 'Tier import violations (core)',
     unplacedFiles: 'Files with no tier (core)',

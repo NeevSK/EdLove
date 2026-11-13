@@ -1,5 +1,4 @@
 import { tokens } from '@repo/ui/tokens';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { readStats, resetStats, type ShellSummary, summarize } from '@/lib/navigation/shellMetrics';
@@ -8,6 +7,7 @@ import {
   setShellVariantOverride,
   useShellVariant,
 } from '@/lib/navigation/shellVariant';
+import { useNavigator } from '@/navigation/navigator';
 
 const percent = (share: number) => `${Math.round(share * 100)}%`;
 const ms = (value: number | null) => (value === null ? '–' : `${value} ms`);
@@ -34,6 +34,7 @@ export function compareShells(
  * renders nothing in a release.
  */
 export function ShellLabScreen() {
+  const router = useNavigator();
   const choice = useShellVariant();
   const [stats, setStats] = useState(() => ({
     custom: readStats('custom'),

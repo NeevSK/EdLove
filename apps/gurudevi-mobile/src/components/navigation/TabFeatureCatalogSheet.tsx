@@ -1,7 +1,6 @@
 import { PERSONAL_SCOPE_PERSPECTIVE, useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { Badge, Launcher, Sheet, Text } from '@repo/ui/components/native';
-import { useRouter } from 'expo-router';
 import type React from 'react';
 import { useMemo } from 'react';
 import { View } from 'react-native';
@@ -10,6 +9,8 @@ import {
   type MobileDomainRegistry,
   type MobileFeatureItem,
 } from '@/navigation/registries';
+import { buildHref } from '@repo/core/routing/internalHref';
+import { useNavigator } from '@/navigation/navigator';
 
 export interface TabFeatureCatalogSheetProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ export const TabFeatureCatalogSheet: React.FC<TabFeatureCatalogSheetProps> = ({
   onClose,
   activeTabKey,
 }) => {
-  const router = useRouter();
+  const router = useNavigator();
 
   const scopeSnapshot = useScopeSessionStore((s) => s.snapshot);
   const scopeTransitioning = useScopeSessionStore((s) => s.isTransitioning);
@@ -69,10 +70,7 @@ export const TabFeatureCatalogSheet: React.FC<TabFeatureCatalogSheetProps> = ({
   const handleSelectFeature = (item: MobileFeatureItem) => {
     if (preferences.catalogDefaultAction === 'open_in_subtab') keepInTabs(item);
     onClose();
-    router.push({
-      pathname: item.route,
-      params: item.params,
-    } as Parameters<typeof router.push>[0]);
+    router.follow(buildHref(item.route, item.params), 'feature-catalog');
   };
 
   return (

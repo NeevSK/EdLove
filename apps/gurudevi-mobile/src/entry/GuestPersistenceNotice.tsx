@@ -8,16 +8,17 @@ import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { Button, IconButton, Surface, Text } from '@repo/ui/components/native';
 import { X } from '@repo/ui/icons';
 import type { KitIconProps } from '@repo/ui/theme';
-import { usePathname, useRouter } from 'expo-router';
+import { usePathname } from 'expo-router';
 import { type ComponentType, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { useNavigator } from '@/navigation/navigator';
 
 /**
  * Nudges a guest to sign in on the lease's reminder days, and on every launch after the
  * last one. It never blocks and nothing is deleted: guest work stays on this device.
  */
 export function GuestPersistenceNotice() {
-  const router = useRouter();
+  const router = useNavigator();
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const [status, setStatus] = useState<GuestLeaseStatus | null>(null);

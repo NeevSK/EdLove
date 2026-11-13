@@ -11,7 +11,6 @@ import { fabBelongsTo } from '@repo/ui/components/LotusPetalFAB';
 import { useFAB } from '@repo/ui/context/FABContext';
 import { Plus } from '@repo/ui/icons/native';
 import type { KitIconProps } from '@repo/ui/theme';
-import { useRouter } from 'expo-router';
 import { type ComponentType, useEffect, useMemo, useState } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { getCurrentFabTab } from '@/lib/navigation/fabTab';
@@ -24,6 +23,8 @@ import {
   roomActions,
   type ScreenFab,
 } from './roomActions';
+import { buildHref } from '@repo/core/routing/internalHref';
+import { useNavigator } from '@/navigation/navigator';
 
 export interface RoomFabProps {
   room: Room;
@@ -63,7 +64,7 @@ export function RoomFab({
   hidden,
   roomName,
 }: RoomFabProps) {
-  const router = useRouter();
+  const router = useNavigator();
   const { state } = useFAB();
   const [open, setOpen] = useState(false);
   const pinnedIds = useActiveSubTabsStore((s) => s.pinnedFeatureIdsByDomain[room]);
@@ -98,10 +99,7 @@ export function RoomFab({
         title: item.title,
         icon: item.icon as ComponentType<KitIconProps> | undefined,
         open: () =>
-          router.push({
-            pathname: item.route,
-            params: item.params,
-          } as Parameters<typeof router.push>[0]),
+          router.follow(buildHref(item.route, item.params), 'room-fab'),
       }));
   }, [pinnedIds, room, router]);
 

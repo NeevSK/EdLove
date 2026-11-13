@@ -11,6 +11,7 @@
   "machinesWithoutEventSchemas": 0,
   "deprecatedMachineOptions": 0,
   "handBuiltMachinePersistence": 0,
+  "directRouterUse": 35,
   "directEffectRuns": 43,
   "tierImportViolations": 20,
   "unplacedFiles": 0,

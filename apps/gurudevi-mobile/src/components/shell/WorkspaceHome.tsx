@@ -25,10 +25,10 @@ import {
 } from '@repo/ui/icons/native';
 import type { KitIconProps } from '@repo/ui/theme';
 import { WorldEnter } from '@repo/ui/theme/native';
-import { router } from 'expo-router';
 import type { ComponentType } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigator } from '@/navigation/navigator';
 
 const kit = (Glyph: unknown) => Glyph as ComponentType<KitIconProps>;
 
@@ -73,6 +73,7 @@ const PLACES = [
 ] as const;
 
 export function WorkspaceHome({ perspective, note }: { perspective?: string; note?: string }) {
+  const router = useNavigator();
   useFloorPresence('full');
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();
@@ -122,7 +123,7 @@ export function WorkspaceHome({ perspective, note }: { perspective?: string; not
                 icon={place.icon}
                 shape="tile"
                 size="sm"
-                onPress={() => router.push(place.href as never)}
+                onPress={() => router.push(place.href)}
               />
             </View>
           ))}

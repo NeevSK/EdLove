@@ -1,9 +1,9 @@
 import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 import { storage } from '@repo/core/native';
 import * as Notifications from 'expo-notifications';
-import { type Href, router } from 'expo-router';
 import { useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
+import { useNavigator } from '@/navigation/navigator';
 
 import { dispatchDeepLink } from '@/lib/deepLinks/dispatchDeepLink';
 import { trackDeepLink } from '@/lib/deepLinks/trackDeepLink';
@@ -30,6 +30,7 @@ if (Platform.OS !== 'web') {
 }
 
 export function PushNotificationProvider({ children }: { children: React.ReactNode }) {
+  const router = useNavigator();
   const handleNotificationReceived = useCallback((notification: Notifications.Notification) => {
     // Handle foreground notification
     console.log('[PushNotification] Received:', notification);
@@ -47,7 +48,7 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
       void (async () => {
         if (target.startsWith('/')) {
           const route = normalizeAcceptedInternalRoute(target);
-          if (route) router.push(route as Href);
+          if (route) router.follow(route, 'notification');
           return;
         }
 
@@ -60,7 +61,7 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
         console.warn('[PushNotification] Failed to dispatch notification target', error);
       });
     },
-    [],
+    [router],
   );
 
   const registerForPushNotifications = useCallback(async () => {
