@@ -14,6 +14,7 @@ import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstr
 import { getEntryNavigationAction } from '@/entry/entryNavigation';
 import { getEntryPresentation } from '@/entry/entryPresentation';
 import { useNavigator } from '@repo/ui/components/native/navigation';
+import { EntryAccessProvider, entryAccessFor } from '@/entry/entryAccess';
 
 export function SessionRouteGate({
   children,
@@ -86,10 +87,14 @@ export function SessionRouteGate({
     presentation.mountProtectedServices &&
     Boolean(routeState.session?.user);
 
+  // Development tools keep their own entry rules; everything else follows the gate's decision.
+  const access = entryAccessFor(isDevelopmentToolRoute ? 'app' : decision, redirectTo);
+  const routes = <EntryAccessProvider value={access}>{children}</EntryAccessProvider>;
+
   const content = (
     <>
       <OptionalStartupServices phase={mountCloudServices ? 'protected-ready' : 'public-ready'} />
-      {children}
+      {routes}
       {mountCloudServices ? appServices : null}
     </>
   );
@@ -174,7 +179,7 @@ export function SessionRouteGate({
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
         >
-          {children}
+          {routes}
         </View>
         <View style={[FILL, CENTRE, { backgroundColor: ground }]}>
           {presentation.message ? (
@@ -250,7 +255,7 @@ export function SessionRouteGate({
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
-        {children}
+        {routes}
       </View>
       <View style={[FILL, CENTRE, { backgroundColor: ground }]}>
         <Text kind="label" align="center">

@@ -29,7 +29,7 @@ import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
 import { sensoryFeedback } from '@repo/ui/sensory';
 import { reportVergerInteraction } from '@repo/verger-react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Stack, useGlobalSearchParams, usePathname } from 'expo-router';
+import { type Href, Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -53,6 +53,7 @@ import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
 import { GuestConversionBoundary } from '@/entry/GuestConversionBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
+import { useEntryAccess } from '@/entry/entryAccess';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 import { FLOOR_PICTURES, FLOOR_PICTURES_WIDE } from '@/generated/floorPictures';
 import { queryClient } from '@/lib/queryClient';
@@ -185,26 +186,7 @@ export function EntryShell() {
                                         <SessionRouteGate
                                           appServices={<AuthenticatedAppServices />}
                                         >
-                                          <Stack
-                                            screenOptions={{
-                                              headerShown: false,
-                                              contentStyle: { backgroundColor: 'transparent' },
-                                            }}
-                                          >
-                                            <Stack.Screen name="index" />
-                                            <Stack.Screen name="welcome" />
-                                            <Stack.Screen name="auth" />
-                                            <Stack.Screen name="account-recovery" />
-                                            <Stack.Screen name="onboarding" />
-                                            <Stack.Screen name="public-form/[slug]" />
-                                            <Stack.Screen name="verger-lab" />
-                                            <Stack.Screen name="verger-diagnostics" />
-                                            <Stack.Screen name="(tabs)" />
-                                            <Stack.Screen
-                                              name="(modal)"
-                                              options={{ presentation: 'modal' }}
-                                            />
-                                          </Stack>
+                                          <EntryStack />
                                         </SessionRouteGate>
                                         <SanctuaryPulseOverlay
                                           visible={isBreathingOpen}
@@ -283,3 +265,54 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+/**
+ * The app's root routes. The tabs and their modals sit inside `Stack.Protected`, so the router
+ * itself refuses them for anyone the entry gate hasn't admitted (expo-router 58 renders a redirect
+ * in their place, before the screen mounts). The gate still owns the splash handoff, the restoring
+ * and transition surfaces, and replaying a pending deep link after sign-in.
+ */
+/** Top-level app screens outside the tabs: only for admitted people. */
+const APP_SCREENS = [
+  'a-i-assistant',
+  'atlas',
+  'companions',
+  'form-builder',
+  'icon-lab',
+  'reading',
+  'shell-lab',
+  'tutii-dance-preview',
+  'ui-showcase',
+  'world-showcase',
+] as const;
+
+function EntryStack() {
+  const access = useEntryAccess();
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: 'transparent' },
+      }}
+    >
+      <Stack.Screen name="index" />
+      <Stack.Screen name="welcome" />
+      <Stack.Screen name="auth" />
+      <Stack.Screen name="account-recovery" />
+      <Stack.Screen name="onboarding" />
+      <Stack.Screen name="public-form/[slug]" />
+      <Stack.Screen name="verger-lab" />
+      <Stack.Screen name="verger-diagnostics" />
+      <Stack.Screen name="pulse" />
+      {/* Every app screen is declared here: a Stack mounts undeclared routes too, outside the guard. */}
+      {/* `access.redirectTo` passed checkInternalHref; this is where it becomes the router's type. */}
+      <Stack.Protected guard={access.appRoutes} redirectTo={access.redirectTo as Href}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
+        {APP_SCREENS.map((name) => (
+          <Stack.Screen key={name} name={name} />
+        ))}
+      </Stack.Protected>
+    </Stack>
+  );
+}
