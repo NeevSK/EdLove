@@ -14,18 +14,18 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -33,9 +33,9 @@
 .weatherCard {
   padding: 1.25rem 1.5rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -56,12 +56,12 @@
 .weatherText h2 {
   font-size: 1.15rem;
   margin: 0;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .weatherText p {
   font-size: 0.85rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   margin: 0.25rem 0 0;
 }
 
@@ -74,13 +74,13 @@
 .treeCard {
   padding: 1.25rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  transition: transform 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 .treeCard:hover {
@@ -96,7 +96,7 @@
 .treeTeacher {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .treeStageBadge {
@@ -104,8 +104,8 @@
   font-weight: 700;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
-  background: color-mix(in srgb, #2e5d32 15%, transparent);
-  color: #2e5d32;
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  color: var(--w-lamp-deep);
 }
 
 .treeVisual {
@@ -118,8 +118,8 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
-  border-top: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
+  color: var(--color-ink-soft, var(--w-ink));
+  border-top: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 10%, transparent));
   padding-top: 0.5rem;
 }
 
@@ -127,16 +127,16 @@
   min-height: 44px;
   padding: 0.4rem 0.85rem;
   border-radius: 0.375rem;
-  background: var(--color-paper, #f7f2e8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  color: var(--color-ink, #131e27);
+  background: var(--color-paper);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  color: var(--color-ink);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .nurtureBtn:hover {
-  background: color-mix(in srgb, var(--color-action, #a85022) 15%, transparent);
-  border-color: var(--color-action, #a85022);
+  background: color-mix(in srgb, var(--color-action) 15%, transparent);
+  border-color: var(--color-action);
 }

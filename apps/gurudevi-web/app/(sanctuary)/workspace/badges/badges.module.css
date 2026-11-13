@@ -15,7 +15,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1.25rem;
-  border-bottom: 2px solid var(--border, #ded8cf);
+  border-bottom: 2px solid var(--border);
 }
 
 .title {
@@ -23,12 +23,12 @@
   font-size: clamp(1.6rem, 3vw, 2.2rem);
   margin: 0;
   font-weight: 600;
-  color: var(--ink, #1f1b16);
+  color: var(--ink);
 }
 
 .subtitle {
   font-size: 0.9rem;
-  color: #71695f;
+  color: var(--w-ink-soft);
   margin: 0.25rem 0 0;
 }
 
@@ -46,13 +46,13 @@
   padding: 0.7rem 1.4rem;
   border: none;
   border-radius: 0.75rem;
-  background: var(--sanctuary-saffron, #9d5b25);
+  background: var(--sanctuary-saffron, var(--w-lamp));
   color: white;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(157, 91, 37, 0.25);
-  transition: opacity 0.15s ease;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .printBtn:hover {
@@ -64,10 +64,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.65rem 1.1rem;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 0.75rem;
   background: white;
-  color: var(--ink, #1f1b16);
+  color: var(--ink);
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
@@ -79,9 +79,9 @@
   justify-content: space-between;
   padding: 0.85rem 1.25rem;
   border-radius: 0.75rem;
-  background: #fdfaf3;
-  border: 1px dashed var(--sanctuary-saffron, #9d5b25);
-  color: #5c3815;
+  background: var(--w-raised);
+  border: 1px dashed var(--sanctuary-saffron, var(--w-lamp));
+  color: var(--w-ink-soft);
   font-size: 0.85rem;
 }
 
@@ -94,7 +94,7 @@
   padding: 8mm 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 47.99rem) {
   .badgeSheetGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -104,15 +104,15 @@
 .badgeCard {
   width: 85.6mm;
   height: 54mm;
-  border: 1.5px solid #ded8cf;
+  border: 1.5px solid var(--w-line);
   border-radius: 4mm;
-  background: #ffffff;
+  background: var(--w-raised);
   padding: 3.5mm 4.5mm;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
   position: relative;
   overflow: hidden;
   break-inside: avoid;
@@ -123,7 +123,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #eee8df;
+  border-bottom: 1px solid var(--w-raised);
   padding-bottom: 2mm;
 }
 
@@ -143,7 +143,7 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #1f1b16;
+  color: var(--w-ink);
   margin: 0;
 }
 
@@ -153,8 +153,8 @@
   text-transform: uppercase;
   padding: 0.6mm 1.8mm;
   border-radius: 999px;
-  background: #faf0d9;
-  color: #7b4c09;
+  background: var(--w-raised);
+  color: var(--w-lamp-deep);
 }
 
 .badgeCardBody {
@@ -176,7 +176,7 @@
 .studentFullName {
   font-size: 3.8mm;
   font-weight: 800;
-  color: #1f1b16;
+  color: var(--w-ink);
   margin: 0;
   line-height: 1.15;
 }
@@ -184,18 +184,18 @@
 .studentClassRoll {
   font-size: 2.6mm;
   font-weight: 600;
-  color: #71695f;
+  color: var(--w-ink-soft);
   margin: 0;
 }
 
 .studentIdSubtext {
   font-size: 2mm;
   font-family: monospace;
-  color: #9d5b25;
+  color: var(--w-lamp-deep);
 }
 
 .qrWrapper {
-  border: 1px solid #ded8cf;
+  border: 1px solid var(--w-line);
   border-radius: 2mm;
   padding: 1mm;
   background: white;
@@ -205,15 +205,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px dashed #ded8cf;
+  border-top: 1px dashed var(--w-line);
   padding-top: 1.5mm;
   font-size: 2.1mm;
-  color: #71695f;
+  color: var(--w-ink-soft);
 }
 
 .claimCodeText {
   font-weight: 700;
-  color: #1f1b16;
+  color: var(--w-ink);
   font-family: monospace;
 }
 
@@ -261,14 +261,14 @@
 
   .badgeCard {
     box-shadow: none !important;
-    border: 1.5px solid #000000 !important;
+    border: 1.5px solid var(--w-ink) !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
 
   .badgeTypePill {
-    border: 1px solid #333 !important;
-    background: #f5f5f5 !important;
-    color: #000 !important;
+    border: 1px solid var(--w-ink) !important;
+    background: var(--w-raised) !important;
+    color: var(--w-ink) !important;
   }
 }

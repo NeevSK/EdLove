@@ -1,17 +1,25 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { haptic } from '../../utils/haptics';
-import { type FeedbackEvent, hapticFor } from '../feedback';
+import { sensoryFeedback } from '../../sensory/SensoryFeedbackService';
+import type { FeedbackEvent } from '../feedback';
 import { useShake } from './motion';
 import { useWorld } from './WorldContext';
 
 /**
  * Feel an event in the active world's character (see `theme/feedback.ts`).
- * Haptics follow the person's haptics setting; visual motion is separate
- * (`usePressMotion`, `useShake`) and follows the world's motion level.
+ * Goes through the one feedback engine, so the person's vibration, sound and
+ * quiet-hours switches and verger's level apply to every kit component. Visual
+ * motion is separate (`usePressMotion`, `useShake`) and follows the world's
+ * motion level.
  */
 export function useFeedback(): (event: FeedbackEvent) => void {
   const character = useWorld().definition.motion.haptic;
-  return useCallback((event: FeedbackEvent) => haptic(hapticFor(event, character)), [character]);
+  return useCallback(
+    (event: FeedbackEvent) => {
+      sensoryFeedback.configure({ character });
+      sensoryFeedback.emit(event);
+    },
+    [character],
+  );
 }
 
 /**

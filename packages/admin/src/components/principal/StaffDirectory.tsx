@@ -26,7 +26,7 @@ export default function StaffDirectory({ staff, onSelect }: StaffDirectoryProps)
     );
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+    <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-4">
         {staff.map((member) => (
           <Pressable

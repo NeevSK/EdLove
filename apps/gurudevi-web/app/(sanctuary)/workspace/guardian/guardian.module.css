@@ -20,21 +20,21 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--color-gold-deep, #9a5b2d);
+  color: var(--color-gold-deep);
   margin: 0;
 }
 
 .title {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: clamp(2rem, 4vw, 2.75rem);
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   margin: 0.2rem 0;
   line-height: 1.15;
 }
 
 .subtitle {
   font-size: 1.05rem;
-  color: var(--color-ink-muted, #62564d);
+  color: var(--color-ink-muted);
   margin: 0;
 }
 
@@ -47,38 +47,38 @@
 }
 
 .childChip {
-  background: var(--color-surface, #fffdfa);
-  border: 2px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
   border-radius: 1rem;
   padding: 1rem 1.25rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   min-width: 14rem;
 }
 
 .childChip:hover {
-  border-color: var(--color-gold-deep, #9a5b2d);
+  border-color: var(--color-gold-deep);
 }
 
 .activeChildChip {
-  border-color: var(--color-gold-deep, #9a5b2d);
-  background: #fdfaf6;
-  box-shadow: 0 4px 16px rgba(154, 91, 45, 0.08);
+  border-color: var(--color-gold-deep);
+  background: var(--w-raised);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-lamp) 8%, transparent);
 }
 
 .childAvatar {
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
-  background: #f0e7df;
+  background: var(--w-raised);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: var(--color-gold-deep, #9a5b2d);
+  color: var(--color-gold-deep);
   font-size: 1.1rem;
 }
 
@@ -91,13 +91,13 @@
 .childName {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .childGrade {
   font-size: 0.82rem;
-  color: var(--color-ink-muted, #74675d);
+  color: var(--color-ink-muted);
   margin: 0;
 }
 
@@ -105,7 +105,7 @@
 .tabBar {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 2px solid var(--color-border-subtle, #f0e7df);
+  border-bottom: 2px solid var(--color-border-subtle);
   padding-bottom: 0.25rem;
 }
 
@@ -116,22 +116,22 @@
   padding: 0.75rem 1.25rem;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-ink-soft, #74675d);
+  color: var(--color-ink-soft, var(--w-ink-soft));
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   margin-bottom: -2px;
 }
 
 .tabButton:hover {
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
 }
 
 .activeTab {
-  color: var(--color-gold-deep, #9a5b2d);
-  border-bottom-color: var(--color-gold-deep, #9a5b2d);
+  color: var(--color-gold-deep);
+  border-bottom-color: var(--color-gold-deep);
 }
 
 /* Sections & Cards */
@@ -148,14 +148,14 @@
 }
 
 .timelineCard {
-  background: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(50, 35, 20, 0.03);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
 }
 
 .timelineEvent {
@@ -168,8 +168,8 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.75rem;
-  background: #fdf5ec;
-  color: var(--color-gold-deep, #9a5b2d);
+  background: var(--w-raised);
+  color: var(--color-gold-deep);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -184,13 +184,13 @@
 .timelineTitle {
   font-weight: 700;
   font-size: 1rem;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .timelineMeta {
   font-size: 0.82rem;
-  color: var(--color-ink-muted, #74675d);
+  color: var(--color-ink-muted);
   margin: 0;
 }
 
@@ -203,14 +203,14 @@
 }
 
 .statusPresent {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--w-raised);
+  color: var(--w-lamp-deep);
 }
 
 /* Communication Bridge */
 .messageCard {
-  background: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
@@ -226,18 +226,18 @@
 
 .messageAuthor {
   font-weight: 700;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .messageDate {
   font-size: 0.82rem;
-  color: var(--color-ink-muted, #74675d);
+  color: var(--color-ink-muted);
 }
 
 .messageBody {
   font-size: 0.95rem;
-  color: var(--color-ink-soft, #52473f);
+  color: var(--color-ink-soft, var(--w-ink-soft));
   line-height: 1.5;
   margin: 0;
 }

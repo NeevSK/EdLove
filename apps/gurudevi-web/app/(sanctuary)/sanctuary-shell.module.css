@@ -90,7 +90,7 @@
   color: var(--w-ink-soft);
   font-size: 0.78rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 .commandPaletteTrigger:hover {
   background: var(--w-ground);
@@ -150,18 +150,18 @@
   color: var(--w-ink-soft);
   font: inherit;
   text-decoration: none;
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  transition: background-color var(--w-dur-micro) var(--w-ease), border-color var(--w-dur-micro) var(--w-ease), color var(--w-dur-micro) var(--w-ease);
 }
 .headerAction:hover,
 .headerAction[aria-current="page"] {
   background: color-mix(in srgb, var(--w-raised) 72%, var(--w-lamp) 8%);
   border-color: var(--w-line);
-  color: var(--w-ink);
+  color: var(--w-on-lamp);
 }
 .commandPaletteTrigger:hover {
   background: color-mix(in srgb, var(--w-raised) 72%, var(--w-lamp) 8%);
   border-color: var(--w-line);
-  color: var(--w-ink);
+  color: var(--w-on-lamp);
 }
 .profileAction {
   background: var(--w-raised);
@@ -246,7 +246,7 @@
   text-decoration-thickness: 1.5px;
   text-underline-offset: 0.15em;
   white-space: nowrap;
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease), text-decoration-color var(--w-dur-micro) var(--w-ease);
 }
 .exploreBanner a:hover {
   color: var(--w-lamp-deep);
@@ -316,7 +316,7 @@
   overflow: hidden;
   container-name: sanctuary-canvas;
   container-type: inline-size;
-  transition: grid-template-columns 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: grid-template-columns var(--w-dur) var(--w-ease);
   position: relative;
   z-index: 5;
 }
@@ -400,7 +400,7 @@
   justify-content: center;
   padding: 0;
   position: relative;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 .shell[data-sidebar="collapsed"] .navLink:hover {
   background: var(--w-ground);
@@ -426,6 +426,7 @@
   height: 1.25rem;
   border-radius: 999px 0 0 999px;
   background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 .shell[data-sidebar="collapsed"] .rail .navLabel {
   position: absolute;
@@ -500,7 +501,7 @@
   color: var(--w-ink-soft);
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 .navLink:hover {
   background: color-mix(in srgb, var(--w-ground) 75%, transparent);
@@ -522,6 +523,7 @@
   height: 1.35rem;
   border-radius: 999px;
   background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 .navSymbol {
   display: inline-flex;
@@ -531,7 +533,7 @@
   height: 1.5rem;
   flex-shrink: 0;
   color: var(--w-ink-soft);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), color var(--w-dur-micro) var(--w-ease);
 }
 .navLink:hover .navSymbol {
   color: var(--w-ink);
@@ -755,7 +757,7 @@
   border: 1px solid color-mix(in srgb, var(--w-danger) 35%, var(--w-line));
   border-radius: 0.65rem;
   background: color-mix(in srgb, var(--w-raised) 88%, var(--w-danger) 12%);
-  color: var(--w-ink);
+  color: var(--w-on-danger);
   font-size: 0.82rem;
 }
 .srOnly {
@@ -926,7 +928,7 @@
 }
 
 /* On small screens / narrow canvases (<= 48rem), anchored bottom tabs preserve canvas width. */
-@media (max-width: 48rem) {
+@media (max-width: 47.99rem) {
   .shell .body,
   .shell[data-navigation-layout="horizontal"] .body { grid-template-columns: minmax(0, 1fr); }
   .body {
@@ -937,10 +939,10 @@
     overflow: hidden;
   }
   .taskStripSlot {
-    transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                padding-block 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                border-bottom-color 0.2s ease;
+    transition: max-height var(--w-dur) var(--w-ease),
+                opacity var(--w-dur-micro) var(--w-ease),
+                padding-block var(--w-dur) var(--w-ease),
+                border-bottom-color var(--w-dur-micro) var(--w-ease);
     max-height: 3.5rem;
     overflow: hidden;
     opacity: 1;
@@ -1040,7 +1042,8 @@
     border-radius: 999px;
     background: var(--w-lamp);
     transform: translateX(-50%);
-  }
+  color: var(--w-on-lamp);
+}
   .rail nav {
     width: 100%;
     min-width: 0;
@@ -1124,7 +1127,8 @@
     border-radius: 999px;
     background: var(--w-lamp);
     transform: translateX(-50%);
-  }
+  color: var(--w-on-lamp);
+}
   .navLink[aria-current="page"]::after {
     display: none;
   }
@@ -1133,7 +1137,8 @@
     height: 1.85rem;
     border-radius: 50%;
     background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
-  }
+  color: var(--w-on-lamp);
+}
   .shell[data-sidebar="collapsed"] .navLink[aria-current="page"] {
     border-color: transparent;
     background: transparent;
@@ -1153,7 +1158,8 @@
     border-radius: 999px;
     background: var(--w-lamp);
     transform: translateX(-50%);
-  }
+  color: var(--w-on-lamp);
+}
   .navLink[aria-current="page"] .navSymbol {
     color: var(--w-lamp-deep);
     transform: none;
@@ -1179,7 +1185,7 @@
   }
 }
 
-@media (max-width: 26rem) {
+@media (max-width: 47.99rem) {
   .header {
     padding-right: 0.35rem;
     padding-left: 0.5rem;
@@ -1264,7 +1270,7 @@
   pointer-events: auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 47.99rem) {
   .fabDock {
     bottom: calc(max(env(safe-area-inset-bottom), 1rem) + var(--bottom-tabs-block-size));
     right: max(env(safe-area-inset-right), 1rem);

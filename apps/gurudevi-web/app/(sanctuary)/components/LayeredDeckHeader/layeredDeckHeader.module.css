@@ -5,7 +5,7 @@
   width: 100%;
   flex-shrink: 0;
   z-index: 25;
-  transition: margin-bottom 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: margin-bottom var(--w-dur-meaningful) var(--w-ease);
   will-change: margin-bottom;
 }
 
@@ -13,9 +13,9 @@
   width: 100%;
   position: relative;
   transition:
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    transform var(--w-dur-meaningful) var(--w-ease),
+    opacity var(--w-dur) var(--w-ease),
+    box-shadow var(--w-dur-meaningful) var(--w-ease);
   will-change: transform, opacity;
 }
 
@@ -74,9 +74,9 @@
   visibility: hidden;
   pointer-events: none;
   transition:
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0.42s step-end;
+    transform var(--w-dur-meaningful) var(--w-ease),
+    opacity var(--w-dur) var(--w-ease),
+    visibility var(--w-dur-meaningful) step-end;
 }
 
 .deckRoot[data-collapsed="true"] .layer2 {
@@ -85,9 +85,9 @@
   visibility: hidden;
   pointer-events: none;
   transition:
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0.42s step-end;
+    transform var(--w-dur-meaningful) var(--w-ease),
+    opacity var(--w-dur) var(--w-ease),
+    visibility var(--w-dur-meaningful) step-end;
 }
 
 .deckRoot[data-collapsed="true"] .layer3 {
@@ -115,7 +115,7 @@
    Top bars (Layer 1, Layer 2, Layer 4) slide away cleanly.
    ========================================================================= */
 
-@media (max-width: 48rem) {
+@media (max-width: 47.99rem) {
   /* The room tabs leave the header and sit at the foot of the screen, like the phone app. */
   .layer3,
   .deckRoot[data-collapsed="true"] .layer3 {
@@ -144,9 +144,3 @@
    Accessibility: Reduced Motion
    ========================================================================= */
 
-@media (prefers-reduced-motion: reduce) {
-  .deckRoot,
-  .layer {
-    transition: none !important;
-  }
-}

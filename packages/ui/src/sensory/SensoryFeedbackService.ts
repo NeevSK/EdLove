@@ -1,62 +1,34 @@
 /**
- * Feedback dispatch in the React Native JavaScript runtime. Worklets must
- * schedule an explicit runtime crossing before invoking this service.
+ * Feedback on the phone (and React Native Web): the shared engine
+ * (`./engine.ts`) with expo-haptics and the app's sound player plugged in.
+ * Worklets must schedule an explicit runtime crossing before calling it.
  */
 
 import { Platform } from 'react-native';
-import type { SoundCue } from '../utils/feedbackPolicy';
-import {
-  hapticError,
-  hapticLight,
-  hapticMedium,
-  hapticSelection,
-  hapticSuccess,
-} from '../utils/haptics';
+import type { FeedbackEvent, FeedbackEventAlias, FeedbackPlan, SoundCue } from '../theme/feedback';
+import { haptic } from '../utils/haptics';
+import { createFeel, type FeelOptions, type FeelSettings } from './engine';
 import { playWebSound } from './webSynthesizer';
 
-export type SensoryEvent =
-  | 'press'
-  | 'selection'
-  | 'success'
-  | 'error'
-  | 'milestone'
-  | 'breath-start'
-  | 'breath-end'
-  | 'sync-restored';
-
-export interface SensoryFeedbackOptions {
-  skipHaptics?: boolean;
-  skipSound?: boolean;
-}
+export type SensoryEvent = FeedbackEvent | FeedbackEventAlias;
+export type SensoryFeedbackOptions = FeelOptions;
 
 class SensoryFeedbackService {
-  private hapticsEnabled = true;
-  private soundEnabled = true;
-  private quietMode = false;
   private nativeSoundPlayer?: { play: (cue: SoundCue) => void };
+  private readonly feel = createFeel({
+    haptic,
+    sound: (cue) => {
+      if (Platform.OS === 'web') playWebSound(cue);
+      else this.nativeSoundPlayer?.play(cue);
+    },
+  });
 
-  /**
-   * Configures user sensory preferences (synced from storage/store).
-   */
-  configure(preferences: {
-    hapticsEnabled?: boolean;
-    soundEnabled?: boolean;
-    quietMode?: boolean;
-  }) {
-    if (preferences.hapticsEnabled !== undefined) {
-      this.hapticsEnabled = preferences.hapticsEnabled;
-    }
-    if (preferences.soundEnabled !== undefined) {
-      this.soundEnabled = preferences.soundEnabled;
-    }
-    if (preferences.quietMode !== undefined) {
-      this.quietMode = preferences.quietMode;
-    }
+  /** The person's switches, verger's levels and the world's character. */
+  configure(settings: Partial<FeelSettings>) {
+    this.feel.configure(settings);
   }
 
-  /**
-   * Registers a native audio player (e.g. expo-audio on mobile).
-   */
+  /** Registers a native audio player (expo-audio on the phone). */
   registerNativeSoundPlayer(play: (cue: SoundCue) => void): () => void {
     const registration = { play };
     this.nativeSoundPlayer = registration;
@@ -65,50 +37,8 @@ class SensoryFeedbackService {
     };
   }
 
-  /**
-   * Emits a synchronized sensory event (Haptics + Sound).
-   */
-  emit(event: SensoryEvent, options?: SensoryFeedbackOptions) {
-    // 1. Tactile Haptics (Physical JSI on native, pseudohaptic on web)
-    if (this.hapticsEnabled && !options?.skipHaptics) {
-      this.dispatchHaptic(event);
-    }
-
-    // 2. Acoustics (expo-audio on native, Web Audio API on web)
-    if (this.soundEnabled && !this.quietMode && !options?.skipSound) {
-      this.dispatchSound(event);
-    }
-  }
-
-  private dispatchHaptic(event: SensoryEvent) {
-    switch (event) {
-      case 'press':
-      case 'breath-start':
-      case 'breath-end':
-        hapticLight();
-        break;
-      case 'selection':
-        hapticSelection();
-        break;
-      case 'success':
-      case 'sync-restored':
-        hapticSuccess();
-        break;
-      case 'milestone':
-        hapticMedium();
-        break;
-      case 'error':
-        hapticError();
-        break;
-    }
-  }
-
-  private dispatchSound(event: SensoryEvent) {
-    if (Platform.OS === 'web') {
-      playWebSound(event);
-    } else if (event !== 'press' && event !== 'selection' && event !== 'error') {
-      this.nativeSoundPlayer?.play(event);
-    }
+  emit(event: SensoryEvent, options?: SensoryFeedbackOptions): FeedbackPlan {
+    return this.feel.emit(event, options);
   }
 }
 

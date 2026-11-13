@@ -1,6 +1,13 @@
 'use client';
 
-import { ActionFab, FabMenu, LivingGround, ScrollArea } from '@repo/ui/components/web';
+import { useEscapeLayer, useShortcut } from '@repo/ui/shortcuts/web';
+import {
+  ActionFab,
+  FabMenu,
+  KeyboardHelp,
+  LivingGround,
+  ScrollArea,
+} from '@repo/ui/components/web';
 import { Sparkles } from '@repo/ui/icons/web';
 import type { FabAction } from '@repo/ui/theme';
 import Link from 'next/link';
@@ -92,16 +99,10 @@ export function SanctuaryShell({
   const [fabMenuOpen, setFabMenuOpen] = useState(false);
   const [tutiiSidePanelOpen, setTutiiSidePanelOpen] = useState(false);
 
-  useEffect(() => {
-    const handleGlobalKeys = (e: KeyboardEvent) => {
-      if (e.altKey && (e.key === 't' || e.key === 'T')) {
-        e.preventDefault();
-        setTutiiSidePanelOpen((prev) => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleGlobalKeys);
-    return () => window.removeEventListener('keydown', handleGlobalKeys);
-  }, []);
+  useShortcut('alt+t', () => setTutiiSidePanelOpen((prev) => !prev), {
+    label: 'Open or close Tutii',
+    scope: 'app',
+  });
 
   const TutiiFabIcon = useCallback(
     ({ size, color, ...rest }: { size?: number; color?: string; 'aria-hidden'?: boolean }) => (
@@ -405,34 +406,16 @@ export function SanctuaryShell({
     });
   }, [autoCollapsed, contextRailVisible, menuIsCollapsed]);
 
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        if (advancedOpen) {
-          setAdvancedOpen(false);
-          advancedTriggerRef.current?.focus();
-        }
-        if (commandPaletteOpen) {
-          setCommandPaletteOpen(false);
-        }
-      }
-
-      // Shortcut: Ctrl+B or Cmd+B to toggle sidebar
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
-        event.preventDefault();
-        toggleSidebar();
-      }
-
-      // Shortcut: Ctrl+K or Cmd+K to open Command Palette
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault();
-        setCommandPaletteOpen((open) => !open);
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [advancedOpen, commandPaletteOpen, toggleSidebar]);
+  useEscapeLayer(advancedOpen, () => {
+    setAdvancedOpen(false);
+    advancedTriggerRef.current?.focus();
+  });
+  useEscapeLayer(commandPaletteOpen, () => setCommandPaletteOpen(false));
+  useShortcut('mod+b', toggleSidebar, { label: 'Show or hide the side menu', scope: 'app' });
+  useShortcut('mod+k', () => setCommandPaletteOpen((open) => !open), {
+    label: 'Search and commands',
+    scope: 'app',
+  });
 
   return (
     <LivingGround
@@ -785,6 +768,8 @@ export function SanctuaryShell({
         />
       </div>
 
+      {/* The "?" list of every key the app answers to, from the shared shortcuts. */}
+      <KeyboardHelp />
       <TutiiSidePanel
         isOpen={tutiiSidePanelOpen}
         onClose={() => setTutiiSidePanelOpen(false)}

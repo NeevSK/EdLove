@@ -8,7 +8,7 @@
 .presenceStrip {
   padding: 0.875rem 1.25rem !important;
   cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .presenceStrip:hover {
@@ -30,29 +30,29 @@
 }
 
 .dotGood {
-  background-color: var(--color-success, #2e7d32);
-  box-shadow: 0 0 6px rgba(46, 125, 50, 0.4);
+  background-color: var(--color-success);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--w-lamp) 40%, transparent);
 }
 
 .dotWarning {
-  background-color: var(--color-warning, #ed6c02);
-  box-shadow: 0 0 6px rgba(237, 108, 2, 0.4);
+  background-color: var(--color-warning);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--w-lamp) 40%, transparent);
 }
 
 .dotAlert {
-  background-color: var(--color-danger, #d32f2f);
-  box-shadow: 0 0 6px rgba(211, 47, 47, 0.4);
+  background-color: var(--color-danger);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--w-danger) 40%, transparent);
 }
 
 .presenceText {
   flex: 1;
   font-weight: 600;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
 }
 
 .actionArrow {
   font-size: 0.8125rem;
-  color: var(--color-action, #a85022);
+  color: var(--color-action);
   font-weight: 600;
 }
 
@@ -70,7 +70,7 @@
 
 .clickableCard {
   cursor: pointer;
-  transition: transform 180ms ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 .clickableCard:hover {
@@ -81,7 +81,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   margin-bottom: 0.25rem;
   font-weight: 600;
 }
@@ -90,26 +90,26 @@
   font-size: 1.75rem;
   font-weight: 750;
   line-height: 1.1;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
 }
 
 .alertValue {
-  color: var(--color-warning, #ed6c02);
+  color: var(--color-warning);
 }
 
 .metricSub {
   font-size: 0.75rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   margin-top: 0.25rem;
 }
 
 .trendUp {
-  color: var(--color-success, #2e7d32);
+  color: var(--color-success);
   font-weight: 600;
 }
 
 .trendDown {
-  color: var(--color-danger, #d32f2f);
+  color: var(--color-danger);
   font-weight: 600;
 }
 
@@ -123,14 +123,14 @@
 .skeletonStrip {
   height: 48px;
   border-radius: 8px;
-  background: rgba(104, 94, 85, 0.08);
+  background: color-mix(in srgb, var(--w-ink-soft) 8%, transparent);
   animation: pulse 1.5s infinite ease-in-out;
 }
 
 .skeletonGrid {
   height: 80px;
   border-radius: 8px;
-  background: rgba(104, 94, 85, 0.08);
+  background: color-mix(in srgb, var(--w-ink-soft) 8%, transparent);
   animation: pulse 1.5s infinite ease-in-out;
 }
 

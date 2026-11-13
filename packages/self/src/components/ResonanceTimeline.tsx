@@ -42,7 +42,6 @@ export const ResonanceTimeline: React.FC = () => {
     <ScrollView
       className="flex-1"
       contentContainerStyle={{ paddingVertical: 24, paddingHorizontal: 16 }}
-      showsVerticalScrollIndicator={false}
     >
       <Animated.View entering={FadeIn.duration(800)}>
         {/* Timeline Header */}

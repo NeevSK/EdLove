@@ -6,12 +6,12 @@
   gap: 1.25rem;
   background-color: var(--w-raised);
   border: 1px solid var(--w-line);
-  border-radius: var(--w-corner-surface, 16px);
+  border-radius: var(--w-corner-surface);
   padding: 1.5rem;
   box-shadow: var(--w-surface-raised-shadow);
   font-family: inherit;
   color: var(--w-ink);
-  transition: all 0.2s ease-in-out;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .header {
@@ -64,7 +64,8 @@
   height: 100%;
   background: var(--w-lamp);
   border-radius: 9999px;
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width var(--w-dur) var(--w-ease);
+  color: var(--w-on-lamp);
 }
 
 .inputForm {
@@ -72,7 +73,7 @@
   gap: 0.5rem;
   background-color: var(--w-sunken);
   border: 1px solid var(--w-line);
-  border-radius: var(--w-corner-control, 10px);
+  border-radius: var(--w-corner-control);
   padding: 0.35rem 0.5rem;
   align-items: center;
 }
@@ -99,11 +100,11 @@
   background-color: var(--w-lamp);
   color: var(--w-on-lamp);
   border: none;
-  border-radius: var(--w-corner-control, 8px);
+  border-radius: var(--w-corner-control);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s ease, transform 0.1s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease), transform var(--w-dur-micro) var(--w-ease);
 }
 
 .addButton:hover:not(:disabled) {
@@ -136,7 +137,7 @@
   padding: 0.35rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .filterBtn:hover {
@@ -166,9 +167,9 @@
   padding: 0.75rem 1rem;
   background-color: var(--w-sunken);
   border: 1px solid var(--w-line);
-  border-radius: var(--w-corner-control, 10px);
+  border-radius: var(--w-corner-control);
   gap: 0.75rem;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color var(--w-dur-micro) var(--w-ease), border-color var(--w-dur-micro) var(--w-ease);
 }
 
 .todoItem:hover {
@@ -197,7 +198,7 @@
   font-weight: 500;
   color: var(--w-ink);
   word-break: break-word;
-  transition: color 0.15s ease, text-decoration 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease), text-decoration var(--w-dur-micro) var(--w-ease);
 }
 
 .todoTitleCompleted {
@@ -213,7 +214,7 @@
   padding: 0.35rem 0.5rem;
   border-radius: 6px;
   font-size: 0.9rem;
-  transition: color 0.15s ease, background-color 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease), background-color var(--w-dur-micro) var(--w-ease);
 }
 
 .deleteButton:hover {

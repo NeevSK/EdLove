@@ -3,6 +3,7 @@ import {
   useSensoryPreferencesOptional,
   useVisualCapabilities,
 } from '@repo/ui/context';
+import { sensoryFeedback } from '@repo/ui/sensory';
 import { type FeedbackEvent, type SoundCue } from '@repo/ui/utils';
 import { type AudioPlayer, type AudioSource, createAudioPlayer } from 'expo-audio';
 import {
@@ -91,6 +92,12 @@ export function SoundFeedbackProvider({
   const { experience } = useVisualCapabilities();
   const { soundEnabled, quietMode } = useSensoryPreferencesOptional();
   const soundPlayerRef = useRef<ReturnType<typeof createSoundPlayer> | null>(null);
+
+  // Verger's levels reach the one feedback engine, so every kit component
+  // (not only this provider's callers) spends what this phone allows.
+  useEffect(() => {
+    sensoryFeedback.configure({ hapticsLevel: experience.haptics, soundLevel: experience.sound });
+  }, [experience.haptics, experience.sound]);
 
   useEffect(() => {
     const player = createSoundPlayer(sources, experience.maxConcurrentSounds);

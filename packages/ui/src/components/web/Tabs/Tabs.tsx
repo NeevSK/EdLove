@@ -3,6 +3,7 @@
 import { useId, useRef } from 'react';
 import type { TabsContract } from '../../../theme/contracts';
 import { cx } from '../cx';
+import { feel } from '../feel';
 import { rovingNext } from '../roving';
 
 export interface TabsProps<V extends string = string> extends TabsContract<V> {
@@ -14,7 +15,14 @@ export interface TabsProps<V extends string = string> extends TabsContract<V> {
  * arrow keys, Home and End move between them and select (automatic
  * activation), and only the selected tab is in the tab order (WAI-ARIA tabs).
  */
-export function Tabs<V extends string = string>({ value, onChange, label, tabs, children, className }: TabsProps<V>) {
+export function Tabs<V extends string = string>({
+  value,
+  onChange,
+  label,
+  tabs,
+  children,
+  className,
+}: TabsProps<V>) {
   const base = useId();
   const refs = useRef<Partial<Record<string, HTMLButtonElement | null>>>({});
   const tabId = (v: string) => `${base}-tab-${v}`;
@@ -29,6 +37,7 @@ export function Tabs<V extends string = string>({ value, onChange, label, tabs, 
         onKeyDown={(event) => {
           const next = rovingNext(event, tabs, value);
           if (next === null) return;
+          feel('select');
           onChange(next);
           refs.current[next]?.focus();
         }}
@@ -49,7 +58,10 @@ export function Tabs<V extends string = string>({ value, onChange, label, tabs, 
               aria-controls={children === undefined ? undefined : panelId}
               tabIndex={selected ? 0 : -1}
               disabled={tab.disabled}
-              onClick={() => onChange(tab.value)}
+              onClick={() => {
+                feel('select');
+                onChange(tab.value);
+              }}
             >
               {tab.label}
             </button>
@@ -57,7 +69,13 @@ export function Tabs<V extends string = string>({ value, onChange, label, tabs, 
         })}
       </div>
       {children === undefined ? null : (
-        <div id={panelId} role="tabpanel" aria-labelledby={tabId(value)} tabIndex={0} className="gd-tabpanel">
+        <div
+          id={panelId}
+          role="tabpanel"
+          aria-labelledby={tabId(value)}
+          tabIndex={0}
+          className="gd-tabpanel"
+        >
           {children}
         </div>
       )}

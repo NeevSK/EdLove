@@ -14,18 +14,18 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -39,9 +39,9 @@
 .metricCard {
   padding: 1.25rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -50,14 +50,14 @@
 .metricLabel {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   text-transform: uppercase;
 }
 
 .metricValue {
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   font-family: var(--font-display, "Fraunces", serif);
   margin: 0;
 }
@@ -65,9 +65,9 @@
 .chartCard {
   padding: 1.5rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -89,21 +89,22 @@
   width: 8rem;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .barTrack {
   flex: 1;
   height: 14px;
-  background: var(--color-paper, #f7f2e8);
+  background: var(--color-paper);
   border-radius: 999px;
   overflow: hidden;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 15%, transparent));
 }
 
 .barFill {
   height: 100%;
-  background: linear-gradient(90deg, #1c4a5a, #a85022);
+  background: linear-gradient(90deg, var(--w-ink-soft), var(--w-lamp));
   border-radius: 999px;
-  transition: width 0.3s ease;
+  transition: width var(--w-dur) var(--w-ease);
+  color: var(--w-on-lamp);
 }

@@ -27,7 +27,7 @@
 .title {
   max-width: 18ch;
   margin: 0;
-  color: #26342d;
+  color: var(--w-ink);
   font-family: var(--font-fraunces, Georgia, serif);
   font-size: clamp(38px, 5vw, 58px);
   font-weight: 550;
@@ -48,7 +48,7 @@
 .introduction {
   max-width: 46ch;
   margin: 18px 0 28px;
-  color: #5e685f;
+  color: var(--w-ink-soft);
   font-size: 16px;
   line-height: 1.7;
   opacity: 0;
@@ -64,19 +64,19 @@
   gap: 12px;
   border: 0;
   border-radius: 8px;
-  color: #fffdf8;
-  background: #365d49;
+  color: var(--w-on-lamp);
+  background: var(--w-lamp);
   font: inherit;
   font-size: 14px;
   font-weight: 650;
   cursor: pointer;
   opacity: 0;
   animation: voiceArrive 360ms 1500ms ease-out both;
-  transition: background-color 150ms ease, transform 150ms ease;
+  transition: background-color var(--w-dur-micro) var(--w-ease), transform var(--w-dur-micro) var(--w-ease);
 }
 
 .action:hover {
-  background: #294a38;
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-ink));
 }
 
 .action:active {
@@ -84,16 +84,16 @@
 }
 
 .action:focus-visible {
-  outline: 3px solid #7b9b85;
+  outline: 3px solid var(--w-focus);
   outline-offset: 4px;
 }
 
 :global([data-appearance='night']) .title {
-  color: #f0ede2;
+  color: var(--w-raised);
 }
 
 :global([data-appearance='night']) .introduction {
-  color: #bdc5b9;
+  color: var(--w-line);
 }
 
 @keyframes tutiiArrive {
@@ -106,7 +106,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 47.99rem) {
   .greeting {
     grid-template-columns: minmax(0, 1fr);
     align-content: center;

@@ -11,16 +11,16 @@
   justify-content: space-between;
   padding: 10px 14px;
   border-radius: 10px;
-  background-color: rgba(212, 132, 58, 0.08);
-  border: 1px solid rgba(212, 132, 58, 0.22);
+  background-color: color-mix(in srgb, var(--w-lamp) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 22%, transparent);
   font-size: 12px;
-  color: #5c4e3e;
+  color: var(--w-ink-soft);
 }
 
 :global([data-appearance="night"]) .kioskBanner {
-  background-color: rgba(212, 132, 58, 0.12);
-  border-color: rgba(212, 132, 58, 0.3);
-  color: #e8d7c0;
+  background-color: color-mix(in srgb, var(--w-lamp) 12%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  color: var(--w-line);
 }
 
 .kioskToggle {
@@ -33,7 +33,7 @@
 
 .kioskCheckbox {
   cursor: pointer;
-  accent-color: #a85022;
+  accent-color: var(--w-lamp);
 }
 
 .accountsGrid {
@@ -48,28 +48,28 @@
   justify-content: space-between;
   padding: 12px 16px;
   border-radius: 12px;
-  border: 1px solid rgba(42, 35, 24, 0.12);
-  background-color: rgba(255, 255, 255, 0.65);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 12%, transparent);
+  background-color: color-mix(in srgb, var(--w-raised) 65%, transparent);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--w-dur-micro) var(--w-ease);
   text-align: left;
 }
 
 .accountCard:hover {
-  background-color: #ffffff;
-  border-color: rgba(168, 80, 34, 0.4);
+  background-color: var(--w-raised);
+  border-color: color-mix(in srgb, var(--w-lamp) 40%, transparent);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(42, 35, 24, 0.06);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 6%, transparent);
 }
 
 :global([data-appearance="night"]) .accountCard {
-  background-color: rgba(45, 38, 29, 0.6);
-  border-color: rgba(245, 237, 214, 0.12);
+  background-color: color-mix(in srgb, var(--w-ink) 60%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 12%, transparent);
 }
 
 :global([data-appearance="night"]) .accountCard:hover {
-  background-color: rgba(55, 47, 36, 0.95);
-  border-color: rgba(212, 132, 58, 0.45);
+  background-color: color-mix(in srgb, var(--w-ink) 95%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 45%, transparent);
 }
 
 .accountMeta {
@@ -82,8 +82,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a85022 0%, #d4843a 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--w-lamp) 0%, var(--w-lamp) 100%);
+  color: var(--w-on-lamp);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,16 +100,16 @@
 .accountName {
   font-weight: 600;
   font-size: 14px;
-  color: #131e27;
+  color: var(--w-ink);
 }
 
 :global([data-appearance="night"]) .accountName {
-  color: #f5edd6;
+  color: var(--w-raised);
 }
 
 .accountEmail {
   font-size: 12px;
-  color: #7a6e5f;
+  color: var(--w-ink-soft);
 }
 
 .accountBadge {
@@ -119,19 +119,19 @@
   letter-spacing: 0.6px;
   padding: 4px 8px;
   border-radius: 999px;
-  background-color: rgba(42, 35, 24, 0.06);
-  color: #5c4e3e;
+  background-color: color-mix(in srgb, var(--w-ink) 6%, transparent);
+  color: var(--w-ink-soft);
 }
 
 :global([data-appearance="night"]) .accountBadge {
-  background-color: rgba(245, 237, 214, 0.1);
-  color: #d6c6b0;
+  background-color: color-mix(in srgb, var(--w-raised) 10%, transparent);
+  color: var(--w-lamp-deep);
 }
 
 .pinGateModal {
   position: fixed;
   inset: 0;
-  background-color: rgba(19, 30, 39, 0.6);
+  background-color: color-mix(in srgb, var(--w-ink) 60%, transparent);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -141,8 +141,8 @@
 }
 
 .pinCard {
-  background-color: #faf6ee;
-  border: 1px solid rgba(42, 35, 24, 0.16);
+  background-color: var(--w-raised);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 16%, transparent);
   border-radius: 16px;
   padding: 24px;
   width: 100%;
@@ -150,24 +150,24 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 16px 36px rgba(19, 30, 39, 0.2);
+  box-shadow: 0 16px 36px color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);
 }
 
 :global([data-appearance="night"]) .pinCard {
-  background-color: #241f17;
-  border-color: rgba(245, 237, 214, 0.16);
-  color: #f5edd6;
+  background-color: var(--w-ink);
+  border-color: color-mix(in srgb, var(--w-raised) 16%, transparent);
+  color: var(--w-raised);
 }
 
 .pinTitle {
   font-size: 18px;
   font-weight: 700;
-  color: #131e27;
+  color: var(--w-ink);
   margin: 0;
 }
 
 :global([data-appearance="night"]) .pinTitle {
-  color: #f5edd6;
+  color: var(--w-raised);
 }
 
 .pinInput {
@@ -176,14 +176,14 @@
   font-size: 22px;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid rgba(42, 35, 24, 0.2);
-  background-color: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--w-ink) 20%, transparent);
+  background-color: var(--w-raised);
 }
 
 :global([data-appearance="night"]) .pinInput {
-  background-color: #18140f;
-  border-color: rgba(245, 237, 214, 0.2);
-  color: #f5edd6;
+  background-color: var(--w-ink);
+  border-color: color-mix(in srgb, var(--w-raised) 20%, transparent);
+  color: var(--w-raised);
 }
 
 .actionRow {
@@ -195,63 +195,63 @@
 .cancelBtn {
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid rgba(42, 35, 24, 0.15);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 15%, transparent);
   background: transparent;
   cursor: pointer;
-  color: #5c4e3e;
+  color: var(--w-ink-soft);
 }
 
 :global([data-appearance="night"]) .cancelBtn {
-  border-color: rgba(245, 237, 214, 0.2);
-  color: #d6c6b0;
+  border-color: color-mix(in srgb, var(--w-raised) 20%, transparent);
+  color: var(--w-lamp-deep);
 }
 
 .unlockBtn {
   padding: 8px 18px;
   border-radius: 8px;
   border: none;
-  background-color: #a85022;
-  color: #ffffff;
+  background-color: var(--w-lamp);
+  color: var(--w-on-lamp);
   font-weight: 600;
   cursor: pointer;
 }
 
 .unlockBtn:hover {
-  background-color: #8c421b;
+  background-color: var(--w-lamp);
 }
 
 .anotherAccountBtn {
   margin-top: 6px;
   background: transparent;
-  border: 1px dashed rgba(42, 35, 24, 0.2);
+  border: 1px dashed color-mix(in srgb, var(--w-ink) 20%, transparent);
   border-radius: 10px;
   padding: 10px;
   font-size: 13px;
-  color: #7a6e5f;
+  color: var(--w-ink-soft);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .anotherAccountBtn:hover {
-  border-color: #a85022;
-  color: #a85022;
+  border-color: var(--w-lamp);
+  color: var(--w-lamp-deep);
 }
 
 :global([data-appearance="night"]) .anotherAccountBtn {
-  border-color: rgba(245, 237, 214, 0.2);
-  color: #b5a895;
+  border-color: color-mix(in srgb, var(--w-raised) 20%, transparent);
+  color: var(--w-ink-soft);
 }
 
 .qrLinkBtn {
-  background: rgba(168, 80, 34, 0.08);
-  border: 1px solid rgba(168, 80, 34, 0.25);
+  background: color-mix(in srgb, var(--w-lamp) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, transparent);
   border-radius: 10px;
   padding: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #a85022;
+  color: var(--w-lamp-deep);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -259,30 +259,30 @@
 }
 
 .qrLinkBtn:hover {
-  background: rgba(168, 80, 34, 0.14);
-  border-color: #a85022;
+  background: color-mix(in srgb, var(--w-lamp) 14%, transparent);
+  border-color: var(--w-lamp);
 }
 
 :global([data-appearance="night"]) .qrLinkBtn {
-  background: rgba(212, 132, 58, 0.12);
-  border-color: rgba(212, 132, 58, 0.35);
-  color: #f39c4a;
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 35%, transparent);
+  color: var(--w-lamp-deep);
 }
 
 .removeAccountBtn {
   background: transparent;
   border: none;
   font-size: 13px;
-  color: #9c8e7e;
+  color: var(--w-ink-soft);
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 6px;
   line-height: 1;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .removeAccountBtn:hover {
-  background: rgba(185, 28, 28, 0.1);
-  color: #dc2626;
+  background: color-mix(in srgb, var(--w-danger) 10%, transparent);
+  color: var(--w-danger);
 }
 

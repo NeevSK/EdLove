@@ -1322,7 +1322,7 @@
   display: none;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 47.99rem) {
   .sheetDragHandle {
     display: block;
     width: 2.75rem;

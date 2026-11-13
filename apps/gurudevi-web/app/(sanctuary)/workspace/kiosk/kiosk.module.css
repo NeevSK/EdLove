@@ -4,7 +4,7 @@
   min-height: 85vh;
   padding: clamp(1rem, 3vw, 2rem);
   background: transparent;
-  color: var(--ink, #1f1b16);
+  color: var(--ink);
   font-family: var(--font-ui-grotesque, "Outfit", system-ui, sans-serif);
   gap: 1.5rem;
 }
@@ -16,7 +16,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border, #ded8cf);
+  border-bottom: 2px solid var(--border);
 }
 
 .headerTitle {
@@ -24,12 +24,12 @@
   font-size: clamp(1.6rem, 3vw, 2.2rem);
   margin: 0;
   font-weight: 600;
-  color: var(--ink, #1f1b16);
+  color: var(--ink);
 }
 
 .headerSubtitle {
   font-size: 0.9rem;
-  color: #71695f;
+  color: var(--w-ink-soft);
   margin: 0.25rem 0 0;
 }
 
@@ -38,19 +38,19 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.1rem;
-  border: 1px solid var(--border, #ded8cf);
+  border: 1px solid var(--border);
   border-radius: 999px;
   background: white;
-  color: var(--ink, #1f1b16);
+  color: var(--ink);
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .exitLink:hover {
-  background: #f5f0e6;
-  border-color: #9d5b25;
+  background: var(--w-raised);
+  border-color: var(--w-lamp);
 }
 
 .kioskGrid {
@@ -60,7 +60,7 @@
   flex: 1;
 }
 
-@media (max-width: 840px) {
+@media (max-width: 47.99rem) {
   .kioskGrid {
     grid-template-columns: 1fr;
   }
@@ -74,44 +74,44 @@
   padding: 2rem;
   border-radius: 1.25rem;
   background: white;
-  border: 2px solid var(--border, #ded8cf);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 2px solid var(--border);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   position: relative;
   overflow: hidden;
   text-align: center;
   min-height: 24rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .scannerCardIdle {
-  border-color: var(--border, #ded8cf);
+  border-color: var(--border);
 }
 
 .scannerCardSuccess {
-  border-color: #3b7b32;
-  box-shadow: 0 0 35px rgba(59, 123, 50, 0.3);
+  border-color: var(--w-lamp);
+  box-shadow: 0 0 35px color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .scannerCardWarning {
-  border-color: #c97e18;
-  box-shadow: 0 0 35px rgba(201, 126, 24, 0.3);
+  border-color: var(--w-lamp);
+  box-shadow: 0 0 35px color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .scannerCardError {
-  border-color: #b23428;
-  box-shadow: 0 0 35px rgba(178, 52, 40, 0.3);
+  border-color: var(--w-danger);
+  box-shadow: 0 0 35px color-mix(in srgb, var(--w-danger) 30%, transparent);
 }
 
 .tapTargetIcon {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  background: #fbf0dc;
+  background: var(--w-raised);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.4rem;
-  color: #9d5b25;
+  color: var(--w-lamp-deep);
   margin-bottom: 1.25rem;
   animation: pulseTarget 2.5s infinite ease-in-out;
 }
@@ -119,11 +119,11 @@
 @keyframes pulseTarget {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(157, 91, 37, 0.2);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--w-lamp) 20%, transparent);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 0 16px rgba(157, 91, 37, 0);
+    box-shadow: 0 0 0 16px color-mix(in srgb, var(--w-lamp) 0%, transparent);
   }
 }
 
@@ -131,12 +131,12 @@
   font-size: 1.35rem;
   font-weight: 700;
   margin: 0;
-  color: var(--ink, #1f1b16);
+  color: var(--ink);
 }
 
 .tapDetail {
   font-size: 0.9rem;
-  color: #71695f;
+  color: var(--w-ink-soft);
   margin: 0.5rem 0 1.5rem;
   max-width: 22rem;
 }
@@ -155,21 +155,21 @@
 }
 
 .badgePulseSuccess {
-  background: #edf6eb;
-  border: 1px solid #3b7b32;
-  color: #24501d;
+  background: var(--w-raised);
+  border: 1px solid var(--w-lamp);
+  color: var(--w-ink-soft);
 }
 
 .badgePulseWarning {
-  background: #fef7e8;
-  border: 1px solid #c97e18;
-  color: #7b4c09;
+  background: var(--w-raised);
+  border: 1px solid var(--w-lamp);
+  color: var(--w-lamp-deep);
 }
 
 .badgePulseError {
-  background: #fbeee9;
-  border: 1px solid #b23428;
-  color: #6d1b13;
+  background: var(--w-raised);
+  border: 1px solid var(--w-danger);
+  color: var(--w-danger);
 }
 
 .badgeStudentName {
@@ -190,8 +190,8 @@
   border-radius: 0.75rem;
   overflow: hidden;
   position: relative;
-  border: 2px solid #ded8cf;
-  background: #000;
+  border: 2px solid var(--w-line);
+  background: var(--w-ink);
   margin-top: 1rem;
 }
 
@@ -204,13 +204,13 @@
 .cameraToggleBtn {
   margin-top: 0.75rem;
   padding: 0.5rem 1rem;
-  border: 1px solid #ded8cf;
+  border: 1px solid var(--w-line);
   border-radius: 0.5rem;
   background: white;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  color: #71695f;
+  color: var(--w-ink-soft);
 }
 
 .manualInputForm {
@@ -224,14 +224,14 @@
 .manualInput {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #ded8cf;
+  border: 1px solid var(--w-line);
   border-radius: 0.5rem;
   font-size: 0.85rem;
 }
 
 .manualSubmitBtn {
   padding: 0.5rem 0.85rem;
-  background: #9d5b25;
+  background: var(--w-lamp);
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -246,8 +246,8 @@
   padding: 1.5rem;
   border-radius: 1.25rem;
   background: white;
-  border: 1px solid var(--border, #ded8cf);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
 }
 
 .streamHeader {
@@ -266,8 +266,8 @@
 .streamCountBadge {
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  background: #edf6eb;
-  color: #24501d;
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
   font-weight: 700;
   font-size: 0.8rem;
 }
@@ -289,8 +289,8 @@
   justify-content: space-between;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  background: #fdfaf5;
-  border: 1px solid #f0ebe1;
+  background: var(--w-raised);
+  border: 1px solid var(--w-raised);
 }
 
 .streamItemInfo {
@@ -301,27 +301,27 @@
 .streamItemName {
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--ink, #1f1b16);
+  color: var(--ink);
 }
 
 .streamItemRoll {
   font-size: 0.75rem;
-  color: #71695f;
+  color: var(--w-ink-soft);
 }
 
 .streamItemTime {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #3b7b32;
+  color: var(--w-lamp-deep);
   font-variant-numeric: tabular-nums;
 }
 
 .burstWarning {
   padding: 0.75rem 1rem;
-  background: #fef7e8;
-  border: 1px solid #c97e18;
+  background: var(--w-raised);
+  border: 1px solid var(--w-lamp);
   border-radius: 0.75rem;
-  color: #7b4c09;
+  color: var(--w-lamp-deep);
   font-size: 0.85rem;
   margin-top: 1rem;
 }

@@ -1,6 +1,7 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { getToasts, subscribeToasts, toast } from '../../shared/toasts';
 import { Button } from '../Button/Button';
+import { feel } from '../feel';
 
 const none = () => [] as const;
 
@@ -11,6 +12,16 @@ const none = () => [] as const;
  */
 export function ToastHost() {
   const items = useSyncExternalStore(subscribeToasts, getToasts, none);
+  const felt = useRef(new Set<number>());
+  // Each new toast is felt once, as on the phone: success and failure only.
+  useEffect(() => {
+    for (const item of items) {
+      if (felt.current.has(item.id)) continue;
+      felt.current.add(item.id);
+      if (item.tone === 'success') feel('success');
+      else if (item.tone === 'danger') feel('error');
+    }
+  }, [items]);
   const polite = items.filter((i) => i.tone !== 'danger');
   const urgent = items.filter((i) => i.tone === 'danger');
   return (
@@ -19,7 +30,12 @@ export function ToastHost() {
         { list: polite, role: 'status', live: 'polite' },
         { list: urgent, role: 'alert', live: 'assertive' },
       ].map(({ list, role, live }) => (
-        <div key={role} role={role} aria-live={live as 'polite' | 'assertive'} className="gd-toast-region">
+        <div
+          key={role}
+          role={role}
+          aria-live={live as 'polite' | 'assertive'}
+          className="gd-toast-region"
+        >
           {list.map((item) => (
             <div key={item.id} className="gd-toast" data-tone={item.tone}>
               <p className="gd-text" data-kind="body">

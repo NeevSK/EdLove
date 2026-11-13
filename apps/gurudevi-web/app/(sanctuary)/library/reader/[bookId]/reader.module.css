@@ -13,7 +13,7 @@
   overflow: hidden;
   box-shadow: 0 12px 40px -10px rgba(19, 30, 39, 0.12), 0 2px 8px rgba(19, 30, 39, 0.04);
   font-family: var(--font-ui-grotesque, 'Outfit', -apple-system, sans-serif);
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background var(--w-dur) var(--w-ease), border-color var(--w-dur) var(--w-ease), box-shadow var(--w-dur) var(--w-ease);
   position: relative;
 }
 
@@ -45,7 +45,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   border-bottom: 1px solid rgba(104, 94, 85, 0.14);
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   z-index: 10;
 }
 
@@ -80,7 +80,7 @@
   text-decoration: none;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .backLink:hover {
@@ -167,7 +167,7 @@
   background: transparent;
   border: none;
   color: inherit;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .actionBtn:hover {
@@ -212,7 +212,7 @@
   padding: 1rem;
   gap: 1rem;
   overflow-y: auto;
-  transition: width 0.25s ease, transform 0.25s ease;
+  transition: width var(--w-dur) var(--w-ease), transform var(--w-dur) var(--w-ease);
 }
 
 .themeMidnight .studySidebar {
@@ -246,7 +246,7 @@
   border: 1px solid transparent;
   color: inherit;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .chapterBtn:hover {
@@ -270,7 +270,7 @@
   justify-content: center;
   overflow: auto;
   padding: 1.5rem;
-  transition: padding 0.2s ease;
+  transition: padding var(--w-dur-micro) var(--w-ease);
 }
 
 .documentIframeWrapper {
@@ -281,7 +281,7 @@
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   background: #ffffff;
-  transition: all 0.3s ease;
+  transition: all var(--w-dur) var(--w-ease);
 }
 
 .themeSepia .documentIframeWrapper {
@@ -325,7 +325,7 @@
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 47.99rem) {
   .studySidebar {
     display: none;
   }

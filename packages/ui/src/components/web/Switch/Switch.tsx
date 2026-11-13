@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, Ref } from 'react';
 import type { SwitchContract } from '../../../theme/contracts';
 import { cx } from '../cx';
+import { feel } from '../feel';
 
 export interface SwitchProps
   extends SwitchContract,
@@ -29,7 +30,10 @@ export function Switch({
       className={cx('gd-switch', className)}
       onClick={(event) => {
         onClick?.(event);
-        if (!event.defaultPrevented) onValueChange(!value);
+        if (!event.defaultPrevented) {
+          feel('select');
+          onValueChange(!value);
+        }
       }}
     >
       <span className="gd-switch-thumb" aria-hidden="true" />

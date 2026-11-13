@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(20, 18, 17, 0.75);
+  background-color: var(--gd-scrim);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -12,13 +12,13 @@
 
 .modal {
   position: relative;
-  background-color: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
   border-radius: 1.25rem;
   max-width: 580px;
   width: 100%;
   padding: 2rem;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 24px 48px color-mix(in srgb, var(--w-shadow-tint) 28%, transparent);
   animation: modalIn 220ms ease-out;
   display: flex;
   flex-direction: column;
@@ -44,7 +44,7 @@
   background: none;
   border: none;
   font-size: 1.25rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
@@ -54,8 +54,8 @@
 }
 
 .closeBtn:hover {
-  background: var(--paper-light, #f5efe6);
-  color: var(--color-ink, #2d2018);
+  background: var(--paper-light);
+  color: var(--color-ink);
 }
 
 .header {
@@ -68,7 +68,7 @@
   margin: 0;
   font-size: 1.35rem;
   font-weight: 700;
-  color: var(--color-ink, #2d2018);
+  color: var(--color-ink);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -77,7 +77,7 @@
 .subtext {
   margin: 0;
   font-size: 0.88rem;
-  color: var(--color-ink-soft, #74675d);
+  color: var(--color-ink-soft, var(--w-ink-soft));
   line-height: 1.5;
 }
 
@@ -87,7 +87,7 @@
   gap: 0.85rem;
 }
 
-@media (max-width: 540px) {
+@media (max-width: 47.99rem) {
   .comparisonGrid {
     grid-template-columns: 1fr;
   }
@@ -96,17 +96,17 @@
 .column {
   padding: 1rem;
   border-radius: 0.85rem;
-  border: 1px solid var(--line, #e6d9ce);
-  background: var(--paper-light, #faf6ef);
+  border: 1px solid var(--line);
+  background: var(--paper-light);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
 .columnActive {
-  background: #ffffff;
-  border-color: var(--color-action, #9a5b2d);
-  box-shadow: 0 4px 12px rgba(154, 91, 45, 0.08);
+  background: var(--w-raised);
+  border-color: var(--color-action);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-lamp) 8%, transparent);
 }
 
 .columnHeader {
@@ -122,20 +122,20 @@
   letter-spacing: 0.05em;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: var(--paper, #f0ebe1);
-  color: var(--ink-soft, #594f47);
+  background: var(--paper);
+  color: var(--ink-soft);
 }
 
 .columnBadgeActive {
-  background: rgba(154, 91, 45, 0.12);
-  color: var(--color-action, #9a5b2d);
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
+  color: var(--color-action);
 }
 
 .columnTitle {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--ink, #2d2018);
+  color: var(--ink);
 }
 
 .featureList {
@@ -146,7 +146,7 @@
   flex-direction: column;
   gap: 0.4rem;
   font-size: 0.78rem;
-  color: var(--ink-soft, #594f47);
+  color: var(--ink-soft);
   line-height: 1.4;
 }
 
@@ -161,16 +161,16 @@
   align-items: center;
   gap: 0.65rem;
   padding: 0.75rem 1rem;
-  background: rgba(154, 91, 45, 0.06);
-  border: 1px dashed rgba(154, 91, 45, 0.35);
+  background: color-mix(in srgb, var(--w-lamp) 6%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--w-lamp) 35%, transparent);
   border-radius: 0.65rem;
   font-size: 0.82rem;
-  color: var(--ink, #2d2018);
+  color: var(--ink);
   cursor: pointer;
 }
 
 .carryoverBox input[type="checkbox"] {
-  accent-color: var(--color-action, #9a5b2d);
+  accent-color: var(--color-action);
   width: 1rem;
   height: 1rem;
   cursor: pointer;
@@ -188,8 +188,8 @@
 .actionPrimary {
   padding: 0.65rem 1.35rem;
   border-radius: 999px;
-  background: var(--color-action, #9a5b2d);
-  color: #ffffff;
+  background: var(--color-action);
+  color: var(--w-raised);
   font-weight: 700;
   font-size: 0.88rem;
   text-decoration: none;
@@ -198,19 +198,19 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .actionPrimary:hover {
-  background: #7e4620;
+  background: var(--w-lamp);
 }
 
 .actionSecondary {
   padding: 0.65rem 1.15rem;
   border-radius: 999px;
   background: transparent;
-  border: 1px solid var(--line, #e6d9ce);
-  color: var(--ink, #2d2018);
+  border: 1px solid var(--line);
+  color: var(--ink);
   font-weight: 600;
   font-size: 0.85rem;
   text-decoration: none;
@@ -218,14 +218,14 @@
 }
 
 .actionSecondary:hover {
-  border-color: var(--color-action, #9a5b2d);
-  color: var(--color-action, #9a5b2d);
+  border-color: var(--color-action);
+  color: var(--color-action);
 }
 
 .actionGhost {
   background: none;
   border: none;
-  color: var(--ink-soft, #74675d);
+  color: var(--ink-soft);
   font-size: 0.82rem;
   cursor: pointer;
   padding: 0.4rem 0.65rem;
@@ -233,5 +233,5 @@
 
 .actionGhost:hover {
   text-decoration: underline;
-  color: var(--ink, #2d2018);
+  color: var(--ink);
 }

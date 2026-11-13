@@ -1,5 +1,6 @@
 'use client';
 
+import { useEscapeLayer } from '@repo/ui/shortcuts/web';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -64,18 +65,7 @@ export function TutiiSidePanel({
   const { messages, sendMessage } = useCommunityChat('dm-tutii', displayName);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  useEscapeLayer(isOpen, onClose);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {

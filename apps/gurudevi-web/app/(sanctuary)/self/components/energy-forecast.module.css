@@ -3,10 +3,10 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-line, #e2e8f0);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line, var(--w-raised));
   border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
 }
 
 .header {
@@ -24,13 +24,13 @@
 .title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-text-primary, #0f172a);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .subtitle {
   font-size: 0.875rem;
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
@@ -47,21 +47,21 @@
   gap: 0.5rem;
   padding: 1rem 0.5rem;
   border-radius: 0.75rem;
-  background: var(--color-surface-subtle, #f8fafc);
+  background: var(--color-surface-subtle);
   border: 2px solid transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .levelCard:hover {
   transform: translateY(-2px);
-  border-color: rgba(2, 132, 199, 0.3);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .levelCardActive {
-  background: var(--color-surface, #ffffff);
-  border-color: var(--color-action, #0284c7);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+  background: var(--color-surface);
+  border-color: var(--color-action);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .levelEmoji {
@@ -71,12 +71,12 @@
 .levelLabel {
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--color-text-primary, #0f172a);
+  color: var(--color-text-primary);
 }
 
 .levelDesc {
   font-size: 0.6875rem;
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
   text-align: center;
 }
 
@@ -90,18 +90,18 @@
   width: 100%;
   padding: 0.75rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, #cbd5e1);
-  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-line, var(--w-line));
+  background: var(--color-surface);
   font-size: 0.875rem;
-  color: var(--color-text-primary, #0f172a);
+  color: var(--color-text-primary);
   font-family: inherit;
   resize: vertical;
 }
 
 .notesInput:focus {
   outline: none;
-  border-color: var(--color-action, #0284c7);
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+  border-color: var(--color-action);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .saveBtn {
@@ -109,15 +109,15 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  background: var(--color-action, #0284c7);
-  color: #ffffff;
+  background: var(--color-action);
+  color: var(--w-raised);
   padding: 0.625rem 1.25rem;
   border-radius: 0.5rem;
   font-weight: 600;
   font-size: 0.875rem;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .saveBtn:hover {
@@ -129,13 +129,13 @@
   flex-direction: column;
   gap: 0.75rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--color-line, #e2e8f0);
+  border-top: 1px solid var(--color-line, var(--w-raised));
 }
 
 .historyTitle {
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
@@ -163,10 +163,10 @@
   width: 100%;
   max-width: 28px;
   border-radius: 0.25rem 0.25rem 0 0;
-  transition: height 0.4s ease;
+  transition: height var(--w-dur) var(--w-ease);
 }
 
 .barDate {
   font-size: 0.6875rem;
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
 }

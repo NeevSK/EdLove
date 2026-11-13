@@ -173,3 +173,6 @@ export {
   type ScrollAreaProps,
 } from './ScrollArea/ScrollArea';
 
+
+export { feel } from './feel';
+export { KeyboardHelp } from './Keyboard/KeyboardHelp';

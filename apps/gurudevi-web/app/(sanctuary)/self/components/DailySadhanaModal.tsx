@@ -1,5 +1,6 @@
 'use client';
 
+import { useEscapeLayer } from '@repo/ui/shortcuts/web';
 import { Battery, BatteryCharging, BatteryLow, BatteryMedium, Sparkles, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';
@@ -118,14 +119,7 @@ export function DailySadhanaModal({ isOpen, onClose, userId }: DailySadhanaModal
     }, 1600);
   }, [effectiveUserId, selectedIntention, energyLevel, onClose]);
 
-  // Handle ESC key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (isOpen) window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  useEscapeLayer(isOpen, onClose);
 
   if (!isOpen) return null;
 

@@ -129,6 +129,14 @@ export type PageFrame = {
  */
 export function useBreakpoint(): Breakpoint {
   const { width } = useWindowDimensions();
+  return breakpointOf(width);
+}
+
+/**
+ * The one width rule for layout: phone, tablet or desktop from the tokens.
+ * Pages call this instead of comparing a width with their own number.
+ */
+export function breakpointOf(width: number): Breakpoint {
   if (width >= breakpoints.desktop) return 'desktop';
   if (width >= breakpoints.tablet) return 'tablet';
   return 'phone';

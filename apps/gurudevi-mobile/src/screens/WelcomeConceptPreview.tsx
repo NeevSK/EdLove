@@ -217,7 +217,6 @@ export default function WelcomeConceptPreview() {
               paddingBottom: Math.max(insets.bottom, 20) + 16,
             },
           ]}
-          showsVerticalScrollIndicator={false}
         >
           <View style={styles.brandRow}>
             {showWelcome ? null : (

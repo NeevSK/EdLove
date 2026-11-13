@@ -14,18 +14,18 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -40,19 +40,19 @@
   min-height: 44px;
   padding: 0.4rem 1rem;
   border-radius: 999px;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  background: var(--color-paper, #f7f2e8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .tabBtn[data-active="true"] {
-  background: var(--color-action, #a85022);
-  color: #ffffff;
-  border-color: var(--color-action, #a85022);
+  background: var(--color-action);
+  color: var(--w-raised);
+  border-color: var(--color-action);
 }
 
 .statsGrid {
@@ -64,9 +64,9 @@
 .statCard {
   padding: 1.25rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -75,14 +75,14 @@
 .statLabel {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   text-transform: uppercase;
 }
 
 .statValue {
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   font-family: var(--font-display, "Fraunces", serif);
   margin: 0;
 }
@@ -90,9 +90,9 @@
 .sectionCard {
   padding: 1.5rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -107,8 +107,8 @@
 .instCard {
   padding: 1rem;
   border-radius: 0.5rem;
-  background: var(--color-paper, #f7f2e8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
+  background: var(--color-paper);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 15%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -118,8 +118,8 @@
   min-height: 44px;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  background: var(--color-action, #a85022);
-  color: #ffffff;
+  background: var(--color-action);
+  color: var(--w-raised);
   border: none;
   font-size: 0.85rem;
   font-weight: 700;

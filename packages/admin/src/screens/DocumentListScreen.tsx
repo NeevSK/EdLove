@@ -225,7 +225,6 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
         <ScrollView
           className="flex-1"
           contentContainerStyle={{ paddingBottom: 40 }}
-          showsVerticalScrollIndicator={false}
         >
           {filteredDocuments.length === 0 ? (
             <Box className="p-10 items-center justify-center bg-phase-surface rounded-3xl border border-dashed border-phase-border mt-4">

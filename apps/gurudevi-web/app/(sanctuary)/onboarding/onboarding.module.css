@@ -2,7 +2,7 @@
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  color: var(--w-ink, #26342d);
+  color: var(--w-ink);
 }
 
 .header {
@@ -27,7 +27,7 @@
 }
 
 .brandMark {
-  color: #55765b;
+  color: var(--w-ink-soft);
   font-family: sans-serif;
   font-size: 23px;
 }
@@ -39,7 +39,7 @@
 }
 
 .backLink {
-  color: #526b57;
+  color: var(--w-ink-soft);
   font-size: 13px;
   text-underline-offset: 4px;
 }
@@ -52,7 +52,7 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #68736a;
+  color: var(--w-ink-soft);
   font-size: 11px;
 }
 
@@ -105,16 +105,16 @@
   width: 27px;
   height: 3px;
   border-radius: 3px;
-  background: #d9ddd4;
+  background: var(--w-line);
 }
 
 .progressSegment[data-active='true'] {
-  background: #52735b;
+  background: var(--w-ink-soft);
 }
 
 .progressLabel {
   margin-left: 7px;
-  color: #667268;
+  color: var(--w-ink-soft);
   font-size: 12px;
 }
 
@@ -159,7 +159,7 @@
 
 .eyebrow {
   margin: 0 0 10px;
-  color: #52735b;
+  color: var(--w-ink-soft);
   font-size: 12px;
   font-weight: 650;
   letter-spacing: 0.04em;
@@ -168,7 +168,7 @@
 .title {
   max-width: 18ch;
   margin: 0;
-  color: #26342d;
+  color: var(--w-ink);
   font-family: var(--font-fraunces, Georgia, serif);
   font-size: clamp(31px, 4vw, 45px);
   font-weight: 550;
@@ -179,7 +179,7 @@
 .prompt {
   max-width: 46ch;
   margin: 14px 0 26px;
-  color: #5e685f;
+  color: var(--w-ink-soft);
   font-size: 16px;
   line-height: 1.7;
 }
@@ -187,7 +187,7 @@
 .fieldLabel {
   display: block;
   margin-bottom: 8px;
-  color: #34473a;
+  color: var(--w-ink-soft);
   font-size: 13px;
   font-weight: 650;
 }
@@ -197,22 +197,22 @@
   min-height: 52px;
   padding: 8px 2px;
   border: 0;
-  border-bottom: 1px solid #9eab9d;
+  border-bottom: 1px solid var(--w-ink-soft);
   border-radius: 0;
   outline: none;
-  color: #26342d;
+  color: var(--w-ink);
   background: transparent;
   font: inherit;
   font-size: 18px;
 }
 
 .nameInput:focus-visible {
-  border-bottom: 2px solid #52735b;
-  box-shadow: 0 2px 0 #52735b;
+  border-bottom: 2px solid var(--w-ink-soft);
+  box-shadow: 0 2px 0 var(--w-shadow-tint);
 }
 
 .nameInput::placeholder {
-  color: #8a948b;
+  color: var(--w-ink-soft);
 }
 
 .actionRow {
@@ -232,17 +232,17 @@
   gap: 12px;
   border: 0;
   border-radius: 8px;
-  color: #fffdf8;
-  background: #365d49;
+  color: var(--w-on-lamp);
+  background: var(--w-lamp);
   font: inherit;
   font-size: 14px;
   font-weight: 650;
   cursor: pointer;
-  transition: background-color 150ms ease, transform 150ms ease;
+  transition: background-color var(--w-dur-micro) var(--w-ease), transform var(--w-dur-micro) var(--w-ease);
 }
 
 .primaryAction:hover:not(:disabled) {
-  background: #294a38;
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-ink));
 }
 
 .primaryAction:active:not(:disabled) {
@@ -257,7 +257,7 @@
 .primaryAction:focus-visible,
 .backAction:focus-visible,
 .roleOption:focus-within {
-  outline: 3px solid #7b9b85;
+  outline: 3px solid var(--w-focus);
   outline-offset: 4px;
 }
 
@@ -265,7 +265,7 @@
   min-height: 44px;
   padding: 0;
   border: 0;
-  color: #53695a;
+  color: var(--w-ink-soft);
   background: transparent;
   font: inherit;
   font-size: 14px;
@@ -291,7 +291,7 @@
   align-items: center;
   gap: 12px;
   padding: 9px 2px;
-  border-bottom: 1px solid #dfe3da;
+  border-bottom: 1px solid var(--w-line);
   cursor: pointer;
 }
 
@@ -299,7 +299,7 @@
   width: 17px;
   height: 17px;
   flex: 0 0 auto;
-  accent-color: #52735b;
+  accent-color: var(--w-ink-soft);
 }
 
 .roleSymbol {
@@ -308,7 +308,7 @@
   font-size: 21px;
   line-height: 1;
   text-align: center;
-  transition: transform 160ms ease;
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 .roleOption:has(input:checked) .roleSymbol {
@@ -322,20 +322,20 @@
 }
 
 .roleName {
-  color: #314437;
+  color: var(--w-ink-soft);
   font-size: 14px;
   font-weight: 650;
 }
 
 .roleDetail {
-  color: #68736a;
+  color: var(--w-ink-soft);
   font-size: 12px;
   line-height: 1.45;
 }
 
 .accountNote {
   margin: 4px 0 0;
-  color: #68736a;
+  color: var(--w-ink-soft);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -351,7 +351,7 @@
 .secondaryActionLink {
   border: 0;
   background: transparent;
-  color: #365d49;
+  color: var(--w-lamp-deep);
   font: inherit;
   font-size: 13.5px;
   font-weight: 600;
@@ -363,17 +363,17 @@
 }
 
 .secondaryActionLink:hover {
-  color: #294a38;
+  color: var(--w-ink-soft);
 }
 
 :global([data-appearance='night']) .secondaryActionLink {
-  color: #8bb899;
+  color: var(--w-lamp-deep);
 }
 
 .error {
   padding: 2px 0 2px 14px;
-  border-left: 2px solid #ad5244;
-  color: #8b3027;
+  border-left: 2px solid var(--w-danger);
+  color: var(--w-danger);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -396,13 +396,13 @@
 }
 
 :global([data-appearance='night']) .page {
-  color: var(--w-ink, #f0ede2);
-  background: var(--w-ground, #201f1a);
+  color: var(--w-ink);
+  background: var(--w-ground);
 }
 
 :global([data-appearance='night']) .title,
 :global([data-appearance='night']) .roleName {
-  color: #f0ede2;
+  color: var(--w-raised);
 }
 
 :global([data-appearance='night']) .guideCaption,
@@ -410,23 +410,23 @@
 :global([data-appearance='night']) .accountNote,
 :global([data-appearance='night']) .progressLabel,
 :global([data-appearance='night']) .roleDetail {
-  color: #bdc5b9;
+  color: var(--w-line);
 }
 
 :global([data-appearance='night']) .nameInput {
-  color: #f0ede2;
-  border-bottom-color: #778377;
+  color: var(--w-raised);
+  border-bottom-color: var(--w-ink-soft);
 }
 
 :global([data-appearance='night']) .roleOption {
-  border-bottom-color: #42483f;
+  border-bottom-color: var(--w-ink-soft);
 }
 
 :global([data-appearance='night']) .footer {
-  color: #aab4a7;
+  color: var(--w-ink-soft);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 47.99rem) {
   .header {
     min-height: 62px;
     padding-inline: 20px;
@@ -459,7 +459,7 @@
   }
 }
 
-@media (max-width: 390px) {
+@media (max-width: 47.99rem) {
   .main {
     padding-inline: 18px;
   }
@@ -478,27 +478,11 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .step,
-  .tutiiImage,
-  .voice {
-    animation: none;
-  }
-
-  .primaryAction {
-    transition: none;
-  }
-
-  .roleSymbol {
-    transition: none;
-  }
-}
-
 .detectedNameCard {
   margin-top: 18px;
   padding: 16px;
-  background: rgba(var(--w-glow-rgb, 212, 132, 58), 0.08);
-  border: 1px solid rgba(var(--w-lamp-rgb, 212, 132, 58), 0.25);
+  background: rgba(var(--w-glow-rgb), 0.08);
+  border: 1px solid rgba(var(--w-lamp-rgb), 0.25);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -507,8 +491,8 @@
 }
 
 :global([data-appearance='night']) .detectedNameCard {
-  background: rgba(var(--w-glow-rgb, 212, 132, 58), 0.12);
-  border-color: rgba(var(--w-lamp-rgb, 212, 132, 58), 0.35);
+  background: rgba(var(--w-glow-rgb), 0.12);
+  border-color: rgba(var(--w-lamp-rgb), 0.35);
 }
 
 .detectedNameChoiceRow {
@@ -521,7 +505,7 @@
 .secondaryActionBtn {
   border: 0;
   background: transparent;
-  color: #365d49;
+  color: var(--w-lamp-deep);
   font: inherit;
   font-size: 13.5px;
   font-weight: 600;
@@ -532,11 +516,11 @@
 }
 
 .secondaryActionBtn:hover {
-  color: #294a38;
+  color: var(--w-ink-soft);
 }
 
 :global([data-appearance='night']) .secondaryActionBtn {
-  color: #8bb899;
+  color: var(--w-lamp-deep);
 }
 
 .detectedNameSuggestion {
@@ -550,7 +534,7 @@
 .detectedNamePrompt {
   margin: 0;
   font-size: 13.5px;
-  color: var(--w-lamp, #a85022);
+  color: var(--w-lamp);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -560,23 +544,23 @@
 .detectedNameHelper {
   margin: 0;
   font-size: 12.5px;
-  color: #68736a;
+  color: var(--w-ink-soft);
 }
 
 .useDetectedNameBtn {
   align-self: flex-start;
-  background: rgba(var(--w-lamp-rgb, 212, 132, 58), 0.1);
-  border: 1px solid rgba(var(--w-lamp-rgb, 212, 132, 58), 0.3);
-  color: var(--w-lamp, #a85022);
+  background: rgba(var(--w-lamp-rgb), 0.1);
+  border: 1px solid rgba(var(--w-lamp-rgb), 0.3);
+  color: var(--w-lamp);
   border-radius: 9999px;
   padding: 4px 12px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .useDetectedNameBtn:hover {
-  background: rgba(var(--w-lamp-rgb, 212, 132, 58), 0.18);
+  background: rgba(var(--w-lamp-rgb), 0.18);
 }
 

@@ -132,7 +132,6 @@ export default function OnboardingRoute() {
               bottomOffset={64}
               contentContainerStyle={styles.scrollContent}
               keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
             >
               {/* Each step settles in the way the world moves (a fade only when motion is low). */}
               <WorldEnter key={step}>

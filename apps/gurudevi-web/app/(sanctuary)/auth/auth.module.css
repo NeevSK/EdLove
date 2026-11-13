@@ -5,13 +5,13 @@
   flex-direction: column;
   position: relative;
   overflow-x: hidden;
-  color: var(--w-ink, #18201a);
+  color: var(--w-ink);
   font-family: var(--font-outfit, var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif));
-  transition: color 0.3s ease;
+  transition: color var(--w-dur) var(--w-ease);
 }
 
 :global([data-appearance="night"]) .viewport {
-  color: var(--w-ink, #f3ead8);
+  color: var(--w-ink);
 }
 
 
@@ -24,14 +24,14 @@
   max-width: 600px;
   max-height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--w-glow-rgb, 212, 132, 58), 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--w-glow-rgb), 0.18) 0%, transparent 70%);
   filter: blur(48px);
   pointer-events: none;
   z-index: 1;
 }
 
 :global([data-appearance="night"]) .ambientOrb1 {
-  background: radial-gradient(circle, rgba(var(--w-glow-rgb, 212, 132, 58), 0.14) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--w-glow-rgb), 0.14) 0%, transparent 70%);
 }
 
 .ambientOrb2 {
@@ -43,14 +43,14 @@
   max-width: 550px;
   max-height: 550px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--w-lamp-rgb, 40, 94, 93), 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--w-lamp-rgb), 0.12) 0%, transparent 70%);
   filter: blur(48px);
   pointer-events: none;
   z-index: 1;
 }
 
 :global([data-appearance="night"]) .ambientOrb2 {
-  background: radial-gradient(circle, rgba(var(--w-lamp-rgb, 40, 94, 93), 0.14) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--w-lamp-rgb), 0.14) 0%, transparent 70%);
 }
 
 .header {
@@ -78,12 +78,12 @@
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background-color: rgba(var(--w-lamp-rgb, 212, 132, 58), 0.14);
+  background-color: rgba(var(--w-lamp-rgb), 0.14);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  border: 1px solid rgba(var(--w-lamp-rgb, 212, 132, 58), 0.25);
+  border: 1px solid rgba(var(--w-lamp-rgb), 0.25);
 }
 
 .brandText {
@@ -105,30 +105,30 @@
   gap: 6px;
   font-size: 13px;
   font-weight: 700;
-  color: #7a6e5f;
+  color: var(--w-ink-soft);
   text-decoration: none;
   padding: 6px 14px;
   border-radius: 999px;
-  border: 1.25px solid rgba(42, 35, 24, 0.14);
-  background: rgba(255, 253, 248, 0.7);
-  transition: all 0.15s ease;
+  border: 1.25px solid color-mix(in srgb, var(--w-ink) 14%, transparent);
+  background: color-mix(in srgb, var(--w-raised) 70%, transparent);
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 :global([data-appearance="night"]) .backLink {
-  background: rgba(42, 35, 24, 0.6);
-  border-color: rgba(245, 237, 214, 0.15);
-  color: #c8bfb0;
+  background: color-mix(in srgb, var(--w-ink) 60%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 15%, transparent);
+  color: var(--w-line);
 }
 
 .backLink:hover {
-  color: var(--color-charcoal-truth, #131e27);
-  border-color: rgba(42, 35, 24, 0.3);
-  background: #ffffff;
+  color: var(--color-charcoal-truth);
+  border-color: color-mix(in srgb, var(--w-ink) 30%, transparent);
+  background: var(--w-raised);
 }
 
 :global([data-appearance="night"]) .backLink:hover {
-  color: #fffdf8;
-  background: rgba(55, 48, 38, 0.9);
+  color: var(--w-raised);
+  background: color-mix(in srgb, var(--w-ink) 90%, transparent);
 }
 
 .stage {
@@ -153,7 +153,7 @@
   align-items: center;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 63.99rem) {
   .authGrid {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -193,22 +193,22 @@
   letter-spacing: -0.03em;
   line-height: 1.2;
   margin: 12px 0 10px 0;
-  color: var(--color-charcoal-truth, #131e27);
+  color: var(--color-charcoal-truth);
 }
 
 :global([data-appearance="night"]) .heroTitle {
-  color: #fffdf8;
+  color: var(--w-raised);
 }
 
 .heroDesc {
   font-size: 15px;
   line-height: 1.6;
-  color: var(--color-mud-brown, #453c35);
+  color: var(--color-mud-brown);
   margin: 0;
 }
 
 :global([data-appearance="night"]) .heroDesc {
-  color: #c8bfb0;
+  color: var(--w-line);
 }
 
 .tutiiGuideContainer {
@@ -230,11 +230,12 @@
   width: clamp(260px, 32vw, 360px);
   height: clamp(260px, 32vw, 360px);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(212, 132, 58, 0.24) 0%, rgba(212, 132, 58, 0.06) 55%, transparent 75%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--w-lamp) 24%, transparent) 0%, color-mix(in srgb, var(--w-lamp) 6%, transparent) 55%, transparent 75%);
   display: flex;
   align-items: center;
   justify-content: center;
   animation: haloBreath 5s ease-in-out infinite alternate;
+  color: var(--w-on-lamp);
 }
 
 @keyframes haloBreath {
@@ -247,7 +248,7 @@
   height: auto;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 14px 28px rgba(168, 80, 34, 0.28));
+  filter: drop-shadow(0 14px 28px color-mix(in srgb, var(--w-lamp) 28%, transparent));
   animation: tutiiLevitate 4.5s ease-in-out infinite alternate;
 }
 
@@ -261,7 +262,7 @@
   font-family: var(--font-fraunces, Georgia, serif);
   font-size: clamp(17px, 1.8vw, 22px);
   line-height: 1.5;
-  color: var(--color-mud-brown, #453c35);
+  color: var(--color-mud-brown);
   margin: 0;
   max-width: 32ch;
   font-weight: 500;
@@ -269,7 +270,7 @@
 }
 
 :global([data-appearance="night"]) .unboxedLede {
-  color: #d8cebc;
+  color: var(--w-lamp-deep);
 }
 
 /* 3 Balanced Pills Stack */
@@ -285,53 +286,53 @@
   border-radius: 9999px;
   font-weight: 700;
   font-size: 14.5px;
-  border: 1.5px solid var(--w-line, rgba(42, 35, 24, 0.14));
-  background: color-mix(in srgb, var(--w-raised, #ffffff) 84%, transparent);
+  border: 1.5px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 84%, transparent);
   backdrop-filter: blur(8px);
-  color: var(--w-ink, #131e27);
+  color: var(--w-ink);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  box-shadow: 0 2px 0 rgba(107, 100, 128, 0.1);
-  transition: all 0.14s ease;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--w-shadow-tint) 10%, transparent);
+  transition: all var(--w-dur-micro) var(--w-ease);
   font-family: inherit;
   width: 100%;
 }
 
 :global([data-appearance="night"]) .pillBtn {
-  background: color-mix(in srgb, var(--w-raised, #312b23) 78%, transparent);
-  border-color: var(--w-line, rgba(245, 237, 214, 0.16));
-  color: #fffdf8;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  background: color-mix(in srgb, var(--w-raised) 78%, transparent);
+  border-color: var(--w-line);
+  color: var(--w-raised);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--w-shadow-tint) 30%, transparent);
 }
 
 .pillBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-raised, #ffffff) 96%, transparent);
+  background: color-mix(in srgb, var(--w-raised) 96%, transparent);
   transform: translateY(-1px);
-  border-color: var(--w-line, rgba(42, 35, 24, 0.28));
-  box-shadow: 0 3px 0 rgba(107, 100, 128, 0.15);
+  border-color: var(--w-line);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--w-shadow-tint) 15%, transparent);
 }
 
 :global([data-appearance="night"]) .pillBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-raised, #3a332a) 90%, transparent);
-  border-color: var(--w-line, rgba(245, 237, 214, 0.3));
+  background: color-mix(in srgb, var(--w-raised) 90%, transparent);
+  border-color: var(--w-line);
 }
 
 .pillBtnEmail {
-  background: color-mix(in srgb, var(--w-sunken, #f7f2e8) 82%, transparent);
-  border-color: var(--w-line, rgba(42, 35, 24, 0.18));
+  background: color-mix(in srgb, var(--w-sunken) 82%, transparent);
+  border-color: var(--w-line);
 }
 
 :global([data-appearance="night"]) .pillBtnEmail {
-  background: color-mix(in srgb, var(--w-sunken, #2a241d) 78%, transparent);
-  border-color: var(--w-line, rgba(245, 237, 214, 0.18));
+  background: color-mix(in srgb, var(--w-sunken) 78%, transparent);
+  border-color: var(--w-line);
 }
 
 .emailGlyph {
   font-size: 16px;
-  color: var(--color-sanctuary-saffron, #a85022);
+  color: var(--color-sanctuary-saffron);
 }
 
 /* Progressive Email Focus View */
@@ -353,26 +354,26 @@
   border: none;
   font-size: 13.5px;
   font-weight: 600;
-  color: #7a6e5f;
+  color: var(--w-ink-soft);
   cursor: pointer;
   padding: 4px 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: color 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease);
 }
 
 .backToPillsBtn:hover {
-  color: var(--color-charcoal-truth, #131e27);
+  color: var(--color-charcoal-truth);
   text-decoration: underline;
 }
 
 :global([data-appearance="night"]) .backToPillsBtn {
-  color: #a89f92;
+  color: var(--w-ink-soft);
 }
 
 :global([data-appearance="night"]) .backToPillsBtn:hover {
-  color: #fffdf8;
+  color: var(--w-raised);
 }
 
 /* Micro-links (Zero Boxes) */
@@ -384,13 +385,13 @@
 .sandboxTextTrigger {
   background: transparent;
   border: none;
-  color: var(--color-sanctuary-saffron, #a85022);
+  color: var(--color-sanctuary-saffron);
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .sandboxTextTrigger:hover {
@@ -400,11 +401,11 @@
 
 
 .formPanel {
-  background: color-mix(in srgb, var(--w-raised, #f8fbf1) 74%, transparent);
-  border: 1.5px solid var(--w-line, rgba(42, 35, 24, 0.14));
+  background: color-mix(in srgb, var(--w-raised) 74%, transparent);
+  border: 1.5px solid var(--w-line);
   border-radius: 32px;
   padding: 36px 32px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 20px 44px -12px rgba(42, 35, 24, 0.12);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--w-shadow-tint) 75%, transparent), 0 20px 44px -12px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   backdrop-filter: blur(24px) saturate(140%);
   -webkit-backdrop-filter: blur(24px) saturate(140%);
   display: flex;
@@ -418,9 +419,9 @@
 
 :global([data-appearance="night"]) .formPanel,
 :global([data-mode="dark"]) .formPanel {
-  background: color-mix(in srgb, var(--w-raised, #1a2617) 70%, transparent);
-  border-color: var(--w-line, rgba(245, 237, 214, 0.16));
-  box-shadow: inset 0 1px 0 rgba(185, 219, 90, 0.28), 0 24px 48px -12px rgba(0, 0, 0, 0.65);
+  background: color-mix(in srgb, var(--w-raised) 70%, transparent);
+  border-color: var(--w-line);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--w-lamp) 28%, transparent), 0 24px 48px -12px color-mix(in srgb, var(--w-shadow-tint) 65%, transparent);
 }
 
 .formHeader {
@@ -438,12 +439,12 @@
   letter-spacing: -0.02em;
   line-height: 1.2;
   margin: 0;
-  color: var(--color-charcoal-truth, #131e27);
+  color: var(--color-charcoal-truth);
   text-align: center;
 }
 
 :global([data-appearance="night"]) .formTitle {
-  color: #fffdf8;
+  color: var(--w-raised);
 }
 
 .authModePill {
@@ -454,18 +455,18 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #7a6e5f;
-  background: rgba(42, 35, 24, 0.06);
-  border: 1px solid rgba(42, 35, 24, 0.1);
+  color: var(--w-ink-soft);
+  background: color-mix(in srgb, var(--w-ink) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 10%, transparent);
   padding: 4px 14px;
   border-radius: 9999px;
   margin-top: 2px;
 }
 
 :global([data-appearance="night"]) .authModePill {
-  color: #c8bfb0;
-  background: rgba(245, 237, 214, 0.08);
-  border-color: rgba(245, 237, 214, 0.14);
+  color: var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 8%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 14%, transparent);
 }
 
 
@@ -475,41 +476,41 @@
   border-radius: 16px;
   font-weight: 700;
   font-size: 14px;
-  border: 1.5px solid var(--w-line, rgba(42, 35, 24, 0.14));
-  background: color-mix(in srgb, var(--w-raised, #ffffff) 84%, transparent);
+  border: 1.5px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 84%, transparent);
   backdrop-filter: blur(8px);
-  color: var(--w-ink, #131e27);
+  color: var(--w-ink);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 2px 0 rgba(107, 100, 128, 0.12);
-  transition: all 0.12s ease;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
+  transition: all var(--w-dur-micro) var(--w-ease);
   font-family: inherit;
   text-decoration: none;
 }
 
 :global([data-appearance="night"]) .oauthBtn {
-  background: color-mix(in srgb, var(--w-raised, #312b23) 78%, transparent);
-  border-color: var(--w-line, rgba(245, 237, 214, 0.16));
-  color: #fffdf8;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  background: color-mix(in srgb, var(--w-raised) 78%, transparent);
+  border-color: var(--w-line);
+  color: var(--w-raised);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--w-shadow-tint) 30%, transparent);
 }
 
 .oauthBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-raised, #ffffff) 96%, transparent);
+  background: color-mix(in srgb, var(--w-raised) 96%, transparent);
   transform: translateY(-1px);
-  box-shadow: 0 3px 0 rgba(107, 100, 128, 0.16);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--w-shadow-tint) 16%, transparent);
 }
 
 :global([data-appearance="night"]) .oauthBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-raised, #3a332a) 90%, transparent);
+  background: color-mix(in srgb, var(--w-raised) 90%, transparent);
 }
 
 .oauthBtn:active:not(:disabled) {
   transform: translateY(1.5px);
-  box-shadow: 0 0.5px 0 rgba(107, 100, 128, 0.12);
+  box-shadow: 0 0.5px 0 color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
 }
 
 .oauthBtn:disabled {
@@ -521,14 +522,14 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--w-raised);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   font-weight: 900;
-  color: #4285f4;
-  border: 1px solid rgba(66, 133, 244, 0.2);
+  color: var(--w-lamp-deep);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 20%, transparent);
 }
 
 .appleGlyph {
@@ -546,65 +547,65 @@
 .inputLabel {
   font-size: 13px;
   font-weight: 700;
-  color: var(--color-charcoal-truth, #131e27);
+  color: var(--color-charcoal-truth);
 }
 
 :global([data-appearance="night"]) .inputLabel {
-  color: #f5edd6;
+  color: var(--w-raised);
 }
 
 .textInput {
   height: 48px;
   border-radius: 16px;
-  border: 1.5px solid rgba(42, 35, 24, 0.18);
-  background: #ffffff;
+  border: 1.5px solid color-mix(in srgb, var(--w-ink) 18%, transparent);
+  background: var(--w-raised);
   padding: 0 16px;
   font-size: 15px;
-  color: var(--color-charcoal-truth, #131e27);
+  color: var(--color-charcoal-truth);
   width: 100%;
   box-sizing: border-box;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   font-family: inherit;
 }
 
 :global([data-appearance="night"]) .textInput {
-  background: #1c1813;
-  border-color: rgba(245, 237, 214, 0.2);
-  color: #fffdf8;
+  background: var(--w-ink);
+  border-color: color-mix(in srgb, var(--w-raised) 20%, transparent);
+  color: var(--w-raised);
 }
 
 .textInput:focus {
   outline: none;
-  border-color: var(--color-sanctuary-saffron, #d4843a);
-  box-shadow: 0 0 0 3px rgba(212, 132, 58, 0.18);
+  border-color: var(--color-sanctuary-saffron);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp) 18%, transparent);
 }
 
 .submitBtn {
   height: 50px;
   border-radius: 16px;
-  background-color: #d4843a;
-  color: #fffdf7;
+  background-color: var(--w-lamp);
+  color: var(--w-on-lamp);
   font-size: 15.5px;
   font-weight: 800;
-  border: 1.5px solid #b06927;
-  box-shadow: 0 3.5px 0 #8a4f19;
+  border: 1.5px solid var(--w-lamp);
+  box-shadow: 0 3.5px 0 var(--w-lamp);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   width: 100%;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease), background-color var(--w-dur-micro) var(--w-ease);
   font-family: inherit;
 }
 
 .submitBtn:hover:not(:disabled) {
-  background-color: #dc8c42;
+  background-color: var(--w-lamp);
 }
 
 .submitBtn:active:not(:disabled) {
   transform: translateY(2px);
-  box-shadow: 0 1.5px 0 #8a4f19;
+  box-shadow: 0 1.5px 0 var(--w-lamp);
 }
 
 .submitBtn:disabled {
@@ -615,9 +616,9 @@
 .statusMessage {
   padding: 12px 16px;
   border-radius: 14px;
-  background: rgba(40, 94, 93, 0.1);
-  border: 1px solid rgba(40, 94, 93, 0.25);
-  color: #1c4a49;
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  color: var(--w-ink-soft);
   font-size: 13px;
   font-weight: 600;
   line-height: 1.45;
@@ -626,55 +627,55 @@
 .errorMessage {
   padding: 12px 16px;
   border-radius: 14px;
-  background: rgba(168, 80, 34, 0.1);
-  border: 1px solid rgba(168, 80, 34, 0.25);
-  color: #8c3214;
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  color: var(--w-danger);
   font-size: 13px;
   font-weight: 600;
   line-height: 1.45;
 }
 
 .disclosureDetails {
-  border-top: 1px solid rgba(42, 35, 24, 0.1);
+  border-top: 1px solid color-mix(in srgb, var(--w-ink) 10%, transparent);
   padding-top: 14px;
 }
 
 :global([data-appearance="night"]) .disclosureDetails {
-  border-color: rgba(245, 237, 214, 0.1);
+  border-color: color-mix(in srgb, var(--w-raised) 10%, transparent);
 }
 
 .disclosureSummary {
   font-size: 13px;
   font-weight: 700;
-  color: #7a6e5f;
+  color: var(--w-ink-soft);
   cursor: pointer;
   user-select: none;
-  transition: color 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease);
 }
 
 :global([data-appearance="night"]) .disclosureSummary {
-  color: #9e9385;
+  color: var(--w-ink-soft);
 }
 
 .disclosureSummary:hover {
-  color: var(--color-charcoal-truth, #131e27);
+  color: var(--color-charcoal-truth);
 }
 
 :global([data-appearance="night"]) .disclosureSummary:hover {
-  color: #fffdf8;
+  color: var(--w-raised);
 }
 
 
 .magicLinkNote {
   font-size: 12.5px;
-  color: #7a6e5f;
+  color: var(--w-ink-soft);
   margin: 0;
   line-height: 1.5;
   text-align: center;
 }
 
 :global([data-appearance="night"]) .magicLinkNote {
-  color: #a89e90;
+  color: var(--w-ink-soft);
 }
 
 .passwordSwitchBtn {
@@ -686,30 +687,30 @@
   justify-content: center;
   gap: 6px;
   font-size: 13px;
-  color: #7a6e5f;
+  color: var(--w-ink-soft);
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   font-family: inherit;
   margin-top: -4px;
 }
 
 :global([data-appearance="night"]) .passwordSwitchBtn {
-  color: #c8bfb0;
+  color: var(--w-line);
 }
 
 .passwordSwitchAction {
-  color: var(--color-sanctuary-saffron, #a85022);
+  color: var(--color-sanctuary-saffron);
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .passwordSwitchBtn:hover .passwordSwitchAction {
-  color: #8a4f19;
+  color: var(--w-lamp-deep);
 }
 
 :global([data-appearance="night"]) .passwordSwitchBtn:hover .passwordSwitchAction {
-  color: #f7a86c;
+  color: var(--w-lamp-deep);
 }
 
 
@@ -717,7 +718,7 @@
   align-self: flex-start;
   background: none;
   border: none;
-  color: #a85022;
+  color: var(--w-lamp-deep);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -735,7 +736,7 @@
   gap: 10px;
   position: relative;
   z-index: 10;
-  border-top: 1px solid rgba(42, 35, 24, 0.08);
+  border-top: 1px solid color-mix(in srgb, var(--w-ink) 8%, transparent);
   max-width: 1120px;
   margin: 0 auto;
   width: 100%;
@@ -743,7 +744,7 @@
 }
 
 :global([data-appearance="night"]) .footer {
-  border-color: rgba(245, 237, 214, 0.08);
+  border-color: color-mix(in srgb, var(--w-raised) 8%, transparent);
 }
 
 .footerLinks {
@@ -752,35 +753,35 @@
   gap: 16px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #7a6e5f;
+  color: var(--w-ink-soft);
   flex-wrap: wrap;
   justify-content: center;
 }
 
 :global([data-appearance="night"]) .footerLinks {
-  color: #9e9385;
+  color: var(--w-ink-soft);
 }
 
 .footerLinks a {
   color: inherit;
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color var(--w-dur-micro) var(--w-ease);
 }
 
 .footerLinks a:hover {
-  color: var(--color-sanctuary-saffron, #a85022);
+  color: var(--color-sanctuary-saffron);
   text-decoration: underline;
 }
 
 .colophon {
   font-size: 11.5px;
-  color: rgba(42, 35, 24, 0.6);
+  color: color-mix(in srgb, var(--w-ink) 60%, transparent);
   text-align: center;
   line-height: 1.5;
 }
 
 :global([data-appearance="night"]) .colophon {
-  color: rgba(245, 237, 214, 0.5);
+  color: color-mix(in srgb, var(--w-raised) 50%, transparent);
 }
 
 .metaDivider {

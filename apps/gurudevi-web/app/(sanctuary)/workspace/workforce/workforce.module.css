@@ -18,21 +18,21 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--color-gold-deep, #9a5b2d);
+  color: var(--color-gold-deep);
   margin: 0;
 }
 
 .title {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: clamp(2rem, 4vw, 2.75rem);
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   margin: 0;
   line-height: 1.15;
 }
 
 .description {
   font-size: 1.05rem;
-  color: var(--color-ink-muted, #62564d);
+  color: var(--color-ink-muted);
   margin: 0;
   max-width: 48rem;
   line-height: 1.6;
@@ -46,26 +46,26 @@
 }
 
 .metricCard {
-  background: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1.25rem 1.5rem;
-  box-shadow: 0 4px 16px rgba(50, 35, 20, 0.04);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .metricCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(50, 35, 20, 0.08);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
 }
 
 .metricLabel {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--color-ink-soft, #74675d);
+  color: var(--color-ink-soft, var(--w-ink-soft));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -73,20 +73,20 @@
 .metricValue {
   font-size: 2rem;
   font-weight: 750;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   font-feature-settings: "tnum";
 }
 
 .metricHint {
   font-size: 0.82rem;
-  color: var(--color-ink-muted, #8b7d72);
+  color: var(--color-ink-muted);
 }
 
 /* Tab Bar */
 .tabBar {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 2px solid var(--color-border-subtle, #f0e7df);
+  border-bottom: 2px solid var(--color-border-subtle);
   padding-bottom: 0.25rem;
 }
 
@@ -97,22 +97,22 @@
   padding: 0.75rem 1.25rem;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-ink-soft, #74675d);
+  color: var(--color-ink-soft, var(--w-ink-soft));
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   margin-bottom: -2px;
 }
 
 .tabButton:hover {
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
 }
 
 .activeTab {
-  color: var(--color-gold-deep, #9a5b2d);
-  border-bottom-color: var(--color-gold-deep, #9a5b2d);
+  color: var(--color-gold-deep);
+  border-bottom-color: var(--color-gold-deep);
 }
 
 /* Tab Contents */
@@ -124,9 +124,9 @@
 
 /* Notification banner */
 .notification {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #166534;
+  background: var(--w-raised);
+  border: 1px solid var(--w-raised);
+  color: var(--w-ink-soft);
   padding: 1rem 1.25rem;
   border-radius: 0.75rem;
   font-weight: 500;
@@ -150,25 +150,25 @@
 }
 
 .filterButton {
-  background: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 0.45rem 0.9rem;
   font-size: 0.88rem;
   font-weight: 550;
-  color: var(--color-ink-soft, #74675d);
+  color: var(--color-ink-soft, var(--w-ink-soft));
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .filterButton:hover {
-  border-color: var(--color-gold-deep, #9a5b2d);
+  border-color: var(--color-gold-deep);
 }
 
 .activeFilter {
-  background: var(--color-gold-deep, #9a5b2d);
-  border-color: var(--color-gold-deep, #9a5b2d);
-  color: #fff;
+  background: var(--color-gold-deep);
+  border-color: var(--color-gold-deep);
+  color: var(--w-raised);
 }
 
 .leaveList {
@@ -178,14 +178,14 @@
 }
 
 .leaveCard {
-  background: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  box-shadow: 0 2px 8px rgba(50, 35, 20, 0.03);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
 }
 
 .leaveCardHeader {
@@ -204,13 +204,13 @@
 .staffName {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .staffRole {
   font-size: 0.88rem;
-  color: var(--color-ink-muted, #74675d);
+  color: var(--color-ink-muted);
   margin: 0;
 }
 
@@ -232,23 +232,23 @@
 }
 
 .badgeApproved {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--w-raised);
+  color: var(--w-lamp-deep);
 }
 
 .badgePending {
-  background: #fef3c7;
-  color: #b45309;
+  background: var(--w-raised);
+  color: var(--w-lamp-deep);
 }
 
 .badgeRejected {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--w-raised);
+  color: var(--w-danger);
 }
 
 .badgeType {
-  background: #f3f4f6;
-  color: #4b5563;
+  background: var(--w-raised);
+  color: var(--w-ink-soft);
 }
 
 .leaveDetails {
@@ -256,8 +256,8 @@
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   gap: 1rem;
   padding: 1rem 0;
-  border-top: 1px solid var(--color-border-subtle, #f0e7df);
-  border-bottom: 1px solid var(--color-border-subtle, #f0e7df);
+  border-top: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .detailItem {
@@ -270,18 +270,18 @@
   font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--color-ink-muted, #8b7d72);
+  color: var(--color-ink-muted);
 }
 
 .detailValue {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
 }
 
 .reason {
   font-size: 0.95rem;
-  color: var(--color-ink-soft, #52473f);
+  color: var(--color-ink-soft, var(--w-ink-soft));
   line-height: 1.5;
   margin: 0;
 }
@@ -293,8 +293,8 @@
 }
 
 .btnPrimary {
-  background: var(--color-gold-deep, #9a5b2d);
-  color: #fff;
+  background: var(--color-gold-deep);
+  color: var(--w-raised);
   border: none;
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
@@ -304,7 +304,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--w-dur-micro) var(--w-ease);
 }
 
 .btnPrimary:hover {
@@ -312,9 +312,9 @@
 }
 
 .btnDanger {
-  background: #fff;
-  color: #b91c1c;
-  border: 1px solid #fca5a5;
+  background: var(--w-raised);
+  color: var(--w-danger);
+  border: 1px solid var(--w-line);
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
@@ -323,11 +323,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  transition: background 0.15s ease;
+  transition: background var(--w-dur-micro) var(--w-ease);
 }
 
 .btnDanger:hover {
-  background: #fef2f2;
+  background: var(--w-raised);
 }
 
 /* Faculty Roster Grid */
@@ -338,14 +338,14 @@
 }
 
 .facultyCard {
-  background: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  box-shadow: 0 2px 8px rgba(50, 35, 20, 0.03);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
 }
 
 .facultyCardHeader {
@@ -357,20 +357,20 @@
 .facultyName {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .facultyDept {
   font-size: 0.85rem;
-  color: var(--color-gold-deep, #9a5b2d);
+  color: var(--color-gold-deep);
   font-weight: 600;
   margin: 0;
 }
 
 .facultyRole {
   font-size: 0.88rem;
-  color: var(--color-ink-muted, #74675d);
+  color: var(--color-ink-muted);
   margin: 0.2rem 0 0;
 }
 
@@ -378,10 +378,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
-  background: var(--color-background-soft, #fcf8f3);
+  background: var(--color-background-soft);
   padding: 0.75rem;
   border-radius: 0.75rem;
-  border: 1px solid var(--color-border-subtle, #f0e7df);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .balanceItem {
@@ -394,14 +394,14 @@
 .balanceCount {
   font-size: 1.25rem;
   font-weight: 750;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
 }
 
 .balanceLabel {
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--color-ink-muted, #8b7d72);
+  color: var(--color-ink-muted);
 }
 
 .classesList {
@@ -414,17 +414,17 @@
   font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--color-ink-muted, #8b7d72);
+  color: var(--color-ink-muted);
 }
 
 .classPill {
   display: inline-block;
-  background: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.35rem;
   padding: 0.2rem 0.5rem;
   font-size: 0.8rem;
-  color: var(--color-ink-soft, #62564d);
+  color: var(--color-ink-soft, var(--w-ink-soft));
   margin-right: 0.35rem;
   margin-bottom: 0.35rem;
 }
@@ -432,14 +432,14 @@
 /* Apply Form */
 .formCard {
   max-width: 44rem;
-  background: var(--color-surface, #fffdfa);
-  border: 1px solid var(--color-border, #e8ddd3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  box-shadow: 0 4px 16px rgba(50, 35, 20, 0.04);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
 }
 
 .formGrid {
@@ -461,7 +461,7 @@
 .label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
 }
 
 .input,
@@ -469,22 +469,22 @@
 .textarea {
   width: 100%;
   padding: 0.65rem 0.85rem;
-  border: 1px solid var(--color-border, #d9ccbe);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-  background: #fff;
+  background: var(--w-raised);
   font-size: 0.95rem;
-  color: var(--color-ink, #1f1915);
+  color: var(--color-ink);
   box-sizing: border-box;
   font-family: inherit;
-  transition: border-color 0.15s ease;
+  transition: border-color var(--w-dur-micro) var(--w-ease);
 }
 
 .input:focus,
 .select:focus,
 .textarea:focus {
   outline: none;
-  border-color: var(--color-gold-deep, #9a5b2d);
-  box-shadow: 0 0 0 3px rgba(154, 91, 45, 0.12);
+  border-color: var(--color-gold-deep);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp) 12%, transparent);
 }
 
 .textarea {

@@ -1,6 +1,7 @@
 import type { ExperienceProfile } from '@repo/ui/context/types';
 
 vi.mock('../haptics', () => ({
+  haptic: vi.fn(),
   hapticError: vi.fn(),
   hapticLight: vi.fn(),
   hapticMedium: vi.fn(),
@@ -34,6 +35,10 @@ describe('feedback policy', () => {
       sound: 'success',
     });
     expect(resolveFeedbackDecision('milestone', profile)).toEqual({
+      haptic: 'success',
+      sound: 'milestone',
+    });
+    expect(resolveFeedbackDecision('milestone', { ...profile, sound: 'off' })).toEqual({
       haptic: 'success',
       sound: null,
     });

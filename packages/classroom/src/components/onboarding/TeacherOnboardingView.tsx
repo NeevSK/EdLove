@@ -28,7 +28,6 @@ export default function TeacherOnboardingView({
 
   return (
     <ScrollView
-      showsVerticalScrollIndicator={false}
       contentContainerClassName="p-6 self-center w-full max-w-[800px]"
     >
       <View className="gap-10 py-10">

@@ -3,10 +3,10 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-line, #e2e8f0);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line, var(--w-raised));
   border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
 }
 
 .header {
@@ -18,13 +18,13 @@
 .title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-text-primary, #0f172a);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .subtitle {
   font-size: 0.875rem;
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
@@ -40,11 +40,11 @@
   gap: 0.5rem;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--w-ink-soft);
 }
 
 .stepDotActive {
-  color: var(--color-action, #0284c7);
+  color: var(--color-action);
 }
 
 .wizardCard {
@@ -53,24 +53,24 @@
   gap: 1.25rem;
   padding: 1.5rem;
   border-radius: 0.75rem;
-  background: var(--color-surface-subtle, #f8fafc);
-  border: 1px solid var(--color-line, #e2e8f0);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-line, var(--w-raised));
 }
 
 .question {
   font-size: 1.0625rem;
   font-weight: 700;
-  color: var(--color-text-primary, #0f172a);
+  color: var(--color-text-primary);
 }
 
 .textarea {
   width: 100%;
   padding: 0.75rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, #cbd5e1);
-  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-line, var(--w-line));
+  background: var(--color-surface);
   font-size: 0.875rem;
-  color: var(--color-text-primary, #0f172a);
+  color: var(--color-text-primary);
   font-family: inherit;
   resize: vertical;
 }
@@ -84,20 +84,20 @@
 .trapBtn {
   padding: 0.625rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, #cbd5e1);
-  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-line, var(--w-line));
+  background: var(--color-surface);
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--color-text-primary, #0f172a);
+  color: var(--color-text-primary);
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .trapBtnActive {
-  border-color: var(--color-action, #0284c7);
-  background: rgba(2, 132, 199, 0.08);
-  color: var(--color-action, #0284c7);
+  border-color: var(--color-action);
+  background: color-mix(in srgb, var(--w-lamp) 8%, transparent);
+  color: var(--color-action);
 }
 
 .actionRow {
@@ -110,8 +110,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  background: var(--color-action, #0284c7);
-  color: #ffffff;
+  background: var(--color-action);
+  color: var(--w-raised);
   padding: 0.625rem 1.25rem;
   border-radius: 0.5rem;
   font-weight: 600;

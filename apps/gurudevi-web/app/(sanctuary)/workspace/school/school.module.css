@@ -22,13 +22,13 @@
 
 /* Hero Banner & Crest Header */
 .heroCard {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 246, 240, 0.92));
-  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--w-raised) 95%, transparent), color-mix(in srgb, var(--w-raised) 92%, transparent));
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 28%, transparent);
   border-radius: 28px;
   padding: clamp(1.5rem, 3vw, 2.5rem);
   box-shadow:
-    0 16px 36px -12px rgba(90, 70, 30, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+    0 16px 36px -12px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--w-shadow-tint) 80%, transparent) inset;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -37,9 +37,9 @@
 }
 
 [data-appearance="night"] .heroCard {
-  background: linear-gradient(135deg, rgba(24, 28, 40, 0.95), rgba(15, 18, 26, 0.92));
-  border-color: rgba(212, 175, 55, 0.2);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--w-ink) 95%, transparent), color-mix(in srgb, var(--w-ink) 92%, transparent));
+  border-color: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  box-shadow: 0 16px 40px -10px color-mix(in srgb, var(--w-shadow-tint) 50%, transparent);
 }
 
 .heroContent {
@@ -53,15 +53,15 @@
   width: 96px;
   height: 96px;
   border-radius: 24px;
-  background: linear-gradient(135deg, #7a1c20, #4a0e12);
-  color: #f8f4ea;
+  background: linear-gradient(135deg, var(--w-danger), var(--w-ink));
+  color: var(--w-on-danger);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.75rem;
-  box-shadow: 0 10px 24px -6px rgba(122, 28, 32, 0.45);
+  box-shadow: 0 10px 24px -6px color-mix(in srgb, var(--w-danger) 45%, transparent);
   flex-shrink: 0;
-  border: 2px solid rgba(248, 244, 234, 0.4);
+  border: 2px solid color-mix(in srgb, var(--w-raised) 40%, transparent);
 }
 
 .heroText {
@@ -83,7 +83,7 @@
   font-size: clamp(1.6rem, 3vw, 2.3rem);
   font-weight: 800;
   letter-spacing: -0.025em;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
   margin: 0;
   line-height: 1.2;
 }
@@ -91,14 +91,14 @@
 .subTitles {
   font-size: 1rem;
   font-weight: 600;
-  color: #7a1c20;
+  color: var(--w-danger);
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
 [data-appearance="night"] .subTitles {
-  color: #f3c978;
+  color: var(--w-lamp-deep);
 }
 
 .badgesRow {
@@ -119,45 +119,45 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  background: rgba(122, 28, 32, 0.08);
-  color: #7a1c20;
-  border: 1px solid rgba(122, 28, 32, 0.16);
+  background: color-mix(in srgb, var(--w-danger) 8%, transparent);
+  color: var(--w-danger);
+  border: 1px solid color-mix(in srgb, var(--w-danger) 16%, transparent);
 }
 
 [data-appearance="night"] .badge {
-  background: rgba(243, 201, 120, 0.12);
-  color: #f3c978;
-  border-color: rgba(243, 201, 120, 0.24);
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
+  color: var(--w-lamp-deep);
+  border-color: color-mix(in srgb, var(--w-lamp) 24%, transparent);
 }
 
 .censusBadge {
-  background: rgba(16, 185, 129, 0.08);
-  color: #065f46;
-  border-color: rgba(16, 185, 129, 0.24);
+  background: color-mix(in srgb, var(--w-lamp) 8%, transparent);
+  color: var(--w-ink-soft);
+  border-color: color-mix(in srgb, var(--w-lamp) 24%, transparent);
 }
 
 [data-appearance="night"] .censusBadge {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border-color: rgba(16, 185, 129, 0.3);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  color: var(--w-success);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .handleBadge {
-  background: rgba(90, 80, 70, 0.06);
-  color: #555048;
-  border-color: rgba(90, 80, 70, 0.12);
+  background: color-mix(in srgb, var(--w-ink-soft) 6%, transparent);
+  color: var(--w-ink-soft);
+  border-color: color-mix(in srgb, var(--w-ink-soft) 12%, transparent);
 }
 
 [data-appearance="night"] .handleBadge {
-  background: rgba(255, 255, 255, 0.06);
-  color: #d1d5db;
-  border-color: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--w-raised) 6%, transparent);
+  color: var(--w-line);
+  border-color: color-mix(in srgb, var(--w-raised) 12%, transparent);
 }
 
 .mottoText {
   font-style: italic;
   font-size: 0.95rem;
-  color: var(--color-ink-muted, #666159);
+  color: var(--color-ink-muted);
   margin-top: 0.25rem;
 }
 
@@ -167,17 +167,17 @@
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid color-mix(in srgb, var(--w-ink) 6%, transparent);
   padding-top: 1rem;
 }
 
 [data-appearance="night"] .heroActions {
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: color-mix(in srgb, var(--w-raised) 8%, transparent);
 }
 
 .primaryBtn {
-  background: #7a1c20;
-  color: #fff;
+  background: var(--w-danger);
+  color: var(--w-on-danger);
   border: none;
   padding: 0.65rem 1.25rem;
   border-radius: 14px;
@@ -187,20 +187,20 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(122, 28, 32, 0.25);
+  transition: all var(--w-dur-micro) var(--w-ease);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-danger) 25%, transparent);
   text-decoration: none;
 }
 
 .primaryBtn:hover {
-  background: #601518;
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-ink));
   transform: translateY(-1px);
 }
 
 .secondaryBtn {
-  background: rgba(255, 255, 255, 0.85);
-  color: #1f1d1a;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: color-mix(in srgb, var(--w-raised) 85%, transparent);
+  color: var(--w-ink);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 12%, transparent);
   padding: 0.65rem 1.25rem;
   border-radius: 14px;
   font-size: 0.88rem;
@@ -209,18 +209,18 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   text-decoration: none;
 }
 
 [data-appearance="night"] .secondaryBtn {
-  background: rgba(255, 255, 255, 0.06);
-  color: #f8f4ea;
-  border-color: rgba(255, 255, 255, 0.16);
+  background: color-mix(in srgb, var(--w-raised) 6%, transparent);
+  color: var(--w-raised);
+  border-color: color-mix(in srgb, var(--w-raised) 16%, transparent);
 }
 
 .secondaryBtn:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: color-mix(in srgb, var(--w-ink) 4%, transparent);
 }
 
 /* Vitals Cards Grid */
@@ -231,20 +231,20 @@
 }
 
 .vitalCard {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: color-mix(in srgb, var(--w-raised) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 6%, transparent);
   border-radius: 20px;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease;
+  box-shadow: 0 4px 16px -4px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
+  transition: transform var(--w-dur-micro) var(--w-ease);
 }
 
 [data-appearance="night"] .vitalCard {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--w-raised) 3%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 7%, transparent);
 }
 
 .vitalCard:hover {
@@ -256,19 +256,19 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--color-ink-muted, #7e786d);
+  color: var(--color-ink-muted);
 }
 
 .vitalValue {
   font-size: 1.85rem;
   font-weight: 800;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
   letter-spacing: -0.02em;
 }
 
 .vitalSub {
   font-size: 0.78rem;
-  color: #10b981;
+  color: var(--w-lamp-deep);
   font-weight: 600;
 }
 
@@ -276,13 +276,13 @@
 .tabsNav {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 2px solid color-mix(in srgb, var(--w-ink) 6%, transparent);
   overflow-x: auto;
   padding-bottom: 0.5rem;
 }
 
 [data-appearance="night"] .tabsNav {
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: color-mix(in srgb, var(--w-raised) 8%, transparent);
 }
 
 .tabBtn {
@@ -292,25 +292,25 @@
   border-radius: 12px;
   font-size: 0.92rem;
   font-weight: 700;
-  color: var(--color-ink-muted, #666159);
+  color: var(--color-ink-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   white-space: nowrap;
 }
 
 .tabBtn:hover {
-  color: #7a1c20;
-  background: rgba(122, 28, 32, 0.04);
+  color: var(--w-danger);
+  background: color-mix(in srgb, var(--w-danger) 4%, transparent);
 }
 
 .tabActive {
-  color: #7a1c20;
-  background: rgba(122, 28, 32, 0.08);
+  color: var(--w-danger);
+  background: color-mix(in srgb, var(--w-danger) 8%, transparent);
 }
 
 [data-appearance="night"] .tabActive {
-  color: #f3c978;
-  background: rgba(243, 201, 120, 0.12);
+  color: var(--w-lamp-deep);
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
 }
 
 /* Tab Content Surfaces */
@@ -328,8 +328,8 @@
 }
 
 .censusCard {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: color-mix(in srgb, var(--w-raised) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 8%, transparent);
   border-radius: 20px;
   padding: 1.5rem;
   display: flex;
@@ -338,8 +338,8 @@
 }
 
 [data-appearance="night"] .censusCard {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--w-raised) 4%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 8%, transparent);
 }
 
 .censusCard h3 {
@@ -349,7 +349,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
 }
 
 .censusCard dl {
@@ -362,14 +362,14 @@
 .censusCard dt {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--color-ink-muted, #7e786d);
+  color: var(--color-ink-muted);
 }
 
 .censusCard dd {
   font-size: 0.88rem;
   font-weight: 700;
   margin: 0;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
   text-align: right;
 }
 
@@ -384,26 +384,28 @@
 .rollItem {
   display: flex;
   gap: 1.25rem;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: color-mix(in srgb, var(--w-raised) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 6%, transparent);
   border-radius: 20px;
   padding: 1.25rem;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 [data-appearance="night"] .rollItem {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--w-raised) 3%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 8%, transparent);
 }
 
 .rollItemCurrent {
-  border-color: #d4af37;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.06), rgba(255, 255, 255, 0.95));
-  box-shadow: 0 8px 24px -8px rgba(212, 175, 55, 0.2);
+  border-color: var(--w-lamp);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--w-lamp) 6%, transparent), color-mix(in srgb, var(--w-raised) 95%, transparent));
+  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  color: var(--w-on-lamp);
 }
 
 [data-appearance="night"] .rollItemCurrent {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(24, 28, 40, 0.95));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--w-lamp) 10%, transparent), color-mix(in srgb, var(--w-ink) 95%, transparent));
+  color: var(--w-on-lamp);
 }
 
 .tenureDates {
@@ -414,8 +416,8 @@
   width: 100px;
   padding: 0.5rem;
   border-radius: 14px;
-  background: rgba(122, 28, 32, 0.06);
-  color: #7a1c20;
+  background: color-mix(in srgb, var(--w-danger) 6%, transparent);
+  color: var(--w-danger);
   font-weight: 800;
   font-size: 0.85rem;
   text-align: center;
@@ -423,8 +425,8 @@
 }
 
 [data-appearance="night"] .tenureDates {
-  background: rgba(243, 201, 120, 0.1);
-  color: #f3c978;
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  color: var(--w-lamp-deep);
 }
 
 .tenureDetails {
@@ -437,23 +439,23 @@
 .personName {
   font-size: 1.15rem;
   font-weight: 800;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .personRole {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #7a1c20;
+  color: var(--w-danger);
 }
 
 [data-appearance="night"] .personRole {
-  color: #f3c978;
+  color: var(--w-lamp-deep);
 }
 
 .personCitation {
   font-size: 0.88rem;
-  color: var(--color-ink-muted, #555048);
+  color: var(--color-ink-muted);
   margin-top: 0.25rem;
   line-height: 1.45;
 }
@@ -466,8 +468,8 @@
 }
 
 .societyCard {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: color-mix(in srgb, var(--w-raised) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 6%, transparent);
   border-radius: 20px;
   padding: 1.25rem;
   display: flex;
@@ -476,8 +478,8 @@
 }
 
 [data-appearance="night"] .societyCard {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--w-raised) 3%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 8%, transparent);
 }
 
 .societyHeader {
@@ -490,32 +492,32 @@
   font-size: 1.05rem;
   font-weight: 750;
   margin: 0;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
 }
 
 .societyMeta {
   display: flex;
   justify-content: space-between;
   font-size: 0.82rem;
-  color: var(--color-ink-muted, #7e786d);
+  color: var(--color-ink-muted);
 }
 
 /* Sanctuary QR Credentials Card */
 .qrCard {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(250, 248, 242, 0.9));
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--w-raised) 95%, transparent), color-mix(in srgb, var(--w-raised) 90%, transparent));
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
   border-radius: 28px;
   padding: clamp(1.5rem, 3vw, 2.5rem);
   display: flex;
   align-items: center;
   gap: 2.5rem;
   flex-wrap: wrap;
-  box-shadow: 0 16px 36px -12px rgba(90, 70, 30, 0.08);
+  box-shadow: 0 16px 36px -12px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
 }
 
 [data-appearance="night"] .qrCard {
-  background: linear-gradient(135deg, rgba(24, 28, 40, 0.95), rgba(15, 18, 26, 0.9));
-  border-color: rgba(212, 175, 55, 0.2);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--w-ink) 95%, transparent), color-mix(in srgb, var(--w-ink) 90%, transparent));
+  border-color: color-mix(in srgb, var(--w-lamp) 20%, transparent);
 }
 
 .qrVisual {
@@ -524,16 +526,16 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1.5rem;
-  background: #fff;
+  background: var(--w-raised);
   border-radius: 24px;
-  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 28px -6px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 8%, transparent);
 }
 
 .qrPayloadDisplay {
   font-family: monospace;
   font-size: 0.75rem;
-  color: #666;
+  color: var(--w-ink-soft);
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -552,11 +554,11 @@
   font-size: 1.45rem;
   font-weight: 800;
   margin: 0;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
 }
 
 .qrDetails p {
-  color: var(--color-ink-muted, #555048);
+  color: var(--color-ink-muted);
   line-height: 1.6;
   margin: 0;
   font-size: 0.95rem;
@@ -568,15 +570,15 @@
   gap: 0.5rem;
   margin: 0;
   padding-left: 1.25rem;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
   font-size: 0.9rem;
   font-weight: 550;
 }
 
 /* Edit Mode Modal or Inline */
 .editForm {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: color-mix(in srgb, var(--w-raised) 95%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 12%, transparent);
   border-radius: 24px;
   padding: 1.5rem;
   display: flex;
@@ -585,8 +587,8 @@
 }
 
 [data-appearance="night"] .editForm {
-  background: rgba(24, 28, 40, 0.95);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--w-ink) 95%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 12%, transparent);
 }
 
 .formGrid {
@@ -606,28 +608,28 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--color-ink-muted, #7e786d);
+  color: var(--color-ink-muted);
 }
 
 .inputField {
   padding: 0.65rem 0.85rem;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 15%, transparent);
   font-size: 0.92rem;
-  background: #fff;
-  color: #1f1d1a;
-  transition: border-color 0.2s ease;
+  background: var(--w-raised);
+  color: var(--w-ink);
+  transition: border-color var(--w-dur-micro) var(--w-ease);
 }
 
 [data-appearance="night"] .inputField {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #f8f4ea;
+  background: color-mix(in srgb, var(--w-raised) 6%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 15%, transparent);
+  color: var(--w-raised);
 }
 
 .inputField:focus {
   outline: none;
-  border-color: #7a1c20;
+  border-color: var(--w-danger);
 }
 
 .toastNotice {
@@ -635,9 +637,9 @@
   border-radius: 12px;
   font-size: 0.88rem;
   font-weight: 600;
-  background: rgba(16, 185, 129, 0.1);
-  color: #065f46;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  color: var(--w-ink-soft);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, transparent);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -651,28 +653,28 @@
 }
 
 .articleCard {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: color-mix(in srgb, var(--w-raised) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink) 8%, transparent);
   border-radius: 20px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
-  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 16px -4px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    transform var(--w-dur-micro) var(--w-ease),
+    box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .articleCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
 }
 
 [data-appearance="night"] .articleCard {
-  background: rgba(24, 28, 40, 0.85);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--w-ink) 85%, transparent);
+  border-color: color-mix(in srgb, var(--w-raised) 8%, transparent);
 }
 
 .articleHeader {
@@ -691,26 +693,26 @@
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  background: rgba(122, 28, 32, 0.08);
-  color: #7a1c20;
+  background: color-mix(in srgb, var(--w-danger) 8%, transparent);
+  color: var(--w-danger);
 }
 
 [data-appearance="night"] .articleCategory {
-  background: rgba(243, 201, 120, 0.12);
-  color: #f3c978;
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
+  color: var(--w-lamp-deep);
 }
 
 .articleTitle {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-ink, #1f1d1a);
+  color: var(--color-ink);
   margin: 0;
   line-height: 1.35;
 }
 
 .articleExcerpt {
   font-size: 0.88rem;
-  color: var(--color-ink-muted, #555048);
+  color: var(--color-ink-muted);
   line-height: 1.5;
   margin: 0;
 }
@@ -720,17 +722,17 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid color-mix(in srgb, var(--w-ink) 6%, transparent);
   font-size: 0.82rem;
-  color: var(--color-ink-muted, #7e786d);
+  color: var(--color-ink-muted);
 }
 
 [data-appearance="night"] .articleFooter {
-  border-color: rgba(255, 255, 255, 0.06);
+  border-color: color-mix(in srgb, var(--w-raised) 6%, transparent);
 }
 
 .articleLink {
-  color: #7a1c20;
+  color: var(--w-danger);
   font-weight: 700;
   text-decoration: none;
   display: inline-flex;
@@ -743,7 +745,7 @@
 }
 
 [data-appearance="night"] .articleLink {
-  color: #f3c978;
+  color: var(--w-lamp-deep);
 }
 
 .authorDeskBanner {
@@ -753,23 +755,24 @@
   align-items: center;
   gap: 1rem;
   padding: 1.25rem 1.75rem;
-  background: linear-gradient(135deg, rgba(122, 28, 32, 0.06), rgba(212, 175, 55, 0.06));
-  border: 1px dashed rgba(122, 28, 32, 0.25);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--w-danger) 6%, transparent), color-mix(in srgb, var(--w-lamp) 6%, transparent));
+  border: 1px dashed color-mix(in srgb, var(--w-danger) 25%, transparent);
   border-radius: 16px;
   margin-bottom: 1.5rem;
+  color: var(--w-on-lamp);
 }
 
 .authorDeskLink {
   padding: 0.5rem 1rem;
   font-size: 0.88rem;
   font-weight: 700;
-  color: #ffffff;
-  background: #7a1c20;
+  color: var(--w-on-danger);
+  background: var(--w-danger);
   border-radius: 8px;
   text-decoration: none;
-  transition: background 0.15s ease;
+  transition: background var(--w-dur-micro) var(--w-ease);
 }
 
 .authorDeskLink:hover {
-  background: #5d1417;
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-ink));
 }

@@ -21,11 +21,19 @@ export {
 } from './css';
 export { FACES, fontNamesOf, MOTION } from './faces';
 export {
+  type FeedbackContext,
   type FeedbackEvent,
+  type FeedbackEventAlias,
+  type FeedbackLevel,
   type FeedbackMotion,
+  type FeedbackPlan,
   type HapticKind,
+  type SoundCue,
+  feedbackEventOf,
   hapticFor,
   motionFor,
+  planFeedback,
+  soundFor,
 } from './feedback';
 export * from './floorFit';
 export * from './groundLimits';

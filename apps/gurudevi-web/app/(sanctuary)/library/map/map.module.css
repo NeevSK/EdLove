@@ -14,18 +14,18 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -40,34 +40,34 @@
   min-height: 44px;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  background: var(--color-paper, #f7f2e8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .filterBtn[data-active="true"] {
-  background: var(--color-action, #a85022);
-  color: #ffffff;
-  border-color: var(--color-action, #a85022);
+  background: var(--color-action);
+  color: var(--w-raised);
+  border-color: var(--color-action);
 }
 
 .mapCard {
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
   border-radius: 0.75rem;
   overflow: hidden;
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
 }
 
 .mapViewport {
   height: 22rem;
-  background: #e5e3df;
+  background: var(--w-line);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -85,8 +85,8 @@
 .centerCard {
   padding: 1rem;
   border-radius: 0.5rem;
-  background: var(--color-paper, #f7f2e8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.12));
+  background: var(--color-paper);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 12%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -95,16 +95,16 @@
 .centerTitle {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .centerMeta {
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .statusOnline {
-  color: #137333;
+  color: var(--w-lamp-deep);
   font-weight: 700;
 }
 
@@ -112,10 +112,10 @@
 .modeSwitcher {
   display: flex;
   gap: 0.35rem;
-  background: rgba(0, 0, 0, 0.05);
+  background: color-mix(in srgb, var(--w-ink) 5%, transparent);
   padding: 0.25rem;
   border-radius: 9999px;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .modeBtn {
@@ -128,21 +128,21 @@
   font-weight: 600;
   border: none;
   background: transparent;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .modeBtn[data-active="true"] {
-  background: var(--color-action, #a85022);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(168, 80, 34, 0.25);
+  background: var(--color-action);
+  color: var(--w-raised);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-lamp) 25%, transparent);
 }
 
 /* Cosmos SVG Graph Viewport */
 .cosmosViewport {
   height: 30rem;
-  background: radial-gradient(circle at center, #141724 0%, #08090e 100%);
+  background: radial-gradient(circle at center, var(--w-ink) 0%, var(--w-ink) 100%);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -158,12 +158,12 @@
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: rgba(10, 12, 18, 0.85);
+  background: var(--gd-scrim);
   backdrop-filter: blur(8px);
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #f5f4ef;
+  border: 1px solid color-mix(in srgb, var(--w-raised) 10%, transparent);
+  color: var(--w-raised);
   font-size: 0.8rem;
   max-width: 280px;
   pointer-events: none;
@@ -175,14 +175,14 @@
   top: 1rem;
   bottom: 1rem;
   width: 320px;
-  background: rgba(12, 14, 22, 0.94);
+  background: color-mix(in srgb, var(--w-ink) 94%, transparent);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid color-mix(in srgb, var(--w-raised) 15%, transparent);
   border-radius: 0.75rem;
   padding: 1.25rem;
-  color: #fff;
+  color: var(--w-raised);
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--w-shadow-tint) 60%, transparent);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;

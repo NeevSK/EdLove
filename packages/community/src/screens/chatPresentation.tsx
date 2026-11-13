@@ -141,7 +141,6 @@ export function ChatHistory({
           <ChatMessageRow item={item} principalId={principalId} onPressAuthor={onPressAuthor} />
         )}
         contentContainerStyle={messages.length === 0 ? styles.listCentered : styles.listStart}
-        showsVerticalScrollIndicator={false}
         ListEmptyComponent={<ChatEmptyState />}
       />
     </>

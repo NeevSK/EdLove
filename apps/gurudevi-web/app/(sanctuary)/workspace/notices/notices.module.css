@@ -15,20 +15,20 @@
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, 'Fraunces', serif);
   font-size: 1.85rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
   letter-spacing: -0.01em;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.9rem;
   margin: 0.35rem 0 0;
 }
@@ -44,25 +44,25 @@
   min-height: 40px;
   padding: 0.4rem 0.9rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
-  background: var(--color-paper-light, #fffdf8);
-  color: var(--color-ink-soft, #453c35);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
+  background: var(--color-paper-light);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--w-dur-micro) var(--w-ease);
   white-space: nowrap;
 }
 
 .filterTab:hover {
-  border-color: var(--color-lotus, #a85022);
-  color: var(--color-ink, #131e27);
+  border-color: var(--color-lotus, var(--w-lamp));
+  color: var(--color-ink);
 }
 
 .filterTab[aria-selected='true'] {
-  background: var(--color-action, #a85022);
-  border-color: var(--color-action, #a85022);
-  color: #ffffff;
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--w-raised);
 }
 
 .feedList {
@@ -74,9 +74,9 @@
 .noticeCard {
   padding: 1.35rem 1.5rem;
   border-radius: 0.85rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 15%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -93,7 +93,7 @@
   font-family: var(--font-display, 'Fraunces', serif);
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
@@ -102,7 +102,7 @@
   align-items: center;
   gap: 0.65rem;
   font-size: 0.775rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .badge {
@@ -113,18 +113,18 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  background: rgba(168, 80, 34, 0.1);
-  color: var(--color-action, #a85022);
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  color: var(--color-action);
 }
 
 .emergencyBadge {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--w-raised);
+  color: var(--w-danger);
 }
 
 .noticeContent {
   font-size: 0.925rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   line-height: 1.55;
   margin: 0;
   white-space: pre-wrap;
@@ -134,18 +134,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
+  border-top: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 10%, transparent));
   padding-top: 0.65rem;
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .emptyState {
   padding: 3.5rem 1rem;
   text-align: center;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.95rem;
-  background: var(--color-paper-light, #fffdf8);
+  background: var(--color-paper-light);
   border-radius: 0.75rem;
-  border: 1px dashed var(--color-line, rgba(104, 94, 85, 0.2));
+  border: 1px dashed var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
 }

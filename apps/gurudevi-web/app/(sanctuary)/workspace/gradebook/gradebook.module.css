@@ -14,18 +14,18 @@
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -41,9 +41,9 @@
   min-height: 44px;
   padding: 0.4rem 0.8rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
-  background: var(--color-paper-light, #fffdf8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
+  background: var(--color-paper-light);
+  color: var(--color-ink);
   font-size: 0.85rem;
   font-family: inherit;
 }
@@ -57,16 +57,16 @@
 .statCard {
   padding: 1rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.05));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 5%, transparent));
 }
 
 .statLabel {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   margin: 0 0 0.25rem;
 }
 
@@ -74,16 +74,16 @@
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .tableWrapper {
   overflow: hidden;
   border-radius: 0.75rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
-  background: var(--color-paper-light, #fffdf8);
-  box-shadow: 0 4px 12px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.05));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
+  background: var(--color-paper-light);
+  box-shadow: 0 4px 12px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 5%, transparent));
 }
 
 .gradeTable {
@@ -95,21 +95,21 @@
 
 .gradeTable th {
   padding: 0.75rem 1rem;
-  background: var(--color-paper, #f7f2e8);
-  color: var(--color-ink-soft, #453c35);
+  background: var(--color-paper);
+  color: var(--color-ink-soft, var(--w-ink));
   font-weight: 600;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .gradeTable td {
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
-  color: var(--color-ink, #131e27);
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 10%, transparent));
+  color: var(--color-ink);
   vertical-align: middle;
 }
 
 .gradeTable tr:hover td {
-  background: rgba(168, 80, 34, 0.03);
+  background: color-mix(in srgb, var(--w-lamp) 3%, transparent);
 }
 
 .scoreInput {
@@ -117,21 +117,21 @@
   width: 4.5rem;
   padding: 0.2rem 0.5rem;
   border-radius: 0.35rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
-  background: var(--color-paper-light, #fffdf8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
+  background: var(--color-paper-light);
+  color: var(--color-ink);
   font-family: inherit;
   font-weight: 600;
   text-align: center;
-  transition: all 0.15s ease-in-out;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .scoreInput:focus-visible {
-  outline: 2px solid var(--color-terra-base, #a85022);
+  outline: 2px solid var(--color-terra-base);
   outline-offset: 1px;
   border-color: transparent;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(168, 80, 34, 0.15);
+  background: var(--w-raised);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .feedbackInput {
@@ -139,20 +139,20 @@
   width: 100%;
   padding: 0.3rem 0.6rem;
   border-radius: 0.35rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 15%, transparent));
   background: transparent;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   font-family: inherit;
   font-size: 0.85rem;
-  transition: all 0.15s ease-in-out;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .feedbackInput:focus-visible {
-  outline: 2px solid var(--color-terra-base, #a85022);
+  outline: 2px solid var(--color-terra-base);
   outline-offset: 1px;
   border-color: transparent;
-  background: var(--color-paper-light, #fffdf8);
-  box-shadow: 0 0 0 3px rgba(168, 80, 34, 0.15);
+  background: var(--color-paper-light);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .shortcutTip {
@@ -161,10 +161,10 @@
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  background: var(--color-paper, #f7f2e8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  background: var(--color-paper);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .kbd {
@@ -174,17 +174,17 @@
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1;
-  color: var(--color-ink, #131e27);
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  color: var(--color-ink);
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
   border-radius: 0.25rem;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 1px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
 }
 
 .progressBarContainer {
   width: 100%;
   height: 4px;
-  background: rgba(104, 94, 85, 0.12);
+  background: color-mix(in srgb, var(--w-ink-soft) 12%, transparent);
   border-radius: 999px;
   overflow: hidden;
   margin-top: 0.35rem;
@@ -193,8 +193,8 @@
 .progressBarFill {
   height: 100%;
   border-radius: 999px;
-  background: var(--color-terra-base, #a85022);
-  transition: width 0.3s ease;
+  background: var(--color-terra-base);
+  transition: width var(--w-dur) var(--w-ease);
 }
 
 /* APCA-Calibrated Grade Badges (Lc >= 75) */
@@ -205,9 +205,9 @@
   min-width: 2rem;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: #e8f5e9;
-  border: 1px solid #81c784;
-  color: #1b5e20;
+  background: var(--w-raised);
+  border: 1px solid var(--w-lamp);
+  color: var(--w-ink-soft);
   font-weight: 700;
   font-size: 0.75rem;
 }
@@ -219,9 +219,9 @@
   min-width: 2rem;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: #e3f2fd;
-  border: 1px solid #90caf9;
-  color: #0d47a1;
+  background: var(--w-raised);
+  border: 1px solid var(--w-lamp);
+  color: var(--w-lamp-deep);
   font-weight: 700;
   font-size: 0.75rem;
 }
@@ -233,9 +233,9 @@
   min-width: 2rem;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: #fff8e1;
-  border: 1px solid #ffe082;
-  color: #b78103;
+  background: var(--w-raised);
+  border: 1px solid var(--w-lamp);
+  color: var(--w-lamp-deep);
   font-weight: 700;
   font-size: 0.75rem;
 }
@@ -247,9 +247,9 @@
   min-width: 2rem;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: #fbe9e7;
-  border: 1px solid #ffab91;
-  color: #bf360c;
+  background: var(--w-raised);
+  border: 1px solid var(--w-danger);
+  color: var(--w-danger);
   font-weight: 700;
   font-size: 0.75rem;
 }
@@ -261,9 +261,9 @@
   min-width: 2rem;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: #ffebee;
-  border: 1px solid #ef9a9a;
-  color: #b71c1c;
+  background: var(--w-raised);
+  border: 1px solid var(--w-danger);
+  color: var(--w-danger);
   font-weight: 700;
   font-size: 0.75rem;
 }

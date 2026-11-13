@@ -9,7 +9,7 @@
 }
 
 .header {
-  border-bottom: 1px solid var(--color-border, #e6ded5);
+  border-bottom: 1px solid var(--color-border);
   padding-bottom: 1.25rem;
 }
 
@@ -17,7 +17,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-gold-deep, #9a5b2d);
+  color: var(--color-gold-deep);
   font-weight: 700;
   margin: 0 0 0.25rem 0;
 }
@@ -25,13 +25,13 @@
 .title {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--color-ink, #2d261e);
+  color: var(--color-ink);
   margin: 0 0 0.5rem 0;
 }
 
 .subtitle {
   font-size: 1rem;
-  color: var(--color-ink-muted, #665b52);
+  color: var(--color-ink-muted);
   margin: 0;
   max-width: 800px;
   line-height: 1.5;
@@ -41,8 +41,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background: var(--color-paper-light, #fbf7f0);
-  border: 1px solid var(--color-border, #e6ded5);
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   padding: 1rem;
 }
@@ -50,7 +50,7 @@
 .roleBarLabel {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--color-ink, #2d261e);
+  color: var(--color-ink);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -67,39 +67,39 @@
   gap: 0.5rem;
   padding: 0.6rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-border, #d9cec2);
-  background: #ffffff;
-  color: var(--color-ink, #2d261e);
+  border: 1px solid var(--color-border);
+  background: var(--w-raised);
+  color: var(--color-ink);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease-in-out;
+  transition: all var(--w-dur-micro) var(--w-ease);
 }
 
 .rolePill:hover {
-  background: var(--color-paper-hover, #f3ede2);
-  border-color: var(--color-gold-deep, #9a5b2d);
+  background: var(--color-paper-hover);
+  border-color: var(--color-gold-deep);
 }
 
 .rolePillActive {
-  background: var(--color-gold-deep, #9a5b2d);
-  color: #ffffff;
-  border-color: var(--color-gold-deep, #9a5b2d);
-  box-shadow: 0 2px 4px rgba(154, 91, 45, 0.2);
+  background: var(--color-gold-deep);
+  color: var(--w-raised);
+  border-color: var(--color-gold-deep);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--w-lamp) 20%, transparent);
 }
 
 .rolePillActive:hover {
-  background: #844c23;
-  color: #ffffff;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 
 .roleSummaryBox {
   font-size: 0.85rem;
-  color: var(--color-ink-muted, #665b52);
+  color: var(--color-ink-muted);
   padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.6);
+  background: color-mix(in srgb, var(--w-raised) 60%, transparent);
   border-radius: 0.4rem;
-  border-left: 3px solid var(--color-gold-deep, #9a5b2d);
+  border-left: 3px solid var(--color-gold-deep);
 }
 
 .filterBar {
@@ -115,16 +115,16 @@
   min-width: 280px;
   padding: 0.65rem 1rem;
   font-size: 0.95rem;
-  border: 1px solid var(--color-border, #d9cec2);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-  background: #ffffff;
-  color: var(--color-ink, #2d261e);
+  background: var(--w-raised);
+  color: var(--color-ink);
   outline: none;
 }
 
 .searchInput:focus {
-  border-color: var(--color-gold-deep, #9a5b2d);
-  box-shadow: 0 0 0 2px rgba(154, 91, 45, 0.15);
+  border-color: var(--color-gold-deep);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .categoryPills {
@@ -138,16 +138,16 @@
   font-size: 0.8rem;
   font-weight: 600;
   border-radius: 1rem;
-  border: 1px solid var(--color-border, #d9cec2);
-  background: #ffffff;
-  color: var(--color-ink-muted, #665b52);
+  border: 1px solid var(--color-border);
+  background: var(--w-raised);
+  color: var(--color-ink-muted);
   cursor: pointer;
 }
 
 .categoryButtonActive {
-  background: var(--color-ink, #2d261e);
-  color: #ffffff;
-  border-color: var(--color-ink, #2d261e);
+  background: var(--color-ink);
+  color: var(--w-raised);
+  border-color: var(--color-ink);
 }
 
 .screenGrid {
@@ -160,17 +160,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #ffffff;
-  border: 1px solid var(--color-border, #e5dcd1);
+  background: var(--w-raised);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   padding: 1.25rem;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), box-shadow var(--w-dur-micro) var(--w-ease);
 }
 
 .screenCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border-color: #d1c0b0;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
+  border-color: var(--w-lamp);
 }
 
 .cardHeader {
@@ -193,15 +193,15 @@
   text-transform: uppercase;
   padding: 0.15rem 0.45rem;
   border-radius: 0.25rem;
-  background: var(--color-paper-light, #fbf7f0);
-  border: 1px solid var(--color-border, #e5dcd1);
-  color: var(--color-gold-deep, #9a5b2d);
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-border);
+  color: var(--color-gold-deep);
 }
 
 .cardTitle {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-ink, #2d261e);
+  color: var(--color-ink);
   margin: 0;
   line-height: 1.3;
 }
@@ -209,14 +209,14 @@
 .cardJob {
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--color-ink-muted, #665b52);
+  color: var(--color-ink-muted);
   margin: 0;
   line-height: 1.4;
 }
 
 .cardDesc {
   font-size: 0.82rem;
-  color: var(--color-ink-muted, #7a6e63);
+  color: var(--color-ink-muted);
   margin: 0.5rem 0;
   line-height: 1.45;
 }
@@ -224,15 +224,15 @@
 .legacyNote {
   font-size: 0.75rem;
   padding: 0.35rem 0.55rem;
-  background: #faf7f2;
-  border: 1px dashed #d9cec2;
+  background: var(--w-raised);
+  border: 1px dashed var(--w-line);
   border-radius: 0.35rem;
-  color: #7a6e63;
+  color: var(--w-ink-soft);
   margin: 0.5rem 0 0.75rem 0;
 }
 
 .legacyNote strong {
-  color: var(--color-ink, #2d261e);
+  color: var(--color-ink);
 }
 
 .routesBox {
@@ -240,7 +240,7 @@
   flex-direction: column;
   gap: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--color-border, #f0eae1);
+  border-top: 1px solid var(--color-border);
 }
 
 .openLink {
@@ -248,27 +248,27 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  background: var(--color-gold-deep, #9a5b2d);
-  color: #ffffff;
+  background: var(--color-gold-deep);
+  color: var(--w-raised);
   font-size: 0.88rem;
   font-weight: 700;
   text-decoration: none;
   border-radius: 0.4rem;
-  transition: background 0.15s ease;
+  transition: background var(--w-dur-micro) var(--w-ease);
 }
 
 .openLink:hover {
-  background: #844c23;
-  color: #ffffff;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 
 .mobileRouteTag {
   font-size: 0.75rem;
   font-family: monospace;
-  color: #7a6e63;
+  color: var(--w-ink-soft);
   word-break: break-all;
   padding: 0.2rem 0.4rem;
-  background: #f5f2ed;
+  background: var(--w-raised);
   border-radius: 0.25rem;
 }
 

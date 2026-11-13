@@ -13,10 +13,10 @@
   gap: 1.5rem;
   flex-wrap: wrap;
   padding: 1.5rem;
-  background: var(--w-raised, #ffffff);
-  border: 1px solid var(--w-line, #e2e8f0);
-  border-radius: var(--w-radius-lg, 16px);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  background: var(--w-raised);
+  border: 1px solid var(--w-line);
+  border-radius: var(--w-radius-lg);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
 }
 
 .periodAnchorGroup {
@@ -51,14 +51,14 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--w-lamp-deep, #9a5b2d);
+  color: var(--w-lamp-deep);
 }
 
 .pulseDot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #22c55e;
+  background: var(--w-success);
   animation: pulse 1.8s infinite;
 }
 
@@ -71,14 +71,14 @@
 .periodTitle {
   font-size: 1.35rem;
   font-weight: 700;
-  color: var(--w-ink, #1e293b);
+  color: var(--w-ink);
   margin: 0;
   line-height: 1.25;
 }
 
 .periodMeta {
   font-size: 0.88rem;
-  color: var(--w-ink-soft, #64748b);
+  color: var(--w-ink-soft);
   margin: 0;
   display: flex;
   align-items: center;
@@ -108,7 +108,7 @@
 .sectionTitle {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--w-ink, #1e293b);
+  color: var(--w-ink);
   margin: 0;
 }
 
@@ -118,12 +118,8 @@
   gap: 0.85rem;
   overflow-x: auto;
   padding: 0.35rem 0.15rem;
-  scrollbar-width: none;
 }
 
-.pebbleRow::-webkit-scrollbar {
-  display: none;
-}
 
 .pebbleSlot {
   width: 130px;
@@ -141,17 +137,17 @@
   display: flex;
   flex-direction: column;
   padding: 1.25rem;
-  background: var(--w-raised, #ffffff);
-  border: 1px solid var(--w-line, #e2e8f0);
-  border-radius: var(--w-radius-lg, 16px);
+  background: var(--w-raised);
+  border: 1px solid var(--w-line);
+  border-radius: var(--w-radius-lg);
   text-decoration: none;
   color: inherit;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition: transform var(--w-dur-micro) var(--w-ease), border-color var(--w-dur-micro) var(--w-ease);
 }
 
 .classroomCardItem:hover {
   transform: translateY(-2px);
-  border-color: var(--w-lamp-deep, #9a5b2d);
+  border-color: var(--w-lamp-deep);
 }
 
 .classHeader {
@@ -164,13 +160,13 @@
 .className {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--w-ink, #0f172a);
+  color: var(--w-ink);
   margin: 0;
 }
 
 .classSubject {
   font-size: 0.85rem;
-  color: var(--w-ink-soft, #64748b);
+  color: var(--w-ink-soft);
   margin: 0.2rem 0 0 0;
 }
 
@@ -179,8 +175,8 @@
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 700;
-  background: var(--w-sunken, #f8fafc);
-  color: var(--w-lamp-deep, #9a5b2d);
+  background: var(--w-sunken);
+  color: var(--w-lamp-deep);
 }
 
 .classFooter {
@@ -188,14 +184,14 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 0.75rem;
-  border-top: 1px dashed var(--w-line, #e2e8f0);
+  border-top: 1px dashed var(--w-line);
   font-size: 0.82rem;
-  color: var(--w-ink-soft, #64748b);
+  color: var(--w-ink-soft);
 }
 
 .openLink {
   font-weight: 600;
-  color: var(--w-lamp-deep, #9a5b2d);
+  color: var(--w-lamp-deep);
 }
 
 /* ─── Schedule Rhythm Strip ─── */
@@ -207,35 +203,36 @@
 
 .slotCard {
   padding: 0.85rem;
-  background: var(--w-raised, #ffffff);
-  border: 1px solid var(--w-line, #e2e8f0);
-  border-radius: var(--w-radius-md, 12px);
+  background: var(--w-raised);
+  border: 1px solid var(--w-line);
+  border-radius: var(--w-radius-md);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
 .slotCurrent {
-  border-color: var(--w-lamp-deep, #9a5b2d);
-  background: var(--w-lamp, #fef8ee);
+  border-color: var(--w-lamp-deep);
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 
 .slotTime {
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--w-ink-muted, #94a3b8);
+  color: var(--w-ink-muted);
   margin: 0;
 }
 
 .slotSubject {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--w-ink, #1e293b);
+  color: var(--w-ink);
   margin: 0;
 }
 
 .slotRoom {
   font-size: 0.75rem;
-  color: var(--w-ink-soft, #64748b);
+  color: var(--w-ink-soft);
   margin: 0;
 }

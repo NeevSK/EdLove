@@ -403,7 +403,6 @@ export const FormBuilder = ({
                   <ButtonText>Add Field to Repository</ButtonText>
                 </Button>
               }
-              showsVerticalScrollIndicator={false}
             />
           </VStack>
 

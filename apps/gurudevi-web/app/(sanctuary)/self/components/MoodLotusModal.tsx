@@ -1,5 +1,6 @@
 'use client';
 
+import { useEscapeLayer } from '@repo/ui/shortcuts/web';
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AccountSafeTrySelfPracticeAdapter } from '../../../../lib/sanctuary/selfExplore';
 import { MOOD_CHOICES, type MoodLog, type MoodValue } from '../../../../lib/sanctuary/selfWellbeing';
@@ -85,15 +86,13 @@ export function MoodLotusModal({
     const previousFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
     dialogRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !savingRef.current) onClose();
-    };
-    document.addEventListener('keydown', closeOnEscape);
     return () => {
-      document.removeEventListener('keydown', closeOnEscape);
       previousFocus?.focus();
     };
-  }, [onClose]);
+  }, []);
+  useEscapeLayer(true, () => {
+    if (!savingRef.current) onClose();
+  });
 
   const latest = history[0] ?? null;
   const selectedChoice = MOOD_CHOICES.find((choice) => choice.value === selectedMood) ?? null;

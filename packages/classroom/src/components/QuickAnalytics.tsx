@@ -107,7 +107,7 @@ export default function QuickAnalytics({
 }: QuickAnalyticsProps) {
   const currentGrade = marks !== undefined ? marksToGPA(marks) : null;
   return (
-    <ScrollView className="flex-1 bg-phase-surface" showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 bg-phase-surface">
       <View className="p-6 gap-8 pb-32">
         <View className="flex-row items-center items-center gap-4 mt-2">
           <View className="p-3.5 bg-sanctuarySaffron rounded-[24px] shadow-lg shadow-sanctuarySaffron/20">
