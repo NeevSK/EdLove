@@ -101,6 +101,20 @@ A refused destination never reaches the router. It is reported with its path onl
 - `directRouterUse` counts expo-router `router`, `useRouter` and `<Redirect>` imports outside the kit's navigation folder. It is **14**: the retired `@repo/self` family, left alone; the old `safeBack` helper in `@repo/ui/utils/navigation`, now used only by `.web` reference files; and live `.web` files. The app and the live package screens have 0.
 - `uncheckedWebNavigation` counts web `navigate({ href: value })` calls outside `lib/navigation`. It is **2**, both in the private `components/workbench` playground.
 
+## Access and the back stack (mobile)
+
+**The router enforces access.** The root Stack (`EntryShell`'s `EntryStack`) puts the tabs, their modals and every top-level app screen inside `Stack.Protected`. Its `guard` is `admitsAppRoutes(decision)` from `logic/auth/bootstrapRoutes`: open for `app`, and while `booting` (the gate covers the screen, and a launch deep link must not bounce); closed for `public`, `inactive-account` and `onboarding`.
+
+A refused route is swapped for a redirect before the screen mounts: on sign-out, or for an inactive account, protected screens never render. The redirect goes where the gate is already sending the person, if that passes `checkInternalHref`, otherwise to `/onboarding` or `/welcome` (`entryAccessFor`). Every app screen is declared in the guard, because a Stack also mounts undeclared routes, outside it.
+
+`SessionRouteGate` still owns the splash handoff, the restoring and transition surfaces, and replaying a pending deep link after sign-in. It publishes its decision; it doesn't enforce it.
+
+**Back always has somewhere to go.**
+- The Self and Workspace stacks anchor to their overview (`unstable_settings.anchor = 'index'`), and the tabs anchor to `self`. A deep link into `/workspace/inventory` has Workspace under it.
+- The navigator passes `withAnchor` on `push` (`NAVIGATION_POLICY.mobile.withAnchor`), so arriving in a stack from elsewhere does the same.
+- The root stack is unanchored on purpose: its anchor would be the protected tabs, put under public deep links.
+- `navigation/anchors.test.ts` checks that every navigator with an overview anchors to a screen it has.
+
 ## Places, not screen names
 
 Code that sends someone to a place names the place (`Place`, in `types/Place.ts`), and `PLACE_ROUTES` (`logic/places/placeRoutes.ts`) says where it is on each platform. The table is typed against both route catalogues and tested to land on a real screen. The workspace switcher's targets used to be React Navigation screen names (`'FounderDashboard'`, `'Classroom'`). They are now `{ kind: 'place', place: 'workspace' }`: switching a perspective chooses the floor Workspace shows, one per capacity (`workspaceCatalog`). The mobile shell's overview map uses the same table.
@@ -189,8 +203,8 @@ router-core 1.171) and the SDK 57→58 migration guide.
 | `dismissTo` | Used for completion | Goes back to the href if it's in the history, otherwise replaces. |
 | `prefetch` | Used (`prefetch`) | Warms a route before the person commits. |
 | Complete hrefs | Required | In SDK 58, `screen`, `params` and `initial` are plain params. Flows already give complete hrefs. |
-| `withAnchor`, `unstable_settings.anchor` | Next | Puts a stack's anchor under a deep-linked screen, so back has somewhere to go. |
-| `Stack.Protected guard redirectTo` | Next | The native way to gate account steps; it lines up with flow fallbacks. |
+| `withAnchor`, `unstable_settings.anchor` | Used | The Self and Workspace stacks anchor to their overview; `push` passes `withAnchor`. |
+| `Stack.Protected guard redirectTo` | Used | App routes are behind it; the guard is the entry gate's decision. |
 | `formSheet` with detents | Ready (`SHEET_SCREEN`) | Layouts adopt it route by route. |
 | `Link.Preview`, zoom transition, `Stack.Toolbar`, `NativeTabs` | Held back | Product and visual choices for the L8 motion layer. They are listed here so nobody rebuilds them by hand. |
 | `setTransitionMode`, `inTransition` | Held back | Marked experimental in 58. The default (`preload-only`) stays. |
