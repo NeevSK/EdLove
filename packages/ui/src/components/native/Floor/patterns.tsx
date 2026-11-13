@@ -3,6 +3,7 @@ import { type ReactNode, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { glowStyle } from '../../../theme/native/style';
 import { useWorld } from '../../../theme/native/WorldContext';
+import { FLOOR_SIDE_BY_SIDE } from '../../../theme/floorFit';
 import { cardWidth } from '../../../tokens/sizes';
 import { Button } from '../Button/Button';
 import { Grid } from '../Layout/Grid';
@@ -41,7 +42,7 @@ const ENGLISH: PatternWords = {
 };
 
 /** Wide enough to put two things side by side (list beside detail, desk). */
-const SIDE_BY_SIDE = 600;
+const SIDE_BY_SIDE = FLOOR_SIDE_BY_SIDE;
 
 const isLit = (p: FloorNode) => !!p.piece?.lit;
 

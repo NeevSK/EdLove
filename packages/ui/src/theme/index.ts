@@ -30,6 +30,7 @@ export {
   hapticFor,
   motionFor,
 } from './feedback';
+export * from './floorBias';
 export * from './floorFit';
 export * from './groundLimits';
 export {

@@ -14,13 +14,13 @@
 .title {
   font-family: var(--font-serif, serif);
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-  color: #2d2926;
+  color: var(--w-ink);
   margin-bottom: 0.5rem;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: #71695f;
+  color: var(--w-ink-soft);
   font-size: 1rem;
   line-height: 1.5;
   max-width: 600px;
@@ -28,11 +28,11 @@
 }
 
 .card {
-  background: #fdfbf7;
-  border: 1px solid #e7e2d9;
+  background: var(--w-raised);
+  border: 1px solid var(--w-line);
   border-radius: 1.25rem;
   padding: clamp(1.5rem, 3vw, 2.5rem);
-  box-shadow: 0 4px 20px -2px rgba(45, 41, 38, 0.05);
+  box-shadow: 0 4px 20px -2px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -47,7 +47,7 @@
 .label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #574c43;
+  color: var(--w-ink-soft);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -60,26 +60,26 @@
 .input {
   flex: 1;
   padding: 0.85rem 1.25rem;
-  border: 2px solid #ded8cf;
+  border: 2px solid var(--w-line);
   border-radius: 0.75rem;
   font-size: 1.15rem;
   font-family: var(--font-mono, monospace);
   font-weight: 700;
   letter-spacing: 0.08em;
-  background: #ffffff;
-  color: #2d2926;
+  background: var(--w-raised);
+  color: var(--w-ink);
   transition: border-color 0.15s ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: #b45309;
+  border-color: var(--w-lamp);
 }
 
 .claimButton {
   padding: 0.85rem 1.75rem;
-  background: #b45309;
-  color: #ffffff;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
   border: none;
   border-radius: 0.75rem;
   font-size: 1rem;
@@ -90,7 +90,7 @@
 }
 
 .claimButton:hover:not(:disabled) {
-  background: #92400e;
+  background: var(--w-lamp);
   transform: translateY(-1px);
 }
 
@@ -101,14 +101,14 @@
 
 .hint {
   font-size: 0.85rem;
-  color: #8c827a;
+  color: var(--w-ink-soft);
   line-height: 1.4;
 }
 
 .errorAlert {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
+  background: var(--w-raised);
+  border: 1px solid var(--w-line);
+  color: var(--w-danger);
   padding: 1rem 1.25rem;
   border-radius: 0.75rem;
   font-size: 0.95rem;
@@ -118,8 +118,8 @@
 }
 
 .successBox {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: var(--w-raised);
+  border: 1px solid var(--w-raised);
   border-radius: 1rem;
   padding: 1.75rem;
   display: flex;
@@ -140,7 +140,7 @@
 .successTitle {
   font-family: var(--font-serif, serif);
   font-size: 1.35rem;
-  color: #166534;
+  color: var(--w-ink-soft);
   margin: 0;
 }
 
@@ -148,10 +148,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
-  background: #ffffff;
+  background: var(--w-raised);
   padding: 1rem 1.25rem;
   border-radius: 0.75rem;
-  border: 1px solid #dcfce7;
+  border: 1px solid var(--w-raised);
 }
 
 .metaItem {
@@ -162,7 +162,7 @@
 
 .metaLabel {
   font-size: 0.75rem;
-  color: #15803d;
+  color: var(--w-lamp-deep);
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -171,16 +171,16 @@
 .metaValue {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #14532d;
+  color: var(--w-ink-soft);
 }
 
 .continuityBadge {
-  background: #ecfdf5;
-  border: 1px dashed #10b981;
+  background: var(--w-raised);
+  border: 1px dashed var(--w-lamp);
   padding: 0.85rem 1rem;
   border-radius: 0.5rem;
   font-size: 0.9rem;
-  color: #065f46;
+  color: var(--w-ink-soft);
   line-height: 1.4;
 }
 
@@ -192,8 +192,8 @@
 
 .primaryLink {
   padding: 0.75rem 1.5rem;
-  background: #15803d;
-  color: #ffffff;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
   border-radius: 0.75rem;
   font-weight: 600;
   text-decoration: none;
@@ -202,14 +202,14 @@
 }
 
 .primaryLink:hover {
-  background: #166534;
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-ink));
 }
 
 .secondaryLink {
   padding: 0.75rem 1.25rem;
   background: transparent;
-  color: #4b5563;
-  border: 1px solid #d1d5db;
+  color: var(--w-ink-soft);
+  border: 1px solid var(--w-line);
   border-radius: 0.75rem;
   font-weight: 600;
   text-decoration: none;
@@ -218,6 +218,6 @@
 }
 
 .secondaryLink:hover {
-  background: #f9fafb;
-  color: #111827;
+  background: var(--w-raised);
+  color: var(--w-ink);
 }

@@ -325,7 +325,7 @@
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 47.99rem) {
   .studySidebar {
     display: none;
   }

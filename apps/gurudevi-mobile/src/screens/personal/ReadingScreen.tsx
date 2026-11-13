@@ -27,6 +27,7 @@ import { View } from 'react-native';
 import { useFontsOnMobileData } from '@/boot/fontDownloads';
 import { ComfortPresets } from '@/components/comfort/ComfortPresets';
 import { PageFrame } from '@/components/shell/PageFrame';
+import { breakpointOf } from '@repo/ui/components/layout';
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 
@@ -44,7 +45,7 @@ export function ReadingScreen() {
         footer="Sets words and controls together. Everything below can still be tuned."
       >
         <View style={{ paddingVertical: 8 }}>
-          <ComfortPresets columns={shell.width >= 600 ? 2 : 1} />
+          <ComfortPresets columns={breakpointOf(shell.width) === 'phone' ? 1 : 2} />
         </View>
       </Group>
 

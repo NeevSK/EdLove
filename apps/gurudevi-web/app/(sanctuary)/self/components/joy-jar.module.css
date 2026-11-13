@@ -27,20 +27,20 @@
 .title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
   margin: 0;
 }
 
 .subtitle {
   font-size: 0.875rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   margin: 0.25rem 0 0;
 }
 
 .addBtn {
   padding: 0.5rem 1rem;
-  background-color: var(--color-action, #a85022);
-  color: #ffffff;
+  background-color: var(--color-action);
+  color: var(--w-raised);
   border: none;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -54,14 +54,14 @@
 }
 
 .formCard {
-  background-color: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
   border-radius: 0.75rem;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
 }
 
 .formTitle {
@@ -82,11 +82,11 @@
   gap: 0.375rem;
   padding: 0.375rem 0.75rem;
   border-radius: 9999px;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
   background: transparent;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
   cursor: pointer;
 }
 
@@ -99,23 +99,23 @@
 .label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
 }
 
 .input,
 .textarea {
   padding: 0.625rem 0.875rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  background-color: #ffffff;
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  background-color: var(--w-raised);
   font-size: 0.875rem;
   font-family: inherit;
 }
 
 .submitBtn {
   padding: 0.625rem 1.25rem;
-  background-color: var(--color-action, #a85022);
-  color: #ffffff;
+  background-color: var(--color-action);
+  color: var(--w-raised);
   border: none;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -134,8 +134,8 @@
 }
 
 .momentCard {
-  background-color: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
   border-radius: 0.75rem;
   padding: 1.25rem;
   display: flex;
@@ -159,7 +159,7 @@
 
 .momentStudent {
   font-size: 0.75rem;
-  color: var(--color-action, #a85022);
+  color: var(--color-action);
   font-weight: 600;
 }
 
@@ -167,21 +167,21 @@
   font-size: 0.9375rem;
   line-height: 1.5;
   margin: 0;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
 }
 
 .momentTime {
   font-size: 0.75rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   align-self: flex-end;
 }
 
 .emptyState {
   padding: 3rem 1.5rem;
   text-align: center;
-  border: 1px dashed var(--color-line, rgba(104, 94, 85, 0.3));
+  border: 1px dashed var(--color-line, color-mix(in srgb, var(--w-ink-soft) 30%, transparent));
   border-radius: 0.75rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   display: flex;
   flex-direction: column;
   align-items: center;

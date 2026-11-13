@@ -15,7 +15,7 @@ export interface FloorConfig {
   reorder: 'smart-areas' | 'everywhere' | 'never';
   /** Product. Order of the hierarchy keys. */
   hierarchy: readonly ('lit' | 'time' | 'attention' | 'saved')[];
-  /** Product. Area order on every floor; unknown areas go after, in input order. */
+  /** Product. Area order to force on every floor; empty means each room's own order. Areas belong to rooms, not to core. */
   areaOrder: readonly string[];
   /** Product. Density tier per room; rooms not listed are Standard (spacing doc 16). */
   tierByRoom: Readonly<Record<string, DensityTier>>;
@@ -48,7 +48,7 @@ export interface FloorConfig {
 export const DEFAULT_FLOOR_CONFIG: FloorConfig = {
   reorder: 'smart-areas',
   hierarchy: ['lit', 'time', 'attention', 'saved'],
-  areaOrder: ['today', 'work', 'institution', 'outlook', 'private'],
+  areaOrder: [],
   tierByRoom: { workspace: 'dense', self: 'calm', profile: 'calm', community: 'standard' },
   ownPatterns: { lamp: true, path: true, 'day-river': true, pinboard: true, desk: true },
   weights: { time: { now: 3, later: 2, anytime: 1 }, attention: 2, pin: 1.5 },

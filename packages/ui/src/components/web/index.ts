@@ -178,3 +178,5 @@ export {
   type ScrollAreaProps,
 } from './ScrollArea/ScrollArea';
 
+export { FloorView, type FloorViewProps } from './Floor/FloorView';
+export { PatternBody, type PatternProps, type PatternWords } from './Floor/patterns';

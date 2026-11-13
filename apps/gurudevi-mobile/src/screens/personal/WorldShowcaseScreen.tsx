@@ -74,6 +74,7 @@ import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ComfortPresets } from '@/components/comfort/ComfortPresets';
+import { breakpointOf } from '@repo/ui/components/layout';
 
 type SceneWeather = NonNullable<StagePreview['weather']>;
 type BarLayout = 'floating' | 'docked' | 'rail';
@@ -147,7 +148,7 @@ export function WorldShowcaseScreen() {
 
   const [header, setHeader] = useState<WorldHeaderLayout>(savedHeader);
   const [posture, setPosture] = useState<Posture>('home');
-  const [bar, setBar] = useState<BarLayout>(width >= 700 ? 'rail' : 'floating');
+  const [bar, setBar] = useState<BarLayout>(breakpointOf(width) !== 'phone' ? 'rail' : 'floating');
   const [room, setRoom] = useState<string>('self');
   const [menuOpen, setMenuOpen] = useState(false);
   const [signal, setSignal] = useState(true);
@@ -467,7 +468,7 @@ export function WorldShowcaseScreen() {
           footer="Text and controls together, for every age."
         >
           <View style={styles.pad}>
-            <ComfortPresets columns={shell.width >= 600 ? 2 : 1} />
+            <ComfortPresets columns={breakpointOf(shell.width) === 'phone' ? 1 : 2} />
           </View>
         </Group>
 

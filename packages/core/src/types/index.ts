@@ -197,6 +197,7 @@ export type {
   WorkbenchTaskResource,
 } from './Workbench';
 export type {
+  AreaId,
   DomainFeature,
   FeatureJourneySpec,
   FeatureLifecycleStage,
@@ -210,6 +211,7 @@ export type {
   WorkspaceAppearance,
   WorkspaceAppearanceMotion,
   WorkspaceAppearancePreset,
+  WorkspaceFloorSettings,
   WorkspaceLayout,
   WorkspaceOwnerPackage,
   WorkspaceRendererConfig,
@@ -222,7 +224,6 @@ export type {
   WorkspaceSwitcherTarget,
   WorkspaceSwitcherTargetId,
   WorkspaceWallpaper,
-  WorkspaceZoneId,
 } from './Workspace';
 export { APIError };
 

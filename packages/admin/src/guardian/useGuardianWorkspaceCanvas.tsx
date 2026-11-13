@@ -1,11 +1,11 @@
 import { View, Text, Pressable } from 'react-native';
-import { WORKSPACE_CANVAS_ZONES } from '@repo/core/logic';
+import { areasOfSurfaces, nextAreaOf } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 import type {
   ResolvedWorkspaceSurface,
   WorkspaceSurfaceDefinition,
   WorkspaceSwitcherTarget,
-  WorkspaceZoneId,
+  AreaId,
 } from '@repo/core/types';
 
 import { WorkspaceCanvas } from '@repo/ui/components/workspace';
@@ -86,11 +86,6 @@ function formatDateTimeLabel(value: string) {
   }).format(date);
 }
 
-function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
-  const currentIndex = WORKSPACE_CANVAS_ZONES.indexOf(zone);
-  const nextIndex = (currentIndex + 1) % WORKSPACE_CANVAS_ZONES.length;
-  return WORKSPACE_CANVAS_ZONES[nextIndex] as WorkspaceZoneId;
-}
 
 function createGuardianSurface(
   surfaceId: GuardianWorkspaceSurfaceId,
@@ -753,7 +748,7 @@ export function GuardianWorkspaceCanvas({
   schoolName?: string | null;
   onToggleHidden: (id: GuardianWorkspaceSurfaceId, hidden: boolean) => void;
   onTogglePinned: (id: GuardianWorkspaceSurfaceId, pinned: boolean) => void;
-  onMoveToNextZone: (id: GuardianWorkspaceSurfaceId, zone: WorkspaceZoneId) => void;
+  onMoveToNextZone: (id: GuardianWorkspaceSurfaceId, zone: AreaId) => void;
   onOpenSurface: (surface: GuardianResolvedSurface) => void;
 }) {
   if (!layout) return null;
@@ -777,7 +772,7 @@ export function GuardianWorkspaceCanvas({
       onSurfacePress={(surface) => onOpenSurface(surface as GuardianResolvedSurface)}
       renderSurfaceActions={(surface) => {
         const typedSurface = surface as GuardianResolvedSurface;
-        const nextZone = getNextZone(typedSurface.zone);
+        const nextZone = nextAreaOf(typedSurface.zone, areasOfSurfaces(surfaces));
         const canOpenRoom = [
           'children',
           'attendance_watch',

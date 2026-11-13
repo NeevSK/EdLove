@@ -293,6 +293,17 @@ export function ScrollArea({
       ? variant
       : resolveScrollVariantForWorld(detectedWorld ?? undefined);
 
+  // Moving right now (for a moment after each scroll). Touch screens show the bar only then, as
+  // phones do; see the touch rule in kitCss. One rule for every scroll area, not per page.
+  const [isMoving, setIsMoving] = useState(false);
+  const movingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (movingTimer.current) clearTimeout(movingTimer.current);
+    },
+    [],
+  );
+
   // Scroll bounds & indicators
   const [canScrollStart, setCanScrollStart] = useState(false);
   const [canScrollEnd, setCanScrollEnd] = useState(false);
@@ -432,6 +443,13 @@ export function ScrollArea({
       });
     }
   }, [orientation, onScrollProgress]);
+
+  const handleViewportScroll = useCallback(() => {
+    updateScrollMetrics();
+    setIsMoving(true);
+    if (movingTimer.current) clearTimeout(movingTimer.current);
+    movingTimer.current = setTimeout(() => setIsMoving(false), 900);
+  }, [updateScrollMetrics]);
 
   // Cancel any running kinetic momentum
   const cancelMomentum = useCallback(() => {
@@ -897,7 +915,7 @@ export function ScrollArea({
         data-orientation={orientation}
         data-panning={isPanning}
         data-smooth={isSmooth}
-        onScroll={updateScrollMetrics}
+        onScroll={handleViewportScroll}
         onPointerDown={handleCanvasPointerDown}
         onPointerMove={handleCanvasPointerMove}
         onPointerUp={endCanvasPanning}
@@ -923,6 +941,7 @@ export function ScrollArea({
           data-axis={orientation === 'vertical' ? 'vertical' : 'horizontal'}
           data-visibility={scrollbarVisibility}
           data-active={isThumbDragging || isPanning}
+          data-moving={isMoving}
         >
           {activeVariant === 'classic' && (
             <button

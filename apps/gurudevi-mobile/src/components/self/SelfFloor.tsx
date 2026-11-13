@@ -67,7 +67,6 @@ export function SelfFloor() {
         paddingBottom: insets.bottom + (shell.tabs === 'rail' ? 96 : 140),
         gap: shell.stance === 'hud' ? 20 : 28,
       }}
-      showsVerticalScrollIndicator={false}
     >
       <View style={sideBySide ? styles.pair : styles.stack}>
         <WorldEnter index={0} style={sideBySide ? styles.half : undefined}>

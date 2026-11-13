@@ -1,5 +1,5 @@
 import type { FeaturePresentationMode } from '@repo/core/logic/permissions/featurePresentation';
-import type { WorkspaceLayout, WorkspaceZoneId } from '@repo/core/types';
+import type { WorkspaceLayout, AreaId } from '@repo/core/types';
 import { groupsWithSavedOrder, piecesFromLayout } from './bridge';
 import type { FloorConfig } from './config';
 import type { FloorInput } from './layout';
@@ -23,7 +23,7 @@ export interface RoomSurfacePlan {
   id: string;
   label: string;
   group: string;
-  area: WorkspaceZoneId;
+  area: AreaId;
   kit: string;
   time?: TimeBand;
   task?: boolean;
@@ -51,7 +51,7 @@ const s = (
   id: string,
   label: string,
   group: string,
-  area: WorkspaceZoneId,
+  area: AreaId,
   kit: string,
   extra: Partial<RoomSurfacePlan> = {},
 ): RoomSurfacePlan => ({ id, label, group, area, kit, ...extra });

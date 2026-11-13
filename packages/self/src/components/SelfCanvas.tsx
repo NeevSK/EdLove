@@ -3,7 +3,7 @@ import type {
   WorkspaceLayout,
   WorkspaceOwnerPackage,
   WorkspaceSurfaceDefinition,
-  WorkspaceZoneId,
+  AreaId,
 } from '@repo/core/types';
 import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import type { AccessibleFeature } from '@repo/self/features/accessPolicy';
@@ -54,10 +54,10 @@ export function SelfCanvas({
   // Map Self features into canonical WorkspaceSurfaceDefinitions
   const surfaceDefinitions = React.useMemo<WorkspaceSurfaceDefinition[]>(() => {
     return features.map((feature, index) => {
-      const defaultZone: WorkspaceZoneId =
+      const defaultZone: AreaId =
         feature.defaultZone === 'shared'
           ? 'work'
-          : ((feature.defaultZone as WorkspaceZoneId) ?? 'today');
+          : ((feature.defaultZone as AreaId) ?? 'today');
       return {
         surfaceId: feature.id,
         workspaceId: 'self',
@@ -71,10 +71,10 @@ export function SelfCanvas({
   }, [features]);
 
   const workspaceLayout = React.useMemo<WorkspaceLayout>(() => {
-    const zoneBySurface: Partial<Record<string, WorkspaceZoneId>> = {};
+    const zoneBySurface: Partial<Record<string, AreaId>> = {};
     for (const f of features) {
       zoneBySurface[f.id] =
-        f.defaultZone === 'shared' ? 'work' : ((f.defaultZone as WorkspaceZoneId) ?? 'today');
+        f.defaultZone === 'shared' ? 'work' : ((f.defaultZone as AreaId) ?? 'today');
     }
 
     return {

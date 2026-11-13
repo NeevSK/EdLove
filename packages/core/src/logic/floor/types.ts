@@ -168,6 +168,8 @@ export interface WorldFloorBias {
   shelfShape?: PieceShape;
   /** The world's motion ceiling. */
   motion?: MotionLevel;
+  /** The world's character: -1 roomier, +1 tighter, applied to each room kind's density. */
+  densityShift?: -1 | 0 | 1;
 }
 
 export interface FloorFootprint {

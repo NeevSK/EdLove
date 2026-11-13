@@ -1,5 +1,5 @@
 import type { FeaturePresentationMode } from '@repo/core/logic/permissions/featurePresentation';
-import type { WorkspaceLayout, WorkspaceZoneId } from '@repo/core/types';
+import type { WorkspaceLayout, AreaId } from '@repo/core/types';
 import type { FloorFit, GroupInput, PieceInput, TimeBand } from './types';
 
 /**
@@ -11,7 +11,7 @@ export interface FloorSurface {
   label: string;
   group: string;
   /** The area it lives in unless the person moved it. */
-  defaultArea: WorkspaceZoneId;
+  defaultArea: AreaId;
   /** SanctuaryFeature's decision, through resolveFeaturePresentation. */
   presentation: FeaturePresentationMode;
   fit: FloorFit;
@@ -58,18 +58,18 @@ export function floorLayoutId(room: string, perspectiveId: string): string {
 export function piecesFromLayout(
   surfaces: readonly FloorSurface[],
   layout: Pick<WorkspaceLayout, 'order' | 'hidden' | 'pinned' | 'zoneBySurface'> | null,
-): { pieces: PieceInput[]; areaOf: Record<string, WorkspaceZoneId> } {
+): { pieces: PieceInput[]; areaOf: Record<string, AreaId> } {
   const hidden = new Set(layout?.hidden ?? []);
   const pinned = new Set(layout?.pinned ?? []);
   const order = layout?.order ?? [];
-  const areaOf: Record<string, WorkspaceZoneId> = {};
+  const areaOf: Record<string, AreaId> = {};
   const pieces: PieceInput[] = [];
   for (const s of surfaces) {
     if (!PRESENT.has(s.presentation) || hidden.has(s.id)) continue;
     const resting = RESTING.has(s.presentation);
     const saved = order.indexOf(s.id);
     areaOf[s.id] =
-      (layout?.zoneBySurface as Record<string, WorkspaceZoneId> | undefined)?.[s.id] ??
+      (layout?.zoneBySurface as Record<string, AreaId> | undefined)?.[s.id] ??
       s.defaultArea;
     pieces.push({
       id: s.id,

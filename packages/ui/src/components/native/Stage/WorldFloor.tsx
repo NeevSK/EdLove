@@ -22,13 +22,12 @@ import { useEffect, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Canvas, LinearGradient, Rect, vec } from 'react-native-skia';
-import type { GroundPlan } from '@repo/core/logic/workspace/groundPlan';
+import { GROUND_PRESENCE_VEILS, type GroundPlan } from '@repo/core/logic/workspace/groundPlan';
 import { photoUrlFor } from '@repo/core/logic/workspace/worldBackdrops';
-import { useGroundPolicy } from '../../../context/useGroundPolicy';
 import { groundLimitsOf } from '../../../theme/groundLimits';
 import { GURUDEVI_APP } from '../../../utils/urls';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
-import { quietVeilOf } from '../../../theme/scene/screenGround';
+import { quietVeilOf, veilGradientOf } from '../../../theme/scene/screenGround';
 import { alpha } from '../../../theme/color';
 import { useWorld } from '../../../theme/native/WorldContext';
 import { type ArtLayer, type ScenePresence, resolveScene, sceneArtOf } from '../../../theme/scene';
@@ -118,8 +117,7 @@ export function WorldFloor({ stage, presence, scrolling, ground: plan = null }: 
   // Veils: a band veil keeps the floor visible behind the header only. Quiet (settings, forms,
   // reading) stills the floor and veils it calmly, but never hides it: every screen still stands
   // on the world's ground. A plain world (Classic) has only its ground.
-  const policy = useGroundPolicy();
-  const quietTo = plainWorld ? 1 : presence === 'quiet' ? quietVeilOf(policy) : 0;
+  const quietTo = plainWorld ? 1 : presence === 'quiet' ? quietVeilOf() : 0;
   const band = useSharedValue(presence === 'band' ? 1 : 0);
   const quiet = useSharedValue(quietTo);
   useEffect(() => {
@@ -225,7 +223,7 @@ export function WorldFloor({ stage, presence, scrolling, ground: plan = null }: 
           StyleSheet.absoluteFill,
           bandStyle,
           {
-            backgroundImage: `linear-gradient(to bottom, ${alpha(ground, 0.1)} 0%, ${alpha(ground, 0.55)} 12%, ${alpha(ground, 0.9)} 22%, ${alpha(ground, 0.94)} 100%)`,
+            backgroundImage: veilGradientOf(GROUND_PRESENCE_VEILS.band, (a) => alpha(ground, a)),
           },
         ]}
       />

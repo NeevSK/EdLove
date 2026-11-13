@@ -27,6 +27,7 @@ import { tokens } from '@repo/ui/tokens';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo } from 'react';
 import { useWindowDimensions, View, Text, Pressable, ScrollView } from 'react-native';
+import { isTabletViewport } from '@repo/ui/components/layout';
 
 const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
 
@@ -52,7 +53,7 @@ export function BaseSelfView({
   const { status: networkStatus } = useOfflineStatus();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
-  const isTablet = isLandscape ? height >= 600 : width >= 768;
+  const isTablet = isTabletViewport(width, height);
 
   const allFeatures = useMemo(
     () => [
@@ -287,7 +288,6 @@ export function BaseSelfView({
       />
 
       <ScrollView
-        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         {voiceJournal && <View className="px-lg pt-sm">{voiceJournal}</View>}
@@ -340,7 +340,6 @@ export function BaseSelfView({
               renderItem={renderFeatureItem}
               horizontal={!isLandscape}
               showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
               contentContainerStyle={
                 isLandscape
                   ? { paddingVertical: tokens.spacing.xs, paddingHorizontal: tokens.spacing.xs }

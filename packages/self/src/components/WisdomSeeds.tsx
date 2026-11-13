@@ -123,7 +123,6 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
       )}
 
       <ScrollView
-        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
         className="flex-1"
       >

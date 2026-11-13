@@ -15,18 +15,18 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -37,17 +37,17 @@
   gap: 0.35rem;
   font-size: 0.8rem;
   font-weight: 650;
-  color: var(--color-action, #a85022);
+  color: var(--color-action);
   text-decoration: none;
   margin-bottom: 0.5rem;
 }
 
 .card {
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
   border-radius: 0.75rem;
   padding: 1.75rem;
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -62,7 +62,7 @@
 .label {
   font-size: 0.85rem;
   font-weight: 650;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .input,
@@ -71,9 +71,9 @@
   width: 100%;
   padding: 0.65rem 0.85rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  background: var(--color-paper, #f7f2e8);
-  color: var(--color-ink, #131e27);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-family: inherit;
   font-size: 0.875rem;
   outline: none;
@@ -84,7 +84,7 @@
 .input:focus,
 .select:focus,
 .textarea:focus {
-  border-color: var(--color-action, #a85022);
+  border-color: var(--color-action);
 }
 
 .textarea {
@@ -94,7 +94,7 @@
 
 .hint {
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   margin: 0;
 }
 
@@ -109,7 +109,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   cursor: pointer;
 }
 
@@ -120,8 +120,8 @@
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  background: var(--color-action, #a85022);
-  color: #fff;
+  background: var(--color-action);
+  color: var(--w-raised);
   font-weight: 700;
   font-size: 0.9rem;
   border: none;
@@ -136,9 +136,9 @@
 .noticeSuccess {
   padding: 1rem;
   border-radius: 0.5rem;
-  background: rgba(26, 127, 55, 0.12);
-  border: 1px solid rgba(26, 127, 55, 0.3);
-  color: #1a7f37;
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  color: var(--w-lamp-deep);
   font-size: 0.875rem;
   font-weight: 600;
 }

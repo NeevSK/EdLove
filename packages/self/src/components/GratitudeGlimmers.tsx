@@ -165,7 +165,7 @@ export default function GratitudeGlimmers({
             }}
           />
 
-          <ScrollView className="max-h-[500px]" showsVerticalScrollIndicator={false}>
+          <ScrollView className="max-h-[500px]">
             <View className="gap-4 pb-20">
               {entries.map((entry, index) => {
                 const cat = categories.find((c) => c.id === entry.category);

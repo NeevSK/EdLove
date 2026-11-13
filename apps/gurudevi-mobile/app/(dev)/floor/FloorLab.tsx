@@ -1,4 +1,10 @@
 import {
+  sampleGuardianDesk,
+  samplePrincipalDesk,
+  sampleStudentDesk,
+  sampleTeacherDesk,
+} from '@repo/classroom/deskPort';
+import {
   type DetailTier,
   type FloorSpace,
   layoutFloor,
@@ -19,6 +25,7 @@ import {
 import { floorFitOf, type KitPiece } from '@repo/ui/theme';
 import { WorldScope } from '@repo/ui/theme/native';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Platform,
   SafeAreaView,
@@ -27,6 +34,14 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { type WorkDesk, workPiece } from '@/components/workspace/pieces';
+
+const SAMPLE_DESKS: Record<string, WorkDesk> = {
+  teacher: { capacity: 'teacher', desk: sampleTeacherDesk() },
+  student: { capacity: 'student', desk: sampleStudentDesk() },
+  guardian: { capacity: 'guardian', desk: sampleGuardianDesk() },
+  principal: { capacity: 'principal', desk: samplePrincipalDesk() },
+};
 
 const CHROME: FloorSpace['chrome'] = [
   { id: 'status', height: 24, giveWayRank: 0, essential: true },
@@ -60,6 +75,7 @@ type PlanId = keyof typeof PLANS;
 export function FloorLab() {
   const here = useWindowDimensions();
   const [plan, setPlan] = useState<PlanId>('teacher');
+  const { t, i18n } = useTranslation();
   const [screen, setScreen] = useState<ScreenId>('here');
   const [detail, setDetail] = useState<DetailTier>('rich');
   const [view, setView] = useState<'floor' | 'why'>('floor');
@@ -138,11 +154,22 @@ export function FloorLab() {
             {view === 'floor' ? (
               <FloorView
                 tree={tree}
-                renderPiece={(p) => (
-                  <View style={{ minHeight: p.footprint.h * 0.6 }}>
-                    <Card title={p.label} meta={p.why[0] ?? `${Math.round(p.footprint.h)} tall`} />
-                  </View>
-                )}
+                renderPiece={(p) =>
+                  (SAMPLE_DESKS[plan]
+                    ? workPiece(p.id, p.label, SAMPLE_DESKS[plan]!, {
+                        t,
+                        locale: i18n.language || 'en',
+                        canOpen: () => false,
+                      })
+                    : null) ?? (
+                    <View style={{ minHeight: p.footprint.h * 0.6 }}>
+                      <Card
+                        title={p.label}
+                        meta={p.why[0] ?? `${Math.round(p.footprint.h)} tall`}
+                      />
+                    </View>
+                  )
+                }
               />
             ) : (
               <FloorInspector tree={tree} findings={findings} />

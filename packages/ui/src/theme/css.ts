@@ -27,6 +27,7 @@ import type {
   TypeStyle,
   WorldId,
   WorldMode,
+  WorldTokens,
 } from './types';
 import { DEFAULT_WORLD, WORLD_IDS, WORLDS } from './worlds';
 
@@ -95,6 +96,35 @@ function typeVars(prefix: string, t: TypeStyle | Omit<TypeStyle, 'color'>): Reco
 const TEXT_ROLES: TextRole[] = ['display', 'title', 'body', 'label', 'caption', 'value'];
 
 /** Every variable for one resolved world. */
+/**
+ * Colour names used by older page styles, each tied to one world colour.
+ * Muted text maps to inkSoft (4.5:1), never inkFaint (3:1), because pages use
+ * these names for readable text.
+ */
+export const legacyColourNames = (t: WorldTokens): Record<string, string> => ({
+  '--color-text': t.ink,
+  '--color-text-primary': t.ink,
+  '--color-foreground': t.ink,
+  '--color-text-secondary': t.inkSoft,
+  '--color-text-muted': t.inkSoft,
+  '--color-ink-muted': t.inkSoft,
+  '--color-surface': t.raised,
+  '--color-surface-subtle': t.sunken,
+  '--color-surface-sunken': t.sunken,
+  '--color-background-soft': t.sunken,
+  '--color-paper-hover': t.sunken,
+  '--color-border': t.line,
+  '--color-border-subtle': t.line,
+  '--color-gold-deep': t.lampDeep,
+  '--color-action-subtle': `color-mix(in srgb, ${t.lamp} 14%, ${t.ground})`,
+  '--color-danger': t.danger,
+  '--color-error': t.danger,
+  '--color-warning': t.lampDeep,
+  '--color-success': t.success,
+  '--color-leaf': t.success,
+  '--color-terra-base': t.ornament,
+});
+
 export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   const t = w.tokens;
   const r = w.recipes;
@@ -135,6 +165,11 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
     '--color-action': t.lamp,
     '--color-focus': t.focus,
   });
+
+  // Older page styles still name these colours, but nothing defined them, so
+  // every page fell back to its own fixed white or cream in every world. Each
+  // name now means one world colour. New styles use the --w-* names directly.
+  Object.assign(v, legacyColourNames(t));
 
   for (const role of TEXT_ROLES) Object.assign(v, typeVars(`--w-text-${role}`, r.text[role]));
 

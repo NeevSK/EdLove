@@ -76,4 +76,5 @@ export {
   type GroundStage,
   quietVeilOf,
   screenPresence,
+  veilGradientOf,
 } from './screenGround';

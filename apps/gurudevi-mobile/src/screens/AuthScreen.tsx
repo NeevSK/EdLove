@@ -390,7 +390,6 @@ export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: Au
 
           <ScrollView
             contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
             {/* Header copy */}

@@ -45,8 +45,8 @@ const phone = { width: 360, height: 760, fontScale: 1, chrome: CHROME };
 const classroom = (over: Partial<FloorInput> = {}): FloorInput => ({
   room: 'workspace',
   areas: [
-    { id: 'work', label: 'Work' },
     { id: 'today', label: 'Today', smart: true },
+    { id: 'work', label: 'Work' },
   ],
   groups: [
     { id: 'daily', label: 'Daily tasks', area: 'today', job: 'act' },
