@@ -36,7 +36,7 @@ import {
   Surface,
   Text,
   TextField,
-  useFloorPresence,
+  useScreenGround,
 } from '@repo/ui/components/native';
 import { WorldEnter } from '@repo/ui/theme/native';
 import { ArrowLeft } from '@repo/ui/icons/native';
@@ -86,7 +86,7 @@ export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: Au
   const { t } = useTranslation();
   const world = useWorld();
   const wt = world.tokens;
-  useFloorPresence('full');
+  useScreenGround('room');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

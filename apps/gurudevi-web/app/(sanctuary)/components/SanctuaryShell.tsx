@@ -441,8 +441,10 @@ export function SanctuaryShell({
   return (
     <LivingGround
       atmosphere="canopy"
-      // The world's ground (WorldBackdrop) is the texture now; the old paper filter would sit on it.
-      dither={false}
+      // The world's motif watermarks stay over the ground on every screen. The paper relief is
+      // left out (data-ground-drawn): the person's Texture setting owns the grain now.
+      data-ground-drawn="shell"
+      dither
       className={styles.shell}
       data-sidebar={menuIsCollapsed ? 'collapsed' : 'expanded'}
       data-navigation-layout={navigationLayout}

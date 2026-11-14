@@ -21,7 +21,7 @@ import {
   RadioGroup,
   Surface,
   Text,
-  useFloorPresence,
+  useScreenGround,
   WorldPicker,
 } from '@repo/ui/components/native';
 import { useLanguageOptional, useThemeContextOptional } from '@repo/ui/context';
@@ -55,7 +55,7 @@ export default function OnboardingRoute() {
   const routeState = useBootstrapRouteState('/onboarding');
   const world = useWorld();
   const wt = world.tokens;
-  useFloorPresence('full');
+  useScreenGround('room');
 
   const [step, setStep] = useState<Step>('language');
   const { language, setLanguage } = useLanguageOptional();

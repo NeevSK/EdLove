@@ -6,6 +6,7 @@ import { getAllDomains, registerDomains } from '@repo/core/logic/registry/appCat
 import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
 import { FORM_BUILDER_REGISTRY } from '@repo/form-builder/constants/formBuilderRegistry';
 import { LIBRARY_REGISTRY } from '@repo/library/constants/libraryRegistry';
+import { PROFILE_REGISTRY } from '@repo/profile/constants/profileRegistry';
 import { SELF_REGISTRY } from '@repo/self/constants/selfRegistry';
 import { WORKFORCE_REGISTRY } from '@repo/workforce/constants/workforceRegistry';
 
@@ -19,6 +20,7 @@ export const APP_CATALOG: Readonly<Record<string, DomainEntry>> = {
   ...CLASSROOM_REGISTRY,
   ...COMMUNITY_REGISTRY,
   ...LIBRARY_REGISTRY,
+  ...PROFILE_REGISTRY,
   ...ADMIN_REGISTRY,
   ...AI_REGISTRY,
   ...FORM_BUILDER_REGISTRY,

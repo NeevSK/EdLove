@@ -49,18 +49,36 @@ export const ROOM_FLOORS: Readonly<Record<TabDomain, RoomFloorParts>> = {
     ],
   },
   community: {
-    zones: [TODAY, { id: 'work', label: 'Together' }],
+    zones: [TODAY, { id: 'work', label: 'Together' }, { id: 'institution', label: 'School' }],
     groups: [
       { id: 'news', label: 'New for you', area: 'today', job: 'glance' },
       { id: 'talk', label: 'Talk', area: 'work', job: 'act' },
       { id: 'groups', label: 'Groups', area: 'work', job: 'browse' },
+      { id: 'school', label: 'From your school', area: 'institution', job: 'glance' },
     ],
   },
+  // Reading carries on first, then shelves, then finding; people who make
+  // lessons also get Make (the catalog gives those entries to makers only).
   library: {
-    zones: [{ id: 'work', label: 'Shelves' }],
-    groups: [{ id: 'shelves', label: 'Shelves', area: 'work', job: 'browse' }],
+    zones: [TODAY, { id: 'work', label: 'Shelves' }, { id: 'institution', label: 'School' }],
+    groups: [
+      { id: 'reading', label: 'Reading now', area: 'today', job: 'act' },
+      { id: 'shelves', label: 'Shelves', area: 'work', job: 'browse' },
+      { id: 'find', label: 'Find', area: 'work', job: 'find' },
+      { id: 'make', label: 'Make', area: 'work', job: 'act' },
+      { id: 'school-shelf', label: 'From your school', area: 'institution', job: 'glance' },
+    ],
   },
-  profile: { zones: [], groups: [] },
+  // The same room for everyone: the card, your places, your journey, the account.
+  profile: {
+    zones: [TODAY, { id: 'private', label: 'Just you' }],
+    groups: [
+      { id: 'you', label: 'You', area: 'today', job: 'glance' },
+      { id: 'bonds', label: 'Your places', area: 'private', job: 'act' },
+      { id: 'journey', label: 'Journey', area: 'private', job: 'browse' },
+      { id: 'account', label: 'Account', area: 'private', job: 'find' },
+    ],
+  },
 };
 
 /** One room's catalog as one role sees it on one platform. */

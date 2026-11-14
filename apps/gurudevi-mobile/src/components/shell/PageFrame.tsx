@@ -5,7 +5,7 @@
 
 import {
   AppHeader,
-  useFloorPresence,
+  useScreenGround,
   useKeypadSpace,
   useShellLayout,
 } from '@repo/ui/components/native';
@@ -27,7 +27,7 @@ export function PageFrame({
   eyebrow?: string;
   children: ReactNode;
 }) {
-  useFloorPresence('quiet');
+  useScreenGround('focus');
   const insets = useSafeAreaInsets();
   // Width, height and the cutouts on both sides: the column holds its reading width either way up.
   const layout = useShellLayout();

@@ -46,6 +46,7 @@ const ROOMS: [TabDomain, string][] = [
   ['workspace', 'guardian'],
   ['community', 'student'],
   ['library', 'student'],
+  ['library', 'teacher'],
 ];
 
 describe('room floors from the catalog', () => {
