@@ -173,3 +173,4 @@ export {
   type ScrollAreaProps,
 } from './ScrollArea/ScrollArea';
 
+export { Radar, type RadarProps } from './Radar/Radar';

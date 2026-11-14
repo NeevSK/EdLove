@@ -236,3 +236,4 @@ export {
   useKeypadSpace,
 } from './Keyboard/Keypad';
 export { TypingBar } from './Keyboard/TypingBar';
+export { Radar, type RadarProps } from './Radar/Radar';

@@ -1745,3 +1745,34 @@ export interface ThemeSwitcherContract {
 
 
 
+
+export interface RadarAxis {
+  id: string;
+  /** Already translated ("Maths", "Caring for others"). */
+  label: string;
+}
+
+export interface RadarSeries {
+  id: string;
+  /** Already translated ("Now", "Start of term"). */
+  label: string;
+  /** 0 to 1 for each axis id. A missing axis is drawn at the centre and said aloud as "not yet". */
+  values: Readonly<Record<string, number>>;
+  /** `now` is lit; `then` is a quiet outline behind it, for comparing a person with their own past. */
+  emphasis?: 'now' | 'then';
+}
+
+/**
+ * Many dimensions of one person at once. The kit draws; it never decides what the axes or the
+ * values mean. Callers pass the person's own areas and their own evidence or self-rating, never a
+ * score computed about them or a comparison with others.
+ */
+export interface RadarContract {
+  axes: RadarAxis[];
+  series: RadarSeries[];
+  /** What the chart is, already translated ("Your areas, this term and last"). */
+  label: string;
+  /** Said for an axis with no value ("not yet"), already translated. */
+  missingLabel: string;
+  size?: number;
+}

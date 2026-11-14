@@ -252,6 +252,15 @@ const BASE_CSS = `
 .gd-progress[data-indeterminate] .gd-progress-fill{width:30%;animation:gd-progress 1.4s ease-in-out infinite}
 @keyframes gd-progress{from{left:0}to{left:70%}}
 @media (prefers-reduced-motion:reduce){.gd-progress[data-indeterminate] .gd-progress-fill{animation:none;left:35%}}
+.gd-radar{margin:0;container-type:inline-size}
+.gd-radar svg{display:block;overflow:visible}
+.gd-radar-ring{fill:none;stroke:var(--w-line);stroke-width:1}
+.gd-radar-shape.gd-radar-now{fill:var(--w-lamp);fill-opacity:.22;stroke:var(--w-lamp);stroke-width:2;transition:all var(--w-settle)}
+.gd-radar-shape.gd-radar-then{fill:none;stroke:var(--w-ink-soft);stroke-width:1.5;stroke-dasharray:4 4}
+.gd-radar-dot{fill:var(--w-lamp)}
+.gd-radar-label{fill:var(--w-ink);font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size)}
+.gd-radar-list{margin:0;padding:0;list-style:none;color:var(--w-ink-soft);font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size)}
+@media (prefers-reduced-motion:reduce){.gd-radar-shape{transition:none}}
 .gd-badge{display:inline-flex;align-items:center;min-height:20px;padding:2px 8px;border-radius:var(--w-chip-radius);font-size:.75rem;line-height:1.3;white-space:nowrap;background:var(--w-sunken);color:var(--w-ink-soft)}
 .gd-badge[data-tone="lamp"]{background:var(--w-lamp);color:var(--w-on-lamp)}
 .gd-badge[data-tone="success"]{background:var(--w-raised);color:var(--w-ink);box-shadow:inset 0 0 0 1px var(--w-success)}
