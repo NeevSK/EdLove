@@ -40,6 +40,7 @@ vi.mock('react-native-reanimated', async (importOriginal) => {
     useSharedValue: (initial: number | boolean) => {
       const shared = {
         value: initial,
+        get: () => shared.value,
         set: (next: number | boolean) => {
           shared.value = next;
         },
