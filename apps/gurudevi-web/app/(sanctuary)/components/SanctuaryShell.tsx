@@ -36,7 +36,8 @@ import {
   withSanctuaryRoutePrefix,
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
-import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatureRegistry';
+import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatures';
+import { registerWebAppCatalog } from '../../../lib/appCatalog';
 import { CapacityPerspectiveSwitcher } from './CapacityPerspectiveSwitcher';
 import { CommandPalette } from './CommandPalette';
 import { DiurnalThemeToggle } from './DiurnalThemeToggle';
@@ -48,6 +49,9 @@ import { TutiiSidePanel } from './TutiiSidePanel';
 import { WorkspaceRouteTabs } from './WorkspaceRouteTabs';
 import { WorkspaceScopeSwitcher } from './WorkspaceScopeSwitcher';
 import { WorldBackdrop } from './WorldBackdrop';
+
+// Every room's feature catalog, so useDomainFeature and SanctuaryFeature work on the web.
+registerWebAppCatalog();
 
 type SanctuaryShellProps = Readonly<{
   children: ReactNode;

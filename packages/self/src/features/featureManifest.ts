@@ -54,24 +54,6 @@ export interface ResolvedSelfFeatureManifest {
   runnable: SelfFeatureManifestItem[];
 }
 
-/**
- * Delivery is deliberately explicit. A catalog entry is not an assertion that
- * its interaction is ready on every platform.
- */
-const FEATURE_DELIVERY: Readonly<
-  Record<string, Readonly<Record<SelfFeaturePlatform, SelfFeatureDelivery>>>
-> = Object.freeze(
-  Object.keys(FEATURE_CATALOG).reduce<
-    Record<string, Readonly<Record<SelfFeaturePlatform, SelfFeatureDelivery>>>
-  >((delivery, id) => {
-    delivery[id] = {
-      native: 'runnable',
-      browser: id === 'fire_journal' ? 'runnable' : 'catalog-only',
-    };
-    return delivery;
-  }, {}),
-);
-
 const FEATURE_TASK_BEHAVIORS: Readonly<Record<string, SelfFeatureTaskBehavior>> = Object.freeze({
   mood_lotus: { kind: 'modal' },
   wisdom_seeds: { kind: 'modal' },
@@ -86,18 +68,20 @@ export function getSelfFeatureTaskBehavior(featureId: string): SelfFeatureTaskBe
     : undefined;
 }
 
+/**
+ * Whether this platform can run a feature. Each platform declares it from its
+ * own renderers (web: BROWSER_SELF_FEATURES, phone: NATIVE_SELF_DELIVERY), so
+ * the answer is never written twice. Without a declaration nothing runs.
+ */
 export function getSelfFeatureDelivery(
   featureId: string,
-  platform: SelfFeaturePlatform,
+  _platform: SelfFeaturePlatform,
   declaration?: SelfFeatureDeliveryDeclaration,
 ): SelfFeatureDelivery | undefined {
-  if (declaration) {
-    return declaresFeatureDelivery(declaration.deliveredFeatureIds, featureId)
-      ? 'runnable'
-      : 'catalog-only';
-  }
-
-  return FEATURE_DELIVERY[featureId]?.[platform];
+  if (!getFeatureDefinition(featureId)) return undefined;
+  return declaration && declaresFeatureDelivery(declaration.deliveredFeatureIds, featureId)
+    ? 'runnable'
+    : 'catalog-only';
 }
 
 /**

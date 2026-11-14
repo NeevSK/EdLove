@@ -157,10 +157,8 @@ export interface WorkspaceRendererConfig {
 
 import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
 
-export interface DomainFeature extends DomainEntry {
-  icon?: string;
-  defaultZone?: string;
-}
+/** One feature in a room's catalog. Same shape as a catalog entry. */
+export type DomainFeature = DomainEntry;
 
 export type WorkspaceRolePersona =
   | 'founder'

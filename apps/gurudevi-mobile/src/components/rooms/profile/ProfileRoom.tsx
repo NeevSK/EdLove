@@ -7,14 +7,16 @@
  */
 import { usePerspectiveSwitch } from '@repo/core/logic';
 import type { FloorNode } from '@repo/core/logic/floor';
-import { roomPlanOf } from '@repo/core/logic/floor';
+import { roomCatalogOf } from '@repo/core/logic/floor';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { profilePort, useProfileStory } from '@repo/profile/port';
 import { Avatar, Badge, Card, Group, Rail, Row, Surface, Text } from '@repo/ui/components/native';
 import { router } from 'expo-router';
+import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { APP_CATALOG } from '@/boot/registerAppCatalog';
 import { useShellRequests } from '@/components/shell/shellRequests';
-import { RoomFloor } from '../RoomFloor';
+import { RoomFront } from '../RoomFront';
 import { SampleNote } from '../SampleNote';
 import { useRoomBond } from '../useRoomBond';
 
@@ -28,20 +30,20 @@ const KIND: Record<string, string> = {
 
 export function ProfileRoom() {
   const bond = useRoomBond();
-  const plan = roomPlanOf('profile', bond.capacity);
+  const catalog = useMemo(
+    () => roomCatalogOf(APP_CATALOG, 'profile', bond.capacity, 'mobile'),
+    [bond.capacity],
+  );
   const user = useAuthStore((s) => s.user);
   const { activePerspective, availablePerspectives, switchPerspective } = usePerspectiveSwitch();
   const story = useProfileStory(bond.capacity).data;
   const ask = useShellRequests((s) => s.ask);
 
-  if (!plan) {
-    return null;
-  }
   const name = user?.display_name || user?.email || 'You';
 
   const piece = (p: FloorNode) => {
     switch (p.id) {
-      case 'card':
+      case 'profile-card':
         return (
           <Surface tone="raised" style={styles.card}>
             <View style={styles.who}>
@@ -65,7 +67,7 @@ export function ProfileRoom() {
             ) : null}
           </Surface>
         );
-      case 'bonds':
+      case 'profile-bonds':
         return (
           <Group label={p.label}>
             {availablePerspectives.map((x) => {
@@ -84,9 +86,9 @@ export function ProfileRoom() {
             <Row label="See every place" chevron onPress={() => ask('perspectives')} />
           </Group>
         );
-      case 'invite':
+      case 'profile-invite':
         return <Row label={p.label} chevron onPress={() => ask('invite')} />;
-      case 'achievements':
+      case 'profile-achievements':
         return story?.badges.length ? (
           <Rail
             label={p.label}
@@ -98,7 +100,7 @@ export function ProfileRoom() {
         ) : (
           <Row label="No badges yet" />
         );
-      case 'record':
+      case 'profile-record':
         return (
           <Card
             title={p.label}
@@ -109,7 +111,7 @@ export function ProfileRoom() {
             }
           />
         );
-      case 'security':
+      case 'profile-security':
         return (
           <Row
             label={p.label}
@@ -118,9 +120,9 @@ export function ProfileRoom() {
             onPress={() => router.push('/account-recovery')}
           />
         );
-      case 'privacy':
+      case 'profile-privacy':
         return <Row label={p.label} detail="Opens with consent on the new server" />;
-      case 'settings':
+      case 'profile-settings':
         return <Row label={p.label} chevron onPress={() => router.push('/settings')} />;
       default:
         return <Card title={p.label} />;
@@ -128,8 +130,8 @@ export function ProfileRoom() {
   };
 
   return (
-    <RoomFloor
-      plan={plan}
+    <RoomFront
+      catalog={catalog}
       userId={bond.userId}
       perspectiveId={bond.perspectiveId}
       renderPiece={piece}

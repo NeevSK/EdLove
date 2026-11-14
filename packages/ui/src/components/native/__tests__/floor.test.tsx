@@ -1,4 +1,5 @@
-import { layoutFloor, lintFloor, ROOM_PLANS, roomFloorInput } from '@repo/core/logic/floor';
+import { layoutFloor, lintFloor, roomFloorInput } from '@repo/core/logic/floor';
+import { sampleRoom } from '@repo/core/logic/floor/__fixtures__/sampleRooms';
 import { render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import { describe, expect, it, vi } from 'vitest';
@@ -13,7 +14,7 @@ vi.mock('../../../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn(
 const tree = (width: number, height: number) =>
   layoutFloor(
     roomFloorInput({
-      plan: ROOM_PLANS['workspace:teacher']!,
+      catalog: sampleRoom('workspace'),
       fitOf: (k) => floorFitOf(k as KitPiece, 'android'),
       space: { width, height, fontScale: 1, chrome: [] },
       controls: { detail: 'rich', motion: 'full' },
@@ -36,7 +37,7 @@ describe('FloorView', { tags: ['unit', 'a11y'] }, () => {
       .map((n) => n.props.children)
       .filter((c) => typeof c === 'string');
     const order = t.readingOrder.map(
-      (id) => ROOM_PLANS['workspace:teacher']!.surfaces.find((x) => x.id === id)!.label,
+      (id) => sampleRoom('workspace').features.find((x) => x.id === id)!.label,
     );
     expect(drawn.filter((d) => order.includes(d))).toEqual(order);
   });
@@ -45,7 +46,7 @@ describe('FloorView', { tags: ['unit', 'a11y'] }, () => {
     const t = tree(1280, 800);
     await render(wrap(<FloorView tree={t} renderPiece={(p) => <Text>{p.label}</Text>} />));
     for (const id of t.readingOrder) {
-      const label = ROOM_PLANS['workspace:teacher']!.surfaces.find((x) => x.id === id)!.label;
+      const label = sampleRoom('workspace').features.find((x) => x.id === id)!.label;
       expect(screen.getByText(label)).toBeTruthy();
     }
   });

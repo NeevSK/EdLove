@@ -28,7 +28,7 @@ import { FloorErrorBoundary } from './FloorErrorBoundary';
 import { FloorReception } from './FloorReception';
 import { FloorStudioDrawer, type FurnitureDefinition } from './FloorStudioDrawer';
 import { GroundLayers, sceneRoomOf } from './GroundLayers';
-import { RoomFloorBody, type RoomFloorProps } from './RoomFloorBody';
+import { RoomFloor, type RoomFloorProps } from './RoomFloor';
 import { WorkspaceLayoutRecoveryControl } from './WorkspaceLayoutRecoveryControl';
 
 export type SanctuaryFloorCanvasRenderProps = {
@@ -340,7 +340,7 @@ export function SanctuaryFloorCanvas({
         fallbackTitle={`${domain.charAt(0).toUpperCase() + domain.slice(1)} Floor Experience Temporarily Paused`}
       >
         {floor ? (
-          <RoomFloorBody worldId={activeWorld} {...floor} />
+          <RoomFloor worldId={activeWorld} {...floor} />
         ) : typeof children === 'function' ? (
           (children as (props: SanctuaryFloorCanvasRenderProps) => React.ReactNode)({
             isModuleVisible: (id: string) => {

@@ -5,7 +5,7 @@
  */
 import { communityPort, useSquare } from '@repo/community/port';
 import type { FloorNode } from '@repo/core/logic/floor';
-import { roomPlanOf } from '@repo/core/logic/floor';
+import { roomCatalogOf } from '@repo/core/logic/floor';
 import {
   Button,
   Card,
@@ -16,8 +16,10 @@ import {
   Stack,
   WaitingSign,
 } from '@repo/ui/components/native';
+import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { RoomFloor } from '../RoomFloor';
+import { APP_CATALOG } from '@/boot/registerAppCatalog';
+import { RoomFront } from '../RoomFront';
 import { SampleNote } from '../SampleNote';
 import { useRoomBond } from '../useRoomBond';
 import { NoticeCard, openCommunity, openGroup, PostCard } from './parts';
@@ -27,12 +29,12 @@ const FRONT_NOTICES = 2;
 
 export function CommunityRoom() {
   const bond = useRoomBond();
-  const plan = roomPlanOf('community', bond.capacity);
+  const catalog = useMemo(
+    () => roomCatalogOf(APP_CATALOG, 'community', bond.capacity, 'mobile'),
+    [bond.capacity],
+  );
   const square = useSquare();
 
-  if (!plan) {
-    return null;
-  }
   if (square.isPending) {
     return (
       <View style={styles.centre}>
@@ -58,7 +60,7 @@ export function CommunityRoom() {
 
   const piece = (p: FloorNode) => {
     switch (p.id) {
-      case 'feed':
+      case 'hearth':
         return posts.length ? (
           <Stack gap="between">
             {posts.slice(0, FRONT_POSTS).map((post) => (
@@ -76,9 +78,7 @@ export function CommunityRoom() {
         ) : (
           <EmptyState title="Quiet for now" message="New posts from your groups land here." />
         );
-      case 'chats':
-        return <Row label={p.label} detail="Opens when chat comes to the new server" />;
-      case 'direct':
+      case 'messages':
         return (
           <Row
             label={p.label}
@@ -89,7 +89,7 @@ export function CommunityRoom() {
             onPress={() => openCommunity('/community/messages')}
           />
         );
-      case 'my-groups':
+      case 'circles':
         return joined.length ? (
           <Rail
             label={p.label}
@@ -108,7 +108,7 @@ export function CommunityRoom() {
         ) : (
           <Row label="You have not joined a group yet" />
         );
-      case 'explore':
+      case 'community-explore':
         return (
           <Card
             title={p.label}
@@ -116,7 +116,7 @@ export function CommunityRoom() {
             onPress={() => openCommunity('/community/groups')}
           />
         );
-      case 'announcements':
+      case 'community-notices':
         return notices.length ? (
           <Stack gap="between">
             {notices.slice(0, FRONT_NOTICES).map((n) => (
@@ -134,16 +134,14 @@ export function CommunityRoom() {
         ) : (
           <Row label="No notices from your school" />
         );
-      case 'forest':
-        return <Card title={p.label} meta="The school forest comes in a later pass." disabled />;
       default:
         return <Card title={p.label} />;
     }
   };
 
   return (
-    <RoomFloor
-      plan={plan}
+    <RoomFront
+      catalog={catalog}
       userId={bond.userId}
       perspectiveId={bond.perspectiveId}
       renderPiece={piece}

@@ -12,7 +12,7 @@ import type { FloorTree } from './types';
 
 /**
  * The one door every room frame (web and phone) uses to lay out a room, so
- * both follow the world the same way: the room's plan and the person's saved
+ * both follow the world the same way: the room's catalog and the person's saved
  * arrangement go in, the floor settings are resolved along the chain (world
  * character, then every room, then this room), and the engine lays it out.
  * Pure; the frame measures the space and draws the tree.
@@ -38,7 +38,7 @@ export function layoutRoomFloor({
   config: overrides,
   ...rest
 }: RoomFloorArgs): RoomFloor {
-  const room = rest.plan.room;
+  const room = rest.catalog.room;
   const base = floorConfigWith(overrides);
   const settings = resolveFloorSettings({
     room,

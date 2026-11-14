@@ -49,7 +49,7 @@ import {
   filterWorkspaceFeatures,
   getWorkspaceOverviewPosture,
   WORKSPACE_FEATURES,
-} from './workspaceFeatureRegistry';
+} from './workspaceFeatures';
 
 type AuthorizedEntryScope = Readonly<{ bondId: string; entityId: string }>;
 

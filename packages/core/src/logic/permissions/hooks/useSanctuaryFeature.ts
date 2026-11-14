@@ -46,6 +46,12 @@ export type UseSanctuaryFeatureReturn = SanctuaryFeatureResult & {
   flags: FeatureFlags;
   can: (action: Action, subject: Subject) => boolean;
   cannot: (action: Action, subject: Subject) => boolean;
+  /** SanctuaryFeature's gates for any feature, for screens that check many at once. */
+  evaluate: (
+    action: string,
+    subject: string,
+    requirement?: FeatureRequirement,
+  ) => SanctuaryFeatureResult;
 };
 
 const DEFAULT_FEATURE_RESULT: SanctuaryFeatureResult = {
@@ -70,9 +76,7 @@ export function useSanctuaryFeature(
   const user = useAuthStore((state) => state.user);
   const activePerspective = usePerspectiveStore((state) => state.activePerspective);
   const schoolType =
-    activePerspective.kind === 'institutional'
-      ? (activePerspective.schoolType ?? null)
-      : null;
+    activePerspective.kind === 'institutional' ? (activePerspective.schoolType ?? null) : null;
 
   const flags = useFeatureStore((state) => state.flags);
   const cedarSnapshotLoaded = useCedarDecisionStore((state) => state.snapshotLoaded);
@@ -154,7 +158,10 @@ export function useSanctuaryFeature(
       },
       tenantKind: 'customer' as TenantKind,
       isAnonymous: !user?.id || Boolean(user?.is_anonymous),
-      isLocalOnly: !user?.id || Boolean(user?.is_anonymous) || resolveBondCitizenship(activeBond) === 'THIRD_CLASS',
+      isLocalOnly:
+        !user?.id ||
+        Boolean(user?.is_anonymous) ||
+        resolveBondCitizenship(activeBond) === 'THIRD_CLASS',
       hasGlobalAccess:
         activeBond?.capacity === 'founder' ||
         activeBond?.capacity === 'admin' ||
@@ -171,14 +178,7 @@ export function useSanctuaryFeature(
       return rawContext;
     }
     return parsed.data;
-  }, [
-    user,
-    activePerspective,
-    schoolType,
-    pricingTier,
-    activeEntitlements,
-    grants,
-  ]);
+  }, [user, activePerspective, schoolType, pricingTier, activeEntitlements, grants]);
 
   /** Direct Cedar policy check. */
   const can = useCallback(
@@ -207,70 +207,72 @@ export function useSanctuaryFeature(
     [can],
   );
 
-  // Evaluate feature gate if action & subject are provided
-  const featureResult = useMemo<SanctuaryFeatureResult>(() => {
-    if (!action || !subject) {
-      return DEFAULT_FEATURE_RESULT;
-    }
+  /** Evaluate one feature's requirements for this person now (SanctuaryFeature's gates). */
+  const evaluate = useCallback(
+    (a: string, sub: string, requirement?: FeatureRequirement): SanctuaryFeatureResult => {
+      const numericCitizenship =
+        context.citizenship === 'FIRST_CLASS'
+          ? CITIZENSHIP.FIRST_CLASS
+          : context.citizenship === 'SECOND_CLASS'
+            ? CITIZENSHIP.SECOND_CLASS
+            : CITIZENSHIP.THIRD_CLASS;
 
-    const numericCitizenship =
-      context.citizenship === 'FIRST_CLASS'
-        ? CITIZENSHIP.FIRST_CLASS
-        : context.citizenship === 'SECOND_CLASS'
-          ? CITIZENSHIP.SECOND_CLASS
-          : CITIZENSHIP.THIRD_CLASS;
+      const cedarDecision: 'allow' | 'deny' | 'no_decision' = context.userId
+        ? getDecision(sub, a)
+        : 'no_decision';
 
-    const cedarDecision: 'allow' | 'deny' | 'no_decision' = context.userId
-      ? getDecision(subject, action)
-      : 'no_decision';
+      const req: FeatureRequirement = requirement ?? {
+        citizenshipRequired: CITIZENSHIP.THIRD_CLASS,
+      };
+      const flagKey = req.flagKey ?? `${sub}.${a}`;
+      const flagActive = resolveFeatureFlagValue(flags, flagKey);
+      const flagType = resolveFeatureFlagClass(flagKey);
 
-    const req: FeatureRequirement = requirement ?? {
-      citizenshipRequired: CITIZENSHIP.THIRD_CLASS,
-    };
-    const flagKey = req.flagKey ?? `${subject}.${action}`;
-    const flagActive = resolveFeatureFlagValue(flags, flagKey);
-    const flagType = resolveFeatureFlagClass(flagKey);
-
-    return sanctuaryFeature(
-      {
-        userId: context.userId,
-        isLocalOnly: context.isLocalOnly === true,
-        activeBondId: context.activeBond?.id ?? null,
-        activeEntityId: context.activeEntityId,
-        activeEntityType: context.activeEntityType,
-        schoolId: context.schoolId,
-        primaryCapacity: context.activeBond?.capacity ?? context.capacity ?? null,
-        cedarSnapshotLoaded,
-        entitlementManifestLoaded: manifestLoaded,
-        entitlementReadiness: readiness,
-        citizenship: numericCitizenship,
-        entitlement: {
-          pricingTier: pricingTier as 'FREE' | 'PRO' | 'INSTITUTIONAL',
-          activeEntitlements,
-          grants,
-          expirationDate: null,
+      return sanctuaryFeature(
+        {
+          userId: context.userId,
+          isLocalOnly: context.isLocalOnly === true,
+          activeBondId: context.activeBond?.id ?? null,
+          activeEntityId: context.activeEntityId,
+          activeEntityType: context.activeEntityType,
+          schoolId: context.schoolId,
+          primaryCapacity: context.activeBond?.capacity ?? context.capacity ?? null,
+          cedarSnapshotLoaded,
+          entitlementManifestLoaded: manifestLoaded,
+          entitlementReadiness: readiness,
+          citizenship: numericCitizenship,
+          entitlement: {
+            pricingTier: pricingTier as 'FREE' | 'PRO' | 'INSTITUTIONAL',
+            activeEntitlements,
+            grants,
+            expirationDate: null,
+          },
+          cedarDecision,
+          flagActive,
+          flagKey,
+          flagType,
         },
-        cedarDecision,
-        flagActive,
-        flagKey,
-        flagType,
-      },
-      req,
-    );
-  }, [
-    action,
-    subject,
-    requirement,
-    context,
-    cedarSnapshotLoaded,
-    getDecision,
-    flags,
-    activeEntitlements,
-    grants,
-    pricingTier,
-    manifestLoaded,
-    readiness,
-  ]);
+        req,
+      );
+    },
+    [
+      context,
+      cedarSnapshotLoaded,
+      getDecision,
+      flags,
+      activeEntitlements,
+      grants,
+      pricingTier,
+      manifestLoaded,
+      readiness,
+    ],
+  );
+
+  // Evaluate feature gate if action & subject are provided
+  const featureResult = useMemo<SanctuaryFeatureResult>(
+    () => (action && subject ? evaluate(action, subject, requirement) : DEFAULT_FEATURE_RESULT),
+    [action, subject, requirement, evaluate],
+  );
 
   return {
     ...featureResult,
@@ -282,6 +284,7 @@ export function useSanctuaryFeature(
     flags,
     can,
     cannot,
+    evaluate,
   };
 }
 

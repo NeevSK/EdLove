@@ -75,3 +75,39 @@ export function workspaceRoomNameOf({
     (Object.hasOwn(BY_CAPACITY, capacity) ? BY_CAPACITY[capacity] : undefined);
   return named ?? WORKSPACE_ROOM_FALLBACK;
 }
+
+/**
+ * The role a capacity has in the room catalogs. Catalog entries name four
+ * roles (teacher, student, principal, guardian) or an exact capacity; this
+ * groups the rest under those four, the same way the room names group them.
+ */
+const ROLE_OF: Readonly<Record<string, string>> = {
+  teacher: 'teacher',
+  gradeHead: 'teacher',
+  sectionHead: 'teacher',
+  librarian: 'teacher',
+  nurse: 'teacher',
+  lead_tutor: 'teacher',
+  assistant_tutor: 'teacher',
+  paper_marker: 'teacher',
+  tutor: 'teacher',
+  marker: 'teacher',
+  principal: 'principal',
+  assistantPrincipal: 'principal',
+  founder: 'principal',
+  coFounder: 'principal',
+  director: 'principal',
+  admin: 'principal',
+  developer: 'principal',
+  systemEngineer: 'principal',
+  student: 'student',
+  member: 'student',
+  guardian: 'guardian',
+  parent: 'guardian',
+};
+
+export function catalogRoleOf(capacity: string | null | undefined): string {
+  return (
+    (capacity && Object.hasOwn(ROLE_OF, capacity) ? ROLE_OF[capacity] : undefined) ?? 'student'
+  );
+}

@@ -5,7 +5,7 @@
  * so instead of leading nowhere.
  */
 import type { FloorNode } from '@repo/core/logic/floor';
-import { roomPlanOf } from '@repo/core/logic/floor';
+import { roomCatalogOf } from '@repo/core/logic/floor';
 import {
   libraryPort,
   type ShelfItem,
@@ -24,8 +24,10 @@ import {
   WaitingSign,
 } from '@repo/ui/components/native';
 import { router } from 'expo-router';
+import { useMemo } from 'react';
 import { View } from 'react-native';
-import { RoomFloor } from '../RoomFloor';
+import { APP_CATALOG } from '@/boot/registerAppCatalog';
+import { RoomFront } from '../RoomFront';
 import { SampleNote } from '../SampleNote';
 import { useRoomBond } from '../useRoomBond';
 
@@ -44,13 +46,13 @@ export function itemMeta(it: ShelfItem): string {
 
 export function LibraryRoom() {
   const bond = useRoomBond();
-  const plan = roomPlanOf('library', bond.capacity);
+  const catalog = useMemo(
+    () => roomCatalogOf(APP_CATALOG, 'library', bond.capacity, 'mobile'),
+    [bond.capacity],
+  );
   const shelf = useShelf();
   const collections = useShelfCollections();
 
-  if (!plan) {
-    return null;
-  }
   if (shelf.isPending) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -77,7 +79,7 @@ export function LibraryRoom() {
 
   const piece = (p: FloorNode) => {
     switch (p.id) {
-      case 'continue':
+      case 'library-continue':
         return first ? (
           <Card
             title={first.title}
@@ -89,7 +91,7 @@ export function LibraryRoom() {
         ) : (
           <EmptyState title="Nothing open yet" message="Pick something from a shelf to start." />
         );
-      case 'new':
+      case 'library-new':
         return (
           <Rail
             label={p.label}
@@ -106,7 +108,7 @@ export function LibraryRoom() {
             }
           />
         );
-      case 'collections':
+      case 'archive':
         return cols.length ? (
           <Rail
             label={p.label}
@@ -122,7 +124,7 @@ export function LibraryRoom() {
             )}
           />
         ) : null;
-      case 'subjects':
+      case 'hub':
         return (
           <Chips label={p.label}>
             {subjectsOf(items).map((s) => (
@@ -130,15 +132,15 @@ export function LibraryRoom() {
             ))}
           </Chips>
         );
-      case 'search':
+      case 'library-search':
         return <Row label={p.label} chevron onPress={() => openShelf({ search: '1' })} />;
-      case 'map':
+      case 'library-map':
         return <Card title={p.label} meta="The map comes in a later pass." disabled />;
-      case 'contribute':
+      case 'library-contribute':
         return <Row label={p.label} detail="Opens with library.resources" chevron={false} />;
-      case 'review':
+      case 'curator':
         return <Row label={p.label} detail="Nothing waiting" chevron={false} />;
-      case 'school-shelf':
+      case 'library-school-shelf':
         return official.length ? (
           <Rail
             label={p.label}
@@ -156,8 +158,8 @@ export function LibraryRoom() {
   };
 
   return (
-    <RoomFloor
-      plan={plan}
+    <RoomFront
+      catalog={catalog}
       userId={bond.userId}
       perspectiveId={bond.perspectiveId}
       renderPiece={piece}
