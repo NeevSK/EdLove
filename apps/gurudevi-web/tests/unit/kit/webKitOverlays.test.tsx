@@ -26,7 +26,7 @@ beforeAll(() => {
 
 afterEach(() => {
   act(() => {
-    for (const id of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) toast.dismiss(id);
+    toast.dismissAll();
   });
 });
 
@@ -116,6 +116,35 @@ describe('web kit: ToastHost', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
     expect(undo).toHaveBeenCalledTimes(1);
     expect(screen.queryByText('Deleted')).toBeNull();
+  });
+});
+
+describe('web kit: ToastHost stack', () => {
+  it('gathers several, newest in front, and fans out on hover', async () => {
+    const { container } = render(<ToastHost />);
+    act(() => {
+      toast.show({ message: 'First' });
+      toast.show({ message: 'Second' });
+    });
+    const first = screen.getByText('First').closest('.gd-toast');
+    expect(first?.getAttribute('aria-hidden')).toBe('true');
+    expect(screen.getByText('Second').closest('.gd-toast')?.hasAttribute('aria-hidden')).toBe(false);
+    fireEvent.mouseEnter(container.querySelector('.gd-toasts') as Element);
+    expect(first?.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('puts banners at the top, counts repeats under one key, and lets Escape dismiss the newest', () => {
+    render(<ToastHost />);
+    act(() => {
+      toast.show({ message: 'Offline', size: 'banner' });
+      toast.show({ message: 'Retrying', key: 'sync' });
+      toast.show({ message: 'Retrying', key: 'sync' });
+    });
+    expect(screen.getByText('Offline').closest('.gd-toast')?.classList.contains('gd-toast-banner')).toBe(true);
+    expect(screen.getByText('×2')).toBeTruthy();
+    fireEvent.keyDown(screen.getByText('Retrying'), { key: 'Escape' });
+    expect(screen.queryByText('Retrying')).toBeNull();
+    expect(screen.getByText('Offline')).toBeTruthy();
   });
 });
 
