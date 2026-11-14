@@ -148,6 +148,17 @@ So when the navigator returns `presentation: 'sheet'`, the destination's layout 
 The navigator reports the intent, and the layout carries it out. The web has the same split: a panel or
 modal there is a nested outlet, or a TanStack `mask` (one URL is shown while another route renders), chosen by the layout.
 
+**Two kinds of sheet, both native:**
+
+| | Route sheet | In-screen sheet |
+| --- | --- | --- |
+| What | A screen with an address, presented as a sheet | Transient UI inside a place |
+| How | The layout declares `SHEET_SCREEN` (`formSheet`, from react-native-screens via expo-router) | The kit `Sheet`, on `@swmansion/react-native-bottom-sheet` 1.0 |
+| Survives a deep link, Back and restoration | Yes | No |
+| Use for | A `sheet` flow step | A picker, a confirm prompt, a short choice |
+
+The kit `Sheet` runs dragging, snapping and the drag/scroll hand-off in native code. It sizes to its content and sits above native modal routes (`windowOverlay`). Scrim, Back, predictive Back and Escape arrive as one controlled close request.
+
 The kit's in-screen `Sheet`, `Dialog` and `Popover` are a different thing. They show transient UI
 **inside** a place, such as a picker or a confirm prompt, and have no URL, no back entry and no
 deep link. Use them when the content isn't worth an address. Use a route sheet when the content
