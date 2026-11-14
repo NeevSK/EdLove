@@ -946,7 +946,6 @@
     "react-native-redash": "^18.1.5",
     "react-native-svg": "15.16.1",
     "react-native-web": "~0.21.4",
-    "sonner-native": "^0.27.0",
     "tailwindcss": "4.3.4",
     "xstate": "6.0.0-beta.2",
     "zod": "4.6.7"
