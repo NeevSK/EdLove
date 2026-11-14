@@ -471,6 +471,26 @@ export interface SheetContract {
   dismissable?: boolean;
 }
 
+/**
+ * A panel that slides in from a side edge over the current place: details beside a list, filters,
+ * a conversation next to its work. It covers the screen (the shell tucks its chrome away), keeps the
+ * place visible behind a scrim, and has no address of its own.
+ */
+export interface SidePanelContract {
+  open: boolean;
+  onClose: () => void;
+  /** The panel's name; shown as its heading. */
+  title: string;
+  children?: ReactNode;
+  /**
+   * The edge it comes from. `end` (the default) is the right in a left-to-right layout and the
+   * left in a right-to-left one; `start` is the other edge.
+   */
+  side?: 'start' | 'end';
+  /** When false, only `open` closes it: the scrim, Back, Escape and dragging do nothing. */
+  dismissable?: boolean;
+}
+
 export interface ToastAction {
   label: string;
   onPress: () => void;

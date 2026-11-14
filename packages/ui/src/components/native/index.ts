@@ -139,6 +139,7 @@ export {
   type LinkRowProps,
 } from './Settings/SettingsRows';
 export { Sheet, type SheetProps } from './Sheet/Sheet';
+export { SidePanel, type SidePanelProps } from './SidePanel/SidePanel';
 export {
   AppHeader,
   type AppHeaderProps,
