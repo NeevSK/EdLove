@@ -9,6 +9,7 @@ export {
   type OpenResult,
   openH5PArchive,
 } from './h5pArchive';
+export { applyH5PBehaviour, type H5PPlayPolicy } from './h5pBehaviour';
 export {
   BRIDGE_CHANNEL,
   BRIDGE_VERSION,

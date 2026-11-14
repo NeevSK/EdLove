@@ -8,12 +8,12 @@ doc `claude/lms-integrate-vs-build.md`. Where its events end up is in
 
 ## What is here
 
-| File | What it does |
-| --- | --- |
+| File            | What it does                                                                                                                                                                                                                                                                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `h5pPackage.ts` | Parses `h5p.json` and `library.json` with Zod, checks entry paths (no `..`, absolute paths, backslashes or control characters) and file types (scripts and styles only inside library folders, no Flash, no HTML), and resolves the order libraries load in. Libraries the package leaves out can come from the device (`installedLibraries`). |
-| `h5pArchive.ts` | Opens an `.h5p` file in memory with `fflate`, applying the checks and size limits before anything is inflated, then again on the real sizes. Defaults suit a 2 GB phone. Writing to disk is the caller's job. |
-| `h5pBridge.ts` | The page that hosts one player (`buildPlayerDocument`), with a Content-Security-Policy that allows only the package's own origin, and the message envelope between page and host (`parseBridgeMessage`): `ready`, `xapi`, `state`, `resize` and `error`, versioned and checked. |
-| `h5pEvents.ts` | Reads the xAPI statements H5P sends into `H5PEvent`: the verb, the activity, the part (`subContentId`), the library, and the result (a score that doesn't add up is dropped, the rest is kept), with the raw statement kept for xAPI 2.0 export. |
+| `h5pArchive.ts` | Opens an `.h5p` file in memory with `fflate`, applying the checks and size limits before anything is inflated, then again on the real sizes. Defaults suit a 2 GB phone. Writing to disk is the caller's job.                                                                                                                                  |
+| `h5pBridge.ts`  | The page that hosts one player (`buildPlayerDocument`), with a Content-Security-Policy that allows only the package's own origin, and the message envelope between page and host (`parseBridgeMessage`): `ready`, `xapi`, `state`, `resize` and `error`, versioned and checked.                                                                |
+| `h5pEvents.ts`  | Reads the xAPI statements H5P sends into `H5PEvent`: the verb, the activity, the part (`subContentId`), the library, and the result (a score that doesn't add up is dropped, the rest is kept), with the raw statement kept for xAPI 2.0 export.                                                                                               |
 
 The page loads [`h5p-standalone`](https://github.com/tunapanda/h5p-standalone) 3.8.2 (MIT)
 from the same origin as the package.
