@@ -40,6 +40,11 @@
       "import": "./src/entrypoints/map.ts",
       "default": "./src/entrypoints/map.ts"
     },
+    "./content": {
+      "types": "./src/content/index.ts",
+      "import": "./src/content/index.ts",
+      "default": "./src/content/index.ts"
+    },
     "./h5p": {
       "types": "./src/h5p/index.ts",
       "import": "./src/h5p/index.ts",
