@@ -1,6 +1,15 @@
-library: compact portrait, standard, cost 30/400
-  Shelves 164h w1
-    Shelves [shelf] 164h w1
-      The Archive 140h w1
-      Resource Hub 140h w1
-      Curator Studio 140h w1
+library: compact portrait, standard, cost 100/400
+  Today 372h w3
+    Reading now [lamp] 372h w3
+      Carry on reading 140h w3
+      New on the shelves 200h w2
+  Shelves 436h w1
+    Shelves [grouped-list] 208h w1
+      The Archive 200h w1
+      Resource Hub 280h w1 (folded)
+    Find [grouped-list] 228h w1 (below)
+      Search the library 56h w1 (below)
+      Library map 140h w1 (below)
+  School 224h w1 (below)
+    From your school [stream] 224h w1 (below)
+      School shelf 200h w1 (below)
