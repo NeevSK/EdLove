@@ -1,6 +1,7 @@
 import {
   type CSSProperties,
   type PointerEvent,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -32,10 +33,21 @@ function Toast({
   style,
   behind,
   measure,
-}: Placed & { measure: (id: number, el: HTMLDivElement | null) => void }) {
+}: Placed & { measure: (id: number, height: number) => void }) {
   const [dx, setDx] = useState(0);
   const start = useRef<number | null>(null);
   const node = useRef<HTMLDivElement | null>(null);
+
+  // Reports its height as it changes, so the stack can place the toasts above it.
+  useLayoutEffect(() => {
+    const el = node.current;
+    if (!el) return;
+    measure(item.id, el.offsetHeight);
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => measure(item.id, el.offsetHeight));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [item.id, measure]);
 
   // A toast that changes while it is up gives a small nudge, so the change is seen.
   const seen = useRef(item.revision);
@@ -68,10 +80,7 @@ function Toast({
   const banner = item.size === 'banner';
   return (
     <div
-      ref={(el) => {
-        node.current = el;
-        measure(item.id, el);
-      }}
+      ref={node}
       className={banner ? 'gd-toast gd-toast-banner' : 'gd-toast'}
       data-tone={item.tone}
       data-size={item.size}
@@ -102,7 +111,7 @@ function Toast({
         ) : null}
         {item.dismissible && item.size !== 'pill' ? (
           <button type="button" className="gd-toast-dismiss" aria-label="Dismiss" onClick={() => toast.dismiss(item.id)}>
-            ×
+            {'×'}
           </button>
         ) : null}
       </div>
@@ -125,26 +134,12 @@ function Toast({
  */
 export function ToastHost() {
   const items = useSyncExternalStore(subscribeToasts, getToasts, none);
-  const heights = useRef(new Map<number, number>());
-  const elements = useRef(new Map<number, HTMLDivElement>());
-  const [, remeasured] = useState(0);
+  const [heights, setHeights] = useState<Record<number, number>>({});
   const [fanned, setFanned] = useState(false);
-
-  const measure = (id: number, el: HTMLDivElement | null) => {
-    if (el) elements.current.set(id, el);
-    else elements.current.delete(id);
-  };
-  useLayoutEffect(() => {
-    let changed = false;
-    for (const [id, el] of elements.current) {
-      const h = el.offsetHeight;
-      if (heights.current.get(id) !== h) {
-        heights.current.set(id, h);
-        changed = true;
-      }
-    }
-    if (changed) remeasured((n) => n + 1);
-  });
+  const measure = useCallback(
+    (id: number, h: number) => setHeights((all) => (all[id] === h ? all : { ...all, [id]: h })),
+    [],
+  );
 
   useEffect(() => {
     const onVisibility = () => (document.hidden ? toast.pause() : toast.resume());
@@ -161,7 +156,7 @@ export function ToastHost() {
   const banners = items.filter((i) => i.size === 'banner');
   const stack = items.filter((i) => i.size !== 'banner').reverse();
   const gathered = !fanned && stack.length > 1;
-  const height = (id: number) => heights.current.get(id) || 56;
+  const height = (id: number) => heights[id] || 56;
 
   const placed = new Map<number, Placed>();
   let top = 0;
