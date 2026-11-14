@@ -67,6 +67,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @stripe/stripe-react-native
 @supabase/postgrest-js
 @supabase/supabase-js
+@swmansion/react-native-bottom-sheet
 @tanstack/react-pacer
 @tanstack/react-query
 @tanstack/react-store
@@ -206,7 +207,6 @@ react-native-url-polyfill
 react-native-webview
 react-native-worklets
 scheduler
-sonner-native
 styleq
 tailwindcss
 use-latest-callback
