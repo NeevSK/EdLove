@@ -10,6 +10,7 @@ export {
   createWorkbenchTask,
   createWorkbenchTaskKey,
   openWorkbenchTask,
+  reorderWorkbenchTask,
   resolveTaskTemporalHorizon,
   restoreDomainWorkbenchState,
   serializeTemporalHorizon,
@@ -18,3 +19,21 @@ export {
   validateWorkbenchTaskDescriptor,
   validateWorkbenchTaskInput,
 } from './activeTasks';
+export type {
+  DomainTemporalCoordinates,
+  MonthGridCoordinates,
+  MonthGridDay,
+  ResolveTemporalOptions,
+  TemporalDaySlot,
+} from './temporalCoordinates';
+export type { TemporalIntent } from '../../types/Workbench';
+export {
+  formatCivilDateLabel,
+  getDomainOrientationCopy,
+  parseCivilDate,
+  resolveMonthGrid,
+  resolveTemporalCoordinates,
+  resolveTemporalIntent,
+  shiftCivilDate,
+  toIsoDate,
+} from './temporalCoordinates';

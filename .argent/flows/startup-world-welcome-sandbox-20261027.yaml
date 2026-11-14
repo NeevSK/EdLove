@@ -1,0 +1,4 @@
+steps:
+  - echo: Restart isolated Verger v2 debug client; preserve app data; expect Welcome
+      or existing onboarding state.
+  - launch: app.gurudevi.sanctuary.vergerv2.dev

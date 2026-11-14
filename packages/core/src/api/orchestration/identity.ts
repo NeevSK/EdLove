@@ -22,6 +22,7 @@ const _identityCoverage = assertContractCoverage(
       'switchPerspective',
       'getMyInternalId',
       'updateProfile',
+      'getClassroomCapacitySummary',
     ], // Explicitly internal or handled via POA
   }),
 );

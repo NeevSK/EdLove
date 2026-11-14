@@ -1,5 +1,6 @@
 import RNSlider, { type SliderProps as RNSliderProps } from '@react-native-community/slider';
 import { useTheme } from '@repo/ui/hooks/useTheme';
+import { tokens } from '@repo/ui/tokens';
 import React from 'react';
 import { styled } from 'react-native-css';
 
@@ -15,26 +16,25 @@ export interface ISliderProps extends RNSliderProps {
   className?: string;
   minValue?: number;
   maxValue?: number;
+  ref?: React.Ref<any>;
 }
 
-export const Slider = React.forwardRef<any, ISliderProps>(
-  ({ className, minValue, maxValue, ...props }, ref) => {
-    const { accent } = useTheme();
+export const Slider = ({ className, minValue, maxValue, ref, ...props }: ISliderProps) => {
+  const { accent } = useTheme();
 
-    return (
-      <StyledSlider
-        {...props}
-        ref={ref}
-        minimumValue={minValue ?? props.minimumValue ?? 0}
-        maximumValue={maxValue ?? props.maximumValue ?? 100}
-        minimumTrackTintColor={accent?.action || '#D4843A'}
-        maximumTrackTintColor="#E9E9EA"
-        thumbTintColor={accent?.action || '#D4843A'}
-        className={className}
-      />
-    );
-  },
-);
+  return (
+    <StyledSlider
+      {...props}
+      ref={ref}
+      minimumValue={minValue ?? props.minimumValue ?? 0}
+      maximumValue={maxValue ?? props.maximumValue ?? 100}
+      minimumTrackTintColor={accent?.action || tokens.colors.primary}
+      maximumTrackTintColor={tokens.colors.border}
+      thumbTintColor={accent?.action || tokens.colors.primary}
+      className={className}
+    />
+  );
+};
 
 Slider.displayName = 'Slider';
 

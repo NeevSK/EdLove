@@ -1,12 +1,14 @@
-import { coreRuntime, mediaInitialState, mediaReducer } from '@repo/core/logic';
+import { coreRuntime } from '@repo/core/logic';
+import { useMachineActor } from '@repo/core/hooks/useMachineActor';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Pause, Play, RotateCcw, RotateCw, X } from '@repo/ui/icons';
+import { createMediaPlaybackActor, mediaPlaybackMachine } from '@repo/ui/machines/mediaPlaybackMachine';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { formatTimeMs } from '@repo/ui/utils/dateTimeUtils';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 export interface VideoPlayerProps {
@@ -18,14 +20,18 @@ export interface VideoPlayerProps {
 
 /**
  * VideoPlayer - Premium, platform-standard video consumption shell.
- * Uses expo-video for high-performance native playback.
+ * Uses expo-video for high-performance native playback coordinated by mediaPlaybackMachine.
  */
 export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) {
   const theme = useTheme();
   const progressBarWidth = useRef<number>(0);
 
-  const [state, dispatch] = useReducer(mediaReducer, mediaInitialState);
-  const { isPlaying, positionMillis, durationMillis, showControls, hasError } = state;
+  const { actor, snapshot } = useMachineActor(
+    () => createMediaPlaybackActor({ mediaId: url }),
+    [url],
+  );
+  const { isPlaying, positionMillis, durationMillis, showControls, hasError } = snapshot.context;
+  const send = actor.send;
 
   // Sync status bar visibility
   useEffect(() => {
@@ -41,51 +47,91 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
     p.play();
   });
 
-  // Sync state with player
+  // Sync state with player via native event listeners, eliminating polling intervals
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (player) {
-        dispatch({ type: 'SET_PLAYING', payload: player.playing });
-        dispatch({
-          type: 'SET_PROGRESS',
-          position: player.currentTime * 1000,
-          duration: player.duration * 1000,
-        });
-      }
-    }, 500);
+    if (!player) return;
 
-    return () => clearInterval(interval);
-  }, [player]);
+    const subscriptions: Array<{ remove: () => void }> = [];
+
+    if (typeof (player as any).addListener === 'function') {
+      subscriptions.push(
+        (player as any).addListener('playingChange', (event: { isPlaying: boolean }) => {
+          send({ type: event.isPlaying ? 'PLAY' : 'PAUSE' });
+        }),
+      );
+      subscriptions.push(
+        (player as any).addListener(
+          'timeUpdate',
+          (event: { currentTime: number; currentLiveTimestamp?: number }) => {
+            send({
+              type: 'PROGRESS_UPDATE',
+              position: event.currentTime * 1000,
+              duration: (player.duration || 0) * 1000,
+            });
+          },
+        ),
+      );
+      subscriptions.push(
+        (player as any).addListener('playToEnd', () => {
+          send({ type: 'PLAYBACK_ENDED' });
+        }),
+      );
+      subscriptions.push(
+        (player as any).addListener(
+          'statusChange',
+          (event: { status: string; error?: { message?: string } }) => {
+            if (event.status === 'error' && event.error) {
+              send({ type: 'PLAYBACK_ERROR', error: event.error.message || 'Playback error' });
+            } else if (event.status === 'loading') {
+              send({ type: 'BUFFER_START' });
+            } else if (event.status === 'readyToPlay') {
+              send({ type: 'BUFFER_END' });
+            }
+          },
+        ),
+      );
+    }
+
+    return () => {
+      subscriptions.forEach((s) => s.remove());
+    };
+  }, [player, send]);
 
   const handlePlayPause = useCallback(() => {
     if (!player) return;
     if (isPlaying) {
       player.pause();
+      send({ type: 'PAUSE' });
     } else {
       player.play();
+      send({ type: 'PLAY' });
     }
-  }, [player, isPlaying]);
+  }, [player, isPlaying, send]);
 
   const handleSeekBy = useCallback(
     (deltaMs: number) => {
       if (!player || durationMillis === 0) return;
-      player.currentTime += deltaMs / 1000;
+      const targetSec = (player.currentTime || 0) + deltaMs / 1000;
+      player.currentTime = targetSec;
+      send({ type: 'SEEK', positionMillis: targetSec * 1000 });
     },
-    [player, durationMillis],
+    [player, durationMillis, send],
   );
 
   const handleProgressTap = useCallback(
     (x: number, barWidth: number) => {
       if (!player || durationMillis === 0 || barWidth === 0) return;
       const ratio = Math.max(0, Math.min(1, x / barWidth));
-      player.currentTime = (ratio * durationMillis) / 1000;
+      const targetSec = (ratio * durationMillis) / 1000;
+      player.currentTime = targetSec;
+      send({ type: 'SEEK', positionMillis: targetSec * 1000 });
     },
-    [player, durationMillis],
+    [player, durationMillis, send],
   );
 
   const handleToggleControls = useCallback(() => {
-    dispatch({ type: 'TOGGLE_CONTROLS' });
-  }, []);
+    send({ type: 'TOGGLE_CONTROLS' });
+  }, [send]);
 
   const handleRewind = useCallback(() => handleSeekBy(-10000), [handleSeekBy]);
   const handleForward = useCallback(() => handleSeekBy(10000), [handleSeekBy]);

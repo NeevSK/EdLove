@@ -99,33 +99,33 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
   const pinchGesture = usePinchGesture({
     onUpdate: (event) => {
       'worklet';
-      scale.value = savedScale.value * event.scale;
+      scale.set(savedScale.value * event.scale);
     },
     onDeactivate: (event) => {
       'worklet';
       if (event.canceled) {
-        scale.value = withTiming(savedScale.value);
+        scale.set(withTiming(savedScale.value));
         return;
       }
-      savedScale.value = scale.value;
+      savedScale.set(scale.value);
     },
   });
 
   const panGesture = usePanGesture({
     onUpdate: (event) => {
       'worklet';
-      translateX.value = savedTranslateX.value + event.translationX;
-      translateY.value = savedTranslateY.value + event.translationY;
+      translateX.set(savedTranslateX.value + event.translationX);
+      translateY.set(savedTranslateY.value + event.translationY);
     },
     onDeactivate: (event) => {
       'worklet';
       if (event.canceled) {
-        translateX.value = withTiming(savedTranslateX.value);
-        translateY.value = withTiming(savedTranslateY.value);
+        translateX.set(withTiming(savedTranslateX.value));
+        translateY.set(withTiming(savedTranslateY.value));
         return;
       }
-      savedTranslateX.value = translateX.value;
-      savedTranslateY.value = translateY.value;
+      savedTranslateX.set(translateX.value);
+      savedTranslateY.set(translateY.value);
     },
   });
 

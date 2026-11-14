@@ -1,0 +1,68 @@
+{
+  "scope": "Horizontal Node HTTP/1 runtime checkpoint only; not full API readiness",
+  "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+  "environment": "Windows; Node 24.22.2; installed Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46, @hono/node-server 2.1.5",
+  "checks": {
+    "apiStrictTypecheck": "exit 0",
+    "inventoryCliStrictTypecheck": "exit 0",
+    "compositionSource": "exit 0",
+    "biome": "17 files, exit 0",
+    "build": "exit 0; reports/run-api_runtime_build_20261030.log",
+    "G1hostConfig": "28/28; reports/run-api_runtime_host_20261030.log",
+    "G1guardCli": "10/10; reports/run-api_runtime_gates_20261030.log",
+    "G2loopback": "12/12; reports/run-api_runtime_socket_20261030.log",
+    "testEvidenceDeclarations": "exit 0",
+    "versionDrift": "exit 0; advisory findings retained",
+    "scopedAislop": "0 errors, 4 warnings; reports/api-runtime-aislop-20261030.json",
+    "G1compiledArtifact": "Built Node entry readiness and redacted invalid-config exit; reports/api-runtime-artifact-smoke-20261030.json"
+  },
+  "blockedChecks": {
+    "aggregateApiQuality": "exit 1: six model/resource authorization parity mismatches (EditorialSubmission, EditorialWork, EditorialRightsAgreement, EditorialAuthor, UserRewards, OperationReceipt)",
+    "antiSlop": "exit 1 at aislop: 36 errors, 199 warnings across the broad worktree; subsequent chained stages not reached"
+  },
+  "substitutions": [
+    "Synthetic procedures only; no application feature admission.",
+    "G1 host uses in-memory Fetch; G2 uses real local TCP. No external database/provider involved."
+  ],
+  "limitations": [
+    "No Docker engine/image run, production deployment, real POSIX shutdown signal, proxy/TLS, load/soak, identity/Cedar/data/effect behavior or G3-G5/R1 claim.",
+    "Device evidence command inspected its certified mobile baseline fixture; it is not API/device verification.",
+    "Global worktree has concurrent edits; fingerprints qualify the inspected runtime sources, not clean HEAD."
+  ],
+  "documentation": {
+    "localFileLinksChecked": 66,
+    "frontmatter": "4 touched guides valid",
+    "interoperabilityModule": "Source-grounded; no identity/idempotency/outbox runtime claim",
+    "latestFocusedLinkCheck": 30
+  },
+  "sha256": {
+    "apps/sanctuary-api/src/core/app.ts": "6189afa90764000b162dae0f9eebf1bd46f4c635816cbcfe2f6d61e7b18b8427",
+    "apps/sanctuary-api/src/core/context.ts": "83acf7690dc080ccbda4c0f69f64c2f7d9000b73ee1a9d44b5d9431dc047b965",
+    "apps/sanctuary-api/src/core/router.ts": "4909b73d1cf9402d01a487d13c6d39fea168275f30dcacffe22fd7f095430558",
+    "apps/sanctuary-api/src/config.ts": "7e002f3cc412ca3a85a59ab28f64f124580f4db509d33374c8c9c87d177660fc",
+    "apps/sanctuary-api/src/node-server.ts": "666d712c711ba2382771836efc55ace69635349dc1c3daad4b899dd6d7558263",
+    "apps/sanctuary-api/src/entry-node.ts": "ab1f5d8edc1c5f9450bc67b67a7e3942f2aeb2c25267ddad064911fa75af275d",
+    "apps/sanctuary-api/src/index.ts": "4273e3ee40cfca280314dc97a80cae59ecfb8cdc4f7e7b61190d7ff7d4c715d0",
+    "apps/sanctuary-api/src/__tests__/foundation.test.ts": "d7e01e5fd32fd53efbabeddb974090e47d9c46736de5c7dbb4a78a577f075bc7",
+    "apps/sanctuary-api/src/__tests__/config.test.ts": "594e8112cc370e5651d516b586838e5e0575ea8e17a444856bfd36c8138e96a8",
+    "apps/sanctuary-api/src/__tests__/node-server.test.ts": "cf24de260637d69f3c96fa17f4dce3401f3b0b5b83a1aa896826d4061c0c6fdc",
+    "apps/sanctuary-api/scripts/audit-contracts.ts": "513ac97e54a7ce8cde4d0fbfb8432a04ea875e3d44a3b76b3574b94b5735d5ec",
+    "scripts/audit-api-contracts.ts": "d01eadb33116218fc40f17ed2e5b659c0cb8b0d4b7f7fd9c8b05c5644fea52d0",
+    "scripts/audit-api-errors.mjs": "c5784730745e5f84c01c49b634282ca0e109daba663df94fb37552c4e7a22db9",
+    "scripts/audit-api-composition.mjs": "c9b341f7b612050008e5c9e4e0d51ec7d939625ef120045440a61e9824b402a7",
+    "scripts/tests/audit-api-composition.test.mjs": "a2847b0585c0222ce6697c45da1c93d072e197fcb2179160007b7bf618d7b2d4",
+    "scripts/tests/api-contract-inventory.test.mjs": "76c663628550e317d81e0a061c6728874adccc871189a857c1b628c559b28511",
+    "apps/sanctuary-api/Dockerfile": "31f83a364e443914363641ed02fbeeaa5191b0d4a7a7c2622ea4e0e53da7a5ef",
+    "render.yaml": "58fd74b6541c4402ceb66530aecd4fcc30ef2ffc35317639d89276dcd2fed823",
+    ".github/workflows/pr-guard.yml": "4ad739982ed6bcaef97377b7b95e619c96a1e325439d1ee5f4d7c46ceebb93e9",
+    "apps/sanctuary-api/docs/architecture/api-foundations/runtime-foundation.md": "42d20ecd30c3dfe6d65a0fc8ac1dd29306268e924213e5895e10d08cc42a9a39",
+    "apps/sanctuary-api/docs/architecture/api-engineering-playbook.md": "1e328be0a81bb0f966ba5cffaf8ffcd667c4dab8b60b5feb7d32b60f1d20aff3",
+    "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md": "ea9894ffd8f59ad5971a834132184ee63571e522c61392bf8b8b1a56c2e047e1",
+    "apps/sanctuary-api/docs/INDEX.md": "1b34e1057195949d39949f2fafc9e424f763c29a7fd12ef0651f4f6f0ac3431b",
+    "packages/core/src/flows/pjc/api.foundation.json": "42daa1046af0915401a2c94d2c42bcf3808ece854900ff307498422e9dae4b28",
+    "apps/sanctuary-api/package.json": "4e1645d73f3978d97a03b5c3aeffa286f5b311ce11a42edab4142d57c3ad7351",
+    "apps/sanctuary-api/tsconfig.json": "7d6670314b2a16dc3afab907040189c8f74f889137250429de4832aebfed4392",
+    "apps/sanctuary-api/docs/architecture/api-foundations/interoperability-and-operation-semantics.md": "dbb3c175e3ce291f1a240929b86d48d3b61e292ae184528104b129678a8227e3",
+    "apps/sanctuary-api/docs/architecture/api-landscape.md": "415179afb8c8fcaf15a08a8d74b9b676579fcf1e6053de5d07e7721243f65399"
+  }
+}

@@ -1,5 +1,4 @@
 import { usePermissions } from '@repo/core/logic';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
 import { LayoutGrid, List } from '@repo/ui/icons';
 import {
@@ -233,7 +232,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         <Box className="flex-1 items-center justify-center bg-silk p-20">
           <Text className="text-ink/40 font-bold italic">Gathering documentation...</Text>
         </Box>
-      </ScreenWrapper>
+      </div>
     );
   }
 

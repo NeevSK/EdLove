@@ -1,0 +1,8 @@
+
+⚡  HERMES IN-MEMORY BYTECODE PROOF GATE
+─────────────────────────────────────────────────────────────────
+  Target:      reports/orpc-hermes-rest-repro.js
+  Engine:      Sovereign Fallback
+  Result:      VALID (Hermes HBC Ready)
+
+√ Code compiles to Hermes Bytecode without strict-mode or closure capture errors!

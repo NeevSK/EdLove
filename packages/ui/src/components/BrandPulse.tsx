@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';
 import { Mascot } from './Mascot';
-import { duration, scale } from './motion';
+import { duration, scale } from '../tokens/motion';
 
 export type BrandPulseProps = {
   /** Diameter in px. Defaults to the standard inline-loader size. */

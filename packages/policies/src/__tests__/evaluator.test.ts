@@ -12,6 +12,144 @@ const { privateKey: snapshotPrivateKey } = generateKeyPairSync('ed25519');
 const snapshotSigningKey = snapshotPrivateKey.export({ format: 'pem', type: 'pkcs8' }).toString();
 
 describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fast'] }, () => {
+  it('loads the AI policy for authenticated members and denies wanderers', () => {
+    const request: AuthRequest = {
+      principal: {
+        type: 'member',
+        id: 'member-1',
+        attributes: { capacity: 'member', school_id: '' },
+      },
+      action: 'use_ai',
+      resource: { type: 'AIAssistant', id: 'assistant', attributes: {} },
+    };
+    expect(check(request).permitted).toBe(true);
+    expect(
+      check({
+        ...request,
+        principal: {
+          ...request.principal,
+          type: 'wanderer',
+          attributes: { ...request.principal.attributes, capacity: 'wanderer' },
+        },
+      }).permitted,
+    ).toBe(false);
+  });
+  it('uses the resource identity rather than a conflicting id attribute for self-profile access', () => {
+    const request: AuthRequest = {
+      principal: { type: 'member', id: 'owner', attributes: { capacity: 'member', school_id: '' } },
+      action: 'read',
+      resource: { type: 'User', id: 'other', attributes: { id: 'owner' } },
+    };
+    expect(check(request).permitted).toBe(false);
+    expect(
+      check({ ...request, resource: { ...request.resource, id: 'owner', attributes: {} } })
+        .permitted,
+    ).toBe(true);
+  });
+  it.each(['member', 'teacher', 'principal', 'admin'])(
+    'keeps the privacy ledger owner-scoped and append-only for %s',
+    (capacity) => {
+      const request: AuthRequest = {
+        principal: {
+          type: capacity,
+          id: 'owner',
+          attributes: { capacity, school_id: 'school-a' },
+        },
+        action: 'read',
+        resource: { id: 'ledger', type: 'PrivacyLedgerEntry', attributes: { user_id: 'owner' } },
+      };
+      expect(check(request).permitted).toBe(true);
+      expect(check({ ...request, action: 'create' }).permitted).toBe(true);
+      for (const action of ['read', 'create', 'update', 'delete']) {
+        expect(
+          check({
+            ...request,
+            action,
+            resource: { ...request.resource, attributes: { user_id: 'other-owner' } },
+          }).permitted,
+        ).toBe(false);
+      }
+      expect(check({ ...request, action: 'update' }).permitted).toBe(false);
+      expect(check({ ...request, action: 'delete' }).permitted).toBe(false);
+      expect(
+        check({ ...request, resource: { ...request.resource, attributes: {} } }).permitted,
+      ).toBe(false);
+    },
+  );
+
+  it('limits ordinary operation receipt reads to the account owner', () => {
+    const request: AuthRequest = {
+      principal: {
+        type: 'teacher',
+        id: 'owner',
+        attributes: { capacity: 'teacher', school_id: 'school-a' },
+      },
+      action: 'read',
+      resource: { id: 'receipt', type: 'OperationReceipt', attributes: { account_id: 'owner' } },
+    };
+    expect(check(request).permitted).toBe(true);
+    expect(
+      check({
+        ...request,
+        resource: { ...request.resource, attributes: { account_id: 'other-owner' } },
+      }).permitted,
+    ).toBe(false);
+    expect(check({ ...request, action: 'update' }).permitted).toBe(false);
+  });
+
+  it.each(['grade', 'publish'])(
+    'authorizes explicit GradeMark %s using verified teacher ownership without device elevation',
+    (action) => {
+      const request: AuthRequest = {
+        principal: {
+          type: 'teacher',
+          id: 'teacher-1',
+          attributes: {
+            capacity: 'teacher',
+            school_id: 'school-a',
+            classroom_ids: ['grade-class-1'],
+          },
+        },
+        action,
+        resource: {
+          type: 'GradeMark',
+          id: 'grade-mark-1',
+          attributes: {
+            school_id: 'school-a',
+            grade_class_id: 'grade-class-1',
+            teacher_id: 'teacher-1',
+          },
+        },
+        context: { device_trust: 'standard', network_zone: 'public' },
+      };
+      expect(check(request).permitted).toBe(true);
+      expect(
+        check({
+          ...request,
+          resource: {
+            ...request.resource,
+            attributes: {
+              ...request.resource.attributes,
+              teacher_id: 'another-teacher',
+            },
+          },
+        }).permitted,
+      ).toBe(false);
+      expect(
+        check({
+          ...request,
+          principal: {
+            ...request.principal,
+            attributes: {
+              ...request.principal.attributes,
+              capacity: 'student',
+            },
+          },
+        }).permitted,
+      ).toBe(false);
+    },
+  );
+
   it('enforces static type boundary on authorization check engine (T16 expectTypeOf)', () => {
     expectTypeOf(check).toBeFunction();
     expectTypeOf(check).parameter(0).toMatchTypeOf<AuthRequest>();
@@ -23,28 +161,31 @@ describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fas
   test.for([
     { capacity: 'admin', expectedPermitted: true },
     { capacity: 'stranger', expectedPermitted: false },
-  ])('parametric capability check for root platform actions with role: $capacity (T17 test.for)', ({ capacity, expectedPermitted }) => {
-    const res = check({
-      principal: {
-        type: capacity,
-        id: `user-${capacity}`,
-        attributes: { school_id: 'school-a', capacity },
-      },
-      action: 'delete',
-      resource: {
-        type: 'Classroom',
-        id: 'classroom-global-target',
-        attributes: { school_id: 'school-b' },
-      },
-    });
-    expect(res.permitted).toBe(expectedPermitted);
-  });
+  ])(
+    'parametric capability check for root platform actions with role: $capacity (T17 test.for)',
+    ({ capacity, expectedPermitted }) => {
+      const res = check({
+        principal: {
+          type: capacity,
+          id: `user-${capacity}`,
+          attributes: { school_id: 'school-a', capacity },
+        },
+        action: 'delete',
+        resource: {
+          type: 'Classroom',
+          id: 'classroom-global-target',
+          attributes: { school_id: 'school-b' },
+        },
+      });
+      expect(res.permitted).toBe(expectedPermitted);
+    },
+  );
 
   it('allows a non-wanderer contributor to submit only as themselves', () => {
     const contributor = {
       type: 'member',
       id: 'author-1',
-      attributes: { capacity: 'member' },
+      attributes: { capacity: 'member', school_id: 'school-1' },
     };
 
     expect(
@@ -368,5 +509,33 @@ describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fas
     expect(snapshot.permissions.Classroom?.create).toBe(true);
     expect(snapshot.permissions.Classroom?.delete).toBe(true);
     expect(snapshot.signature).toBeDefined();
+  });
+
+  it('characterizes the resource-level limit of a signed snapshot', { timeout: 15000 }, () => {
+    const user = {
+      id: 'member-1',
+      school_id: 'school-a',
+      capacity: 'member',
+      active_bond_id: 'bond-1',
+      active_entity_id: 'school-a',
+      active_entity_type: 'SCHOOL',
+      policy_version: 'policy-v1',
+    };
+    const snapshot = generateSnapshot(user, snapshotSigningKey);
+    expect(snapshot.permissions.OperationReceipt?.read).toBe(true);
+    const otherOwner = check({
+      principal: {
+        type: 'member',
+        id: user.id,
+        attributes: { school_id: 'school-a', capacity: 'member' },
+      },
+      action: 'read',
+      resource: {
+        type: 'OperationReceipt',
+        id: 'other-entry',
+        attributes: { account_id: 'other-user' },
+      },
+    });
+    expect(otherOwner.permitted).toBe(false);
   });
 });

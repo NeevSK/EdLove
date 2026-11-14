@@ -1,4 +1,4 @@
-import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { View, Text, ScrollView } from 'react-native';
 import type { GridData } from '@repo/library/api/spreadsheet';
 
 interface SpreadsheetGridProps {
@@ -46,20 +46,19 @@ export function SpreadsheetGrid({ grid }: SpreadsheetGridProps) {
   return (
     <ScrollView style={{ maxHeight: 480 }}>
       <ScrollView horizontal>
-        <VStack space="0" style={{ width: tableWidth }}>
-          <HStack
-            space="0"
-            className="border-b border-phase-border bg-phase-canvas"
+        <View style={{ width: tableWidth }}>
+          <View
+            className="flex-row items-center border-b border-phase-border bg-phase-canvas"
             style={{ width: tableWidth }}
           >
-            <Box
+            <View
               style={{ width: GUTTER_WIDTH }}
               className="items-center justify-center border-r border-phase-border"
             >
               <Text className="text-xs font-bold text-phase-text-secondary">#</Text>
-            </Box>
+            </View>
             {grid.headers.map((header, col) => (
-              <Box
+              <View
                 key={`h-${col}`}
                 style={{ width: widths[col], paddingHorizontal: CELL_PAD, paddingVertical: 6 }}
                 className="border-r border-phase-border"
@@ -70,26 +69,25 @@ export function SpreadsheetGrid({ grid }: SpreadsheetGridProps) {
                 <Text className="text-sm font-bold text-phase-text-primary" numberOfLines={1}>
                   {header}
                 </Text>
-              </Box>
+              </View>
             ))}
-          </HStack>
+          </View>
           {grid.rows.map((row, rowIndex) => (
-            <HStack
+            <View
               key={`r-${rowIndex}`}
-              space="0"
+              className={`flex-row items-center ${rowIndex % 2 === 0 ? 'bg-white dark:bg-obsidian' : 'bg-phase-canvas'}`}
               style={{ width: tableWidth }}
-              className={rowIndex % 2 === 0 ? 'bg-white dark:bg-obsidian' : 'bg-phase-canvas'}
             >
-              <Box
+              <View
                 style={{ width: GUTTER_WIDTH }}
                 className="items-center justify-center border-r border-phase-border"
               >
                 <Text className="text-xs text-phase-text-secondary">{rowIndex + 1}</Text>
-              </Box>
+              </View>
               {widths.map((width, col) => {
                 const cell = row[col];
                 return (
-                  <Box
+                  <View
                     key={`c-${rowIndex}-${col}`}
                     style={{ width: width, paddingHorizontal: CELL_PAD, paddingVertical: 5 }}
                     className="border-b border-r border-phase-border/60"
@@ -101,12 +99,12 @@ export function SpreadsheetGrid({ grid }: SpreadsheetGridProps) {
                     >
                       {cell == null || cell === '' ? '' : String(cell)}
                     </Text>
-                  </Box>
+                  </View>
                 );
               })}
-            </HStack>
+            </View>
           ))}
-        </VStack>
+        </View>
       </ScrollView>
     </ScrollView>
   );

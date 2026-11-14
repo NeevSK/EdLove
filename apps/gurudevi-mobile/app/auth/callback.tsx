@@ -1,42 +1,55 @@
-import { deepLink } from '@repo/core/logic';
-import { BrandPulse } from '@repo/ui';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
+import { ErrorState, WorldLoading } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Button, ButtonText, Center, Text, VStack } from '@repo/ui/primitives';
-import { router } from 'expo-router';
+import { useGlobalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
+import { createNativeAuthCallbackUrl } from '@/entry/authCallbackUrl';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
 export default function AuthCallbackRoute() {
+  const router = useNavigator();
   const startedRef = useRef(false);
-  const [failed, setFailed] = useState(false);
+  const params = useGlobalSearchParams<Record<string, string | string[]>>();
+  const [failureMessage, setFailureMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (Platform.OS !== 'web' || startedRef.current) return;
+    if (startedRef.current) return;
 
     startedRef.current = true;
-    void deepLink.handleURL(window.location.href).then((result) => {
-      setFailed(!result.isHandled);
-    });
-  }, []);
+    const callbackUrl =
+      Platform.OS === 'web' ? window.location.href : createNativeAuthCallbackUrl(params);
 
-  if (failed) {
+    let active = true;
+    void handleDeepLink(callbackUrl)
+      .then((result) => {
+        if (active && !result.isHandled) {
+          setFailureMessage(result.message ?? 'Unable to complete sign-in.');
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setFailureMessage('Sign-in could not be completed. Please try again.');
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [params]);
+
+  if (failureMessage) {
     return (
-      <Center className="flex-1 bg-obsidian px-6">
-        <VStack space="md" className="items-center">
-          <Text className="text-center text-sacred-white">Unable to complete sign-in.</Text>
-          <Button onPress={() => router.replace('/auth')}>
-            <ButtonText>Try again</ButtonText>
-          </Button>
-        </VStack>
-      </Center>
+      <ErrorState
+        title="Sign-in did not finish"
+        message={failureMessage}
+        retry={{ label: 'Try again', onPress: () => router.replace('/auth') }}
+        style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}
+      />
     );
   }
 
-  return (
-    <Center className="flex-1 bg-obsidian">
-      <BrandPulse accessibilityLabel="Completing sign-in" />
-    </Center>
-  );
+  return <WorldLoading label="Completing sign-in" fullscreen />;
 }

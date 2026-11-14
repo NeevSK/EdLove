@@ -1,88 +1,85 @@
-import { isQueuedDeviceSecurityMutation } from '@repo/core/lib/sync/deviceSecurityIntents';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { useDeviceSecurityStore } from '@repo/core/store/useDeviceSecurityStore';
-import { useCallback, useEffect, useMemo, useOptimistic, useTransition } from 'react';
+import { isQueuedDeviceSecurityMutation } from '@repo/core/lib/sync/deviceSecurityIntents.coordinator';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
+import { deviceSecurity } from '@repo/core/effect/bindings/deviceSecurity';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useCallback, useMemo, useState } from 'react';
+import { useScopedDeviceSecurity } from '@repo/core/hooks/useScopedDeviceSecurity';
+
+export async function completeDeviceSecurityCommand<T>(
+  operation: () => Promise<{ queued: boolean; data: T }>,
+  refresh: () => Promise<void>,
+): Promise<{ queued: boolean; data: T }> {
+  const result = await operation();
+  if (!result.queued) await refresh();
+  return result;
+}
 
 /**
  * useDeviceSecurity
  *
- * The Sovereign Connector for Device Trust.
- * Now acts as a lightweight interface to the global DeviceSecurityStore.
+ * The device-security summary is Query-owned. Mutations remain on the
+ * manager/outbox path so a cache never becomes a security authority.
  */
 export function useDeviceSecurity() {
+  const requestedPrincipalId = useAuthStore((state) => state.user?.id ?? null);
   const {
-    devices,
-    events,
-    authEvents,
-    sessions,
-    currentDevice,
-    loading,
-    error,
-    fetchSecuritySummary,
-    revokeSession,
-    unlinkDevice,
-    revokeAllSessions,
-    trustDevice,
-  } = useDeviceSecurityStore();
-
-  const [isPending, startTransition] = useTransition();
-
-  // Optimistic tracking for local feedback
-  const [optimisticDevices, addOptimisticDevice] = useOptimistic(
-    devices,
-    (state, action: { type: 'unlink'; deviceId: string }) => {
-      if (action.type === 'unlink') {
-        return state.filter((d) => d.deviceId !== action.deviceId);
-      }
-      return state;
-    },
-  );
-
-  const [optimisticSessions, addOptimisticSession] = useOptimistic(
-    sessions,
-    (state, action: { type: 'revoke'; sessionId: string }) => {
-      if (action.type === 'revoke') {
-        return state.map((s) =>
-          s.sessionId === action.sessionId ? { ...s, status: 'revoked' as const } : s,
-        );
-      }
-      return state;
-    },
-  );
+    scope,
+    summary,
+    isLoading,
+    error: readError,
+    refresh,
+  } = useScopedDeviceSecurity(requestedPrincipalId);
+  const [commandError, setCommandError] = useState<string | null>(null);
+  const [isMutating, setIsMutating] = useState(false);
+  const devices = summary?.devices ?? [];
+  const events = summary?.events ?? [];
+  const authEvents = summary?.authEvents ?? [];
+  const sessions = summary?.sessions ?? [];
+  const currentDevice = summary?.currentDevice ?? null;
 
   // Sync with mutation queue for offline-resilience awareness
   const queueLength = useMutationQueue(
     (s) => s.queue.filter(isQueuedDeviceSecurityMutation).length,
   );
 
-  useEffect(() => {
-    void fetchSecuritySummary();
-  }, [fetchSecuritySummary]);
-
-  // Actions wrapped in transitions and optimistic updates
-  const handleRevokeSession = useCallback(
-    async (sessionId: string) => {
-      startTransition(() => {
-        addOptimisticSession({ type: 'revoke', sessionId });
-      });
-      return revokeSession(sessionId);
+  const runCommand = useCallback(
+    async <T>(operation: () => Promise<{ queued: boolean; data: T }>) => {
+      if (!scope) throw new Error('An authenticated device-security scope is required.');
+      setCommandError(null);
+      setIsMutating(true);
+      try {
+        return await completeDeviceSecurityCommand(operation, refresh);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Device-security action failed.';
+        setCommandError(message);
+        throw error;
+      } finally {
+        setIsMutating(false);
+      }
     },
-    [revokeSession, addOptimisticSession],
+    [refresh, scope],
   );
 
-  const handleUnlinkDevice = useCallback(
-    async (deviceId: string) => {
-      startTransition(() => {
-        addOptimisticDevice({ type: 'unlink', deviceId });
-      });
-      return unlinkDevice(deviceId);
-    },
-    [unlinkDevice, addOptimisticDevice],
+  const revokeSession = useCallback(
+    (sessionId: string) => runCommand(() => deviceSecurity.revokeSession(sessionId)),
+    [runCommand],
+  );
+  const unlinkDevice = useCallback(
+    (deviceId: string) => runCommand(() => deviceSecurity.unlinkDevice(deviceId)),
+    [runCommand],
+  );
+  const revokeAllSessions = useCallback(
+    () => runCommand(() => deviceSecurity.revokeAllSessions()),
+    [runCommand],
+  );
+  const trustDevice = useCallback(
+    (deviceId: string) => runCommand(() => deviceSecurity.trustDevice(deviceId)),
+    [runCommand],
   );
 
   // Health Score (Derived Intelligence)
   const healthScore = useMemo(() => {
-    if (loading && devices.length === 0) return null;
+    if (!summary) return null;
     let score = 100;
 
     // Deduct for untrusted active devices
@@ -95,23 +92,23 @@ export function useDeviceSecurity() {
     if (platforms.size > 2) score -= 10;
 
     // Deduct for stale devices
-    const staleCount = devices.filter((d) => d.trustStatus === 'stale').length;
+    const staleCount = devices.filter((d) => d.isTrusted === false).length;
     score -= staleCount * 5;
 
     return Math.max(0, score);
-  }, [devices, sessions, loading]);
+  }, [devices, sessions, summary]);
 
   return {
-    devices: optimisticDevices,
+    devices,
     events,
-    sessions: optimisticSessions,
+    sessions,
     authEvents,
     currentDevice,
-    loading: loading || isPending,
-    error,
-    refresh: fetchSecuritySummary,
-    revokeSession: handleRevokeSession,
-    unlinkDevice: handleUnlinkDevice,
+    loading: isLoading || isMutating,
+    error: readError ?? commandError,
+    refresh,
+    revokeSession,
+    unlinkDevice,
     revokeAllSessions,
     trustDevice,
     syncPending: queueLength > 0,

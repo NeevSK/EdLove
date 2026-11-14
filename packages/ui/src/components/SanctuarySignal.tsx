@@ -1,13 +1,14 @@
 import { ArrowRight, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useNavigator } from './native/navigation';
 
 /**
  * SanctuarySignal: A premium, non-intrusive conversion prompt
  * for anonymous users to join the sanctuary.
  */
 export const SanctuarySignal = () => {
+  const router = useNavigator();
   const { t } = useTranslation();
 
   return (

@@ -1,0 +1,237 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(20, 18, 17, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.25rem;
+}
+
+.modal {
+  position: relative;
+  background-color: var(--color-surface, #fffdfa);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  border-radius: 1.25rem;
+  max-width: 580px;
+  width: 100%;
+  padding: 2rem;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+  animation: modalIn 220ms ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-family: inherit;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--color-text-muted, #726860);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  background: var(--paper-light, #f5efe6);
+  color: var(--color-ink, #2d2018);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-ink, #2d2018);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subtext {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-ink-soft, #74675d);
+  line-height: 1.5;
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+@media (max-width: 540px) {
+  .comparisonGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.column {
+  padding: 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--line, #e6d9ce);
+  background: var(--paper-light, #faf6ef);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.columnActive {
+  background: #ffffff;
+  border-color: var(--color-action, #9a5b2d);
+  box-shadow: 0 4px 12px rgba(154, 91, 45, 0.08);
+}
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.columnBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--paper, #f0ebe1);
+  color: var(--ink-soft, #594f47);
+}
+
+.columnBadgeActive {
+  background: rgba(154, 91, 45, 0.12);
+  color: var(--color-action, #9a5b2d);
+}
+
+.columnTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink, #2d2018);
+}
+
+.featureList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft, #594f47);
+  line-height: 1.4;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.carryoverBox {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  background: rgba(154, 91, 45, 0.06);
+  border: 1px dashed rgba(154, 91, 45, 0.35);
+  border-radius: 0.65rem;
+  font-size: 0.82rem;
+  color: var(--ink, #2d2018);
+  cursor: pointer;
+}
+
+.carryoverBox input[type="checkbox"] {
+  accent-color: var(--color-action, #9a5b2d);
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.actionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.actionPrimary {
+  padding: 0.65rem 1.35rem;
+  border-radius: 999px;
+  background: var(--color-action, #9a5b2d);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.actionPrimary:hover {
+  background: #7e4620;
+}
+
+.actionSecondary {
+  padding: 0.65rem 1.15rem;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid var(--line, #e6d9ce);
+  color: var(--ink, #2d2018);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.actionSecondary:hover {
+  border-color: var(--color-action, #9a5b2d);
+  color: var(--color-action, #9a5b2d);
+}
+
+.actionGhost {
+  background: none;
+  border: none;
+  color: var(--ink-soft, #74675d);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.4rem 0.65rem;
+}
+
+.actionGhost:hover {
+  text-decoration: underline;
+  color: var(--ink, #2d2018);
+}

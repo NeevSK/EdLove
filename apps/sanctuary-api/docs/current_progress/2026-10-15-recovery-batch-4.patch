@@ -1,0 +1,1286 @@
+diff --git a/apps/gurudevi-mobile/supabase/migrations/20240319000000_relief_and_inventory.sql b/apps/gurudevi-mobile/supabase/migrations/20240319000000_relief_and_inventory.sql
+deleted file mode 100644
+index 2018e8ae1..000000000
+--- a/apps/gurudevi-mobile/supabase/migrations/20240319000000_relief_and_inventory.sql
++++ /dev/null
+@@ -1,45 +0,0 @@
+--- Relief Assignments: Tracking who covers for absent teachers
+-CREATE TABLE IF NOT EXISTS public.relief_assignments (
+-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+-    school_id UUID NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+-    classroom_id UUID NOT NULL REFERENCES public.classrooms(id) ON DELETE CASCADE,
+-    original_teacher_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+-    relief_teacher_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+-    date DATE NOT NULL DEFAULT CURRENT_DATE,
+-    status TEXT NOT NULL DEFAULT 'pending', -- pending, confirmed, cancelled
+-    notes TEXT,
+-    created_at TIMESTAMPTZ DEFAULT now()
+-);
+-
+--- Resource Inventory Items: Tracking school-wide assets
+-CREATE TABLE IF NOT EXISTS public.inventory_items (
+-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+-    school_id UUID NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+-    name TEXT NOT NULL,
+-    category TEXT NOT NULL, -- furniture, tech, stationery, etc.
+-    quantity INTEGER NOT NULL DEFAULT 1,
+-    unit TEXT DEFAULT 'pcs',
+-    condition TEXT DEFAULT 'good', -- new, good, fair, poor, broken
+-    location TEXT, -- warehouse, classroom-A, etc.
+-    last_audit_at TIMESTAMPTZ DEFAULT now(),
+-    created_at TIMESTAMPTZ DEFAULT now()
+-);
+-
+--- Enable Resonance (Temporal Tracking / Bi-Temporal History)
+--- This automatically creates the _history tables and triggers
+-SELECT resonance.enable_resonance('public', 'relief_assignments');
+-SELECT resonance.enable_resonance('public', 'inventory_items');
+-
+--- RLS Policies (Principal & Admin access)
+-ALTER TABLE public.relief_assignments ENABLE ROW LEVEL SECURITY;
+-ALTER TABLE public.inventory_items ENABLE ROW LEVEL SECURITY;
+-
+-CREATE POLICY "Principals can manage relief assignments" ON public.relief_assignments
+-    FOR ALL
+-    USING (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = relief_assignments.school_id AND role IN ('principal', 'founder')))
+-    WITH CHECK (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = relief_assignments.school_id AND role IN ('principal', 'founder')));
+-
+-CREATE POLICY "Principals can manage inventory" ON public.inventory_items
+-    FOR ALL
+-    USING (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = inventory_items.school_id AND role IN ('principal', 'founder')))
+-    WITH CHECK (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = inventory_items.school_id AND role IN ('principal', 'founder')));
+diff --git a/apps/gurudevi-mobile/supabase/migrations/20260211193000_fix_rls_recursion_v2.sql b/apps/gurudevi-mobile/supabase/migrations/20260211193000_fix_rls_recursion_v2.sql
+index 7724fda53..65a915b73 100644
+--- a/apps/gurudevi-mobile/supabase/migrations/20260211193000_fix_rls_recursion_v2.sql
++++ b/apps/gurudevi-mobile/supabase/migrations/20260211193000_fix_rls_recursion_v2.sql
+@@ -20,6 +20,7 @@ DROP POLICY IF EXISTS "Users can see school members" ON public.users;
+ -- This allows:
+ --  a) Seeing your own profile
+ --  b) Seeing other members of your school
++DROP POLICY IF EXISTS "Users can select own and school members" ON public.users;
+ CREATE POLICY "Users can select own and school members" 
+ ON public.users 
+ FOR SELECT 
+diff --git a/apps/gurudevi-mobile/supabase/migrations/20260216000001_fix_runtime_errors.sql b/apps/gurudevi-mobile/supabase/migrations/20260216000001_fix_runtime_errors.sql
+index f9da52ff2..e21532cd0 100644
+--- a/apps/gurudevi-mobile/supabase/migrations/20260216000001_fix_runtime_errors.sql
++++ b/apps/gurudevi-mobile/supabase/migrations/20260216000001_fix_runtime_errors.sql
+@@ -27,6 +27,7 @@ DROP POLICY IF EXISTS "Strictly private mood logs" ON mood_logs;
+ -- Create separated policies for better control
+ 
+ -- 1. Allow users to insert their own logs
++DROP POLICY IF EXISTS "Users can insert their own mood logs" ON mood_logs;
+ CREATE POLICY "Users can insert their own mood logs"
+ ON mood_logs
+ FOR INSERT
+@@ -34,6 +35,7 @@ TO authenticated
+ WITH CHECK (auth.uid() = user_id);
+ 
+ -- 2. Allow users to view their own logs
++DROP POLICY IF EXISTS "Users can view their own mood logs" ON mood_logs;
+ CREATE POLICY "Users can view their own mood logs"
+ ON mood_logs
+ FOR SELECT
+@@ -41,6 +43,7 @@ TO authenticated
+ USING (auth.uid() = user_id);
+ 
+ -- 3. Allow users to update their own logs
++DROP POLICY IF EXISTS "Users can update their own mood logs" ON mood_logs;
+ CREATE POLICY "Users can update their own mood logs"
+ ON mood_logs
+ FOR UPDATE
+diff --git a/apps/gurudevi-mobile/supabase/migrations/20260228105057_group_messages.sql b/apps/gurudevi-mobile/supabase/migrations/20260228105057_group_messages.sql
+index 11d10b20a..7597b7efe 100644
+--- a/apps/gurudevi-mobile/supabase/migrations/20260228105057_group_messages.sql
++++ b/apps/gurudevi-mobile/supabase/migrations/20260228105057_group_messages.sql
+@@ -17,6 +17,10 @@ CREATE INDEX IF NOT EXISTS idx_group_messages_group_created
+     ON public.group_messages (group_id, created_at ASC);
+ 
+ -- ── Row Level Security ────────────────────────────────────────
++ALTER TABLE public.community_group_members
++    ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active'
++    CHECK (status IN ('active', 'pending', 'banned'));
++
+ ALTER TABLE public.group_messages ENABLE ROW LEVEL SECURITY;
+ 
+ -- Members can read messages in groups they belong to
+diff --git a/apps/gurudevi-mobile/supabase/migrations/20260302000000_versatile_search.sql b/apps/gurudevi-mobile/supabase/migrations/20260302000000_versatile_search.sql
+deleted file mode 100644
+index ac1debb24..000000000
+--- a/apps/gurudevi-mobile/supabase/migrations/20260302000000_versatile_search.sql
++++ /dev/null
+@@ -1,76 +0,0 @@
+--- 1. Create a search vector column for FTS
+-ALTER TABLE public.library_resources 
+-ADD COLUMN IF NOT EXISTS search_vector tsvector;
+-
+--- 2. Create a function to update the search vector
+-CREATE OR REPLACE FUNCTION library_resource_search_trigger() RETURNS trigger AS $$
+-BEGIN
+-  new.search_vector :=
+-    setweight(to_tsvector('english', coalesce(new.title, '')), 'A') ||
+-    setweight(to_tsvector('english', coalesce(new.description, '')), 'B') ||
+-    setweight(to_tsvector('english', coalesce(new.subject, '')), 'C');
+-  return new;
+-END
+-$$ LANGUAGE plpgsql;
+-
+--- 3. Create the trigger
+-DROP TRIGGER IF EXISTS tr_library_resource_search ON public.library_resources;
+-CREATE TRIGGER tr_library_resource_search
+-BEFORE INSERT OR UPDATE ON public.library_resources
+-FOR EACH ROW EXECUTE FUNCTION library_resource_search_trigger();
+-
+--- 4. Initial update for existing rows
+-UPDATE public.library_resources SET search_vector = 
+-  setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
+-  setweight(to_tsvector('english', coalesce(description, '')), 'B') ||
+-  setweight(to_tsvector('english', coalesce(subject, '')), 'C');
+-
+--- 5. Create the GIN index
+-CREATE INDEX IF NOT EXISTS idx_library_resources_search ON public.library_resources USING gin(search_vector);
+-
+--- 6. Consolidated Search RPC (FTS + Vector + Filters)
+-CREATE OR REPLACE FUNCTION search_library(
+-  query_text TEXT,
+-  query_embedding vector(1536) DEFAULT NULL,
+-  filter_type TEXT DEFAULT NULL,
+-  filter_subject TEXT DEFAULT NULL,
+-  match_threshold FLOAT DEFAULT 0.5,
+-  match_count INT DEFAULT 20
+-)
+-RETURNS TABLE (
+-  id UUID,
+-  title TEXT,
+-  description TEXT,
+-  url TEXT,
+-  type TEXT,
+-  subject TEXT,
+-  similarity FLOAT,
+-  search_rank REAL
+-)
+-AS $$
+-BEGIN
+-  RETURN QUERY
+-  SELECT
+-    lr.id,
+-    lr.title,
+-    lr.description,
+-    lr.url,
+-    lr.type,
+-    lr.subject,
+-    CASE 
+-      WHEN query_embedding IS NOT NULL THEN (1 - (lr.embedding <=> query_embedding))
+-      ELSE 0
+-    END as similarity,
+-    ts_rank_cd(lr.search_vector, websearch_to_tsquery('english', query_text)) as search_rank
+-  FROM public.library_resources lr
+-  WHERE
+-    (query_text IS NULL OR lr.search_vector @@ websearch_to_tsquery('english', query_text))
+-    AND (filter_type IS NULL OR lr.type = filter_type)
+-    AND (filter_subject IS NULL OR lr.subject = filter_subject)
+-    AND (query_embedding IS NULL OR (1 - (lr.embedding <=> query_embedding)) > match_threshold)
+-  ORDER BY
+-    search_rank DESC,
+-    similarity DESC
+-  LIMIT match_count;
+-END;
+-$$ LANGUAGE plpgsql;
+diff --git a/apps/sanctuary-api/src/__tests__/education.orpc.test.ts b/apps/sanctuary-api/src/__tests__/education.orpc.test.ts
+index 486a4a910..d4d6a2d15 100644
+--- a/apps/sanctuary-api/src/__tests__/education.orpc.test.ts
++++ b/apps/sanctuary-api/src/__tests__/education.orpc.test.ts
+@@ -1,9 +1,11 @@
+ import './setup';
++import { createZenStackDb } from '@repo/database/client';
+ import { beforeEach, describe, expect, it } from 'vitest';
+ import { app } from '../core/app';
+ import { createTestORPCClient } from './orpc-client';
+ import {
+   setMockActiveBond,
++  setMockAssignmentSubmissionRead,
+   setMockClassroomRelationships,
+   setMockZenStackDbAvailable,
+ } from './setup';
+@@ -15,6 +17,7 @@ describe('Sanctuary API: education via native oRPC', () => {
+   };
+ 
+   beforeEach(() => {
++    setMockAssignmentSubmissionRead(null);
+     setMockZenStackDbAvailable(true);
+     setMockActiveBond({
+       id: 'bond-education',
+@@ -34,6 +37,10 @@ describe('Sanctuary API: education via native oRPC', () => {
+           '923e4567-e89b-12d3-a456-426614174000',
+         ].map((id) => ({
+           id,
++          name: 'Synthetic classroom',
++          academic_year: '2026',
++          created_at: new Date('2026-01-01T00:00:00.000Z'),
++          updated_at: new Date('2026-01-01T00:00:00.000Z'),
+           school_id: 'school-123',
+           teacher_id: '123e4567-e89b-12d3-a456-426614174000',
+         })),
+@@ -123,7 +130,7 @@ describe('Sanctuary API: education via native oRPC', () => {
+       body: { fullName: 'Shadow Learner' },
+     });
+     expect(shadow).toMatchObject({ classroom_id: classroomId, full_name: 'Shadow Learner' });
+-    const enrollmentId = '523e4567-e89b-12d3-a456-426614174000';
++    const enrollmentId = enrolled.id;
+     expect(
+       await client.updateClassroomStudent({
+         params: { id: enrollmentId },
+@@ -154,7 +161,7 @@ describe('Sanctuary API: education via native oRPC', () => {
+     expect(await client.getClassroomNoteTimeline({ params: { id: noteId } })).toEqual([]);
+     const created = await client.createClassroomNote({
+       body: {
+-        classroomId,
++        classroom_id: classroomId,
+         content: 'Lesson recap',
+         visibility: 'class',
+       },
+@@ -165,7 +172,7 @@ describe('Sanctuary API: education via native oRPC', () => {
+       visibility: 'class',
+     });
+     expect(
+-      await client.updateClassroomNote({ params: { id: noteId }, body: { isPinned: true } }),
++      await client.updateClassroomNote({ params: { id: noteId }, body: { is_pinned: true } }),
+     ).toMatchObject({ is_pinned: true });
+     expect(await client.deleteClassroomNote({ params: { id: noteId } })).toEqual({
+       success: true,
+@@ -175,7 +182,6 @@ describe('Sanctuary API: education via native oRPC', () => {
+   it('executes material CRUD through the native Material contract', async () => {
+     const client = createTestORPCClient(headers).educational;
+     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+-    const materialId = '723e4567-e89b-12d3-a456-426614174000';
+     expect(await client.getMaterials({ query: { classroomId } })).toEqual([]);
+     const created = await client.createMaterial({
+       body: {
+@@ -188,17 +194,16 @@ describe('Sanctuary API: education via native oRPC', () => {
+     expect(created).toMatchObject({ classroom_id: classroomId, title: 'Reading', type: 'link' });
+     expect(
+       await client.updateMaterial({
+-        params: { id: materialId },
++        params: { id: created.id },
+         body: { title: 'Updated reading' },
+       }),
+     ).toMatchObject({ title: 'Updated reading' });
+-    expect(await client.deleteMaterial({ params: { id: materialId } })).toEqual({ success: true });
++    expect(await client.deleteMaterial({ params: { id: created.id } })).toEqual({ success: true });
+   });
+ 
+   it('executes assignment CRUD through the native Assignment contract', async () => {
+     const client = createTestORPCClient(headers).educational;
+     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+-    const assignmentId = '823e4567-e89b-12d3-a456-426614174000';
+     expect(await client.getAssignments({ query: { classroomId } })).toEqual([]);
+     const created = await client.createAssignment({
+       body: {
+@@ -210,15 +215,68 @@ describe('Sanctuary API: education via native oRPC', () => {
+     expect(created).toMatchObject({ classroom_id: classroomId, title: 'Practice', max_points: 20 });
+     expect(
+       await client.updateAssignment({
+-        params: { id: assignmentId },
++        params: { id: created.id },
+         body: { title: 'Updated practice' },
+       }),
+     ).toMatchObject({ title: 'Updated practice' });
+-    expect(await client.deleteAssignment({ params: { id: assignmentId } })).toEqual({
++    expect(await client.deleteAssignment({ params: { id: created.id } })).toEqual({
+       success: true,
+     });
+   });
+ 
++  it('does not authorize a missing material using a classroom-shaped identifier', async () => {
++    await expect(
++      createTestORPCClient(headers).educational.updateMaterial({
++        params: { id: '123e4567-e89b-12d3-a456-426614174001' },
++        body: { title: 'Must not write' },
++      }),
++    ).rejects.toMatchObject({ status: 404 });
++  });
++
++  it('resolves stored material and assignment classrooms before update or deletion', async () => {
++    const userId = '123e4567-e89b-12d3-a456-426614174000';
++    const ownClassroomId = '123e4567-e89b-12d3-a456-426614174001';
++    const foreignClassroomId = '423e4567-e89b-12d3-a456-426614174001';
++    setMockClassroomRelationships({
++      classrooms: [
++        { id: ownClassroomId, school_id: 'school-123', teacher_id: userId },
++        { id: foreignClassroomId, school_id: 'other-school', teacher_id: userId },
++      ],
++    });
++    const db = createZenStackDb({ id: userId });
++    const materialId = '523e4567-e89b-12d3-a456-426614174001';
++    const assignmentId = '623e4567-e89b-12d3-a456-426614174001';
++    await db.material.create({
++      data: {
++        id: materialId,
++        classroom_id: foreignClassroomId,
++        title: 'Foreign material',
++        type: 'link',
++      },
++    });
++    await db.assignment.create({
++      data: {
++        id: assignmentId,
++        classroom_id: foreignClassroomId,
++        title: 'Foreign assignment',
++        max_points: 20,
++      },
++    });
++    const client = createTestORPCClient(headers).educational;
++    await expect(
++      client.updateMaterial({ params: { id: materialId }, body: { title: 'Must not write' } }),
++    ).rejects.toMatchObject({ status: 403 });
++    await expect(client.deleteMaterial({ params: { id: materialId } })).rejects.toMatchObject({
++      status: 403,
++    });
++    await expect(
++      client.updateAssignment({ params: { id: assignmentId }, body: { title: 'Must not write' } }),
++    ).rejects.toMatchObject({ status: 403 });
++    await expect(client.deleteAssignment({ params: { id: assignmentId } })).rejects.toMatchObject({
++      status: 403,
++    });
++  });
++
+   it('enforces and executes native assignment submission procedures', async () => {
+     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+     const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
+@@ -271,11 +329,71 @@ describe('Sanctuary API: education via native oRPC', () => {
+     expect(body).toEqual([]);
+   });
+ 
++  it('preserves replay of a submission matching the authenticated intent', async () => {
++    const studentId = '223e4567-e89b-12d3-a456-426614174002';
++    const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
++    const submissionId = '623e4567-e89b-12d3-a456-426614174002';
++    setMockActiveBond({
++      user_id: studentId,
++      entity_id: 'school-123',
++      entity_type: 'SCHOOL',
++      capacity: 'student',
++    });
++    setMockAssignmentSubmissionRead({
++      id: submissionId,
++      assignment_id: assignmentId,
++      student_id: studentId,
++      content: 'My work',
++      submitted_at: new Date('2026-10-15T00:00:00.000Z'),
++      assignment: { classroom_id: '123e4567-e89b-12d3-a456-426614174001' },
++    });
++    await expect(
++      createTestORPCClient({ Authorization: `Bearer ${studentId}` }).educational.submitAssignment({
++        body: {
++          assignmentId,
++          content: 'My work',
++          idempotencyKey: '723e4567-e89b-12d3-a456-426614174002',
++        },
++      }),
++    ).resolves.toMatchObject({ id: submissionId, content: 'My work', student_id: studentId });
++  });
++
++  it.each([
++    { student_id: '423e4567-e89b-12d3-a456-426614174002' },
++    { assignment_id: '523e4567-e89b-12d3-a456-426614174002' },
++    { content: 'Different private work' },
++  ])('does not return an existing submission with inconsistent intent %j', async (change) => {
++    const studentId = '223e4567-e89b-12d3-a456-426614174002';
++    const assignmentId = '923e4567-e89b-12d3-a456-426614174000';
++    setMockActiveBond({
++      user_id: studentId,
++      entity_id: 'school-123',
++      entity_type: 'SCHOOL',
++      capacity: 'student',
++    });
++    setMockAssignmentSubmissionRead({
++      id: '623e4567-e89b-12d3-a456-426614174002',
++      assignment_id: assignmentId,
++      student_id: studentId,
++      content: 'My work',
++      ...change,
++    });
++    await expect(
++      createTestORPCClient({ Authorization: `Bearer ${studentId}` }).educational.submitAssignment({
++        body: {
++          assignmentId,
++          content: 'My work',
++          idempotencyKey: '723e4567-e89b-12d3-a456-426614174002',
++        },
++      }),
++    ).rejects.toMatchObject({ status: 409 });
++  });
++
+   it('serves procedures through the OpenAPI adapter', async () => {
+     const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+     const response = await app.fetch(
+       new Request(
+-        `http://sanctuary.test/api/openapi/educational/classrooms/${classroomId}/assignments?query[classroomId]=${classroomId}`,
++        `http://sanctuary.test/api/openapi/educational/classrooms/${classroomId}/assignments?classroomId=${classroomId}`,
+         { headers },
+       ),
+     );
+diff --git a/apps/sanctuary-api/src/__tests__/setup.ts b/apps/sanctuary-api/src/__tests__/setup.ts
+index 29f7cb39d..26b571875 100644
+--- a/apps/sanctuary-api/src/__tests__/setup.ts
++++ b/apps/sanctuary-api/src/__tests__/setup.ts
+@@ -9,6 +9,8 @@ let mockUserData: any = null;
+ let mockUsers: any[] = [];
+ let mockDailyContentRows: any[] = [];
+ let mockLastQueryRawArgs: unknown[] | null = null;
++let mockLastExecuteRawArgs: unknown[] | null = null;
++let mockRawQueryRowsQueue: unknown[][] = [];
+ let mockQueryRowsQueue: any[][] = [];
+ let mockLibraryCollectionRead: any = null;
+ let mockLibraryCollections: any[] = [];
+@@ -33,6 +35,12 @@ let mockWhisperedMoments: any[] = [];
+ let mockClassroomNotes: any[] = [];
+ let mockClassrooms: any[] = [];
+ let mockClassroomStudents: any[] = [];
++const mockEducationalRows = new Map<string, Record<string, unknown>>();
++let mockAssignmentSubmissionRead: Record<string, unknown> | null = null;
++
++export function setMockAssignmentSubmissionRead(row: Record<string, unknown> | null) {
++  mockAssignmentSubmissionRead = row;
++}
+ 
+ export function setMockZenStackDbAvailable(available: boolean) {
+   mockZenStackDbAvailable = available;
+@@ -69,6 +77,26 @@ export function getMockLastQueryRawArgs(): unknown[] | null {
+   return mockLastQueryRawArgs;
+ }
+ 
++export function setMockRawQueryRowsQueue(rows: unknown[][]) {
++  mockRawQueryRowsQueue = [...rows];
++  mockLastQueryRawArgs = null;
++  mockLastExecuteRawArgs = null;
++}
++
++export function getMockLastExecuteRawArgs(): unknown[] | null {
++  return mockLastExecuteRawArgs;
++}
++
++async function queryMockRawRows(...args: unknown[]): Promise<unknown[]> {
++  mockLastQueryRawArgs = args;
++  return mockRawQueryRowsQueue.shift() ?? mockDailyContentRows;
++}
++
++async function executeMockRaw(...args: unknown[]): Promise<number> {
++  mockLastExecuteRawArgs = args;
++  return 1;
++}
++
+ export function setMockQueryRowsQueue(rows: any[][]) {
+   mockQueryRowsQueue = [...rows];
+ }
+@@ -137,6 +165,7 @@ export function setMockClassroomRelationships({
+ }) {
+   mockClassrooms = classrooms;
+   mockClassroomStudents = students ?? [];
++  mockEducationalRows.clear();
+ }
+ 
+ export function getMockLibraryCollectionFindManyArgs() {
+@@ -149,6 +178,12 @@ function createMockDelegate(name: string): any {
+     {
+       get(_target, prop) {
+         if (prop === 'findUnique') {
++          if (name === 'classroom')
++            return async (args: { where: { id: string } }) =>
++              mockClassrooms.find((row) => row.id === args.where.id) ?? null;
++          if (name === 'material')
++            return async (args: { where: { id: string } }) =>
++              mockEducationalRows.get(`material:${args.where.id}`) ?? null;
+           if (name === 'sanctuaryManifesto') {
+             return async () => ({
+               id: 'd23e4567-e89b-12d3-a456-426614174000',
+@@ -156,7 +191,7 @@ function createMockDelegate(name: string): any {
+             });
+           }
+           if (name === 'communityCommentUpvote') return async () => null;
+-          if (name === 'assignmentSubmission') return async () => null;
++          if (name === 'assignmentSubmission') return async () => mockAssignmentSubmissionRead;
+           if (name === 'classroomNote')
+             return async (args: any = {}) => ({
+               id: args?.where?.id ?? 'mock-note-id',
+@@ -165,11 +200,12 @@ function createMockDelegate(name: string): any {
+               author_id: '123e4567-e89b-12d3-a456-426614174000',
+             });
+           if (name === 'assignment')
+-            return async () => ({
+-              id: '923e4567-e89b-12d3-a456-426614174000',
+-              classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+-              school_id: 'school-123',
+-            });
++            return async (args: { where: { id: string } }) =>
++              mockEducationalRows.get(`assignment:${args.where.id}`) ?? {
++                id: '923e4567-e89b-12d3-a456-426614174000',
++                classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++                school_id: 'school-123',
++              };
+           if (name === 'principalNote')
+             return async (args: any = {}) => ({
+               id: args?.where?.id ?? 'principal-note-mock-id',
+@@ -686,6 +722,39 @@ function createMockDelegate(name: string): any {
+               author: { full_name: 'Test Author' },
+             });
+           }
++          if (
++            [
++              'classroom',
++              'classroomStudent',
++              'material',
++              'assignment',
++              'assignmentSubmission',
++            ].includes(name)
++          ) {
++            return async (args: any = {}) => {
++              const id = args.where?.id ?? args.data?.id ?? crypto.randomUUID();
++              const data = Object.fromEntries(
++                Object.entries(args.data ?? {}).filter(([, value]) => value !== undefined),
++              );
++              const row = {
++                id,
++                created_at: new Date(),
++                updated_at: new Date(),
++                ...(name === 'classroom' ? { academic_year: '2026' } : {}),
++                ...(name === 'classroomStudent' ? { enrolled_at: new Date() } : {}),
++                ...(name === 'assignmentSubmission'
++                  ? {
++                      submitted_at: new Date(),
++                      classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++                    }
++                  : {}),
++                ...mockEducationalRows.get(`${name}:${id}`),
++                ...data,
++              };
++              mockEducationalRows.set(`${name}:${id}`, row);
++              return row;
++            };
++          }
+           return async (args: any = {}) => ({
+             id: `${name}-mock-id`,
+             ...(args?.data ?? {}),
+@@ -930,7 +999,10 @@ function createMockDelegate(name: string): any {
+         if (prop === 'findFirst') {
+           if (name === 'bond') {
+             return async (args: any = {}) => {
+-              if (args?.where?.entity_type === 'PERSONAL_CLASSROOM' && mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM')
++              if (
++                args?.where?.entity_type === 'PERSONAL_CLASSROOM' &&
++                mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM'
++              )
+                 return null;
+               if (args?.where?.entity_type === 'SCHOOL' && mockActiveBond?.entity_type !== 'SCHOOL')
+                 return null;
+@@ -990,11 +1062,9 @@ function createMockDelegate(name: string): any {
+           return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+         }
+         if (prop === '$queryRaw') {
+-          return async (...args: unknown[]) => {
+-            mockLastQueryRawArgs = args;
+-            return mockDailyContentRows;
+-          };
++          return queryMockRawRows;
+         }
++        if (prop === '$executeRaw') return executeMockRaw;
+ 
+         return createMockDelegate(`${name}.${String(prop)}`);
+       },
+@@ -1010,11 +1080,9 @@ const mockDb = new Proxy(
+         return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+       }
+       if (prop === '$queryRaw') {
+-        return async (...args: unknown[]) => {
+-          mockLastQueryRawArgs = args;
+-          return mockDailyContentRows;
+-        };
++        return queryMockRawRows;
+       }
++      if (prop === '$executeRaw') return executeMockRaw;
+       if (prop === '$queryRawUnsafe') {
+         return async () => [];
+       }
+diff --git a/apps/sanctuary-api/src/core/handlers/educational.ts b/apps/sanctuary-api/src/core/handlers/educational.ts
+index 63ae3c535..4abfb90f7 100644
+--- a/apps/sanctuary-api/src/core/handlers/educational.ts
++++ b/apps/sanctuary-api/src/core/handlers/educational.ts
+@@ -1,5 +1,9 @@
+ import { ORPCError } from '@orpc/server';
+ import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
++import {
++  OperationReceiptResponseSchema,
++  OperationReceiptResultSchema,
++} from '@repo/core/api/educational.contract';
+ import { assertDatabase } from '../apiErrors';
+ import { implement, type ORPCContext } from '../orpc';
+ import { doubleGateMiddleware } from '../orpcMiddleware';
+@@ -7,6 +11,33 @@ import { doubleGateMiddleware } from '../orpcMiddleware';
+ const impl = implement(educationalORPCContract).$context<ORPCContext>();
+ const iso = (value: unknown) => (value instanceof Date ? value.toISOString() : String(value ?? ''));
+ 
++type OperationReceiptRow = {
++  operation_id: string;
++  capability: string;
++  status: string;
++  result: unknown;
++  created_at: Date | string;
++  updated_at: Date | string;
++};
++
++function mapOperationReceipt(row: OperationReceiptRow | undefined) {
++  if (!row) throw new ORPCError('NOT_FOUND', { message: 'Operation receipt was not found.' });
++  return OperationReceiptResponseSchema.parse({
++    operationId: row.operation_id,
++    capability: row.capability,
++    status: row.status,
++    result: row.status === 'committed' ? OperationReceiptResultSchema.parse(row.result) : null,
++    errorCode:
++      row.status === 'failed'
++        ? 'OPERATION_FAILED'
++        : row.status === 'conflict'
++          ? 'OPERATION_CONFLICT'
++          : null,
++    createdAt: iso(row.created_at),
++    updatedAt: iso(row.updated_at),
++  });
++}
++
+ const mapClassroom = (row: any) => ({
+   id: String(row.id),
+   school_id: row.school_id ?? null,
+@@ -125,6 +156,32 @@ const mapSubmission = (row: any) => ({
+ });
+ 
+ export const educationalRouter = impl.router({
++  getOperationReceipt: impl.getOperationReceipt
++    .use(doubleGateMiddleware)
++    .handler(async ({ input, context }) => {
++      assertDatabase(context);
++      const rows = await context.db.$queryRaw<OperationReceiptRow[]>`
++      SELECT operation_id, capability, status, result, created_at, updated_at
++      FROM public.operation_receipts
++      WHERE account_id = ${context.user.id}::uuid AND operation_id = ${input.params.operationId}::uuid
++      LIMIT 1
++    `;
++      return mapOperationReceipt(rows[0]);
++    }),
++  getOperationReceiptByKey: impl.getOperationReceiptByKey
++    .use(doubleGateMiddleware)
++    .handler(async ({ input, context }) => {
++      assertDatabase(context);
++      const rows = await context.db.$queryRaw<OperationReceiptRow[]>`
++      SELECT operation_id, capability, status, result, created_at, updated_at
++      FROM public.operation_receipts
++      WHERE account_id = ${context.user.id}::uuid
++        AND capability = ${input.query.capability}
++        AND idempotency_key = ${input.query.idempotencyKey}::uuid
++      LIMIT 1
++    `;
++      return mapOperationReceipt(rows[0]);
++    }),
+   getByTeacher: impl.getByTeacher.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+     assertDatabase(context);
+     const rows = await (context.db as any).classroom.findMany({
+@@ -579,7 +636,7 @@ export const educationalRouter = impl.router({
+   submitAssignment: impl.submitAssignment
+     .use(doubleGateMiddleware)
+     .handler(async ({ input, context }) => {
+-      const db = context.db as any;
++      assertDatabase(context);
+       const where = input.body.idempotencyKey
+         ? { idempotency_key: input.body.idempotencyKey }
+         : {
+@@ -588,9 +645,23 @@ export const educationalRouter = impl.router({
+               student_id: context.user.id,
+             },
+           };
+-      const existing = await db.assignmentSubmission.findUnique({ where });
+-      if (existing) return mapSubmission(existing);
+-      const row = await db.assignmentSubmission.create({
++      const existing = await context.db.assignmentSubmission.findUnique({
++        where,
++        include: { assignment: { select: { classroom_id: true } } },
++      });
++      if (existing) {
++        if (
++          existing.student_id !== context.user.id ||
++          existing.assignment_id !== input.body.assignmentId ||
++          (existing.content ?? null) !== (input.body.content ?? null)
++        ) {
++          throw new ORPCError('CONFLICT', {
++            message: 'Submission intent does not match the existing operation.',
++          });
++        }
++        return mapSubmission(existing);
++      }
++      const row = await context.db.assignmentSubmission.create({
+         data: {
+           assignment_id: input.body.assignmentId,
+           student_id: context.user.id,
+diff --git a/apps/sanctuary-api/src/core/orpcMiddleware.ts b/apps/sanctuary-api/src/core/orpcMiddleware.ts
+index 99b5f8da2..c5475ffe5 100644
+--- a/apps/sanctuary-api/src/core/orpcMiddleware.ts
++++ b/apps/sanctuary-api/src/core/orpcMiddleware.ts
+@@ -1,31 +1,34 @@
+ import { ORPCError } from '@orpc/server';
++import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
+ import { SovereignError } from '@repo/core/types/Errors';
+ import { check as checkCedar } from '@repo/policies';
+ import { evaluateWithRust } from '../authorization/rustEvaluator';
++import { toSafeErrorTelemetry } from '../telemetry/safeErrorTelemetry';
+ import { type ORPCContext, o } from './orpc';
++import { resolveGradeMarkAuthority } from './gradingAuthority';
+ 
+-export function toORPCError(error: unknown): unknown {
+-  if (!(error instanceof SovereignError)) return error;
+-  const status = error.details.status;
+-  const code =
+-    status === 400
+-      ? 'BAD_REQUEST'
+-      : status === 401
+-        ? 'UNAUTHORIZED'
+-        : status === 403
+-          ? 'FORBIDDEN'
+-          : status === 404
+-            ? 'NOT_FOUND'
+-            : status === 409
+-              ? 'CONFLICT'
+-              : status === 429
+-                ? 'TOO_MANY_REQUESTS'
+-                : status === 503
+-                  ? 'SERVICE_UNAVAILABLE'
+-                  : 'INTERNAL_SERVER_ERROR';
++const protocolCodeByStatus: Readonly<Partial<Record<number, string>>> = {
++  400: 'BAD_REQUEST',
++  401: 'UNAUTHORIZED',
++  403: 'FORBIDDEN',
++  404: 'NOT_FOUND',
++  409: 'CONFLICT',
++  429: 'TOO_MANY_REQUESTS',
++  503: 'SERVICE_UNAVAILABLE',
++};
++
++export function toORPCError(error: unknown, requestId?: string): ORPCError<string, unknown> {
++  if (error instanceof ORPCError) return error;
++  if (!(error instanceof SovereignError)) {
++    return new ORPCError('INTERNAL_SERVER_ERROR', {
++      message: 'An unexpected platform error occurred.',
++      data: { code: 'INTERNAL_SERVER_ERROR', requestId },
++    });
++  }
++  const code = protocolCodeByStatus[error.details.status] ?? 'INTERNAL_SERVER_ERROR';
+   return new ORPCError(code, {
+     message: error.details.detail || error.details.title,
+-    data: { code: error.details.code, requestId: error.details.instance },
++    data: { code: error.details.code, requestId: error.details.instance ?? requestId },
+   });
+ }
+ 
+@@ -33,17 +36,17 @@ export function toORPCError(error: unknown): unknown {
+  * Bootstrap procedures cannot use the authorization gate that requires an
+  * active bond, but they must still preserve the shared typed error wire.
+  */
+-export const sovereignErrorMiddleware = o.middleware(async ({ next }) => {
++export const sovereignErrorMiddleware = o.middleware(async ({ next, context }) => {
+   try {
+     return await next({});
+   } catch (error) {
+-    if (!(error instanceof SovereignError)) {
++    if (!(error instanceof SovereignError) && !(error instanceof ORPCError)) {
+       console.error('[oRPC] unexpected procedure failure', {
+-        name: error instanceof Error ? error.name : 'unknown',
+-        message: error instanceof Error ? error.message : String(error),
++        ...toSafeErrorTelemetry(error, 'INTERNAL_SERVER_ERROR', 500),
++        requestId: context.requestId,
+       });
+     }
+-    throw toORPCError(error);
++    throw toORPCError(error, context.requestId);
+   }
+ });
+ 
+@@ -122,6 +125,43 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+     typeof procedureInput.userId === 'string' ? procedureInput.userId : undefined;
+   const selfScopedTargetId = requestedUserId ?? context.user.id;
+   const authorizationFacts: Record<string, unknown> = {};
++  if (resourceType === 'GradeMark' && (cedarAction === 'grade' || cedarAction === 'publish')) {
++    Object.assign(
++      authorizationFacts,
++      await resolveGradeMarkAuthority(context, procedureInput, cedarAction),
++    );
++  }
++  const routePath = procedure['~orpc'].route.path;
++  const classroomChild =
++    routePath === educationalORPCContract.updateMaterial.path
++      ? 'material'
++      : routePath === educationalORPCContract.updateAssignment.path
++        ? 'assignment'
++        : undefined;
++  if (resourceType === 'Classroom' && classroomChild) {
++    if (!context.db) {
++      throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Database is unavailable.' });
++    }
++    const childId = procedureInput.id;
++    if (typeof childId !== 'string') {
++      throw new ORPCError('BAD_REQUEST', { message: 'A resource identifier is required.' });
++    }
++    const lookup = { where: { id: childId }, select: { classroom_id: true } } as const;
++    const child =
++      classroomChild === 'material'
++        ? await context.db.material.findUnique(lookup)
++        : await context.db.assignment.findUnique(lookup);
++    if (!child) throw new ORPCError('NOT_FOUND', { message: 'Resource was not found.' });
++    const classroom = await context.db.classroom.findUnique({
++      where: { id: child.classroom_id },
++      select: { id: true, school_id: true },
++    });
++    if (!classroom) throw new ORPCError('NOT_FOUND', { message: 'Classroom was not found.' });
++    if (classroom.school_id !== (context.schoolId ?? null)) {
++      throw new ORPCError('FORBIDDEN', { message: 'Resource is outside the active school.' });
++    }
++    authorizationFacts.classroomId = classroom.id;
++  }
+   if (context.db && resourceType === 'ClassroomNote' && !procedureInput.classroomId) {
+     const noteId = typeof procedureInput.id === 'string' ? procedureInput.id : undefined;
+     if (noteId) {
+@@ -173,32 +213,34 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+       ? verifiedClassroomIds[0]
+       : undefined;
+   const resourceId =
+-    resourceType === 'User'
+-      ? context.user.id
+-      : resourceType === 'School'
+-        ? context.schoolId || 'school_institutional'
+-        : resourceType === 'AssignmentSubmission'
+-          ? (typeof facts.id === 'string' && facts.id) ||
+-            (typeof facts.assignmentId === 'string' && facts.assignmentId) ||
+-            context.schoolId ||
+-            'school_institutional'
+-          : resourceType === 'Classroom'
+-            ? (typeof facts.classroomId === 'string' && facts.classroomId) ||
+-              (typeof facts.id === 'string' && facts.id) ||
+-              (context.capacity === 'student' && defaultVerifiedClassroomId) ||
++    resourceType === 'OperationReceipt'
++      ? String(facts.operationId ?? facts.idempotencyKey ?? context.user.id)
++      : resourceType === 'User'
++        ? context.user.id
++        : resourceType === 'School'
++          ? context.schoolId || 'school_institutional'
++          : resourceType === 'AssignmentSubmission'
++            ? (typeof facts.id === 'string' && facts.id) ||
++              (typeof facts.assignmentId === 'string' && facts.assignmentId) ||
+               context.schoolId ||
+               'school_institutional'
+-            : (selfScopedResource && selfScopedTargetId) ||
+-              (typeof facts.id === 'string' && facts.id) ||
+-              (typeof facts.gradeClassId === 'string' && facts.gradeClassId) ||
+-              (typeof facts.classroomId === 'string' && facts.classroomId) ||
+-              (typeof facts.studentId === 'string' && facts.studentId) ||
+-              (typeof facts.commentId === 'string' && facts.commentId) ||
+-              (typeof facts.postId === 'string' && facts.postId) ||
+-              (typeof facts.groupId === 'string' && facts.groupId) ||
+-              (typeof facts.targetUserId === 'string' && facts.targetUserId) ||
+-              context.schoolId ||
+-              'school_institutional';
++            : resourceType === 'Classroom'
++              ? (typeof facts.classroomId === 'string' && facts.classroomId) ||
++                (typeof facts.id === 'string' && facts.id) ||
++                (context.capacity === 'student' && defaultVerifiedClassroomId) ||
++                context.schoolId ||
++                'school_institutional'
++              : (selfScopedResource && selfScopedTargetId) ||
++                (typeof facts.id === 'string' && facts.id) ||
++                (typeof facts.gradeClassId === 'string' && facts.gradeClassId) ||
++                (typeof facts.classroomId === 'string' && facts.classroomId) ||
++                (typeof facts.studentId === 'string' && facts.studentId) ||
++                (typeof facts.commentId === 'string' && facts.commentId) ||
++                (typeof facts.postId === 'string' && facts.postId) ||
++                (typeof facts.groupId === 'string' && facts.groupId) ||
++                (typeof facts.targetUserId === 'string' && facts.targetUserId) ||
++                context.schoolId ||
++                'school_institutional';
+   const request = {
+     principal: context.principal,
+     action: cedarAction,
+@@ -206,7 +248,9 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+       id: resourceId,
+       type: resourceType,
+       attributes: {
+-        ...(resourceType !== 'School' && { school_id: context.schoolId }),
++        ...(resourceType === 'OperationReceipt' && { account_id: context.user.id }),
++        ...(resourceType !== 'School' &&
++          resourceType !== 'OperationReceipt' && { school_id: context.schoolId }),
+         ...(resourceType === 'Classroom' &&
+           typeof facts.teacherId === 'string' && { teacher_id: facts.teacherId }),
+         ...(resourceType === 'Announcement' &&
+@@ -229,11 +273,15 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+             grade_class_id: procedureInput.gradeClassId,
+           }),
+         ...(resourceType === 'GradeMark' &&
+-          typeof procedureInput.gradeClassId === 'string' && {
+-            grade_class_id: procedureInput.gradeClassId,
++          typeof facts.gradeClassId === 'string' && {
++            grade_class_id: facts.gradeClassId,
+           }),
+         ...(resourceType === 'GradeMark' &&
+-          typeof procedureInput.schoolId === 'string' && { school_id: procedureInput.schoolId }),
++          typeof facts.schoolId === 'string' && { school_id: facts.schoolId }),
++        ...(resourceType === 'GradeMark' &&
++          typeof authorizationFacts.teacherId === 'string' && {
++            teacher_id: authorizationFacts.teacherId,
++          }),
+         ...([
+           'Grade',
+           'GradeMark',
+@@ -326,7 +374,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
+   try {
+     result = await next({});
+   } catch (error) {
+-    throw toORPCError(error);
++    throw toORPCError(error, context.requestId);
+   }
+   console.info(
+     JSON.stringify({
+diff --git a/packages/core/src/api/educational.contract.ts b/packages/core/src/api/educational.contract.ts
+index 16427a2b8..99749990a 100644
+--- a/packages/core/src/api/educational.contract.ts
++++ b/packages/core/src/api/educational.contract.ts
+@@ -6,6 +6,28 @@ import {
+ } from '@repo/core/logic/schemas/classroom-note.schema';
+ import { z } from 'zod';
+ 
++export const ASSIGNMENT_SUBMISSION_CAPABILITY = 'assignment.submit' as const;
++export const OperationReceiptResultSchema = z.object({ submissionId: z.uuid() });
++export const OperationReceiptResponseSchema = z.strictObject({
++  operationId: z.uuid(),
++  capability: z.literal(ASSIGNMENT_SUBMISSION_CAPABILITY),
++  status: z.enum(['pending', 'committed', 'failed', 'conflict']),
++  result: OperationReceiptResultSchema.nullable(),
++  errorCode: z.enum(['OPERATION_FAILED', 'OPERATION_CONFLICT']).nullable(),
++  createdAt: z.iso.datetime(),
++  updatedAt: z.iso.datetime(),
++});
++
++const classroomResponse = ClassroomSchema.extend({
++  teacher_name: z.string().nullable(),
++  student_count: z.number().int().nonnegative().optional(),
++  lesson_count: z.number().int().nonnegative().optional(),
++});
++
++const classroomNoteResponse = ClassroomNoteSchema.extend({
++  author_name: z.string().nullable(),
++});
++
+ const classroomAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+   ({
+     policy: { action, subject: 'Classroom' },
+@@ -90,6 +112,35 @@ const submission = z.object({
+  * [LOUD-FAILURE] Methods must be explicitly mapped in the contract to be exposed via POA.
+  */
+ export const educationalContract = {
++  getOperationReceipt: {
++    method: 'get',
++    path: '/educational/operations/:operationId',
++    request: { params: z.strictObject({ operationId: z.uuid() }) },
++    responses: {
++      200: {
++        schema: OperationReceiptResponseSchema,
++        description: 'Account-owned operation outcome',
++      },
++    },
++    metadata: { policy: { action: 'read', subject: 'OperationReceipt' } },
++  },
++  getOperationReceiptByKey: {
++    method: 'get',
++    path: '/educational/operation-receipts/by-key',
++    request: {
++      query: z.strictObject({
++        capability: z.literal(ASSIGNMENT_SUBMISSION_CAPABILITY),
++        idempotencyKey: z.uuid(),
++      }),
++    },
++    responses: {
++      200: {
++        schema: OperationReceiptResponseSchema,
++        description: 'Account-owned outcome by caller-known key',
++      },
++    },
++    metadata: { policy: { action: 'read', subject: 'OperationReceipt' } },
++  },
+   getByTeacher: {
+     method: 'get',
+     path: '/educational/classrooms/by-teacher',
+@@ -102,7 +153,7 @@ export const educationalContract = {
+     },
+     responses: {
+       200: {
+-        schema: z.array(ClassroomSchema),
++        schema: z.array(classroomResponse),
+         description: 'Retrieve classrooms by teacher',
+       },
+     },
+@@ -119,7 +170,7 @@ export const educationalContract = {
+     },
+     responses: {
+       200: {
+-        schema: z.array(ClassroomSchema),
++        schema: z.array(classroomResponse),
+         description: 'Retrieve classrooms by student',
+       },
+     },
+@@ -153,7 +204,7 @@ export const educationalContract = {
+     },
+     responses: {
+       200: {
+-        schema: ClassroomSchema,
++        schema: classroomResponse,
+         description: 'Retrieve a single classroom',
+       },
+     },
+@@ -177,7 +228,7 @@ export const educationalContract = {
+         academicYear: z.string().optional().nullable(),
+       }),
+     },
+-    responses: { 201: { schema: ClassroomSchema, description: 'Create classroom' } },
++    responses: { 201: { schema: classroomResponse, description: 'Create classroom' } },
+     metadata: classroomAuthority('create'),
+   },
+ 
+@@ -199,7 +250,7 @@ export const educationalContract = {
+         isArchived: z.boolean().optional(),
+       }),
+     },
+-    responses: { 200: { schema: ClassroomSchema, description: 'Update classroom' } },
++    responses: { 200: { schema: classroomResponse, description: 'Update classroom' } },
+     metadata: classroomAuthority('update'),
+   },
+ 
+@@ -510,7 +561,7 @@ export const educationalContract = {
+     },
+     responses: {
+       200: {
+-        schema: z.array(ClassroomNoteSchema),
++        schema: z.array(classroomNoteResponse),
+         description: 'Retrieve classroom notes',
+       },
+     },
+@@ -526,7 +577,7 @@ export const educationalContract = {
+     },
+     responses: {
+       200: {
+-        schema: z.array(ClassroomNoteSchema),
++        schema: z.array(classroomNoteResponse),
+         description: 'Retrieve classroom notes snapshot',
+       },
+     },
+@@ -541,7 +592,7 @@ export const educationalContract = {
+     },
+     responses: {
+       201: {
+-        schema: ClassroomNoteSchema,
++        schema: classroomNoteResponse,
+         description: 'Classroom note created successfully',
+       },
+     },
+@@ -561,7 +612,7 @@ export const educationalContract = {
+     },
+     responses: {
+       200: {
+-        schema: ClassroomNoteSchema,
++        schema: classroomNoteResponse,
+         description: 'Classroom note updated successfully',
+       },
+     },
+@@ -575,6 +626,10 @@ export const educationalContract = {
+       params: z.strictObject({ id: z.uuid() }),
+     },
+     responses: {
++      200: {
++        schema: z.strictObject({ success: z.literal(true) }),
++        description: 'Classroom note deletion acknowledged',
++      },
+       204: {
+         schema: z.null(),
+         description: 'Classroom note deleted successfully',
+diff --git a/packages/policies/src/__tests__/evaluator.test.ts b/packages/policies/src/__tests__/evaluator.test.ts
+index 635dc4cdc..8b53c7606 100644
+--- a/packages/policies/src/__tests__/evaluator.test.ts
++++ b/packages/policies/src/__tests__/evaluator.test.ts
+@@ -12,6 +12,79 @@ const { privateKey: snapshotPrivateKey } = generateKeyPairSync('ed25519');
+ const snapshotSigningKey = snapshotPrivateKey.export({ format: 'pem', type: 'pkcs8' }).toString();
+ 
+ describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fast'] }, () => {
++  it('limits ordinary operation receipt reads to the account owner', () => {
++    const request: AuthRequest = {
++      principal: {
++        type: 'teacher',
++        id: 'owner',
++        attributes: { capacity: 'teacher', school_id: 'school-a' },
++      },
++      action: 'read',
++      resource: { id: 'receipt', type: 'OperationReceipt', attributes: { account_id: 'owner' } },
++    };
++    expect(check(request).permitted).toBe(true);
++    expect(
++      check({
++        ...request,
++        resource: { ...request.resource, attributes: { account_id: 'other-owner' } },
++      }).permitted,
++    ).toBe(false);
++    expect(check({ ...request, action: 'update' }).permitted).toBe(false);
++  });
++
++  it.each(['grade', 'publish'])(
++    'authorizes explicit GradeMark %s using verified teacher ownership without device elevation',
++    (action) => {
++      const request: AuthRequest = {
++        principal: {
++          type: 'teacher',
++          id: 'teacher-1',
++          attributes: {
++            capacity: 'teacher',
++            school_id: 'school-a',
++            classroom_ids: ['grade-class-1'],
++          },
++        },
++        action,
++        resource: {
++          type: 'GradeMark',
++          id: 'grade-mark-1',
++          attributes: {
++            school_id: 'school-a',
++            grade_class_id: 'grade-class-1',
++            teacher_id: 'teacher-1',
++          },
++        },
++        context: { device_trust: 'standard', network_zone: 'public' },
++      };
++      expect(check(request).permitted).toBe(true);
++      expect(
++        check({
++          ...request,
++          resource: {
++            ...request.resource,
++            attributes: {
++              ...request.resource.attributes,
++              teacher_id: 'another-teacher',
++            },
++          },
++        }).permitted,
++      ).toBe(false);
++      expect(
++        check({
++          ...request,
++          principal: {
++            ...request.principal,
++            attributes: {
++              ...request.principal.attributes,
++              capacity: 'student',
++            },
++          },
++        }).permitted,
++      ).toBe(false);
++    },
++  );
++
+   it('enforces static type boundary on authorization check engine (T16 expectTypeOf)', () => {
+     expectTypeOf(check).toBeFunction();
+     expectTypeOf(check).parameter(0).toMatchTypeOf<AuthRequest>();
+@@ -23,22 +96,25 @@ describe('Sovereign Authorization Engine', { tags: ['policies', 'security', 'fas
+   test.for([
+     { capacity: 'admin', expectedPermitted: true },
+     { capacity: 'stranger', expectedPermitted: false },
+-  ])('parametric capability check for root platform actions with role: $capacity (T17 test.for)', ({ capacity, expectedPermitted }) => {
+-    const res = check({
+-      principal: {
+-        type: capacity,
+-        id: `user-${capacity}`,
+-        attributes: { school_id: 'school-a', capacity },
+-      },
+-      action: 'delete',
+-      resource: {
+-        type: 'Classroom',
+-        id: 'classroom-global-target',
+-        attributes: { school_id: 'school-b' },
+-      },
+-    });
+-    expect(res.permitted).toBe(expectedPermitted);
+-  });
++  ])(
++    'parametric capability check for root platform actions with role: $capacity (T17 test.for)',
++    ({ capacity, expectedPermitted }) => {
++      const res = check({
++        principal: {
++          type: capacity,
++          id: `user-${capacity}`,
++          attributes: { school_id: 'school-a', capacity },
++        },
++        action: 'delete',
++        resource: {
++          type: 'Classroom',
++          id: 'classroom-global-target',
++          attributes: { school_id: 'school-b' },
++        },
++      });
++      expect(res.permitted).toBe(expectedPermitted);
++    },
++  );
+ 
+   it('allows a non-wanderer contributor to submit only as themselves', () => {
+     const contributor = {
+diff --git a/packages/policies/src/policies/platform/dataBoundaries.cedar b/packages/policies/src/policies/platform/dataBoundaries.cedar
+index 5a80b0969..27233fd2b 100644
+--- a/packages/policies/src/policies/platform/dataBoundaries.cedar
++++ b/packages/policies/src/policies/platform/dataBoundaries.cedar
+@@ -2,6 +2,10 @@
+ // as first-class ZenStack models. ZenStack remains the object/data boundary;
+ // these Cedar rules provide the procedure-level authorization gate.
+ 
++permit(principal, action == Action::"read", resource) when {
++  resource is OperationReceipt && resource.account_id == principal.id
++};
++
+ permit(
+   principal,
+   action == Action::"read",
+diff --git a/packages/policies/src/schema/schema.cedarschema b/packages/policies/src/schema/schema.cedarschema
+index 8981ad038..e499b392a 100644
+--- a/packages/policies/src/schema/schema.cedarschema
++++ b/packages/policies/src/schema/schema.cedarschema
+@@ -101,9 +101,15 @@ entity GradeMark {
+   term_id?: String,
+   subject_id?: String,
+   student_id?: String,
++  teacher_id?: String,
+   graded_by?: String
+ };
+ 
++entity OperationReceipt {
++  id: String,
++  account_id: String
++};
++
+ entity Assignment {
+   id: String,
+   school_id?: String,
+@@ -374,12 +380,18 @@ type SecurityContext = {
+   network_zone?: String
+ };
+ 
++action "grade", "publish" appliesTo {
++  principal: [User],
++  resource: [GradeMark],
++  context: SecurityContext
++};
++
+ action "read", "create", "update", "delete", "use_ai" appliesTo {
+     principal: [User],
+   resource: [
+     User, Student, GratitudeGift, School, Classroom, AttendanceRecord, DailyAttendance, AttendanceSession, Grade, GradeMark, Assignment, Lesson, Material,
+     StaffLeave, MoodLog, FireJournal, LearningReflection, InventoryItem, InventoryRequest, Group, Post, Ledger, Accounting, Payments, MappingTopology,
+-    Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts,
++    Guardian, SentinelAuditLog, OperationReceipt, JoyMoments, GratitudeEntries, EnergyForecasts,
+     UserRewards, WhisperedMoment,
+     PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent, DecisionJournal,
+     Manifesto, ManifestoEndorsement, AssignmentSubmission, Calendar, Notification, PrincipalNote, Announcement,

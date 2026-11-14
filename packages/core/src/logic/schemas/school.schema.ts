@@ -25,6 +25,33 @@ export const SchoolSchema = makeModelSchema('School')
   .catchall(z.unknown());
 
 /**
+ * What a school is, organisationally (Neev, 2026-11-13). Institutional schools (government and
+ * the like) already exist in the national registry (`EduSchool`, with their official
+ * `SchoolType` classification): a principal chooses one and asks to connect. Commercial ones
+ * (private, international, tuition) are created by their owner. More kinds, such as a
+ * sanctuary, join this list when they exist. Not stored on `School` yet: the model has no column.
+ */
+export const SchoolKindSchema = z.enum(['institutional', 'commercial']);
+export type SchoolKind = z.infer<typeof SchoolKindSchema>;
+
+/**
+ * The stage of schooling a school covers, within its kind: one list for every path that
+ * collects it (the union of what the provisioning and principal setup machines used). Stored
+ * in `School.type`, a free-text column.
+ */
+export const SchoolLevelSchema = z.enum([
+  'k12',
+  'primary',
+  'secondary',
+  'mixed',
+  'vocational',
+  'higher_ed',
+  // From principal setup's list; may move to `SchoolKindSchema` when sanctuary becomes a kind.
+  'sanctuary',
+]);
+export type SchoolLevel = z.infer<typeof SchoolLevelSchema>;
+
+/**
  * SectionSchema - A department or level within a school.
  * Derived from ZenStack Model Schema.
  */

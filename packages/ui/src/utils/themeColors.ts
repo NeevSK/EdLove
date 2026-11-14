@@ -7,7 +7,7 @@
  * maintaining a second parallel theme system.
  */
 
-import type { TemporalPhase } from '../context/types';
+import type { Phase } from '../theme/types';
 import {
   type ResolvedThemeTokens,
   resolveClassicTokens,
@@ -88,7 +88,7 @@ export function toThemeColors(source: ThemeColorSource): ThemeColors {
  * Legacy helper retained for compatibility. It now delegates to the canonical
  * phase resolver instead of maintaining a separate modulation path.
  */
-export function getThemeColors(isDark: boolean, temporalPhase?: TemporalPhase): ThemeColors {
+export function getThemeColors(isDark: boolean, temporalPhase?: Phase): ThemeColors {
   const tokens = temporalPhase
     ? resolvePhaseTokens(temporalPhase, isDark)
     : resolveClassicTokens(isDark);

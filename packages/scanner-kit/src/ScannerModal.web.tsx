@@ -42,12 +42,12 @@ export default function ScannerModal({
 
   // Reset state each time the modal opens and focus the input
   useEffect(() => {
-    if (visible) {
-      setValue('');
-      setError('');
-      // Small delay so the modal animation completes before focusing
-      setTimeout(() => inputRef.current?.focus(), 300);
-    }
+    if (!visible) return;
+    setValue('');
+    setError('');
+    // Small delay so the modal animation completes before focusing
+    const timer = setTimeout(() => inputRef.current?.focus(), 300);
+    return () => clearTimeout(timer);
   }, [visible]);
 
   const handleSubmit = () => {

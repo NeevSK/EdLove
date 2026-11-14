@@ -13,7 +13,7 @@
  * - Configuration changes
  */
 
-import { ORPCError } from '@orpc/server';
+import { ORPCError } from '@orpc/client';
 
 // Local type to avoid cross-package dependency
 interface ORPCContext {

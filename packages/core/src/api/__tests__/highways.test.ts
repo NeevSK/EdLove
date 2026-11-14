@@ -18,9 +18,17 @@ describe('data highways', () => {
 
   it('fails loudly when browser bootstrap touches PowerSync too early', () => {
     vi.stubGlobal('window', {});
+    vi.stubGlobal('document', {});
 
     expect(() => assertPowerSyncBootstrapReady()).toThrow(
       /PowerSync bootstrap guard: browser code touched PowerSync before the app was ready/i,
     );
+  });
+
+  it('allows the React Native Hermes global shape', () => {
+    vi.stubGlobal('window', {});
+    vi.stubGlobal('document', undefined);
+
+    expect(() => assertPowerSyncBootstrapReady()).not.toThrow();
   });
 });

@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 
 export const GUEST_LEASE_DAYS = 15;
 export const GUEST_LEASE_REMINDER_DAYS = [1, 3, 6, 10, 15] as const;
@@ -55,11 +55,15 @@ export function getGuestLeaseStatus(lease: GuestLease, now = new Date()): GuestL
     lease,
     day,
     isExpired,
-    reminderDay: reminderDay && !lease.dismissedReminderDays.includes(reminderDay) ? reminderDay : null,
+    reminderDay:
+      reminderDay && !lease.dismissedReminderDays.includes(reminderDay) ? reminderDay : null,
   };
 }
 
-export async function getOrCreateGuestLease(userId: string, now = new Date()): Promise<GuestLeaseStatus> {
+export async function getOrCreateGuestLease(
+  userId: string,
+  now = new Date(),
+): Promise<GuestLeaseStatus> {
   const expired = await SafeZustandStorage.getItem(expiredKey(userId));
   if (expired) {
     const lease = createLease(now);
@@ -107,7 +111,9 @@ export async function registerGuestLeaseDataKey(userId: string, storageKey: stri
   let keys: string[] = [];
   try {
     const parsed: unknown = raw ? JSON.parse(raw) : [];
-    keys = Array.isArray(parsed) ? parsed.filter((key): key is string => typeof key === 'string') : [];
+    keys = Array.isArray(parsed)
+      ? parsed.filter((key): key is string => typeof key === 'string')
+      : [];
   } catch {
     keys = [];
   }
@@ -120,9 +126,14 @@ export async function clearGuestLeaseData(userId: string): Promise<void> {
   let keys: string[] = [];
   try {
     const parsed: unknown = raw ? JSON.parse(raw) : [];
-    keys = Array.isArray(parsed) ? parsed.filter((key): key is string => typeof key === 'string') : [];
+    keys = Array.isArray(parsed)
+      ? parsed.filter((key): key is string => typeof key === 'string')
+      : [];
   } catch {
     keys = [];
   }
-  await Promise.all([...keys.map((key) => SafeZustandStorage.removeItem(key)), SafeZustandStorage.removeItem(dataKeysKey(userId))]);
+  await Promise.all([
+    ...keys.map((key) => SafeZustandStorage.removeItem(key)),
+    SafeZustandStorage.removeItem(dataKeysKey(userId)),
+  ]);
 }

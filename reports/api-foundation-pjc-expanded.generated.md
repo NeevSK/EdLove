@@ -1,0 +1,2219 @@
+---
+title: "API journey expanded projection"
+status: active
+created: 2026-10-30
+updated: 2026-10-30
+author: Codex
+tags: [pjc, generated]
+---
+
+Generated from packages/core/src/flows/pjc/api.foundation.json; regenerate through the PJC CLI.
+
+# Product and Journey Catalog
+
+- **record**
+  - **id:** journey:api.execute
+  - **title:** API admission, execution and recovery
+  - **situation:** A user or delegated agent invokes the existing API while identity, authorization relationships or persistence may be unavailable.
+  - **outcome:** A validated result or explicit rejection/recovery state.
+  - **links**
+    - (none)
+  - **context:** other
+  - **preconditions**
+    - Verified identity and current authority for protected operations.
+  - **entry:** step:api.request
+  - **development**
+    - **mode:** brownfield
+    - **existingBehavior**
+      - Hono identity bridge, Cedar procedures, operation receipts and AI providers already exist.
+    - **invariants**
+      - No actor identity or school authority comes from an LLM or client hint.
+      - Read transport cannot invoke mutations.
+      - A retry key is not proof of server idempotency.
+      - Evidence applies only to the named seam and substitutions.
+      - Required authority lookup failures reject the operation instead of producing a partial principal.
+      - Production admission uses shared rate limits; invalid configuration cannot silently select memory.
+    - **openQuestions**
+      - Real-Postgres Cedar/RLS authorization proofs still require an isolated policy-test database; the narrow receipt and bucket proof is recorded in the API guide.
+      - Shared rate-limit tables are reachable; deployed proxy trust and cross-process contention remain unverified.
+      - Bootstrap Cedar coverage and feature flag enforcement require procedure-specific audits.
+      - Provider billing, retention and deployment canaries require external-system evidence.
+      - The latest strict compiler audit reports 636 diagnostics; the API config still disables strict checks. Privacy and daily content use native SDK inference, while the remaining server contract converter and client index signatures still erase types.
+      - Daily content caps recent lookbacks at 366 days, but pagination, full query-cost budgets, all-role authorization and real database execution remain unverified.
+      - Ordinary reward points, badge and achievement mutations still require concurrency and idempotency verification; removing false-success catches does not make those writes atomic.
+      - The new worktree todos router required a builder syntax correction to restore compiled startup. Its CRUD, Cedar coverage and database correctness remain unverified by liveness or the existing boundary suite.
+      - WebSocket Node transport scenarios use real sockets with substituted identity, Cedar and database; browser authentication negotiation and actual Bun socket traffic remain unverified.
+      - AdMob grants use one account-locked ORM transaction and explicit 503 failures. Real Postgres rollback and owner policy denial were exercised; contention, committed replay, provider delivery and historical partial-receipt reconciliation remain unverified.
+      - MCP catalog registration caches immutable schema conversions through the SDK extension. The 2026-10-30 full host suite no longer reproduces the catalog deadlines; sustained production load remains unverified.
+    - **integrationPoints**
+      - apps/sanctuary-api/src/core/app.ts
+      - apps/sanctuary-api/src/core/orpcMiddleware.ts
+      - apps/sanctuary-api/src/doors/mcp.ts
+      - packages/core/src/api/orpcClient.ts
+  - **steps**
+    -
+      - **id:** step:api.request
+      - **title:** request
+      - **interaction:** Send a validated command with captured account context.
+      - **terminal:** false
+      - **links**
+        - (none)
+    -
+      - **id:** step:api.result
+      - **title:** result
+      - **interaction:** Consume the scoped result.
+      - **terminal:** true
+      - **links**
+        - (none)
+    -
+      - **id:** step:api.recovery
+      - **title:** recovery
+      - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+      - **terminal:** true
+      - **links**
+        - (none)
+  - **transitions**
+    -
+      - **id:** transition:api.daily\_content\_read
+      - **title:** Read validated daily content
+      - **from:** step:api.request
+      - **to:** step:api.result
+      - **action:** Validate the date or lookback, evaluate Cedar and execute the existing parameterized read.
+      - **feedback:** Return validated content with normalized driver timestamps, or the existing absent-content result for an empty query.
+      - **links**
+        - binding:api.daily\_content\_handler
+    -
+      - **id:** transition:api.daily\_content\_reject
+      - **title:** Reject invalid daily-content requests or storage results
+      - **from:** step:api.request
+      - **to:** step:api.recovery
+      - **action:** Reject malformed date/lookback input before SQL or propagate malformed query results and storage exceptions.
+      - **feedback:** Return BAD\_REQUEST for invalid input or a safe INTERNAL\_SERVER\_ERROR for invalid storage, without private details or fabricated content.
+      - **links**
+        - binding:api.daily\_content\_test
+    -
+      - **id:** transition:api.privacy\_reject
+      - **title:** Reject an invalid privacy operation or storage result
+      - **from:** step:api.request
+      - **to:** step:api.recovery
+      - **action:** Reject invalid envelopes, other-owner or history-mutation authority, malformed stored rows and inserts without a stored result.
+      - **feedback:** Return a safe native error without private storage details or false success.
+      - **links**
+        - binding:api.privacy\_api\_test
+        - binding:api.privacy\_policy\_test
+    -
+      - **id:** transition:api.privacy\_owner
+      - **title:** Read or append the authenticated user's privacy ledger
+      - **from:** step:api.request
+      - **to:** step:api.result
+      - **action:** Validate the native contract, derive the owner from authenticated context, evaluate Cedar and execute the owner-scoped SQL.
+      - **feedback:** Return a schema-validated ledger or stored entry; legitimate absence remains an empty ledger.
+      - **links**
+        - binding:api.privacy\_handler
+        - binding:api.privacy\_policy
+    -
+      - **id:** transition:api.native\_failure
+      - **title:** Expose a dependency failure through the native protocol
+      - **from:** step:api.request
+      - **to:** step:api.recovery
+      - **action:** Reject failed admission or reward storage without fabricating an empty success.
+      - **feedback:** Return a safe native oRPC error with its standard code; retain private dependency details on neither the wire nor safe logs.
+      - **links**
+        - binding:api.native\_admission
+        - binding:api.regular\_rewards\_test
+    -
+      - **id:** transition:api.reward\_commit
+      - **title:** Persist a verified reward
+      - **from:** step:api.request
+      - **to:** step:api.result
+      - **action:** Verify the signed reward and atomically record its receipt and balance increment, or acknowledge a committed replay or cap receipt.
+      - **feedback:** Return a successful acknowledgement only after the ORM transaction resolves.
+      - **links**
+        - binding:api.rewards
+    -
+      - **id:** transition:api.reward\_unavailable
+      - **title:** Reject unavailable reward dependencies
+      - **from:** step:api.request
+      - **to:** step:api.recovery
+      - **action:** Fail verification-key lookup or persistence without acknowledging a grant.
+      - **feedback:** Return 503 with safe failure details; retry using the same provider transaction ID.
+      - **links**
+        - binding:api.rewards
+    -
+      - **id:** transition:api.http
+      - **title:** http boundary
+      - **from:** step:api.request
+      - **to:** step:api.result
+      - **action:** Evaluate http boundary
+      - **feedback:** Return a safe result or explicit recovery information.
+      - **links**
+        - (none)
+    -
+      - **id:** transition:api.mcp
+      - **title:** mcp boundary
+      - **from:** step:api.request
+      - **to:** step:api.result
+      - **action:** Evaluate mcp boundary
+      - **feedback:** Return a safe result or explicit recovery information.
+      - **links**
+        - (none)
+    -
+      - **id:** transition:api.entitlement
+      - **title:** entitlement boundary
+      - **from:** step:api.request
+      - **to:** step:api.recovery
+      - **action:** Evaluate entitlement boundary
+      - **feedback:** Return a safe result or explicit recovery information.
+      - **links**
+        - (none)
+    -
+      - **id:** transition:api.ai\_cancel
+      - **title:** ai\_cancel boundary
+      - **from:** step:api.request
+      - **to:** step:api.recovery
+      - **action:** Evaluate ai\_cancel boundary
+      - **feedback:** Return a safe result or explicit recovery information.
+      - **links**
+        - (none)
+    -
+      - **id:** transition:api.retry
+      - **title:** retry boundary
+      - **from:** step:api.request
+      - **to:** step:api.recovery
+      - **action:** Evaluate retry boundary
+      - **feedback:** Return a safe result or explicit recovery information.
+      - **links**
+        - (none)
+  - **requirements**
+    -
+      - **id:** requirement:api.daily\_content\_contract
+      - **title:** Daily-content reads cannot fabricate valid data
+      - **statement:** Use native SDK contract inference, validate dates and the 1–366 day operational lookback budget, retain parameterized SQL and Cedar, and reject invalid stored results instead of silently coercing them.
+      - **classification:** quality
+      - **origin:** source
+      - **links**
+        - binding:api.daily\_content\_contract
+        - binding:api.daily\_content\_handler
+    -
+      - **id:** requirement:api.privacy\_owner
+      - **title:** Privacy ownership is independent of institutional role
+      - **statement:** Use native SDK contract implementation and client inference. Preserve authenticated-owner SQL predicates and explicit Cedar read/create checks; institutional or platform roles cannot confer cross-owner access or mutate ledger history.
+      - **classification:** constraint
+      - **origin:** source
+      - **links**
+        - binding:api.privacy\_contract
+        - binding:api.privacy\_handler
+        - binding:api.privacy\_policy
+    -
+      - **id:** requirement:api.contract\_composition
+      - **title:** Malformed declarations must fail during composition
+      - **statement:** Primitive, null, function and array contract members cannot become empty procedures. Retain declared input/output validation and native contract support.
+      - **classification:** constraint
+      - **origin:** source
+      - **links**
+        - binding:api.contract\_conversion
+        - binding:api.contract\_test
+    -
+      - **id:** requirement:api.mcp\_schema\_cache
+      - **title:** MCP metadata reuse cannot reuse caller authority
+      - **statement:** Reuse immutable schema conversion by identity and direction while providing a distinct caller context to each per-request SDK server. Close servers even when registration fails.
+      - **classification:** quality
+      - **origin:** source
+      - **links**
+        - binding:api.mcp
+        - binding:api.mcp\_door
+    -
+      - **id:** requirement:api.explicit\_failure
+      - **title:** Dependency failures remain explicit
+      - **statement:** Required storage and authority lookup failures must produce explicit unavailable feedback and safe telemetry; they must not become successful empty data or a partial principal.
+      - **origin:** user
+      - **links**
+        - binding:api.readiness
+        - binding:api.authority\_failure
+        - binding:api.rewards
+        - scenario:api.reward\_unavailable
+  - **bindings**
+    -
+      - **id:** binding:api.daily\_content\_contract
+      - **title:** Native daily-content contract
+      - **category:** api
+      - **reference:** packages/core/src/api/dailyContent.orpc.contract.ts
+      - **status:** implemented
+      - **note:** Reuses existing schemas and metadata. Other domains still use the legacy untyped converter.
+      - **links**
+        - requirement:api.daily\_content\_contract
+    -
+      - **id:** binding:api.daily\_content\_handler
+      - **title:** Validated daily-content query result boundary
+      - **category:** api
+      - **reference:** apps/sanctuary-api/src/core/handlers/dailyContent.ts
+      - **status:** implemented
+      - **note:** Retains tagged SQL and Cedar while parsing unknown results. No real database, all-role authorization or query-cost assurance is claimed.
+      - **links**
+        - scenario:api.daily\_content\_read
+        - scenario:api.daily\_content\_reject
+    -
+      - **id:** binding:api.daily\_content\_test
+      - **title:** Daily-content boundary and failure assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/daily-content.orpc.test.ts
+      - **status:** implemented
+      - **note:** Real SDK and Cedar; identity and storage substituted. Covers input validation, separated query values, driver normalization, corrupt storage and dependency failures.
+      - **links**
+        - scenario:api.daily\_content\_read
+        - scenario:api.daily\_content\_reject
+    -
+      - **id:** binding:api.daily\_content\_contract\_test
+      - **title:** Daily-content shared-schema and native client type checks
+      - **category:** test
+      - **reference:** packages/core/src/api/\_\_tests\_\_/dailyContent.contract.test.ts
+      - **status:** implemented
+      - **note:** Checks schema identity, metadata and SDK input/output types for both client namespaces; does not execute a deployed route.
+      - **links**
+        - scenario:api.daily\_content\_read
+    -
+      - **id:** binding:api.privacy\_contract
+      - **title:** Native privacy contract using canonical route schemas
+      - **category:** api
+      - **reference:** packages/core/src/api/privacy.orpc.contract.ts
+      - **status:** implemented
+      - **note:** Uses native oc, shared metadata and existing privacy.contract schemas. Other domains still use the untyped converter.
+      - **links**
+        - requirement:api.privacy\_owner
+    -
+      - **id:** binding:api.privacy\_handler
+      - **title:** Typed privacy implementation and row validation
+      - **category:** api
+      - **reference:** apps/sanctuary-api/src/core/handlers/privacy.ts
+      - **status:** implemented
+      - **note:** Uses native implement, Cedar middleware and account-scoped SQL; database rows are unknown until parsed. Real storage and RLS remain unverified.
+      - **links**
+        - scenario:api.privacy\_owner
+    -
+      - **id:** binding:api.privacy\_policy
+      - **title:** Privacy owner and append-only Cedar rules
+      - **category:** authorization
+      - **reference:** packages/policies/src/policies/platform/dataBoundaries.cedar
+      - **status:** implemented
+      - **note:** Explicit forbids override generic platform-admin permission for other-owner and non-read/create ledger operations.
+      - **links**
+        - scenario:api.privacy\_owner
+    -
+      - **id:** binding:api.privacy\_api\_test
+      - **title:** Privacy native boundary and storage result assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/privacy.orpc.test.ts
+      - **status:** implemented
+      - **note:** Real SDK and Cedar WASM with identity and database substituted. Covers owner parameters, trimmed fields, empty reads, malformed rows and unacknowledged inserts.
+      - **links**
+        - scenario:api.privacy\_owner
+    -
+      - **id:** binding:api.privacy\_policy\_test
+      - **title:** Real Cedar owner and role decision assertions
+      - **category:** test
+      - **reference:** packages/policies/src/\_\_tests\_\_/evaluator.test.ts
+      - **status:** implemented
+      - **note:** Real installed WASM evaluator and source policies; synthetic principal/resource attributes. Does not prove source authority of those attributes or live database isolation.
+      - **links**
+        - scenario:api.privacy\_owner
+    -
+      - **id:** binding:api.privacy\_contract\_test
+      - **title:** Privacy shared-schema and SDK client type assertions
+      - **category:** test
+      - **reference:** packages/core/src/api/\_\_tests\_\_/privacy.contract.test.ts
+      - **status:** implemented
+      - **note:** Schema identity, policy/OpenAPI metadata and compiler-checked native input/output inference. Does not establish deployed routes or storage behavior.
+      - **links**
+        - scenario:api.privacy\_owner
+    -
+      - **id:** binding:api.contract\_conversion
+      - **title:** Server contract composition boundary
+      - **category:** api
+      - **reference:** apps/sanctuary-api/src/core/orpc.ts
+      - **status:** implemented
+      - **note:** Rejects malformed declaration members; converter and implementer type erasure remains unresolved.
+      - **links**
+        - requirement:api.contract\_composition
+    -
+      - **id:** binding:api.contract\_test
+      - **title:** Contract conversion and transport assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/contract-conversion.characterization.test.ts
+      - **status:** implemented
+      - **note:** Real SDK conversion, RPC and OpenAPI handlers with synthetic procedures. Does not prove actual domain handlers or database authority.
+      - **links**
+        - requirement:api.contract\_composition
+    -
+      - **id:** binding:api.native\_client
+      - **title:** Unmodified SDK boundary test client
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/orpc-client.ts
+      - **status:** implemented
+      - **note:** Real RPCLink and ORPCError shapes; in-process fetch replaces external network transport.
+      - **links**
+        - scenario:api.native\_failure
+    -
+      - **id:** binding:api.native\_admission
+      - **title:** Single and batch admission error assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/canonical-account.security.test.ts
+      - **status:** implemented
+      - **note:** Real SDK batching and native decoding; identity and database dependencies substituted.
+      - **links**
+        - scenario:api.native\_failure
+    -
+      - **id:** binding:api.regular\_rewards\_test
+      - **title:** Ordinary reward storage failure assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/rewards.orpc.test.ts
+      - **status:** implemented
+      - **note:** Injected storage exceptions and corrupted snapshot, with legitimate empty reads retained. No concurrency or durable-write proof.
+      - **links**
+        - scenario:api.native\_failure
+    -
+      - **id:** binding:api.readiness
+      - **title:** Startup and readiness dependency checks
+      - **category:** failure
+      - **reference:** apps/sanctuary-api/src/core/readiness.ts
+      - **status:** implemented
+      - **note:** Both server entrypoints and health readiness validate the shared admission schema. Does not establish every domain schema, SQL write permission, or deployed traffic.
+      - **links**
+        - (none)
+    -
+      - **id:** binding:api.authority\_failure
+      - **title:** Reject unavailable authorization relationships
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/authorization-context-failure.test.ts
+      - **status:** implemented
+      - **note:** G1 relationship storage substitutions distinguish empty results from lookup failures; this is not real Cedar/RLS evidence.
+      - **links**
+        - (none)
+    -
+      - **id:** binding:api.http
+      - **title:** http executable boundary assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/rpc-method-policy.test.ts
+      - **status:** implemented
+      - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+      - **links**
+        - scenario:api.http
+    -
+      - **id:** binding:api.mcp\_door
+      - **title:** Per-request MCP servers and cached SDK schema conversion
+      - **category:** api
+      - **reference:** apps/sanctuary-api/src/doors/mcp.ts
+      - **status:** implemented
+      - **note:** Uses the installed StandardJsonSchemaConverter through the registrar's converters option. Only schema metadata is cached; caller context and authorization remain per request. Production load behavior is unverified.
+      - **links**
+        - binding:api.mcp
+        - requirement:api.mcp\_schema\_cache
+    -
+      - **id:** binding:api.mcp
+      - **title:** mcp executable boundary assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/mcp-door.test.ts
+      - **status:** implemented
+      - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+      - **links**
+        - scenario:api.mcp
+    -
+      - **id:** binding:api.entitlement
+      - **title:** entitlement executable boundary assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/orpc-entitlement.test.ts
+      - **status:** implemented
+      - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+      - **links**
+        - scenario:api.entitlement
+    -
+      - **id:** binding:api.ai\_cancel
+      - **title:** ai\_cancel executable boundary assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/ai-streaming-resilience.test.ts
+      - **status:** implemented
+      - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+      - **links**
+        - scenario:api.ai\_cancel
+    -
+      - **id:** binding:api.retry
+      - **title:** retry executable boundary assertions
+      - **category:** test
+      - **reference:** packages/core/src/api/\_\_tests\_\_/orpcClient.errors.test.ts
+      - **status:** implemented
+      - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+      - **links**
+        - scenario:api.retry
+    -
+      - **id:** binding:api.database\_proof
+      - **title:** Rollback receipt and isolated rate bucket harness
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/integration/api-foundation.pg.test.ts
+      - **status:** implemented
+      - **note:** Explicit opt-in real Postgres harness. Its G2 run is documented in the API guide; it does not establish Cedar/RLS or deployment assurance.
+      - **links**
+        - binding:api.guide
+    -
+      - **id:** binding:api.rewards
+      - **title:** Verified reward persistence and policy-filtered balance reads
+      - **category:** api
+      - **reference:** apps/sanctuary-api/src/core/routes/adRewards.ts
+      - **status:** implemented
+      - **note:** Account-locked ORM transaction; real rollback was exercised, while contention and provider delivery remain unverified.
+      - **links**
+        - binding:api.rewards\_test
+    -
+      - **id:** binding:api.rewards\_test
+      - **title:** Signed reward callback and failure boundary assertions
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/adRewards.test.ts
+      - **status:** implemented
+      - **note:** Real ECDSA; database transactions, policy decisions and provider-key fetch substituted. Does not prove database rollback or authorization policy execution.
+      - **links**
+        - binding:api.guide
+    -
+      - **id:** binding:api.rewards\_pg
+      - **title:** Real reward ORM rollback and owner-write denial harness
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/integration/ad-reward.pg.test.ts
+      - **status:** implemented
+      - **note:** Explicit opt-in real PostgreSQL proof. Provider key is synthetic and transaction completion is intercepted to force rollback. Does not prove concurrent grants or provider delivery.
+      - **links**
+        - scenario:api.reward\_unavailable
+        - binding:api.rewards\_storage
+    -
+      - **id:** binding:api.rewards\_storage
+      - **title:** Server-owned reward storage migration
+      - **category:** data
+      - **reference:** apps/gurudevi-mobile/supabase/migrations/20261029220000\_verified\_ad\_reward\_storage.sql
+      - **status:** implemented
+      - **note:** Applied to the authorized shared dev/production database; owner-read RLS and explicit client-write revocation. Full Data API RLS scenarios remain unverified.
+      - **links**
+        - binding:api.guide
+    -
+      - **id:** binding:api.guide
+      - **title:** API architecture and release limitations
+      - **category:** documentation
+      - **reference:** apps/sanctuary-api/docs/architecture/api-middleware.md
+      - **status:** implemented
+      - **note:** Operating guidance and unresolved release evidence.
+      - **links**
+        - (none)
+  - **impacts**
+    -
+      - **id:** impact:api.daily\_content\_validation
+      - **title:** Invalid dates and oversized recent lookbacks now reject before SQL
+      - **statement:** Daily-content date inputs require ISO calendar dates and recent lookbacks are capped at 366 days as an operational request budget. Both existing route namespaces remain. Invalid stored values now produce safe errors rather than coerced content.
+      - **origin:** source
+      - **links**
+        - binding:api.daily\_content\_contract
+        - binding:api.daily\_content\_test
+    -
+      - **id:** impact:api.reward\_acknowledgement
+      - **title:** Reward callback acknowledgement requires a committed transaction
+      - **statement:** Provider callbacks now return unavailable when reward persistence fails; balance reads use the existing policy client. Callers must not treat 503 as a recorded grant. Older partial receipts need reconciliation.
+      - **origin:** source
+      - **links**
+        - binding:api.rewards
+        - binding:api.rewards\_test
+  - **observations**
+    -
+      - **id:** observation:api.daily\_content\_native
+      - **title:** Daily-content normalization previously fabricated valid results
+      - **statement:** The handler now uses native SDK contracts and parses unknown query results. Non-array results, invalid content types, null content and string booleans reject rather than becoming empty arrays, motivation or true. The reviewed tagged SQL calls bind values separately; scanner findings alone do not establish injection.
+      - **origin:** source
+      - **links**
+        - binding:api.daily\_content\_handler
+        - binding:api.daily\_content\_test
+        - binding:api.guide
+    -
+      - **id:** observation:api.privacy\_native
+      - **title:** Privacy success paths exposed an incomplete Cedar declaration
+      - **statement:** The privacy API now implements native oRPC contracts using existing canonical schemas. Success-path checks exposed an omitted Cedar appliesTo entry and invalid school attribute projection. Owner-scoped read/create policy and API projection now align; database authorization remains unverified.
+      - **origin:** source
+      - **links**
+        - binding:api.privacy\_contract
+        - binding:api.privacy\_policy
+        - binding:api.privacy\_api\_test
+    -
+      - **id:** observation:api.native\_error\_testing
+      - **title:** Native SDK errors are no longer patched by the test helper
+      - **statement:** The test client uses the installed SDK without prototype or wire mutations. Historical runs under the previous helper do not establish native v2 protocol compatibility. Current native error and batch scenarios use substituted identity and storage.
+      - **origin:** source
+      - **links**
+        - binding:api.native\_client
+        - binding:api.native\_admission
+    -
+      - **id:** observation:api.contract\_erasure
+      - **title:** Runtime validation does not establish compile-time contract safety
+      - **statement:** Malformed primitive contract declarations now fail during composition, but the server converter and implement wrapper still erase handler types. Configured compilation is not strict compilation.
+      - **origin:** source
+      - **links**
+        - binding:api.contract\_conversion
+        - binding:api.contract\_test
+  - **platformDifferences**
+    -
+      - **id:** platform:api.reward\_server
+      - **title:** Server verification and client balance reads
+      - **statement:** The provider-signed callback is a server ingress; browser and mobile balance consumers retain the existing JSON fields and receive explicit 503 during dependency failure. Their UI recovery behavior remains unverified.
+      - **origin:** source
+      - **links**
+        - binding:api.rewards
+      - **platform:** shared
+  - **scenarios**
+    -
+      - **id:** scenario:api.daily\_content\_read
+      - **title:** Native daily content across existing namespaces
+      - **transitions**
+        - transition:api.daily\_content\_read
+      - **expected:** Both namespaces return the canonical DTO, driver dates normalize, nullable authors remain absent, values remain separate from SQL segments and legitimate absence is retained.
+      - **links**
+        - binding:api.daily\_content\_test
+        - binding:api.daily\_content\_contract\_test
+    -
+      - **id:** scenario:api.daily\_content\_reject
+      - **title:** Daily-content invalid input and persistence failure
+      - **transitions**
+        - transition:api.daily\_content\_reject
+      - **expected:** Invalid calendar dates, flattened envelopes and out-of-budget lookbacks reject before SQL. Invalid stored fields, non-array results and storage exceptions reject without leaking private details.
+      - **links**
+        - binding:api.daily\_content\_test
+    -
+      - **id:** scenario:api.privacy\_reject
+      - **title:** Privacy rejection and failure feedback
+      - **transitions**
+        - transition:api.privacy\_reject
+      - **expected:** Malformed envelopes reject before storage; the policy denies other-owner, missing-owner, update and delete access. Invalid stored rows and missing insert results reject without disclosing private values.
+      - **links**
+        - binding:api.privacy\_api\_test
+        - binding:api.privacy\_policy\_test
+    -
+      - **id:** scenario:api.privacy\_owner
+      - **title:** Native privacy contract and owner-only access
+      - **transitions**
+        - transition:api.privacy\_owner
+      - **expected:** Owner reads and appends use validated fields and server-derived account IDs. Database timestamps normalize to ISO strings, nullable metadata remains an empty object and a legitimately absent ledger remains an empty array.
+      - **links**
+        - binding:api.privacy\_api\_test
+        - binding:api.privacy\_policy\_test
+        - binding:api.privacy\_contract\_test
+    -
+      - **id:** scenario:api.native\_failure
+      - **title:** Native admission and reward dependency errors
+      - **transitions**
+        - transition:api.native\_failure
+      - **expected:** Single and default-batch admission failures produce native ORPCError instances; reward storage failures reject rather than returning null or empty arrays, without leaking private details.
+      - **links**
+        - binding:api.native\_admission
+        - binding:api.regular\_rewards\_test
+    -
+      - **id:** scenario:api.reward\_commit
+      - **title:** Verified grant, replay and quota outcomes
+      - **transitions**
+        - transition:api.reward\_commit
+      - **expected:** A grant updates receipt and balance in one transaction; replay does not credit twice and a capped receipt grants zero.
+      - **links**
+        - binding:api.rewards\_test
+    -
+      - **id:** scenario:api.reward\_unavailable
+      - **title:** Reward dependency failure remains unavailable
+      - **transitions**
+        - transition:api.reward\_unavailable
+      - **expected:** Key lookup or database failure returns 503 without fabricated success; expired verification keys are not reused.
+      - **links**
+        - binding:api.rewards\_test
+    -
+      - **id:** scenario:api.http
+      - **title:** http contract
+      - **transitions**
+        - transition:api.http
+      - **expected:** Preserve http behavior under its success and rejection cases.
+      - **links**
+        - (none)
+    -
+      - **id:** scenario:api.mcp
+      - **title:** mcp contract
+      - **transitions**
+        - transition:api.mcp
+      - **expected:** Preserve mcp behavior under its success and rejection cases.
+      - **links**
+        - (none)
+    -
+      - **id:** scenario:api.entitlement
+      - **title:** entitlement contract
+      - **transitions**
+        - transition:api.entitlement
+      - **expected:** Preserve entitlement behavior under its success and rejection cases.
+      - **links**
+        - (none)
+    -
+      - **id:** scenario:api.ai\_cancel
+      - **title:** ai\_cancel contract
+      - **transitions**
+        - transition:api.ai\_cancel
+      - **expected:** Preserve ai\_cancel behavior under its success and rejection cases.
+      - **links**
+        - (none)
+    -
+      - **id:** scenario:api.retry
+      - **title:** retry contract
+      - **transitions**
+        - transition:api.retry
+      - **expected:** Preserve retry behavior under its success and rejection cases.
+      - **links**
+        - (none)
+  - **evidence**
+    -
+      - **id:** evidence:api.daily\_content\_read\_g1\_20261030
+      - **title:** Daily-content native reads and namespace compatibility
+      - **scenario:** scenario:api.daily\_content\_read
+      - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-daily-content-20261030
+      - **environment:** Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Identity and database services
+        - In-process HTTP transport
+      - **limitations:** Full API suite: 1147 assertions passed and six existing skips. Includes both namespaces, driver-date/nullable-author normalization, separate query values and legitimate empty content. Real SDK and Cedar WASM are used. Does not prove live database execution, RLS, all-role access or deployment. Mutable working-tree evidence; no scenario tier promotion claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-native\_daily\_content\_20261030.log
+      - **links**
+        - binding:api.daily\_content\_test
+        - binding:api.daily\_content\_handler
+    -
+      - **id:** evidence:api.daily\_content\_reject\_g1\_20261030
+      - **title:** Daily-content invalid requests and storage rejection
+      - **scenario:** scenario:api.daily\_content\_reject
+      - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-daily-content-20261030
+      - **environment:** Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Identity and database services
+        - Injected malformed query results and storage exceptions
+      - **limitations:** Included in the 1147-assertion full API run: invalid calendar dates, SQL-like date text, invalid/oversized lookbacks, non-array results, invalid stored fields and storage exceptions reject with safe native errors. Does not prove live database failures or resistance to all injection paths. Mutable working-tree evidence; no scenario tier promotion claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-native\_daily\_content\_20261030.log
+      - **links**
+        - binding:api.daily\_content\_test
+    -
+      - **id:** evidence:api.privacy\_api\_g1\_20261030
+      - **title:** Native privacy boundary, compatibility read and storage-result checks
+      - **scenario:** scenario:api.privacy\_owner
+      - **revision:** 1e0d1c76a6e5fa80768f2054fc08f96801c983d7+working-tree:native-privacy-20261030
+      - **environment:** Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Identity and database services
+        - In-process HTTP transport
+      - **limitations:** 42 focused API assertions passed across privacy, entitlement and contract conversion. Privacy checks use the real installed Cedar WASM, account-bound SQL parameters, canonical envelopes, empty ledger and malformed storage rejection. Does not prove live database RLS, committed writes, deployment or all-domain typing. Mutable working-tree evidence; no scenario tier promotion claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-native\_privacy\_focused\_20261030.log
+      - **links**
+        - binding:api.privacy\_api\_test
+        - binding:api.privacy\_handler
+    -
+      - **id:** evidence:api.privacy\_policy\_g1\_20261030
+      - **title:** Real WASM owner decisions and policy startup regression
+      - **scenario:** scenario:api.privacy\_owner
+      - **revision:** 1e0d1c76a6e5fa80768f2054fc08f96801c983d7+working-tree:native-privacy-20261030
+      - **environment:** Windows Node, Vitest 5.0.5, installed Cedar WASM
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Synthetic principal and resource attributes
+        - Filesystem failures injected in startup tests
+      - **limitations:** 24 policy assertions passed. Includes member, teacher, principal and admin own-ledger decisions, cross-owner and missing-owner denial, and append-only restrictions. No live database or identity proof. Mutable working-tree evidence; no scenario tier promotion claimed.
+      - **reference:** reports/run-packages\_policies-native\_privacy\_20261030.log
+      - **links**
+        - binding:api.privacy\_policy\_test
+    -
+      - **id:** evidence:api.native\_failure\_g1\_20261030
+      - **title:** Full boundary suite with native SDK error shapes
+      - **scenario:** scenario:api.native\_failure
+      - **revision:** e1b0b9d0bf1f311604d01ecc90d9fff6a1c65628+working-tree:native-v2-errors-20261030
+      - **environment:** Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Identity and database services
+        - In-process fetch instead of deployed HTTP transport
+      - **limitations:** Full suite: 1105 assertions passed, six existing skips. Native single/batch admission rejection, reward storage failures and corrupt snapshots are included. Does not establish production, database authority, concurrent writes or complete application coverage. Uncommitted working-tree evidence; no G0 scenario promotion claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-native\_v2\_stable\_20261030.log
+      - **links**
+        - binding:api.native\_client
+        - binding:api.native\_admission
+        - binding:api.regular\_rewards\_test
+    -
+      - **id:** evidence:api.mcp\_g1\_20261030
+      - **title:** MCP cache, caller isolation and full host regression run
+      - **scenario:** scenario:api.mcp
+      - **revision:** 3533705df46b236a645090fd84a7ca084dc90644+working-tree:mcp-schema-cache-20261030
+      - **environment:** Windows Node 24.22.2, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Identity and database services
+        - Domain procedures in the focused MCP tests
+      - **limitations:** Full API run: 1081 assertions passed and six existing skips. MCP tests exercise real SDK dispatch, separate input/output conversion, metadata reuse, actor context isolation and registration failure cleanup. Real-router catalog and unknown-tool deadlines did not fail. Does not prove sustained production load, real identity or real Cedar/database authorization. Uncommitted working-tree evidence; no G0 scenario result or higher-tier promotion is claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-mcp\_final\_20261030.log
+      - **links**
+        - binding:api.mcp
+        - binding:api.mcp\_door
+    -
+      - **id:** evidence:api.reward\_unavailable\_g1
+      - **title:** Signed reward and dependency-failure boundary scenarios
+      - **scenario:** scenario:api.reward\_unavailable
+      - **revision:** 3533705df46b236a645090fd84a7ca084dc90644+working-tree:reward-hardening-20261029
+      - **environment:** Windows Node 24.22.2, Vitest 5.0.5
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Database transactions and policy outcomes
+        - Provider verification-key fetch
+      - **limitations:** 26 reward assertions within 43 reward/readiness/retention assertions. Real ECDSA with synthetic keys. Does not prove real database rollback, real provider delivery or production behavior. Evidence describes uncommitted working-tree source; G0 scenario evidence is not yet recorded, so no tier promotion is claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-reward\_boundaries\_final.log
+      - **links**
+        - binding:api.rewards\_test
+    -
+      - **id:** evidence:api.reward\_unavailable\_g2
+      - **title:** Real PostgreSQL forced rollback through the signed callback
+      - **scenario:** scenario:api.reward\_unavailable
+      - **revision:** 3533705df46b236a645090fd84a7ca084dc90644+working-tree:reward-hardening-20261029
+      - **environment:** Windows Node 24.22.2, Vitest 5.0.5, authorized shared PostgreSQL
+      - **tier:** G2
+      - **result:** passed
+      - **substitutions**
+        - Synthetic provider signing key
+        - Transaction completion intercepted to force rollback
+      - **limitations:** Two reward assertions within five API database assertions. Observes receipt and balance writes together, then forces rollback and verifies absence of committed changes. Also proves owner create denial through the real ORM policy client. Does not prove successful provider delivery, contention, complete RLS isolation or production canary behavior. G0 scenario evidence remains unrecorded; no skipped-level promotion is claimed.
+      - **reference:** reports/run-apps\_sanctuary-api-reward\_policy\_pg\_final.log
+      - **links**
+        - binding:api.rewards\_pg
+  - **sharedRequirements**
+    - (none)
+  - **sharedBindings**
+    - (none)
+- **parent:** intent:api.execute
+- **outgoing**
+  - step:api.request
+- **incoming**
+  - binding:api.ai\_cancel
+  - binding:api.authority\_failure
+  - binding:api.contract\_conversion
+  - binding:api.contract\_test
+  - binding:api.daily\_content\_contract
+  - binding:api.daily\_content\_contract\_test
+  - binding:api.daily\_content\_handler
+  - binding:api.daily\_content\_test
+  - binding:api.database\_proof
+  - binding:api.entitlement
+  - binding:api.guide
+  - binding:api.http
+  - binding:api.mcp
+  - binding:api.mcp\_door
+  - binding:api.native\_admission
+  - binding:api.native\_client
+  - binding:api.privacy\_api\_test
+  - binding:api.privacy\_contract
+  - binding:api.privacy\_contract\_test
+  - binding:api.privacy\_handler
+  - binding:api.privacy\_policy
+  - binding:api.privacy\_policy\_test
+  - binding:api.readiness
+  - binding:api.regular\_rewards\_test
+  - binding:api.retry
+  - binding:api.rewards
+  - binding:api.rewards\_pg
+  - binding:api.rewards\_storage
+  - binding:api.rewards\_test
+  - evidence:api.daily\_content\_read\_g1\_20261030
+  - evidence:api.daily\_content\_reject\_g1\_20261030
+  - evidence:api.mcp\_g1\_20261030
+  - evidence:api.native\_failure\_g1\_20261030
+  - evidence:api.privacy\_api\_g1\_20261030
+  - evidence:api.privacy\_policy\_g1\_20261030
+  - evidence:api.reward\_unavailable\_g1
+  - evidence:api.reward\_unavailable\_g2
+  - impact:api.daily\_content\_validation
+  - impact:api.reward\_acknowledgement
+  - observation:api.contract\_erasure
+  - observation:api.daily\_content\_native
+  - observation:api.native\_error\_testing
+  - observation:api.privacy\_native
+  - platform:api.reward\_server
+  - requirement:api.contract\_composition
+  - requirement:api.daily\_content\_contract
+  - requirement:api.explicit\_failure
+  - requirement:api.mcp\_schema\_cache
+  - requirement:api.privacy\_owner
+  - scenario:api.ai\_cancel
+  - scenario:api.daily\_content\_read
+  - scenario:api.daily\_content\_reject
+  - scenario:api.entitlement
+  - scenario:api.http
+  - scenario:api.mcp
+  - scenario:api.native\_failure
+  - scenario:api.privacy\_owner
+  - scenario:api.privacy\_reject
+  - scenario:api.retry
+  - scenario:api.reward\_commit
+  - scenario:api.reward\_unavailable
+  - step:api.recovery
+  - step:api.request
+  - step:api.result
+  - transition:api.ai\_cancel
+  - transition:api.daily\_content\_read
+  - transition:api.daily\_content\_reject
+  - transition:api.entitlement
+  - transition:api.http
+  - transition:api.mcp
+  - transition:api.native\_failure
+  - transition:api.privacy\_owner
+  - transition:api.privacy\_reject
+  - transition:api.retry
+  - transition:api.reward\_commit
+  - transition:api.reward\_unavailable
+- **related**
+  - binding:api.ai\_cancel
+  - binding:api.authority\_failure
+  - binding:api.contract\_conversion
+  - binding:api.contract\_test
+  - binding:api.daily\_content\_contract
+  - binding:api.daily\_content\_contract\_test
+  - binding:api.daily\_content\_handler
+  - binding:api.daily\_content\_test
+  - binding:api.database\_proof
+  - binding:api.entitlement
+  - binding:api.guide
+  - binding:api.http
+  - binding:api.mcp
+  - binding:api.mcp\_door
+  - binding:api.native\_admission
+  - binding:api.native\_client
+  - binding:api.privacy\_api\_test
+  - binding:api.privacy\_contract
+  - binding:api.privacy\_contract\_test
+  - binding:api.privacy\_handler
+  - binding:api.privacy\_policy
+  - binding:api.privacy\_policy\_test
+  - binding:api.readiness
+  - binding:api.regular\_rewards\_test
+  - binding:api.retry
+  - binding:api.rewards
+  - binding:api.rewards\_pg
+  - binding:api.rewards\_storage
+  - binding:api.rewards\_test
+  - evidence:api.daily\_content\_read\_g1\_20261030
+  - evidence:api.daily\_content\_reject\_g1\_20261030
+  - evidence:api.mcp\_g1\_20261030
+  - evidence:api.native\_failure\_g1\_20261030
+  - evidence:api.privacy\_api\_g1\_20261030
+  - evidence:api.privacy\_policy\_g1\_20261030
+  - evidence:api.reward\_unavailable\_g1
+  - evidence:api.reward\_unavailable\_g2
+  - feature:api.foundation
+  - impact:api.daily\_content\_validation
+  - impact:api.reward\_acknowledgement
+  - intent:api.execute
+  - observation:api.contract\_erasure
+  - observation:api.daily\_content\_native
+  - observation:api.native\_error\_testing
+  - observation:api.privacy\_native
+  - platform:api.reward\_server
+  - requirement:api.contract\_composition
+  - requirement:api.daily\_content\_contract
+  - requirement:api.explicit\_failure
+  - requirement:api.mcp\_schema\_cache
+  - requirement:api.privacy\_owner
+  - scenario:api.ai\_cancel
+  - scenario:api.daily\_content\_read
+  - scenario:api.daily\_content\_reject
+  - scenario:api.entitlement
+  - scenario:api.http
+  - scenario:api.mcp
+  - scenario:api.native\_failure
+  - scenario:api.privacy\_owner
+  - scenario:api.privacy\_reject
+  - scenario:api.retry
+  - scenario:api.reward\_commit
+  - scenario:api.reward\_unavailable
+  - step:api.recovery
+  - step:api.request
+  - step:api.result
+  - transition:api.ai\_cancel
+  - transition:api.daily\_content\_read
+  - transition:api.daily\_content\_reject
+  - transition:api.entitlement
+  - transition:api.http
+  - transition:api.mcp
+  - transition:api.native\_failure
+  - transition:api.privacy\_owner
+  - transition:api.privacy\_reject
+  - transition:api.retry
+  - transition:api.reward\_commit
+  - transition:api.reward\_unavailable
+- **connectionPaths**
+  -
+    - **id:** binding:api.ai\_cancel
+    - **path**
+      - journey:api.execute
+      - binding:api.ai\_cancel
+  -
+    - **id:** binding:api.authority\_failure
+    - **path**
+      - journey:api.execute
+      - binding:api.authority\_failure
+  -
+    - **id:** binding:api.contract\_conversion
+    - **path**
+      - journey:api.execute
+      - binding:api.contract\_conversion
+  -
+    - **id:** binding:api.contract\_test
+    - **path**
+      - journey:api.execute
+      - binding:api.contract\_test
+  -
+    - **id:** binding:api.daily\_content\_contract
+    - **path**
+      - journey:api.execute
+      - binding:api.daily\_content\_contract
+  -
+    - **id:** binding:api.daily\_content\_contract\_test
+    - **path**
+      - journey:api.execute
+      - binding:api.daily\_content\_contract\_test
+  -
+    - **id:** binding:api.daily\_content\_handler
+    - **path**
+      - journey:api.execute
+      - binding:api.daily\_content\_handler
+  -
+    - **id:** binding:api.daily\_content\_test
+    - **path**
+      - journey:api.execute
+      - binding:api.daily\_content\_test
+  -
+    - **id:** binding:api.database\_proof
+    - **path**
+      - journey:api.execute
+      - binding:api.database\_proof
+  -
+    - **id:** binding:api.entitlement
+    - **path**
+      - journey:api.execute
+      - binding:api.entitlement
+  -
+    - **id:** binding:api.guide
+    - **path**
+      - journey:api.execute
+      - binding:api.guide
+  -
+    - **id:** binding:api.http
+    - **path**
+      - journey:api.execute
+      - binding:api.http
+  -
+    - **id:** binding:api.mcp
+    - **path**
+      - journey:api.execute
+      - binding:api.mcp
+  -
+    - **id:** binding:api.mcp\_door
+    - **path**
+      - journey:api.execute
+      - binding:api.mcp\_door
+  -
+    - **id:** binding:api.native\_admission
+    - **path**
+      - journey:api.execute
+      - binding:api.native\_admission
+  -
+    - **id:** binding:api.native\_client
+    - **path**
+      - journey:api.execute
+      - binding:api.native\_client
+  -
+    - **id:** binding:api.privacy\_api\_test
+    - **path**
+      - journey:api.execute
+      - binding:api.privacy\_api\_test
+  -
+    - **id:** binding:api.privacy\_contract
+    - **path**
+      - journey:api.execute
+      - binding:api.privacy\_contract
+  -
+    - **id:** binding:api.privacy\_contract\_test
+    - **path**
+      - journey:api.execute
+      - binding:api.privacy\_contract\_test
+  -
+    - **id:** binding:api.privacy\_handler
+    - **path**
+      - journey:api.execute
+      - binding:api.privacy\_handler
+  -
+    - **id:** binding:api.privacy\_policy
+    - **path**
+      - journey:api.execute
+      - binding:api.privacy\_policy
+  -
+    - **id:** binding:api.privacy\_policy\_test
+    - **path**
+      - journey:api.execute
+      - binding:api.privacy\_policy\_test
+  -
+    - **id:** binding:api.readiness
+    - **path**
+      - journey:api.execute
+      - binding:api.readiness
+  -
+    - **id:** binding:api.regular\_rewards\_test
+    - **path**
+      - journey:api.execute
+      - binding:api.regular\_rewards\_test
+  -
+    - **id:** binding:api.retry
+    - **path**
+      - journey:api.execute
+      - binding:api.retry
+  -
+    - **id:** binding:api.rewards
+    - **path**
+      - journey:api.execute
+      - binding:api.rewards
+  -
+    - **id:** binding:api.rewards\_pg
+    - **path**
+      - journey:api.execute
+      - binding:api.rewards\_pg
+  -
+    - **id:** binding:api.rewards\_storage
+    - **path**
+      - journey:api.execute
+      - binding:api.rewards\_storage
+  -
+    - **id:** binding:api.rewards\_test
+    - **path**
+      - journey:api.execute
+      - binding:api.rewards\_test
+  -
+    - **id:** evidence:api.daily\_content\_read\_g1\_20261030
+    - **path**
+      - journey:api.execute
+      - evidence:api.daily\_content\_read\_g1\_20261030
+  -
+    - **id:** evidence:api.daily\_content\_reject\_g1\_20261030
+    - **path**
+      - journey:api.execute
+      - evidence:api.daily\_content\_reject\_g1\_20261030
+  -
+    - **id:** evidence:api.mcp\_g1\_20261030
+    - **path**
+      - journey:api.execute
+      - evidence:api.mcp\_g1\_20261030
+  -
+    - **id:** evidence:api.native\_failure\_g1\_20261030
+    - **path**
+      - journey:api.execute
+      - evidence:api.native\_failure\_g1\_20261030
+  -
+    - **id:** evidence:api.privacy\_api\_g1\_20261030
+    - **path**
+      - journey:api.execute
+      - evidence:api.privacy\_api\_g1\_20261030
+  -
+    - **id:** evidence:api.privacy\_policy\_g1\_20261030
+    - **path**
+      - journey:api.execute
+      - evidence:api.privacy\_policy\_g1\_20261030
+  -
+    - **id:** evidence:api.reward\_unavailable\_g1
+    - **path**
+      - journey:api.execute
+      - evidence:api.reward\_unavailable\_g1
+  -
+    - **id:** evidence:api.reward\_unavailable\_g2
+    - **path**
+      - journey:api.execute
+      - evidence:api.reward\_unavailable\_g2
+  -
+    - **id:** feature:api.foundation
+    - **path**
+      - journey:api.execute
+      - intent:api.execute
+      - feature:api.foundation
+  -
+    - **id:** impact:api.daily\_content\_validation
+    - **path**
+      - journey:api.execute
+      - impact:api.daily\_content\_validation
+  -
+    - **id:** impact:api.reward\_acknowledgement
+    - **path**
+      - journey:api.execute
+      - impact:api.reward\_acknowledgement
+  -
+    - **id:** intent:api.execute
+    - **path**
+      - journey:api.execute
+      - intent:api.execute
+  -
+    - **id:** observation:api.contract\_erasure
+    - **path**
+      - journey:api.execute
+      - observation:api.contract\_erasure
+  -
+    - **id:** observation:api.daily\_content\_native
+    - **path**
+      - journey:api.execute
+      - observation:api.daily\_content\_native
+  -
+    - **id:** observation:api.native\_error\_testing
+    - **path**
+      - journey:api.execute
+      - observation:api.native\_error\_testing
+  -
+    - **id:** observation:api.privacy\_native
+    - **path**
+      - journey:api.execute
+      - observation:api.privacy\_native
+  -
+    - **id:** platform:api.reward\_server
+    - **path**
+      - journey:api.execute
+      - platform:api.reward\_server
+  -
+    - **id:** requirement:api.contract\_composition
+    - **path**
+      - journey:api.execute
+      - requirement:api.contract\_composition
+  -
+    - **id:** requirement:api.daily\_content\_contract
+    - **path**
+      - journey:api.execute
+      - requirement:api.daily\_content\_contract
+  -
+    - **id:** requirement:api.explicit\_failure
+    - **path**
+      - journey:api.execute
+      - requirement:api.explicit\_failure
+  -
+    - **id:** requirement:api.mcp\_schema\_cache
+    - **path**
+      - journey:api.execute
+      - requirement:api.mcp\_schema\_cache
+  -
+    - **id:** requirement:api.privacy\_owner
+    - **path**
+      - journey:api.execute
+      - requirement:api.privacy\_owner
+  -
+    - **id:** scenario:api.ai\_cancel
+    - **path**
+      - journey:api.execute
+      - scenario:api.ai\_cancel
+  -
+    - **id:** scenario:api.daily\_content\_read
+    - **path**
+      - journey:api.execute
+      - scenario:api.daily\_content\_read
+  -
+    - **id:** scenario:api.daily\_content\_reject
+    - **path**
+      - journey:api.execute
+      - scenario:api.daily\_content\_reject
+  -
+    - **id:** scenario:api.entitlement
+    - **path**
+      - journey:api.execute
+      - scenario:api.entitlement
+  -
+    - **id:** scenario:api.http
+    - **path**
+      - journey:api.execute
+      - scenario:api.http
+  -
+    - **id:** scenario:api.mcp
+    - **path**
+      - journey:api.execute
+      - scenario:api.mcp
+  -
+    - **id:** scenario:api.native\_failure
+    - **path**
+      - journey:api.execute
+      - scenario:api.native\_failure
+  -
+    - **id:** scenario:api.privacy\_owner
+    - **path**
+      - journey:api.execute
+      - scenario:api.privacy\_owner
+  -
+    - **id:** scenario:api.privacy\_reject
+    - **path**
+      - journey:api.execute
+      - scenario:api.privacy\_reject
+  -
+    - **id:** scenario:api.retry
+    - **path**
+      - journey:api.execute
+      - scenario:api.retry
+  -
+    - **id:** scenario:api.reward\_commit
+    - **path**
+      - journey:api.execute
+      - scenario:api.reward\_commit
+  -
+    - **id:** scenario:api.reward\_unavailable
+    - **path**
+      - journey:api.execute
+      - scenario:api.reward\_unavailable
+  -
+    - **id:** step:api.recovery
+    - **path**
+      - journey:api.execute
+      - step:api.recovery
+  -
+    - **id:** step:api.request
+    - **path**
+      - journey:api.execute
+      - step:api.request
+  -
+    - **id:** step:api.result
+    - **path**
+      - journey:api.execute
+      - step:api.result
+  -
+    - **id:** transition:api.ai\_cancel
+    - **path**
+      - journey:api.execute
+      - transition:api.ai\_cancel
+  -
+    - **id:** transition:api.daily\_content\_read
+    - **path**
+      - journey:api.execute
+      - transition:api.daily\_content\_read
+  -
+    - **id:** transition:api.daily\_content\_reject
+    - **path**
+      - journey:api.execute
+      - transition:api.daily\_content\_reject
+  -
+    - **id:** transition:api.entitlement
+    - **path**
+      - journey:api.execute
+      - transition:api.entitlement
+  -
+    - **id:** transition:api.http
+    - **path**
+      - journey:api.execute
+      - transition:api.http
+  -
+    - **id:** transition:api.mcp
+    - **path**
+      - journey:api.execute
+      - transition:api.mcp
+  -
+    - **id:** transition:api.native\_failure
+    - **path**
+      - journey:api.execute
+      - transition:api.native\_failure
+  -
+    - **id:** transition:api.privacy\_owner
+    - **path**
+      - journey:api.execute
+      - transition:api.privacy\_owner
+  -
+    - **id:** transition:api.privacy\_reject
+    - **path**
+      - journey:api.execute
+      - transition:api.privacy\_reject
+  -
+    - **id:** transition:api.retry
+    - **path**
+      - journey:api.execute
+      - transition:api.retry
+  -
+    - **id:** transition:api.reward\_commit
+    - **path**
+      - journey:api.execute
+      - transition:api.reward\_commit
+  -
+    - **id:** transition:api.reward\_unavailable
+    - **path**
+      - journey:api.execute
+      - transition:api.reward\_unavailable
+- **journeyContext**
+  - **feature**
+    - **id:** feature:api.foundation
+    - **title:** Authorized API and agent execution
+  - **intent**
+    - **id:** intent:api.execute
+    - **title:** Execute an authorized operation reliably
+    - **actor:** authenticated user or delegated agent
+    - **outcome:** Receive a scoped result or safe recovery feedback without repeating an unconfirmed mutation.
+  - **sharedWith**
+    - (none)
+  - **scenarioPaths**
+    -
+      - **id:** scenario:api.daily\_content\_read
+      - **title:** Native daily content across existing namespaces
+      - **expected:** Both namespaces return the canonical DTO, driver dates normalize, nullable authors remain absent, values remain separate from SQL segments and legitimate absence is retained.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.daily\_content\_handler
+          - **title:** Validated daily-content query result boundary
+          - **category:** api
+          - **reference:** apps/sanctuary-api/src/core/handlers/dailyContent.ts
+          - **status:** implemented
+          - **note:** Retains tagged SQL and Cedar while parsing unknown results. No real database, all-role authorization or query-cost assurance is claimed.
+          - **links**
+            - scenario:api.daily\_content\_read
+            - scenario:api.daily\_content\_reject
+        -
+          - **id:** binding:api.daily\_content\_test
+          - **title:** Daily-content boundary and failure assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/daily-content.orpc.test.ts
+          - **status:** implemented
+          - **note:** Real SDK and Cedar; identity and storage substituted. Covers input validation, separated query values, driver normalization, corrupt storage and dependency failures.
+          - **links**
+            - scenario:api.daily\_content\_read
+            - scenario:api.daily\_content\_reject
+        -
+          - **id:** binding:api.daily\_content\_contract\_test
+          - **title:** Daily-content shared-schema and native client type checks
+          - **category:** test
+          - **reference:** packages/core/src/api/\_\_tests\_\_/dailyContent.contract.test.ts
+          - **status:** implemented
+          - **note:** Checks schema identity, metadata and SDK input/output types for both client namespaces; does not execute a deployed route.
+          - **links**
+            - scenario:api.daily\_content\_read
+      - **evidence**
+        -
+          - **id:** evidence:api.daily\_content\_read\_g1\_20261030
+          - **title:** Daily-content native reads and namespace compatibility
+          - **scenario:** scenario:api.daily\_content\_read
+          - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-daily-content-20261030
+          - **environment:** Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Identity and database services
+            - In-process HTTP transport
+          - **limitations:** Full API suite: 1147 assertions passed and six existing skips. Includes both namespaces, driver-date/nullable-author normalization, separate query values and legitimate empty content. Real SDK and Cedar WASM are used. Does not prove live database execution, RLS, all-role access or deployment. Mutable working-tree evidence; no scenario tier promotion claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-native\_daily\_content\_20261030.log
+          - **links**
+            - binding:api.daily\_content\_test
+            - binding:api.daily\_content\_handler
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.daily\_content\_read
+            - **title:** Read validated daily content
+            - **from:** step:api.request
+            - **to:** step:api.result
+            - **action:** Validate the date or lookback, evaluate Cedar and execute the existing parameterized read.
+            - **feedback:** Return validated content with normalized driver timestamps, or the existing absent-content result for an empty query.
+            - **links**
+              - binding:api.daily\_content\_handler
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.result
+            - **title:** result
+            - **interaction:** Consume the scoped result.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.daily\_content\_reject
+      - **title:** Daily-content invalid input and persistence failure
+      - **expected:** Invalid calendar dates, flattened envelopes and out-of-budget lookbacks reject before SQL. Invalid stored fields, non-array results and storage exceptions reject without leaking private details.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.daily\_content\_handler
+          - **title:** Validated daily-content query result boundary
+          - **category:** api
+          - **reference:** apps/sanctuary-api/src/core/handlers/dailyContent.ts
+          - **status:** implemented
+          - **note:** Retains tagged SQL and Cedar while parsing unknown results. No real database, all-role authorization or query-cost assurance is claimed.
+          - **links**
+            - scenario:api.daily\_content\_read
+            - scenario:api.daily\_content\_reject
+        -
+          - **id:** binding:api.daily\_content\_test
+          - **title:** Daily-content boundary and failure assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/daily-content.orpc.test.ts
+          - **status:** implemented
+          - **note:** Real SDK and Cedar; identity and storage substituted. Covers input validation, separated query values, driver normalization, corrupt storage and dependency failures.
+          - **links**
+            - scenario:api.daily\_content\_read
+            - scenario:api.daily\_content\_reject
+      - **evidence**
+        -
+          - **id:** evidence:api.daily\_content\_reject\_g1\_20261030
+          - **title:** Daily-content invalid requests and storage rejection
+          - **scenario:** scenario:api.daily\_content\_reject
+          - **revision:** a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:native-daily-content-20261030
+          - **environment:** Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Identity and database services
+            - Injected malformed query results and storage exceptions
+          - **limitations:** Included in the 1147-assertion full API run: invalid calendar dates, SQL-like date text, invalid/oversized lookbacks, non-array results, invalid stored fields and storage exceptions reject with safe native errors. Does not prove live database failures or resistance to all injection paths. Mutable working-tree evidence; no scenario tier promotion claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-native\_daily\_content\_20261030.log
+          - **links**
+            - binding:api.daily\_content\_test
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.daily\_content\_reject
+            - **title:** Reject invalid daily-content requests or storage results
+            - **from:** step:api.request
+            - **to:** step:api.recovery
+            - **action:** Reject malformed date/lookback input before SQL or propagate malformed query results and storage exceptions.
+            - **feedback:** Return BAD\_REQUEST for invalid input or a safe INTERNAL\_SERVER\_ERROR for invalid storage, without private details or fabricated content.
+            - **links**
+              - binding:api.daily\_content\_test
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.recovery
+            - **title:** recovery
+            - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.privacy\_reject
+      - **title:** Privacy rejection and failure feedback
+      - **expected:** Malformed envelopes reject before storage; the policy denies other-owner, missing-owner, update and delete access. Invalid stored rows and missing insert results reject without disclosing private values.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.privacy\_api\_test
+          - **title:** Privacy native boundary and storage result assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/privacy.orpc.test.ts
+          - **status:** implemented
+          - **note:** Real SDK and Cedar WASM with identity and database substituted. Covers owner parameters, trimmed fields, empty reads, malformed rows and unacknowledged inserts.
+          - **links**
+            - scenario:api.privacy\_owner
+        -
+          - **id:** binding:api.privacy\_policy\_test
+          - **title:** Real Cedar owner and role decision assertions
+          - **category:** test
+          - **reference:** packages/policies/src/\_\_tests\_\_/evaluator.test.ts
+          - **status:** implemented
+          - **note:** Real installed WASM evaluator and source policies; synthetic principal/resource attributes. Does not prove source authority of those attributes or live database isolation.
+          - **links**
+            - scenario:api.privacy\_owner
+      - **evidence**
+        - (none)
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.privacy\_reject
+            - **title:** Reject an invalid privacy operation or storage result
+            - **from:** step:api.request
+            - **to:** step:api.recovery
+            - **action:** Reject invalid envelopes, other-owner or history-mutation authority, malformed stored rows and inserts without a stored result.
+            - **feedback:** Return a safe native error without private storage details or false success.
+            - **links**
+              - binding:api.privacy\_api\_test
+              - binding:api.privacy\_policy\_test
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.recovery
+            - **title:** recovery
+            - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.privacy\_owner
+      - **title:** Native privacy contract and owner-only access
+      - **expected:** Owner reads and appends use validated fields and server-derived account IDs. Database timestamps normalize to ISO strings, nullable metadata remains an empty object and a legitimately absent ledger remains an empty array.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.privacy\_handler
+          - **title:** Typed privacy implementation and row validation
+          - **category:** api
+          - **reference:** apps/sanctuary-api/src/core/handlers/privacy.ts
+          - **status:** implemented
+          - **note:** Uses native implement, Cedar middleware and account-scoped SQL; database rows are unknown until parsed. Real storage and RLS remain unverified.
+          - **links**
+            - scenario:api.privacy\_owner
+        -
+          - **id:** binding:api.privacy\_policy
+          - **title:** Privacy owner and append-only Cedar rules
+          - **category:** authorization
+          - **reference:** packages/policies/src/policies/platform/dataBoundaries.cedar
+          - **status:** implemented
+          - **note:** Explicit forbids override generic platform-admin permission for other-owner and non-read/create ledger operations.
+          - **links**
+            - scenario:api.privacy\_owner
+        -
+          - **id:** binding:api.privacy\_api\_test
+          - **title:** Privacy native boundary and storage result assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/privacy.orpc.test.ts
+          - **status:** implemented
+          - **note:** Real SDK and Cedar WASM with identity and database substituted. Covers owner parameters, trimmed fields, empty reads, malformed rows and unacknowledged inserts.
+          - **links**
+            - scenario:api.privacy\_owner
+        -
+          - **id:** binding:api.privacy\_policy\_test
+          - **title:** Real Cedar owner and role decision assertions
+          - **category:** test
+          - **reference:** packages/policies/src/\_\_tests\_\_/evaluator.test.ts
+          - **status:** implemented
+          - **note:** Real installed WASM evaluator and source policies; synthetic principal/resource attributes. Does not prove source authority of those attributes or live database isolation.
+          - **links**
+            - scenario:api.privacy\_owner
+        -
+          - **id:** binding:api.privacy\_contract\_test
+          - **title:** Privacy shared-schema and SDK client type assertions
+          - **category:** test
+          - **reference:** packages/core/src/api/\_\_tests\_\_/privacy.contract.test.ts
+          - **status:** implemented
+          - **note:** Schema identity, policy/OpenAPI metadata and compiler-checked native input/output inference. Does not establish deployed routes or storage behavior.
+          - **links**
+            - scenario:api.privacy\_owner
+      - **evidence**
+        -
+          - **id:** evidence:api.privacy\_api\_g1\_20261030
+          - **title:** Native privacy boundary, compatibility read and storage-result checks
+          - **scenario:** scenario:api.privacy\_owner
+          - **revision:** 1e0d1c76a6e5fa80768f2054fc08f96801c983d7+working-tree:native-privacy-20261030
+          - **environment:** Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Identity and database services
+            - In-process HTTP transport
+          - **limitations:** 42 focused API assertions passed across privacy, entitlement and contract conversion. Privacy checks use the real installed Cedar WASM, account-bound SQL parameters, canonical envelopes, empty ledger and malformed storage rejection. Does not prove live database RLS, committed writes, deployment or all-domain typing. Mutable working-tree evidence; no scenario tier promotion claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-native\_privacy\_focused\_20261030.log
+          - **links**
+            - binding:api.privacy\_api\_test
+            - binding:api.privacy\_handler
+        -
+          - **id:** evidence:api.privacy\_policy\_g1\_20261030
+          - **title:** Real WASM owner decisions and policy startup regression
+          - **scenario:** scenario:api.privacy\_owner
+          - **revision:** 1e0d1c76a6e5fa80768f2054fc08f96801c983d7+working-tree:native-privacy-20261030
+          - **environment:** Windows Node, Vitest 5.0.5, installed Cedar WASM
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Synthetic principal and resource attributes
+            - Filesystem failures injected in startup tests
+          - **limitations:** 24 policy assertions passed. Includes member, teacher, principal and admin own-ledger decisions, cross-owner and missing-owner denial, and append-only restrictions. No live database or identity proof. Mutable working-tree evidence; no scenario tier promotion claimed.
+          - **reference:** reports/run-packages\_policies-native\_privacy\_20261030.log
+          - **links**
+            - binding:api.privacy\_policy\_test
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.privacy\_owner
+            - **title:** Read or append the authenticated user's privacy ledger
+            - **from:** step:api.request
+            - **to:** step:api.result
+            - **action:** Validate the native contract, derive the owner from authenticated context, evaluate Cedar and execute the owner-scoped SQL.
+            - **feedback:** Return a schema-validated ledger or stored entry; legitimate absence remains an empty ledger.
+            - **links**
+              - binding:api.privacy\_handler
+              - binding:api.privacy\_policy
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.result
+            - **title:** result
+            - **interaction:** Consume the scoped result.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.native\_failure
+      - **title:** Native admission and reward dependency errors
+      - **expected:** Single and default-batch admission failures produce native ORPCError instances; reward storage failures reject rather than returning null or empty arrays, without leaking private details.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.native\_client
+          - **title:** Unmodified SDK boundary test client
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/orpc-client.ts
+          - **status:** implemented
+          - **note:** Real RPCLink and ORPCError shapes; in-process fetch replaces external network transport.
+          - **links**
+            - scenario:api.native\_failure
+        -
+          - **id:** binding:api.native\_admission
+          - **title:** Single and batch admission error assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/canonical-account.security.test.ts
+          - **status:** implemented
+          - **note:** Real SDK batching and native decoding; identity and database dependencies substituted.
+          - **links**
+            - scenario:api.native\_failure
+        -
+          - **id:** binding:api.regular\_rewards\_test
+          - **title:** Ordinary reward storage failure assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/rewards.orpc.test.ts
+          - **status:** implemented
+          - **note:** Injected storage exceptions and corrupted snapshot, with legitimate empty reads retained. No concurrency or durable-write proof.
+          - **links**
+            - scenario:api.native\_failure
+      - **evidence**
+        -
+          - **id:** evidence:api.native\_failure\_g1\_20261030
+          - **title:** Full boundary suite with native SDK error shapes
+          - **scenario:** scenario:api.native\_failure
+          - **revision:** e1b0b9d0bf1f311604d01ecc90d9fff6a1c65628+working-tree:native-v2-errors-20261030
+          - **environment:** Windows Node, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Identity and database services
+            - In-process fetch instead of deployed HTTP transport
+          - **limitations:** Full suite: 1105 assertions passed, six existing skips. Native single/batch admission rejection, reward storage failures and corrupt snapshots are included. Does not establish production, database authority, concurrent writes or complete application coverage. Uncommitted working-tree evidence; no G0 scenario promotion claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-native\_v2\_stable\_20261030.log
+          - **links**
+            - binding:api.native\_client
+            - binding:api.native\_admission
+            - binding:api.regular\_rewards\_test
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.native\_failure
+            - **title:** Expose a dependency failure through the native protocol
+            - **from:** step:api.request
+            - **to:** step:api.recovery
+            - **action:** Reject failed admission or reward storage without fabricating an empty success.
+            - **feedback:** Return a safe native oRPC error with its standard code; retain private dependency details on neither the wire nor safe logs.
+            - **links**
+              - binding:api.native\_admission
+              - binding:api.regular\_rewards\_test
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.recovery
+            - **title:** recovery
+            - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.reward\_commit
+      - **title:** Verified grant, replay and quota outcomes
+      - **expected:** A grant updates receipt and balance in one transaction; replay does not credit twice and a capped receipt grants zero.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.rewards
+          - **title:** Verified reward persistence and policy-filtered balance reads
+          - **category:** api
+          - **reference:** apps/sanctuary-api/src/core/routes/adRewards.ts
+          - **status:** implemented
+          - **note:** Account-locked ORM transaction; real rollback was exercised, while contention and provider delivery remain unverified.
+          - **links**
+            - binding:api.rewards\_test
+        -
+          - **id:** binding:api.rewards\_test
+          - **title:** Signed reward callback and failure boundary assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/adRewards.test.ts
+          - **status:** implemented
+          - **note:** Real ECDSA; database transactions, policy decisions and provider-key fetch substituted. Does not prove database rollback or authorization policy execution.
+          - **links**
+            - binding:api.guide
+      - **evidence**
+        - (none)
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.reward\_commit
+            - **title:** Persist a verified reward
+            - **from:** step:api.request
+            - **to:** step:api.result
+            - **action:** Verify the signed reward and atomically record its receipt and balance increment, or acknowledge a committed replay or cap receipt.
+            - **feedback:** Return a successful acknowledgement only after the ORM transaction resolves.
+            - **links**
+              - binding:api.rewards
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.result
+            - **title:** result
+            - **interaction:** Consume the scoped result.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.reward\_unavailable
+      - **title:** Reward dependency failure remains unavailable
+      - **expected:** Key lookup or database failure returns 503 without fabricated success; expired verification keys are not reused.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        -
+          - **id:** requirement:api.explicit\_failure
+          - **title:** Dependency failures remain explicit
+          - **statement:** Required storage and authority lookup failures must produce explicit unavailable feedback and safe telemetry; they must not become successful empty data or a partial principal.
+          - **origin:** user
+          - **links**
+            - binding:api.readiness
+            - binding:api.authority\_failure
+            - binding:api.rewards
+            - scenario:api.reward\_unavailable
+      - **bindings**
+        -
+          - **id:** binding:api.readiness
+          - **title:** Startup and readiness dependency checks
+          - **category:** failure
+          - **reference:** apps/sanctuary-api/src/core/readiness.ts
+          - **status:** implemented
+          - **note:** Both server entrypoints and health readiness validate the shared admission schema. Does not establish every domain schema, SQL write permission, or deployed traffic.
+          - **links**
+            - (none)
+        -
+          - **id:** binding:api.authority\_failure
+          - **title:** Reject unavailable authorization relationships
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/authorization-context-failure.test.ts
+          - **status:** implemented
+          - **note:** G1 relationship storage substitutions distinguish empty results from lookup failures; this is not real Cedar/RLS evidence.
+          - **links**
+            - (none)
+        -
+          - **id:** binding:api.rewards
+          - **title:** Verified reward persistence and policy-filtered balance reads
+          - **category:** api
+          - **reference:** apps/sanctuary-api/src/core/routes/adRewards.ts
+          - **status:** implemented
+          - **note:** Account-locked ORM transaction; real rollback was exercised, while contention and provider delivery remain unverified.
+          - **links**
+            - binding:api.rewards\_test
+        -
+          - **id:** binding:api.rewards\_test
+          - **title:** Signed reward callback and failure boundary assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/adRewards.test.ts
+          - **status:** implemented
+          - **note:** Real ECDSA; database transactions, policy decisions and provider-key fetch substituted. Does not prove database rollback or authorization policy execution.
+          - **links**
+            - binding:api.guide
+        -
+          - **id:** binding:api.rewards\_pg
+          - **title:** Real reward ORM rollback and owner-write denial harness
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/integration/ad-reward.pg.test.ts
+          - **status:** implemented
+          - **note:** Explicit opt-in real PostgreSQL proof. Provider key is synthetic and transaction completion is intercepted to force rollback. Does not prove concurrent grants or provider delivery.
+          - **links**
+            - scenario:api.reward\_unavailable
+            - binding:api.rewards\_storage
+      - **evidence**
+        -
+          - **id:** evidence:api.reward\_unavailable\_g1
+          - **title:** Signed reward and dependency-failure boundary scenarios
+          - **scenario:** scenario:api.reward\_unavailable
+          - **revision:** 3533705df46b236a645090fd84a7ca084dc90644+working-tree:reward-hardening-20261029
+          - **environment:** Windows Node 24.22.2, Vitest 5.0.5
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Database transactions and policy outcomes
+            - Provider verification-key fetch
+          - **limitations:** 26 reward assertions within 43 reward/readiness/retention assertions. Real ECDSA with synthetic keys. Does not prove real database rollback, real provider delivery or production behavior. Evidence describes uncommitted working-tree source; G0 scenario evidence is not yet recorded, so no tier promotion is claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-reward\_boundaries\_final.log
+          - **links**
+            - binding:api.rewards\_test
+        -
+          - **id:** evidence:api.reward\_unavailable\_g2
+          - **title:** Real PostgreSQL forced rollback through the signed callback
+          - **scenario:** scenario:api.reward\_unavailable
+          - **revision:** 3533705df46b236a645090fd84a7ca084dc90644+working-tree:reward-hardening-20261029
+          - **environment:** Windows Node 24.22.2, Vitest 5.0.5, authorized shared PostgreSQL
+          - **tier:** G2
+          - **result:** passed
+          - **substitutions**
+            - Synthetic provider signing key
+            - Transaction completion intercepted to force rollback
+          - **limitations:** Two reward assertions within five API database assertions. Observes receipt and balance writes together, then forces rollback and verifies absence of committed changes. Also proves owner create denial through the real ORM policy client. Does not prove successful provider delivery, contention, complete RLS isolation or production canary behavior. G0 scenario evidence remains unrecorded; no skipped-level promotion is claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-reward\_policy\_pg\_final.log
+          - **links**
+            - binding:api.rewards\_pg
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.reward\_unavailable
+            - **title:** Reject unavailable reward dependencies
+            - **from:** step:api.request
+            - **to:** step:api.recovery
+            - **action:** Fail verification-key lookup or persistence without acknowledging a grant.
+            - **feedback:** Return 503 with safe failure details; retry using the same provider transaction ID.
+            - **links**
+              - binding:api.rewards
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.recovery
+            - **title:** recovery
+            - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.http
+      - **title:** http contract
+      - **expected:** Preserve http behavior under its success and rejection cases.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.http
+          - **title:** http executable boundary assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/rpc-method-policy.test.ts
+          - **status:** implemented
+          - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+          - **links**
+            - scenario:api.http
+      - **evidence**
+        - (none)
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.http
+            - **title:** http boundary
+            - **from:** step:api.request
+            - **to:** step:api.result
+            - **action:** Evaluate http boundary
+            - **feedback:** Return a safe result or explicit recovery information.
+            - **links**
+              - (none)
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.result
+            - **title:** result
+            - **interaction:** Consume the scoped result.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.mcp
+      - **title:** mcp contract
+      - **expected:** Preserve mcp behavior under its success and rejection cases.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.mcp
+          - **title:** mcp executable boundary assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/mcp-door.test.ts
+          - **status:** implemented
+          - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+          - **links**
+            - scenario:api.mcp
+      - **evidence**
+        -
+          - **id:** evidence:api.mcp\_g1\_20261030
+          - **title:** MCP cache, caller isolation and full host regression run
+          - **scenario:** scenario:api.mcp
+          - **revision:** 3533705df46b236a645090fd84a7ca084dc90644+working-tree:mcp-schema-cache-20261030
+          - **environment:** Windows Node 24.22.2, Vitest 5.0.5, Hono 5.0.0-rc.1, oRPC 2.0.0-beta.46
+          - **tier:** G1
+          - **result:** passed
+          - **substitutions**
+            - Identity and database services
+            - Domain procedures in the focused MCP tests
+          - **limitations:** Full API run: 1081 assertions passed and six existing skips. MCP tests exercise real SDK dispatch, separate input/output conversion, metadata reuse, actor context isolation and registration failure cleanup. Real-router catalog and unknown-tool deadlines did not fail. Does not prove sustained production load, real identity or real Cedar/database authorization. Uncommitted working-tree evidence; no G0 scenario result or higher-tier promotion is claimed.
+          - **reference:** reports/run-apps\_sanctuary-api-mcp\_final\_20261030.log
+          - **links**
+            - binding:api.mcp
+            - binding:api.mcp\_door
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.mcp
+            - **title:** mcp boundary
+            - **from:** step:api.request
+            - **to:** step:api.result
+            - **action:** Evaluate mcp boundary
+            - **feedback:** Return a safe result or explicit recovery information.
+            - **links**
+              - (none)
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.result
+            - **title:** result
+            - **interaction:** Consume the scoped result.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.entitlement
+      - **title:** entitlement contract
+      - **expected:** Preserve entitlement behavior under its success and rejection cases.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.entitlement
+          - **title:** entitlement executable boundary assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/orpc-entitlement.test.ts
+          - **status:** implemented
+          - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+          - **links**
+            - scenario:api.entitlement
+      - **evidence**
+        - (none)
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.entitlement
+            - **title:** entitlement boundary
+            - **from:** step:api.request
+            - **to:** step:api.recovery
+            - **action:** Evaluate entitlement boundary
+            - **feedback:** Return a safe result or explicit recovery information.
+            - **links**
+              - (none)
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.recovery
+            - **title:** recovery
+            - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.ai\_cancel
+      - **title:** ai\_cancel contract
+      - **expected:** Preserve ai\_cancel behavior under its success and rejection cases.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.ai\_cancel
+          - **title:** ai\_cancel executable boundary assertions
+          - **category:** test
+          - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/ai-streaming-resilience.test.ts
+          - **status:** implemented
+          - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+          - **links**
+            - scenario:api.ai\_cancel
+      - **evidence**
+        - (none)
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.ai\_cancel
+            - **title:** ai\_cancel boundary
+            - **from:** step:api.request
+            - **to:** step:api.recovery
+            - **action:** Evaluate ai\_cancel boundary
+            - **feedback:** Return a safe result or explicit recovery information.
+            - **links**
+              - (none)
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.recovery
+            - **title:** recovery
+            - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+    -
+      - **id:** scenario:api.retry
+      - **title:** retry contract
+      - **expected:** Preserve retry behavior under its success and rejection cases.
+      - **start:** step:api.request
+      - **preconditions**
+        - (none)
+      - **completion:** outcome
+      - **checkpointReason:** undefined
+      - **requirements**
+        - (none)
+      - **bindings**
+        -
+          - **id:** binding:api.retry
+          - **title:** retry executable boundary assertions
+          - **category:** test
+          - **reference:** packages/core/src/api/\_\_tests\_\_/orpcClient.errors.test.ts
+          - **status:** implemented
+          - **note:** Host boundary tests substitute external identity, database or provider systems; no production assurance is claimed.
+          - **links**
+            - scenario:api.retry
+      - **evidence**
+        - (none)
+      - **steps**
+        -
+          - **transition**
+            - **id:** transition:api.retry
+            - **title:** retry boundary
+            - **from:** step:api.request
+            - **to:** step:api.recovery
+            - **action:** Evaluate retry boundary
+            - **feedback:** Return a safe result or explicit recovery information.
+            - **links**
+              - (none)
+          - **from**
+            - **id:** step:api.request
+            - **title:** request
+            - **interaction:** Send a validated command with captured account context.
+            - **terminal:** false
+            - **links**
+              - (none)
+          - **to**
+            - **id:** step:api.recovery
+            - **title:** recovery
+            - **interaction:** Show a safe rejection, retain the command, or reconcile its receipt.
+            - **terminal:** true
+            - **links**
+              - (none)
+      - **disclaimer:** Declared scenario path; not evidence of execution.
+  - **sharedRequirements**
+    - (none)
+  - **sharedBindings**
+    - (none)

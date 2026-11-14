@@ -1,0 +1,281 @@
+{
+  "evidenceType": "android-device-profile-snapshot",
+  "claim": "observational-snapshot",
+  "captureId": "2026-10-19T08-35-28-711Z-7b0bfdc5",
+  "startedAt": "2026-10-19T08:35:28.715Z",
+  "endedAt": "2026-10-19T08:35:39.019Z",
+  "label": "a52-middle-self-idle-dev-trace",
+  "targetAppId": "app.gurudevi.sanctuary.dev",
+  "declaredBuildKind": "development",
+  "deviceAlias": "android-71651cf0ddda",
+  "artifactDirectory": "reports/mobile-performance/2026-10-19T08-35-28-711Z-7b0bfdc5",
+  "source": "adb fixed read-only command allowlist",
+  "commands": {
+    "model": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "getprop",
+        "ro.product.model"
+      ],
+      "startedAt": "2026-10-19T08:35:28.716Z",
+      "endedAt": "2026-10-19T08:35:28.825Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "model.txt"
+    },
+    "sdk": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "getprop",
+        "ro.build.version.sdk"
+      ],
+      "startedAt": "2026-10-19T08:35:28.828Z",
+      "endedAt": "2026-10-19T08:35:28.941Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "sdk.txt"
+    },
+    "soc": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "getprop",
+        "ro.soc.model"
+      ],
+      "startedAt": "2026-10-19T08:35:28.943Z",
+      "endedAt": "2026-10-19T08:35:29.039Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "soc.txt"
+    },
+    "lowRam": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "getprop",
+        "ro.config.low_ram"
+      ],
+      "startedAt": "2026-10-19T08:35:29.040Z",
+      "endedAt": "2026-10-19T08:35:29.144Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "lowRam.txt"
+    },
+    "meminfo": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "cat",
+        "/proc/meminfo"
+      ],
+      "startedAt": "2026-10-19T08:35:29.145Z",
+      "endedAt": "2026-10-19T08:35:29.239Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "meminfo.txt"
+    },
+    "cpuOnline": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "cat",
+        "/sys/devices/system/cpu/online"
+      ],
+      "startedAt": "2026-10-19T08:35:29.241Z",
+      "endedAt": "2026-10-19T08:35:29.342Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "cpuOnline.txt"
+    },
+    "battery": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "dumpsys",
+        "battery"
+      ],
+      "startedAt": "2026-10-19T08:35:29.352Z",
+      "endedAt": "2026-10-19T08:35:29.466Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "battery.txt"
+    },
+    "thermal": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "dumpsys",
+        "thermalservice"
+      ],
+      "startedAt": "2026-10-19T08:35:29.467Z",
+      "endedAt": "2026-10-19T08:35:29.564Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "thermal.txt"
+    },
+    "appMemory": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "dumpsys",
+        "meminfo",
+        "app.gurudevi.sanctuary.dev"
+      ],
+      "startedAt": "2026-10-19T08:35:29.566Z",
+      "endedAt": "2026-10-19T08:35:30.085Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "appMemory.txt"
+    },
+    "packageInfo": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "dumpsys",
+        "package",
+        "app.gurudevi.sanctuary.dev"
+      ],
+      "startedAt": "2026-10-19T08:35:30.086Z",
+      "endedAt": "2026-10-19T08:35:30.364Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "packageInfo.txt"
+    },
+    "pid": {
+      "command": "adb",
+      "args": [
+        "-s",
+        "<redacted-device>",
+        "shell",
+        "pidof",
+        "app.gurudevi.sanctuary.dev"
+      ],
+      "startedAt": "2026-10-19T08:35:30.365Z",
+      "endedAt": "2026-10-19T08:35:30.490Z",
+      "exitCode": 0,
+      "ok": true,
+      "rawFile": "pid.txt"
+    }
+  },
+  "traceCapture": {
+    "status": "captured",
+    "startedAt": "2026-10-19T08:35:30.491Z",
+    "endedAt": "2026-10-19T08:35:39.019Z",
+    "durationSeconds": 10,
+    "artifactType": "android-perfetto-scheduler-trace",
+    "interpretationLimit": "Scheduler/system trace only; not CPU sampling, JavaScript stacks, or time-to-first-draw evidence.",
+    "remotePath": "/data/misc/perfetto-traces/gurudevi-profile-6baa764b-9d0d-4c57-8b25-daed2fdf2cfb.pftrace",
+    "artifactFile": "native.pftrace",
+    "artifactBytes": 8301702,
+    "commands": {
+      "start": {
+        "command": "adb",
+        "args": [
+          "-s",
+          "<redacted-device>",
+          "shell",
+          "perfetto",
+          "-t",
+          "10s",
+          "-b",
+          "8mb",
+          "-s",
+          "8mb",
+          "-o",
+          "/data/misc/perfetto-traces/gurudevi-profile-6baa764b-9d0d-4c57-8b25-daed2fdf2cfb.pftrace",
+          "-a",
+          "app.gurudevi.sanctuary.dev",
+          "sched",
+          "freq",
+          "idle",
+          "am",
+          "wm",
+          "gfx",
+          "view"
+        ],
+        "startedAt": "2026-10-19T08:35:30.491Z",
+        "endedAt": "2026-10-19T08:35:38.625Z",
+        "exitCode": 0,
+        "ok": true
+      },
+      "pull": {
+        "command": "adb",
+        "args": [
+          "-s",
+          "<redacted-device>",
+          "pull",
+          "/data/misc/perfetto-traces/gurudevi-profile-6baa764b-9d0d-4c57-8b25-daed2fdf2cfb.pftrace",
+          "C:\\x\\reports\\mobile-performance\\2026-10-19T08-35-28-711Z-7b0bfdc5\\native.pftrace"
+        ],
+        "startedAt": "2026-10-19T08:35:38.627Z",
+        "endedAt": "2026-10-19T08:35:38.909Z",
+        "exitCode": 0,
+        "ok": true
+      },
+      "cleanup": {
+        "command": "adb",
+        "args": [
+          "-s",
+          "<redacted-device>",
+          "shell",
+          "rm",
+          "--",
+          "/data/misc/perfetto-traces/gurudevi-profile-6baa764b-9d0d-4c57-8b25-daed2fdf2cfb.pftrace"
+        ],
+        "startedAt": "2026-10-19T08:35:38.914Z",
+        "endedAt": "2026-10-19T08:35:39.018Z",
+        "exitCode": 0,
+        "ok": true
+      }
+    },
+    "cleanupOk": true
+  },
+  "metrics": {
+    "device": {
+      "model": "SM-A525F",
+      "sdk": 34,
+      "soc": "SM7125",
+      "lowRam": null
+    },
+    "systemMemoryKb": {
+      "total": 7668940,
+      "available": 3027616,
+      "swapTotal": 8388604,
+      "swapFree": 6773728
+    },
+    "cpuOnline": "0-7",
+    "appMemoryKb": {
+      "pss": 1573926,
+      "rss": 1671684,
+      "swapPss": 4
+    },
+    "app": {
+      "pid": "31556",
+      "debuggable": true,
+      "profileable": false
+    }
+  },
+  "status": "complete"
+}

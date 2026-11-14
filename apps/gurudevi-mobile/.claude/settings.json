@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "command": "node .agents/gate.mjs \"$FILE_PATH\" --auto-ground"
+      }
+    ],
+    "Stop": [
+      {
+        "command": "node .agents/stop-gate.mjs"
+      }
+    ]
+  }
+}

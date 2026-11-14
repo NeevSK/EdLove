@@ -87,6 +87,10 @@ as a giant URL and never treated as durable feature data.
    unsaved work, and explain a forced removal when it happens.
 7. A task whose resource no longer exists or whose access is revoked restores
    to Overview/Catalog with a specific reason and a recovery action.
+8. Home is fixed before the ordered task strip. New tasks are inserted directly
+   after Home; focusing an existing task does not reorder it. Users can reorder
+   task descriptors within their domain. Quick Access remains a separate
+   shortcut set, and tasks are not grouped.
 
 The initial platform caps are experience safeguards, not a claim about memory:
 three visible tasks on compact phones, five recoverable tasks per mobile domain,
@@ -96,9 +100,11 @@ user-configurable until their recovery behavior is proven.
 
 ## Temporal horizon
 
-Time belongs to the **domain workbench**, directly below its header and active
-task strip, whenever that domain has a meaningful temporal lens. It is a quiet
-orientation line, not a universal dashboard filter and not another task tab.
+Time belongs to the **domain workbench** whenever that domain has a meaningful
+temporal lens. In the browser, the compact greeting/date context band sits above
+the task strip, and the strip sits above the focused feature content. Time is a
+quiet orientation line, not a universal dashboard filter and not another task
+tab.
 
 ```text
 [ Overview ] [ Daily Pulse × ] [ Goals × ] [ + ]
@@ -129,9 +135,9 @@ Community is normally current/live. Profile and Settings have no horizon.
 
 | Context | Mobile portrait | Mobile landscape | Browser |
 | --- | --- | --- | --- |
-| Overview, no tasks | domain header then overview; no empty strip | compact header and overview | shell plus domain overview |
+| Overview, no tasks | domain header then overview; no empty strip | compact header and overview | shell, primary navigation, workbench context, then overview |
 | Overview with background tasks | horizontally scrollable active-task strip; Overview remains an explicit first destination | compact switcher with Overview/back action | task strip or vertical work list within the domain floor |
-| Focused task | focused domain header, task strip, then temporal horizon if relevant | title, Overview return, compact task switcher; do not consume scarce height with two full bars | task title and task strip integrated into domain floor |
+| Focused task | focused domain header, task strip, then temporal horizon if relevant | title, Overview return, compact task switcher; do not consume scarce height with two full bars | workbench context, task strip, then focused feature content |
 | Temporal horizon | one human date line with Today, previous/next, and calendar on demand | terse date and previous/next; calendar in overflow | date line or a richer period control only when the domain needs it |
 
 The horizon should read like a change in daylight over the workbench: “Monday,
@@ -176,6 +182,18 @@ server write, account conversion, or sync has occurred.
 4. Rebuild Self Overview and its first complete tasks against the contract.
 5. Migrate Workspace resource instances, then Library, Community, and the
    account destinations only where their domain behavior warrants it.
+
+## Browser shell composition
+
+The browser uses a horizontal primary navigation row by default at every
+width; at compact widths it uses compact icon-and-label destinations. Settings
+can switch to a side rail, which adapts into a full-width four-destination
+bottom bar on small screens. Self and Workspace keep Home fixed at the start of
+their task strip.
+Quick Access opens a sheet from the strip, keeps pinned tools separate from
+open tasks, and opens the selected feature route directly. The layout preference
+is browser-local presentation state; it does not grant access or alter feature
+data.
 
 ## Cross-platform migration rule
 

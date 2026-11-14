@@ -4,6 +4,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "sectionHead" &&
   resource is Classroom &&
   resource has section_id &&
@@ -17,6 +18,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "sectionHead" &&
   (resource is AttendanceRecord || resource is DailyAttendance || resource is AttendanceSession) &&
   resource has section_id &&

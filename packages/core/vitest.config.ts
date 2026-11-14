@@ -1,10 +1,12 @@
 import path from 'node:path';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, configDefaults } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
     alias: {
+      // Workspace source, not the declaration build that tsconfig paths point at.
+      '@repo/verger-core': path.resolve(import.meta.dirname, '../verger-core/src/index.ts'),
       'expo-constants': path.resolve(import.meta.dirname, 'src/test-shims/expo-constants.ts'),
       'react-native': path.resolve(import.meta.dirname, 'src/test-shims/react-native.ts'),
     },
@@ -27,6 +29,8 @@ export default defineConfig({
       { name: 'network', description: 'Network, synchronization, and external adapter calls' },
     ],
     include: ['src/**/*.{test,spec}.ts', 'packages/core/src/**/*.{test,spec}.ts'],
+    // Tests of reference-only *.web files (tooling/reference-only.mjs) don't run.
+    exclude: [...configDefaults.exclude, '**/*.web.test.ts', '**/*.web.test.tsx'],
     includeSource: ['src/logic/**/*.ts'],
     passWithNoTests: true,
     coverage: {

@@ -5,6 +5,7 @@ const { get } = vi.hoisted(() => ({ get: vi.fn() }));
 
 vi.mock('@repo/core/api/base', () => ({
   SOVEREIGN_API_URL: 'http://sanctuary.test',
+  SOVEREIGN_ORPC_URL: 'http://sanctuary.test/rpc',
   createSovereignClient: () => ({
     api: { longitudinal: { student: { timeline: { $get: get } } } },
   }),

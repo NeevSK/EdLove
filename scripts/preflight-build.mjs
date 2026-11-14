@@ -38,7 +38,7 @@ function runCheck(label, cmd) {
 console.log('🚀 Pre-build Preflight');
 console.log('━'.repeat(50));
 
-const doctor = runCheck('expo-ci-doctor', 'npx expo-ci-doctor check');
+const doctor = runCheck('expo-ci-doctor', 'npx -y expo-ci-doctor check');
 const fingerprint = runCheck('Fingerprint', 'pnpm exec fingerprint fingerprint:generate');
 
 console.log('\n' + '━'.repeat(50));

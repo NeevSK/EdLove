@@ -1,0 +1,540 @@
+{
+  "date": "2026-10-27",
+  "evidence": "G5 physical Android / actual Hermes via Argent CDP and ADB",
+  "device": {
+    "serial": "R58T33Y0E3M",
+    "model": "SM-A525F",
+    "android": 14,
+    "sdk": 34
+  },
+  "package": "app.gurudevi.sanctuary.vergerv2.dev",
+  "apkSha256": "1CB4750F3C45826E3BEA96F8C574A1AE7CA4D0179ADF39CE403C27F366A6B50B",
+  "bindingSha256": "7D653AE9189904CF98D8BC78E8C0C81ED48A2E4C9A0CC125056C841E7642E60F",
+  "threadObservations": {
+    "process": 8830,
+    "initial": 9349,
+    "afterEarlyRuntimeReset": 10206,
+    "afterControlledReload1": 10970,
+    "afterControlledReload2": 11299,
+    "simultaneousVergerSenseThreadsObserved": 1
+  },
+  "limitations": [
+    "One normal-memory Android 14 phone; no low-memory comparison or production performance claim.",
+    "CPU-headroom channel requires API 36; CPU boost returned applied=false, so no positive hint-session proof.",
+    "No release/R8 build, heap-retention proof, forced no-current-activity case, or cold floors-only/missing-module physical test.",
+    "An early stop probe was interrupted by a runtime reset during manual navigation; cause unestablished. The uninterrupted replacement probe and two deliberate reloads are recorded.",
+    "Initial loop-captured debugger callback counts were discarded after a raw eval closure check returned b,b for a,b. Per-call callback closures and literal callbacks validated the accepted channel observations.",
+    "The app logs a disabled entitlement query missing-queryFn warning; no whole-app or World UI approval is implied."
+  ],
+  "observations": [
+    {
+      "key": "verger_device_lookup",
+      "output": [
+        {
+          "result": {
+            "available": true,
+            "capacity": {
+              "cpuCores": 8,
+              "refreshRateHz": 60.000003814697266,
+              "sdkInt": 34,
+              "totalMemoryBytes": 7852994560
+            },
+            "exits": [],
+            "hermes": true,
+            "methods": [
+              [
+                "readCapacity",
+                "function"
+              ],
+              [
+                "readExits",
+                "function"
+              ],
+              [
+                "readProcessId",
+                "function"
+              ],
+              [
+                "start",
+                "function"
+              ],
+              [
+                "stop",
+                "function"
+              ],
+              [
+                "setSensors",
+                "function"
+              ],
+              [
+                "setRefreshCap",
+                "function"
+              ],
+              [
+                "setCpuBoost",
+                "function"
+              ],
+              [
+                "readTotals",
+                "function"
+              ]
+            ],
+            "pid": 8830,
+            "totals": {
+              "costMs": 114.29611400000002,
+              "frames": 3,
+              "missedVsyncs": 4
+            }
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_literal_events",
+      "output": [
+        {
+          "result": {
+            "correctedSubscriptions": 11,
+            "lastLiteral": {
+              "battery": [
+                {
+                  "levelPercent": 74,
+                  "pluggedIn": true,
+                  "temperatureC": 32
+                }
+              ],
+              "lever": [
+                {
+                  "applied": true,
+                  "lever": "refresh-cap",
+                  "modeId": 0,
+                  "requested": null
+                },
+                {
+                  "applied": false,
+                  "lever": "cpu-boost",
+                  "requested": false
+                }
+              ],
+              "network": [
+                {
+                  "dataSaver": "disabled",
+                  "downKbps": 32768,
+                  "metered": false,
+                  "transport": "wifi",
+                  "validated": true
+                }
+              ],
+              "thermal": [
+                {
+                  "headroom": 0.6800000667572021,
+                  "status": "none"
+                }
+              ],
+              "threads": [
+                {
+                  "cores": {
+                    "gc": 0,
+                    "image": 0,
+                    "js": 0.019251543126690807,
+                    "main": 0.18288965970356266,
+                    "nativeModules": 0,
+                    "other": 0.03850308625338161,
+                    "render": 0
+                  },
+                  "intervalMs": 1038.877760000003,
+                  "processCores": 0.24064428908363508,
+                  "rssMb": 1447.0703125,
+                  "topOtherCores": 0.03850308625338161,
+                  "topOtherName": "VergerSense"
+                }
+              ]
+            },
+            "literalCounts": [
+              [
+                "thermal",
+                1
+              ],
+              [
+                "threads",
+                9
+              ],
+              [
+                "lever",
+                2
+              ],
+              [
+                "network",
+                1
+              ],
+              [
+                "battery",
+                1
+              ]
+            ]
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_corrected_events",
+      "output": [
+        {
+          "result": {
+            "counts": {
+              "onBattery": 1,
+              "onCpuHeadroom": 0,
+              "onDataUsage": 1,
+              "onFrameWindow": 11,
+              "onLever": 4,
+              "onMemory": 1,
+              "onMemoryTrim": 0,
+              "onNetwork": 1,
+              "onPowerSaver": 1,
+              "onThermal": 2,
+              "onThreadLoad": 26
+            },
+            "latest": {
+              "onBattery": {
+                "levelPercent": 74,
+                "pluggedIn": true,
+                "temperatureC": 32
+              },
+              "onDataUsage": {
+                "totalBytes": 66067018
+              },
+              "onFrameWindow": {
+                "averageMs": 328.80709666666667,
+                "droppedRatio": 0.6666666666666666,
+                "endMs": 196000,
+                "frames": 3,
+                "stages": {
+                  "delayMs": 185.241055,
+                  "gpuMs": 10.701892333333333,
+                  "renderMs": 35.259896000000005,
+                  "uiMs": 76.74178866666666
+                },
+                "startMs": 195500,
+                "state": "stressed",
+                "targetMs": 249.45029166666666,
+                "worstMs": 401.142558
+              },
+              "onLever": {
+                "applied": false,
+                "lever": "cpu-boost",
+                "requested": false
+              },
+              "onMemory": {
+                "availableMb": 3123.8125,
+                "lowMemory": false,
+                "rssMb": 1463.33203125,
+                "thresholdMb": 390
+              },
+              "onNetwork": {
+                "dataSaver": "disabled",
+                "downKbps": 32768,
+                "metered": false,
+                "transport": "wifi",
+                "validated": true
+              },
+              "onPowerSaver": {
+                "saver": false
+              },
+              "onThermal": {
+                "headroom": 0.6800000667572021,
+                "status": "none"
+              },
+              "onThreadLoad": {
+                "cores": {
+                  "gc": 0,
+                  "image": 0,
+                  "js": 0.8422812419046759,
+                  "main": 0.7178533311687578,
+                  "nativeModules": 0,
+                  "other": 0.1339992884848348,
+                  "render": 0.09571377748916772
+                },
+                "intervalMs": 1044.781667000003,
+                "processCores": 1.7898476390474363,
+                "rssMb": 1480.24609375,
+                "topOtherCores": 0.05742826649350063,
+                "topOtherName": "VergerSense"
+              }
+            },
+            "totals": {
+              "costMs": 7058.184246000001,
+              "frames": 124,
+              "missedVsyncs": 128
+            }
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_stop_result",
+      "output": [
+        {
+          "result": {
+            "available": true,
+            "stopResult": {
+              "counts": {
+                "onBattery": 0,
+                "onCpuHeadroom": 0,
+                "onDataUsage": 0,
+                "onFrameWindow": 0,
+                "onMemory": 0,
+                "onMemoryTrim": 0,
+                "onNetwork": 0,
+                "onPowerSaver": 0,
+                "onThermal": 0,
+                "onThreadLoad": 0
+              },
+              "frameTotalsStable": true,
+              "sensorEventsStable": true
+            },
+            "totals": {
+              "costMs": 65.20643,
+              "frames": 1,
+              "missedVsyncs": 3
+            }
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_restarted",
+      "output": [
+        {
+          "result": {
+            "counts": {
+              "onBattery": 2,
+              "onCpuHeadroom": 0,
+              "onDataUsage": 1,
+              "onFrameWindow": 2,
+              "onMemory": 0,
+              "onMemoryTrim": 1,
+              "onNetwork": 2,
+              "onPowerSaver": 2,
+              "onThermal": 2,
+              "onThreadLoad": 4
+            },
+            "levers": [
+              {
+                "applied": true,
+                "lever": "refresh-cap",
+                "modeId": 2,
+                "requested": 60
+              },
+              {
+                "applied": true,
+                "lever": "refresh-cap",
+                "modeId": 0,
+                "requested": null
+              },
+              {
+                "applied": false,
+                "lever": "cpu-boost",
+                "requested": true
+              },
+              {
+                "applied": false,
+                "lever": "cpu-boost",
+                "requested": false
+              }
+            ],
+            "totals": {
+              "costMs": 110.697072,
+              "frames": 2,
+              "missedVsyncs": 6
+            }
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_background_result",
+      "output": [
+        {
+          "result": {
+            "backgroundFrameTotalsStable": true,
+            "backgroundSensorEventsStable": true,
+            "counts": {
+              "onBattery": 2,
+              "onCpuHeadroom": 0,
+              "onDataUsage": 1,
+              "onFrameWindow": 2,
+              "onMemory": 0,
+              "onMemoryTrim": 1,
+              "onNetwork": 2,
+              "onPowerSaver": 2,
+              "onThermal": 2,
+              "onThreadLoad": 10
+            }
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_foreground_result",
+      "output": [
+        {
+          "result": {
+            "counts": {
+              "onBattery": 2,
+              "onCpuHeadroom": 0,
+              "onDataUsage": 1,
+              "onFrameWindow": 2,
+              "onMemory": 0,
+              "onMemoryTrim": 1,
+              "onNetwork": 2,
+              "onPowerSaver": 2,
+              "onThermal": 3,
+              "onThreadLoad": 17
+            },
+            "foregroundThreadsResumed": true,
+            "totals": {
+              "costMs": 110.697072,
+              "frames": 2,
+              "missedVsyncs": 6
+            }
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_unsubscribe_result",
+      "output": [
+        {
+          "result": {
+            "sensors": "all six native sensors disabled",
+            "unsubscribeResult": {
+              "leverCallbackRemoved": true,
+              "sensorCallbacksRemoved": true
+            }
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_no_sensor_result",
+      "output": [
+        {
+          "result": {
+            "noSensorResult": {
+              "callbacksStable": true,
+              "counts": {
+                "frames": 0,
+                "threads": 0
+              }
+            },
+            "pid": 8830,
+            "reloadWithSensorRunning": true
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_reload_first_result",
+      "output": [
+        {
+          "result": {
+            "available": true,
+            "diagnosticsCleared": true,
+            "hermes": true,
+            "modeCleared": true,
+            "pid": 8830,
+            "totals": {
+              "costMs": 55.679951,
+              "frames": 1,
+              "missedVsyncs": 3
+            }
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_reload_second_setup",
+      "output": [
+        {
+          "result": {
+            "activeSensing": true,
+            "pid": 8830,
+            "queuedRefreshReleases": 20
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_reload_second_result",
+      "output": [
+        {
+          "result": {
+            "hermes": true,
+            "oldDiagnosticsCleared": true,
+            "pid": 8830,
+            "totals": {
+              "costMs": 93.982028,
+              "frames": 1,
+              "missedVsyncs": 5
+            },
+            "wrapperAvailable": true
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    },
+    {
+      "key": "verger_single_and_invalid_result",
+      "output": [
+        {
+          "result": {
+            "invalid": [
+              "start: 'windowMs' must be finite and positive",
+              "start: 'windowMs' must be finite and positive",
+              "start: 'windowMs' must be finite and positive"
+            ],
+            "matchingCallbacks": 1
+          },
+          "deviceName": "SM-A525F - 14 - API 34",
+          "appName": "app.gurudevi.sanctuary.vergerv2.dev (samsung SM-A525F)",
+          "logicalDeviceId": "8c9fa26230f740ae58257f97496276f0fcdf6fa1"
+        }
+      ]
+    }
+  ]
+}

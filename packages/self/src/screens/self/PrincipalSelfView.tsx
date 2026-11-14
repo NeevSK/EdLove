@@ -1,4 +1,5 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
@@ -26,8 +27,8 @@ import {
   MoodSection,
   PrincipalPulse,
 } from '@repo/self/views/sections';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { EmptyState } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Box, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useState } from 'react';
@@ -53,8 +54,8 @@ export default function PrincipalSelfView() {
   // UI State
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
   const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
   const { decisions, isLoading: loadingDecisions } = useDecisionJournal(userId ?? undefined);
 
@@ -80,7 +81,7 @@ export default function PrincipalSelfView() {
   };
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="principal"
         description={t('self.principalDescription')}
@@ -186,10 +187,9 @@ export default function PrincipalSelfView() {
                 id: 'monthly_reflection',
                 label: 'Monthly Reflection',
                 content: (
-                  <PositiveInvitation
-                    context="self"
+                  <EmptyState
                     title={t('principal.monthlyComingSoon')}
-                    description={t('principal.monthlyComingSoonDesc')}
+                    message={t('principal.monthlyComingSoonDesc')}
                   />
                 ),
               },
@@ -213,6 +213,6 @@ export default function PrincipalSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

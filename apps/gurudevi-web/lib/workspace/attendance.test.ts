@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  discardUnmatchedAttendanceDraftMarks,
+  type AccountAttendanceDraftScope,
   discardAccountPracticeAttendance,
+  discardUnmatchedAttendanceDraftMarks,
   loadAccountAttendanceDraft,
   loadAccountPracticeAttendance,
   loadExploreAttendance,
@@ -11,7 +12,6 @@ import {
   saveAccountPracticeAttendance,
   saveExploreAttendance,
   stepAttendanceStatus,
-  type AccountAttendanceDraftScope,
   type WorkspaceStudent,
 } from './attendance';
 
@@ -63,8 +63,20 @@ describe('Workspace account attendance drafts', () => {
   };
   const students: readonly WorkspaceStudent[] = [
     { id: 'roster-1', studentId: 'student-1', name: 'Learner one', rollNumber: 1, status: 'late' },
-    { id: 'roster-2', studentId: 'student-2', name: 'Learner two', rollNumber: 2, status: 'absent' },
-    { id: 'roster-unlinked', studentId: null, name: 'Unlinked learner', rollNumber: 3, status: 'present' },
+    {
+      id: 'roster-2',
+      studentId: 'student-2',
+      name: 'Learner two',
+      rollNumber: 2,
+      status: 'absent',
+    },
+    {
+      id: 'roster-unlinked',
+      studentId: null,
+      name: 'Unlinked learner',
+      rollNumber: 3,
+      status: 'present',
+    },
   ];
 
   it('stores only linked student marks in the account + bond + scope + classroom + day namespace', () => {
@@ -79,7 +91,9 @@ describe('Workspace account attendance drafts', () => {
 
     saveAccountAttendanceDraft(scope, students);
     const [key, raw] = [...local.entries()][0] ?? [];
-    expect(key).toContain('standard:account:account-17:workspace%3Aattendance%3Abond-1%3Aclassroom-scope-1%3Aclassroom-1%3A2026-09-17');
+    expect(key).toContain(
+      'standard:account:account-17:workspace%3Aattendance%3Abond-1%3Aclassroom-scope-1%3Aclassroom-1%3A2026-09-17',
+    );
     expect(raw).not.toContain('Learner one');
     expect(raw).toContain('student-1');
     expect(loadAccountAttendanceDraft(scope)?.marks).toEqual({
@@ -146,7 +160,11 @@ describe('Workspace account attendance practice adapter', () => {
   it('loads fictional students and keeps saved marks per account, practice feature, and day', () => {
     const initial = loadAccountPracticeAttendance(accountId, date);
     expect(initial.classroom.id).toBe('practice-classroom');
-    expect(initial.students.map((student) => student.name)).toEqual(['Nila Sen', 'Ravi Das', 'Mira Anand']);
+    expect(initial.students.map((student) => student.name)).toEqual([
+      'Nila Sen',
+      'Ravi Das',
+      'Mira Anand',
+    ]);
     expect(initial.students.every((student) => student.status === 'present')).toBe(true);
 
     const changed = initial.students.map((student, index) =>
@@ -155,8 +173,12 @@ describe('Workspace account attendance practice adapter', () => {
     saveAccountPracticeAttendance(accountId, date, changed);
 
     expect(loadAccountPracticeAttendance(accountId, date).students[0]?.status).toBe('late');
-    expect(loadAccountPracticeAttendance(accountId, '2026-09-18').students[0]?.status).toBe('present');
-    expect(loadAccountPracticeAttendance('different-account', date).students[0]?.status).toBe('present');
+    expect(loadAccountPracticeAttendance(accountId, '2026-09-18').students[0]?.status).toBe(
+      'present',
+    );
+    expect(loadAccountPracticeAttendance('different-account', date).students[0]?.status).toBe(
+      'present',
+    );
     const stored = [...values.values()].join('\n');
     expect(stored).not.toContain('Learner one');
     expect(stored).not.toContain('Nila Sen');
@@ -172,8 +194,16 @@ describe('Workspace account attendance practice adapter', () => {
 
     discardAccountPracticeAttendance(accountId);
 
-    expect(loadAccountPracticeAttendance(accountId, date).students.every((student) => student.status === 'present')).toBe(true);
-    expect(loadAccountPracticeAttendance('different-account', date).students.every((student) => student.status === 'absent')).toBe(true);
+    expect(
+      loadAccountPracticeAttendance(accountId, date).students.every(
+        (student) => student.status === 'present',
+      ),
+    ).toBe(true);
+    expect(
+      loadAccountPracticeAttendance('different-account', date).students.every(
+        (student) => student.status === 'absent',
+      ),
+    ).toBe(true);
   });
 
   it('preserves malformed practice data and reports storage failures', () => {

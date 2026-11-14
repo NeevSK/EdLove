@@ -59,6 +59,33 @@ Both use `action: 'update'` because Cedar policy only permits non-admin users `r
 - `getActivePerspective()` — uses dynamic `import()` of factory to avoid circular dependency
 - Other methods (`requestSchoolJoin`, `requestClassroomJoin`, etc.) still call factory directly
 
+---
+
+## Canonical Onboarding & Workspace Transition Seam (2026-11-01)
+
+The platform enforces a three-stage progressive covenant:
+
+```mermaid
+flowchart TD
+    G["1. Guest Explorer\n(Ephemeral local bond · THIRD_CLASS)"] --> S["2. Personal Citizen\n(EdLove UUIDv8 · SECOND_CLASS)"]
+    S --> P{"Primary Capacity?"}
+    P -->|Teacher| T["Educator Personal Studio\n(Private lesson drafts & templates)"]
+    P -->|Student| St["Learner Personal Studio\n(Study sanctuary & reflection)"]
+    P -->|Principal| Pr["Institutional Governance\n(Direct to School/Commercial setup)"]
+    
+    T --> J["3. School Join via Invite / QR\n(Institutional Bond · FIRST_CLASS)"]
+    St --> J
+    
+    J --> Choice{"Explicit Upgrade Seam"}
+    Choice -->|Promote & Converge| C1["Links personal drafts into School Workspace"]
+    Choice -->|Dual-Lens Separation| C2["Preserves Personal Studio + adds School Lens in usePerspectiveStore"]
+```
+
+### The Explicit Upgrade Choice:
+When an existing personal account joins an accredited school:
+1. **Option A (Promote & Converge)**: Links their existing personal draft materials to the newly bonded school context so they hit the ground running with zero data reentry.
+2. **Option B (Dual-Lens Separation)**: Retains their independent Personal Studio and registers an `InstitutionalBondPerspective` inside `usePerspectiveStore.availablePerspectives`. Switching between personal craft and official school duties occurs with 0ms latency.
+
 ## How to Add a New Onboarding Step
 
 1. **Add route to contract** — Add entry to `onboardingContract` in `packages/core/src/api/onboarding.contract.ts` with method, path, Zod request body, response, and POA metadata

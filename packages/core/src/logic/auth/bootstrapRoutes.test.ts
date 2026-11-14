@@ -29,7 +29,22 @@ describe('web auth callback bootstrap route', () => {
     ).toMatchObject({ decision: 'app', redirectTo: '/self' });
   });
 
-  it('admits guest onboarding only for an anonymous session', () => {
+  it('preserves a caller-selected workspace entry route after a completed callback', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasActiveCapacity: true,
+        hasSession: true,
+        identityAvailability: 'active',
+        onboardingCompleted: true,
+        pathname: '/auth/callback',
+        sessionMode: 'authenticated',
+        appEntryPath: '/workspace',
+      }),
+    ).toMatchObject({ decision: 'app', redirectTo: '/workspace' });
+  });
+
+  it('admits guest onboarding only for an anonymous Auth session or local device guest', () => {
     expect(
       getAuthRouteTarget({
         bootstrapReady: true,
@@ -40,6 +55,18 @@ describe('web auth callback bootstrap route', () => {
         guestOnboardingIntent: true,
       }),
     ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasLocalGuestSession: true,
+        hasSession: false,
+        onboardingCompleted: false,
+        pathname: '/onboarding',
+        sessionMode: 'unauthenticated',
+        guestOnboardingIntent: true,
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
 
     expect(
       getAuthRouteTarget({
@@ -138,4 +165,3 @@ describe('web auth callback bootstrap route', () => {
     ).toMatchObject({ decision: 'public', redirectTo: null });
   });
 });
-

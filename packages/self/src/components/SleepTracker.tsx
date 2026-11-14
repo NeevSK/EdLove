@@ -1,30 +1,23 @@
 /**
  * SLEEP TRACKER
  * Morning check-in: "How was your sleep?"
- * Simple, gentle way to track sleep quality
+ * Reconstructed: Purged legacy UI primitives and SkeletonLoader; replaced with React Native primitives + @repo/ui/theme/native.
  */
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useSleepTracker } from '@repo/self/hooks/useSleepTracker';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Moon, Sparkles } from '@repo/ui/icons';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Slider,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
+import { useWorld } from '@repo/ui/theme/native';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
+import Animated, {
   Easing,
   FadeIn,
   useAnimatedStyle,
@@ -39,6 +32,7 @@ interface SleepTrackerProps {
 }
 
 export default function SleepTracker({ userId, disabled: componentDisabled }: SleepTrackerProps) {
+  const { tokens } = useWorld();
   const { context } = usePermissions();
   const activeUserId = userId || context.userId || undefined;
   const {
@@ -176,134 +170,145 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
 
   if (isLoading && activeUserId) {
     return (
-      <VStack className="p-lg gap-lg">
-        <SkeletonCard height={40} />
-        <SkeletonCard height={280} />
-      </VStack>
+      <View className="p-5 gap-5">
+        <View className="h-10 rounded-2xl bg-white/5" />
+        <View className="h-[280px] rounded-2xl bg-white/5" />
+      </View>
     );
   }
 
   if (!isMorning && !hasLoggedToday) {
     return (
-      <VStack className="p-lg gap-lg items-center justify-center min-h-[200px] bg-obsidian rounded-comfortable border border-white/5">
-        <Icon as={Moon} className="text-sanctuarySaffron mb-4" size={48} />
+      <View className="p-5 gap-5 items-center justify-center min-h-[200px] bg-obsidian rounded-comfortable border border-white/5">
+        <Moon className="text-sanctuarySaffron mb-4" size={48} color={tokens.lampDeep} />
         <Text className="text-mistGray text-center">
           {t('sleepTracker.notTime') || 'Sleep tracking is available in the morning (5am - 11am)'}
         </Text>
-      </VStack>
+      </View>
     );
   }
 
   return (
-    <VStack className="p-lg gap-lg">
+    <View className="p-5 gap-5">
       {historyError ? (
-        <HStack className="items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+        <View className="flex-row items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
           <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
             {historyError} Showing the last available log.
           </Text>
-          <Button
-            variant="outline"
-            size="sm"
+          <Pressable
             onPress={() => void refreshData()}
+            className="px-3 py-1.5 rounded-lg border border-white/20 active:bg-white/10"
             accessibilityLabel="Retry loading sleep history"
           >
-            <ButtonText>Retry</ButtonText>
-          </Button>
-        </HStack>
+            <Text className="text-sacredWhite text-xs font-bold">Retry</Text>
+          </Pressable>
+        </View>
       ) : null}
+
       {/* Header */}
-      <VStack className="gap-1">
-        <Heading className="text-sacredWhite" size="lg">
+      <View className="gap-1">
+        <Text className="text-sacredWhite text-xl font-bold">
           {t('sleepTracker.title') || 'Morning Rest'}
-        </Heading>
+        </Text>
         <Text className="text-mistGray text-sm">
           {t('sleepTracker.subtitle') || 'Understanding your rest helps you care for yourself.'}
         </Text>
-      </VStack>
+      </View>
 
       {/* Sleep visualization */}
-      <Box className="items-center justify-center p-xl bg-obsidian rounded-comfortable min-h-[220px] relative border border-white/5">
+      <View className="items-center justify-center p-6 bg-obsidian rounded-comfortable min-h-[220px] relative border border-white/5">
         {/* Animated stars */}
-        <AnimatedView style={[animatedStarsStyle]} className="absolute top-5 right-8">
-          <Icon as={Sparkles} className="text-indigo-400" size={24} />
-        </AnimatedView>
+        <Animated.View style={[animatedStarsStyle]} className="absolute top-5 right-8">
+          <Sparkles className="text-indigo-400" size={24} color={tokens.ornament} />
+        </Animated.View>
 
         {/* Emoji Feedback */}
-        <AnimatedView style={animatedMoonStyle}>
+        <Animated.View style={animatedMoonStyle}>
           <Text className="text-[96px]">{currentQuality.emoji}</Text>
-        </AnimatedView>
+        </Animated.View>
 
-        <VStack className="items-center mt-4">
+        <View className="items-center mt-4">
           <Text className={`text-2xl font-bold ${currentQuality.color}`}>
             {currentQuality.label}
           </Text>
           <Text className="text-mistGray text-sm italic text-center">
             {currentQuality.description}
           </Text>
-        </VStack>
-      </Box>
+        </View>
+      </View>
 
-      {/* Slider and Logging Controls */}
+      {/* Selector and Logging Controls */}
       {!hasLoggedToday ? (
-        <VStack className="gap-6">
-          <Box className="px-md">
-            <Slider
-              value={sleepQuality}
-              onValueChange={(value: number) => {
-                hapticLight();
-                setSleepQuality(value);
-              }}
-              minValue={1}
-              maxValue={5}
-              step={1}
-              className="h-10 w-full"
-              accessibilityLabel="Sleep quality"
-              accessibilityHint="Choose from restless to excellent"
-              accessibilityValue={{ min: 1, max: 5, now: sleepQuality }}
-            />
+        <View className="gap-6">
+          <View className="px-2">
+            <View className="flex-row justify-between items-center gap-2">
+              {SLEEP_QUALITY.map((sq) => {
+                const isSelected = sq.value === sleepQuality;
+                return (
+                  <Pressable
+                    key={sq.value}
+                    onPress={() => {
+                      hapticLight();
+                      setSleepQuality(sq.value);
+                    }}
+                    className={`flex-1 items-center justify-center py-3 rounded-2xl border transition-all ${
+                      isSelected
+                        ? 'bg-white/15 border-white/30 scale-105'
+                        : 'bg-white/5 border-white/5 opacity-60'
+                    }`}
+                  >
+                    <Text className="text-2xl mb-1">{sq.emoji}</Text>
+                    <Text className="text-[10px] font-black uppercase text-sacredWhite">
+                      {sq.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
 
-            <HStack className="justify-between mt-4">
+            <View className="flex-row justify-between mt-4">
               <Text className="text-dimGray text-xs">
                 {t('sleepTracker.restless') || 'Restless'}
               </Text>
               <Text className="text-dimGray text-xs">
                 {t('sleepTracker.excellent') || 'Excellent'}
               </Text>
-            </HStack>
-          </Box>
+            </View>
+          </View>
 
-          <Button
-            size="lg"
+          <Pressable
             onPress={handleSaveSleepLog}
-            isDisabled={isSaving || componentDisabled}
+            disabled={isSaving || componentDisabled}
             accessibilityLabel={isSaving ? 'Saving sleep quality' : 'Log sleep quality'}
             accessibilityState={{ busy: isSaving, disabled: Boolean(componentDisabled) }}
-            className={`rounded-full h-14 ${currentQuality.bg}`}
+            className={`rounded-full h-14 items-center justify-center active:scale-98 ${currentQuality.bg} ${
+              isSaving || componentDisabled ? 'opacity-50' : ''
+            }`}
           >
-            <ButtonText className="text-white font-bold">
+            <Text className="text-white font-bold text-base">
               {isSaving ? t('common.loading') : t('sleepTracker.logButton') || 'Log Rest'}
-            </ButtonText>
-          </Button>
-        </VStack>
+            </Text>
+          </Pressable>
+        </View>
       ) : (
-        <AnimatedView entering={FadeIn}>
-          <VStack className="p-lg bg-emeraldGreen/10 rounded-comfortable items-center border border-emeraldGreen/20 gap-2">
-            <Text className="text-emeraldGreen font-bold text-md">
+        <Animated.View entering={FadeIn}>
+          <View className="p-5 bg-emeraldGreen/10 rounded-comfortable items-center border border-emeraldGreen/20 gap-2">
+            <Text className="text-emeraldGreen font-bold text-base">
               ✓ {t('sleepTracker.alreadyLogged') || 'Rest Logged Today'}
             </Text>
             <Text className="text-mistGray text-xs">
               {t('sleepTracker.tomorrowHint') || 'You can record your next rest tomorrow morning.'}
             </Text>
-          </VStack>
-        </AnimatedView>
+          </View>
+        </Animated.View>
       )}
 
       {/* Philosophy note */}
-      <Box className="p-md bg-white/5 rounded-comfortable border border-white/5">
+      <View className="p-4 bg-white/5 rounded-comfortable border border-white/5">
         <Text className="text-mistGray text-xs text-center italic">
           {t('sleepTracker.philosophy') || '💤 Rest is sacred. Your wellbeing matters.'}
         </Text>
-      </Box>
-    </VStack>
+      </View>
+    </View>
   );
 }

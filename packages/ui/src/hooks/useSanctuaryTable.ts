@@ -1,19 +1,19 @@
+import type { RowData, SortingState } from '@tanstack/react-table';
 import {
-  type ColumnDef,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type SortingState,
-  type TableOptions,
-  useReactTable,
-} from '@tanstack/react-table';
+  type LegacyColumnDef,
+  type LegacyTableOptions,
+  useLegacyTable,
+} from '@tanstack/react-table/legacy';
 import { useState } from 'react';
 
-export interface UseSanctuaryTableOptions<TData>
-  extends Omit<TableOptions<TData>, 'getCoreRowModel'> {
+export interface UseSanctuaryTableOptions<TData extends RowData>
+  extends Omit<LegacyTableOptions<TData>, 'getCoreRowModel'> {
   data: TData[];
-  columns: ColumnDef<TData, any>[];
+  columns: LegacyColumnDef<TData, any>[];
   enableSorting?: boolean;
   enableFiltering?: boolean;
 }
@@ -22,7 +22,7 @@ export interface UseSanctuaryTableOptions<TData>
  * useSanctuaryTable - A shared headless hook that configures TanStack Table
  * for sorting, filtering, selection, and pagination.
  */
-export function useSanctuaryTable<TData>({
+export function useSanctuaryTable<TData extends RowData>({
   data,
   columns,
   enableSorting = true,
@@ -33,7 +33,7 @@ export function useSanctuaryTable<TData>({
   const [globalFilter, setGlobalFilter] = useState('');
   const [rowSelection, setRowSelection] = useState({});
 
-  const table = useReactTable({
+  const table = useLegacyTable({
     data,
     columns,
     state: {

@@ -1,11 +1,8 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import type {
-  AuthChangeEvent,
-  AuthMfaFactor,
-  AuthSession,
-  AuthUser,
-  IAuthPort,
-} from '@repo/core/logic/ports/auth.port';
+import { requestPhoneOtp, verifyPhoneOtp } from '@repo/core/lib/security/phoneAuth';
+import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import type { AuthChangeEvent, AuthMfaFactor, IAuthPort } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession, AuthUser } from '@repo/core/types/authSession';
 import { APIError } from '@repo/core/types/API';
 
 export class SupabaseAuthAdapter implements IAuthPort {
@@ -106,10 +103,28 @@ export class SupabaseAuthAdapter implements IAuthPort {
     const redirectTo = this.magicLinkRedirectUri();
     const { data, error } = await this.client.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: redirectTo },
+      // This is deliberately explicit: the unified entry has no separate
+      // registration branch. Supabase owns the verified new-vs-returning
+      // identity decision and suppresses account enumeration responses.
+      options: { emailRedirectTo: redirectTo, shouldCreateUser: true },
     });
     if (error) throw new APIError('Failed to send magic link', error.code, error);
     return { user: data.user as any, session: data.session as any };
+  }
+
+  async resetPasswordForEmail(email: string, redirectTo?: string): Promise<void> {
+    const { error } = await this.client.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectTo ?? this.magicLinkRedirectUri(),
+    });
+    if (error) throw new APIError('Failed to send password recovery email', error.code, error);
+  }
+
+  async signInWithPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest) {
+    return requestPhoneOtp(this.client.auth, params);
+  }
+
+  async verifyPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpVerification) {
+    return verifyPhoneOtp(this.client.auth, params);
   }
 
   private magicLinkRedirectUri(): string {
@@ -162,6 +177,42 @@ export class SupabaseAuthAdapter implements IAuthPort {
     });
     if (error) throw new APIError('Failed to register passkey', error.code, error);
     return data;
+  }
+
+  async unlinkIdentity(params: {
+    identityId: string;
+    expectedSubject?: string;
+  }): Promise<{ user: AuthUser | null }> {
+    const session = await this.getSession();
+    if (!session || session.user.is_anonymous !== false) {
+      throw new APIError('Sign in before unlinking a credential.', 'AUTH_REQUIRED');
+    }
+    if (params.expectedSubject !== undefined && params.expectedSubject !== session.user.id) {
+      throw new APIError('The account changed before credential unlink.', 'AUTH_SESSION_CHANGED');
+    }
+    throw new APIError('Credential unlink is not admitted by the v1 foundation.', 'UNSUPPORTED');
+  }
+
+  async requestPasswordReauthentication(): Promise<void> {
+    const owner = getActiveAccountId() ?? undefined;
+    const session = await this.getSession();
+    if (!session || session.user.is_anonymous !== false) {
+      throw new APIError('Sign in before requesting password confirmation.', 'AUTH_REQUIRED');
+    }
+    const { error } = await this.client.auth.reauthenticate();
+    if (error) {
+      throw new APIError(
+        'Could not request password confirmation. Try again.',
+        'AUTH_REAUTHENTICATION_UNAVAILABLE',
+      );
+    }
+    const current = await this.getSession();
+    if (current?.user.id !== session.user.id) {
+      throw new APIError(
+        'The account changed during password confirmation.',
+        'AUTH_SESSION_CHANGED',
+      );
+    }
   }
 
   async listMfaFactors() {
@@ -278,8 +329,48 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data as any;
   }
 
-  async updateUser(params: { email?: string; password?: string; data?: Record<string, any> }) {
-    const { data, error } = await this.client.auth.updateUser(params);
+  async updateUser(params: {
+    email?: string;
+    password?: string;
+    currentPassword?: string;
+    nonce?: string;
+    expectedSubject?: string;
+    data?: Record<string, any>;
+    options?: { emailRedirectTo?: string };
+  }) {
+    if (
+      (params.currentPassword !== undefined ||
+        params.nonce !== undefined ||
+        params.expectedSubject !== undefined) &&
+      params.password === undefined
+    ) {
+      throw new APIError(
+        'Password confirmation requires a new password.',
+        'INVALID_PASSWORD_CHANGE',
+      );
+    }
+    if (params.password !== undefined) {
+      const session = await this.getSession();
+      if (!session) throw new APIError('Sign in before changing a password.', 'AUTH_REQUIRED');
+      if (params.expectedSubject !== undefined && params.expectedSubject !== session.user.id) {
+        throw new APIError(
+          'The account changed before the password operation.',
+          'AUTH_SESSION_CHANGED',
+        );
+      }
+      const guestConversion = session.user.is_anonymous === true && params.email !== undefined;
+      if (guestConversion && (params.currentPassword !== undefined || params.nonce !== undefined)) {
+        throw new APIError(
+          'Guest conversion does not accept password confirmation.',
+          'INVALID_PASSWORD_CHANGE',
+        );
+      }
+      if (!guestConversion) {
+        throw new APIError('Password change is not admitted by the v1 foundation.', 'UNSUPPORTED');
+      }
+    }
+    const { options, expectedSubject: _expectedSubject, ...attributes } = params;
+    const { data, error } = await this.client.auth.updateUser(attributes, options);
     if (error) throw new APIError('Failed to update user', error.code, error);
     return data as any;
   }

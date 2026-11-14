@@ -1,14 +1,12 @@
+import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
 import { isBaselineReadCapability } from '@repo/core/logic/permissions/baselineCapabilities';
 import {
   type FeaturePresentation,
   resolveFeaturePresentation,
 } from '@repo/core/logic/permissions/featurePresentation';
-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { useAuthority } from '@repo/core/logic/permissions/hooks/useAuthority';
 import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
-import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
-import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import type { DomainFeature } from '@repo/core/types/Workspace';
 import { useMemo } from 'react';
 
@@ -22,12 +20,17 @@ export interface FeatureGatingResult {
 export function useFeatureRegistry(
   registry: Record<string, DomainFeature>,
 ): Record<string, FeatureGatingResult> {
-  const { context } = usePermissions();
-  const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
-  const getDecision = useCedarDecisionStore((s) => s.getDecision);
-  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
-    useEntitlementStore();
-  const flags = useFeatureStore((s) => s.flags);
+  const { context, cedarSnapshotLoaded, getDecision, flags } = useAuthority();
+  const entitlement = useEntitlementQuery(
+    context.userId,
+    {
+      activeBondId: context.activeBond?.id ?? null,
+      activeEntityId: context.activeEntityId,
+      activeEntityType: context.activeEntityType,
+    },
+    Boolean(context.userId && !context.isLocalOnly),
+  );
+  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } = entitlement;
 
   return useMemo(() => {
     return Object.fromEntries(

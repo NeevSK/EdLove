@@ -1,0 +1,62 @@
+[
+  {
+    "resource": "EditorialSubmission",
+    "table": "editorial_submissions",
+    "tableSource": "apps/gurudevi-mobile/supabase/migrations/20260831090000_editorial_control_plane.sql",
+    "securitySource": "apps/gurudevi-mobile/supabase/migrations/20260831090000_editorial_control_plane.sql",
+    "admission": "server-owned",
+    "policyMode": "default-deny",
+    "requireClientRevoke": true
+  },
+  {
+    "resource": "EditorialWork",
+    "table": "editorial_works",
+    "tableSource": "apps/gurudevi-mobile/supabase/migrations/20260831090000_editorial_control_plane.sql",
+    "securitySource": "apps/gurudevi-mobile/supabase/migrations/20260831090000_editorial_control_plane.sql",
+    "admission": "server-owned",
+    "policyMode": "default-deny",
+    "requireClientRevoke": true
+  },
+  {
+    "resource": "EditorialRightsAgreement",
+    "table": "editorial_rights_agreements",
+    "tableSource": "apps/gurudevi-mobile/supabase/migrations/20260831090000_editorial_control_plane.sql",
+    "securitySource": "apps/gurudevi-mobile/supabase/migrations/20260831090000_editorial_control_plane.sql",
+    "admission": "server-owned",
+    "policyMode": "default-deny",
+    "requireClientRevoke": true
+  },
+  {
+    "resource": "EditorialAuthor",
+    "table": "editorial_authors",
+    "tableSource": "apps/gurudevi-mobile/supabase/migrations/20260831090000_editorial_control_plane.sql",
+    "securitySource": "apps/gurudevi-mobile/supabase/migrations/20260831090000_editorial_control_plane.sql",
+    "admission": "server-owned",
+    "policyMode": "default-deny",
+    "requireClientRevoke": true
+  },
+  {
+    "resource": "UserRewards",
+    "table": "user_rewards",
+    "tableSource": "apps/gurudevi-mobile/supabase/migrations/20260211170000_master_baseline.sql",
+    "securitySource": "apps/gurudevi-mobile/supabase/migrations/20260309000000_identity_rls_fix.sql",
+    "rlsSource": "apps/gurudevi-mobile/supabase/migrations/20261030021000_user_rewards_rls_boundary.sql",
+    "admission": "legacy-not-admitted",
+    "policyMode": "owner",
+    "requireClientRevoke": false,
+    "policies": [
+      { "name": "Users can view own rewards", "command": "SELECT", "predicate": "USING", "identity": "get_my_id" },
+      { "name": "Users can insert own rewards", "command": "INSERT", "predicate": "WITH CHECK", "identity": "get_my_id" },
+      { "name": "Users can update own rewards", "command": "UPDATE", "predicate": "USING", "identity": "get_my_id" }
+    ]
+  },
+  {
+    "resource": "OperationReceipt",
+    "table": "operation_receipts",
+    "tableSource": "apps/gurudevi-mobile/supabase/migrations/20261014120000_operation_receipts.sql",
+    "securitySource": "apps/gurudevi-mobile/supabase/migrations/20261030020000_api_operation_foundation.sql",
+    "admission": "server-owned",
+    "policyMode": "default-deny",
+    "requireClientRevoke": true
+  }
+]

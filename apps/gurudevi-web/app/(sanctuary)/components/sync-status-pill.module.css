@@ -1,0 +1,82 @@
+/*
+ * The connection, said quietly like the mobile header's top line: online and
+ * checking show only a lit dot (the word stays for screen readers); trouble
+ * shows its word beside a dot that changes colour in the world's light time.
+ */
+.pill {
+  display: inline-flex;
+  min-height: 2rem;
+  min-width: 2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0 0.25rem;
+  color: var(--w-ink-soft);
+  font-family: var(--w-text-caption-font);
+  font-size: var(--w-text-caption-size);
+  font-weight: var(--w-text-caption-weight);
+  white-space: nowrap;
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 0.5rem;
+  border-radius: 50%;
+  background: var(--w-lamp);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp) 18%, transparent);
+  transition:
+    background-color var(--w-light-ms),
+    box-shadow var(--w-light-ms);
+}
+
+.pill[data-status="online"] .word,
+.pill[data-status="checking"] .word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pill[data-status="checking"] .statusDot {
+  background: var(--w-ink-faint);
+  box-shadow: none;
+}
+
+.pill[data-status="offline"] .statusDot {
+  background: var(--w-ink-faint);
+  box-shadow: none;
+}
+
+.pill[data-status="unstable"] .statusDot {
+  background: var(--w-lamp-deep);
+}
+
+.pill[data-status="unreachable"] {
+  color: var(--w-danger);
+}
+
+.pill[data-status="unreachable"] .statusDot {
+  background: var(--w-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-danger) 18%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pill[data-status="checking"] .statusDot {
+    animation: breathe 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusDot {
+    transition: none;
+  }
+}

@@ -1,20 +1,4 @@
-export interface AuthUser {
-  id: string;
-  email?: string | null;
-  user_metadata?: Record<string, any>;
-  app_metadata?: Record<string, any>;
-  is_anonymous?: boolean | null;
-  created_at?: string;
-}
-
-export interface AuthSession {
-  access_token: string;
-  refresh_token: string;
-  expires_in?: number;
-  expires_at?: number;
-  token_type?: string;
-  user: AuthUser;
-}
+import type { AuthSession, AuthUser } from '@repo/core/types/authSession';
 
 export type AuthChangeEvent =
   | 'SIGNED_IN'
@@ -27,6 +11,13 @@ export type AuthChangeEvent =
 
 export interface AuthSubscription {
   unsubscribe: () => void;
+}
+
+export interface PasswordChangeConfirmation {
+  currentPassword?: string;
+  nonce?: string;
+  /** Client continuity assertion; never an account selector or provider mutation attribute. */
+  expectedSubject?: string;
 }
 
 export interface AuthMfaFactor {
@@ -115,6 +106,23 @@ export interface IAuthPort {
     email: string,
   ): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
 
+  /** Sends a recovery link; the password is changed only after that link opens a recovery session. */
+  resetPasswordForEmail(email: string, redirectTo?: string): Promise<void>;
+
+  requestPasswordReauthentication(): Promise<void>;
+
+  unlinkIdentity(params: {
+    identityId: string;
+    expectedSubject?: string;
+  }): Promise<{ user: AuthUser | null }>;
+
+  signInWithPhoneOtp(params: PhoneOtpRequest): Promise<void>;
+
+  verifyPhoneOtp(params: PhoneOtpVerification): Promise<{
+    user: AuthUser;
+    session: AuthSession;
+  }>;
+
   /**
    * Exchanges a PKCE `code` (from a magic-link deep link) for a session.
    */
@@ -172,10 +180,25 @@ export interface IAuthPort {
   updateUser(params: {
     email?: string;
     password?: string;
+    currentPassword?: string;
+    nonce?: string;
+    expectedSubject?: string;
     data?: Record<string, any>;
+    options?: { emailRedirectTo?: string };
   }): Promise<{ user: AuthUser | null }>;
 
   signOut(options?: { scope?: 'global' | 'local' | 'others' }): Promise<void>;
 
   executeRpc(fn: string, params?: Record<string, any>): Promise<any>;
+}
+
+export interface PhoneOtpRequest {
+  phone: string;
+  shouldCreateUser?: boolean;
+  captchaToken?: string;
+}
+
+export interface PhoneOtpVerification {
+  phone: string;
+  token: string;
 }

@@ -1,0 +1,14 @@
+{
+  "extends": "../typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": [],
+    "paths": {
+      "@repo/verger-core": ["../verger-core/src/index.ts"],
+      "@repo/verger-react": ["../verger-react/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules"]
+}

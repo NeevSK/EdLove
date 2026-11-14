@@ -11,18 +11,25 @@ This skill provides guides and instructions on how to use device automation tool
 
 ## 🚀 Unified MCP Tool: `sovereign_device`
 
-The primary way to control and query emulator or simulator states is using the `sovereign_device` tool registered on our `platform-mcp` gateway.
+The repo gateway exposes a small, curated action set through `sovereign_device`. It is useful for platform-MCP-routed operations, but it is not the full device-control surface.
+
+### Software Mansion Argent MCP
+
+Argent is a separate Software Mansion MCP server. This workstation runs it from the Ubuntu WSL checkout so it uses the same ADB/Android SDK environment as native builds. Codex registers it as the `argent` MCP server; after a Codex restart, use its exposed tools directly. Its current tool server has live schemas for device discovery, accessibility descriptions, RN component trees, gestures, recording, network logs, and profilers.
+
+Use Argent's `list-devices` first to get the exact device id, then pass that id to each device-specific tool. Use `debugger-component-tree` for the live React Native component tree; it requires a debugger connection to Metro. Use `describe` for the accessibility/DOM tree. These are different inspections.
+
+Use Callstack `agent-device` for general cross-platform open/press/type/snapshot loops. Use `sovereign_device` when its smaller gateway action set fits or when the repo gateway is specifically required. Do not assume its optional `params.tool = "argent"` route exposes all native Argent tools.
 
 ### Selecting a Tool
 
-Pass `"tool": "argent"` to use the Software Mansion (SWM) tool.
-Omit it (default) to use **agent-device** (Callstack).
+For calls made through `sovereign_device`, omit `params.tool` for the Callstack `agent-device` adapter or set `params.tool = "argent"` for its limited SWM compatibility path. The richer Argent MCP server is a separate Codex connection; call its exposed tools directly instead of wrapping them in `sovereign_device`.
 
 ---
 
 ## 📋 Action Verb Reference
 
-### agent-device (Callstack) — default tool
+### `sovereign_device` actions — Callstack adapter by default
 
 | Action Verb | Description | Key Params |
 | :--- | :--- | :--- |
@@ -42,35 +49,22 @@ Omit it (default) to use **agent-device** (Callstack).
 | `clear-cache` | Clear Metro cache + reload | — |
 | `profile` | CPU/memory sample (JSON) | `{ duration?: number (ms) }` |
 
-### argent (SWM) — `{ "tool": "argent" }`
+### Argent tool names
 
-| Action Verb | Description | Key Params |
-| :--- | :--- | :--- |
-| `doctor` | Check connected tools & devices | — |
-| `screenshot` | Capture screen image | — |
-| `visual-diff` | Diff screenshot vs. baseline | `{ baseline?: "/path/to/base.png" }` |
-| `record` | Start/stop screen recording | `{ stop?: boolean, output?: "file.mp4" }` |
-| `component-tree` | Live React Native component tree | — |
-| `swipe` | Swipe gesture | `{ direction: "up"\|"down"\|"left"\|"right", element? }` |
-| `pinch` | Pinch / zoom gesture | `{ direction: "in"\|"out", scale?: number }` |
-| `long-press` | Long press on element | `{ element: "id", duration?: number (ms) }` |
-| `wait` | Wait for element to appear | `{ element: "id", timeout?: number (ms) }` |
-| `assert` | Assert element exists / has text | `{ element: "id", text?: "expected" }` |
-| `network` | Dump native-level network requests | — |
-| `logs` | Dump device logs | — |
+Argent tools are named by the live MCP schema. The workspace's pinned CLI can also list them with `argent tools` and describe a tool with `argent tools describe <tool-name>`. Invoke the MCP tool itself rather than inventing CLI subcommands such as `argent screenshot` or `argent doctor`; CLI invocations use `argent run <tool-name>`.
 
 ---
 
 ## 🛠️ Diagnostics & Setup Verification
 
-Always run `doctor` first to verify the connection is healthy:
+Check device availability before interacting:
 
 ```json
 // agent-device
 { "action": "doctor" }
 
-// argent
-{ "action": "doctor", "params": { "tool": "argent" } }
+// Argent MCP: list-devices (then use the returned id on tool calls)
+{ "platform": "android" }
 ```
 
 ---
@@ -81,8 +75,8 @@ Always run `doctor` first to verify the connection is healthy:
 // Get accessibility snapshot (agent-device)
 { "action": "snapshot", "params": { "platform": "android" } }
 
-// Get live React Native component tree (argent)
-{ "action": "component-tree", "params": { "tool": "argent" } }
+// Argent MCP: call debugger-component-tree with the id returned by list-devices.
+// It requires the app's React Native debugger to be connected to Metro.
 ```
 
 Always read the snapshot before pressing/tapping — it reveals element identifiers.
@@ -121,80 +115,9 @@ When you don't know the a11y id, use finders (agent-device):
 
 ---
 
-## ✋ Gestures (argent 0.21+)
+## Gestures, recording, network and profiling
 
-```json
-// Swipe left on a carousel
-{ "action": "swipe", "params": { "tool": "argent", "direction": "left" } }
-
-// Pinch to zoom in
-{ "action": "pinch", "params": { "tool": "argent", "direction": "in", "scale": 2.0 } }
-
-// Long press an item to open context menu
-{ "action": "long-press", "params": { "tool": "argent", "element": "post-item-42", "duration": 800 } }
-```
-
----
-
-## ⏳ Waiting & Asserting State (argent 0.21+)
-
-Use `wait` before interacting with elements that load asynchronously:
-
-```json
-// Wait for the home screen to appear (max 8s)
-{ "action": "wait", "params": { "tool": "argent", "element": "home-screen", "timeout": 8000 } }
-
-// Assert the welcome text is visible
-{ "action": "assert", "params": { "tool": "argent", "element": "welcome-header", "text": "Welcome back" } }
-```
-
----
-
-## 🌐 Network Inspection (argent 0.21+ / agent-device)
-
-```json
-// Dump native network requests (argent)
-{ "action": "network", "params": { "tool": "argent" } }
-
-// Dump network traffic (agent-device)
-{ "action": "network" }
-```
-
-Use this to verify API calls are succeeding during a flow, or debug auth headers.
-
----
-
-## 📸 Visual Regression Workflow (argent 0.22+)
-
-```
-1. Take a baseline screenshot of a stable state
-2. Make UI changes in code
-3. Run visual-diff to detect unintended changes
-```
-
-```json
-// Step 1 — save baseline (omit --baseline to create it)
-{ "action": "visual-diff", "params": { "tool": "argent" } }
-
-// Step 3 — diff against saved baseline
-{ "action": "visual-diff", "params": { "tool": "argent", "baseline": "/tmp/home-baseline.png" } }
-```
-
----
-
-## 🎬 Video Recording (argent 0.23+)
-
-Useful for capturing a full interaction flow for bug reports:
-
-```json
-// Start recording
-{ "action": "record", "params": { "tool": "argent" } }
-
-// ... perform interactions ...
-
-// Stop and save
-{ "action": "record", "params": { "tool": "argent", "stop": true, "output": "bug-repro.mp4" } }
-```
+These capabilities are available through the direct Argent MCP server. Load each tool's current schema before calling it; names and required arguments are versioned with the installed package. For sequences, use Argent's `run-sequence` or recorded-flow tools when their current schemas match the task. Do not route them through `sovereign_device` unless its gateway schema explicitly supports the operation.
 
 ---
 

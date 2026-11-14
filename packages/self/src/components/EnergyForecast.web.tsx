@@ -7,7 +7,6 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
 import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Battery, CircleCheck } from '@repo/ui/icons';
 import {
   Box,
@@ -70,7 +69,8 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
     saveForecast,
     error: historyError,
   } = useEnergyForecast(userId);
-  const { isPastView, viewDate } = useTemporalStore();
+  const isPastView = useTemporalStore((s) => s.isPastView);
+  const viewDate = useTemporalStore((s) => s.viewDate);
 
   const currentForecast = forecasts.find((f) => f.forecast_date === viewDate) ?? null;
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);

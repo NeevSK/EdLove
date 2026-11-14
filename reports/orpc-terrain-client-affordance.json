@@ -1,0 +1,32 @@
+
+📂  PHYSICAL NODE_MODULES AFFORDANCE: @orpc/client@2.0.0-beta.46
+Path: C:\x\node_modules\.pnpm\@orpc+client@2.0.0-beta.46\node_modules\@orpc\client
+Types: C:\x\node_modules\.pnpm\@orpc+client@2.0.0-beta.46\node_modules\@orpc\client\dist\index.d.mts
+Symbols Detected in .d.ts: 83
+
+🧩 GROUNDED COMPONENTS:
+  AsyncCleanupFn, AsyncIteratorClass, AsyncIteratorClassNextFn, ClientPromiseResult, MaybeOptionalOptions, PromiseWithError, Registry, ThrowableError, AnyORPCErrorJSON, COMMON_ERROR_STATUS_MAP, FriendlyClientOptions, InferClientBodyInputs, InferClientBodyOutputs, InferClientErrors, InferClientInputs, InferClientOutputs, MalformedResponseError, MalformedResponseErrorOptions, NestedClient, ORPCErrorOptions, ResponseError, ResponseErrorOptions, RPCJsonSerialization, RPCJsonSerializationMeta, RPCJsonSerializer, RPCJsonSerializerHandler, RPCJsonSerializerOptions, RPCSerializer, RPCSerializerOptions, RPCSerializerSerializeOptions, ErrorEvent, EventMeta, StandardBody, StandardBodyHint, StandardHeaders, StandardLazyRequest, StandardLazyResponse, StandardMethod, StandardRequest, StandardResponse, StandardUrl, AnyNestedClient, AnyORPCError, Client, ClientContext, ClientLink, ClientOptions, ClientRest, DynamicLink, InferClientContext, InferClientError, InferClientErrorUnion, ORPCError, ORPCErrorCode, ORPCErrorJSON, RECURSIVE_CLIENT_UNWRAP_KEYS
+
+⚡ GROUNDED FUNCTIONS:
+  asyncIteratorToStream, asyncIteratorToUnproxiedDataStream, consumeAsyncIterator, consumeEventIterator, eventIteratorToStream, eventIteratorToUnproxiedDataStream, onAsyncIteratorObjectError, onError, onFinish, onReadableStreamError, onStart, onSuccess, streamToAsyncIteratorObject, streamToEventIterator, getEventMeta
+
+📖 EXTRACTED CODE SNIPPET (FROM README/EXAMPLE):
+import { os } from '@orpc/server'
+import * as z from 'zod'
+
+export const router = {
+  planet: {
+    find: os
+      .input(z.object({ id: z.number() }))
+      .handler(({ input }) => ({ id: input.id, name: 'Earth' })),
+  },
+}
+
+📋 PRE-FLIGHT AGENT PROMPT:
+[PHYSICAL NODE_MODULES AFFORDANCE: @orpc/client@2.0.0-beta.46]
+Located at: C:\x\node_modules\.pnpm\@orpc+client@2.0.0-beta.46\node_modules\@orpc\client
+Grounded in real .d.ts declarations (83 symbols detected):
+  • Valid Components: AsyncCleanupFn, AsyncIteratorClass, AsyncIteratorClassNextFn, ClientPromiseResult, MaybeOptionalOptions, PromiseWithError, Registry, ThrowableError
+  • Valid Functions: asyncIteratorToStream, asyncIteratorToUnproxiedDataStream, consumeAsyncIterator, consumeEventIterator, eventIteratorToStream, eventIteratorToUnproxiedDataStream, onAsyncIteratorObjectError, onError
+CRITICAL: Any API not declared in the real .d.ts will fail at compile time. DO NOT hallucinate older Major-N APIs.
+

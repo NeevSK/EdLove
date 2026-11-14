@@ -1,0 +1,384 @@
+{
+  "id": "feature:classroom.teaching_loop",
+  "title": "Classroom Daily Teaching & Learning Loop",
+  "description": "The pedagogical heartbeat for educators: daily attendance roll call with offline sync resilience, lesson plan preparation, assignment dispatch, and holistic student radar attunement.",
+  "lifecycle": {
+    "maturity": "available",
+    "owner": "Naveen"
+  },
+  "links": [
+    "intent:teacher.daily_rollcall",
+    "intent:teacher.student_attunement",
+    "intent:teacher.respond_to_class_answers"
+  ],
+  "intents": [
+    {
+      "id": "intent:teacher.daily_rollcall",
+      "title": "Conduct Daily Classroom Roll Call",
+      "actor": "teacher",
+      "outcome": "Mark attendance for all enrolled students with instant local feedback and resilient background sync.",
+      "links": ["journey:teacher.daily_rollcall"],
+      "journeys": [
+        {
+          "id": "journey:teacher.daily_rollcall",
+          "title": "Record Daily Student Attendance",
+          "situation": "A teacher opens their classroom workspace at the beginning of the morning session to take attendance across their active student roster.",
+          "outcome": "Attendance states (present, late, excused, unexcused) are captured in local SQLite and synced to the school record.",
+          "context": "daily",
+          "preconditions": ["Authenticated account has active teacher bond for the classroom."],
+          "entry": "step:teacher.open_rollcall",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "AttendanceScreen provides individual and batch student attendance marking.",
+              "AttendanceView renders the daily classroom attendance snapshot.",
+              "teacherRollCallFlow defines the declarative flow sequence."
+            ],
+            "invariants": [
+              "Roll call marks must save to local SQLite immediately so connectivity drops in classrooms do not interrupt the teacher.",
+              "Attendance records must be idempotently upserted by student_id and date."
+            ],
+            "openQuestions": [
+              "How should multi-period secondary school attendance differentiate from primary morning roll call?"
+            ],
+            "integrationPoints": [
+              "packages/classroom/src/screens/AttendanceScreen.tsx",
+              "packages/classroom/src/components/AttendanceView.tsx",
+              "packages/core/src/flows/classroom/teacherRollCall.flow.ts",
+              "packages/core/src/adapters/powersync/schema.ts"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:teacher.open_rollcall",
+              "title": "Open Classroom Roster",
+              "interaction": "Navigate to classroom attendance and load the current date roster.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:teacher.mark_students",
+              "title": "Mark Student Presence",
+              "interaction": "Tap status pills for each student or use Mark All Present.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:teacher.submit_rollcall",
+              "title": "Submit Attendance Batch",
+              "interaction": "Confirm attendance snapshot.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:teacher.roster_to_mark",
+              "title": "Begin Roll Call",
+              "from": "step:teacher.open_rollcall",
+              "to": "step:teacher.mark_students",
+              "action": "Select student cards",
+              "feedback": "Status indicators update with haptic feedback.",
+              "links": []
+            },
+            {
+              "id": "transition:teacher.mark_to_submit",
+              "title": "Finalize Roll Call",
+              "from": "step:teacher.mark_students",
+              "to": "step:teacher.submit_rollcall",
+              "action": "Press Submit Attendance",
+              "feedback": "Snapshot is stored locally and sync status indicator reflects queued upload.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:teacher.offline_attendance_queue",
+              "title": "Resilient Offline Attendance Capture",
+              "statement": "Attendance marks must save to local SQLite WAL without network dependency, synchronizing automatically when connectivity resumes.",
+              "classification": "quality",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:teacher.attendance_screen",
+              "title": "Attendance Screen",
+              "category": "mobile",
+              "reference": "packages/classroom/src/screens/AttendanceScreen.tsx",
+              "status": "implemented",
+              "note": "Provides roll call UI with tactile status toggles.",
+              "links": []
+            },
+            {
+              "id": "binding:teacher.rollcall_flow",
+              "title": "Teacher Roll Call Flow DAG",
+              "category": "architecture",
+              "reference": "packages/core/src/flows/classroom/teacherRollCall.flow.ts",
+              "status": "implemented",
+              "note": "Flow DAG defining roll call steps and fallbacks.",
+              "links": []
+            },
+            {
+              "id": "binding:teacher.active_period_dispatcher",
+              "title": "Active Period Dispatcher",
+              "category": "mobile",
+              "reference": "packages/classroom/src/components/teacher/TeacherActivePeriodCard.tsx",
+              "status": "implemented",
+              "note": "Computes current and upcoming period from timetable_periods and enables 1-tap roll call.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:teacher.complete_daily_rollcall",
+              "title": "Complete Daily Morning Roll Call",
+              "transitions": [
+                "transition:teacher.roster_to_mark",
+                "transition:teacher.mark_to_submit"
+              ],
+              "expected": "All enrolled students are marked and attendance record is persisted.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:teacher.student_attunement",
+      "title": "Attune to Student Holistic Radar & Growth",
+      "actor": "teacher",
+      "outcome": "Observe student emotional wellbeing, focus, and holistic growth vectors.",
+      "links": ["journey:teacher.student_attunement"],
+      "journeys": [
+        {
+          "id": "journey:teacher.student_attunement",
+          "title": "Holistic Radar Attunement",
+          "situation": "A teacher notices a learner struggling or thriving and checks the student's holistic growth radar to adapt instruction.",
+          "outcome": "Teacher gains non-intrusive insight into emotional and cognitive balance.",
+          "context": "daily",
+          "preconditions": [
+            "Authenticated account has authorized teaching relationship with the student."
+          ],
+          "entry": "step:teacher.open_attunement",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "ClassroomHolisticInsights displays student radar and wellbeing cards.",
+              "teacherStudentRadarAttunementFlow governs the interaction."
+            ],
+            "invariants": [
+              "Private reflective journal text is never disclosed to teachers; only aggregate radar energy vectors are visible."
+            ],
+            "openQuestions": [
+              "What sensitivity thresholds should trigger proactive guidance prompts for the educator?"
+            ],
+            "integrationPoints": [
+              "packages/classroom/src/components/ClassroomHolisticInsights.tsx",
+              "packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:teacher.open_attunement",
+              "title": "Open Holistic Insights",
+              "interaction": "Navigate to the classroom insights tab.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:teacher.review_radar",
+              "title": "Review Growth Radar",
+              "interaction": "Inspect balance across focus, vitality, and emotional serenity.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:teacher.insights_to_radar",
+              "title": "Examine Student Radar",
+              "from": "step:teacher.open_attunement",
+              "to": "step:teacher.review_radar",
+              "action": "Select learner radar visualization",
+              "feedback": "Render Skia radar polygon with current growth balance.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:teacher.student_privacy_preservation",
+              "title": "Strict Learner Privacy Preservation",
+              "statement": "Attunement views must display aggregate pedagogical metrics without exposing private thoughts or personal journal text.",
+              "classification": "constraint",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:teacher.holistic_insights",
+              "title": "Classroom Holistic Insights Component",
+              "category": "mobile",
+              "reference": "packages/classroom/src/components/ClassroomHolisticInsights.tsx",
+              "status": "implemented",
+              "note": "Renders non-invasive radar and wellbeing telemetry.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:teacher.inspect_learner_radar",
+              "title": "Inspect Learner Holistic Radar",
+              "transitions": ["transition:teacher.insights_to_radar"],
+              "expected": "Radar graphic displays student growth dimensions without private diary text.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:teacher.respond_to_class_answers",
+      "title": "Teach next from what the class answered",
+      "actor": "teacher",
+      "outcome": "The next lesson aims at real misconceptions.",
+      "links": ["journey:teacher.class_answer_view"],
+      "journeys": [
+        {
+          "id": "journey:teacher.class_answer_view",
+          "title": "Respond to what the class answered",
+          "situation": "A teacher has run a check or exit ticket and wants to know what to teach next.",
+          "outcome": "The teacher sees the most common wrong answers and either reteaches or sends a note to someone who grew.",
+          "links": [],
+          "planning": {
+            "maturity": "proposed",
+            "implementation": "partial",
+            "verification": "partial"
+          },
+          "context": "daily",
+          "preconditions": ["The person has opened Gurudevi on their own device."],
+          "entry": "step:teacher.open_class_answers",
+          "development": {
+            "mode": "mixed",
+            "existingBehavior": [],
+            "invariants": ["No student is named, ranked or labelled."],
+            "openQuestions": [
+              "Whether 'who might need help' appears at all, and how it is worded."
+            ],
+            "integrationPoints": ["packages/form-builder/src/activity/classView.ts"]
+          },
+          "steps": [
+            {
+              "id": "step:teacher.open_class_answers",
+              "title": "Open the class view",
+              "interaction": "After a check, open what the class answered.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:teacher.read_common_wrong",
+              "title": "Read common wrong answers",
+              "interaction": "Per question: answered, right, right alone, most common wrong answers. No names.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:teacher.act_on_answers",
+              "title": "Reteach or send a note",
+              "interaction": "Plan a reteach, or send a growth note to a student who did alone what needed help before.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:teacher.open_to_read",
+              "title": "See the answers",
+              "from": "step:teacher.open_class_answers",
+              "to": "step:teacher.read_common_wrong",
+              "action": "Open",
+              "feedback": "Questions are ordered as in the activity.",
+              "links": []
+            },
+            {
+              "id": "transition:teacher.read_to_act",
+              "title": "Act",
+              "from": "step:teacher.read_common_wrong",
+              "to": "step:teacher.act_on_answers",
+              "action": "Choose a next step",
+              "feedback": "A note goes through the relation; a reteach is noted for the next lesson.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:teacher.class_view_names_no_one",
+              "title": "The class view names no one",
+              "statement": "The class answer view is computed when read from attempts the teacher may see, is never stored, and names no one; it says what the class answered, not who is behind.",
+              "classification": "constraint",
+              "origin": "proposal",
+              "links": ["requirement:learning.reflected_never_computed"]
+            },
+            {
+              "id": "requirement:teacher.formative_loop",
+              "title": "Formative loop",
+              "statement": "Teachers can see common wrong answers after a check and adjust teaching, as in the ASSISTments trials. Project doc claude/learning-that-works.md (evidence, 14 Nov 2026).",
+              "classification": "product",
+              "origin": "source",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:teacher.class_view_core",
+              "title": "Class answer view core",
+              "category": "architecture",
+              "reference": "packages/form-builder/src/activity/classView.ts",
+              "status": "implemented",
+              "note": "Read-time aggregate (G1).",
+              "links": []
+            },
+            {
+              "id": "binding:teacher.growth_note_rule",
+              "title": "Teacher growth-note moment",
+              "category": "architecture",
+              "reference": "packages/core/src/flows/moments/learningMoments.ts",
+              "status": "implemented",
+              "note": "moment:teacher_growth_noticed (G1).",
+              "links": []
+            },
+            {
+              "id": "binding:teacher.class_view_flow",
+              "title": "Class view flow and screen",
+              "category": "mobile",
+              "reference": "packages/core/src/flows/index.ts",
+              "status": "planned",
+              "note": "flow:teacher:send_growth_note is not registered yet.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:teacher.reteach_after_check",
+              "title": "Reteach after a check",
+              "transitions": ["transition:teacher.open_to_read", "transition:teacher.read_to_act"],
+              "expected": "The teacher targets the most common misconception; no student is named or ranked.",
+              "links": [
+                "requirement:teacher.class_view_names_no_one",
+                "requirement:teacher.formative_loop",
+                "binding:teacher.class_view_core",
+                "binding:teacher.class_view_flow"
+              ]
+            }
+          ],
+          "evidence": [],
+          "sharedRequirements": ["requirement:learning.reflected_never_computed"]
+        }
+      ]
+    }
+  ]
+}

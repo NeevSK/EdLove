@@ -1,5 +1,5 @@
+import { Text, Pressable } from 'react-native';
 import { BrandedEmptyState, BrandedErrorState } from '@repo/ui';
-import { Pressable, Text } from '@repo/ui/primitives';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 function isMissingTableError(error: unknown): boolean {

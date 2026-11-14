@@ -1,0 +1,77 @@
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background-color: #fef3c7;
+  border-bottom: 2px solid #f59e0b;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+:global([data-appearance="night"]) .banner {
+  background-color: #291b05;
+  border-bottom-color: #b45309;
+  color: #fde68a;
+}
+
+.bannerViolation {
+  background-color: #fee2e2;
+  border-bottom-color: #ef4444;
+  color: #991b1b;
+  animation: pulseViolate 1.5s ease-in-out infinite;
+}
+
+:global([data-appearance="night"]) .bannerViolation {
+  background-color: #3b0707;
+  border-bottom-color: #b91c1c;
+  color: #fca5a5;
+}
+
+@keyframes pulseViolate {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.82; }
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.statusText {
+  letter-spacing: 0.2px;
+}
+
+.strikesBadge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.08);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+:global([data-appearance="night"]) .strikesBadge {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.fullscreenBtn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.fullscreenBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}

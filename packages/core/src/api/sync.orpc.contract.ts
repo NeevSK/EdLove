@@ -1,3 +1,4 @@
+import { WorkspaceLayoutPatchSchema } from '@repo/core/logic/workspace/layoutPatch';
 import { z } from 'zod';
 
 const syncAuthority = (action: 'update') =>
@@ -52,4 +53,36 @@ export const syncORPCContract = {
     },
     metadata: syncAuthority('update'),
   },
+  patchWorkspaceLayout: {
+    method: 'post',
+    path: '/sync/patchWorkspaceLayout',
+    request: {
+      body: WorkspaceLayoutPatchSchema,
+    },
+    responses: {
+      200: {
+        schema: z.discriminatedUnion('status', [
+          z.object({
+            status: z.literal('completed'),
+            operationId: z.string().uuid(),
+            serverRevision: z.number().int(),
+          }),
+          z.object({
+            status: z.literal('conflict'),
+            conflictReason: z.string(),
+            conflictingGroups: z.array(z.string()).optional(),
+            conflictFetchReference: z
+              .object({
+                workspaceId: z.string(),
+                layoutTarget: z.string(),
+              })
+              .optional(),
+          }),
+        ]),
+        description: 'Authoritative workspace layout patch receipt',
+      },
+    },
+    metadata: syncAuthority('update'),
+  },
 };
+

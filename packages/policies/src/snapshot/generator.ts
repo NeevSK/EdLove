@@ -1,16 +1,17 @@
 import { sign } from 'node:crypto';
 import { AUTHORIZATION_ACTIONS, AUTHORIZATION_RESOURCES } from '../authorizationRegistry';
 import { check } from '../engine/evaluator';
-import type { PermissionSnapshot, UserContext } from './types';
+import type { PermissionSnapshot, SnapshotSubject } from './types';
 
 /**
  * Runs Cedar check() for every meaningful permission combination and generates
  * an offline-compatible capability snapshot signed with Ed25519.
  */
-export function generateSnapshot(user: UserContext, secret?: string): PermissionSnapshot {
-  const generatedAt = new Date().toISOString();
-  // Expires in 24 hours
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+export function generateSnapshot(user: SnapshotSubject, secret?: string): PermissionSnapshot {
+  // One clock reading, so the lifetime is exactly 24 hours.
+  const now = Date.now();
+  const generatedAt = new Date(now).toISOString();
+  const expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString();
 
   const resourceTypes = AUTHORIZATION_RESOURCES;
 
@@ -48,9 +49,11 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     AIAssistant: ['school_id'],
     UserRewards: ['school_id', 'user_id'],
     WhisperedMoment: ['school_id', 'user_id'],
+    OperationReceipt: ['account_id'],
   };
 
   const allPossibleAttributes: Record<string, any> = {
+    account_id: user.id,
     school_id: user.school_id,
     teacher_id: user.id,
     user_id: user.id,

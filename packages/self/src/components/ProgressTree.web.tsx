@@ -7,7 +7,7 @@
  * Metro resolves this over ProgressTree.tsx on the web platform.
  */
 import { useTemporalStore } from '@repo/core/logic';
-import { fetchInteractionCountForView } from '@repo/self/api/selfInsightsRepository';
+import { fetchInteractionCountForView } from '@repo/self/data/selfInsights.data';
 import { useEffect, useState } from 'react';
 
 interface ProgressTreeProps {
@@ -63,7 +63,8 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
   const [interactionCount, setInteractionCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const { viewDate, isPastView } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
 
   useEffect(() => {
     if (!userId) {

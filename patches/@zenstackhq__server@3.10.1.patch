@@ -1,0 +1,37 @@
+diff --git a/dist/hono.cjs b/dist/hono.cjs
+index c92d0d447d69bf11467c37233ff461e9b7ad3a20..78975bc62a311d094a21678978fa54f6c4904157 100644
+--- a/dist/hono.cjs
++++ b/dist/hono.cjs
+@@ -1,4 +1,5 @@
+ Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
++const { routePath } = require("hono/route");
+ const require_common = require("./common-CEe4nh_-.cjs");
+ //#region src/adapter/hono/handler.ts
+ function createHonoHandler(options) {
+@@ -7,7 +8,7 @@ function createHonoHandler(options) {
+ 		if (!client) return ctx.json({ message: "unable to get ZenStackClient from request context" }, 500);
+ 		const url = new URL(ctx.req.url);
+ 		const query = Object.fromEntries(url.searchParams);
+-		const path = ctx.req.path.substring(ctx.req.routePath.length - 1);
++		const path = ctx.req.path.substring(routePath(ctx).length - 1);
+ 		if (!path) return ctx.json({ message: "missing path parameter" }, 400);
+ 		let requestBody;
+ 		if (ctx.req.raw.body) try {
+diff --git a/dist/hono.mjs b/dist/hono.mjs
+index 853d9f6359a176b223bebf233049201a0979dac3..e2030ca09e94f11de509abe553d01160156f36e9 100644
+--- a/dist/hono.mjs
++++ b/dist/hono.mjs
+@@ -1,3 +1,4 @@
++import { routePath } from "hono/route";
+ import { t as logInternalError } from "./common-DETPQ77o.mjs";
+ //#region src/adapter/hono/handler.ts
+ function createHonoHandler(options) {
+@@ -6,7 +7,7 @@ function createHonoHandler(options) {
+ 		if (!client) return ctx.json({ message: "unable to get ZenStackClient from request context" }, 500);
+ 		const url = new URL(ctx.req.url);
+ 		const query = Object.fromEntries(url.searchParams);
+-		const path = ctx.req.path.substring(ctx.req.routePath.length - 1);
++		const path = ctx.req.path.substring(routePath(ctx).length - 1);
+ 		if (!path) return ctx.json({ message: "missing path parameter" }, 400);
+ 		let requestBody;
+ 		if (ctx.req.raw.body) try {

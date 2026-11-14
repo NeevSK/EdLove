@@ -1,9 +1,9 @@
+import { View, Text, Pressable } from 'react-native';
 import { LivingGlow } from '@repo/ui/components/LivingGlow';
-import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { Surface } from '@repo/ui/components/native';
 import { Heart, ShieldCheck, Star, Target } from '@repo/ui/icons';
-import { Box, Heading, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import Animated, { LinearTransition } from 'react-native-reanimated';
-import type { SanctuaryManifesto } from '@repo/community/types';
+import type { SanctuaryManifesto } from '@repo/core/types/Growth';
 
 interface ManifestoCardProps extends SanctuaryManifesto {
   onEndorse?: (id: string) => void;
@@ -51,42 +51,42 @@ export default function ManifestoCard({
   const VibeIcon = config.icon;
 
   return (
-    <SanctuaryCard onPress={onPress} elevated={has_endorsed} className="bg-surface-lowest">
-      <VStack className="gap-4">
-        <HStack className="justify-between items-center">
-          <HStack className="items-center gap-2">
-            <Box className="p-1 bg-white/5 border border-outline-variant rounded-md">
+    <Pressable onPress={onPress} className="active:opacity-90"><Surface tone="raised" className="p-4 rounded-2xl">
+      <View className="gap-4">
+        <View className="flex-row items-center justify-between items-center">
+          <View className="flex-row items-center items-center gap-2">
+            <View className="p-1 bg-white/5 border border-outline-variant rounded-md">
               <VibeIcon size={16} color={config.color} />
-            </Box>
+            </View>
             <Text className={`text-[10px] font-extrabold uppercase ${config.textColorClass}`}>
               {vibe} Manifesto
             </Text>
-          </HStack>
+          </View>
 
-          <HStack className="items-center gap-1">
+          <View className="flex-row items-center items-center gap-1">
             <Heart
               size={16}
               fill={has_endorsed ? '#E74C3C' : 'none'}
               color={has_endorsed ? '#E74C3C' : 'rgba(255,255,255,0.4)'}
             />
             <Text className="text-[12px] font-bold text-muted-foreground">{endorsement_count}</Text>
-          </HStack>
-        </HStack>
+          </View>
+        </View>
 
-        <VStack className="gap-1">
-          <Heading size="md" className="text-foreground">
+        <View className="gap-1">
+          <Text className="text-foreground">
             {title}
-          </Heading>
+          </Text>
           <Text
             numberOfLines={onPress ? 3 : undefined}
             className="text-sm leading-relaxed text-muted-foreground"
           >
             {content}
           </Text>
-        </VStack>
+        </View>
 
         <Animated.View layout={LinearTransition}>
-          <HStack className="justify-between items-center mt-1">
+          <View className="flex-row items-center justify-between items-center mt-1">
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();
@@ -106,9 +106,9 @@ export default function ManifestoCard({
                 <Star size={18} color="#E67E22" />
               </LivingGlow>
             )}
-          </HStack>
+          </View>
         </Animated.View>
-      </VStack>
-    </SanctuaryCard>
+      </View>
+    </Surface></Pressable>
   );
 }

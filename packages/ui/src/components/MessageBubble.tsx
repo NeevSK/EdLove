@@ -2,7 +2,8 @@ import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import React from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { EnrichedMarkdownText } from 'react-native-enriched-markdown';
-import { tokens } from '../tokens';
+import { proseMarkdownStyle } from './native/Media/EnrichedMarkdownAdapter';
+import { useWorldContext } from '../theme/native/WorldContext';
 
 export type MessageBubbleVariant = 'user' | 'assistant' | 'group';
 
@@ -32,6 +33,8 @@ export interface MessageBubbleProps {
   bubbleClassName?: string;
   textClassName?: string;
   style?: StyleProp<ViewStyle>;
+  /** Optional callback when a fenced code block is tapped (e.g. to open in Artifact Canvas). */
+  onCodeBlockPress?: (code: string, language?: string) => void;
 }
 
 function MessageBubbleInner({
@@ -45,10 +48,16 @@ function MessageBubbleInner({
   maxWidthClassName = 'max-w-[75%]',
   bubbleClassName,
   style,
+  onCodeBlockPress,
 }: MessageBubbleProps) {
   const isUser = variant === 'user' || (variant === 'group' && isOwn);
   const alignEnd = isUser;
   const showAuthorRow = variant === 'group' && !isOwn && authorName;
+  // Text and bubble share one source: the lamp for the person's own words, raised paper otherwise.
+  const { world, language } = useWorldContext();
+  const bubblePaint = isUser
+    ? { backgroundColor: world.tokens.lamp, borderColor: world.tokens.lamp }
+    : { backgroundColor: world.tokens.raised, borderColor: world.tokens.line };
 
   return (
     <HStack className={`${alignEnd ? 'justify-end' : 'justify-start'} mb-4 px-5`} style={style}>
@@ -69,18 +78,33 @@ function MessageBubbleInner({
               ? 'bg-phase-interactive border-phase-interactive rounded-tr-sm'
               : 'bg-phase-surface border-border rounded-tl-sm'
           } ${bubbleClassName ?? ''}`}
+          style={bubblePaint}
         >
           <EnrichedMarkdownText
             markdown={content}
             selectable
-            markdownStyle={{
-              paragraph: {
-                color: isUser ? '#ffffff' : tokens.colors.ink,
-                fontFamily: tokens.typography.fonts.body,
-                fontSize: tokens.typography.sizes.sm,
-                lineHeight: 21,
-              },
+            flavor="github"
+            streamingAnimation={!isUser}
+            streamingConfig={{
+              tableMode: 'progressive',
+              codeBlockMode: 'progressive',
             }}
+            md4cFlags={{
+              latexMath: true,
+              admonitions: true,
+            }}
+            onCodeBlockPress={
+              onCodeBlockPress
+                ? (event) => {
+                    const payload = (event as { nativeEvent?: { code?: string; language?: string } })
+                      ?.nativeEvent;
+                    if (payload?.code) {
+                      onCodeBlockPress(payload.code, payload.language);
+                    }
+                  }
+                : undefined
+            }
+            markdownStyle={proseMarkdownStyle(world.recipes.prose[isUser ? 'lamp' : 'ground'], world, language)}
           />
         </Box>
         {timestamp ? (

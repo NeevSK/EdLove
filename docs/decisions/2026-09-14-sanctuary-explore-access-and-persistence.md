@@ -2,7 +2,7 @@
 title: "Sanctuary Explore Access and Persistence Model"
 status: "accepted"
 created: 2026-09-14
-updated: 2026-10-04
+updated: 2026-10-23
 decision_owner: "Gurudevi product architecture"
 tags: [adr, sanctuary, explore, guest, sandbox, local-first, web]
 ---
@@ -18,6 +18,14 @@ backed by a private local data adapter and a clearly identified baseline data
 set. It is not a separate preview application and it must not report discarded
 writes as successful.
 
+## Integration note (2026-10-23)
+
+This accepted decision remains authoritative for Explore identity and local
+persistence. Its browser-local behavior maps to W0/W1 in the platform
+[`Client State and Web Offline Capability Canon`](../architecture/client-state-and-web-offline-capability-canon.md).
+Authenticated account outboxes and W4 durable-write requirements do not apply
+to public Explore, which must never create cloud commands or background sync.
+
 The persistence commitment, rather than a different application, changes as a
 person chooses more continuity:
 
@@ -28,10 +36,13 @@ person chooses more continuity:
 | Account | Authenticated durable identity and server-authorized data. | Sync, sharing, collaboration, billing, and durable work. |
 | Developer sandbox | Development-only, separately gated tooling with scoped real accounts or fixtures. | Engineering and QA only; never the public Explore experience. |
 
-`/explore` is public and starts in Explore mode. `/sanctuary/*` remains the
-durable-account boundary until a feature-specific policy explicitly admits a
-different session. `/welcome` offers Explore without turning a visitor into a
-cloud identity.
+`https://explore.gurudevi.app` is the public, account-free Explore host. Its
+clean paths (`/self`, `/workspace`, and the other explicitly supported Explore
+surfaces) rewrite internally to `/explore-internal/*`. The old
+`/explore/*` public paths are retired and return 404. Sanctuary remains the durable-account
+boundary until a feature-specific policy explicitly admits a different
+session. `/welcome` offers Explore without turning a visitor into a cloud
+identity.
 
 ## Non-negotiable experience rules
 
@@ -108,7 +119,7 @@ the original local namespace.
 2. Define browser-safe Explore session, storage, baseline-fixture, reset, and
    conversion-export contracts in `apps/gurudevi-web` or a browser-safe shared
    package.
-3. Deliver `/explore` with one real domain canvas and local mutations; prove
+3. Deliver Explore at `explore.gurudevi.app` with one real domain canvas and local mutations; prove
    that it makes no auth, API-write, outbox, or sync call.
 4. Reuse that route component for the corresponding authenticated domain slice
    by swapping only the adapter.
@@ -126,7 +137,7 @@ the original local namespace.
 - Existing guest conversion currently covers only a limited set of records;
   it is not a general conversion guarantee.
 - Existing Next.js Sanctuary authorization intentionally rejects anonymous and
-  local sessions. Preserve that boundary while `/explore` is introduced as a
+  local sessions. Preserve that boundary while Explore is introduced as a
   separate public route family.
 
 ## Acceptance criteria

@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -6,8 +7,22 @@ const mocks = vi.hoisted(() => ({
   searchParams: {} as { entry?: string },
   replace: vi.fn(),
   refreshProfile: vi.fn(),
-  routeTarget: { decision: 'booting', redirectTo: null as string | null },
-  routeState: {} as { profileError?: string | null },
+  recordDevelopmentTrace: vi.fn(),
+  routeTarget: {
+    decision: 'booting',
+    redirectTo: null as string | null,
+    policy: { canRenderCurrentPath: false },
+  },
+  routeState: {} as {
+    profileError?: string | null;
+    session?: { user: { id: string; is_anonymous?: boolean } };
+    isSessionLoading?: boolean;
+    isProfileResolving?: boolean;
+    isLocalGuestReady?: boolean;
+    onboardingCompleted?: boolean;
+  },
+  optionalStartup: vi.fn(),
+  splashHandoff: vi.fn(() => () => undefined),
 }));
 
 vi.mock('expo-router', () => ({
@@ -27,19 +42,42 @@ vi.mock('@/entry/bootstrapRouteState', () => ({
   getBootstrapRouteTarget: () => mocks.routeTarget,
   useBootstrapRouteState: () => mocks.routeState,
 }));
+vi.mock('@/boot/OptionalStartupServices', () => ({
+  OptionalStartupServices: (props: { phase: string }) => {
+    mocks.optionalStartup(props);
+    return null;
+  },
+}));
+vi.mock('@/boot/nativeSplashService', () => ({
+  handoffNativeSplashAfterCommit: mocks.splashHandoff,
+}));
+vi.mock('@/boot/startupTelemetry', () => ({
+  recordDevelopmentTrace: mocks.recordDevelopmentTrace,
+}));
+vi.mock('@repo/ui', () => ({ BrandPulse: () => null }));
 vi.mock('@repo/ui/components/BrandPulse', () => ({
   BrandPulse: () => null,
 }));
 vi.mock('@repo/ui/components/Mascot', () => ({
   Mascot: () => null,
 }));
-vi.mock('@repo/ui/primitives', () => ({
-  Box: 'Box',
-  Pressable: 'Pressable',
+vi.mock('@repo/ui/components/native', () => ({
+  Button: ({ label, ...rest }: { label: string }) =>
+    createElement(
+      'Pressable',
+      { accessibilityRole: 'button', accessibilityLabel: label, ...rest },
+      label,
+    ),
   Text: 'Text',
 }));
+vi.mock('@repo/ui/theme/native', () => ({
+  useWorld: () => ({ tokens: { ground: 'ground', lamp: 'lamp' } }),
+}));
 
-import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
+import {
+  DEFAULT_PENDING_INTENT_TTL_MS,
+  pendingIntentStore,
+} from '@repo/core/logic/deeplink/pendingIntent.store';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 
 function AppServices() {
@@ -48,13 +86,101 @@ function AppServices() {
 
 describe('SessionRouteGate account isolation', () => {
   beforeEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
     pendingIntentStore.getState().clearPendingIntent();
     mocks.pathname = '/self';
     mocks.searchParams = {};
     mocks.replace.mockReset();
     mocks.refreshProfile.mockReset();
-    mocks.routeTarget = { decision: 'booting', redirectTo: null };
+    mocks.recordDevelopmentTrace.mockReset();
+    mocks.routeTarget = {
+      decision: 'booting',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: false },
+    };
     mocks.routeState = {};
+    mocks.optionalStartup.mockReset();
+    mocks.splashHandoff.mockClear();
+  });
+
+  it('logs route state changes without repeating identical render diagnostics', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    let tree: ReturnType<typeof create>;
+    try {
+      await act(async () => {
+        tree = create(<SessionRouteGate>{null}</SessionRouteGate>);
+      });
+      await act(async () => {
+        tree.update(<SessionRouteGate>{null}</SessionRouteGate>);
+      });
+      expect(log.mock.calls.filter(([name]) => name === '[SessionRouteGate]')).toHaveLength(1);
+      mocks.routeState.isLocalGuestReady = true;
+      await act(async () => {
+        tree.update(<SessionRouteGate>{null}</SessionRouteGate>);
+      });
+      expect(log.mock.calls.filter(([name]) => name === '[SessionRouteGate]')).toHaveLength(2);
+      await act(async () => tree.unmount());
+    } finally {
+      log.mockRestore();
+    }
+  });
+
+  it('records a fixed route bucket without retaining route identifiers', async () => {
+    mocks.pathname = '/(tabs)/profile/private-user-id';
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'profile-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.recordDevelopmentTrace).toHaveBeenCalledWith({
+      category: 'route-transition',
+      task: 'profile',
+      state: 'restoring',
+      decision: 'booting',
+    });
+    expect(JSON.stringify(mocks.recordDevelopmentTrace.mock.calls)).not.toContain(
+      'private-user-id',
+    );
+  });
+
+  it('records only bounded route readiness facts for startup diagnosis', async () => {
+    vi.stubGlobal('__DEV__', true);
+    mocks.pathname = '/self';
+    mocks.routeState = {
+      profileError: 'private error detail',
+      isSessionLoading: true,
+      isProfileResolving: false,
+      isLocalGuestReady: true,
+      onboardingCompleted: true,
+    };
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.recordDevelopmentTrace).toHaveBeenCalledWith({
+      category: 'route-readiness',
+      task: 'self',
+      state: 'booting',
+      session_loading: true,
+      profile_resolving: false,
+      local_guest_ready: true,
+      onboarding_completed: true,
+      profile_error_present: true,
+      has_session: false,
+    });
+    expect(JSON.stringify(mocks.recordDevelopmentTrace.mock.calls)).not.toContain(
+      'private error detail',
+    );
   });
 
   it('renders a visible protected bootstrap state while a different account profile resolves', async () => {
@@ -84,6 +210,23 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.toJSON()).toBe('callback-shell');
   });
 
+  it('allows development diagnostics routes before a profile is completed', async () => {
+    vi.stubGlobal('__DEV__', true);
+    mocks.pathname = '/verger-diagnostics';
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'development-diagnostics'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(tree!.toJSON()).toBe('development-diagnostics');
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(mocks.optionalStartup).toHaveBeenCalledWith({ phase: 'public-ready' });
+  });
+
   it('shows a bootstrap state at root until the entry resolver has authority', async () => {
     mocks.pathname = '/';
     let tree: ReturnType<typeof create>;
@@ -100,7 +243,11 @@ describe('SessionRouteGate account isolation', () => {
 
   it('mounts authenticated services only after the session policy enters the app', async () => {
     mocks.pathname = '/welcome';
-    mocks.routeTarget = { decision: 'public', redirectTo: null };
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -113,7 +260,12 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.root.findAllByType(AppServices)).toHaveLength(0);
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+    mocks.routeState = { session: { user: { id: 'durable-account-1' } } };
     await act(async () => {
       tree!.update(
         <SessionRouteGate appServices={<AppServices />}>
@@ -125,9 +277,76 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.root.findAllByType(AppServices)).toHaveLength(1);
   });
 
+  it('mounts optional work only for admitted route content and supplies the owning route phase', async () => {
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+    expect(mocks.optionalStartup).not.toHaveBeenCalled();
+
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+    mocks.routeState = { session: { user: { id: 'durable-account-2' } } };
+    await act(async () => {
+      tree!.update(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+    expect(mocks.optionalStartup).toHaveBeenLastCalledWith({ phase: 'protected-ready' });
+
+    mocks.pathname = '/welcome';
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+    await act(async () => {
+      tree!.update(
+        <SessionRouteGate>
+          <>{'public-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+    expect(mocks.optionalStartup).toHaveBeenLastCalledWith({ phase: 'public-ready' });
+  });
+
+  it('keeps cloud services unmounted for an admitted device-local guest', async () => {
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+    mocks.routeState = {};
+
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate appServices={<AppServices />}>
+          <>{'local-guest-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(tree!.root.findAllByType(AppServices)).toHaveLength(0);
+    expect(mocks.optionalStartup).toHaveBeenLastCalledWith({ phase: 'public-ready' });
+  });
+
   it('does not mount authenticated services on the welcome route', async () => {
     mocks.pathname = '/welcome';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -141,7 +360,29 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.root.findAllByType(AppServices)).toHaveLength(0);
   });
 
-  it('replaces stale route content with a transition while redirecting', async () => {
+  it('keeps a real account on Welcome until the user chooses an entry action', async () => {
+    mocks.pathname = '/welcome';
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+    mocks.routeState = { session: { user: { id: 'real-account-001' } } };
+
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'welcome-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(tree!.toJSON()).toBe('welcome-shell');
+    expect(mocks.replace).not.toHaveBeenCalled();
+  });
+
+  it('hides blocked route content and offers a retry while redirecting', async () => {
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
@@ -154,7 +395,11 @@ describe('SessionRouteGate account isolation', () => {
     expect(tree!.toJSON()).not.toBeNull();
     expect(mocks.replace).not.toHaveBeenCalled();
 
-    mocks.routeTarget = { decision: 'public', redirectTo: '/welcome' };
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: '/welcome',
+      policy: { canRenderCurrentPath: false },
+    };
     await act(async () => {
       tree!.update(
         <SessionRouteGate>
@@ -164,9 +409,14 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     expect(tree!.toJSON()).not.toBe('protected-shell');
+    expect(JSON.stringify(tree!.toJSON())).toContain('Continue to Welcome');
     expect(JSON.stringify(tree!.toJSON())).toContain('protected-shell');
+    expect(tree!.root.findByProps({ pointerEvents: 'none' })).toBeDefined();
     expect(mocks.replace).toHaveBeenCalledTimes(1);
     expect(mocks.replace).toHaveBeenCalledWith('/welcome');
+    const continueButton = tree!.root.findByProps({ accessibilityLabel: 'Continue to Welcome' });
+    await act(async () => continueButton.props.onPress());
+    expect(mocks.replace).toHaveBeenCalledTimes(2);
 
     mocks.pathname = '/welcome';
     await act(async () => {
@@ -177,8 +427,65 @@ describe('SessionRouteGate account isolation', () => {
       );
     });
 
-    expect(mocks.replace).toHaveBeenCalledTimes(1);
+    expect(mocks.replace).toHaveBeenCalledTimes(2);
     expect(tree!.toJSON()).toBe('protected-shell');
+  });
+
+  it('keeps the native splash over a route transition and releases it for the admitted route', async () => {
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: '/welcome',
+      policy: { canRenderCurrentPath: false },
+    };
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith('/welcome');
+    expect(mocks.splashHandoff).not.toHaveBeenCalled();
+
+    mocks.pathname = '/welcome';
+    await act(async () => {
+      tree!.update(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(tree!.toJSON()).toBe('protected-shell');
+    expect(mocks.splashHandoff).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the native splash when a route transition outlasts the wait', async () => {
+    vi.useFakeTimers();
+    mocks.routeTarget = {
+      decision: 'public',
+      redirectTo: '/welcome',
+      policy: { canRenderCurrentPath: false },
+    };
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.splashHandoff).not.toHaveBeenCalled();
+    expect(JSON.stringify(tree!.toJSON())).toContain('protected-shell');
+    await act(async () => {
+      vi.advanceTimersByTime(8_000);
+    });
+
+    expect(mocks.splashHandoff).toHaveBeenCalledTimes(1);
+    expect(tree!.root.findByProps({ accessibilityLabel: 'Continue to Welcome' })).toBeDefined();
   });
 
   it('shows recovery and retries profile restoration after a bootstrap failure', async () => {
@@ -211,6 +518,40 @@ describe('SessionRouteGate account isolation', () => {
     expect(mocks.replace).toHaveBeenCalledWith('/welcome');
   });
 
+  it('keeps ordinary restoration calm, then offers recovery if the wait runs long', async () => {
+    vi.useFakeTimers();
+    let tree: ReturnType<typeof create>;
+    await act(async () => {
+      tree = create(
+        <SessionRouteGate>
+          <>{'protected-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(JSON.stringify(tree!.toJSON())).toContain('Opening Gurudevi');
+    expect(JSON.stringify(tree!.toJSON())).toContain('protected-shell');
+    expect(
+      tree!.root.findAllByProps({ accessibilityLabel: 'Retry restoring your sanctuary' }),
+    ).toHaveLength(0);
+    expect(tree!.root.findAllByProps({ accessibilityLabel: 'Return to Welcome' })).toHaveLength(0);
+
+    await act(async () => {
+      vi.advanceTimersByTime(8_000);
+    });
+
+    const retry = tree!.root.findByProps({ accessibilityLabel: 'Retry restoring your sanctuary' });
+    const escapeHatch = tree!.root.findByProps({ accessibilityLabel: 'Return to Welcome' });
+    expect(retry.props.accessibilityRole).toBe('button');
+    expect(escapeHatch.props.accessibilityRole).toBe('button');
+
+    await act(async () => {
+      escapeHatch.props.onPress();
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith('/welcome');
+  });
+
   it('drains pending intent store and navigates to deferred route when session enters app', async () => {
     pendingIntentStore.getState().setPendingIntent({
       targetPath: '/community?inviteCode=RESUME123',
@@ -219,7 +560,11 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/self';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
 
     let tree: ReturnType<typeof create>;
     await act(async () => {
@@ -234,6 +579,93 @@ describe('SessionRouteGate account isolation', () => {
     expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 
+  // The mobile app has no `/qr` screen (QR intents are retired; `+native-intent` fails them closed).
+  // The intent is still drained exactly once, but the navigator refuses to open a screen that
+  // doesn't exist, where it used to replace into expo-router's unmatched screen.
+  it('drains a QR intent exactly once and does not open the retired QR screen', async () => {
+    const payload = JSON.stringify({ v: 1, action: 'join_class', classroom_id: 'c123' });
+    const targetPath = `/qr?payload=${encodeURIComponent(payload)}`;
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath,
+      intentKind: 'qr',
+      params: { payload },
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+
+    await act(async () => {
+      create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
+  it('drains an internal route intent and navigates to target after session admission', async () => {
+    const targetPath = '/self/wisdom/bio-101';
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath,
+      intentKind: 'generic',
+      params: { path: targetPath },
+      originalUrl: 'https://sanctuary.gurudevi.app/self/wisdom/bio-101',
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+
+    await act(async () => {
+      create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith(targetPath);
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
+  it('drains an intent for a screen that does not exist without navigating to it', async () => {
+    const targetPath = '/library/resource/bio-101';
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath,
+      intentKind: 'generic',
+      params: { path: targetPath },
+      originalUrl: 'https://sanctuary.gurudevi.app/library/resource/bio-101',
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+
+    await act(async () => {
+      create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
   it('does NOT trigger redundant replace when pathname matches target base route', async () => {
     pendingIntentStore.getState().setPendingIntent({
       targetPath: '/community?inviteCode=ALREADY_HERE',
@@ -242,11 +674,42 @@ describe('SessionRouteGate account isolation', () => {
     });
 
     mocks.pathname = '/community';
-    mocks.routeTarget = { decision: 'app', redirectTo: null };
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
 
     let tree: ReturnType<typeof create>;
     await act(async () => {
       tree = create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).not.toHaveBeenCalled();
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
+  it('discards an expired deferred intent instead of replaying it into the app', async () => {
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath: '/community?inviteCode=EXPIRED',
+      intentKind: 'classroomInvite',
+      params: { inviteCode: 'EXPIRED' },
+      timestamp: Date.now() - DEFAULT_PENDING_INTENT_TTL_MS - 1,
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+
+    await act(async () => {
+      create(
         <SessionRouteGate>
           <>{'app-shell'}</>
         </SessionRouteGate>,

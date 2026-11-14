@@ -1,0 +1,20 @@
+steps:
+  - echo: Self All spaces is visible. Verify Reminders, filter to Wellbeing, then
+      verify Reminders is hidden; return to All spaces and verify it reappears.
+  - tool: await-ui-element
+    args:
+      condition: visible
+      selector:
+        text: Open Reminders
+      timeoutMs: 5000
+  - tap:
+      text: Wellbeing
+  - tool: await-ui-element
+    args:
+      condition: hidden
+      selector:
+        text: Open Reminders
+      timeoutMs: 15000
+executionPrerequisite: Android Gurudevi app is locally admitted as a guest on
+  Self, English UI, at the top of the All spaces category with Show Wellbeing
+  visible. No app reset or account changes.

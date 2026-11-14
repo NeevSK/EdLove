@@ -8,7 +8,7 @@ import { cn } from '@repo/ui/utils/classNames';
 import type React from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { type ViewProps } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
   SlideInDown,
   SlideOutDown,
@@ -16,7 +16,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 
 /**
  * Actionsheet Component
@@ -91,21 +91,24 @@ export interface ActionsheetContentProps {
 export const ActionsheetContent = ({ children, className }: ActionsheetContentProps) => {
   const { isOpen, onClose } = useActionsheet();
   const translateY = useSharedValue(0);
-  const panGesture = Gesture.Pan()
-    .activeOffsetY?.(8)
-    .failOffsetX?.([-24, 24])
-    .onUpdate((event: { translationY: number }) => {
+  const panGesture = usePanGesture({
+    activeOffsetY: 8,
+    failOffsetX: [-24, 24],
+    onUpdate: (event) => {
       'worklet';
-      translateY.value = Math.max(0, event.translationY);
-    })
-    .onEnd((event: { canceled?: boolean }) => {
+      translateY.set(Math.max(0, event.translationY));
+    },
+    onDeactivate: (event) => {
       'worklet';
-      const shouldClose = !event.canceled && translateY.value > 120;
-      if (shouldClose) runOnJS(onClose)();
-      translateY.value = withSpring(0);
-    });
+      if (!event.canceled && translateY.get() > 120) scheduleOnRN(onClose);
+    },
+    onFinalize: () => {
+      'worklet';
+      translateY.set(withSpring(0));
+    },
+  });
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
+    transform: [{ translateY: translateY.get() }],
   }));
 
   if (!isOpen) return null;

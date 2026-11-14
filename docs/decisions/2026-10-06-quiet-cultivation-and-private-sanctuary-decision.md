@@ -1,13 +1,21 @@
 ---
 title: "Quiet Cultivation & Private Sanctuary Decision"
-status: "active"
+status: "superseded"
 created: 2026-10-06
 author: "Naveen"
 scribe: "Antigravity"
 tags: [sanctuary, founder-decision, sovereignty, quiet-craft, private-release, mental-health]
+superseded_by: "2026-10-11-open-stewardship-and-aligned-support-decision.md"
 ---
 
 # Quiet Cultivation & Private Sanctuary Decision
+
+> **Superseded on 2026-10-11.** This decision remains as the record of why
+> performative launch pressure, public fundraising machinery, and sponsor-driven
+> product capture are unacceptable. The current policy is
+> [Open Stewardship & Aligned Support](2026-10-11-open-stewardship-and-aligned-support-decision.md):
+> Gurudevi may open its work and accept aligned support without accepting those
+> harms.
 
 ## Founder Statement & Context
 

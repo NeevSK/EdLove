@@ -1,50 +1,25 @@
-export type ErrorCategory = 'TRANSIENT' | 'PERMANENT' | 'CONFLICT' | 'AUTH_EXPIRED';
+import { classifyFailure } from '@repo/core/logic/failure/classifyFailure';
+
+export type SyncFailureClass = 'TRANSIENT' | 'PERMANENT' | 'CONFLICT' | 'AUTH_EXPIRED';
 
 /**
- * classifyError
- *
- * Standardized mapping of PostgreSQL and HTTP error codes and messages to
- * retry strategies.
+ * The outbox's view of a failure: how it should treat a queued item. The rules live in
+ * logic/failure/classifyFailure.ts; this maps the kind onto the outbox's four classes.
  */
-export function classifyError(error: any): ErrorCategory {
-  const msg = error.message?.toLowerCase() || '';
-  const code = String(error.code || error.status || '');
-
-  // Auth Expired: Token expired or needs refresh (should pause, not dump to DLQ)
-  if (
-    code === '401' ||
-    msg.includes('jwt expired') ||
-    msg.includes('token expired') ||
-    msg.includes('refresh token')
-  ) {
-    return 'AUTH_EXPIRED';
+export function classifyError(error: unknown): SyncFailureClass {
+  const kind = classifyFailure(error);
+  switch (kind?._tag) {
+    case 'UnauthorizedError':
+      return 'AUTH_EXPIRED';
+    case 'ForbiddenError':
+    case 'NotFoundError':
+    case 'ValidationError':
+    case 'DatabaseQueryError':
+      return 'PERMANENT';
+    case 'ConflictError':
+      return 'CONFLICT';
+    default:
+      // Transient kinds, and defects: the outbox keeps retrying what it can't recognise.
+      return 'TRANSIENT';
   }
-
-  // Permanent: Won't fix itself on retry (Schema, Logic, Constraints)
-  // Reference: https://www.postgresql.org/docs/current/errcodes-appendix.html
-  if (
-    code === '23505' || // Unique violation
-    code === '42501' || // Insufficient privilege
-    code === '42P01' || // Relation doesn't exist
-    code === '23503' || // Foreign key violation
-    code === '42703' || // Undefined column
-    msg.includes('permission denied') ||
-    msg.includes('not found')
-  ) {
-    return 'PERMANENT';
-  }
-
-  // Conflict: Data fork detected (Version mismatch, 409 Conflict)
-  if (
-    code === '409' ||
-    msg.includes('conflict') ||
-    msg.includes('version mismatch') ||
-    msg.includes('stale data')
-  ) {
-    return 'CONFLICT';
-  }
-
-  // Transient: Network, timeout, rate limit, server 5xx
-  // Also captures code 'P0000' (Internal Error) or network timeouts
-  return 'TRANSIENT';
 }

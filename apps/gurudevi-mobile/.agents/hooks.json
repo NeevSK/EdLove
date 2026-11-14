@@ -1,0 +1,24 @@
+{
+  "rn-terrain-safety-gate": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .agents/antigravity-gate-adapter.mjs",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "node .agents/antigravity-stop-adapter.mjs",
+        "timeout": 30
+      }
+    ]
+  }
+}

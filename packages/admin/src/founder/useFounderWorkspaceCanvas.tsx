@@ -1,3 +1,4 @@
+import { View, Text, Pressable } from 'react-native';
 import { useDomainRollout } from '@repo/core/hooks';
 import { WORKSPACE_CANVAS_ZONES } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
@@ -18,7 +19,6 @@ import {
   MoveRight,
   School as SchoolIcon,
 } from '@repo/ui/icons';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';
@@ -88,10 +88,10 @@ function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
 
 function StatPill({ label, value }: { label: string; value: string | number }) {
   return (
-    <Box className="min-w-[47%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk p-4">
+    <View className="min-w-[47%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk p-4">
       <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">{label}</Text>
       <Text className="mt-1 text-2xl font-bold text-phaseText-primary">{value}</Text>
-    </Box>
+    </View>
   );
 }
 
@@ -111,16 +111,16 @@ function SurfaceLauncher({
   disabled?: boolean;
 }) {
   return (
-    <VStack className="gap-4">
-      <HStack className="items-center gap-3">
-        <Box className="h-10 w-10 items-center justify-center rounded-xl bg-phase-warning/10">
+    <View className="gap-4">
+      <View className="flex-row items-center items-center gap-3">
+        <View className="h-10 w-10 items-center justify-center rounded-xl bg-phase-warning/10">
           <Icon size={18} color="#2A2318" />
-        </Box>
-        <VStack className="flex-1 gap-0.5">
+        </View>
+        <View className="flex-1 gap-0.5">
           <Text className="text-[15px] font-bold text-phaseText-primary">{title}</Text>
           <Text className="text-[12px] text-phaseText-secondary">{copy}</Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
       <Pressable
         disabled={disabled}
         onPress={onPress}
@@ -129,70 +129,70 @@ function SurfaceLauncher({
         accessibilityState={{ disabled }}
         className="self-start active:opacity-80"
       >
-        <Box
+        <View
           className={`rounded-full border px-4 py-2 ${disabled ? 'border-starlightGray/20 bg-phase-primary/5' : 'border-starlightGray/30 bg-phase-primary'}`}
         >
-          <HStack className="items-center gap-2">
+          <View className="flex-row items-center items-center gap-2">
             <Text
               className={`text-[12px] font-bold ${disabled ? 'text-phaseText-secondary' : 'text-white'}`}
             >
               {actionLabel}
             </Text>
             <MoveRight size={14} color={disabled ? '#7E7462' : 'white'} />
-          </HStack>
-        </Box>
+          </View>
+        </View>
       </Pressable>
-    </VStack>
+    </View>
   );
 }
 
 function PlatformPulseSurface({ stats }: { stats: FounderEcosystemStats }) {
   return (
-    <VStack className="gap-4">
-      <HStack className="flex-wrap gap-3">
+    <View className="gap-4">
+      <View className="flex-row items-center flex-wrap gap-3">
         <StatPill label="Institutions" value={stats?.total_schools ?? 0} />
         <StatPill label="Total, souls" value={stats?.total_users ?? 0} />
         <StatPill label="Active, users (7d)" value={stats?.active_users_7d ?? 0} />
         <StatPill label="Health" value={`${Math.round(stats?.ecosystem_health ?? 0)}%`} />
-      </HStack>
-      <HStack className="flex-wrap gap-3">
+      </View>
+      <View className="flex-row items-center flex-wrap gap-3">
         <StatPill label="Students" value={stats?.total_students ?? 0} />
         <StatPill label="Teachers" value={stats?.total_teachers ?? 0} />
-      </HStack>
-    </VStack>
+      </View>
+    </View>
   );
 }
 
 function StewardshipTopologySurface({ stats }: { stats: FounderEcosystemStats }) {
   return (
-    <VStack className="gap-3">
-      <HStack className="gap-3">
+    <View className="gap-3">
+      <View className="flex-row items-center gap-3">
         <StatPill label="Institutions" value={stats?.total_schools ?? 0} />
         <StatPill label="Principals" value={stats?.total_principals ?? 0} />
-      </HStack>
-      <HStack className="gap-3">
+      </View>
+      <View className="flex-row items-center gap-3">
         <StatPill label="Teachers" value={stats?.total_teachers ?? 0} />
         <StatPill label="Classrooms" value={stats?.total_classrooms ?? 0} />
-      </HStack>
-      <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
+      </View>
+      <View className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[13px] font-bold text-phaseText-primary">Founder, read</Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
           This, is the, operating lattice for a, cross-tenant, founder: institutions, leadership,
           heads, teacher, coverage, and, classroom spread.
         </Text>
-      </Box>
-    </VStack>
+      </View>
+    </View>
   );
 }
 
 function LearningVitalitySurface({ stats }: { stats: FounderEcosystemStats }) {
   return (
-    <VStack className="gap-3">
-      <HStack className="gap-3">
+    <View className="gap-3">
+      <View className="flex-row items-center gap-3">
         <StatPill label="Attendance (7d)" value={stats?.attendance_records_7d ?? 0} />
         <StatPill label="Submissions (7d)" value={stats?.submissions_7d ?? 0} />
-      </HStack>
-      <HStack className="gap-3">
+      </View>
+      <View className="flex-row items-center gap-3">
         <StatPill label="Growth, signals (7d)" value={stats?.growth_signals_7d ?? 0} />
         <StatPill
           label="Avg, performance"
@@ -202,40 +202,40 @@ function LearningVitalitySurface({ stats }: { stats: FounderEcosystemStats }) {
               : 'n/a'
           }
         />
-      </HStack>
-      <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
+      </View>
+      <View className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[13px] font-bold text-phaseText-primary">Academic, motion</Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
           Founder, should see, whether learning, is actually, moving across, the network, not, only
           whether, institutions exist, on paper.
         </Text>
-      </Box>
-    </VStack>
+      </View>
+    </View>
   );
 }
 
 function WellbeingRadarSurface({ stats }: { stats: FounderEcosystemStats }) {
   return (
-    <VStack className="gap-3">
-      <HStack className="gap-3">
+    <View className="gap-3">
+      <View className="flex-row items-center gap-3">
         <StatPill label="Mood, check-ins (7d)" value={stats?.mood_checkins_7d ?? 0} />
         <StatPill
           label="Avg, mood"
           value={stats?.avg_mood_score_7d != null ? stats.avg_mood_score_7d.toFixed(1) : 'n/a'}
         />
-      </HStack>
-      <HStack className="gap-3">
+      </View>
+      <View className="flex-row items-center gap-3">
         <StatPill label="Health" value={`${Math.round(stats?.ecosystem_health ?? 0)}%`} />
         <StatPill label="Active, communities" value={stats?.active_communities ?? 0} />
-      </HStack>
-      <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
+      </View>
+      <View className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[13px] font-bold text-phaseText-primary">Ecology, tone</Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
           This, stays in, the founder, workspace because, ecosystem wellbeing, is governance,
           signal, not, just a, private reflection, surface.
         </Text>
-      </Box>
-    </VStack>
+      </View>
+    </View>
   );
 }
 
@@ -247,38 +247,38 @@ function InstitutionRosterSurface({
   onOpenInstitution: (school: School) => void;
 }) {
   return (
-    <VStack className="gap-3">
+    <View className="gap-3">
       {schools.slice(0, 4).map((school) => (
         <Pressable
           key={school.id}
           onPress={() => onOpenInstitution(school)}
           className="active:opacity-80"
         >
-          <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
-            <HStack className="items-center gap-3">
-              <Box className="h-10 w-10 items-center justify-center rounded-xl bg-templeGold/10">
+          <View className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
+            <View className="flex-row items-center items-center gap-3">
+              <View className="h-10 w-10 items-center justify-center rounded-xl bg-templeGold/10">
                 <SchoolIcon size={18} color="#D4843A" />
-              </Box>
-              <VStack className="flex-1 gap-0.5">
+              </View>
+              <View className="flex-1 gap-0.5">
                 <Text className="text-[14px] font-bold text-phaseText-primary">{school.name}</Text>
                 <Text className="text-[11px] uppercase text-phaseText-secondary">
                   {(school.official_type || school.type || 'Institution').toString()}
                 </Text>
-              </VStack>
+              </View>
               <ArrowUpRight size={16} color="#7E7462" />
-            </HStack>
-          </Box>
+            </View>
+          </View>
         </Pressable>
       ))}
       {schools.length === 0 ? (
-        <Box className="rounded-2xl border border-dashed border-starlightGray/30 bg-silk p-5">
+        <View className="rounded-2xl border border-dashed border-starlightGray/30 bg-silk p-5">
           <Text className="text-[12px] text-phaseText-secondary">
             No institutions are registered yet. Use the creation runway to begin the founder
             workspace.
           </Text>
-        </Box>
+        </View>
       ) : null}
-    </VStack>
+    </View>
   );
 }
 
@@ -290,7 +290,7 @@ function WorkspaceSwitcherSurface({
   onSelectTarget: (target: WorkspaceSwitcherTarget) => void;
 }) {
   return (
-    <VStack className="gap-3">
+    <View className="gap-3">
       {targets.map((target) => (
         <Pressable
           key={target.id}
@@ -298,27 +298,27 @@ function WorkspaceSwitcherSurface({
           onPress={() => onSelectTarget(target)}
           className="active:opacity-80"
         >
-          <Box
+          <View
             className={`rounded-2xl border p-4 ${target.enabled ? 'border-starlightGray/20 bg-silk' : 'border-starlightGray/10 bg-phase-primary/5'}`}
           >
-            <HStack className="items-center gap-3">
-              <Box className="rounded-full bg-phase-warning/10 px-3 py-1">
+            <View className="flex-row items-center items-center gap-3">
+              <View className="rounded-full bg-phase-warning/10 px-3 py-1">
                 <Text className="text-[10px] font-bold uppercase text-phaseText-primary">
                   {target.status.replace('_', ' ')}
                 </Text>
-              </Box>
-              <VStack className="flex-1 gap-0.5">
+              </View>
+              <View className="flex-1 gap-0.5">
                 <Text className="text-[14px] font-bold text-phaseText-primary">{target.title}</Text>
                 <Text className="text-[12px] text-phaseText-secondary">
                   {target.enabled ? target.description : target.reason || target.description}
                 </Text>
-              </VStack>
+              </View>
               <ArrowUpRight size={16} color={target.enabled ? '#7E7462' : '#B3AA99'} />
-            </HStack>
-          </Box>
+            </View>
+          </View>
         </Pressable>
       ))}
-    </VStack>
+    </View>
   );
 }
 
@@ -345,8 +345,8 @@ function BridgeSurface({
   }
 
   return (
-    <VStack className="gap-3">
-      <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
+    <View className="gap-3">
+      <View className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
           Primary institution
         </Text>
@@ -357,49 +357,49 @@ function BridgeSurface({
           Enter the founder view for cross-institution stewardship, or drop into principal
           operations when you need the school room itself.
         </Text>
-      </Box>
-      <HStack className="gap-3">
+      </View>
+      <View className="flex-row items-center gap-3">
         <Pressable
           onPress={() => onOpenFounderSchool(primarySchool)}
           className="flex-1 active:opacity-80"
         >
-          <Box className="rounded-2xl border border-starlightGray/20 bg-phase-primary px-4 py-3">
+          <View className="rounded-2xl border border-starlightGray/20 bg-phase-primary px-4 py-3">
             <Text className="text-center text-[12px] font-bold text-white">
               Open, founder school, view
             </Text>
-          </Box>
+          </View>
         </Pressable>
         <Pressable
           onPress={() => onOpenPrincipalOps(primarySchool)}
           className="flex-1 active:opacity-80"
         >
-          <Box className="rounded-2xl border border-starlightGray/20 bg-phase-warning px-4 py-3">
+          <View className="rounded-2xl border border-starlightGray/20 bg-phase-warning px-4 py-3">
             <Text className="text-center text-[12px] font-bold text-phaseText-primary">
               Open, principal ops
             </Text>
-          </Box>
+          </View>
         </Pressable>
-      </HStack>
-    </VStack>
+      </View>
+    </View>
   );
 }
 
 function ResourceEcologySurface({ stats }: { stats: FounderEcosystemStats }) {
   return (
-    <VStack className="gap-3">
-      <HStack className="gap-3">
+    <View className="gap-3">
+      <View className="flex-row items-center gap-3">
         <StatPill label="Inventory, items" value={stats?.total_inventory_items ?? 0} />
         <StatPill label="Open, requests" value={stats?.pending_inventory_requests ?? 0} />
-      </HStack>
-      <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
+      </View>
+      <View className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[13px] font-bold text-phaseText-primary">Founder, read</Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
           This, surface stays, in the, founder outlook, layer only, when the, inventory stack, is
           explicitly, enabled. It, is meant, to show, pressure and, readiness, not, replace the,
           deeper operational, ERP rooms.
         </Text>
-      </Box>
-    </VStack>
+      </View>
+    </View>
   );
 }
 
@@ -411,11 +411,11 @@ function KnowledgeAtlasSurface({
   onOpenLibrary: () => void;
 }) {
   return (
-    <VStack className="gap-3">
-      <HStack className="gap-3">
+    <View className="gap-3">
+      <View className="flex-row items-center gap-3">
         <StatPill label="Resources" value={stats?.total_library_resources ?? 0} />
         <StatPill label="Verified" value={stats?.verified_resources ?? 0} />
-      </HStack>
+      </View>
       <SurfaceLauncher
         icon={BookOpen}
         title="Library, command"
@@ -423,7 +423,7 @@ function KnowledgeAtlasSurface({
         actionLabel="Open, library"
         onPress={onOpenLibrary}
       />
-    </VStack>
+    </View>
   );
 }
 
@@ -435,15 +435,15 @@ function CommunitySignalSurface({
   onOpenCommunity: () => void;
 }) {
   return (
-    <VStack className="gap-3">
-      <HStack className="gap-3">
+    <View className="gap-3">
+      <View className="flex-row items-center gap-3">
         <StatPill label="Active, communities" value={stats?.active_communities ?? 0} />
         <StatPill label="Posts (7d)" value={stats?.posts_7d ?? 0} />
-      </HStack>
-      <HStack className="gap-3">
+      </View>
+      <View className="flex-row items-center gap-3">
         <StatPill label="Feedback, echoes" value={stats?.total_echo_feedback ?? 0} />
         <StatPill label="Pending, responses" value={stats?.pending_echo_responses ?? 0} />
-      </HStack>
+      </View>
       <SurfaceLauncher
         icon={MessageSquareHeart}
         title="Community, commons"
@@ -451,7 +451,7 @@ function CommunitySignalSurface({
         actionLabel="Open, community"
         onPress={onOpenCommunity}
       />
-    </VStack>
+    </View>
   );
 }
 
@@ -769,7 +769,7 @@ export function FounderWorkspaceCanvas({
       subtitle="A, shared founder, workspace built from real, capability surfaces, with, layout sync, and optional, families revealed, through the, feature flag, engine."
       emptyMessage="No, founder surfaces, are available, yet for this workspace."
       renderSurfaceContent={(surface) => (
-        <Box className="flex-1">{(surface as FounderResolvedSurface).content}</Box>
+        <View className="flex-1">{(surface as FounderResolvedSurface).content}</View>
       )}
       getSurfaceTitle={(surface) => (surface as FounderResolvedSurface).title}
       getSurfaceSubtitle={(surface) => (surface as FounderResolvedSurface).subtitle}
@@ -782,7 +782,7 @@ export function FounderWorkspaceCanvas({
         const nextZone = getNextZone(typedSurface.zone);
 
         return (
-          <HStack className="flex-wrap gap-3">
+          <View className="flex-row items-center flex-wrap gap-3">
             <Pressable
               onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
               accessibilityRole="button"
@@ -790,11 +790,11 @@ export function FounderWorkspaceCanvas({
               accessibilityHint="Changes this surface's shortcut priority"
               className="active:opacity-80"
             >
-              <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
+              <View className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
                 <Text className="text-[12px] font-bold text-phaseText-primary">
                   {typedSurface.pinned ? 'Unpin' : 'Pin'}
                 </Text>
-              </Box>
+              </View>
             </Pressable>
             <Pressable
               onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
@@ -803,13 +803,13 @@ export function FounderWorkspaceCanvas({
               accessibilityHint="Moves this surface to the next workspace zone"
               className="active:opacity-80"
             >
-              <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
+              <View className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
                 <Text className="text-[12px] font-bold text-phaseText-primary">
                   Move, to {nextZone}
                 </Text>
-              </Box>
+              </View>
             </Pressable>
-          </HStack>
+          </View>
         );
       }}
       onToggleHidden={(surface) =>

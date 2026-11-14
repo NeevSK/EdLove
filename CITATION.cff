@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you cite or build upon this educational research corpus, architecture, or software, please cite it as below."
+title: "EdLove & Polymath Platform: An Offline-First Educational Transformation Ecosystem"
+authors:
+  - family-names: "K"
+    given-names: "Naveen"
+    alias: "NeevSK"
+url: "https://edlove.org"
+repository-code: "https://github.com/NeevSK/EdLove"
+abstract: "An open-source educational transformation ecosystem bridging perennial pedagogical philosophy, a worldwide catalog of 200 grassroots educational innovations, the Sri Lanka Education Atlas, and a convivial, offline-first digital sanctuary for teachers, students, and schools."
+keywords:
+  - "education"
+  - "pedagogy"
+  - "edtech"
+  - "offline-first"
+  - "sri-lanka"
+  - "convivial-tools"
+  - "critical-realism"
+  - "open-source"
+license: "MIT"
+version: "0.1.0"
+date-released: "2026-10-14"

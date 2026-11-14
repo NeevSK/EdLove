@@ -7,6 +7,7 @@ import { type ParsedStudent, parseStudents } from '@repo/scanner-kit/ocr/parsers
 import type { OCRProviderName } from '@repo/scanner-kit/ocr/types';
 import type { ScannedStudent } from '@repo/scanner-kit/types';
 import * as ImagePicker from 'expo-image-picker';
+import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -96,10 +97,10 @@ export default function OCRScanner({
     const hasPermission = await requestPermissions();
     if (!hasPermission) return;
 
+    // A whole page: no crop step before recognition.
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      ...imagePickerOptionsFor('scan'),
       allowsEditing: false,
-      quality: 1,
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -112,9 +113,8 @@ export default function OCRScanner({
   // Pick image from gallery
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      ...imagePickerOptionsFor('scan'),
       allowsEditing: false,
-      quality: 1,
     });
 
     if (!result.canceled && result.assets[0]) {

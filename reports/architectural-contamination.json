@@ -1,0 +1,788 @@
+{
+  "scannedFiles": 3208,
+  "timestamp": "2026-11-01T17:25:52.001Z",
+  "violationsCount": 67,
+  "javaViolationsCount": 45,
+  "reactViolationsCount": 22,
+  "debtCount": 20,
+  "falsePositivesCount": 6,
+  "violations": [
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_STATIC_CONTAINER_CLASS",
+      "severity": "MEDIUM",
+      "path": "packages/graphics/src/algorithms/KnowledgeParser.ts",
+      "line": 9,
+      "detail": "Class KnowledgeParser is purely a static container holding only static functions with no instance state. In TypeScript, standalone functions should be exported directly from the module.",
+      "cure": "Replace `class KnowledgeParser` with exported standalone functions: `export async function fromMermaid(...) { ... }`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/screens/SelfScreen.unified.tsx",
+      "line": 55,
+      "detail": "useSelfCanvasStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useSelfCanvasStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/hooks/useWisdom.ts",
+      "line": 13,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/hooks/useStudentGoals.ts",
+      "line": 19,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/hooks/useProgressTree.ts",
+      "line": 12,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/hooks/useMoodLogs.ts",
+      "line": 20,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/hooks/useJourneyData.ts",
+      "line": 22,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/hooks/useJournalEntries.ts",
+      "line": 17,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/hooks/useEnergyForecast.ts",
+      "line": 16,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/hooks/useDecisionJournal.ts",
+      "line": 13,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/components/ResonanceTimeline.tsx",
+      "line": 14,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/self/src/components/BaseSelfView.tsx",
+      "line": 46,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF",
+      "severity": "CRITICAL",
+      "path": "packages/ui/src/components/maps/UnifiedMapView.tsx",
+      "line": 30,
+      "detail": "React.forwardRef is deprecated in React 19. Pass `ref` directly as a standard component prop.",
+      "cure": "Remove forwardRef wrapper; add `ref?: React.Ref<...>` to props interface and accept `{ ref, ...props }`."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/ui/src/components/TemporalScrubber.tsx",
+      "line": 12,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/ui/src/components/TemporalProvider.tsx",
+      "line": 17,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/ui/src/components/TemporalPilot.tsx",
+      "line": 25,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/ui/src/components/TemporalNavigator.tsx",
+      "line": 19,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/core/src/hooks/useManualSnapshot.ts",
+      "line": 19,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/core/src/hooks/useJourneyHistory.ts",
+      "line": 27,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/core/src/lib/sync/sync/SyncManager.tsx",
+      "line": 63,
+      "detail": "useConflictStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useConflictStore((s) => s.user);`"
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/TeacherManager.ts",
+      "line": 10,
+      "detail": "Manager class TeacherManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/TeacherInsightsManager.ts",
+      "line": 1,
+      "detail": "Class forwards 16 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/TeacherInsightsManager.ts",
+      "line": 17,
+      "detail": "Manager class TeacherInsightsManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/RealtimeManager.ts",
+      "line": 7,
+      "detail": "Manager class RealtimeManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/PushNotificationManager.ts",
+      "line": 9,
+      "detail": "Manager class PushNotificationManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/ProfileManager.ts",
+      "line": 1,
+      "detail": "Class forwards 19 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/ProfileManager.ts",
+      "line": 15,
+      "detail": "Manager class ProfileManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/profile.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/NotificationManager.ts",
+      "line": 1,
+      "detail": "Class forwards 6 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/NotificationManager.ts",
+      "line": 9,
+      "detail": "Manager class NotificationManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/notification.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/misc.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/MediaManager.ts",
+      "line": 1,
+      "detail": "Class forwards 3 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/MediaManager.ts",
+      "line": 10,
+      "detail": "Manager class MediaManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/media.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/IdentityManager.ts",
+      "line": 1,
+      "detail": "Class forwards 14 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/IdentityManager.ts",
+      "line": 13,
+      "detail": "Manager class IdentityManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/identity.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/GrowthManager.ts",
+      "line": 130,
+      "detail": "Manager class GrowthManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/growth.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/featureFlag.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/EducationalManager.ts",
+      "line": 1,
+      "detail": "Class forwards 2 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/EducationalManager.ts",
+      "line": 19,
+      "detail": "Manager class EducationalManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/educational.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/DeviceSecurityManager.ts",
+      "line": 1,
+      "detail": "Class forwards 5 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/DeviceSecurityManager.ts",
+      "line": 7,
+      "detail": "Manager class DeviceSecurityManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/DeviceIdentityManager.ts",
+      "line": 9,
+      "detail": "Manager class DeviceIdentityManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/DeepLinkManager.ts",
+      "line": 30,
+      "detail": "Manager class DeepLinkManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/CryptoManager.ts",
+      "line": 3,
+      "detail": "Manager class CryptoManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/CommunityManager.ts",
+      "line": 1,
+      "detail": "Class forwards 15 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/CommunityManager.ts",
+      "line": 11,
+      "detail": "Manager class CommunityManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/community.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/authz.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/AuthManager.ts",
+      "line": 26,
+      "detail": "Manager class AuthManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_DEADWEIGHT_FACTORY",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/logic/managers/auth.factory.ts",
+      "line": 1,
+      "detail": "Factory file has 0 application callers. Pointless Java-style instantiation ceremony.",
+      "cure": "Delete factory. Export module singletons or composable functions directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_USELESS_PASS_THROUGH",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/AuditManager.ts",
+      "line": 1,
+      "detail": "Class forwards 2 calls directly to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "cure": "Liquidate wrapper class and let callers import the underlying repository or adapter port directly."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/managers/AuditManager.ts",
+      "line": 8,
+      "detail": "Manager class AuditManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_STATIC_CONTAINER_CLASS",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/native/guestDataSync.ts",
+      "line": 28,
+      "detail": "Class GuestDataSync is purely a static container holding only static functions with no instance state. In TypeScript, standalone functions should be exported directly from the module.",
+      "cure": "Replace `class GuestDataSync` with exported standalone functions: `export async function rememberGuestSession(...) { ... }`"
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_STATIC_CONTAINER_CLASS",
+      "severity": "MEDIUM",
+      "path": "packages/core/src/native/guestDataManager.ts",
+      "line": 13,
+      "detail": "Class GuestStorageError is purely a static container holding only static functions with no instance state. In TypeScript, standalone functions should be exported directly from the module.",
+      "cure": "Replace `class GuestStorageError` with exported standalone functions: `export async function getTimetable(...) { ... }`"
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/core/src/native/guestDataManager.ts",
+      "line": 81,
+      "detail": "Manager class GuestDataManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "line": 74,
+      "detail": "useEntitlementStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useEntitlementStore((s) => s.user);`"
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "packages/ui/src/components/TemporalShield.tsx",
+      "line": 17,
+      "detail": "useTemporalStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useTemporalStore((s) => s.user);`"
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "severity": "HIGH",
+      "path": "packages/accounting/src/cheques.ts",
+      "line": 15,
+      "detail": "Manager class ChequeManager has 0 application callers across web and mobile. UI code bypassed it.",
+      "cure": "Quarantine and strangle. Migrate any remaining state to Zustand/TanStack Query."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_GOF_SINGLETON",
+      "severity": "CRITICAL",
+      "path": "packages/admin/src/document-workflow/engine.ts",
+      "line": 17,
+      "detail": "Class uses GoF private static instance + getInstance(). Modern TypeScript modules are native singletons.",
+      "cure": "Export a module const instance: `export const instance = new Engine();` or export plain functions."
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_GOF_SINGLETON",
+      "severity": "CRITICAL",
+      "path": "packages/admin/src/analytics/engine.ts",
+      "line": 23,
+      "detail": "Class uses GoF private static instance + getInstance(). Modern TypeScript modules are native singletons.",
+      "cure": "Export a module const instance: `export const instance = new Engine();` or export plain functions."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "ZUSTAND_FULL_STORE_SUBSCRIPTION",
+      "severity": "HIGH",
+      "path": "apps/gurudevi-mobile/src/components/PDPAConsentModal.tsx",
+      "line": 14,
+      "detail": "useConsentStore() called without a selector. Causes component to re-render on any store mutation.",
+      "cure": "Use atomic selector: `const user = useConsentStore((s) => s.user);`"
+    },
+    {
+      "domain": "JAVA_OOP",
+      "rule": "JAVA_GOF_SINGLETON",
+      "severity": "CRITICAL",
+      "path": "apps/gurudevi-mobile/src/telemetry/devTelemetryCatcher.ts",
+      "line": 29,
+      "detail": "Class uses GoF private static instance + getInstance(). Modern TypeScript modules are native singletons.",
+      "cure": "Export a module const instance: `export const instance = new Engine();` or export plain functions."
+    }
+  ],
+  "debtItems": [
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/vstack/index.tsx",
+      "line": 23,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/view/index.tsx",
+      "line": 31,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/textarea/index.tsx",
+      "line": 13,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/text-input/index.tsx",
+      "line": 11,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/spinner/index.tsx",
+      "line": 7,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/scroll-view/index.tsx",
+      "line": 14,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/progress/index.tsx",
+      "line": 32,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/overlay/index.tsx",
+      "line": 13,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/linear-gradient/index.tsx",
+      "line": 10,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/input/index.tsx",
+      "line": 40,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/maps/UnifiedMapView.web.tsx",
+      "line": 14,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/image-background/index.tsx",
+      "line": 26,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/image/index.tsx",
+      "line": 7,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/icon/index.tsx",
+      "line": 38,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/hstack/index.tsx",
+      "line": 23,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/divider/index.tsx",
+      "line": 12,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/center/index.tsx",
+      "line": 7,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/button/index.tsx",
+      "line": 43,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/box/index.tsx",
+      "line": 15,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    },
+    {
+      "domain": "REACT_18_LEGACY",
+      "rule": "REACT_FORWARD_REF_GRANDFATHERED",
+      "path": "packages/ui/src/components/ui/badge/index.tsx",
+      "line": 29,
+      "detail": "Legacy forwardRef in grandfathered UI kit (tracked in ratchet)."
+    }
+  ],
+  "filteredFalsePositives": [
+    {
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "path": "packages/self/src/components/RemindersManager.tsx",
+      "reason": "Functional React Component / Headless hook with \"Manager\" naming; not an OOP class."
+    },
+    {
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/RemindersManager.tsx",
+      "reason": "Functional React Component / Headless hook with \"Manager\" naming; not an OOP class."
+    },
+    {
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "path": "packages/ui/src/components/DeviceAccountManager.tsx",
+      "reason": "Functional React Component / Headless hook with \"Manager\" naming; not an OOP class."
+    },
+    {
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "path": "packages/core/src/lib/sync/sync/SyncManager.tsx",
+      "reason": "Functional React Component / Headless hook with \"Manager\" naming; not an OOP class."
+    },
+    {
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "path": "packages/core/src/logic/managers/TelemetryManager.ts",
+      "reason": "Legitimate Hexagonal Cross-Platform Dispatcher with external store subscription (TelemetryManager)"
+    },
+    {
+      "rule": "JAVA_ORPHANED_MANAGER",
+      "path": "packages/core/src/logic/managers/StorageManager.ts",
+      "reason": "Legitimate Hexagonal Cross-Platform Dispatcher with external store subscription (StorageManager)"
+    }
+  ]
+}

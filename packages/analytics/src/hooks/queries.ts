@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { PerformanceAnalyzer } from '@repo/analytics/engine/PerformanceAnalyzer';
 import { InsightGenerator } from '@repo/analytics/ml/InsightGenerator';
 import { Predictor } from '@repo/analytics/ml/Predictor';
-import type { PredictionRequest } from '@repo/analytics/types/AnalyticsTypes';
+import type { PredictionRequest } from '@repo/core/types/Analytics';
 
 const performanceAnalyzer = new PerformanceAnalyzer(supabase);
 export const predictor = new Predictor(supabase);

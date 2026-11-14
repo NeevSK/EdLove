@@ -1,5 +1,5 @@
+import { View, Text, Pressable } from 'react-native';
 import { GraduationCap, Plus, School, X } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 interface StepHierarchyProps {
   data: {
@@ -42,108 +42,104 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
   };
 
   return (
-    <VStack className="gap-8">
-      <VStack className="gap-4">
-        <VStack className="gap-1">
-          <Heading className="text-lg font-black text-phaseText-primary uppercase tracking-wider">
+    <View className="gap-8">
+      <View className="gap-4">
+        <View className="gap-1">
+          <Text className="text-lg font-black text-phaseText-primary uppercase tracking-wider">
             Academic Levels
-          </Heading>
+          </Text>
           <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-widest">
             Define school educational tiers
           </Text>
-        </VStack>
-        <VStack className="gap-2">
+        </View>
+        <View className="gap-2">
           {AVAILABLE_LEVELS.map((level) => {
             const isActive = data.levels.includes(level.id);
             return (
               <Pressable key={level.id} onPress={() => toggleLevel(level.id)}>
-                <Box
+                <View
                   className={`p-4 rounded-2xl border-2 transition-all ${
                     isActive
                       ? 'bg-phase-interactive/5 border-phase-interactive/20'
                       : 'bg-phase-canvas border-phase-border'
                   }`}
                 >
-                  <HStack className="gap-4 items-center">
-                    <Box
+                  <View className="flex-row items-center gap-4 items-center">
+                    <View
                       className={`p-2 rounded-xl border border-phase-border ${isActive ? 'bg-phase-interactive/10' : 'bg-phase-surface'}`}
                     >
-                      <Icon
-                        as={GraduationCap}
-                        size={18}
-                        className={isActive ? 'text-phase-interactive' : 'text-phaseText-muted'}
-                      />
-                    </Box>
+                      <GraduationCap size={18} className={isActive ? 'text-phase-interactive' : 'text-phaseText-muted'} />
+                    </View>
                     <Text
                       className={`text-sm tracking-tight ${isActive ? 'font-black text-phaseText-primary' : 'font-bold text-phaseText-secondary'}`}
                     >
                       {level.label}
                     </Text>
-                  </HStack>
-                </Box>
+                  </View>
+                </View>
               </Pressable>
             );
           })}
-        </VStack>
-      </VStack>
+        </View>
+      </View>
 
-      <VStack className="gap-4">
-        <HStack className="justify-between items-center">
-          <VStack className="gap-1">
-            <Heading className="text-lg font-black text-phaseText-primary uppercase tracking-wider">
+      <View className="gap-4">
+        <View className="flex-row items-center justify-between items-center">
+          <View className="gap-1">
+            <Text className="text-lg font-black text-phaseText-primary uppercase tracking-wider">
               Administrative Sections
-            </Heading>
+            </Text>
             <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-widest">
               Societies, Prefects, Council
             </Text>
-          </VStack>
+          </View>
           <Pressable
             onPress={addSection}
             className="bg-phaseText-primary px-4 py-2 rounded-xl active:opacity-80"
           >
-            <HStack className="items-center gap-2">
-              <Icon as={Plus} className="text-white" size="xs" />
+            <View className="flex-row items-center items-center gap-2">
+              <Plus size={12} className="text-white" />
               <Text className="text-[10px] font-black text-white uppercase tracking-widest">
                 ADD
               </Text>
-            </HStack>
+            </View>
           </Pressable>
-        </HStack>
+        </View>
 
         {data.sections.length === 0 ? (
-          <Box className="p-8 items-center justify-center bg-phase-canvas rounded-[32px] border-2 border-dashed border-phase-border">
+          <View className="p-8 items-center justify-center bg-phase-canvas rounded-[32px] border-2 border-dashed border-phase-border">
             <Text className="text-xs font-bold text-phaseText-muted uppercase tracking-widest">
               No divisions established
             </Text>
-          </Box>
+          </View>
         ) : (
-          <VStack className="gap-3">
+          <View className="gap-3">
             {data.sections.map((section, idx) => (
-              <Box
+              <View
                 key={idx}
                 className="p-4 rounded-2xl bg-phase-surface border border-phase-border"
               >
-                <HStack className="gap-4 items-center">
-                  <Box className="p-2 bg-phase-canvas rounded-xl border border-phase-border">
-                    <Icon as={School} size={16} className="text-phaseText-muted" />
-                  </Box>
-                  <VStack className="flex-1">
+                <View className="flex-row items-center gap-4 items-center">
+                  <View className="p-2 bg-phase-canvas rounded-xl border border-phase-border">
+                    <School size={16} className="text-phaseText-muted" />
+                  </View>
+                  <View className="flex-1">
                     <Text className="text-sm font-bold text-phaseText-primary">
                       {section.name || 'Unnamed Division'}
                     </Text>
-                  </VStack>
+                  </View>
                   <Pressable
                     onPress={() => removeSection(idx)}
                     className="p-2 active:bg-phase-danger/10 rounded-lg"
                   >
-                    <Icon as={X} className="text-phase-danger" size="sm" />
+                    <X size={16} className="text-phase-danger" />
                   </Pressable>
-                </HStack>
-              </Box>
+                </View>
+              </View>
             ))}
-          </VStack>
+          </View>
         )}
-      </VStack>
-    </VStack>
+      </View>
+    </View>
   );
 }

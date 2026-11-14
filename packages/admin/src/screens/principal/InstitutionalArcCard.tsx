@@ -1,6 +1,6 @@
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { View, Text, Pressable } from 'react-native';
+import { Dialog } from '@repo/ui/components/native';
 import { Clock, Info, type LucideIcon, Plus } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
@@ -43,16 +43,16 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
   const scopeHelpText = scopeMeta ? t(scopeMeta.scopeHelpTextKey) : '';
 
   return (
-    <Box className="bg-phase-surface rounded-[40px] p-6 border border-phase-border shadow-md h-full gap-5">
+    <View className="bg-phase-surface rounded-[40px] p-6 border border-phase-border shadow-md h-full gap-5">
       {/* Header Section */}
-      <HStack className="justify-between items-center">
-        <HStack className="items-center gap-4 flex-1">
+      <View className="flex-row items-center justify-between items-center">
+        <View className="flex-row items-center items-center gap-4 flex-1">
           {FeatureIcon && (
-            <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
-              <Icon as={FeatureIcon} size={24} className="text-phase-interactive" />
-            </Box>
+            <View className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+              <FeatureIcon size={24} className="text-phase-interactive" />
+            </View>
           )}
-          <VStack className="flex-1 gap-1">
+          <View className="flex-1 gap-1">
             <Text
               className="text-[17px] font-black text-phaseText-primary tracking-tight"
               numberOfLines={1}
@@ -60,16 +60,16 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
               {title}
             </Text>
             {scopeMeta && (
-              <Box className="px-2.5 py-0.5 rounded-lg bg-phase-canvas border border-phase-border/20 self-start">
+              <View className="px-2.5 py-0.5 rounded-lg bg-phase-canvas border border-phase-border/20 self-start">
                 <Text className="text-[9px] font-black uppercase text-phaseText-muted tracking-[0.15em]">
                   {scopeBadgeLabel}
                 </Text>
-              </Box>
+              </View>
             )}
-          </VStack>
-        </HStack>
+          </View>
+        </View>
 
-        <HStack className="items-center gap-1.5 bg-phase-canvas/50 p-1.5 rounded-2xl border border-phase-border/10">
+        <View className="flex-row items-center items-center gap-1.5 bg-phase-canvas/50 p-1.5 rounded-2xl border border-phase-border/10">
           {/* Info Icon (ⓘ) */}
           <Pressable
             onPress={() => {
@@ -79,7 +79,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
             accessibilityRole="button"
             className="p-2 rounded-xl active:bg-phase-surface transition-all"
           >
-            <Icon as={Info} size="sm" className="text-phaseText-muted" />
+            <Info size={16} className="text-phaseText-muted" />
           </Pressable>
 
           {/* History Icon (⌛) */}
@@ -92,7 +92,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
               accessibilityRole="button"
               className="p-2 rounded-xl active:bg-phase-surface transition-all"
             >
-              <Icon as={Clock} size="sm" className="text-phaseText-muted" />
+              <Clock size={16} className="text-phaseText-muted" />
             </Pressable>
           )}
 
@@ -109,49 +109,45 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                 pressed ? { transform: [{ scale: 0.9 }] } : null,
               ]}
             >
-              <Icon as={Plus} size="sm" className="text-white" />
+              <Plus size={16} className="text-white" />
             </Pressable>
           )}
-        </HStack>
-      </HStack>
+        </View>
+      </View>
 
       {/* Content Section */}
-      <Box className="flex-1 px-1">{children}</Box>
+      <View className="flex-1 px-1">{children}</View>
 
       {/* Info Modal */}
-      <SanctuaryModal
-        isOpen={isInfoOpen}
-        onClose={() => setIsInfoOpen(false)}
-        title={featureInfo?.title || title}
-      >
-        <VStack className="gap-6 p-6">
+      <Dialog open={isInfoOpen} onClose={() => setIsInfoOpen(false)} title={featureInfo?.title || title}>
+        <View className="gap-6 p-6">
           <Text className="text-[16px] leading-relaxed text-phaseText-secondary font-medium">
             {featureInfo?.description}
           </Text>
           {scopeMeta && (
-            <VStack className="bg-phase-canvas p-5 rounded-3xl gap-2 border border-phase-border shadow-inner">
+            <View className="bg-phase-canvas p-5 rounded-3xl gap-2 border border-phase-border shadow-inner">
               <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest">
                 {scopeBadgeLabel}
               </Text>
               <Text className="text-[14px] text-phaseText-secondary font-medium leading-relaxed">
                 {scopeHelpText}
               </Text>
-            </VStack>
+            </View>
           )}
 
           {featureInfo?.howToUse && (
-            <VStack className="bg-phase-interactive/5 p-5 rounded-3xl gap-2 border border-phase-interactive/10">
+            <View className="bg-phase-interactive/5 p-5 rounded-3xl gap-2 border border-phase-interactive/10">
               <Text className="text-[12px] font-black text-phase-interactive uppercase tracking-widest">
                 Implementation Strategy
               </Text>
               <Text className="text-[14px] text-phaseText-secondary font-medium leading-relaxed">
                 {featureInfo.howToUse}
               </Text>
-            </VStack>
+            </View>
           )}
-        </VStack>
-      </SanctuaryModal>
-    </Box>
+        </View>
+      </Dialog>
+    </View>
   );
 };
 

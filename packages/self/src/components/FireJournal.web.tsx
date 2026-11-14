@@ -48,9 +48,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     await new Promise((r) => setTimeout(r, 1200));
 
     try {
-      if (userId) {
-        await burnEntry(content);
-      }
+      await burnEntry(content);
       onBurned?.();
     } catch {
       setErrorMessage('Your entry could not be saved. It is still here—please try again.');

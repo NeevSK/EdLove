@@ -1,0 +1,90 @@
+import type { WorldDefinition } from '../../types';
+import { NOTO_SANS_SI, NOTO_SANS_TA, variable } from '../shared/faces';
+import { W } from '../shared/perch';
+import { tokens } from '../tokens';
+
+export const colombo: WorldDefinition = {
+  id: 'colombo',
+  names: { en: 'Colombo night', si: 'කොළඹ රාත්‍රිය', ta: 'கொழும்பு இரவு' },
+  description: 'City lights on the harbour. Clean, precise, a little futuristic.',
+  family: 'modern',
+  faces: {
+    serif: variable('SpaceGrotesk-VF', {
+      weights: { '400': 420, '500': 480, '600': 560, '700': 640 },
+    }),
+    sans: variable('IBMPlexSans-Regular', { axes: { wdth: 92 } }),
+    si: { serif: NOTO_SANS_SI, sans: NOTO_SANS_SI },
+    ta: { serif: NOTO_SANS_TA, sans: NOTO_SANS_TA },
+  },
+  motion: {
+    tempo: 0.9,
+    curve: 'standard',
+    travel: 16,
+    axis: 'side',
+    settle: 'none',
+    stagger: 0,
+    haptic: 'crisp',
+  },
+  sign: 'signal',
+  // The spire over the city line.
+  perch: {
+    stroke: 'ornament',
+    strokeWidth: W,
+    fill: 'none',
+    shapes: [
+      { el: 'path', attrs: { d: 'M20 162 V148 H44 V140 H62 V154 H158 V138 H176 V150 H200 V162' } },
+      { el: 'path', attrs: { d: 'M182 150 L188 90 L194 150' } },
+      { el: 'circle', attrs: { cx: 188, cy: 86, r: 2.4 }, fill: 'lamp', stroke: 'none' },
+    ],
+  },
+  preferredMode: 'dark',
+  palette: {
+    light: tokens({
+      ground: '#EEF1F6',
+      raised: '#FFFFFF',
+      sunken: '#E2E7EF',
+      ink: '#121826',
+      inkSoft: '#48526A',
+      inkFaint: '#7A8399',
+      lamp: '#2D6BFF',
+      onLamp: '#FFFFFF',
+      lampDeep: '#1F55D6',
+      glow: '#7FA6FF',
+      ornament: '#00A396',
+      danger: '#B3261E',
+      onDanger: '#FFFFFF',
+      success: '#1E7A4A',
+      focus: '#1F55D6',
+    }),
+    dark: tokens({
+      ground: '#0B0F1A',
+      raised: '#141A2A',
+      sunken: '#080B13',
+      ink: '#E8EEF9',
+      inkSoft: '#A6B2CC',
+      inkFaint: '#6F7A93',
+      lamp: '#5EE6D2',
+      onLamp: '#04201C',
+      lampDeep: '#5EE6D2',
+      glow: '#5EE6D2',
+      ornament: '#8A7CFF',
+      danger: '#FF8A80',
+      onDanger: '#2A0808',
+      success: '#6FDCA0',
+      focus: '#5EE6D2',
+    }),
+  },
+  style: {
+    corner: { control: 10, surface: 12, chip: 8, field: 8 },
+    primary: { fill: 'solid', doubleEdge: false, glow: false },
+    quietForm: 'outlined',
+    raised: { edge: 'hairline', shadow: false },
+    field: 'box',
+    chip: 'outlined',
+    label: 'smallcaps',
+    display: { weight: '500', letterSpacing: -0.6 },
+    lineWeight: 1,
+    boundary: { dense: 'margin', calm: 'boxes' },
+    ornament: 'grid',
+  },
+};

@@ -9,7 +9,7 @@
  * rather than the full gurudevi://qr?... scheme URL.
  */
 
-import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
+import QRCodeGenerator from './QRCodeGenerator';
 import { View as PrimitiveView, Text, Pressable } from '@repo/ui/primitives';
 import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';

@@ -17,6 +17,14 @@ export type BrowserAuthRuntime = Readonly<{
     | Readonly<{ status: 'signed-out'; session: null; user: null }>
     | Readonly<{ status: 'unavailable'; session: null; user: null; error: Error }>
   >;
+  signInWithPassword: (credentials: { email: string; password: string }) => Promise<{
+    data: { session: BrowserSession | null; user: BrowserUser | null };
+    error: Error | null;
+  }>;
+  signInWithOtp: (credentials: { email: string; emailRedirectTo?: string }) => Promise<{
+    data: unknown;
+    error: Error | null;
+  }>;
   setSessionDuration: (remember: boolean) => Promise<void>;
 }>;
 
@@ -44,15 +52,29 @@ export function browserAuthRuntime(): BrowserAuthRuntime | null {
         };
       }
     },
+    async signInWithPassword({ email, password }) {
+      const result = await client.auth.signInWithPassword({ email, password });
+      return {
+        data: { session: result.data.session, user: result.data.user },
+        error: result.error ? new Error(result.error.message) : null,
+      };
+    },
+    async signInWithOtp({ email, emailRedirectTo }) {
+      // The configured SDK owns the PKCE verifier and challenge used by the callback.
+      const result = await client.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo, shouldCreateUser: true },
+      });
+      return {
+        data: result.data,
+        error: result.error ? new Error(result.error.message) : null,
+      };
+    },
     async setSessionDuration(remember: boolean) {
-      // Session duration is handled by Supabase JWT expiry settings.
-      // The "Remember me" checkbox sets a custom claim that the server can use
-      // to adjust cookie max-age on subsequent requests.
-      // This is non-fatal - session persistence works via default Supabase behavior.
       const duration = remember ? SESSION_DURATION_REMEMBER : SESSION_DURATION_DEFAULT;
       try {
-        await client.auth.updateUser({ 
-          data: { session_duration: duration } 
+        await client.auth.updateUser({
+          data: { session_duration: duration },
         });
       } catch {
         // Intentionally silent - auth flow continues regardless

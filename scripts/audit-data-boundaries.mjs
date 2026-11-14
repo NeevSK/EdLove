@@ -9,8 +9,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const { values } = parseArgs({ options: { stdout: { type: 'boolean', default: false } } });
 
 function filesIn(directory) {
   if (!fs.existsSync(directory)) return [];
@@ -68,13 +70,16 @@ const report = {
 };
 
 const outputPath = path.join(root, 'docs', 'architecture', 'api-data-boundary-inventory.json');
-fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-fs.writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-
-console.log(`Sanctuary API direct Supabase findings: ${report.sanctuaryApi.length}`);
-console.log(`Legacy core API direct Supabase findings: ${report.legacyCoreApi.length}`);
-console.log(`Other first-party package API findings: ${report.firstPartyPackageApis.length}`);
-console.log(`Inventory: ${outputPath}`);
+if (values.stdout) {
+  console.log(JSON.stringify(report, null, 2));
+} else {
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+  console.log(`Sanctuary API direct Supabase findings: ${report.sanctuaryApi.length}`);
+  console.log(`Legacy core API direct Supabase findings: ${report.legacyCoreApi.length}`);
+  console.log(`Other first-party package API findings: ${report.firstPartyPackageApis.length}`);
+  console.log(`Inventory: ${outputPath}`);
+}
 
 if (report.sanctuaryApi.length > 0) {
   console.error(

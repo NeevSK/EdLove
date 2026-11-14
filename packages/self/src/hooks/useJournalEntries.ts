@@ -1,45 +1,21 @@
-import { authAPI, growthSignalsAPI, identityAPI } from '@repo/core/api/client';
-import { useStore, useTemporalStore } from '@repo/core/logic';
-import { GuestDataManager } from '@repo/core/native';
+import { useTemporalStore } from '@repo/core/logic';
+import { GuestStorage } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { createJournalEntry, fetchJournalEntries } from '@repo/self/api/selfFeatureRepository';
-import type { JournalEntry } from '@repo/self/types';
+import { useAuthStore } from '@repo/core/store';
+import { createJournalEntry, fetchJournalEntries } from '@repo/self/data/selfFeature.data';
+import type { JournalEntry } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const JOURNAL_ENTRIES_CACHE_KEY = 'gurudevi-journal-entries-cache';
 
 export const useJournalEntries = () => {
-  const isOnline = useStore((state) => state.isOnline);
+  const authUser = useAuthStore((state) => state.user);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-  const { viewDate, phase } = useTemporalStore();
-
-  // Check anonymous status and resolve identity
-  useEffect(() => {
-    let active = true;
-    const resolveAuth = async () => {
-      try {
-        const anon = await authAPI.isAnonymous();
-        if (!active) return;
-        setIsAnonymous(anon);
-
-        if (!anon) {
-          const internalId = await identityAPI.getMyInternalId();
-          if (active && internalId) {
-            setUserId(internalId);
-          }
-        }
-      } catch (error) {
-        console.warn('[useJournalEntries] Auth check error:', error);
-      }
-    };
-    void resolveAuth();
-    return () => {
-      active = false;
-    };
-  }, []);
+  const isAnonymous = !authUser || authUser.is_anonymous;
+  const userId = authUser?.id ?? null;
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const phase = useTemporalStore((s) => s.phase);
 
   // Initial load from cache (local-first)
   useEffect(() => {
@@ -47,7 +23,7 @@ export const useJournalEntries = () => {
     const loadCache = async () => {
       try {
         if (isAnonymous) {
-          const guestEntries = await GuestDataManager.getJournalEntries();
+          const guestEntries = await GuestStorage.getJournalEntries();
           const mappedEntries: JournalEntry[] = guestEntries.map((ge) => ({
             id: ge.localId,
             user_id: 'guest',
@@ -76,10 +52,10 @@ export const useJournalEntries = () => {
     };
   }, [isAnonymous, userId, viewDate]);
 
-  // Refresh from remote / sync in background
+  // Refresh from local guest storage or the account-scoped device cache.
   const refreshData = useCallback(async () => {
     if (isAnonymous) {
-      const guestEntries = await GuestDataManager.getJournalEntries();
+      const guestEntries = await GuestStorage.getJournalEntries();
       const mappedEntries: JournalEntry[] = guestEntries.map((ge) => ({
         id: ge.localId,
         user_id: 'guest',
@@ -90,7 +66,7 @@ export const useJournalEntries = () => {
       return;
     }
 
-    if (!userId || !isOnline) return;
+    if (!userId) return;
 
     try {
       const data = await fetchJournalEntries(userId, { viewDate });
@@ -104,7 +80,7 @@ export const useJournalEntries = () => {
     } catch (error) {
       console.warn('[useJournalEntries] Failed to refresh entries from server:', error);
     }
-  }, [isAnonymous, isOnline, userId, viewDate]);
+  }, [isAnonymous, userId, viewDate]);
 
   useEffect(() => {
     void refreshData();
@@ -116,7 +92,7 @@ export const useJournalEntries = () => {
 
       if (isAnonymous) {
         // Guest mode: Save to local storage
-        const guestEntry = await GuestDataManager.addJournalEntry(content);
+        const guestEntry = await GuestStorage.addJournalEntry(content);
         const newEntry: JournalEntry = {
           id: guestEntry.localId,
           user_id: 'guest',
@@ -146,10 +122,6 @@ export const useJournalEntries = () => {
         return next;
       });
 
-      if (!isOnline) {
-        return tempEntry;
-      }
-
       try {
         const data = await createJournalEntry(userId, content);
         setEntries((prev) => {
@@ -161,13 +133,6 @@ export const useJournalEntries = () => {
           return next;
         });
 
-        // Fire growth signal
-        growthSignalsAPI.emitSilent({
-          user_id: userId,
-          event_type: 'reflection_written',
-          event_metadata: {},
-        });
-
         return data;
       } catch (error) {
         console.warn(
@@ -177,7 +142,7 @@ export const useJournalEntries = () => {
         return tempEntry;
       }
     },
-    [isAnonymous, isOnline, phase, userId, viewDate],
+    [isAnonymous, phase, userId, viewDate],
   );
 
   return {

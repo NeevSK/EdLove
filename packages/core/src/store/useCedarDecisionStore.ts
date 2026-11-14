@@ -3,10 +3,9 @@
  *
  * Replaces usePermissionStore as the data source for useSanctuaryFeature.
  *
- * Migration path:
- *   Phase 1.1 — reads from permissionSnapshots table (same source as old store,
- *               but decouples the component dependency)
- *   Phase 4.x — switches to direct Cedar WASM evaluation from synced policies
+ * The snapshot is read and checked (person, bond, policy version, signature, expiry) by
+ * PermissionSnapshotPort, bound in effect/Layers.ts to the PowerSync adapter. This store keeps the
+ * resulting decisions, drops stale loads, and withdraws them when the snapshot expires.
  *
  * Lifecycle:
  *   loadDecisions()   → called during boot hydration after user authenticated
@@ -14,14 +13,24 @@
  *   clearDecisions()  → called on logout / account swap
  */
 
-import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
-import { permissionSnapshots, policyVersion } from '@repo/core/adapters/powersync/schema';
-import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
-import { and, eq } from 'drizzle-orm';
+import { callPort } from '@repo/core/effect/AppRuntime';
+import { sessionScope } from '@repo/core/effect/bindings/state';
+import { PermissionSnapshotPort } from '@repo/core/logic/ports/permissionSnapshot.port';
+import type { CedarDecision } from '@repo/core/types/authorization';
+import { cedarActionFor } from '@repo/policies/authorizationRegistry';
 import { create } from 'zustand';
 
-export type CedarDecision = 'allow' | 'deny' | 'no_decision';
 export type DecisionMap = Record<string, Record<string, CedarDecision>>;
+
+let decisionLoadGeneration = 0;
+let snapshotExpiry: number | null = null;
+let expiryTimer: ReturnType<typeof setTimeout> | null = null;
+
+function cancelSnapshotExpiry(): void {
+  if (expiryTimer !== null) clearTimeout(expiryTimer);
+  expiryTimer = null;
+  snapshotExpiry = null;
+}
 
 export interface CedarDecisionState {
   decisions: DecisionMap | null;
@@ -45,25 +54,42 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
   snapshotScopeId: null,
 
   loadDecisions: async (userId: string, scopeId?: string | null) => {
+    const generation = ++decisionLoadGeneration;
+    cancelSnapshotExpiry();
     if (!userId) {
-      set({ decisions: null, snapshotLoaded: false, isLoading: false, snapshotScopeId: null });
+      set({
+        decisions: null,
+        snapshotLoaded: false,
+        isLoading: false,
+        snapshotScopeId: null,
+        error: null,
+      });
       return;
     }
 
-    set({ isLoading: true, error: null });
-
-    try {
-      const db = getDrizzleDB();
-      const record = await db.query.permissionSnapshots.findFirst({
-        where: scopeId
-          ? and(
-              eq(permissionSnapshots.userId, userId),
-              eq(permissionSnapshots.activeBondId, scopeId),
-            )
-          : eq(permissionSnapshots.userId, userId),
+    if (sessionScope.isLocalGuest(userId)) {
+      set({
+        decisions: null,
+        snapshotLoaded: false,
+        isLoading: false,
+        error: null,
+        snapshotScopeId: scopeId ?? null,
       });
-
-      if (!record) {
+      return;
+    }
+    set({
+      decisions: null,
+      snapshotLoaded: false,
+      isLoading: true,
+      error: null,
+      snapshotScopeId: scopeId ?? null,
+    });
+    try {
+      const read = await callPort(PermissionSnapshotPort, (port) =>
+        port.read(userId, scopeId ?? null),
+      );
+      if (generation !== decisionLoadGeneration) return;
+      if (read.kind === 'missing') {
         set({
           decisions: null,
           snapshotLoaded: false,
@@ -72,87 +98,47 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
         });
         return;
       }
-
-      if (scopeId && record.activeBondId !== scopeId) {
-        set({
-          decisions: null,
-          snapshotLoaded: false,
-          isLoading: false,
-          snapshotScopeId: scopeId,
-          error: 'Permission snapshot scope mismatch',
-        });
-        return;
-      }
-
-      const currentPolicyVersion = await db.query.policyVersion?.findFirst?.();
-      if (
-        (scopeId &&
-          (!currentPolicyVersion?.hash ||
-            !record.policyVersion ||
-            record.policyVersion !== currentPolicyVersion.hash)) ||
-        (!scopeId &&
-          currentPolicyVersion?.hash &&
-          record.policyVersion !== currentPolicyVersion.hash)
-      ) {
+      if (read.kind === 'rejected') {
         set({
           decisions: null,
           snapshotLoaded: false,
           isLoading: false,
           snapshotScopeId: scopeId ?? null,
-          error: 'Permission snapshot policy version is stale',
+          error: read.reason,
         });
         return;
       }
-
-      // Ed25519 signature verification
-      const isSignatureValid = await verifySnapshotSignature(record);
-      if (!isSignatureValid) {
-        console.error('[CedarDecisionStore] Cryptographic tamper detected on permission snapshot');
-        set({
-          decisions: null,
-          snapshotLoaded: false,
-          error: 'Cryptographic tamper detected on permission snapshot',
-          isLoading: false,
-          snapshotScopeId: scopeId ?? null,
-        });
-        return;
-      }
-
-      // Expiration check
-      const expiresAt = new Date(record.expiresAt);
-      if (expiresAt < new Date()) {
-        set({
-          decisions: null,
-          snapshotLoaded: false,
-          error: 'Permission snapshot has expired',
-          isLoading: false,
-          snapshotScopeId: scopeId ?? null,
-        });
-        return;
-      }
-
-      const rawPermissions = JSON.parse(record.permissions) as Record<
-        string,
-        Record<string, boolean>
-      >;
-
       // Convert boolean map to CedarDecision map
       const decisions: DecisionMap = {};
-      for (const [subject, actions] of Object.entries(rawPermissions)) {
+      for (const [subject, actions] of Object.entries(read.permissions)) {
         decisions[subject] = {};
         for (const [action, allowed] of Object.entries(actions)) {
-          decisions[subject][action] = allowed ? 'allow' : 'deny';
+          decisions[subject][action] =
+            typeof allowed === 'boolean' ? (allowed ? 'allow' : 'deny') : 'no_decision';
         }
       }
-
+      const expiresAt = new Date(read.expiresAt);
+      snapshotExpiry = expiresAt.getTime();
+      const scheduleExpiry = () => {
+        const remaining = expiresAt.getTime() - Date.now();
+        if (generation !== decisionLoadGeneration) return;
+        if (remaining <= 0) {
+          cancelSnapshotExpiry();
+          set({ decisions: null, snapshotLoaded: false, error: 'Permission snapshot has expired' });
+          return;
+        }
+        expiryTimer = setTimeout(scheduleExpiry, Math.min(remaining, 2_147_483_647));
+      };
       set({
         decisions,
         snapshotLoaded: true,
         isLoading: false,
         error: null,
-        snapshotScopeId: scopeId ?? record.activeBondId ?? record.schoolId,
+        snapshotScopeId: read.scopeId,
       });
+      scheduleExpiry();
     } catch (err) {
+      if (generation !== decisionLoadGeneration) return;
       console.error('[CedarDecisionStore] Error loading decisions:', err);
       set({
         decisions: null,
@@ -166,16 +152,23 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
 
   getDecision: (subject: string, action: string): CedarDecision => {
     const { decisions } = get();
-    if (!decisions) return 'no_decision';
-    return decisions[subject]?.[action] ?? 'no_decision';
+    if (!decisions || snapshotExpiry === null || Date.now() >= snapshotExpiry) return 'no_decision';
+    return (
+      decisions[subject]?.[action] ??
+      decisions[subject]?.[cedarActionFor(action, subject)] ??
+      'no_decision'
+    );
   },
 
-  clearDecisions: () =>
+  clearDecisions: () => {
+    decisionLoadGeneration += 1;
+    cancelSnapshotExpiry();
     set({
       decisions: null,
       snapshotLoaded: false,
       isLoading: false,
       error: null,
       snapshotScopeId: null,
-    }),
+    });
+  },
 }));

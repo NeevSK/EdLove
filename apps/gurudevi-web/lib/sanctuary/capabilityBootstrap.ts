@@ -1,3 +1,4 @@
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 export type BrowserCapabilityDomain = 'self' | 'workspace' | 'community' | 'library';
@@ -10,7 +11,9 @@ export type BrowserCapability = Readonly<{
 
 function apiOrigin(): string | null {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim();
-  return value ? value.replace(/\/+$/, '') : null;
+  if (!value) return null;
+  assertSecureApiUrl(value);
+  return value.replace(/\/+$/, '');
 }
 
 function isCapability(value: unknown): value is BrowserCapability {
@@ -35,18 +38,25 @@ export async function loadAccountCapabilities(
   domain: BrowserCapabilityDomain,
   fetcher: typeof fetch = fetch,
 ): Promise<readonly BrowserCapability[]> {
-  const origin = apiOrigin();
+  let origin: string | null;
+  try {
+    origin = apiOrigin();
+  } catch {
+    return [];
+  }
   const supabase = createBrowserSupabaseClient();
   if (!origin || !supabase) return [];
-  const { data, error } = await supabase.auth.getSession();
-  const session = data.session;
-  if (error || !session?.access_token || session.user.is_anonymous) return [];
+  const supabaseResult = await supabase.auth.getSession();
+  if (!supabaseResult || supabaseResult.error) return [];
+  const session = supabaseResult.data?.session;
+  if (!session?.access_token || session.user?.is_anonymous) return [];
 
   const response = await fetcher(
     `${origin}/api/identity/capabilities/bootstrap/v1?domain=${encodeURIComponent(domain)}&platform=browser`,
     {
       headers: { Authorization: `Bearer ${session.access_token}` },
       cache: 'no-store',
+      redirect: 'error',
     },
   );
   if (!response.ok) return [];

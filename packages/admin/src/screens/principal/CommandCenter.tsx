@@ -1,5 +1,5 @@
+import { View, Text, Pressable } from 'react-native';
 import { CalendarCheck, FileText, NotebookPen, Users } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -50,12 +50,12 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
   ];
 
   return (
-    <VStack className="gap-6 p-5">
-      <Heading className="text-[12px] font-black uppercase tracking-[0.2em] text-phaseText-muted">
+    <View className="gap-6 p-5">
+      <Text className="text-[12px] font-black uppercase tracking-[0.2em] text-phaseText-muted">
         {t('principal.commandCenter') || 'Command Center'} 🏛️
-      </Heading>
+      </Text>
 
-      <HStack className="flex-wrap gap-4">
+      <View className="flex-row items-center flex-wrap gap-4">
         {actions.map((action, i) => {
           const scopeMeta = getPrincipalFeatureScopeMeta(action.featureId);
           const isDisabled = action.isAgentic;
@@ -69,36 +69,36 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
               accessibilityLabel={action.label}
               className={`flex-[1_1_45%] min-w-[140px] bg-phase-surface rounded-[32px] border border-phase-border items-center p-6 gap-4 shadow-sm active:scale-95 transition-all ${isDisabled ? 'opacity-50' : 'opacity-100'}`}
             >
-              <Box className={`p-4 rounded-2xl ${action.bgClass}`}>
-                <Icon as={action.icon} size="md" className={action.tokenClass} />
-              </Box>
+              <View className={`p-4 rounded-2xl ${action.bgClass}`}>
+                <action.icon size={20} className={action.tokenClass} />
+              </View>
 
-              <VStack className="items-center gap-1.5">
+              <View className="items-center gap-1.5">
                 <Text className="text-[14px] font-black text-phaseText-primary text-center tracking-tight">
                   {action.label}
                 </Text>
 
                 {scopeMeta && (
-                  <Box className="bg-phase-canvas px-2.5 py-0.5 rounded-full border border-phase-border">
+                  <View className="bg-phase-canvas px-2.5 py-0.5 rounded-full border border-phase-border">
                     <Text className="text-[9px] font-black uppercase tracking-widest text-phaseText-muted">
                       {t(scopeMeta.scopeBadgeLabelKey)}
                     </Text>
-                  </Box>
+                  </View>
                 )}
-              </VStack>
+              </View>
 
               {isDisabled && (
-                <Box className="bg-phase-canvas px-2 py-0.5 rounded-lg border border-phase-border mt-1">
+                <View className="bg-phase-canvas px-2 py-0.5 rounded-lg border border-phase-border mt-1">
                   <Text className="text-[9px] text-phaseText-muted uppercase font-black tracking-widest">
                     {t('common.comingSoon') || 'Soon'}
                   </Text>
-                </Box>
+                </View>
               )}
             </Pressable>
           );
         })}
-      </HStack>
-    </VStack>
+      </View>
+    </View>
   );
 };
 

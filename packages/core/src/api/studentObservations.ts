@@ -74,3 +74,13 @@ export const studentObservationsAPI = {
     await teacherInsightsAPI.deleteStudentObservation(id);
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_STUDENT_OBSERVATIONS } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'studentObservations',
+  ghostMethods: ['getForEnrollment', 'getForClassroom', 'listStudentObservations'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_STUDENT_OBSERVATIONS,
+});

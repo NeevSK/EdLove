@@ -1,4 +1,4 @@
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { WorldSkeleton } from '@repo/ui/components/native';
 import { ArrowLeft, Castle, Plus } from '@repo/ui/icons';
 import {
   Box,

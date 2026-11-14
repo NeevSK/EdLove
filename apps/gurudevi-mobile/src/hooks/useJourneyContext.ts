@@ -4,7 +4,7 @@ import {
   getBootstrapSessionState,
 } from '@repo/core/logic/auth/bootstrapContract';
 import { useAuth } from '@repo/core/providers';
-import { useStore } from '@repo/core/store';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useMemo } from 'react';
 
 export type JourneyType = 'auth' | 'onboarding' | 'create' | 'sync' | 'general';
@@ -32,7 +32,7 @@ interface JourneyContext {
  */
 export function useJourneyContext(): JourneyContext {
   const { session } = useAuth();
-  const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const onboardingCompleted = useAuthStore((state) => Boolean(state.user?.onboarding_completed));
 
   const bootstrapState = useMemo(
     () =>

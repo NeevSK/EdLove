@@ -1,11 +1,11 @@
-﻿import { test } from 'vitest';
+import { bench, describe } from 'vitest';
 import { check } from '../index';
 
-test('Cedar WASM Authorization PDP', async ({ bench }) => {
+describe('Cedar WASM Authorization PDP', () => {
   const contributor = {
     type: 'member',
     id: 'author-1',
-    attributes: { capacity: 'member' },
+    attributes: { capacity: 'member', school_id: 'school-1' },
   };
 
   const req = {
@@ -18,7 +18,7 @@ test('Cedar WASM Authorization PDP', async ({ bench }) => {
     },
   };
 
-  await bench('evaluates single principal action permission', { time: 500 }, () => {
+  bench('evaluates single principal action permission', () => {
     check(req);
-  }).run();
+  });
 });

@@ -1,6 +1,7 @@
 {
   "name": "@repo/typescript-config",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
   "license": "MIT",
   "publishConfig": {
@@ -8,6 +9,7 @@
   },
   "exports": {
     "./base.json": "./base.json",
+    "./es2026.json": "./es2026.json",
     "./react-library.json": "./react-library.json",
     "./nextjs.json": "./nextjs.json"
   }

@@ -1,0 +1,248 @@
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
+
+export const principalConnectSchoolFlow: FeatureJTBDGraph = {
+  featureId: 'admin.school_connection',
+  jobTitle: 'Connect to a school',
+  jobStory:
+    'When I enter my workspace, I want to connect to the correct school while keeping access to my personal space.',
+  targetPersonas: ['principal'],
+  lifecycleStage: 'day_0_onboarding',
+  triggers: [{ type: 'tab_navigation', tab: 'workspace', floor: 'admin' }],
+  // Existing routes are entry and convergence points, not claims that the proposed steps exist.
+  nodes: [
+    {
+      stepId: 'workspace_entry',
+      title: 'Workspace',
+      purpose: 'on_ramp',
+      mobileRoute: '/(tabs)/workspace',
+      webRoute: '/workspace',
+      primaryAction: 'Open workspace',
+      fallbacks: [],
+    },
+    {
+      stepId: 'personal_space',
+      title: 'Personal space',
+      purpose: 'terminal_success',
+      mobileRoute: '/(tabs)/workspace',
+      webRoute: '/self',
+      primaryAction: 'Return to Self',
+      fallbacks: [],
+    },
+  ],
+  completion: {
+    nextCircadianRoute: '/workspace',
+    sensoryProfile: { tutiiMode: 'guiding', haptic: 'selection' },
+  },
+  journeyPilot: {
+    status: 'proposed',
+    intent: 'Connect to the correct school without losing access to Self.',
+    developmentContext: {
+      mode: 'brownfield',
+      existingBehavior: [
+        'Personal Self and the existing account-scoped workspace selector already exist.',
+        'The principal capability registry models institutional leadership and existing native principal surfaces.',
+      ],
+      integrationPoints: [
+        {
+          reference: 'packages/admin/src/principal/workspace.ts',
+          role: 'Principal capability and scope registry',
+        },
+        {
+          reference: 'apps/gurudevi-web/lib/sanctuary/workspaceScopes.ts',
+          role: 'Verified account and scope selection',
+        },
+        {
+          reference: 'packages/schema/schema.zmodel',
+          role: 'School, bond and tuition institute models',
+        },
+        {
+          reference: 'apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx',
+          role: 'Native workspace dispatcher and permission states',
+        },
+        {
+          reference: 'packages/admin/src/machines/principalSetupMachine.ts',
+          role: 'Existing principal setup state machine; connection and server execution remain unverified',
+        },
+        {
+          reference: 'packages/admin/src/screens/SchoolCreationScreen.tsx',
+          role: 'Existing native school creation flow; transaction and authority require verification',
+        },
+        {
+          reference: 'packages/core/src/adapters/supabase/schoolInviteRepository.ts',
+          role: 'School invitation redemption and scope selection',
+        },
+      ],
+      invariants: [
+        'Principal authority is institutional or commercial, never a personal principal workspace.',
+        'Contacting the founder is optional and never grants school authority.',
+        'Opening WhatsApp does not establish that a message was sent.',
+        'Personal Self and a teacher personal workspace are separate from principal authority.',
+        'Preserve existing school, capacity, authorization, data and navigation behavior during integration.',
+      ],
+      openQuestions: [
+        'How do commercial tuition institutes map to principal capacity, bonds and Cedar authorization?',
+        'Which existing creation, claim and invitation journeys support each institutional type end to end?',
+        'How should onboarding transition into an institution without treating a personal scope as principal authority?',
+        'Can the existing school creation and invitation paths safely support principal bootstrap on both platforms and recover after partial failure?',
+      ],
+    },
+    entryStep: 'resolve',
+    steps: [
+      {
+        id: 'resolve',
+        title: 'Resolve school access',
+        interaction: 'Check authoritative school scope and preserve access to Self.',
+        terminal: false,
+      },
+      {
+        id: 'choose',
+        title: 'Connect your school',
+        interaction: 'Choose an available school, invitation, or supported request path.',
+        terminal: false,
+      },
+      {
+        id: 'pending',
+        title: 'Request status',
+        interaction: 'Explain that a submitted request is awaiting review.',
+        terminal: true,
+      },
+      {
+        id: 'contact',
+        title: 'Contact the founder',
+        interaction:
+          'Optionally prepare a WhatsApp message with school and contact details; send it in WhatsApp.',
+        terminal: true,
+      },
+      {
+        id: 'workspace',
+        title: 'School workspace',
+        interaction: 'Open the verified school scope.',
+        terminal: true,
+      },
+      {
+        id: 'unavailable',
+        title: 'Access unavailable',
+        interaction: 'Explain the failure and offer retry or Self.',
+        terminal: true,
+      },
+      {
+        id: 'self',
+        title: 'Personal Self',
+        interaction: 'Return to personal space.',
+        terminal: true,
+      },
+    ],
+    transitions: [
+      {
+        id: 'no_school',
+        from: 'resolve',
+        to: 'choose',
+        action: 'No eligible school is confirmed',
+        feedback: 'Offer school connection choices.',
+      },
+      {
+        id: 'existing_school',
+        from: 'resolve',
+        to: 'workspace',
+        action: 'A permitted school scope is selected',
+        feedback: 'Show the selected school.',
+      },
+      {
+        id: 'lookup_failed',
+        from: 'resolve',
+        to: 'unavailable',
+        action: 'Authority lookup fails',
+        feedback: 'Explain that access could not be checked.',
+      },
+      {
+        id: 'submit_pending',
+        from: 'choose',
+        to: 'pending',
+        action: 'Server confirms a request is pending',
+        feedback: 'Request sent; awaiting review.',
+      },
+      {
+        id: 'contact_founder',
+        from: 'choose',
+        to: 'contact',
+        action: 'Open WhatsApp to contact the founder',
+        feedback: 'Explain that the message must be sent in WhatsApp.',
+      },
+      {
+        id: 'return_self',
+        from: 'choose',
+        to: 'self',
+        action: 'Return to Self',
+        feedback: 'Keep personal space available.',
+      },
+    ],
+    scenarios: [
+      {
+        id: 'first_visit',
+        title: 'No school bond on first visit',
+        transitions: ['no_school'],
+        evidence: [],
+      },
+      {
+        id: 'existing_scope',
+        title: 'Existing permitted school',
+        transitions: ['existing_school'],
+        evidence: [],
+      },
+      {
+        id: 'authority_failure',
+        title: 'Authority lookup fails',
+        transitions: ['lookup_failed'],
+        evidence: [],
+      },
+      {
+        id: 'pending_request',
+        title: 'Request remains pending',
+        transitions: ['no_school', 'submit_pending'],
+        evidence: [],
+      },
+      {
+        id: 'optional_contact',
+        title: 'Optionally contact the founder',
+        transitions: ['no_school', 'contact_founder'],
+        evidence: [],
+      },
+      {
+        id: 'return_to_self',
+        title: 'Return to personal space',
+        transitions: ['no_school', 'return_self'],
+        evidence: [],
+      },
+    ],
+    bindings: [
+      {
+        kind: 'web',
+        status: 'planned',
+        note: 'Principal connection choices are not yet implemented.',
+      },
+      {
+        kind: 'mobile',
+        status: 'unknown',
+        reference: 'apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx',
+        note: 'End-to-end connection behavior needs verification.',
+      },
+      {
+        kind: 'api',
+        status: 'unknown',
+        note: 'Trace the school request and invitation contracts.',
+      },
+      {
+        kind: 'data',
+        status: 'implemented',
+        reference: 'packages/schema/schema.zmodel',
+        note: 'School and bond models exist; deployed schema is unverified.',
+      },
+      {
+        kind: 'authorization',
+        status: 'unknown',
+        reference: 'packages/policies/src/policies/school/principal.cedar',
+        note: 'Verify authority for each connection operation and school scope.',
+      },
+    ],
+  },
+};

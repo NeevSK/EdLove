@@ -102,3 +102,5 @@ export class SupabaseNotificationAdapter implements INotificationPort {
     };
   }
 }
+
+export const supabaseNotificationAdapter = new SupabaseNotificationAdapter();

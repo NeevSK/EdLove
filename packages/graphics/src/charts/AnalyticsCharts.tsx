@@ -1,6 +1,5 @@
 import { useThemedColors } from '@repo/ui/hooks';
-import { Text } from '@repo/ui/primitives';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
 // —————————————————————————————————————————————————————————————————————————————
 // SIMPLE BAR CHART

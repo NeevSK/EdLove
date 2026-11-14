@@ -101,14 +101,6 @@ const copyForRole: Readonly<
   },
 };
 
-function orderForRole(features: readonly SelfFeatureManifestItem[], role: SelfViewRole) {
-  return [...features].sort((left, right) => {
-    const rightWeight = right.roleWeights?.[role] ?? (right.roleWeights ? 0 : 50);
-    const leftWeight = left.roleWeights?.[role] ?? (left.roleWeights ? 0 : 50);
-    return rightWeight - leftWeight || left.defaultOrder - right.defaultOrder;
-  });
-}
-
 /**
  * The Overview is the Self floor, not a registry item. Every returned item is
  * a real native-delivered feature with the canonical feature id as its task id.
@@ -117,29 +109,19 @@ function orderForRole(features: readonly SelfFeatureManifestItem[], role: SelfVi
 export function getSelfRegistry(
   capacities?: string | null | readonly string[],
 ): MobileDomainRegistry {
-  const capacityList = Array.isArray(capacities)
-    ? capacities
-    : capacities
-      ? [capacities]
-      : [];
+  const capacityList = Array.isArray(capacities) ? capacities : capacities ? [capacities] : [];
   const roles: SelfViewRole[] =
-    capacityList.length > 0
-      ? Array.from(new Set(capacityList.map(normalizeRole)))
-      : ['teacher'];
+    capacityList.length > 0 ? Array.from(new Set(capacityList.map(normalizeRole))) : ['teacher'];
 
   const primaryRole = roles[0] ?? 'teacher';
   const manifest = resolveSelfFeatureManifest(null, DEFAULT_SELF_PREFERENCES.features, 'native');
   const runnableFeatures = manifest.all.filter((feature) => feature.delivery === 'runnable');
 
-  const sorted = [...runnableFeatures].sort((left, right) => {
-    const rightWeight = Math.max(
-      ...roles.map((r) => right.roleWeights?.[r] ?? (right.roleWeights ? 0 : 50)),
-    );
-    const leftWeight = Math.max(
-      ...roles.map((r) => left.roleWeights?.[r] ?? (left.roleWeights ? 0 : 50)),
-    );
-    return rightWeight - leftWeight || left.defaultOrder - right.defaultOrder;
-  });
+  // The catalog says which roles a feature is for; it does not order them
+  // (docs/architecture/places-roles-and-features.md, rules 5 and 8).
+  const sorted = runnableFeatures
+    .filter((feature) => feature.roles.some((role) => roles.includes(role)))
+    .sort((left, right) => left.defaultOrder - right.defaultOrder);
 
   const items: MobileFeatureItem[] = sorted.map((feature) => ({
     id: feature.id,

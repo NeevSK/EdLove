@@ -1,43 +1,45 @@
-import { } from '@repo/core/logic';
 import { SanctuaryGuard } from '@repo/ui';
 import { ClipboardList, MessageCircle } from '@repo/ui/icons';
-import { Button, ButtonText, HStack, Icon } from '@repo/ui/primitives';
+import { useWorld } from '@repo/ui/theme/native';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
 
 export function TeacherEchoActions() {
+  const { tokens } = useWorld();
   const { t } = useTranslation();
 
   return (
-    <HStack className="gap-4 flex-wrap items-center">
+    <View className="gap-4 flex-row flex-wrap items-center">
       <SanctuaryGuard action="read" subject="School" requirement={{ citizenshipRequired: 3 }}>
-        <Button
-          variant="outline"
+        <Pressable
           onPress={hapticLight}
-          className="rounded-full px-8 h-14 border-emberRed/40 shadow-sm bg-phase-surface active:bg-emberRed/5"
+          className="rounded-full px-8 h-14 border border-emberRed/40 shadow-sm bg-phase-surface active:bg-emberRed/5 justify-center"
         >
-          <HStack className="items-center gap-2.5">
-            <Icon as={MessageCircle} size="sm" className="text-emberRed" />
-            <ButtonText className="text-emberRed font-black uppercase text-[10px] tracking-[0.2em]">
+          <View className="flex-row items-center gap-2.5">
+            <MessageCircle size={16} color={tokens.danger} />
+            <Text className="text-emberRed font-black uppercase text-[10px] tracking-[0.2em]">
               {t('teacher.actions.principalEcho') || 'Principal Echo'}
-            </ButtonText>
-          </HStack>
-        </Button>
+            </Text>
+          </View>
+        </Pressable>
       </SanctuaryGuard>
       <SanctuaryGuard action="read" subject="School" requirement={{ citizenshipRequired: 3 }}>
-        <Button
-          variant="outline"
+        <Pressable
           onPress={hapticLight}
-          className="rounded-full px-8 h-14 border-phase-canvas bg-phase-surface/50 shadow-sm active:bg-phase-canvas/20"
+          className="rounded-full px-8 h-14 border border-phase-canvas bg-phase-surface/50 shadow-sm active:bg-phase-canvas/20 justify-center"
         >
-          <HStack className="items-center gap-2.5">
-            <Icon as={ClipboardList} size="sm" className="text-phaseText-primary" />
-            <ButtonText className="text-phaseText-primary font-black uppercase text-[10px] tracking-[0.2em]">
+          <View className="flex-row items-center gap-2.5">
+            <ClipboardList size={16} color={tokens.ink} />
+            <Text className="text-phaseText-primary font-black uppercase text-[10px] tracking-[0.2em]">
               My Echoes
-            </ButtonText>
-          </HStack>
-        </Button>
+            </Text>
+          </View>
+        </Pressable>
       </SanctuaryGuard>
-    </HStack>
+    </View>
   );
 }
+
+export default TeacherEchoActions;

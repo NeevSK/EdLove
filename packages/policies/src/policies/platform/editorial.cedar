@@ -5,6 +5,8 @@ permit(
   resource
 ) when {
   resource is EditorialSubmission &&
+  resource has submitter_id &&
   resource.submitter_id == principal.id &&
+  principal has capacity &&
   principal.capacity != "wanderer"
 };

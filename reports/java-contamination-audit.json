@@ -1,0 +1,524 @@
+{
+  "totalAnalyzed": 32,
+  "totalWithZeroAppCallers": 30,
+  "uselessPassThrough": 5,
+  "deadweightFactories": 11,
+  "orphanedManagers": 14,
+  "contaminationRate": 94,
+  "files": [
+    {
+      "file": "GrowthManager.ts",
+      "loc": 721,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 4,
+      "appCallersCount": 0,
+      "coreCallersCount": 4,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/CommunityManager.ts",
+        "packages/core/src/logic/managers/EducationalManager.ts",
+        "packages/core/src/logic/managers/growth.factory.ts",
+        "packages/core/src/logic/ports/growth.tags.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "AuthManager.ts",
+      "loc": 611,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/auth.factory.ts",
+        "packages/core/src/logic/managers/DeepLinkManager.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "EducationalManager.ts",
+      "loc": 384,
+      "classification": "USELESS PASS-THROUGH WRAPPER",
+      "reason": "Class with 2 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/educational.factory.ts"
+      ],
+      "passThroughMethods": 2
+    },
+    {
+      "file": "DeepLinkManager.ts",
+      "loc": 131,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 3,
+      "appCallersCount": 0,
+      "coreCallersCount": 3,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/index.ts",
+        "packages/core/src/logic/managers/misc.factory.ts",
+        "packages/core/src/logic/managers/PushNotificationManager.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "CommunityManager.ts",
+      "loc": 126,
+      "classification": "USELESS PASS-THROUGH WRAPPER",
+      "reason": "Class with 15 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/community.factory.ts",
+        "packages/core/src/logic/managers/EducationalManager.ts"
+      ],
+      "passThroughMethods": 15
+    },
+    {
+      "file": "PushNotificationManager.ts",
+      "loc": 125,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/notification.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "DeviceIdentityManager.ts",
+      "loc": 121,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/misc.factory.ts",
+        "packages/core/src/native/bootstrap.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "StorageManager.ts",
+      "loc": 99,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 3,
+      "appCallersCount": 0,
+      "coreCallersCount": 3,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/lib/storage.ts",
+        "packages/core/src/logic/journey/roleJourneyMachine.v6.ts",
+        "packages/core/src/native/bootstrap.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "ProfileManager.ts",
+      "loc": 95,
+      "classification": "USELESS PASS-THROUGH WRAPPER",
+      "reason": "Class with 19 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/EducationalManager.ts",
+        "packages/core/src/logic/managers/profile.factory.ts"
+      ],
+      "passThroughMethods": 19
+    },
+    {
+      "file": "TeacherInsightsManager.ts",
+      "loc": 84,
+      "classification": "USELESS PASS-THROUGH WRAPPER",
+      "reason": "Class with 16 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/misc.factory.ts"
+      ],
+      "passThroughMethods": 16
+    },
+    {
+      "file": "IdentityManager.ts",
+      "loc": 83,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 3,
+      "appCallersCount": 0,
+      "coreCallersCount": 3,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/identity.factory.ts",
+        "packages/core/src/logic/managers/misc.factory.ts",
+        "packages/core/src/native/bootstrap.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "NetworkManager.ts",
+      "loc": 70,
+      "classification": "ACTIVE MANAGER",
+      "reason": "Active manager with 4 app callers.",
+      "totalCallers": 11,
+      "appCallersCount": 4,
+      "coreCallersCount": 7,
+      "appCallers": [
+        "apps/gurudevi-web/lib/query/getQueryClient.ts",
+        "apps/gurudevi-web/lib/runtime/browserNetwork.ts",
+        "apps/gurudevi-mobile/src/lib/queryClient.ts",
+        "apps/gurudevi-mobile/src/runtime/deviceSignals.ts"
+      ],
+      "coreCallers": [
+        "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+        "packages/core/src/adapters/NetworkBusAdapter.ts",
+        "packages/core/src/adapters/subscribeToNetwork.ts",
+        "packages/core/src/hooks/useSafeMutation.ts",
+        "packages/core/src/native/bootstrap.ts",
+        "packages/core/src/offline/useOfflineStatus.ts",
+        "packages/core/src/testing/scenarioHarness.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "misc.factory.ts",
+      "loc": 59,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/factory.ts",
+        "packages/core/src/logic/managers/notification.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "TelemetryManager.ts",
+      "loc": 53,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 3,
+      "appCallersCount": 0,
+      "coreCallersCount": 3,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/lib/monitoring/sentry.ts",
+        "packages/core/src/monitoring/sentry.ts",
+        "packages/core/src/native/bootstrap.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "NotificationManager.ts",
+      "loc": 47,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/notification.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "CryptoManager.ts",
+      "loc": 39,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 4,
+      "appCallersCount": 0,
+      "coreCallersCount": 4,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/lib/accountPin.ts",
+        "packages/core/src/lib/supabaseAuthStorage.ts",
+        "packages/core/src/logic/index.ts",
+        "packages/core/src/native/bootstrap.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "MediaManager.ts",
+      "loc": 34,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/media.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "AuditManager.ts",
+      "loc": 30,
+      "classification": "USELESS PASS-THROUGH WRAPPER",
+      "reason": "Class with 2 pass-through method(s) forwarding to this.repo with 0 application callers. Pure Spring Boot ceremony.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/misc.factory.ts"
+      ],
+      "passThroughMethods": 2
+    },
+    {
+      "file": "DeviceSecurityManager.ts",
+      "loc": 30,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/misc.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "RealtimeManager.ts",
+      "loc": 29,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/misc.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "TeacherManager.ts",
+      "loc": 27,
+      "classification": "ORPHANED OOP MANAGER",
+      "reason": "Heavyweight OOP class with 0 application callers. UI apps bypassed it for reactive stores.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/misc.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "auth.factory.ts",
+      "loc": 22,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/factory.ts",
+        "packages/core/src/logic/managers/misc.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "educational.factory.ts",
+      "loc": 22,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "notification.factory.ts",
+      "loc": 21,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/educational.factory.ts",
+        "packages/core/src/logic/managers/factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "profile.factory.ts",
+      "loc": 21,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/educational.factory.ts",
+        "packages/core/src/logic/managers/factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "factory.ts",
+      "loc": 19,
+      "classification": "ACTIVE MANAGER",
+      "reason": "Active manager with 1 app callers.",
+      "totalCallers": 25,
+      "appCallersCount": 1,
+      "coreCallersCount": 24,
+      "appCallers": [
+        "apps/sanctuary-api/src/core/app.ts"
+      ],
+      "coreCallers": [
+        "packages/core/src/accounts/deviceAccounts.ts",
+        "packages/core/src/adapters/clientDomainServices.ts",
+        "packages/core/src/auth.ts",
+        "packages/core/src/hooks/useAuthLifecycle.ts",
+        "packages/core/src/hooks/useDeviceSecurity.ts",
+        "packages/core/src/hooks/useGrowthQuery.ts",
+        "packages/core/src/hooks/useJourneyHistory.ts",
+        "packages/core/src/hooks/useManualSnapshot.ts",
+        "packages/core/src/hooks/usePendingActions.ts",
+        "packages/core/src/hooks/useScopedDeviceSecurity.ts",
+        "packages/core/src/hooks/useScopedNotifications.ts",
+        "packages/core/src/hooks/useStudentGoals.ts",
+        "packages/core/src/index.ts",
+        "packages/core/src/lib/authorization.ts",
+        "packages/core/src/logic/domains/index.ts",
+        "packages/core/src/logic/index.ts",
+        "packages/core/src/logic/managers/auth.factory.ts",
+        "packages/core/src/logic/managers/community.factory.ts",
+        "packages/core/src/logic/managers/educational.factory.ts",
+        "packages/core/src/logic/managers/misc.factory.ts",
+        "packages/core/src/logic/managers/notification.factory.ts",
+        "packages/core/src/logic/managers/profile.factory.ts",
+        "packages/core/src/native/deviceTrust.ts",
+        "packages/core/src/store/useFeatureStore.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "community.factory.ts",
+      "loc": 9,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/educational.factory.ts",
+        "packages/core/src/logic/managers/factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "featureFlag.factory.ts",
+      "loc": 9,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/factory.ts",
+        "packages/core/src/store/useFeatureStore.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "growth.factory.ts",
+      "loc": 8,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 4,
+      "appCallersCount": 0,
+      "coreCallersCount": 4,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/hooks/useGrowthQuery.ts",
+        "packages/core/src/logic/managers/community.factory.ts",
+        "packages/core/src/logic/managers/educational.factory.ts",
+        "packages/core/src/logic/managers/factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "identity.factory.ts",
+      "loc": 8,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 3,
+      "appCallersCount": 0,
+      "coreCallersCount": 3,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/auth.factory.ts",
+        "packages/core/src/logic/managers/educational.factory.ts",
+        "packages/core/src/logic/managers/factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "media.factory.ts",
+      "loc": 8,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 2,
+      "appCallersCount": 0,
+      "coreCallersCount": 2,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/factory.ts",
+        "packages/core/src/logic/managers/profile.factory.ts"
+      ],
+      "passThroughMethods": 0
+    },
+    {
+      "file": "authz.factory.ts",
+      "loc": 7,
+      "classification": "DEADWEIGHT FACTORY",
+      "reason": "Instantiates a global singleton that is never imported by any mobile or web application.",
+      "totalCallers": 1,
+      "appCallersCount": 0,
+      "coreCallersCount": 1,
+      "appCallers": [],
+      "coreCallers": [
+        "packages/core/src/logic/managers/factory.ts"
+      ],
+      "passThroughMethods": 0
+    }
+  ]
+}

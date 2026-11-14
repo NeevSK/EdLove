@@ -14,7 +14,7 @@ Gurudevi Web is the browser home of the **Gurudevi Sanctuary**. It brings togeth
   * **Inner Sanctuary (`/self`)**: Private journaling, mindful check-ins, and personal growth reflection.
   * **Institutional Stewardship (`/admin`)**: School structure, approvals, and official reporting.
   * **Open Library (`/library`)**: Curated regional learning resources and accessible readers.
-* **In-Browser Offline Sovereignty**: Built with in-browser WASM SQLite (OPFS), allowing teachers on desktop or Chromebooks to continue working even during local power or network outages.
+* **Offline capability, delivered by verified slice**: Cached reads can remain available during an open-tab outage. Offline app-shell launch, restart-safe local replicas, and durable offline writes are separately gated per journey; see the [platform capability canon](../../docs/architecture/client-state-and-web-offline-capability-canon.md).
 
 ---
 

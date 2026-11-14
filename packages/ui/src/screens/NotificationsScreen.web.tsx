@@ -1,5 +1,6 @@
-import { useNotifications } from '@repo/core/logic';
+import { useScopedNotifications } from '@repo/core/hooks';
 import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import type { AppNotification } from '@repo/core/types';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
@@ -167,7 +168,7 @@ const NotificationRow = memo(
 export default memo(function NotificationsScreenWeb() {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
-  const isOnline = useAuthStore((state) => state.isOnline);
+  const { status: networkStatus } = useOfflineStatus();
   const { gutter, maxWidth } = useResponsiveGrid();
   const {
     notifications,
@@ -178,7 +179,7 @@ export default memo(function NotificationsScreenWeb() {
     markAsRead,
     markAllRead,
     refresh,
-  } = useNotifications(user?.id);
+  } = useScopedNotifications(user?.id);
 
   const hasData = notifications.length > 0;
   const handleMarkAllRead = useCallback(() => {
@@ -227,7 +228,7 @@ export default memo(function NotificationsScreenWeb() {
               />
               Live Stream Active
             </div>
-          ) : isOnline ? (
+          ) : networkStatus !== 'offline' ? (
             <div className="notification-state notification-state-stale">
               Live updates are paused. Your saved notifications remain available.
             </div>

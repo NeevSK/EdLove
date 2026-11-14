@@ -69,11 +69,28 @@ model User {
   reactions CommunityReaction[]
   messages  GroupMessage[]
   ai_messages AiMessage[]
+  community_comments CommunityComment[] @relation("CommunityCommentAuthor")
+  community_comment_upvotes CommunityCommentUpvote[] @relation("CommunityCommentUpvoteUser")
+  direct_conversations_user1 DirectConversation[] @relation("DirectConversationUser1")
+  direct_conversations_user2 DirectConversation[] @relation("DirectConversationUser2")
+  direct_messages DirectMessage[] @relation("DirectMessageAuthor")
+  principal_notes PrincipalNote[] @relation("PrincipalNotesAuthored")
+  context_teacher_notes PrincipalNote[] @relation("PrincipalNotesContextTeacher")
+  blocked_users UserBlock[] @relation("UserBlocksInitiated")
+  blocked_by_users UserBlock[] @relation("UserBlocksReceived")
   mood_logs MoodLog[]
   journal_entries FireJournalEntry[]
   thought_records ThoughtRecord[]
   learning_reflections LearningReflection[]
   preferences UserPreferences?
+  joy_moments JoyMoment[]
+  gratitude_glimmers GratitudeGlimmer[]
+  sleep_logs SleepLog[]
+  timetable_periods TimetablePeriod[]
+  daily_prep_items DailyPrepItem[]
+  personal_reminders PersonalReminder[]
+  todo_lists TodoList[]
+  todos Todo[]
   personal_classrooms PersonalClassroom[]
   notifications Notification[]
   push_tokens PushToken[]
@@ -96,6 +113,8 @@ model User {
   // Guardian & Relationship
   student_guardian_links StudentGuardianRelationship[] @relation("StudentGuardians")
   student_guardian_links_as_guardian StudentGuardianRelationship[] @relation("GuardianStudents")
+  guardian_identities GuardianIdentity[] @relation("UserGuardianIdentities")
+  announcements_authored Announcement[] @relation("AnnouncementAuthor")
 
   // Accounting & Payments
   invoices Invoice[]
@@ -140,6 +159,9 @@ model User {
   
   // Everyone can read basic profile info (Discovery)
   @@allow('read', true)
+  // Shadow learners (added to a roster before they have an account) are created by a
+  // teacher or leader of the same school; nothing else about another user can be written.
+  @@allow('create', auth() != null && identity_state == 'shadow' && is_anonymous == true && school_id != null && auth().bonds?[entity_id == this.school_id && (capacity == 'teacher' || capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')])
 
   @@map("users")
 }
@@ -241,6 +263,8 @@ model Classroom {
   deleted_at       DateTime?
   deleted_by       String?
   deletion_reason  String?
+  // #149 teaching group kind: homeroom | subject | cohort; null = not yet classified.
+  kind             String?
 
   school           School?    @relation(fields: [school_id], references: [id])
   teacher          User?      @relation("TeacherClassrooms", fields: [teacher_id], references: [id])
@@ -253,8 +277,10 @@ model Classroom {
   attendance       AttendanceRecord[]
   inventory        InventoryItem[]
   notes            ClassroomNote[]
+  principal_notes  PrincipalNote[] @relation("PrincipalNotesContextClassroom")
   join_requests    ClassroomJoinRequest[]
   legacy_records   ClassroomLegacyRecord[]
+  grade_class_links ClassroomGradeClass[]
 
   // Permissions
   // Official/Cloud Access: Teachers, School Admins, and Platform Admins
@@ -308,6 +334,8 @@ model ClassroomStudent {
 
   @@allow('read', classroom.teacher_id == auth().id || student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  // School leaders may manage rosters of their school's classrooms (as Classroom allows).
+  @@allow('all', auth() != null && auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head')])
 
   @@map("classroom_students")
 }
@@ -425,12 +453,13 @@ model AssignmentSubmission {
   grade           Int?
   feedback        String?
   graded_at       DateTime?
-  idempotency_key String?  @unique
+  idempotency_key String?
 
   assignment Assignment @relation(fields: [assignment_id], references: [id])
   student    User       @relation("StudentSubmissions", fields: [student_id], references: [id])
 
   @@unique([assignment_id, student_id])
+  @@unique([student_id, idempotency_key])
   @@index([student_id, submitted_at])
   @@index([assignment_id, submitted_at])
 
@@ -570,6 +599,7 @@ model Post {
   group            Group    @relation(fields: [group_id], references: [id])
   author           User     @relation(fields: [author_id], references: [id])
   reactions        CommunityReaction[]
+  comments         CommunityComment[]
 
   // Authors can manage their own posts
   @@allow('all', auth() != null && author_id == auth().id)
@@ -640,6 +670,139 @@ model CommunityReaction {
   @@allow('all', user_id == auth().id)
 
   @@map("community_reactions")
+}
+
+model CommunityComment {
+  id                 String   @id @default(uuid())
+  post_id            String
+  author_id          String?
+  content            String
+  is_anonymous       Boolean  @default(false)
+  is_official_answer Boolean  @default(false)
+  upvote_count       Int      @default(0)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @default(now()) @updatedAt
+
+  post               Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  author             User?    @relation("CommunityCommentAuthor", fields: [author_id], references: [id], onDelete: SetNull)
+  upvotes            CommunityCommentUpvote[]
+
+  @@index([post_id, created_at])
+  @@index([author_id, created_at])
+
+  @@allow('read', post.group.is_public || post.group.members?[user_id == auth().id])
+  @@allow('create', auth() != null)
+  @@allow('update', auth() != null && author_id == auth().id)
+  @@allow('delete', auth() != null && (author_id == auth().id || post.author_id == auth().id))
+
+  @@map("community_comments")
+}
+
+model CommunityCommentUpvote {
+  comment_id String
+  user_id    String
+  created_at DateTime @default(now())
+
+  comment    CommunityComment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  user       User             @relation("CommunityCommentUpvoteUser", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([comment_id, user_id])
+  @@allow('all', auth() != null && user_id == auth().id)
+
+  @@map("community_comment_upvotes")
+}
+
+model DirectConversation {
+  id         String   @id @default(uuid())
+  user1_id   String
+  user2_id   String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  user1      User     @relation("DirectConversationUser1", fields: [user1_id], references: [id], onDelete: Cascade)
+  user2      User     @relation("DirectConversationUser2", fields: [user2_id], references: [id], onDelete: Cascade)
+  messages   DirectMessage[]
+
+  @@unique([user1_id, user2_id])
+  @@index([user1_id])
+  @@index([user2_id])
+
+  @@allow('read', auth() != null && (user1_id == auth().id || user2_id == auth().id))
+  @@allow('create', auth() != null && (user1_id == auth().id || user2_id == auth().id))
+  @@allow('update', auth() != null && (user1_id == auth().id || user2_id == auth().id))
+  @@allow('delete', auth() != null && (user1_id == auth().id || user2_id == auth().id))
+
+  @@map("direct_conversations")
+}
+
+model DirectMessage {
+  id              String   @id @default(uuid())
+  conversation_id String
+  author_id       String
+  content         String
+  created_at      DateTime @default(now())
+
+  conversation    DirectConversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  author          User               @relation("DirectMessageAuthor", fields: [author_id], references: [id], onDelete: Cascade)
+
+  @@index([conversation_id, created_at])
+
+  @@allow('read', auth() != null && (conversation.user1_id == auth().id || conversation.user2_id == auth().id))
+  @@allow('create', auth() != null && author_id == auth().id && (conversation.user1_id == auth().id || conversation.user2_id == auth().id))
+  @@allow('delete', auth() != null && author_id == auth().id)
+
+  @@map("direct_messages")
+}
+
+model PrincipalNote {
+  id                   String    @id @default(uuid())
+  school_id            String
+  author_id            String
+  content              String
+  note_type            String    @default("note")
+  is_pinned            Boolean   @default(false)
+  is_done              Boolean   @default(false)
+  context_teacher_id   String?
+  context_classroom_id String?
+  target_date          DateTime?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @default(now()) @updatedAt
+
+  school               School     @relation("SchoolPrincipalNotes", fields: [school_id], references: [id], onDelete: Cascade)
+  author               User       @relation("PrincipalNotesAuthored", fields: [author_id], references: [id], onDelete: Cascade)
+  context_teacher      User?      @relation("PrincipalNotesContextTeacher", fields: [context_teacher_id], references: [id], onDelete: SetNull)
+  context_classroom    Classroom? @relation("PrincipalNotesContextClassroom", fields: [context_classroom_id], references: [id], onDelete: SetNull)
+
+  @@index([school_id, created_at])
+  @@index([school_id, target_date])
+  @@index([author_id, school_id])
+
+  @@allow('read', auth() != null && author_id == auth().id)
+  @@allow('create', auth() != null && author_id == auth().id)
+  @@allow('update', auth() != null && author_id == auth().id)
+  @@allow('delete', auth() != null && author_id == auth().id)
+
+  @@map("principal_notes")
+}
+
+model UserBlock {
+  id         String   @id @default(uuid())
+  blocker_id String
+  blocked_id String
+  created_at DateTime @default(now())
+
+  blocker    User     @relation("UserBlocksInitiated", fields: [blocker_id], references: [id], onDelete: Cascade)
+  blocked    User     @relation("UserBlocksReceived", fields: [blocked_id], references: [id], onDelete: Cascade)
+
+  @@unique([blocker_id, blocked_id])
+  @@index([blocker_id])
+  @@index([blocked_id])
+
+  @@allow('read', auth() != null && blocker_id == auth().id)
+  @@allow('create', auth() != null && blocker_id == auth().id)
+  @@allow('delete', auth() != null && blocker_id == auth().id)
+
+  @@map("user_blocks")
 }
 
 model Lesson {
@@ -724,8 +887,20 @@ model School {
   deleted_at DateTime?
   deleted_by String?
   deletion_reason String?
+  // IANA zone for plans, quiet hours and notice release (plan-and-bridge).
+  timezone   String   @default("Asia/Colombo")
+  // Opt-in, aggregate-only usage counts (school_mode_usage_daily).
+  usage_signal_opt_in Boolean @default(false)
+  // Guardian verification policy: open (default) allows parents immediate visibility; strict requires leader verification.
+  guardian_verification_required Boolean @default(false)
+  guardian_verification_policy   String  @default("open")
+  // Who may read a student's attendance history; '{}' = strict defaults. Keys and
+  // defaults: migration 20261022090000 and sanctuary-api core/studentHistoryAccess.ts.
+  student_history_access         Json    @default("{}")
 
   classrooms Classroom[]
+  announcements Announcement[]
+  mode_policies SchoolModePolicy[]
   groups     Group[]
   manifestos SanctuaryManifesto[]
   sections   Section[]
@@ -746,6 +921,7 @@ model School {
   teacher_daily_attendance TeacherDailyAttendance[] @relation("SchoolTeacherDailyAttendance")
   teacher_attendance_sessions TeacherAttendanceSession[]
   grade_marks GradeMark[]
+  principal_notes PrincipalNote[] @relation("SchoolPrincipalNotes")
 
   // HR & Staff
   staff_leaves StaffLeave[]
@@ -1039,6 +1215,159 @@ model UserPreferences {
 
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("user_preferences")
+}
+
+// ============================================================================
+// SELF: JOY JAR
+// ============================================================================
+model JoyMoment {
+  id                 String   @id @default(uuid())
+  user_id            String
+  student_name       String?
+  moment_description String
+  category           String   @default("breakthrough")
+  idempotency_key    String?  @unique
+  created_at         DateTime @default(now())
+
+  user               User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, created_at])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("joy_moments")
+}
+
+// ============================================================================
+// SELF: GRATITUDE GLIMMERS
+// ============================================================================
+model GratitudeGlimmer {
+  id              String   @id @default(uuid())
+  user_id         String
+  content         String
+  category        String   @default("personal-win")
+  idempotency_key String?  @unique
+  created_at      DateTime @default(now())
+
+  user            User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, created_at])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("gratitude_glimmers")
+}
+
+// ============================================================================
+// SELF: SLEEP TRACKER
+// ============================================================================
+model SleepLog {
+  id              String   @id @default(uuid())
+  user_id         String
+  quality         Int
+  hours_slept     Float?
+  note            String?
+  idempotency_key String?  @unique
+  created_at      DateTime @default(now())
+
+  user            User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, created_at])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("sleep_logs")
+}
+
+// ============================================================================
+// SELF: TIMETABLE PERIODS (STUDY RHYTHM)
+// ============================================================================
+model TimetablePeriod {
+  id            String   @id @default(uuid())
+  user_id       String
+  day_of_week   Int
+  period_number Int
+  subject       String
+  class_name    String
+  type          String   @default("subject")
+  start_time    String
+  end_time      String
+  created_at    DateTime @default(now())
+
+  user          User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, day_of_week])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("timetable_periods")
+}
+
+// ============================================================================
+// SELF: TOMORROW PREP
+// ============================================================================
+model DailyPrepItem {
+  id           String   @id @default(uuid())
+  user_id      String
+  item_text    String
+  prep_date    String
+  is_completed Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  user         User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, prep_date])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("daily_prep_items")
+}
+
+// ============================================================================
+// SELF: PERSONAL REMINDERS
+// ============================================================================
+model PersonalReminder {
+  id              String   @id @default(uuid())
+  user_id         String
+  title           String
+  scheduled_time  String
+  is_recurring    Boolean  @default(false)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+
+  user            User     @relation(fields: [user_id], references: [id])
+  @@index([user_id, scheduled_time])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("personal_reminders")
+}
+
+// ============================================================================
+// GENERIC TODOS & LISTS (Offline-first PowerSync Engine)
+// ============================================================================
+model TodoList {
+  id         String   @id @default(uuid())
+  user_id    String
+  name       String
+  color      String?
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [user_id], references: [id])
+  todos      Todo[]
+
+  @@index([user_id])
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("lists")
+}
+
+model Todo {
+  id           String    @id @default(uuid())
+  list_id      String
+  user_id      String
+  title        String
+  notes        String?
+  is_completed Boolean   @default(false)
+  due_date     String?
+  created_at   DateTime  @default(now())
+  completed_at DateTime?
+
+  list         TodoList  @relation(fields: [list_id], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [user_id], references: [id])
+
+  @@index([list_id, is_completed])
+  @@index([user_id])
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("todos")
 }
 
 //  ============================================================================
@@ -1567,10 +1896,37 @@ model GradeClass {
   attendance_sessions AttendanceSession[]
   teacher_attendance_sessions TeacherAttendanceSession[]
   grade_marks GradeMark[]
+  classroom_links ClassroomGradeClass[]
 
   @@unique([academic_cycle_id, grade_level_id, name])
   @@index([school_id, academic_cycle_id, status])
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('all', auth() != null && (auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("grade_classes")
+}
+
+/// #149 C3: explicit link from a teaching group (classroom) to the grade class(es) it
+/// teaches. Attendance/enrollment use this before any name matching.
+model ClassroomGradeClass {
+  id             String   @id @default(uuid())
+  classroom_id   String
+  grade_class_id String
+  created_by     String?
+  created_at     DateTime @default(now())
+
+  classroom   Classroom  @relation(fields: [classroom_id], references: [id], onDelete: Cascade)
+  grade_class GradeClass @relation(fields: [grade_class_id], references: [id], onDelete: Cascade)
+
+  @@unique([classroom_id, grade_class_id])
+  @@index([grade_class_id])
+  // Anyone in the classroom's school can see which grade classes it teaches.
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.classroom.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // School leaders link and unlink. A classroom's own teacher may link it to a grade
+  // class they hold an active assignment for. Both must be in the same school
+  // (checked in the handler; the rule below pins the grade class to a leader's school).
+  @@allow('create,delete', auth() != null && (auth().bonds?[entity_id == this.grade_class.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('create,delete', auth() != null && this.classroom.teacher_id == auth().id && this.grade_class.teacher_assignments?[teacher_id == auth().id && status == 'active'])
+  @@map("classroom_grade_classes")
 }
 
 model GradeClassSubject {
@@ -1613,6 +1969,10 @@ model GradeClassTeacherAssignment {
 
   @@index([grade_class_id, role, effective_from])
   @@index([teacher_id, effective_from])
+  // Had no rules (deny-all under the policy client). Teachers read their own
+  // assignments; school leaders read and manage their school's.
+  @@allow('read', auth() != null && auth().id == teacher_id)
+  @@allow('all', auth() != null && (auth().bonds?[entity_id == this.grade_class.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("grade_class_teacher_assignments")
 }
 
@@ -1637,6 +1997,8 @@ model StudentGradeClassEnrollment {
 
   @@index([student_id, effective_from])
   @@index([grade_class_id, status])
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.school_id] || auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('all', auth() != null && (auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("student_grade_class_enrollments")
 }
 
@@ -1661,6 +2023,10 @@ model DailyAttendance {
 
   @@unique([student_id, grade_class_id, attendance_date])
   @@index([grade_class_id, attendance_date])
+  // Verified guardians read their ward's attendance (pending/revoked links never count).
+  @@allow('read', auth() != null && auth().student_guardian_links_as_guardian?[student_id == this.student_id && verification_status == 'verified'])
+  @@allow('read', auth() != null && (auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')]))
+  @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("daily_attendance")
 }
 
@@ -1692,6 +2058,10 @@ model AttendanceSession {
 
   @@index([daily_attendance_id, session_at])
   @@index([grade_class_id, session_at])
+  // Verified guardians read their ward's attendance (pending/revoked links never count).
+  @@allow('read', auth() != null && auth().student_guardian_links_as_guardian?[student_id == this.student_id && verification_status == 'verified'])
+  @@allow('read', auth() != null && (auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')]))
+  @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("attendance_sessions")
 }
 
@@ -1714,6 +2084,8 @@ model TeacherDailyAttendance {
 
   @@unique([teacher_id, attendance_date])
   @@index([school_id, attendance_date])
+  @@allow('read', auth() != null && (auth().id == teacher_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'admin')]))
+  @@allow('all', auth() != null && (auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'admin')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("teacher_daily_attendance")
 }
 
@@ -1826,6 +2198,114 @@ model StaffLeave {
   @@map("staff_leaves")
 }
 
+// plan-and-bridge PB0: live table (master_baseline) + notice columns
+// (20261017210000). Reads go through sanctuary-api; RLS shows school-wide
+// rows only once sent, grade-class rows only to that class's audience.
+model Announcement {
+  id                     String    @id @default(uuid())
+  school_id              String
+  author_id              String?
+  title                  String    @default("")
+  content                String
+  is_pinned              Boolean   @default(false)
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @default(now())
+  audience_scope         String    @default("school")
+  grade_class_id         String?
+  status                 String    @default("sent")
+  send_at                DateTime?
+  sent_at                DateTime?
+  calendar_event_id      String?
+  held_by_mode           String?
+  drafted_in_quiet_hours Boolean   @default(false)
+  override_reason        String?
+  overridden_by          String?
+  overridden_at          DateTime?
+  schedule_version       Int       @default(0)
+  recipient_count        Int?
+  failure_code           String?
+
+  school                 School    @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  author                 User?     @relation("AnnouncementAuthor", fields: [author_id], references: [id], onDelete: SetNull)
+
+  @@index([send_at])
+  @@index([grade_class_id, created_at])
+  @@allow('read', auth() != null && (
+    author_id == auth().id ||
+    auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'admin')] ||
+    (status == 'sent' && (
+      (audience_scope == 'school' && auth().bonds?[entity_id == this.school_id]) ||
+      (grade_class_id != null && auth().bonds?[entity_id == this.grade_class_id])
+    ))
+  ))
+  @@allow('create,update,delete', auth() != null && (
+    author_id == auth().id ||
+    auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'admin')] ||
+    auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']
+  ))
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("announcements")
+}
+
+// Modes engine v0 (school side). Configurable over closed decisions: a missing
+// row = PROVISIONAL defaults (packages/core/src/logic/modes/provisionalDefaults.ts).
+model SchoolModePolicy {
+  id                     String   @id @default(uuid())
+  school_id              String
+  mode_key               String
+  capacities             String[]
+  // locked | suggested | off. No default: a row is an explicit school choice.
+  lock                   String
+  schedule               Json
+  trigger                Json     @default("{\"source\":\"schedule\"}")
+  effects                Json     @default("{}")
+  override_roles         String[]
+  override_rate_limit_per_day Int?
+  version                Int      @default(1)
+  created_by             String?
+  updated_by             String?
+  created_at             DateTime @default(now())
+  updated_at             DateTime @default(now())
+
+  school                 School   @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@unique([school_id, mode_key])
+  @@allow('read', auth() != null && auth().bonds?[entity_id == this.school_id])
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_mode_policies")
+}
+
+// Opt-in aggregate usage signal: counts only, no content or user ids. Read
+// via read_school_mode_usage() (k >= 5 suppression). Server-only.
+model SchoolModeUsageDaily {
+  school_id String
+  day       DateTime @db.Date
+  mode_key  String
+  event     String
+  capacity  String
+  count     Int      @default(0)
+
+  @@id([school_id, day, mode_key, event, capacity])
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_mode_usage_daily")
+}
+
+// Append-only notice log (created, scheduled, rescheduled, override,
+// cancelled, released, failed). Server-only; no client policy.
+model SchoolNoticeEvent {
+  id         String   @id @default(uuid())
+  notice_id  String
+  school_id  String
+  actor_id   String?
+  event      String
+  detail     Json     @default("{}")
+  created_at DateTime @default(now())
+
+  @@index([notice_id, created_at])
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_notice_events")
+}
+
 model CalendarEvent {
   id           String   @id @default(uuid())
   school_id    String
@@ -1836,10 +2316,18 @@ model CalendarEvent {
   is_public    Boolean  @default(true)
   created_by   String?
   created_at   DateTime @default(now())
+  // plan-and-bridge: audience (model A grade class; null = whole school) and
+  // how many days before the event its notice should go out.
+  grade_class_id   String?
+  notice_lead_days Int?
+  description      String?
 
   school       School   @relation(fields: [school_id], references: [id])
 
-  @@allow('read', auth() != null && (is_public || auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@index([grade_class_id, start_date])
+  // Postgres RLS (20261017210000) is the enforced rule; grade-class rows are
+  // limited to class staff, enrolled students and verified guardians.
+  @@allow('read', auth() != null && (auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("calendar_events")
 }
@@ -1854,12 +2342,19 @@ model StudentGuardianRelationship {
   guardian_id       String
   relationship_type String
   created_at        DateTime @default(now())
+  // pending | verified | revoked. Only a school leader verifies (sanctuary-api).
+  verification_status String   @default("pending")
+  verified_by         String?
+  verified_at         DateTime?
 
   student           User     @relation("StudentGuardians", fields: [student_id], references: [id])
   guardian          User     @relation("GuardianStudents", fields: [guardian_id], references: [id])
 
   @@unique([student_id, guardian_id])
   @@allow('read', auth().id == student_id || auth().id == guardian_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  // A guardian may request a link, never self-verify it.
+  @@allow('create', auth().id == guardian_id && verification_status == 'pending' && verified_by == null)
+  @@allow('delete', auth().id == guardian_id)
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("student_guardian_relationships")
 }
@@ -1889,6 +2384,77 @@ model GuardianAssessmentReadAuditEvent {
 
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("guardian_assessment_read_audit_events")
+}
+
+model GuardianIdentity {
+  id                  String   @id @default(uuid())
+  user_id             String
+  relationship_type   String   @default("parent")
+  contact_info        Json?
+  verification_status String   @default("pending")
+  custody_info        Json?
+  emergency_contact   Json?
+  school_id           String?
+  tenant_id           String?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  user                User     @relation("UserGuardianIdentities", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@allow('read', auth() != null && (user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // Owners create pending identities and may delete them; they cannot edit
+  // verification_status (was 'all' for the owner: self-verification).
+  @@allow('create', auth() != null && user_id == auth().id && verification_status == 'pending')
+  @@allow('delete', auth() != null && user_id == auth().id)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("guardian_identities")
+}
+
+model GuardianNotification {
+  id          String   @id @default(uuid())
+  guardian_id String
+  student_id  String?
+  type        String
+  title       String
+  message     String
+  is_read     Boolean  @default(false)
+  action_url  String?
+  created_at  DateTime @default(now())
+
+  // Was read for any signed-in user.
+  @@allow('read', auth() != null && guardian_id == auth().id)
+  @@allow('update', auth() != null && guardian_id == auth().id)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("guardian_notifications")
+}
+
+model GuardianNotificationSetting {
+  id          String   @id @default(uuid())
+  guardian_id String   @unique
+  settings    Json
+  updated_at  DateTime @updatedAt
+
+  // Was read + write for any signed-in user.
+  @@allow('all', auth() != null && guardian_id == auth().id)
+  @@map("guardian_notification_settings")
+}
+
+model SchoolEvent {
+  id            String   @id @default(uuid())
+  school_id     String?
+  title         String
+  description   String?
+  date          DateTime
+  time          String?
+  location      String?
+  type          String   @default("general")
+  requires_rsvp Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("school_events")
 }
 
 // ============================================================================
@@ -1945,7 +2511,7 @@ model GuardianBond {
   guardian_user_id String
   ward_student_id  String
   relationship     String   @default("parent") // parent, mother, father, guardian, relative
-  status           String   @default("verified") // pending, verified, revoked
+  status           String   @default("pending") // pending, verified, revoked (DB default is pending since 20261017210000)
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
@@ -1955,8 +2521,13 @@ model GuardianBond {
   @@unique([guardian_user_id, ward_student_id])
   @@index([guardian_user_id])
   @@index([ward_student_id])
-  @@allow('all', auth() != null && (guardian_user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
-  @@allow('read', auth() != null && (guardian_user_id == auth().id || ward_student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // Was 'all' for the guardian: anyone could self-link to any student as verified.
+  // Guardians may only request (pending) or withdraw; verification is server-side,
+  // matching the guardian_bonds RLS in 20261017210000_plan_bridge_calm_notices.sql.
+  @@allow('read', auth() != null && (guardian_user_id == auth().id || ward_student_id == auth().id))
+  @@allow('create', auth() != null && guardian_user_id == auth().id && status == 'pending')
+  @@allow('delete', auth() != null && guardian_user_id == auth().id)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("guardian_bonds")
 }
 
@@ -2275,6 +2846,33 @@ model SchoolRegistry {
 
 // Canonical national school facts registry. This is distinct from SchoolRegistry,
 // which maps to the legacy compatibility view `school_registry`.
+// ============================================================================
+// NATIONAL GEOGRAPHIC & JURISDICTIONAL TOPOLOGY
+// ============================================================================
+
+model JurisdictionNode {
+    id          String   @id @default(uuid())
+    level       String   // country, province, district, zone, division, gn_division
+    code        String   @unique
+    name_en     String
+    name_si     String?
+    name_ta     String?
+    parent_id   String?
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
+
+    parent      JurisdictionNode?  @relation("JurisdictionHierarchy", fields: [parent_id], references: [id])
+    children    JurisdictionNode[] @relation("JurisdictionHierarchy")
+
+    // Publicly discoverable read access
+    @@allow('read', true)
+    @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+    @@index([level])
+    @@index([parent_id])
+    @@map("jurisdiction_nodes")
+}
+
 model EduSchool {
     id                  String   @id
     census_no           String   @unique
@@ -2324,11 +2922,9 @@ model UserEnergyBalance {
 
     user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    // Policies: User can read their balance; modifications must be performed by the system/admin or user themselves for authorized client interactions
+    // Reward credit is server-owned; account ownership permits reads, never self-minting.
     @@allow('read', auth() != null && user_id == auth().id)
     @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-    @@allow('update', auth() != null && user_id == auth().id)
-    @@allow('create', auth() != null && user_id == auth().id)
 
     @@map("user_energy_balances")
 }
@@ -2349,7 +2945,6 @@ model AdRewardTransaction {
 
     @@allow('read', auth() != null && user_id == auth().id)
     @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-    @@allow('create', auth() != null && user_id == auth().id)
 
     @@index([user_id])
     @@map("ad_reward_transactions")

@@ -1,3 +1,5 @@
+import type { GuardianAssessmentReadAuditEvent } from '@repo/core/logic/schemas/guardian-assessment.schema';
+
 /**
  * Local, fail-closed contract for guardian assessment reads.
  *
@@ -40,22 +42,6 @@ export type GuardianAssessmentResult = {
   percentage?: number;
   date?: string;
   type?: string;
-};
-
-export type GuardianAssessmentReadAuditEvent = {
-  event: 'guardian_assessment_read';
-  actor_id: string;
-  student_id: string;
-  outcome: 'allowed' | 'denied';
-  reason:
-    | 'allowed'
-    | 'no_relationship'
-    | 'invalid_relationship'
-    | 'permission_missing'
-    | 'permission_denied'
-    | 'no_published_results';
-  result_count: number;
-  occurred_at: string;
 };
 
 export type GuardianAssessmentReadDependencies = {
@@ -145,9 +131,9 @@ export function createGuardianAssessmentReadService({
       }
     }
 
+    // The shape guardian_assessment_read_audit_events stores (guardian-assessment.schema).
     await writeAudit({
-      event: 'guardian_assessment_read',
-      actor_id: guardianId,
+      guardian_id: guardianId,
       student_id: studentId,
       outcome,
       reason,

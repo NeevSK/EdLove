@@ -1,0 +1,603 @@
+{
+  "postOct29ConsumersWithLegacy": [
+    {
+      "file": "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/native"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/src/media/mediaAdapters.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/native"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/app/(sanctuary)/components/workbench/SanctuaryScrollArea.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/app/(sanctuary)/components/workbench/ScrollArea.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/app/(sanctuary)/kit/components/KitTableOfContents.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/app/(sanctuary)/kit/components/ScrollInstrumentsShowcase.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitAgent.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitBasics.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitCapture.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitCards.test.tsx",
+      "birthDate": "2026-10-30",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitChoices.test.tsx",
+      "birthDate": "2026-10-30",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitCollections.test.tsx",
+      "birthDate": "2026-10-30",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitLanguagePicker.test.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitLauncher.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitLayout.test.tsx",
+      "birthDate": "2026-10-30",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitMedia.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitNames.test.tsx",
+      "birthDate": "2026-10-30",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitNavigation.test.tsx",
+      "birthDate": "2026-10-30",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitOverlays.test.tsx",
+      "birthDate": "2026-10-29",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitParity.test.tsx",
+      "birthDate": "2026-10-29",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitQuestions.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitScrollArea.test.tsx",
+      "birthDate": "untracked",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitSettings.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitSettingsRows.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitShell.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web",
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitStatus.test.tsx",
+      "birthDate": "2026-10-30",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitSwipeRow.test.tsx",
+      "birthDate": "2026-10-30",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-web/tests/unit/kit/webKitTime.test.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/web"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "packages/classroom/src/components/teacher/TeacherActivePeriodCard.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/native"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "packages/self/src/components/SwipeableTodoRow.tsx",
+      "birthDate": "2026-10-31",
+      "isPostOct29": true,
+      "legacyImports": [
+        "@repo/ui/components/native"
+      ],
+      "isWebTsx": false
+    }
+  ],
+  "postOct29WebTsx": [],
+  "preOct29ConsumersCount": 293,
+  "preOct29ConsumersSample": [
+    {
+      "file": "apps/gurudevi-mobile/app/(modal)/create-form.tsx",
+      "birthDate": "2026-10-17",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(modal)/_layout.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/notifications.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+      "birthDate": "2026-06-10",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/BrandPulse",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/self/_layout.tsx",
+      "birthDate": "2026-09-06",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/settings.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
+      "birthDate": "2026-10-17",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx",
+      "birthDate": "2026-09-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx",
+      "birthDate": "2026-10-17",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/BrandedEmptyState",
+        "@repo/ui/components/BrandPulse",
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/components/ErrorState",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/workspace/inventory.tsx",
+      "birthDate": "2026-10-17",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/workspace/peers.tsx",
+      "birthDate": "2026-10-17",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/workspace/welfare.tsx",
+      "birthDate": "2026-10-17",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+      "birthDate": "2026-06-13",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/components/GlobalHeader",
+        "@repo/ui/components/native",
+        "@repo/ui/components/PerspectiveSwitcherSheet",
+        "@repo/ui/components/SchoolInviteCodeModal",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/account-recovery.tsx",
+      "birthDate": "2026-09-04",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/atlas.tsx",
+      "birthDate": "2026-10-17",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/auth/callback.tsx",
+      "birthDate": "2026-09-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/auth.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/form-builder.tsx",
+      "birthDate": "2026-10-17",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/index.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/onboarding.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/components/native"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/public-form/[slug].tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/pulse.tsx",
+      "birthDate": "2026-10-27",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/app/welcome.tsx",
+      "birthDate": "2026-06-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ErrorBoundary",
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/gluestack-ui.config.ts",
+      "birthDate": "2026-02-05",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/primitives",
+        "@repo/ui/theme/Theme"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/runtime-fixtures/style-engine/index.tsx",
+      "birthDate": "2026-08-12",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/ui/box",
+        "@repo/ui/components/ui/button",
+        "@repo/ui/components/ui/dialog",
+        "@repo/ui/components/ui/form-field",
+        "@repo/ui/components/ui/icon",
+        "@repo/ui/components/ui/input",
+        "@repo/ui/components/ui/list",
+        "@repo/ui/components/ui/pressable",
+        "@repo/ui/components/ui/text"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/src/boot/registerAppCatalog.ts",
+      "birthDate": "2026-07-24",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/components/native"
+      ],
+      "isWebTsx": false
+    },
+    {
+      "file": "apps/gurudevi-mobile/src/components/AppVersionGateOverlay.tsx",
+      "birthDate": "2026-09-08",
+      "isPostOct29": false,
+      "legacyImports": [
+        "@repo/ui/primitives"
+      ],
+      "isWebTsx": false
+    }
+  ]
+}

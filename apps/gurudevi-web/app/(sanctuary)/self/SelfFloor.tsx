@@ -1,71 +1,70 @@
-'use client';
-
-import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
-import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
-import { resolveWorkspaceGroupOrder } from '@repo/core/logic/workspace/canvas';
 import {
+  resolveTemporalCoordinates,
+  resolveTemporalIntent,
+  toIsoDate,
+} from '@repo/core/logic/workbench';
+import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
+import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
+import {
+  createSelfAccessContext,
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
-import { FeatureStateBoundary } from '@repo/ui/components/FeatureStateBoundary.web';
+import { useQuery } from '@tanstack/react-query';
+import { Volume2, VolumeX } from 'lucide-react';
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import type { SelfCategory } from '../../../lib/canvas/useSelfCanvas';
+import { useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
+import { useExploreCapacity } from '../../../lib/explore/exploreCapacity';
 import {
-  type Dispatch,
-  type FormEvent,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useSelfCanvas, type SelfCategory } from '../../../lib/canvas/useSelfCanvas';
+  isSanctuaryAudioMuted,
+  subscribeSanctuaryAudio,
+  toggleSanctuaryAudio,
+} from '../../../lib/sanctuary/audioSanctuary';
 import { createAccountSafeTrySelfPracticeAdapter } from '../../../lib/sanctuary/selfExplore';
-import {
-  type BurnedJournalEntry,
-  burnJournal,
-  loadBurnedJournalHistory,
-} from '../../../lib/sanctuary/selfJournal';
-import {
-  loadMoodHistory,
-  logMood,
-  MOOD_CHOICES,
-  type MoodLog,
-  type MoodValue,
-} from '../../../lib/sanctuary/selfWellbeing';
+import { burnJournal, loadBurnedJournalHistory } from '../../../lib/sanctuary/selfJournal';
 import { useDomainWorkbench } from '../../../lib/workbench';
-import { TaskStrip, TemporalHorizon } from '../components/workbench';
-import { FloorAtmosphere, type FloorAtmosphereKind } from '../components/FloorAtmosphere';
-import { FloorAtmospherePicker } from '../components/FloorAtmospherePicker';
-import {
-  BROWSER_SELF_FEATURES,
-  getBrowserSelfFeature,
-  isBrowserSelfFeatureDelivered,
-} from './browserFeatureRegistry';
+import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
+import type { FloorAtmosphereKind } from '../components/FloorAtmosphere';
+import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import { DateTimeCombo } from '@repo/ui/components/web';
+import { timeGreeting } from '../../../lib/timeGreeting';
+import { TaskStrip } from '../components/TaskStrip';
+import { BROWSER_SELF_FEATURES } from './browserFeatureRegistry';
+import { DailyContentCard } from './components/DailyContentCard';
+import { DailyRhythm } from './components/DailyRhythm';
+import { DailySadhanaModal } from './components/DailySadhanaModal';
+import { DecisionJournalSection } from './components/DecisionJournalSection';
+import { DynamicCareIsland } from './components/DynamicCareIsland';
+import { EnergyForecast } from './components/EnergyForecast';
+import { FireJournal, initialScreen, type ScreenState } from './components/FireJournal';
+import { GratitudeGlimmers } from './components/GratitudeGlimmers';
+import { JoyJar } from './components/JoyJar';
+import { MoodLotusModal } from './components/MoodLotusModal';
+import { Dialog } from '@repo/ui/components/web';
+import { MyGradesView } from './components/MyGradesView';
+import { ProgressTree } from './components/ProgressTree';
+import { PulseDashboard } from './components/PulseDashboard';
+import { ReframeWizard } from './components/ReframeWizard';
+import { RemindersManager } from './components/RemindersManager';
+import { ResonancePatternCard } from './components/ResonancePatternCard';
+import { SelfOverview } from './components/SelfOverview';
+import { ShadowAgentDrawer } from './components/ShadowAgentDrawer';
+import { SleepTracker } from './components/SleepTracker';
+import { StudentGoals } from './components/StudentGoals';
+import { TeachingHistoryTimeline } from './components/TeachingHistoryTimeline';
+import { TomorrowPrep } from './components/TomorrowPrep';
+import { UnavailableTask } from './components/UnavailableTask';
+import { VoiceJournaling } from './components/VoiceJournaling';
+import { WarmMirrorCard } from './components/WarmMirrorCard';
+import { WindDownRitual } from './components/WindDownRitual';
+import { WisdomSeeds } from './components/WisdomSeeds';
 import styles from './self-floor.module.css';
 
-type ScreenState = Readonly<{
-  draft: string;
-  entries: readonly BurnedJournalEntry[];
-  error: string | null;
-  historyStatus: 'loading' | 'ready' | 'error';
-  isBurning: boolean;
-  notice: string | null;
-}>;
-
-const initialScreen: ScreenState = {
-  draft: '',
-  entries: [],
-  error: null,
-  historyStatus: 'loading',
-  isBurning: false,
-  notice: null,
-};
-
-type SelfGroup = SelfFeatureManifestItem['category'];
-
 const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
-  null,
+  createSelfAccessContext({ isExplore: true }),
   {
     customOrder: [],
     hiddenIds: [],
@@ -88,55 +87,129 @@ const fireJournalTask = {
   route: '/self',
   title: fireJournalFeature.label,
   icon: fireJournalFeature.emoji,
-  temporalBinding: { kind: 'none' },
+  temporalBinding: { kind: 'follow-domain' },
   localStatePolicy: 'restore-permitted',
 } as const;
 
 function todayHorizon(): DomainTemporalHorizon {
   const now = new Date();
+  const date = toIsoDate(now);
   return {
     anchor: {
       kind: 'date',
-      date: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-        now.getDate(),
-      ).padStart(2, '0')}`,
+      date,
     },
     scale: 'day',
     intent: 'current',
   };
 }
 
-function shiftDate(horizon: DomainTemporalHorizon, amount: number): DomainTemporalHorizon {
-  const anchorDate =
-    horizon.anchor.kind === 'date' ? horizon.anchor.date : new Date().toISOString();
-  const date = new Date(`${anchorDate.slice(0, 10)}T12:00:00`);
-  date.setDate(date.getDate() + amount);
-  return { ...horizon, anchor: { kind: 'date', date: date.toISOString().slice(0, 10) } };
-}
+const SELF_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
+  {
+    id: 'hero',
+    label: 'Primary Hero Practice',
+    icon: '🪷',
+  },
+  {
+    id: 'somatic',
+    label: 'Somatic Health & Breathing',
+    icon: '🫁',
+  },
+  {
+    id: 'circadian',
+    label: 'Circadian Rhythm Practices',
+    icon: '🌅',
+  },
+  {
+    id: 'shelf',
+    label: 'Personal Shelf & History',
+    icon: '📌',
+  },
+  {
+    id: 'catalog',
+    label: 'Complete Practice Catalog',
+    icon: '📚',
+  },
+];
 
-function formatHorizon(horizon: DomainTemporalHorizon): string {
-  if (horizon.anchor.kind !== 'date') return 'Today';
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(
-    new Date(`${horizon.anchor.date}T12:00:00`),
-  );
-}
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.valueOf())
-    ? 'Recently'
-    : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
-}
+export type SelfPractice = 'breath' | 'journal';
 
 export function SelfFloor({
   accountId,
   displayName,
-}: Readonly<{ accountId?: string; displayName: string }>) {
+  initialPracticing = false,
+  initialCapacity,
+  capacities = [],
+  practice,
+}: Readonly<{
+  accountId?: string;
+  displayName: string;
+  initialPracticing?: boolean;
+  initialCapacity?: string;
+  capacities?: readonly string[];
+  /** A practice a link asked to open, such as a quick-access shortcut. */
+  practice?: SelfPractice;
+}>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
-  const [isPracticing, setIsPracticing] = useState(false);
-  const [moodModalOpen, setMoodModalOpen] = useState(false);
-  const workbench = useDomainWorkbench('self');
+  const [isPracticing, setIsPracticing] = useState(initialPracticing || accountId === 'explore');
+  const quickAccessScope = accountId === 'explore-guest' ? 'explore' : 'sanctuary';
+  const quickAccess = useQuickAccessPreferences(
+    'self',
+    quickAccessScope,
+    SELF_FEATURE_MANIFEST.all.map((feature) => feature.id),
+    ['fire_journal'],
+    getMaxPinnedForWorkspace('self'),
+  );
+  const workbench = useDomainWorkbench('self', { usageScope: quickAccessScope });
   const [showOverview, setShowOverview] = useState(true);
+  const [showSadhanaModal, setShowSadhanaModal] = useState(false);
+  const [activeModalFeature, setActiveModalFeature] = useState<SelfFeatureManifestItem | null>(null);
+  const [audioMuted, setAudioMuted] = useState(false);
+
+  useEffect(() => {
+    setAudioMuted(isSanctuaryAudioMuted());
+    return subscribeSanctuaryAudio(setAudioMuted);
+  }, []);
+
+  const handleToggleAudio = useCallback(() => {
+    const next = toggleSanctuaryAudio();
+    setAudioMuted(next);
+  }, []);
+
+  const [todaySadhana, setTodaySadhana] = useState<{
+    intention: string;
+    energyLevel: number;
+  } | null>(null);
+  const loadTodaySadhana = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem('sanctuary_today_sadhana');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const todayStr = new Date().toISOString().slice(0, 10);
+        if (parsed.date === todayStr) {
+          setTodaySadhana(parsed);
+          return;
+        }
+      }
+      setTodaySadhana(null);
+    } catch {
+      setTodaySadhana(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTodaySadhana();
+    const handler = () => loadTodaySadhana();
+    window.addEventListener('sanctuary_sadhana_saved', handler);
+    return () => window.removeEventListener('sanctuary_sadhana_saved', handler);
+  }, [loadTodaySadhana]);
+  const returnToHome = useCallback(() => setShowOverview(true), []);
+  const exploreCapacity = useExploreCapacity();
+  const primaryRole =
+    initialCapacity ?? (accountId === 'explore-guest' ? exploreCapacity : undefined);
+  const isExplore =
+    accountId === 'explore-guest' || accountId === 'explore' || initialPracticing;
   const practiceAdapter = useMemo(
     () =>
       accountId
@@ -148,6 +221,30 @@ export function SelfFloor({
     practiceAdapter !== null &&
     declaredPracticeCapability(fireJournalFeature.id, 'browser') !== null;
   const horizon = workbench.state.temporalHorizon ?? todayHorizon();
+  const currentAnchorDate =
+    horizon.anchor.kind === 'date' ? horizon.anchor.date : toIsoDate(new Date());
+  const coordinates = useMemo(
+    () => resolveTemporalCoordinates(currentAnchorDate, { domain: 'self' }),
+    [currentAnchorDate],
+  );
+
+  const datesKey = useMemo(
+    () => coordinates.slots.map((s) => s.date).join(','),
+    [coordinates.slots],
+  );
+
+  const { data: activityDensity = {} } = useQuery<Readonly<Record<string, number>>>({
+    queryKey: ['self', 'activity-density', accountId ?? 'anonymous', datesKey],
+    queryFn: async () => {
+      if (!practiceAdapter?.getActivityDensityForDates) return {};
+      const dates = coordinates.slots.map((s) => s.date);
+      const result = practiceAdapter.getActivityDensityForDates(dates);
+      return result instanceof Promise ? await result : result;
+    },
+    enabled: Boolean(practiceAdapter?.getActivityDensityForDates),
+    staleTime: 60_000,
+  });
+
   const focusedTask = useMemo(
     () =>
       workbench.state.tasks.find((task) => task.taskKey === workbench.state.focusedTaskKey) ?? null,
@@ -156,6 +253,8 @@ export function SelfFloor({
   const canvas = useSelfCanvas({
     accountId: accountId ?? 'anonymous',
     activeFeatureId: focusedTask ? focusedTask.featureId : null,
+    role: primaryRole,
+    roles: primaryRole ? [primaryRole, ...capacities] : capacities,
   });
 
   const [atmosphere, setAtmosphere] = useState<FloorAtmosphereKind>(() => {
@@ -176,6 +275,14 @@ export function SelfFloor({
     }
   });
 
+  const [selfFurnitureOrder, setSelfFurnitureOrder] = useState<string[]>([
+    'hero',
+    'somatic',
+    'circadian',
+    'shelf',
+    'catalog',
+  ]);
+
   const selectAtmosphere = useCallback((kind: FloorAtmosphereKind) => {
     setAtmosphere(kind);
     try {
@@ -187,17 +294,16 @@ export function SelfFloor({
 
   useEffect(() => {
     if (!workbench.state.temporalHorizon) workbench.setTemporalHorizon(todayHorizon());
-  }, [workbench, workbench.state.temporalHorizon]);
-
-  useEffect(() => {
-    if (focusedTask) setShowOverview(false);
-  }, [focusedTask]);
+  }, [workbench]);
 
   const loadHistory = useCallback(async () => {
+    await Promise.resolve();
     setScreen((current) => ({ ...current, error: null, historyStatus: 'loading' }));
     try {
       const rawEntries = isPracticing
-        ? await practiceAdapter?.loadJournal()
+        ? coordinates.intent === 'review'
+          ? practiceAdapter?.loadJournalForDate(coordinates.date)
+          : practiceAdapter?.loadJournal()
         : await loadBurnedJournalHistory();
       const entries = Array.isArray(rawEntries) ? rawEntries : [];
       setScreen((current) => ({ ...current, entries, historyStatus: 'ready' }));
@@ -209,7 +315,7 @@ export function SelfFloor({
         historyStatus: 'error',
       }));
     }
-  }, [isPracticing, practiceAdapter]);
+  }, [isPracticing, practiceAdapter, coordinates.date, coordinates.intent]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -218,8 +324,12 @@ export function SelfFloor({
 
     setScreen((current) => ({ ...current, error: null, isBurning: true, notice: null }));
     try {
+      const isReviewMode = coordinates.intent === 'review';
       const entry = isPracticing
-        ? await practiceAdapter?.burnJournal(content)
+        ? await practiceAdapter?.burnJournal(content, {
+            targetDate: coordinates.date,
+            isRetroactive: isReviewMode,
+          })
         : await burnJournal(content);
       if (!entry) throw new Error('Safe Try is unavailable until the account identity is ready.');
       setScreen((current) => ({
@@ -274,6 +384,7 @@ export function SelfFloor({
   }
 
   function openFireJournal() {
+    quickAccess.trackUse(fireJournalFeature.id);
     const result = workbench.open(fireJournalTask);
     if (result.kind === 'at-capacity') {
       setScreen((current) => ({
@@ -291,31 +402,90 @@ export function SelfFloor({
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {
+    const returnToHome = showOverview;
     const result = workbench.close(task.taskKey);
-    setShowOverview(result.kind === 'overview');
+    setShowOverview(returnToHome || result.kind === 'overview');
   }
 
   function openFeature(feature: SelfFeatureManifestItem) {
-    const delivery = getBrowserSelfFeature(feature.id);
-    if (delivery?.taskKind === 'modal' && delivery.renderer === 'mood-lotus') {
-      setMoodModalOpen(true);
+    quickAccess.trackUse(feature.id);
+    const isModalKind =
+      feature.id === 'mood_lotus' ||
+      feature.id === 'breath_guide' ||
+      feature.id === 'daily_pulse' ||
+      feature.id === 'gratitude_glimmers' ||
+      feature.id === 'joy_jar' ||
+      feature.id === 'wisdom_seeds';
+
+    if (isModalKind) {
+      setActiveModalFeature(feature);
       return;
     }
-    if (feature.id === fireJournalFeature.id && isBrowserSelfFeatureDelivered(feature.id)) {
-      openFireJournal();
+
+    const result = workbench.open({
+      ...fireJournalTask,
+      featureId: feature.id,
+      title: feature.label,
+      icon: feature.emoji,
+    });
+    if (result.kind === 'at-capacity') {
+      setScreen((current) => ({
+        ...current,
+        error: `Close one of your other Self tasks before opening ${feature.label}.`,
+      }));
       return;
     }
-    setScreen((current) => ({
-      ...current,
-      error: `${feature.label} is not delivered in the browser yet. It remains in the catalog so the same Self floor can grow without a second navigation model.`,
-    }));
+    setShowOverview(false);
   }
 
+  function openQuickAccessFeature(feature: SelfFeatureManifestItem) {
+    openFeature(feature);
+  }
+
+  // Opens on each new request, including from a shortcut while Self is already showing.
+  useEffect(() => {
+    if (practice === 'breath') {
+      openFeature(requiredFeature('breath_guide'));
+    } else if (practice === 'journal') {
+      openFireJournal();
+    }
+  }, [practice]);
+
   const journalActive = !showOverview && focusedTask?.featureId === fireJournalFeature.id;
+  const wellbeingTaskActive =
+    !showOverview &&
+    (focusedTask?.featureId === 'mood_lotus' ||
+      focusedTask?.featureId === 'breath_guide' ||
+      focusedTask?.featureId === 'daily_pulse');
 
   useEffect(() => {
-    if (journalActive) void loadHistory();
-  }, [journalActive, isPracticing, loadHistory]);
+    if (!journalActive) return;
+    let active = true;
+    (async () => {
+      try {
+        const rawEntries = isPracticing
+          ? coordinates.intent === 'review'
+            ? practiceAdapter?.loadJournalForDate(coordinates.date)
+            : practiceAdapter?.loadJournal()
+          : await loadBurnedJournalHistory();
+        if (!active) return;
+        const entries = Array.isArray(rawEntries) ? rawEntries : [];
+        setScreen((current) => ({ ...current, entries, historyStatus: 'ready' }));
+      } catch (error) {
+        if (!active) return;
+        setScreen((current) => ({
+          ...current,
+          error:
+            error instanceof Error ? error.message : 'We could not load your Fire Journal history.',
+          historyStatus: 'error',
+        }));
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [journalActive, isPracticing, practiceAdapter, coordinates.date, coordinates.intent]);
 
   const practiceContent = journalActive ? (
     <FireJournal
@@ -327,687 +497,231 @@ export function SelfFloor({
       setScreen={setScreen}
       loadHistory={loadHistory}
       submit={submit}
+      temporalIntent={coordinates.intent}
+      selectedDate={coordinates.date}
     />
+  ) : wellbeingTaskActive && focusedTask ? (
+    <MoodLotusModal
+      embedded
+      initialTab={focusedTask.featureId === 'breath_guide' ? 'breath' : 'mood'}
+      onClose={returnToHome}
+      temporalIntent={coordinates.intent}
+      selectedDate={coordinates.date}
+      isPracticing={isPracticing}
+      practiceAdapter={practiceAdapter}
+    />
+  ) : focusedTask?.featureId === 'joy_jar' ? (
+    <JoyJar userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'gratitude_glimmers' ? (
+    <GratitudeGlimmers userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'wisdom_seeds' ? (
+    <WisdomSeeds userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'tomorrow_prep' ? (
+    <TomorrowPrep userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'sleep_tracker' ? (
+    <SleepTracker userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'personal_goals' ? (
+    <StudentGoals userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'daily_rhythm' || focusedTask?.featureId === 'study_rhythm' ? (
+    <DailyRhythm userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'governance_history' ? (
+    <ProgressTree userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'energy_forecast' ? (
+    <EnergyForecast userId={accountId ?? 'guest-explorer'} selectedDate={coordinates.date} />
+  ) : focusedTask?.featureId === 'voice_journal' ? (
+    <VoiceJournaling userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'reminders' ? (
+    <RemindersManager userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'wind_down_ritual' ? (
+    <WindDownRitual userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'monthly_reflection' ? (
+    <WarmMirrorCard userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'resonance_patterns' ? (
+    <ResonancePatternCard userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'academic_grades' ? (
+    <MyGradesView userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'daily_content' ? (
+    <DailyContentCard userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'reframe' ? (
+    <ReframeWizard userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'decisions' ? (
+    <DecisionJournalSection userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'professional_history' ||
+    focusedTask?.featureId === 'journey_timeline' ? (
+    <TeachingHistoryTimeline userId={accountId ?? 'guest-explorer'} />
+  ) : focusedTask?.featureId === 'daily_pulse' ? (
+    <PulseDashboard userId={accountId ?? 'guest-explorer'} />
   ) : (
     <UnavailableTask task={focusedTask} onReturnToOverview={() => setShowOverview(true)} />
   );
 
   return (
-    <article
-      className={styles.floor}
-      aria-labelledby="self-floor-title"
-      data-domain="self"
-      data-appearance={canvas.appearance.preset}
-      data-motion={canvas.appearance.motion}
-      data-atmosphere={atmosphere}
-    >
-      <FloorAtmosphere kind={atmosphere} preset={canvas.appearance.preset} />
-      <div className={styles.workbenchChrome}>
-        <TaskStrip
-          focusedTaskKey={workbench.state.focusedTaskKey}
-          onCloseTask={closeTask}
-          onFocusTask={focusTask}
-          onOpenCatalog={() => setShowOverview(true)}
-          onOpenOverview={() => setShowOverview(true)}
-          overviewActive={showOverview}
-          tasks={workbench.state.tasks}
-        />
-        <TemporalHorizon
-          dateLabel={formatHorizon(horizon)}
-          onNext={() => workbench.setTemporalHorizon(shiftDate(horizon, 1))}
-          onPrevious={() => workbench.setTemporalHorizon(shiftDate(horizon, -1))}
-          onToday={() => workbench.setTemporalHorizon(todayHorizon())}
-          orientation="A quiet daily orientation for reflection; Fire Journal does not bind to a date."
-        />
-      </div>
-      {showOverview ? (
-        <SelfOverview
-          displayName={displayName}
-          groupOrder={canvas.groupOrder}
-          onOpenFeature={openFeature}
-          onOpenFireJournal={openFireJournal}
-          pinnedFeatures={canvas.pinnedFeatures}
-        />
-      ) : (
-        <div className={styles.masterDetailLayout} data-layout-mode={canvas.layoutMode}>
-          <aside aria-label="Self Practices" className={styles.catalogRail}>
-            <div className={styles.catalogRailHeader}>
-              <h3 className={styles.catalogRailTitle}>Self Practices</h3>
-              <button
-                className={styles.returnOverviewButton}
-                onClick={() => {
-                  if (focusedTask) closeTask(focusedTask);
-                  setShowOverview(true);
-                }}
-                type="button"
-              >
-                Full Overview
-              </button>
-            </div>
-
-            {canvas.pinnedFeatures.length > 0 ? (
-              <section aria-labelledby="rail-pinned-heading" className={styles.catalogRailSection}>
-                <h4 id="rail-pinned-heading" className={styles.catalogRailSectionTitle}>
-                  Pinned
-                </h4>
-                <ul className={styles.catalogRailList}>
-                  {canvas.pinnedFeatures.map((f) => (
-                    <li key={f.id}>
-                      <div className={styles.catalogRailRow}>
-                        <button
-                          className={`${styles.catalogRailItem} ${
-                            focusedTask?.featureId === f.id ? styles.catalogRailItemActive : ''
-                          }`}
-                          onClick={() => openFeature(f)}
-                          type="button"
-                        >
-                          <span className={styles.catalogRailItemEmoji}>{f.emoji}</span>
-                          <span className={styles.catalogRailItemLabel}>{f.label}</span>
-                        </button>
-                        <button
-                          aria-label={`Unpin ${f.label}`}
-                          className={`${styles.catalogRailPinButton} ${styles.catalogRailPinButtonPinned}`}
-                          onClick={() => canvas.togglePin(f.id)}
-                          title="Unpin practice"
-                          type="button"
-                        >
-                          📌
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-
-            <section aria-labelledby="rail-catalog-heading" className={styles.catalogRailSection}>
-              <h4 id="rail-catalog-heading" className={styles.catalogRailSectionTitle}>
-                Practice Catalog
-              </h4>
-              {canvas.groupOrder.map((category) => {
-                const categoryFeatures = canvas.featuresByCategory.get(category) ?? [];
-                if (categoryFeatures.length === 0) return null;
-
-                return (
-                  <div key={category} className={styles.catalogRailSection}>
-                    <span className={styles.catalogRailSectionTitle}>
-                      {categoryTitle(category)}
-                    </span>
-                    <ul className={styles.catalogRailList}>
-                      {categoryFeatures.map((f) => {
-                        const isPinned = canvas.pinnedIds.includes(f.id);
-                        const isCurrentActive = focusedTask?.featureId === f.id;
-                        return (
-                          <li key={f.id}>
-                            <div className={styles.catalogRailRow}>
-                              <button
-                                className={`${styles.catalogRailItem} ${
-                                  isCurrentActive ? styles.catalogRailItemActive : ''
-                                }`}
-                                onClick={() => openFeature(f)}
-                                type="button"
-                              >
-                                <span className={styles.catalogRailItemEmoji}>{f.emoji}</span>
-                                <span className={styles.catalogRailItemLabel}>{f.label}</span>
-                              </button>
-                              <button
-                                aria-label={isPinned ? `Unpin ${f.label}` : `Pin ${f.label}`}
-                                className={`${styles.catalogRailPinButton} ${
-                                  isPinned ? styles.catalogRailPinButtonPinned : ''
-                                }`}
-                                onClick={() => canvas.togglePin(f.id)}
-                                title={isPinned ? 'Unpin practice' : 'Pin practice'}
-                                type="button"
-                              >
-                                {isPinned ? '📌' : '📍'}
-                              </button>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              })}
-            </section>
-          </aside>
-
-          <div className={styles.activePracticeStage}>
-            <div className={styles.backOverviewBar}>
-              <button
-                className={styles.streamBackButton}
-                onClick={() => {
-                  if (focusedTask) closeTask(focusedTask);
-                  setShowOverview(true);
-                }}
-                type="button"
-              >
-                ← Back to Overview
-              </button>
-            </div>
-            {practiceContent}
-          </div>
-        </div>
-      )}
-      {moodModalOpen ? <MoodLotusModal onClose={() => setMoodModalOpen(false)} /> : null}
-      <FloorAtmospherePicker
-        currentPreset={canvas.appearance.preset}
-        currentMotion={canvas.appearance.motion}
-        currentAtmosphere={atmosphere}
-        onSelectPreset={(preset) => canvas.setAppearance({ ...canvas.appearance, preset })}
-        onSelectMotion={(motion) => canvas.setAppearance({ ...canvas.appearance, motion })}
-        onSelectAtmosphere={selectAtmosphere}
-      />
-    </article>
-  );
-}
-
-function SelfOverview({
-  displayName,
-  groupOrder,
-  onOpenFeature,
-  onOpenFireJournal,
-  pinnedFeatures,
-}: Readonly<{
-  displayName: string;
-  groupOrder: readonly SelfCategory[];
-  onOpenFeature: (feature: SelfFeatureManifestItem) => void;
-  onOpenFireJournal: () => void;
-  pinnedFeatures: readonly SelfFeatureManifestItem[];
-}>) {
-  const byCategory = SELF_FEATURE_MANIFEST.all.reduce<Record<SelfCategory, SelfFeatureManifestItem[]>>(
-    (groups, feature) => {
-      (groups[feature.category] ??= []).push(feature);
-      return groups;
-    },
-    {
-      identity: [],
-      wellbeing: [],
-      growth: [],
-      practice: [],
-      professional: [],
-    },
-  );
-
-  const primaryPinned = pinnedFeatures[0];
-
-  return (
-    <>
-      <header className={styles.arrival}>
-        <p className={styles.eyebrow}>Self · Overview</p>
-        <h1 id="self-floor-title">A place to notice what is asking for your care.</h1>
-        <p>
-          {displayName}, this is your orientation floor. Open a practice when it is useful, then
-          return here without losing your place.
-        </p>
-      </header>
-
-      <section aria-labelledby="self-pinned-title" className={styles.catalog}>
-        <div>
-          <p className={styles.eyebrow}>Pinned practice</p>
-          <h2 id="self-pinned-title">{primaryPinned?.label ?? 'Fire Journal'}</h2>
-          <p>
-            {primaryPinned && primaryPinned.id !== 'fire_journal'
-              ? featureDescription(primaryPinned)
-              : 'Release a private reflection. Only a short preview and the day remain in your history.'}
-          </p>
-        </div>
-        <button
-          className={styles.burnButton}
-          onClick={() => {
-            if (!primaryPinned || primaryPinned.id === 'fire_journal') {
-              onOpenFireJournal();
-            } else {
-              onOpenFeature(primaryPinned);
-            }
+    <SanctuaryFloorCanvas
+      appearance={canvas.appearance}
+      className={
+        canvas.phase === 'morning'
+          ? styles.diurnalDawn
+          : canvas.phase === 'night'
+            ? styles.diurnalDusk
+            : styles.diurnalSolar
+      }
+      domain="self"
+      furnitureItems={SELF_FURNITURE_ITEMS}
+      groupOrder={selfFurnitureOrder}
+      onReorderFurniture={setSelfFurnitureOrder}
+      onResetFloorDefaults={canvas.resetAppearance}
+      showPageActions={showOverview}
+      onTogglePinFurniture={canvas.togglePin}
+      pinnedIds={canvas.pinnedIds}
+      setAppearance={canvas.setAppearance}
+      titleId="self-floor-title"
+      greeting={timeGreeting(displayName)}
+      breadcrumb={
+        showOverview
+          ? coordinates.intent === 'review'
+            ? 'Self · Archival Horizon'
+            : coordinates.intent === 'plan'
+              ? 'Self · Future Horizon'
+              : 'Self · Overview'
+          : `Self · ${focusedTask?.title ?? 'Task'}`
+      }
+      timeControl={
+        <DateTimeCombo
+          formFactor="nano"
+          date={coordinates.date}
+          dateLabel={coordinates.dateLabel}
+          intent={coordinates.intent}
+          activityDensity={activityDensity}
+          onSelectDate={(date) => {
+            workbench.setTemporalHorizon({
+              anchor: { kind: 'date', date },
+              scale: 'day',
+              intent: resolveTemporalIntent(date, toIsoDate(new Date())),
+            });
           }}
-          type="button"
-        >
-          Open {primaryPinned?.label ?? 'Fire Journal'}
-        </button>
-      </section>
-      <section aria-labelledby="self-catalog-title" className={styles.catalog}>
-        <p className={styles.eyebrow}>Practice catalog</p>
-        <h2 id="self-catalog-title">Practices, held in one place</h2>
-        <p className={styles.catalogIntroduction}>
-          This catalog is the shared Self inventory. A practice opens only when its browser delivery
-          is real; the rest remain visible without pretending to be ready.
-        </p>
-        <div className={styles.catalogZones}>
-          {groupOrder.map((zone) => (
-            <section
-              aria-labelledby={`self-category-${zone}`}
-              className={styles.catalogZone}
-              key={zone}
-            >
-              <h3 id={`self-category-${zone}`}>{categoryTitle(zone)}</h3>
-              <div className={styles.catalogGrid}>
-                {(byCategory[zone] ?? []).map((feature) => (
-                  <FeatureCatalogCard
-                    feature={feature}
-                    key={feature.id}
-                    onOpen={() => onOpenFeature(feature)}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
-
-function categoryTitle(category: SelfGroup): string {
-  const labels: Record<SelfGroup, string> = {
-    identity: 'Identity',
-    wellbeing: 'Wellbeing',
-    growth: 'Growth',
-    practice: 'Practice & rhythm',
-    professional: 'Professional',
-  };
-  return labels[category] ?? category;
-}
-
-function FeatureCatalogCard({
-  feature,
-  onOpen,
-}: Readonly<{ feature: SelfFeatureManifestItem; onOpen: () => void }>) {
-  const runnable = isBrowserSelfFeatureDelivered(feature.id);
-  const status = runnable
-    ? feature.availability === 'authorization-unresolved'
-      ? 'Available after secure check'
-      : 'Open practice'
-    : 'Not yet delivered in browser';
-
-  return (
-    <article className={styles.catalogItem} data-runnable={runnable}>
-      <p aria-hidden="true" className={styles.catalogEmoji}>
-        {feature.emoji}
-      </p>
-      <h4>{feature.label}</h4>
-      <p>{featureDescription(feature)}</p>
-      {runnable ? (
-        <button className={styles.catalogOpen} onClick={onOpen} type="button">
-          {status}
-        </button>
-      ) : (
-        <span className={styles.catalogStatus}>{status}</span>
-      )}
-    </article>
-  );
-}
-
-function featureDescription(feature: SelfFeatureManifestItem): string {
-  if (feature.id === fireJournalFeature.id)
-    return 'Release a private reflection. Only a short preview and the day remain in history.';
-  return `${feature.category} practice · ${feature.timing?.preferredPhase ?? 'any time'}`;
-}
-
-function MoodLotusModal({ onClose }: Readonly<{ onClose: () => void }>) {
-  const [history, setHistory] = useState<readonly MoodLog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [selectedMood, setSelectedMood] = useState<MoodValue | null>(null);
-  const [note, setNote] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const savingRef = useRef(false);
-
-  useEffect(() => {
-    savingRef.current = saving;
-  }, [saving]);
-
-  const refreshHistory = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const entries = await loadMoodHistory();
-      setHistory(Array.isArray(entries) ? entries : []);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'We could not load your mood history.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void refreshHistory();
-    const previousFocus =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    dialogRef.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !savingRef.current) onClose();
-    };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => {
-      document.removeEventListener('keydown', closeOnEscape);
-      previousFocus?.focus();
-    };
-  }, [onClose, refreshHistory]);
-
-  const latest = history[0] ?? null;
-  const selectedChoice = MOOD_CHOICES.find((choice) => choice.value === selectedMood) ?? null;
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!selectedMood || saving) return;
-    setSaving(true);
-    setError(null);
-    try {
-      const entry = await logMood({ mood: selectedMood, note });
-      setHistory((current) => [entry, ...(Array.isArray(current) ? current : [])].slice(0, 8));
-      setNote('');
-      setSelectedMood(null);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'We could not save this check-in.');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <div
-      className={styles.modalBackdrop}
-      onMouseDown={(event) => {
-        if (event.currentTarget === event.target && !saving) onClose();
-      }}
+          onToday={() => workbench.setTemporalHorizon(todayHorizon())}
+          allowDismiss={false}
+        />
+      }
     >
-      <section
-        aria-describedby="mood-lotus-description"
-        aria-labelledby="mood-lotus-title"
-        aria-modal="true"
-        className={styles.moodModal}
-        ref={dialogRef}
-        role="dialog"
-        tabIndex={-1}
-      >
-        <header className={styles.modalHeader}>
-          <div>
-            <p className={styles.eyebrow}>Mood Lotus</p>
-            <h2 id="mood-lotus-title">How are you arriving?</h2>
-            <p id="mood-lotus-description">
-              A brief check-in for this moment. It is saved to your private history, not opened as a
-              task.
-            </p>
-          </div>
-          <button
-            aria-label="Close Mood Lotus"
-            className={styles.modalClose}
-            disabled={saving}
-            onClick={onClose}
-            type="button"
-          >
-            Close
-          </button>
-        </header>
-
-        <form className={styles.moodForm} onSubmit={(event) => void submit(event)}>
-          <fieldset disabled={saving}>
-            <legend>Choose what feels closest</legend>
-            <div className={styles.moodChoices}>
-              {MOOD_CHOICES.map((choice) => (
-                <button
-                  aria-pressed={selectedMood === choice.value}
-                  className={styles.moodChoice}
-                  data-selected={selectedMood === choice.value}
-                  key={choice.value}
-                  onClick={() => setSelectedMood(choice.value)}
-                  type="button"
-                >
-                  <span aria-hidden="true">{choice.emoji}</span>
-                  {choice.label}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-          <label htmlFor="mood-lotus-note">A few words, if useful</label>
-          <textarea
-            disabled={saving}
-            id="mood-lotus-note"
-            maxLength={500}
-            onChange={(event) => setNote(event.target.value)}
-            placeholder="Optional. Keep this gentle and brief."
-            rows={3}
-            value={note}
-          />
-          <div className={styles.actions}>
-            <button
-              className={styles.burnButton}
-              disabled={!selectedChoice || saving}
-              type="submit"
-            >
-              {saving
-                ? 'Saving…'
-                : selectedChoice
-                  ? `Save ${selectedChoice.label}`
-                  : 'Choose a feeling'}
-            </button>
-            {latest ? (
-              <span className={styles.hint}>Last check-in: {formatDate(latest.created_at)}</span>
-            ) : null}
-          </div>
-        </form>
-        {error ? (
-          <p className={styles.error} role="alert">
-            {error}
-          </p>
-        ) : null}
-        <section aria-labelledby="mood-history-title" className={styles.moodHistory}>
-          <div className={styles.historyHeader}>
-            <h3 id="mood-history-title">Recent check-ins</h3>
-            {error && !saving ? (
-              <button
-                className={styles.retryButton}
-                onClick={() => void refreshHistory()}
-                type="button"
-              >
-                Retry
-              </button>
-            ) : null}
-          </div>
-          {loading ? <p className={styles.empty}>Gathering the recent pattern…</p> : null}
-          {!loading && history.length === 0 ? (
-            <p className={styles.empty}>Your first check-in can begin here.</p>
-          ) : null}
-          {!loading && history.length > 0 ? (
-            <ol className={styles.moodHistoryList}>
-              {history.map((entry) => (
-                <li key={entry.id}>
-                  <div className={styles.moodHistoryEntry}>
-                    <span aria-hidden="true" className={styles.moodEmoji}>
-                      {MOOD_CHOICES.find((choice) => choice.value === entry.mood)?.emoji ?? '•'}
-                    </span>
-                    <div>
-                      <p className={styles.moodLabel}>
-                        {entry.mood ? entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1) : 'Logged'}
-                      </p>
-                      {entry.note ? <p className={styles.moodNote}>{entry.note}</p> : null}
-                      <time dateTime={entry.created_at}>{formatDate(entry.created_at)}</time>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          ) : null}
-        </section>
-      </section>
-    </div>
-  );
-}
-
-function UnavailableTask({
-  task,
-  onReturnToOverview,
-}: Readonly<{
-  task: WorkbenchTaskDescriptor | null;
-  onReturnToOverview: () => void;
-}>) {
-  return (
-    <section aria-labelledby="unavailable-task-title" className={styles.unavailableTask}>
-      <h2 id="unavailable-task-title">{task?.title ?? 'Practice'} is not delivered here</h2>
-      <p>
-        This task is present in your workbench, but its full browser surface is not yet delivered in
-        this release.
-      </p>
-      <button className={styles.burnButton} onClick={onReturnToOverview} type="button">
-        Return to overview
-      </button>
-    </section>
-  );
-}
-
-function FireJournal({
-  isPracticing,
-  practiceStorageKind,
-  onDiscardPractice,
-  onEnterPractice,
-  screen,
-  setScreen,
-  loadHistory,
-  submit,
-}: Readonly<{
-  isPracticing: boolean;
-  practiceStorageKind: 'local-storage' | 'memory';
-  onDiscardPractice: () => void;
-  onEnterPractice: () => void;
-  screen: ScreenState;
-  setScreen: Dispatch<SetStateAction<ScreenState>>;
-  loadHistory: () => Promise<void>;
-  submit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
-}>) {
-  const historySnapshot = journalHistorySnapshot(screen);
-
-  return (
-    <>
-      <header className={styles.arrival}>
-        <p className={styles.eyebrow}>Self · Fire Journal</p>
-        <h1 id="self-floor-title">Make room for what needs to be released.</h1>
-        <p>
-          {isPracticing
-            ? practiceStorageKind === 'local-storage'
-              ? 'Safe Try uses fictional sample data and saves only on this browser. Your account journal is untouched.'
-              : 'Safe Try uses fictional sample data in this page session only. Your account journal is untouched.'
-            : 'Write freely. When you release an entry, the full text is not retained.'}
-        </p>
-        <div className={styles.actions}>
-          {isPracticing ? (
-            <button className={styles.retryButton} onClick={onDiscardPractice} type="button">
-              End Safe Try and discard
-            </button>
-          ) : (
-            <button className={styles.retryButton} onClick={onEnterPractice} type="button">
-              Try this safely
-            </button>
-          )}
-        </div>
-      </header>
-      <div className={styles.grid}>
-        <section className={styles.alcove} aria-labelledby="fire-journal-compose-title">
-          <p className={styles.eyebrow}>Reflection</p>
-          <h2 id="fire-journal-compose-title">What can leave your hands today?</h2>
-          <form
-            className={styles.form}
-            onSubmit={(event) => {
-              void submit(event);
+      {({ isArrangeMode }) => (
+        <>
+          <TaskStrip
+            shellSlot
+            focusedTaskKey={workbench.state.focusedTaskKey}
+            onCloseTask={closeTask}
+            onFocusTask={focusTask}
+            onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
+            onOpenOverview={() => {
+              setShowOverview(true);
+              requestAnimationFrame(() =>
+                document.getElementById('self-catalog-title')?.scrollIntoView?.({
+                  behavior: 'smooth',
+                  block: 'start',
+                }),
+              );
             }}
-          >
-            <label htmlFor="fire-journal-entry">A private reflection</label>
-            <textarea
-              disabled={screen.isBurning}
-              id="fire-journal-entry"
-              maxLength={10_000}
-              onChange={(event) =>
-                setScreen((current) => ({ ...current, draft: event.target.value }))
+            quickAccessItems={SELF_FEATURE_MANIFEST.all.map((feature) => ({
+              id: feature.id,
+              label: feature.label,
+              emoji: feature.emoji,
+            }))}
+            quickAccessPinnedIds={quickAccess.pinnedIds}
+            quickAccessUsage={quickAccess.usage}
+            quickAccessPinLimit={quickAccess.pinLimit}
+            onOpenQuickAccessItem={(item) => {
+              const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === item.id);
+              if (feature) openQuickAccessFeature(feature);
+            }}
+            onToggleQuickAccessPin={quickAccess.togglePin}
+            overviewActive={showOverview}
+            tasks={workbench.state.tasks}
+          />
+
+          {showOverview ? (
+            <div className={styles.featureContentIn} key="self-home">
+              <SelfOverview
+                isArrangeMode={isArrangeMode}
+                displayName={displayName}
+                phase={canvas.phase}
+                groupOrder={canvas.groupOrder}
+                floorSectionOrder={selfFurnitureOrder}
+                manifestAll={canvas.sortedManifestAll}
+                onOpenFeature={openFeature}
+                onOpenFireJournal={openFireJournal}
+                pinnedFeatures={canvas.pinnedFeatures}
+                pinnedIds={quickAccess.pinnedIds}
+                usage={quickAccess.usage}
+                onTogglePin={quickAccess.togglePin}
+                fireJournalId={fireJournalFeature.id}
+                temporalIntent={coordinates.intent}
+                selectedDate={coordinates.date}
+                primaryRole={primaryRole}
+                otherRoles={capacities}
+                userId={accountId}
+                isExplore={isExplore}
+              />
+            </div>
+          ) : (
+            <div
+              className={styles.featureContentIn}
+              data-layout-mode={canvas.layoutMode}
+              key={focusedTask?.taskKey ?? 'self-feature'}
+            >
+              <div className={styles.activePracticeStage}>{practiceContent}</div>
+            </div>
+          )}
+
+          <DailySadhanaModal
+            isOpen={showSadhanaModal}
+            onClose={() => setShowSadhanaModal(false)}
+            userId={accountId}
+          />
+
+          {activeModalFeature && (
+            <Dialog
+              open={!!activeModalFeature}
+              onClose={() => setActiveModalFeature(null)}
+              title={activeModalFeature.label}
+              description={
+                activeModalFeature.id === 'breath_guide'
+                  ? 'Follow the gentle rhythm to settle your autonomic nervous system.'
+                  : activeModalFeature.id === 'daily_pulse'
+                    ? 'Your living morning threshold: commitments, energy anchors, and mindful pacing.'
+                    : activeModalFeature.id === 'gratitude_glimmers'
+                      ? 'Capture moments of student growth, colleague support, or quiet personal wins.'
+                      : activeModalFeature.id === 'joy_jar'
+                        ? 'Preserve classroom breakthrough moments and joyful connections.'
+                        : activeModalFeature.id === 'wisdom_seeds'
+                          ? 'Plant spontaneous pedagogical insights and grounding reminders.'
+                          : undefined
               }
-              placeholder="Write without needing to carry every word forward."
-              required
-              rows={7}
-              value={screen.draft}
-            />
-            <div className={styles.actions}>
-              <button className={styles.burnButton} disabled={screen.isBurning} type="submit">
-                {screen.isBurning
-                  ? 'Releasing…'
-                  : isPracticing
-                    ? 'Practice release'
-                    : 'Release to Fire Journal'}
-              </button>
-              <span className={styles.hint}>
-                {isPracticing
-                  ? 'This only changes the local practice copy.'
-                  : 'The full reflection is not saved.'}
-              </span>
-            </div>
-          </form>
-          {screen.notice ? (
-            <p className={styles.status} role="status">
-              {screen.notice}
-            </p>
-          ) : null}
-          {screen.error ? (
-            <p className={styles.error} role="alert">
-              {screen.error}
-            </p>
-          ) : null}
-        </section>
-
-        <section className={styles.history} aria-labelledby="fire-journal-history-title">
-          <div className={styles.historyHeader}>
-            <div>
-              <p className={styles.eyebrow}>What remains</p>
-              <h2 id="fire-journal-history-title">Burned history</h2>
-            </div>
-          </div>
-          <FeatureStateBoundary
-            emptyTitle="Nothing has been released here yet"
-            onRetry={() => void loadHistory()}
-            snapshot={historySnapshot}
-          >
-            <ol className={styles.historyList}>
-              {screen.entries.map((entry) => (
-                <li key={entry.id}>
-                  <article className={styles.entry}>
-                    <p>{entry.content_preview}</p>
-                    <footer>
-                      <time dateTime={entry.created_at}>{formatDate(entry.created_at)}</time>
-                      <span className={styles.burned}>Released</span>
-                    </footer>
-                  </article>
-                </li>
-              ))}
-            </ol>
-          </FeatureStateBoundary>
-        </section>
-      </div>
-    </>
+            >
+              <div style={{ marginTop: '0.5rem', width: '100%' }}>
+                {activeModalFeature.id === 'mood_lotus' || activeModalFeature.id === 'breath_guide' ? (
+                  <MoodLotusModal
+                    embedded
+                    initialTab={activeModalFeature.id === 'breath_guide' ? 'breath' : 'mood'}
+                    onClose={() => setActiveModalFeature(null)}
+                    temporalIntent={coordinates.intent}
+                    selectedDate={coordinates.date}
+                    isPracticing={isPracticing}
+                    practiceAdapter={practiceAdapter}
+                  />
+                ) : activeModalFeature.id === 'daily_pulse' ? (
+                  <PulseDashboard userId={accountId ?? 'guest-explorer'} onClose={() => setActiveModalFeature(null)} />
+                ) : activeModalFeature.id === 'gratitude_glimmers' ? (
+                  <GratitudeGlimmers userId={accountId ?? 'guest-explorer'} />
+                ) : activeModalFeature.id === 'joy_jar' ? (
+                  <JoyJar userId={accountId ?? 'guest-explorer'} />
+                ) : activeModalFeature.id === 'wisdom_seeds' ? (
+                  <WisdomSeeds userId={accountId ?? 'guest-explorer'} />
+                ) : null}
+              </div>
+            </Dialog>
+          )}
+        </>
+      )}
+    </SanctuaryFloorCanvas>
   );
-}
-
-function journalHistorySnapshot(screen: ScreenState): FeatureSurfaceStateSnapshot {
-  const state =
-    screen.historyStatus === 'loading'
-      ? 'loading'
-      : screen.historyStatus === 'error'
-        ? 'retryable_error'
-        : (screen.entries?.length ?? 0) === 0
-          ? 'empty'
-          : 'ready';
-
-  return {
-    state,
-    lastKnownGoodAt: null,
-    pendingMutationCount: 0,
-    canRetry: state === 'retryable_error',
-    canEdit: true,
-    isSensitive: true,
-    safeMessage:
-      state === 'loading'
-        ? 'Gathering your history…'
-        : state === 'retryable_error'
-          ? (screen.error ?? 'We could not load your Fire Journal history.')
-          : state === 'empty'
-            ? 'Your released reflections will appear here.'
-            : 'Your Fire Journal history is ready.',
-  };
 }

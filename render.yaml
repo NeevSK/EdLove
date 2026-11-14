@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: sanctuary-api
+    runtime: docker
+    dockerfilePath: ./apps/sanctuary-api/Dockerfile
+    dockerContext: .
+    plan: free
+    region: singapore
+    healthCheckPath: /health/ready
+    autoDeploy: false
+    envVars:
+      - key: PORT
+        value: "3000"
+      - key: NODE_ENV
+        value: "production"
+      - key: API_AUTHENTICATION
+        value: "required"
+      - key: DATABASE_URL
+        sync: false
+      - key: AUTH_ISSUER
+        sync: false
+      - key: AUTH_JWKS_URL
+        sync: false
+      - key: SNAPSHOT_SIGNING_PRIVATE_KEY
+        sync: false
+      - key: API_BROWSER_ORIGINS
+        sync: false
+      - key: AUTH_AUDIENCE
+        value: "authenticated"

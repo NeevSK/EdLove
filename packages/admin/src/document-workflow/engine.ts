@@ -12,14 +12,6 @@ import type {
 } from '@repo/admin/document-workflow/types';
 
 export class DocumentWorkflowEngine {
-  private static instance: DocumentWorkflowEngine;
-
-  static getInstance(): DocumentWorkflowEngine {
-    if (!DocumentWorkflowEngine.instance) {
-      DocumentWorkflowEngine.instance = new DocumentWorkflowEngine();
-    }
-    return DocumentWorkflowEngine.instance;
-  }
 
   // Workflow transition rules
   private workflowTransitions: WorkflowTransition[] = [
@@ -362,4 +354,4 @@ export class DocumentWorkflowEngine {
 }
 
 // Export singleton instance
-export const documentWorkflowEngine = DocumentWorkflowEngine.getInstance();
+export const documentWorkflowEngine = new DocumentWorkflowEngine();

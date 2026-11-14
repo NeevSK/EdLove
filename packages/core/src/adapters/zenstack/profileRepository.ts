@@ -1,19 +1,8 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import type {
-  CommunityProfile,
-  ProfileHistoryEntry,
-  ProfileJourneyEvent,
-  ProfileJourneyReadOptions,
-  ProfileJourneySnapshot,
-  ProfileRepository,
-  ProfileTemporalReadOptions,
-  PulseMetrics,
-  UserGrowthState,
-  UserPreferences,
-  UserRewardsSnapshot,
-  WhisperedMomentSnapshot,
-} from '@repo/core/logic/domains/profile/ports';
+import type { CommunityProfile, ProfileHistoryEntry, ProfileJourneyEvent, ProfileJourneyReadOptions, ProfileJourneySnapshot, ProfileRepository, ProfileTemporalReadOptions, PulseMetrics, UserGrowthState, UserRewardsSnapshot, WhisperedMomentSnapshot } from '@repo/core/logic/ports/profile.port';
+import type { UserPreferences } from '@repo/core/types/UserPreferences';
 import type { IFileStoragePort } from '@repo/core/logic/ports/storage.port';
+import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { APIError, type SocialLink, type User } from '@repo/core/types';
 import type { User as ZenStackUser } from '@repo/schema/contracts';
@@ -38,7 +27,7 @@ const getPreviousRange = (start: string, end: string) => {
 
 type AuthUserResolver = () => { id: string | null };
 
-const normalizeUser = (record: ZenStackUser | null | undefined): User | null => {
+const normalizeUser = (record: Partial<ZenStackUser> | null | undefined): User | null => {
   if (!record) return null;
   const user = record as any;
   return {
@@ -335,15 +324,9 @@ export const createZenStackProfileRepository = (
         .slice(0, limit);
     },
     async updateUserProfile(userId, updates) {
-      const db = await getDb();
-      const updated = await db.user.update({
-        where: { id: userId },
-        data: updates,
-      });
-      const normalized = normalizeUser(updated);
-      if (!normalized)
-        throw new APIError('Failed to normalize updated user profile', 'INTERNAL_ERROR');
-      return normalized;
+      void userId;
+      void updates;
+      throw new APIError('Profile updates are not admitted by the v1 foundation.', 'UNSUPPORTED');
     },
     async getAnonymousFlag(userId) {
       const db = await getDb();

@@ -28,6 +28,7 @@ import {
   ripplesAPI,
 } from '@repo/core/api/orchestration/growth';
 import { type ORPCClient, type ORPCUtils, orpc, orpcClient } from '@repo/core/api/orpcClient';
+import { planBridgeAPI } from '@repo/core/api/planBridge';
 import { presenceAPI } from '@repo/core/api/presence';
 import { principalNotesAPI } from '@repo/core/api/principalNotes';
 import { privacyAPI } from '@repo/core/api/privacy';
@@ -82,7 +83,11 @@ export * from '@repo/core/api/community.contract';
 export * from '@repo/core/api/contextualChallenges';
 export * from '@repo/core/api/contractCoverage';
 export * from '@repo/core/api/contracts';
-export * from '@repo/core/api/decisionJournal.contract';
+/** @deprecated [USE resonantProxy / sandboxDataset] Legacy provider export retained for backward compatibility. */
+export * from '@repo/core/api/demoProvider';
+export * from '@repo/core/api/sandboxMode';
+export * from '@repo/core/api/sandboxDataset';
+export * from '@repo/core/api/sandboxBridge';
 export * from '@repo/core/api/durableAgents.contract';
 export * from '@repo/core/api/editorial.contract';
 export * from '@repo/core/api/educational.contract';
@@ -107,6 +112,7 @@ export * from '@repo/core/api/longitudinal';
 export * from '@repo/core/api/longitudinal.contract';
 export * from '@repo/core/api/mapping';
 export * from '@repo/core/api/mapping.contract';
+/** @deprecated [INTERNAL FIXTURE REGISTRY] Do NOT import directly in UI components or domain hooks. */
 export * from '@repo/core/api/mockData';
 export * from '@repo/core/api/moonPhase';
 export * from '@repo/core/api/naturePaths';
@@ -179,6 +185,7 @@ export {
   onboardingAPI,
   orpc,
   orpcClient,
+  planBridgeAPI,
   presenceAPI,
   profileAPI,
   readLocalFirst,
@@ -192,81 +199,99 @@ export {
   writeLocalFirst,
 };
 
-/**
- * Unified API Object (Sovereign Orchestration)
- */
-export const api: Record<string, any> = {
-  announcements: announcementAPI,
+const domainApiMap: Record<string, any> = {
+  academicCycles: academicCyclesAPI,
+  accounting: accountingAPI,
   agent: agentAPI,
+  announcements: announcementAPI,
+  assignments: assignmentsAPI,
+  attendance: attendanceAPI,
   auth: authAPI,
   circles: circleAPI,
-  identity: identityAPI,
-  tasks: tasksAPI,
-  notes: classroomNotesAPI,
-  lessons: lessonsAPI,
-  students: studentsAPI,
-  attendance: attendanceAPI,
-  resources: resourcesAPI,
-  groups: groupsAPI,
-  lessonMaterials: lessonMaterialsAPI,
-  assignments: assignmentsAPI,
   classroomGroups: classroomGroupsAPI,
+  classroomNotes: classroomNotesAPI,
   classroomStudents: classroomStudentsAPI,
   classrooms: classroomsAPI,
-  grading: gradingAPI,
-  school: schoolAPI,
-  inventory: inventoryAPI,
-  accounting: accountingAPI,
-  payments: paymentsAPI,
-  erp: {
-    inventory: inventoryAPI,
-    accounting: accountingAPI,
-    payments: paymentsAPI,
-  },
-  rewards: rewardsAPI,
-  tracking: trackingAPI,
-  onboarding: onboardingAPI,
-  presence: presenceAPI,
-  sacredMissions: missionsAPI,
-  dailyContent: dailyContentAPI,
-  thuthimal: proAPI,
-  pro: proAPI,
-  classroomNotes: classroomNotesAPI,
-  principalNotes: principalNotesAPI,
   community: communityAPI,
-  messaging: messagingAPI,
-  community_group: communityAPI,
-  guardian: guardianAPI,
-  staffManagement: staffManagementAPI,
-  missions: missionsAPI,
+  contextualChallenges: contextualChallengesAPI,
+  dailyContent: dailyContentAPI,
   demo: demoAPI,
-  growth: growthAPI,
-  growthState: growthStateAPI,
-  ripples: ripplesAPI,
-  warmMirror: warmMirrorAPI,
-  naturePaths: naturePathsAPI,
-  moonPhase: moonPhaseAPI,
-  schoolForest: schoolForestAPI,
-  challenges: contextualChallengesAPI,
   deviceTrust: deviceTrustAPI,
-  founder: founderAPI,
-  principalWorkspace: principalWorkspaceAPI,
-  teacherInsights: teacherInsightsAPI,
-  longitudinal: longitudinalAPI,
-  academicCycles: academicCyclesAPI,
-  studentObservations: studentObservationsAPI,
-  privacy: privacyAPI,
   echo: echoAPI,
-  studentPotential: studentPotentialAPI,
-  mapping: mappingAPI,
+  formTemplates: formTemplatesAPI,
+  founder: founderAPI,
+  grading: gradingAPI,
+  groups: groupsAPI,
+  growth: growthAPI,
+  guardian: guardianAPI,
   history: historyAPI,
-  forms: formTemplatesAPI,
-  socialAPI,
-  profile: profileAPI,
-  media: mediaAPI,
+  identity: identityAPI,
+  inventory: inventoryAPI,
+  lessonMaterials: lessonMaterialsAPI,
+  lessons: lessonsAPI,
   library: libraryAPI,
-  orpcClient,
-  orpc,
+  longitudinal: longitudinalAPI,
+  mapping: mappingAPI,
+  media: mediaAPI,
+  messaging: messagingAPI,
+  missions: missionsAPI,
+  moonPhase: moonPhaseAPI,
+  naturePaths: naturePathsAPI,
+  notes: classroomNotesAPI,
+  onboarding: onboardingAPI,
+  payments: paymentsAPI,
+  planBridge: planBridgeAPI,
+  presence: presenceAPI,
+  principalNotes: principalNotesAPI,
+  principalWorkspace: principalWorkspaceAPI,
+  privacy: privacyAPI,
+  profile: profileAPI,
+  resources: resourcesAPI,
+  rewards: rewardsAPI,
+  school: schoolAPI,
+  schoolForest: schoolForestAPI,
+  social: socialAPI,
+  staffManagement: staffManagementAPI,
+  studentObservations: studentObservationsAPI,
+  studentPotential: studentPotentialAPI,
+  students: studentsAPI,
+  tasks: tasksAPI,
+  teacherInsights: teacherInsightsAPI,
+  tracking: trackingAPI,
+  warmMirror: warmMirrorAPI,
 };
 
+/**
+ * Modern Sovereign oRPC v2 Dynamic Client Proxy
+ *
+ * Bridges domain orchestrations (resonantProxy + temporalProxy + oRPC) and
+ * direct procedures on `orpcClient`.
+ *
+ * Deleted or non-existent legacy methods throw loud, actionable errors.
+ */
+export const api: any = new Proxy(orpcClient, {
+  get(target: any, domainProp: string) {
+    if (domainProp in domainApiMap) {
+      return domainApiMap[domainProp];
+    }
+    if (domainProp in target) {
+      return target[domainProp];
+    }
+    // Direct oRPC domain aliases
+    if (domainProp === 'challenges') return target.growth;
+    if (domainProp === 'pro') return target.thuthimal;
+    if (domainProp === 'forms') return target.forms;
+
+    // Loud break for deleted/unmapped domain properties
+    throw new Error(
+      `[NUCLEAR-HARD-CUT] Domain property "api.${domainProp}" does not exist in domain orchestration or oRPC v2. Migrate directly to orpcClient.${domainProp}.*`,
+    );
+  },
+});
+
 export default api;
+export * from './pilot.orpc.v2';
+export * from './hooks';
+export * from './eventsReceiver';
+
+

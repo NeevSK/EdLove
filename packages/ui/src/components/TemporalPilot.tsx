@@ -2,6 +2,7 @@ import { useTemporalStore } from '@repo/core/logic';
 import { TemporalScrubber } from '@repo/ui/components/TemporalScrubber';
 import { Calendar, PanelsTopLeft as LayoutIcon, Wifi, WifiOff, Zap } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import type React from 'react';
 import { useState } from 'react';
 import { Modal } from 'react-native';
@@ -17,16 +18,14 @@ export interface TemporalPilotProps {
 }
 
 export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
-  const {
-    viewScale,
-    setScale,
-    viewMode,
-    setViewMode,
-    timelineFocus,
-    setTimelineFocus,
-    isOffline,
-    setOffline,
-  } = useTemporalStore();
+  const viewScale = useTemporalStore((s) => s.viewScale);
+  const setScale = useTemporalStore((s) => s.setScale);
+  const viewMode = useTemporalStore((s) => s.viewMode);
+  const setViewMode = useTemporalStore((s) => s.setViewMode);
+  const timelineFocus = useTemporalStore((s) => s.timelineFocus);
+  const setTimelineFocus = useTemporalStore((s) => s.setTimelineFocus);
+  const readPolicy = useTemporalStore((s) => s.readPolicy);
+  const setReadPolicy = useTemporalStore((s) => s.setReadPolicy);
   const [isCalendarVisible, setCalendarVisible] = useState(false);
 
   return (
@@ -58,18 +57,26 @@ export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
             className={`w-9 h-9 rounded-full items-center justify-center ${viewMode === 'timeline' ? 'bg-white/20 border border-phase-accent/50' : 'bg-white/5'}`}
           >
             {viewMode === 'spotlight' ? (
-              <Zap size={20} color="#F6BF8C" />
+              <Zap size={20} color={tokens.colors.primary} />
             ) : (
-              <LayoutIcon size={20} color="#F6BF8C" />
+              <LayoutIcon size={20} color={tokens.colors.primary} />
             )}
           </Pressable>
 
           <Pressable
             accessibilityRole="button"
-            onPress={() => setOffline(!isOffline)}
+            accessibilityLabel={
+              readPolicy === 'cached-only' ? 'Allow live reads' : 'Use cached reads only'
+            }
+            accessibilityState={{ selected: readPolicy === 'cached-only' }}
+            onPress={() => setReadPolicy(readPolicy === 'cached-only' ? 'live' : 'cached-only')}
             className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
           >
-            {isOffline ? <WifiOff size={20} color="#FF6B6B" /> : <Wifi size={20} color="#F6BF8C" />}
+            {readPolicy === 'cached-only' ? (
+              <WifiOff size={20} color={tokens.colors.error} />
+            ) : (
+              <Wifi size={20} color={tokens.colors.primary} />
+            )}
           </Pressable>
 
           <Pressable
@@ -77,7 +84,7 @@ export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
             onPress={() => setCalendarVisible(true)}
             className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
           >
-            <Calendar size={20} color="#F6BF8C" />
+            <Calendar size={20} color={tokens.colors.primary} />
           </Pressable>
 
           {onSearch ? (
@@ -87,7 +94,7 @@ export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
               onPress={onSearch}
               className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
             >
-              <LayoutIcon size={20} color="#F6BF8C" />
+              <LayoutIcon size={20} color={tokens.colors.primary} />
             </Pressable>
           ) : null}
         </HStack>
@@ -124,7 +131,7 @@ export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
           onPress={() => setCalendarVisible(false)}
           className="flex-1 bg-black/80 justify-center items-center"
         >
-          <Box className="w-[90%] bg-[#1A1A1A] rounded-[32px] p-6 border border-white/10">
+          <Box className="w-[90%] bg-phase-canvas rounded-[32px] p-6 border border-white/10">
             <Text className="text-white text-lg font-bold mb-6 text-center">
               Select Temporal Point
             </Text>

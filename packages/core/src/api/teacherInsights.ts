@@ -162,3 +162,17 @@ export const teacherInsightsAPI = {
     return teacherInsights.getInsightTimeline(insightType, insightId);
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_STUDENT_OBSERVATIONS } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'teacherInsights',
+  ghostMethods: [
+    'listStudentObservations',
+    'listStudentObservationsForEnrollment',
+    'listStudentObservationsForStudent',
+  ],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_STUDENT_OBSERVATIONS,
+});

@@ -1,5 +1,5 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { CapacitySchema, type Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { type Capacity, CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 
 const GUEST_IDENTITY_PREFIX = 'gurudevi:guest-identity:';
 
@@ -7,8 +7,9 @@ export interface LocalGuestBond {
   id: string;
   user_id: string;
   entity_id: string;
-  entity_type: 'PERSONAL_CLASSROOM';
+  entity_type: 'PERSONAL';
   capacity: string;
+  citizenship: 'THIRD_CLASS';
   status: 'active';
 }
 

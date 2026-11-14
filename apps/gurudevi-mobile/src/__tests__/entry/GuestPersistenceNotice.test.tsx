@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -9,7 +10,11 @@ const mocks = vi.hoisted(() => ({
     day: 1,
     isExpired: false,
     reminderDay: 1,
-    lease: { startedAt: '2026-09-10T00:00:00.000Z', expiresAt: '2026-09-25T00:00:00.000Z', dismissedReminderDays: [] },
+    lease: {
+      startedAt: '2026-09-10T00:00:00.000Z',
+      expiresAt: '2026-09-25T00:00:00.000Z',
+      dismissedReminderDays: [],
+    },
   },
 }));
 
@@ -33,21 +38,31 @@ vi.mock('@repo/core/native', () => ({
   dismissGuestLeaseReminder: vi.fn(() => Promise.resolve()),
 }));
 
+vi.mock('@repo/core/native/localGuestSession', () => ({
+  isLocalGuestSessionId: (id: string) => id.startsWith('local-'),
+}));
+
 vi.mock('expo-router', () => ({
   usePathname: () => mocks.pathname,
   useRouter: () => ({ push: mocks.push }),
 }));
 
-vi.mock('@repo/ui/primitives', () => ({
-  Box: 'Box',
-  Pressable: 'Pressable',
+vi.mock('@repo/ui/components/native', () => ({
+  Button: ({ label, ...rest }: { label: string }) =>
+    createElement('Pressable', { accessibilityLabel: label, ...rest }),
+  IconButton: ({ label, ...rest }: { label: string }) =>
+    createElement('Pressable', { accessibilityLabel: label, ...rest }),
+  Surface: 'Surface',
   Text: 'Text',
 }));
+
+vi.mock('@repo/ui/icons', () => ({ X: 'X' }));
 
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 
 describe('GuestPersistenceNotice (component-real)', () => {
   beforeEach(() => {
+    mocks.user.id = 'guest-1';
     mocks.pathname = '/self';
     mocks.push.mockClear();
   });
@@ -68,7 +83,8 @@ describe('GuestPersistenceNotice (component-real)', () => {
       button.props.onPress();
     });
 
-    expect(mocks.push).toHaveBeenCalledWith('/auth');
+    // Arriving in another stack by push keeps its overview underneath (NAVIGATION_POLICY.mobile.withAnchor).
+    expect(mocks.push).toHaveBeenCalledWith('/auth', { withAnchor: true });
   });
 
   it('does not duplicate the notice on entry routes', async () => {
@@ -79,5 +95,25 @@ describe('GuestPersistenceNotice (component-real)', () => {
     });
 
     expect(tree!.toJSON()).toBeNull();
+  });
+
+  it('nudges a device-local guest without a countdown, and can be dismissed', async () => {
+    mocks.user.id = 'local-123e4567-e89b-42d3-a456-426614174000';
+    let tree;
+    await act(async () => {
+      tree = create(<GuestPersistenceNotice />);
+    });
+
+    const text = JSON.stringify(tree!.toJSON());
+    expect(text).toContain('saved on this device');
+    expect(text).not.toContain('days left');
+    const dismiss = tree!.root.findByProps({
+      accessibilityLabel: 'Dismiss guest storage reminder',
+    });
+    await act(async () => {
+      dismiss.props.onPress();
+    });
+    expect(tree!.toJSON()).toBeNull();
+    mocks.user.id = 'guest-1';
   });
 });

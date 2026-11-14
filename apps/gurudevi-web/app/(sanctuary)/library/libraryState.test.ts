@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   classifyLibraryFailure,
+  filterBrowserResources,
+  getGuestBookmarks,
   parseBrowserLibraryResources,
   safeResourceUrl,
 } from './libraryState';
@@ -51,5 +53,38 @@ describe('Library browser boundary helpers', () => {
     expect(() => parseBrowserLibraryResources([{ id: 'resource-1' }])).toThrow(
       'The Library returned an invalid resource.',
     );
+  });
+
+  it('filters resources by category and search keyword', () => {
+    const list = [
+      {
+        id: 'r1',
+        title: 'Sinhala Grammar Essentials',
+        description: 'Grade 10 grammar rules',
+        type: 'pdf',
+        url: 'https://example.com/grammar.pdf',
+        subjects: ['Sinhala', 'Language'],
+        verified: true,
+      },
+      {
+        id: 'r2',
+        title: 'Mangrove Ecology Video',
+        description: 'Coastal biology lecture',
+        type: 'video',
+        url: 'https://example.com/mangrove.mp4',
+        subjects: ['Science', 'Biology'],
+        verified: false,
+      },
+    ];
+
+    expect(filterBrowserResources(list, '', 'All')).toHaveLength(2);
+    expect(filterBrowserResources(list, '', 'pdf')).toHaveLength(1);
+    expect(filterBrowserResources(list, 'grammar', 'All')).toHaveLength(1);
+    expect(filterBrowserResources(list, 'biology', 'All')[0]?.id).toBe('r2');
+  });
+
+  it('isolates guest bookmarks safely in browser storage', () => {
+    const bookmarks = getGuestBookmarks();
+    expect(bookmarks).toBeInstanceOf(Set);
   });
 });

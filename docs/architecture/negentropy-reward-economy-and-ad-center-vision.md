@@ -32,6 +32,11 @@ Rather than inflicting unsolicited cognitive disruption on users, we create a de
 2. **High-Yield Economics:** Rewarded video ads yield **$15 – $45+ eCPM**, compared to $0.20 – $1.50 for banner impressions.
 3. **Mutual Value Realization:** 100% of the attention contributed is reciprocated with tangible in-app utility (AI fuel, badges, capacity increases).
 
+This is the sole permitted sponsor-media surface. It is never embedded in the
+Sanctuary's core floors, groups, direct messages, notifications, or learning
+workflows. The governing boundary and eligibility rules are in the
+[Rewarded Ad Center Policy](../decisions/2026-08-31-rewarded-ad-center-policy-and-compliance.md).
+
 ---
 
 ## 2. Tokenomics & The Virtual Reward Loop
@@ -54,7 +59,9 @@ Rather than inflicting unsolicited cognitive disruption on users, we create a de
 
 ### 2.1 The Faucet (How Users Acquire Sanctuary Energy)
 * **Sponsored Video Capsule:** Watching a 15–30s sponsor video yields **+10 Energy**.
-* **Daily Contribution Streak:** Consecutive days of contributing energy grants a streak multiplier (+2 bonus on day 3, +5 bonus on day 7).
+* **No contribution streaks:** There are no streak multipliers, loss mechanics,
+  or time-pressure rewards. A person may use the Reservoir rarely, often, or
+  never without penalty.
 * **Daily Energy Harvest Cap:** Paced at a maximum of **10 capsules / day** (100 base Energy max per day) to prevent farming, maintain high advertiser engagement value, and protect user wellbeing.
 
 ### 2.2 The Sinks (Where Users Spend Sanctuary Energy)

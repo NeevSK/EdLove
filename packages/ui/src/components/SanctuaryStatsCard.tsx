@@ -1,6 +1,7 @@
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 import { Trophy } from '@repo/ui/icons';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 
 export interface SanctuaryStatsItem {
   label: string;
@@ -33,7 +34,7 @@ export default function SanctuaryStatsCard({
     <Box
       className="bg-phase-surface border border-phase-surface rounded-generous p-6 shadow-xl"
       style={{
-        shadowColor: '#6B6480',
+        shadowColor: tokens.colors.shadowColor,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 12,
@@ -41,7 +42,7 @@ export default function SanctuaryStatsCard({
       }}
     >
       <HStack className="items-center gap-2 mt-2 mb-4">
-        {showTrophy && <Trophy size={18} color="#FDD925" />}
+        {showTrophy && <Trophy size={18} color={tokens.colors.warning} />}
         <Text className="text-phase-text-primary font-bold text-base">{title}</Text>
       </HStack>
 

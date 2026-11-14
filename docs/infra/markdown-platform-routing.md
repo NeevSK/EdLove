@@ -44,11 +44,11 @@ Add `"browser": "./lib/module/index.web.js"` to the library's `package.json` via
 
 ## Resolved toolchain note
 The repository is a **pnpm** workspace (`pnpm-lock.yaml`, `pnpm-workspace.yaml`, and every mobile script uses
-`pnpm exec ...`). The root package manager is aligned with the lockfile and CI at pnpm v11.21.0:
+`pnpm exec ...`). The root package manager is aligned with the lockfile and CI at pnpm v12.10.1:
 
 ```jsonc
 // package.json (repo root)
-"packageManager": "pnpm@11.21.0"
+"packageManager": "pnpm@12.10.1"
 ```
 
 `pnpm install --frozen-lockfile` now completes successfully with this alignment.

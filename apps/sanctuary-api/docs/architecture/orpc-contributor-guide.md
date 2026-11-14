@@ -2,13 +2,27 @@
 title: "oRPC Contributor Guide"
 status: "active"
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-10-30
 author: "Naveen"
 scribe: "Codex"
 tags: [api, orpc, contributors, testing, architecture]
 ---
 
 # oRPC Contributor Guide
+
+## Current governing policy
+
+Read the [canonical domain and channel model](./api-domain-and-channel-model.md)
+first. Native oRPC v2 at `/api/v1` is the sole first-party command/query target;
+legacy aliases, declaration conversion and parallel first-party OpenAPI are not
+accepted migration destinations. Existing compatibility/checkpoint instructions
+below describe historical work and are superseded for the current cutover.
+
+The immediate phase is horizontal foundation. Do not start a feature migration,
+invent a business domain from a navigation label, or resolve a deferred product
+decision by granting authority. Use PJC links to the owning contracts, policies
+and scenario evidence. Run `pnpm audit:api-composition`; a red application gate
+must remain visible even when its isolated fixture tests succeed.
 
 This is the starting point for anyone adding or changing a request/response API after the native oRPC migration checkpoint.
 

@@ -9,8 +9,8 @@
  */
 
 import { handleAPIError } from '@repo/core/logic';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { WaitingSign } from '@repo/ui/components/native';
+import { Dialog } from '@repo/ui/components/native';
 import { Camera, CircleCheck, Send, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
@@ -30,6 +30,7 @@ import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { confirmAction } from '@repo/ui/utils/dialogs';
 
 import * as ImagePicker from 'expo-image-picker';
+import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
@@ -76,16 +77,8 @@ export default function SubmissionModal({
       if (!(await requestPermission(useCamera))) return;
 
       const result = useCamera
-        ? await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 0.7,
-          })
-        : await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 0.7,
-          });
+        ? await ImagePicker.launchCameraAsync(imagePickerOptionsFor('submission'))
+        : await ImagePicker.launchImageLibraryAsync(imagePickerOptionsFor('submission'));
 
       if (!result.canceled && result.assets?.[0]?.uri) {
         setPhotoUri(result.assets[0].uri);
@@ -171,7 +164,7 @@ export default function SubmissionModal({
             </Text>
           </VStack>
         </VStack>
-      </SanctuaryModal>
+      </Dialog>
     );
   }
   return (
@@ -187,11 +180,7 @@ export default function SubmissionModal({
         >
           {isSubmitting ? (
             <HStack className="items-center gap-2">
-              <BrandPulse
-                size={20}
-                tintColor="#FFFFFF"
-                accessibilityLabel="Submitting assignment"
-              />
+              <WaitingSign size="sm" />
               <ButtonText className="text-phaseText-inverse font-bold text-lg">
                 {t('submission.submitting') || 'Turning in...'}
               </ButtonText>
@@ -290,6 +279,6 @@ export default function SubmissionModal({
           )}
         </VStack>
       </VStack>
-    </SanctuaryModal>
+    </Dialog>
   );
 }

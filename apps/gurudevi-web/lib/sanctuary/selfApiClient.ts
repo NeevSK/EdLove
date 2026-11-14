@@ -2,6 +2,8 @@ import {
   createPersistenceIdentity,
   resolvePersistenceWriteDecision,
 } from '@repo/core/lib/persistenceBoundary';
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
+import { isEdloveAccountId } from '@repo/core/logic/schemas/edloveUuidV8';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 type ORPCResponse<T> = Readonly<{ json?: T }>;
@@ -22,7 +24,9 @@ type AccountSelfProcedureInputs = Readonly<{
 
 function apiOrigin(): string | null {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim();
-  return value ? value.replace(/\/+$/, '') : null;
+  if (!value) return null;
+  assertSecureApiUrl(value);
+  return value.replace(/\/+$/, '');
 }
 
 function decodeORPCResponse<T>(
@@ -49,7 +53,12 @@ export async function requestAccountSelfProcedure<
   predicate: (value: unknown) => value is T,
   invalidResponseMessage: string,
 ): Promise<T> {
-  const origin = apiOrigin();
+  let origin: string | null;
+  try {
+    origin = apiOrigin();
+  } catch {
+    throw new Error('Sanctuary services are not configured securely in this browser.');
+  }
   const supabase = createBrowserSupabaseClient();
   if (!origin || !supabase)
     throw new Error('This Self practice is not configured in this browser.');
@@ -60,15 +69,27 @@ export async function requestAccountSelfProcedure<
     throw new Error('Your secure session has ended. Please sign in again.');
   }
 
+  const { data: verified, error: verificationError } = await supabase.auth.getClaims(
+    session.access_token,
+  );
+  const accountId = verified?.claims.canonical_account_id;
+  if (
+    verificationError ||
+    verified?.claims.sub !== session.user.id ||
+    typeof accountId !== 'string' ||
+    !isEdloveAccountId(accountId)
+  ) {
+    throw new Error('Your account identity could not be verified. Refresh your session.');
+  }
   const identity = createPersistenceIdentity({
     experience: 'standard',
-    principal: { kind: 'account', id: session.user.id },
+    principal: { kind: 'account', id: accountId },
   });
   if (!resolvePersistenceWriteDecision(identity, 'production').allowed) {
     throw new Error('This Self practice is available only in its local experience.');
   }
 
-  const requestInput = typeof input === 'function' ? input(session.user.id) : input;
+  const requestInput = typeof input === 'function' ? input(accountId) : input;
   let response: Response;
   try {
     response = await fetch(`${origin}/api/self/${procedure}`, {
@@ -79,6 +100,7 @@ export async function requestAccountSelfProcedure<
       },
       cache: 'no-store',
       method: 'POST',
+      redirect: 'error',
     });
   } catch {
     throw new Error('We could not reach Sanctuary. Please check your connection and retry.');

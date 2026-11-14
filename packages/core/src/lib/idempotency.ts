@@ -12,7 +12,8 @@
  * - Returns cached result on replay
  */
 
-import { ORPCError } from '@orpc/server';
+import { ORPCError } from '@orpc/client';
+import { worthRetrying } from '@repo/core/logic/failure/classifyFailure';
 
 // Local type to avoid cross-package dependency
 interface ORPCContext {
@@ -277,7 +278,7 @@ export async function withIdempotency<T>(
         throw error;
       }
 
-      if (attempt === retries) throw error;
+      if (attempt === retries || !worthRetrying(error)) throw error;
 
       // Exponential backoff
       await new Promise((resolve) => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));

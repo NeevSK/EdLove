@@ -1,0 +1,206 @@
+{
+ "status_totals": {
+  "UI-UNWIRED": 265,
+  "LIVE": 267,
+  "BACKEND-ONLY": 58,
+  "PARTIAL": 108,
+  "UNVERIFIED": 30,
+  "LOST": 38,
+  "PLANNED": 682
+ },
+ "total": 1448,
+ "planned_reclass": {
+  "MERGED:LIVE": 165,
+  "MERGED:UI-UNWIRED": 22,
+  "PLANNED": 681,
+  "PARTIAL": 24,
+  "NON-CAPABILITY": 123,
+  "MERGED:PARTIAL": 14,
+  "BACKEND-ONLY": 15,
+  "LOST": 3,
+  "UI-UNWIRED": 23
+ },
+ "live_transitions": {
+  "LIVE->UI-UNWIRED": 22,
+  "LIVE->LIVE": 250,
+  "LIVE->PARTIAL": 1
+ },
+ "status_changes_non_doc": 28,
+ "contradicted_refs": {
+  "CONFIRMED": 82,
+  "RESOLVED": 4
+ },
+ "low_confidence": 615,
+ "low_confidence_planned": 615,
+ "non_capabilities": 123,
+ "changes": [
+  [
+   "principal-workspace:admin.getStaffPresence",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "calendar-events:admin.getUpcomingCalendarEvents",
+   "LIVE",
+   "UI-UNWIRED",
+   "manual v4 override: hostile check confirmed: the only caller InstitutionalCalendarSection.tsx:126 is not imported by any TS file (barrel-only; mentions are in t"
+  ],
+  [
+   "calendar-events:admin.createCalendarEvent",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "attendance:attendance.record",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "community-feed:community.getGroups",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "decision-journal:decisionJournal.markReviewed",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "school-onboarding:identity.fetchUserProfile",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "decision-journal:journalEntries.list",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "decision-journal:journalEntries.create",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.updateResource",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.deleteResource",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-curation-review:library.verifyResource",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.engage",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.updateCollection",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.forkCollection",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "privacy-ledger:privacy.logPrivacyEvent",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "sacred-missions:sacredMissions.create",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "direct-messages:social.getNotifications",
+   "LIVE",
+   "PARTIAL",
+   "manual v4 override: packages/core/src/api/hooks/notification.hooks.ts:24 socialAPI.getNotifications; only consumer is CommunityScreen.web.tsx (Expo web build), "
+  ],
+  [
+   "direct-messages:social.getUnreadNotificationCount",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "direct-messages:social.markAllNotificationsRead",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "student-potential:studentPotential.listForStudent",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "offline-sync:sync.uploadBatch",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "thuthimal:thuthimal.getMyGifts",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "thuthimal:thuthimal.previewGift",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "notifications:route/notifications",
+   "PARTIAL",
+   "LIVE",
+   "manual v4 override: (tabs)/notifications.tsx -> NotificationsScreen.tsx uses useNotifications (real Supabase notifications table + realtime); nav: _layout.tsx:3"
+  ],
+  [
+   "school-onboarding:route/c/[code]",
+   "UI-UNWIRED",
+   "LIVE",
+   "no API/table; nav Y"
+  ],
+  [
+   "notifications:supabase.read:notifications",
+   "UI-UNWIRED",
+   "LIVE",
+   "manual v4 override: useNotifications.ts:38 setUserId -> useNotificationStore.ts:42 loadNotifications :54 notification.getNotifications -> NotificationManager.ts"
+  ],
+  [
+   "notifications:supabase.write:notifications",
+   "UI-UNWIRED",
+   "LIVE",
+   "manual v4 override: markAsRead/markAllRead exposed by useNotifications.ts -> adapter :29/:37 (same chain as the read)"
+  ]
+ ]
+}

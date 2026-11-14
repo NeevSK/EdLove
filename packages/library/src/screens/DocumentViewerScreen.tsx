@@ -1,8 +1,8 @@
 import { useMediaDownloader } from '@repo/core/hooks';
 import { UniversalDocumentPortal } from '@repo/ui/components/media/UniversalDocumentPortal';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 function resolveDocumentMimeType(format?: string) {
   switch (format?.toLowerCase()) {
@@ -30,7 +30,7 @@ function resolveDocumentMimeType(format?: string) {
  * Uses the shared UniversalDocumentPortal to handle non-PDF/Video documents.
  */
 export function DocumentViewerScreen() {
-  const router = useRouter();
+  const router = useNavigator();
   const { title, url, format, size, resourceId } = useLocalSearchParams<{
     title?: string;
     url?: string;
@@ -53,8 +53,8 @@ export function DocumentViewerScreen() {
     });
 
   const handleBack = useCallback(() => {
-    safeBack('/library');
-  }, []);
+    router.back('/library');
+  }, [router]);
 
   const handleOpenNative = useCallback(async () => {
     await openInNativeViewer();

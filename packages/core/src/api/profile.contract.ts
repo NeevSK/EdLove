@@ -1,5 +1,7 @@
-import { z } from 'zod';
 import type { SovereignContract } from '@repo/core/api/contracts';
+import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
+import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
+import { z } from 'zod';
 
 const profileAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
@@ -106,8 +108,8 @@ export const profileContract = {
     method: 'patch',
     path: '/profile/users/:id',
     request: {
-      params: z.strictObject({ id: z.uuid() }),
-      body: z.record(z.string(), z.any()),
+      params: z.strictObject({ id: CanonicalAccountIdSchema }),
+      body: UserProfilePatchSchema,
     },
     responses: {
       200: { schema: UserProfileSchema, description: 'User profile updated' },

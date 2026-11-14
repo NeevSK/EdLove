@@ -30,11 +30,11 @@ import {
   useTheme,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import type React from 'react';
 import { memo, useCallback } from 'react';
 
-import type { LibraryResource } from '@repo/library/types';
+import type { LibraryResource } from '@repo/core/types/Library';
 
 type ThumbnailType =
   | 'lesson'

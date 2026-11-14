@@ -1,3 +1,4 @@
+import { View, Text, Pressable } from 'react-native';
 import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import {
@@ -7,9 +8,9 @@ import {
   DollarSign,
   FileText,
   type LucideIcon,
+  Send,
   SquareCheckBig,
 } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
 
@@ -22,6 +23,8 @@ type ActionVariant = 'primary' | 'warning' | 'success' | 'error';
 interface AdminActionProps {
   icon: LucideIcon;
   label: string;
+  /** Stable id passed to onAction (labels are translated). Falls back to label. */
+  actionId?: string;
   variant?: ActionVariant;
   onPress?: () => void;
   onAction?: (action: string) => void;
@@ -30,6 +33,7 @@ interface AdminActionProps {
 interface AdminActionDef {
   icon: LucideIcon;
   label: string;
+  actionId?: string;
   variant: ActionVariant;
   visible: boolean;
 }
@@ -44,6 +48,7 @@ const ACTION_VARIANT_CLASSES: Record<ActionVariant, string> = {
 function AdminAction({
   icon: LucideIcon,
   label,
+  actionId,
   variant = 'primary',
   onPress,
   onAction,
@@ -55,14 +60,15 @@ function AdminAction({
       onPress={() => {
         void hapticLight();
         if (onPress) onPress();
-        if (onAction) onAction(label);
+        if (onAction) onAction(actionId ?? label);
       }}
       accessibilityRole="button"
+      accessibilityLabel={label}
       className={`flex-1 bg-phase-canvas p-4 rounded-3xl border ${borderColor} items-center justify-center gap-3 min-h-[110px] shadow-sm`}
     >
-      <Box className={`p-3 rounded-2xl ${bgColor}`}>
-        <Icon as={LucideIcon} size="md" className={textColor} />
-      </Box>
+      <View className={`p-3 rounded-2xl ${bgColor}`}>
+        <LucideIcon size={20} className={textColor} />
+      </View>
       <Text className="text-[12px] font-bold text-center text-phase-text-primary uppercase tracking-tight">
         {label}
       </Text>
@@ -78,6 +84,13 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
 
   // Define actions with their visibility conditions
   const allActions: AdminActionDef[] = [
+    {
+      icon: Send,
+      label: t('planBridge.title', 'Plan & notices'),
+      actionId: 'plan-and-notices',
+      variant: 'primary',
+      visible: can('create', 'Announcement'),
+    },
     {
       icon: Calendar,
       label: t('teacher.admin.myLeaves') || 'My Leaves',
@@ -126,28 +139,30 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
   if (actions.length === 0) return null;
 
   return (
-    <VStack className="gap-6 mt-4 px-1">
-      <HStack className="justify-between items-center">
+    <View className="gap-6 mt-4 px-1">
+      <View className="flex-row items-center justify-between items-center">
         <Text className="text-[11px] font-black uppercase tracking-[2px] text-phase-text-tertiary">
           {t('teacher.admin.title') || 'Administrative Portal'}
         </Text>
-      </HStack>
-      <VStack className="gap-2">
+      </View>
+      <View className="gap-2">
         {rows.map((row) => (
-          <HStack key={row.map((action) => action.label).join('|')} className="gap-2">
+          <View key={row.map((action) => action.label).join('|')} className="flex-row items-center gap-2">
             {row.map((action) => (
               <AdminAction
                 key={action.label}
                 icon={action.icon}
                 label={action.label}
+                {...(action.actionId ? { actionId: action.actionId } : {})}
                 variant={action.variant}
+                {...(onAction ? { onAction } : {})}
               />
             ))}
             {/* Fill space if only one item in row */}
-            {row.length === 1 && <Box className="flex-1" />}
-          </HStack>
+            {row.length === 1 && <View className="flex-1" />}
+          </View>
         ))}
-      </VStack>
-    </VStack>
+      </View>
+    </View>
   );
 }

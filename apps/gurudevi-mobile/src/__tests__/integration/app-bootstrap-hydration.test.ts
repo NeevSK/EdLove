@@ -7,8 +7,6 @@ describe('Suite A: Full App Bootstrap, Rehydration & Essential Startup Gate', ()
     useAuthStore.setState({
       isStoreHydrated: false,
       user: null,
-      authSession: null,
-      authSessionResolved: false,
     });
   });
 

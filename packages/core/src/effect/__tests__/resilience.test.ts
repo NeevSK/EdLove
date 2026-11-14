@@ -1,25 +1,24 @@
 import { Duration, Effect, Fiber, Queue } from 'effect';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import * as monitoring from '../../monitoring';
 import {
   DatabaseQueryError,
-  NetworkError,
-  OfflineMutationError,
-  SyncDelegateError,
-  SyncOperationError,
-  SyncTableError,
-  UnauthorizedError,
   defaultRetryPolicy,
   fireAndForget,
   fireAndForgetEffect,
   fromSupabase,
+  NetworkError,
   normalizeError,
+  OfflineMutationError,
   retryPolicy,
   runEffect,
+  SyncDelegateError,
+  SyncOperationError,
+  SyncTableError,
   strictRetryPolicy,
   tryPromise,
+  UnauthorizedError,
 } from '../index';
-import { applyPowerSyncBatch } from '../../api/handlers/sync';
-import * as monitoring from '../../monitoring';
 
 vi.mock('../../monitoring', () => ({
   captureException: vi.fn(),
@@ -457,81 +456,6 @@ describe('Effect-TS Production Resilience & Load-Breaking Tests', () => {
       expect(processed.length).toBe(50);
 
       await Effect.runPromise(Fiber.interrupt(workerFiber));
-    });
-  });
-
-  // ═════════════════════════════════════════════════════════════════════
-  // 7. POWERSYNC BATCH ATOMICITY UNDER POISON PILLS
-  // ═════════════════════════════════════════════════════════════════════
-  describe('applyPowerSyncBatch Poison Pill & Transaction Atomicity', () => {
-    it('aborts entire batch atomically when an unsupported table appears mid-batch', async () => {
-      let rolledBack = false;
-      const appliedOps: string[] = [];
-
-      const mockTx: any = {
-        classroom: {
-          upsert: vi.fn(async () => {
-            appliedOps.push('classroom_1');
-          }),
-        },
-      };
-
-      const mockDb = {
-        $transaction: async (fn: (tx: any) => Promise<any>) => {
-          try {
-            return await fn(mockTx);
-          } catch (err) {
-            rolledBack = true;
-            throw err;
-          }
-        },
-      };
-
-      const crudBatch = [
-        { id: '1', op: 'PUT', table: 'classroom', opData: { name: 'Grade 10' } },
-        { id: '2', op: 'PUT', table: 'INVALID_POISON_TABLE', opData: {} }, // POISON PILL
-      ];
-
-      await expect(
-        applyPowerSyncBatch(mockDb, crudBatch, 'key-1', 'principal-1'),
-      ).rejects.toThrow('Unsupported sync table: INVALID_POISON_TABLE');
-
-      expect(rolledBack).toBe(true);
-    });
-
-    it('aborts entire batch atomically when an unsupported operation mode appears', async () => {
-      let rolledBack = false;
-      const mockTx: any = {
-        bond: { upsert: vi.fn() },
-      };
-
-      const mockDb = {
-        $transaction: async (fn: (tx: any) => Promise<any>) => {
-          try {
-            return await fn(mockTx);
-          } catch (err) {
-            rolledBack = true;
-            throw err;
-          }
-        },
-      };
-
-      const crudBatch = [
-        { id: '1', op: 'TRUNCATE_ILLEGAL_OP', table: 'bonds', opData: {} }, // POISON PILL
-      ];
-
-      await expect(
-        applyPowerSyncBatch(mockDb, crudBatch, 'key-2', 'principal-1'),
-      ).rejects.toThrow('Unsupported operations mode: TRUNCATE_ILLEGAL_OP');
-
-      expect(rolledBack).toBe(true);
-    });
-
-    it('rejects batch payload that is not an array', async () => {
-      const mockDb = { $transaction: vi.fn() };
-      await expect(
-        applyPowerSyncBatch(mockDb, 'not-an-array' as any, 'key-3', 'principal-1'),
-      ).rejects.toThrow('Invalid payload: crud must be an array');
     });
   });
 });

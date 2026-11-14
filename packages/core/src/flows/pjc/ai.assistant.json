@@ -1,0 +1,230 @@
+{
+  "id": "feature:ai.assistant_companion",
+  "title": "AI Assistant Companion",
+  "description": "Unified cognitive companion interface with multimodal chat streaming (Gen 2/3), asynchronous background agent dispatch (Gen 4), ephemeral Rewind/Incognito FAB ingress, persistent Community DM ingress, and bounded user data context ingestion.",
+  "lifecycle": {
+    "maturity": "development",
+    "owner": "platform-engineering"
+  },
+  "links": [
+    "intent:ai.assistant_companion"
+  ],
+  "intents": [
+    {
+      "id": "intent:ai.assistant_companion",
+      "title": "Consult AI Assistant or Commission Autonomous Agent Mission",
+      "actor": "authenticated user (student, teacher, or community member)",
+      "outcome": "Receive real-time streamed guidance, historical context retrieval, or reviewable autonomous agent action proposals.",
+      "links": [
+        "journey:ai.assistant_companion"
+      ],
+      "journeys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "situation": "A user launches AI assistant from FAB (with Rewind/Incognito) or Community DM, consults conversational intelligence, or runs long-horizon agent missions with human approval.",
+          "outcome": "Provides fast cognitive synthesis and safe human-in-the-loop task execution.",
+          "context": "daily",
+          "preconditions": [
+            "User is authenticated or operating in temporary ephemeral guest/incognito session.",
+            "Client connects to AG-UI compatible SSE stream or Inngest mission coordinator."
+          ],
+          "entry": "step:ai.entry_resolution",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "AIAssistantScreen existed as an isolated prototype screen.",
+              "DurableAgentsScreen existed as a separate raw workflow runner.",
+              "Community DMs used DirectConversation without AI persona integration.",
+              "LotusPetalFAB navigated to legacy screens without Rewind history or Incognito privacy mode."
+            ],
+            "invariants": [
+              "Screen MUST be named AIScreen, not Tutii. Tutii is solely an ambient visual mascot.",
+              "Autonomous agent proposals require explicit human acceptance before mutating platform data.",
+              "Incognito sessions never persist messages to the database or sync layer.",
+              "User data ingestion injects classroom/term context but strictly excludes private reflections."
+            ],
+            "integrationPoints": [
+              "packages/core/src/flows/ai/aiAssistant.flow.ts",
+              "packages/ui/src/screens/AIScreen.shared.tsx",
+              "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+              "packages/schema/schema.zmodel"
+            ],
+            "openQuestions": [
+              "Configure Inngest execution cluster webhook endpoint for production background agents."
+            ]
+          },
+          "links": [
+            "requirement:ai.human_review_gate",
+            "requirement:ai.incognito_privacy_boundary",
+            "requirement:ai.classroom_context_safety"
+          ],
+          "steps": [
+            {
+              "id": "step:ai.entry_resolution",
+              "title": "Entry Vector & Context Resolution",
+              "interaction": "Detect entry point (FAB ephemeral, FAB incognito, or Community DM persistent) and load relevant context.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:ai.chat_stream",
+              "title": "Multimodal Chat Stream",
+              "interaction": "Interactive conversation stream supporting text, suggestions, and Tutii avatar expressions.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:ai.agent_dispatch",
+              "title": "Autonomous Agent Mission Dispatch",
+              "interaction": "Commission long-running, multi-step Inngest mission with real-time status and live timeline.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:ai.proposal_review",
+              "title": "Proposal Human Review Gate",
+              "interaction": "User reviews proposed mutations via Accept & Publish, Edit Draft, or Discard.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:ai.terminal_commit",
+              "title": "Terminal Commit & Persistence",
+              "interaction": "Commit approved changes to database or finalize conversational session.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:ai.stream_chat",
+              "title": "Stream conversation",
+              "from": "step:ai.entry_resolution",
+              "to": "step:ai.chat_stream",
+              "action": "User queries assistant.",
+              "feedback": "Render real-time token stream.",
+              "links": []
+            },
+            {
+              "id": "transition:ai.dispatch_mission",
+              "title": "Dispatch agent mission",
+              "from": "step:ai.entry_resolution",
+              "to": "step:ai.agent_dispatch",
+              "action": "User triggers autonomous mission from Agent pill.",
+              "feedback": "Display mission progress cards and timeline.",
+              "links": []
+            },
+            {
+              "id": "transition:ai.review_proposals",
+              "title": "Submit proposals for review",
+              "from": "step:ai.agent_dispatch",
+              "to": "step:ai.proposal_review",
+              "action": "Agent completes step requiring authorization.",
+              "feedback": "Present interactive review modal.",
+              "links": []
+            },
+            {
+              "id": "transition:ai.accept_proposal",
+              "title": "Accept and commit",
+              "from": "step:ai.proposal_review",
+              "to": "step:ai.terminal_commit",
+              "action": "User clicks Accept & Publish.",
+              "feedback": "Mutate domain store and display success.",
+              "links": []
+            },
+            {
+              "id": "transition:ai.end_chat",
+              "title": "End chat session",
+              "from": "step:ai.chat_stream",
+              "to": "step:ai.terminal_commit",
+              "action": "User closes sheet or navigates away.",
+              "feedback": "Persist thread unless incognito.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:ai.fab_ephemeral_chat",
+              "title": "Quick query via Lotus Petal FAB",
+              "transitions": [
+                "transition:ai.stream_chat",
+                "transition:ai.end_chat"
+              ],
+              "expected": "Instant sheet opens, streams answers, and offers rewind history.",
+              "links": []
+            },
+            {
+              "id": "scenario:ai.autonomous_agent_approval",
+              "title": "Teacher generates syllabus with approval",
+              "transitions": [
+                "transition:ai.dispatch_mission",
+                "transition:ai.review_proposals",
+                "transition:ai.accept_proposal"
+              ],
+              "expected": "Agent generates lesson plan draft; teacher explicitly reviews and publishes to classroom.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:ai.human_review_gate",
+              "title": "Mandatory Human Review Gate",
+              "statement": "Autonomous background agents must never execute write mutations to student or classroom domain records without explicit human user review and approval.",
+              "origin": "proposal",
+              "links": [
+                "binding:ai.flow_dag"
+              ]
+            },
+            {
+              "id": "requirement:ai.incognito_privacy_boundary",
+              "title": "Incognito Zero-Persistence Boundary",
+              "statement": "When Incognito privacy mode is active, conversation turns must never be written to SQLite, PowerSync, or remote databases.",
+              "origin": "user",
+              "links": [
+                "binding:ai.screen_shared"
+              ]
+            },
+            {
+              "id": "requirement:ai.classroom_context_safety",
+              "title": "Classroom Context Ingestion with Reflection Exclusion",
+              "statement": "Classroom metadata, term schedules, and attendance may be ingested for context; private emotional reflections from packages/self are strictly excluded.",
+              "origin": "proposal",
+              "links": [
+                "binding:ai.flow_dag"
+              ]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:ai.flow_dag",
+              "title": "AI Assistant FlowDAG Engine",
+              "category": "architecture",
+              "status": "implemented",
+              "reference": "packages/core/src/flows/ai/aiAssistant.flow.ts",
+              "note": "Complete FlowDAG specifying entry, streaming, dispatch, and review transitions.",
+              "links": [
+                "journey:ai.assistant_companion"
+              ]
+            },
+            {
+              "id": "binding:ai.screen_shared",
+              "title": "Unified AIScreen Component",
+              "category": "mobile",
+              "status": "planned",
+              "reference": "packages/ui/src/screens/AIScreen.shared.tsx",
+              "note": "Shared cross-platform container housing [Chat] vs [Agent] pills, Rewind history drawer, and Incognito mode.",
+              "links": [
+                "journey:ai.assistant_companion"
+              ]
+            }
+          ],
+          "evidence": [],
+          "sharedRequirements": [],
+          "sharedBindings": []
+        }
+      ],
+      "sharedJourneys": []
+    }
+  ]
+}

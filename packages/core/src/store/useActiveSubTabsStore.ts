@@ -1,9 +1,10 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { scopedState } from '@repo/core/effect/bindings/state';
 import {
   closeWorkbenchTask,
   createDomainWorkbenchState,
   createWorkbenchTask,
   openWorkbenchTask,
+  reorderWorkbenchTask,
 } from '@repo/core/logic/workbench/activeTasks';
 import type {
   DomainWorkbenchState,
@@ -53,6 +54,12 @@ export interface NavigationPreferences {
   showActiveSubTabs: boolean;
   autoHideChromeOnScroll: boolean;
   maxTabsPerDomain: number;
+  /** The shell's header: a greeting with the person, a compact line, or the classic title row. */
+  headerLayout: 'greeting' | 'compact' | 'classic';
+  /** The tab bar: chosen by size (auto), docked to the edge, or floating above the floor. */
+  tabBarLayout: 'auto' | 'docked' | 'floating';
+  /** Who answers the header's help button: Tutii, or a plain AI button (being compared). */
+  assistantButton: 'tutii' | 'ai';
 }
 
 export interface ActiveSubTabsState {
@@ -61,14 +68,22 @@ export interface ActiveSubTabsState {
   pinnedFeatureIdsByDomain: Record<string, string[]>;
   preferences: NavigationPreferences;
   isChromeVisible: boolean;
+  /**
+   * How many overlays (an open side panel) are covering the screen right now. While any are, the
+   * shell tucks its chrome away with the same animation as scrolling does; not persisted.
+   */
+  chromeCovers: number;
   openTab: (tab: ActiveSubTabInput) => void;
   closeTab: (domain: ActiveSubTabDomain, tabId: string) => ActiveSubTabCloseResult;
   setActiveTab: (domain: ActiveSubTabDomain, tabId: string) => void;
+  reorderTab: (domain: ActiveSubTabDomain, tabId: string, destinationIndex: number) => void;
   clearTabs: (domain?: ActiveSubTabDomain) => void;
   togglePinFeature: (domain: string, featureId: string) => void;
   isFeaturePinned: (domain: string, featureId: string) => boolean;
   reorderPinnedFeatures: (domain: string, featureIds: string[]) => void;
   setChromeVisible: (visible: boolean) => void;
+  /** Covers the chrome until the returned release is called; releasing twice is harmless. */
+  coverChrome: () => () => void;
   updatePreferences: (updates: Partial<NavigationPreferences>) => void;
   resetPreferences: () => void;
 }
@@ -79,6 +94,9 @@ const DEFAULT_PREFERENCES: NavigationPreferences = {
   showActiveSubTabs: true,
   autoHideChromeOnScroll: true,
   maxTabsPerDomain: 5,
+  headerLayout: 'greeting',
+  tabBarLayout: 'auto',
+  assistantButton: 'tutii',
 };
 
 const DEFAULT_PINNED_FEATURES: Record<string, string[]> = {
@@ -127,6 +145,22 @@ function migratedPreferences(value: unknown): NavigationPreferences {
       maxTabsPerDomain > 0
         ? maxTabsPerDomain
         : DEFAULT_PREFERENCES.maxTabsPerDomain,
+    headerLayout:
+      value.headerLayout === 'greeting' ||
+      value.headerLayout === 'compact' ||
+      value.headerLayout === 'classic'
+        ? value.headerLayout
+        : DEFAULT_PREFERENCES.headerLayout,
+    tabBarLayout:
+      value.tabBarLayout === 'auto' ||
+      value.tabBarLayout === 'docked' ||
+      value.tabBarLayout === 'floating'
+        ? value.tabBarLayout
+        : DEFAULT_PREFERENCES.tabBarLayout,
+    assistantButton:
+      value.assistantButton === 'tutii' || value.assistantButton === 'ai'
+        ? value.assistantButton
+        : DEFAULT_PREFERENCES.assistantButton,
   };
 }
 
@@ -249,6 +283,7 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
       pinnedFeatureIdsByDomain: DEFAULT_PINNED_FEATURES,
       preferences: DEFAULT_PREFERENCES,
       isChromeVisible: true,
+      chromeCovers: 0,
 
       openTab: (input) => {
         if (!isWorkbenchDomain(input.domain)) return;
@@ -362,6 +397,28 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
         });
       },
 
+      reorderTab: (domain, tabId, destinationIndex) => {
+        if (!isWorkbenchDomain(domain)) return;
+        set((state) => {
+          const currentTabs = state.tabsByDomain[domain] ?? [];
+          const currentWorkbench = toWorkbenchState(
+            domain,
+            currentTabs,
+            state.activeTabByDomain[domain] ?? '',
+          );
+          const reordered = reorderWorkbenchTask(currentWorkbench, tabId, destinationIndex);
+          if (reordered === currentWorkbench) return state;
+          return {
+            tabsByDomain: {
+              ...state.tabsByDomain,
+              [domain]: reordered.tasks.map((task) =>
+                toItem(task, paramsForTask(task, currentTabs)),
+              ),
+            },
+          };
+        });
+      },
+
       clearTabs: (domain) => {
         set((state) => {
           if (domain) {
@@ -396,15 +453,33 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
       setChromeVisible: (visible) => {
         if (get().isChromeVisible !== visible) set({ isChromeVisible: visible });
       },
+      coverChrome: () => {
+        set((state) => ({ chromeCovers: state.chromeCovers + 1 }));
+        let released = false;
+        return () => {
+          if (released) return;
+          released = true;
+          set((state) => ({ chromeCovers: Math.max(0, state.chromeCovers - 1) }));
+        };
+      },
       updatePreferences: (updates) =>
         set((state) => ({ preferences: { ...state.preferences, ...updates } })),
       resetPreferences: () => set({ preferences: DEFAULT_PREFERENCES }),
     }),
     {
       name: 'gurudevi-active-subtabs-storage',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      storage: createJSONStorage(() => scopedState.createStorage()),
       version: 2,
       migrate: migrateActiveSubTabsStateForV2,
+      // Preferences saved before a field existed get its default, not undefined.
+      merge: (persisted, current) => {
+        const saved = isRecord(persisted) ? persisted : {};
+        return {
+          ...current,
+          ...saved,
+          preferences: migratedPreferences(saved.preferences),
+        } as ActiveSubTabsState;
+      },
       partialize: (state) => ({
         tabsByDomain: state.tabsByDomain,
         activeTabByDomain: state.activeTabByDomain,

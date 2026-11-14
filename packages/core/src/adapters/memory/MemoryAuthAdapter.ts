@@ -1,20 +1,14 @@
-import type {
-  AccountDeletionRequest,
-  AccountLifecycleStatus,
-  AuthChangeEvent,
-  AuthMfaFactor,
-  AuthSession,
-  AuthSubscription,
-  AuthUser,
-  IAuthPort,
-} from '@repo/core/logic/ports/auth.port';
+import type { AccountDeletionRequest, AccountLifecycleStatus, AuthChangeEvent, AuthMfaFactor, AuthSubscription, IAuthPort } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession, AuthUser } from '@repo/core/types/authSession';
+import { APIError } from '@repo/core/types/API';
 
 export class MemoryAuthAdapter implements IAuthPort {
   private currentSession: AuthSession | null = null;
   private currentUser: AuthUser | null = null;
   private listeners: Set<(event: AuthChangeEvent, session: AuthSession | null) => void> = new Set();
   private mfaFactors: AuthMfaFactor[] = [];
-  private rpcHandlers: Map<string, (params?: Record<string, any>) => Promise<any> | any> = new Map();
+  private rpcHandlers: Map<string, (params?: Record<string, any>) => Promise<any> | any> =
+    new Map();
 
   constructor(initialSession?: AuthSession | null) {
     if (initialSession) {
@@ -128,11 +122,46 @@ export class MemoryAuthAdapter implements IAuthPort {
     return { user: this.currentUser, session: this.currentSession };
   }
 
-  async signInWithMagicLink(email: string): Promise<{ user: AuthUser | null; session: AuthSession | null }> {
+  async signInWithMagicLink(
+    email: string,
+  ): Promise<{ user: AuthUser | null; session: AuthSession | null }> {
     return { user: null, session: null };
   }
 
-  async exchangeCodeForSession(code: string): Promise<{ user: AuthUser | null; session: AuthSession | null }> {
+  async resetPasswordForEmail(_email: string, _redirectTo?: string): Promise<void> {}
+
+  async requestPasswordReauthentication(): Promise<void> {
+    throw new APIError(
+      'Confirmation delivery is unavailable in memory authentication.',
+      'AUTH_REAUTHENTICATION_UNAVAILABLE',
+    );
+  }
+
+  async unlinkIdentity(_params: {
+    identityId: string;
+    expectedSubject?: string;
+  }): Promise<{ user: AuthUser | null }> {
+    throw new APIError(
+      'Credential unlink is unavailable in memory authentication.',
+      'CREDENTIAL_UNLINK_UNAVAILABLE',
+    );
+  }
+
+  async signInWithPhoneOtp(
+    _params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest,
+  ): Promise<void> {
+    throw new APIError('Phone sign-in is unavailable in memory auth.', 'AUTH_PHONE_UNAVAILABLE');
+  }
+
+  async verifyPhoneOtp(
+    _params: import('@repo/core/logic/ports/auth.port').PhoneOtpVerification,
+  ): Promise<{ user: AuthUser; session: AuthSession }> {
+    throw new APIError('Phone sign-in is unavailable in memory auth.', 'AUTH_PHONE_UNAVAILABLE');
+  }
+
+  async exchangeCodeForSession(
+    code: string,
+  ): Promise<{ user: AuthUser | null; session: AuthSession | null }> {
     const user: AuthUser = {
       id: `magic-user-${code}`,
       email: 'magic@example.com',
@@ -276,6 +305,7 @@ export class MemoryAuthAdapter implements IAuthPort {
     email?: string;
     password?: string;
     data?: Record<string, any>;
+    options?: { emailRedirectTo?: string };
   }): Promise<{ user: AuthUser | null }> {
     if (this.currentUser) {
       if (params.email) this.currentUser.email = params.email;
@@ -290,6 +320,7 @@ export class MemoryAuthAdapter implements IAuthPort {
   }
 
   async signOut(options?: { scope?: 'global' | 'local' | 'others' }): Promise<void> {
+    if (options?.scope === 'others') return;
     this.currentSession = null;
     this.currentUser = null;
     this.notify('SIGNED_OUT', null);

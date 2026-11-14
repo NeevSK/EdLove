@@ -1,0 +1,355 @@
+/* ==========================================================================
+   FLOOR RECEPTION (IDEA 2: DUAL-ANCHOR HORIZON SPLIT WITH 4 CONTAINER GEARS)
+   ========================================================================== */
+
+.receptionWrapper {
+  container-type: inline-size;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  z-index: 40 !important;
+  position: relative;
+}
+
+.receptionHorizon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.25rem;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   LEFT ANCHOR: SENSE OF IDENTITY & PLACE
+   -------------------------------------------------------------------------- */
+.leftAnchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 0 1 auto;
+  padding: 0.35rem 0.85rem;
+  background: color-mix(in srgb, var(--w-surface, #ffffff) 82%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--w-line, rgba(19, 30, 39, 0.12));
+  border-radius: var(--w-radius-sm, 6px);
+  box-shadow: 0 2px 8px rgba(19, 30, 39, 0.04);
+}
+
+.greetingText {
+  overflow: hidden;
+  margin: 0;
+  color: var(--w-ink, var(--ink, #131e27));
+  font-family: var(--w-font-display, var(--font-display, Georgia, "Times New Roman", serif));
+  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumbSeparator {
+  color: var(--w-ink-muted, rgba(19, 30, 39, 0.35));
+  font-size: 0.8125rem;
+  user-select: none;
+}
+
+.breadcrumbBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--w-ink, #131e27);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   RIGHT ANCHOR: MODULAR UTILITY ISLAND
+   -------------------------------------------------------------------------- */
+.rightAnchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0.2rem 0.4rem;
+  background: color-mix(in srgb, var(--w-surface, #ffffff) 82%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--w-line, rgba(19, 30, 39, 0.12));
+  border-radius: var(--w-radius-sm, 6px);
+  box-shadow: 0 2px 8px rgba(19, 30, 39, 0.04);
+}
+
+.timeSlot {
+  display: inline-flex;
+  align-items: center;
+  min-width: max-content;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.timeSlot [class*="nanoComboTile"] {
+  border: none !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.islandDivider {
+  width: 1px;
+  height: 14px;
+  background: var(--w-line, rgba(19, 30, 39, 0.16));
+  flex: 0 0 auto;
+}
+
+.extraActionsSlot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ANGULAR ARRANGE TOGGLE BUTTON */
+.arrangeToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.95rem;
+  padding: 0 0.65rem;
+  border: 1px solid var(--w-line, rgba(19, 30, 39, 0.14));
+  border-radius: var(--w-radius-sm, 4px);
+  background: color-mix(in srgb, var(--w-surface, #ffffff) 90%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--w-ink, #131e27);
+  font-size: 0.78125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.arrangeToggleBtn:hover {
+  border-color: var(--w-lamp, #a85022);
+  color: var(--w-lamp, #a85022);
+  background: var(--w-surface, #ffffff);
+}
+
+.arrangeToggleBtnActive {
+  border-color: var(--w-lamp, #a85022);
+  background: var(--w-lamp, #a85022);
+  color: var(--w-on-lamp, #ffffff);
+}
+
+.arrangeToggleBtnActive:hover {
+  background: color-mix(in srgb, var(--w-lamp, #a85022) 90%, black);
+  color: #ffffff;
+}
+
+/* ANGULAR ARRANGE DONE BUTTON */
+.arrangeDoneBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.95rem;
+  padding: 0 0.65rem;
+  border: 1px solid var(--w-lamp, #a85022);
+  border-radius: var(--w-radius-sm, 4px);
+  background: var(--w-lamp, #a85022);
+  color: var(--w-on-lamp, #ffffff);
+  font-size: 0.78125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.arrangeDoneBtn:hover {
+  opacity: 0.9;
+}
+
+/* ANGULAR THREE-DOTS / FLOOR STUDIO TRIGGER */
+.studioTriggerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 1.85rem;
+  padding: 0 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--w-radius-sm, 4px);
+  background: transparent;
+  color: var(--w-ink, #131e27);
+  font-size: 0.78125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.studioTriggerBtn:hover {
+  border-color: var(--w-line, rgba(19, 30, 39, 0.14));
+  color: var(--w-lamp, #a85022);
+  background: color-mix(in srgb, var(--w-surface, #ffffff) 90%, transparent);
+}
+
+.studioTriggerBtn[aria-expanded="true"] {
+  border-color: var(--w-lamp, #a85022);
+  background: var(--w-surface, #ffffff);
+  color: var(--w-lamp, #a85022);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-lamp, #a85022) 18%, transparent);
+}
+
+/* THREE-DOTS CONSOLIDATED STUDIO MENU DROPDOWN */
+.studioMenuContainer {
+  position: relative;
+  display: inline-flex;
+}
+
+.studioDetails {
+  position: relative;
+  display: inline-flex;
+}
+
+.studioDetails summary {
+  list-style: none;
+  user-select: none;
+}
+
+.studioDetails summary::-webkit-details-marker {
+  display: none;
+}
+
+.studioDropdown {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  min-width: 13.5rem;
+  padding: 0.35rem;
+  border: 1px solid var(--w-line, rgba(19, 30, 39, 0.14));
+  border-radius: var(--w-radius-sm, 6px);
+  background: var(--w-raised, #ffffff);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(19, 30, 39, 0.12);
+  gap: 0.15rem;
+}
+
+.studioDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.65rem;
+  border: 0;
+  border-radius: var(--w-radius-sm, 4px);
+  background: transparent;
+  color: var(--w-ink, #131e27);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.studioDropdownItem:hover {
+  background: color-mix(in srgb, var(--w-lamp, #a85022) 10%, transparent);
+  color: var(--w-lamp, #a85022);
+}
+
+.studioDropdownItem svg {
+  flex: 0 0 auto;
+  color: var(--w-lamp, #a85022);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ==========================================================================
+   DISCRETE DEGRADATION GEARS (RULE 6: CONTAINER QUERIES)
+   ========================================================================== */
+
+/* GEAR 3: FULL (>= 640px)
+   Everything visible with spacious breathing room. */
+@container (min-width: 640px) {
+  .receptionHorizon {
+    gap: 1rem;
+  }
+}
+
+/* GEAR 2: MEDIUM (460px - 639px)
+   Slightly compacted greeting, maintains time and studio trigger. */
+@container (max-width: 639px) and (min-width: 460px) {
+  .greetingText {
+    font-size: 1rem;
+  }
+  .breadcrumbBadge {
+    display: none;
+  }
+  .breadcrumbSeparator {
+    display: none;
+  }
+}
+
+/* GEAR 1: COMPACT (340px - 459px)
+   Greeting dissolves; shows breadcrumb/domain and compact utility island. */
+@container (max-width: 459px) and (min-width: 340px) {
+  .greetingText {
+    display: none;
+  }
+  .breadcrumbSeparator {
+    display: none;
+  }
+  .breadcrumbBadge {
+    display: inline-flex;
+    font-size: 0.8125rem;
+  }
+  .extraActionsSlot {
+    display: none;
+  }
+  .islandDivider {
+    display: none;
+  }
+}
+
+/* GEAR 0: NANO (< 340px)
+   Minimal footprint: only domain badge on left and studio trigger on right. Zero text-wrapping. */
+@container (max-width: 339px) {
+  .greetingText {
+    display: none;
+  }
+  .breadcrumbSeparator {
+    display: none;
+  }
+  .timeSlot {
+    display: none;
+  }
+  .extraActionsSlot {
+    display: none;
+  }
+  .islandDivider {
+    display: none;
+  }
+  .breadcrumbBadge {
+    font-size: 0.75rem;
+  }
+  .studioTriggerBtn span {
+    display: none;
+  }
+}

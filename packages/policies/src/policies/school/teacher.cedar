@@ -4,12 +4,13 @@ permit(
   action in [Action::"read", Action::"create"],
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   (resource is School || resource is Staff || resource is Calendar) &&
   (
-    (resource is School && resource.id == principal.school_id) ||
-    (resource is Staff && resource.school_id == principal.school_id) ||
-    (resource is Calendar && resource.school_id == principal.school_id)
+    (resource is School && principal has school_id && resource.id == principal.school_id) ||
+    (resource is Staff && (resource has school_id && principal has school_id && resource.school_id == principal.school_id)) ||
+    (resource is Calendar && (resource has school_id && principal has school_id && resource.school_id == principal.school_id))
   )
 };
 
@@ -19,9 +20,10 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   resource is DailyContent &&
-  resource.school_id == principal.school_id
+  (resource has school_id && principal has school_id && resource.school_id == principal.school_id)
 };
 
 // 1c. Community permissions: Full CRUD on Group and Post in their school
@@ -30,9 +32,10 @@ permit(
   action,
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   (resource is Group || resource is Post) &&
-  resource.school_id == principal.school_id
+  (resource has school_id && principal has school_id && resource.school_id == principal.school_id)
 };
 
 // Sacred Missions: teachers may read their school's manifestos and manage
@@ -43,9 +46,10 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   resource is Manifesto &&
-  resource.school_id == principal.school_id
+  (resource has school_id && principal has school_id && resource.school_id == principal.school_id)
 };
 
 permit(
@@ -53,8 +57,10 @@ permit(
   action in [Action::"read", Action::"create", Action::"delete"],
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   resource is ManifestoEndorsement &&
+  resource has user_id &&
   resource.user_id == principal.id
 };
 
@@ -64,6 +70,7 @@ permit(
   action,
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   (
     resource is Classroom ||
@@ -89,7 +96,12 @@ permit(
     (resource is Classroom && principal has classroom_ids && principal.classroom_ids.contains(resource.id)) ||
     (resource is Library) // Library reads/actions are generally permitted
   ) &&
-  // Optionally restrict Grade creation to highly trusted devices
+  (
+    if (resource is GradeMark && (action == Action::"grade" || action == Action::"publish"))
+    then (resource has teacher_id && resource.teacher_id == principal.id)
+    else true
+  ) &&
+  // Legacy Grade creation retains its existing device condition.
   (
     if (action == Action::"create" && (resource is Grade || resource is GradeMark)) then (context has device_trust && context.device_trust == "high") else true
   )
@@ -101,6 +113,7 @@ permit(
   action == Action::"read",
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   resource is StaffLeave &&
   resource has user_id &&
@@ -113,6 +126,7 @@ permit(
   action,
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   (
     resource is MoodLog ||
@@ -135,6 +149,7 @@ permit(
   action in [Action::"read", Action::"update", Action::"delete"],
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "teacher" &&
   resource is User &&
   resource.id == principal.id

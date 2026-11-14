@@ -24,65 +24,50 @@
       "import": "./src/shared/*.ts",
       "default": "./src/shared/*.ts"
     },
-    "./api/client": {
-      "types": "./src/api/index.ts",
-      "import": "./src/api/index.ts",
-      "default": "./src/api/index.ts"
-    },
-    "./api/identity": {
-      "types": "./src/api/identity.ts",
-      "import": "./src/api/identity.ts",
-      "default": "./src/api/identity.ts"
-    },
-    "./api/contracts": {
-      "types": "./src/api/contracts.ts",
-      "import": "./src/api/contracts.ts",
-      "default": "./src/api/contracts.ts"
-    },
-    "./api/clientRuntime": {
-      "types": "./src/api/clientRuntime.ts",
-      "import": "./src/api/clientRuntime.ts",
-      "default": "./src/api/clientRuntime.ts"
-    },
-    "./api/serverAdapter": {
-      "types": "./src/api/serverAdapter.ts",
-      "import": "./src/api/serverAdapter.ts",
-      "default": "./src/api/serverAdapter.ts"
-    },
-    "./api/server": {
-      "types": "./src/api/server.ts",
-      "import": "./src/api/server.ts",
-      "default": "./src/api/server.ts"
-    },
-    "./api/interceptor": {
-      "types": "./src/api/interceptor.ts",
-      "import": "./src/api/interceptor.ts",
-      "default": "./src/api/interceptor.ts"
-    },
-    "./api/*": {
-      "types": "./src/api/*.ts",
-      "import": "./src/api/*.ts",
-      "default": "./src/api/*.ts"
-    },
-    "./api/hooks": {
-      "types": "./src/api/hooks/index.ts",
-      "import": "./src/api/hooks/index.ts",
-      "default": "./src/api/hooks/index.ts"
-    },
-    "./api/runtimes/*": {
-      "types": "./src/api/runtimes/*.ts",
-      "import": "./src/api/runtimes/*.ts",
-      "default": "./src/api/runtimes/*.ts"
-    },
     "./logic": {
       "types": "./src/logic/index.ts",
       "import": "./src/logic/index.ts",
       "default": "./src/logic/index.ts"
     },
+    "./logic/omnichannel": {
+      "types": "./src/logic/omnichannel/index.ts",
+      "import": "./src/logic/omnichannel/index.ts",
+      "default": "./src/logic/omnichannel/index.ts"
+    },
+    "./logic/omnichannel/*": {
+      "types": "./src/logic/omnichannel/*.ts",
+      "import": "./src/logic/omnichannel/*.ts",
+      "default": "./src/logic/omnichannel/*.ts"
+    },
+    "./logic/i18n": {
+      "types": "./src/logic/i18n/index.ts",
+      "import": "./src/logic/i18n/index.ts",
+      "default": "./src/logic/i18n/index.ts"
+    },
+    "./logic/i18n/*": {
+      "types": "./src/logic/i18n/*.ts",
+      "import": "./src/logic/i18n/*.ts",
+      "default": "./src/logic/i18n/*.ts"
+    },
+    "./logic/modes": {
+      "types": "./src/logic/modes/index.ts",
+      "import": "./src/logic/modes/index.ts",
+      "default": "./src/logic/modes/index.ts"
+    },
+    "./logic/modes/*": {
+      "types": "./src/logic/modes/*.ts",
+      "import": "./src/logic/modes/*.ts",
+      "default": "./src/logic/modes/*.ts"
+    },
     "./logic/registry/*": {
       "types": "./src/logic/registry/*.ts",
       "import": "./src/logic/registry/*.ts",
       "default": "./src/logic/registry/*.ts"
+    },
+    "./logic/schemas": {
+      "types": "./src/logic/schemas/index.ts",
+      "import": "./src/logic/schemas/index.ts",
+      "default": "./src/logic/schemas/index.ts"
     },
     "./logic/schemas/*": {
       "types": "./src/logic/schemas/*.ts",
@@ -94,10 +79,25 @@
       "import": "./src/logic/events/*.ts",
       "default": "./src/logic/events/*.ts"
     },
+    "./logic/deeplink/*": {
+      "types": "./src/logic/deeplink/*.ts",
+      "import": "./src/logic/deeplink/*.ts",
+      "default": "./src/logic/deeplink/*.ts"
+    },
     "./logic/deeplink/deepLinkPolicyPipeline": {
       "types": "./src/logic/deeplink/deepLinkPolicyPipeline.ts",
       "import": "./src/logic/deeplink/deepLinkPolicyPipeline.ts",
       "default": "./src/logic/deeplink/deepLinkPolicyPipeline.ts"
+    },
+    "./logic/pairing/*": {
+      "types": "./src/logic/pairing/*.ts",
+      "import": "./src/logic/pairing/*.ts",
+      "default": "./src/logic/pairing/*.ts"
+    },
+    "./logic/utils/*": {
+      "types": "./src/logic/utils/*.ts",
+      "import": "./src/logic/utils/*.ts",
+      "default": "./src/logic/utils/*.ts"
     },
     "./routing/routeManifest": {
       "types": "./src/routing/routeManifest.ts",
@@ -113,11 +113,6 @@
       "types": "./src/logic/reflection/*.ts",
       "import": "./src/logic/reflection/*.ts",
       "default": "./src/logic/reflection/*.ts"
-    },
-    "./zen": {
-      "types": "./src/logic/generated/index.ts",
-      "import": "./src/logic/generated/index.ts",
-      "default": "./src/logic/generated/index.ts"
     },
     "./native": {
       "types": "./src/native/index.ts",
@@ -144,9 +139,9 @@
       "default": "./src/hooks/index.ts"
     },
     "./hooks/*": {
-      "types": "./src/hooks/*",
-      "import": "./src/hooks/*",
-      "default": "./src/hooks/*"
+      "types": "./src/hooks/*.ts",
+      "import": "./src/hooks/*.ts",
+      "default": "./src/hooks/*.ts"
     },
     "./providers": {
       "types": "./src/providers/index.ts",
@@ -193,6 +188,16 @@
       "import": "./src/effect/*.ts",
       "default": "./src/effect/*.ts"
     },
+    "./flows": {
+      "types": "./src/flows/index.ts",
+      "import": "./src/flows/index.ts",
+      "default": "./src/flows/index.ts"
+    },
+    "./flows/*": {
+      "types": "./src/flows/*.ts",
+      "import": "./src/flows/*.ts",
+      "default": "./src/flows/*.ts"
+    },
     "./types": {
       "types": "./src/types/index.ts",
       "import": "./src/types/index.ts",
@@ -204,34 +209,24 @@
       "default": "./src/types/*.ts"
     },
     "./auth": {
-      "types": "./src/api/auth.ts",
-      "import": "./src/api/auth.ts",
-      "default": "./src/api/auth.ts"
+      "types": "./src/auth.ts",
+      "import": "./src/auth.ts",
+      "default": "./src/auth.ts"
     },
     "./web-auth": {
-      "types": "./src/webAuth.ts",
-      "import": "./src/webAuth.ts",
-      "default": "./src/webAuth.ts"
+      "types": "./src/webAuth.adapter.ts",
+      "import": "./src/webAuth.adapter.ts",
+      "default": "./src/webAuth.adapter.ts"
     },
     "./web-authorized-entry": {
       "types": "./src/webAuthorizedEntry.ts",
       "import": "./src/webAuthorizedEntry.ts",
       "default": "./src/webAuthorizedEntry.ts"
     },
-    "./identity": {
-      "types": "./src/api/identity.ts",
-      "import": "./src/api/identity.ts",
-      "default": "./src/api/identity.ts"
-    },
     "./storage": {
       "types": "./src/native/storage.ts",
       "import": "./src/native/storage.ts",
       "default": "./src/native/storage.ts"
-    },
-    "./supabase": {
-      "types": "./src/api/supabase.ts",
-      "import": "./src/api/supabase.ts",
-      "default": "./src/api/supabase.ts"
     },
     "./monitoring": {
       "types": "./src/monitoring/index.ts",
@@ -247,6 +242,11 @@
       "types": "./src/lib/sync/index.ts",
       "import": "./src/lib/sync/index.ts",
       "default": "./src/lib/sync/index.ts"
+    },
+    "./todos": {
+      "types": "./src/adapters/supabase/webTodos.react.ts",
+      "import": "./src/adapters/supabase/webTodos.react.ts",
+      "default": "./src/adapters/supabase/webTodos.react.ts"
     },
     "./powersync": {
       "types": "./src/adapters/powersync/index.ts",
@@ -284,19 +284,24 @@
       "default": "./src/logic/events/bus.ts"
     },
     "./offline": {
-      "types": "./src/offline/resilience.ts",
-      "import": "./src/offline/resilience.ts",
-      "default": "./src/offline/resilience.ts"
+      "types": "./src/offline/resilience.adapter.ts",
+      "import": "./src/offline/resilience.adapter.ts",
+      "default": "./src/offline/resilience.adapter.ts"
     },
     "./efficiency": {
       "types": "./src/efficiency/index.ts",
       "import": "./src/efficiency/index.ts",
       "default": "./src/efficiency/index.ts"
     },
+    "./verger": {
+      "types": "./src/verger/index.ts",
+      "import": "./src/verger/index.ts",
+      "default": "./src/verger/index.ts"
+    },
     "./storage-wrapper": {
-      "types": "./src/lib/storageWrapper.ts",
-      "import": "./src/lib/storageWrapper.ts",
-      "default": "./src/lib/storageWrapper.ts"
+      "types": "./src/lib/storageWrapper.adapter.ts",
+      "import": "./src/lib/storageWrapper.adapter.ts",
+      "default": "./src/lib/storageWrapper.adapter.ts"
     },
     "./lib": {
       "types": "./src/lib/index.ts",
@@ -307,6 +312,11 @@
       "types": "./src/logic/workspace/*.ts",
       "import": "./src/logic/workspace/*.ts",
       "default": "./src/logic/workspace/*.ts"
+    },
+    "./logic/workbench": {
+      "types": "./src/logic/workbench/index.ts",
+      "import": "./src/logic/workbench/index.ts",
+      "default": "./src/logic/workbench/index.ts"
     },
     "./logic/workbench/*": {
       "types": "./src/logic/workbench/*.ts",
@@ -323,11 +333,6 @@
       "import": "./src/logic/forms/*.ts",
       "default": "./src/logic/forms/*.ts"
     },
-    "./forms/form-manager": {
-      "types": "./src/logic/forms/form-manager.ts",
-      "import": "./src/logic/forms/form-manager.ts",
-      "default": "./src/logic/forms/form-manager.ts"
-    },
     "./logic/entities/*": {
       "types": "./src/logic/entities/*.ts",
       "import": "./src/logic/entities/*.ts",
@@ -338,15 +343,15 @@
       "import": "./src/logic/ports/*.ts",
       "default": "./src/logic/ports/*.ts"
     },
-    "./logic/managers/StorageManager": {
-      "types": "./src/logic/managers/StorageManager.ts",
-      "import": "./src/logic/managers/StorageManager.ts",
-      "default": "./src/logic/managers/StorageManager.ts"
+    "./platform/drivers": {
+      "types": "./src/platform/drivers/index.ts",
+      "import": "./src/platform/drivers/index.ts",
+      "default": "./src/platform/drivers/index.ts"
     },
-    "./logic/utils/*": {
-      "types": "./src/logic/utils/*.ts",
-      "import": "./src/logic/utils/*.ts",
-      "default": "./src/logic/utils/*.ts"
+    "./platform/drivers/*": {
+      "types": "./src/platform/drivers/*.ts",
+      "import": "./src/platform/drivers/*.ts",
+      "default": "./src/platform/drivers/*.ts"
     },
     "./effect": {
       "types": "./src/effect/index.ts",
@@ -358,6 +363,11 @@
       "types": "./src/*.ts",
       "import": "./src/*.ts",
       "default": "./src/*.ts"
+    },
+    "./api/v1/*": {
+      "types": "./src/api/v1/*.ts",
+      "import": "./src/api/v1/*.ts",
+      "default": "./src/api/v1/*.ts"
     }
   },
   "scripts": {
@@ -378,87 +388,86 @@
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-community/netinfo": ">=12.0.1",
-    "@sentry/react-native": "*",
-    "@supabase/postgrest-js": "2.117.2",
-    "@supabase/supabase-js": "2.117.2",
-    "expo-background-task": "~58.0.10",
+    "@react-native-community/netinfo": "12.0.1",
+    "@sentry/react-native": "8.34.0",
+    "@supabase/postgrest-js": "2.119.0",
+    "@supabase/supabase-js": "^2.119.0",
+    "expo-background-task": "~58.0.12",
     "expo-battery": "~58.0.3",
-    "expo-clipboard": ">=58.0.3",
-    "expo-constants": "~58.0.9",
-    "expo-crypto": ">=58.0.4",
+    "expo-clipboard": "~58.0.4",
+    "expo-constants": "~58.0.15",
+    "expo-crypto": "~58.0.7",
     "expo-device": "~58.0.5",
-    "expo-file-system": ">=58.0.5",
-    "expo-font": "~58.0.6",
-    "expo-haptics": "~58.0.4",
-    "expo-location": "~58.0.11",
-    "expo-notifications": "~58.1.0",
+    "expo-file-system": "~58.0.13",
+    "expo-font": "~58.0.11",
+    "expo-haptics": "~58.0.7",
+    "expo-location": "~58.0.20",
+    "expo-notifications": "~58.1.8",
     "expo-secure-store": "~58.0.2",
-    "expo-sharing": ">=58.0.14",
-    "expo-task-manager": "~58.0.11",
-    "react": "*",
-    "react-native": "*",
-    "react-native-keychain": "*",
-    "react-native-mmkv": "^4.3.2",
-    "react-native-url-polyfill": "*",
-    "zustand": "^5.0.14"
+    "expo-sharing": "~58.0.22",
+    "expo-task-manager": "~58.0.13",
+    "react": "19.3.1",
+    "react-native": "0.88.1",
+    "react-native-keychain": "^10.0.0",
+    "react-native-mmkv": "4.3.2",
+    "react-native-url-polyfill": "^4.0.0",
+    "zustand": "^5.1.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/types-shim": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@supabase/supabase-js": "2.117.2",
-    "@tanstack/react-query": "^5.104.1",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^25.9.6",
+    "@supabase/supabase-js": "^2.119.0",
+    "@tanstack/react-query": "^5.107.1",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
-    "@types/uuid": "^10.0.0",
-    "@vitest/ui": "^5.0.0",
+    "@vitest/ui": "^5.1.0",
     "decimal.js": "^10.6.0",
-    "eslint": "^10.10.0",
+    "eslint": "^10.14.0",
     "fast-check": "^4.10.2",
-    "jest": "^29.7.0",
-    "pino-pretty": "^13.1.3",
-    "tailwindcss": "^4.3.3",
-    "typescript": "rc",
+    "pino-pretty": "^13.2.0",
+    "tailwindcss": "4.3.4",
+    "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0",
-    "zustand": "^5.0.15"
+    "vitest": "5.1.0",
+    "zustand": "^5.1.0"
   },
   "dependencies": {
-    "@growthbook/growthbook": "^1.7.0",
-    "@hono/zod-openapi": "^1.6.3",
-    "@intuitui-labs/form-builder-engine": "^0.1.0",
-    "@orpc/client": "1.15.4",
-    "@orpc/contract": "1.15.4",
-    "@orpc/server": "1.15.4",
-    "@orpc/tanstack-query": "1.15.4",
-    "@paralleldrive/cuid2": "^2.3.1",
-    "@powersync/common": "^2.2.1",
-    "@powersync/drizzle-driver": "^0.8.0",
-    "@powersync/react": "^2.0.1",
-    "@powersync/web": "^2.3.1",
+    "@cedar-policy/cedar-wasm": "4.14.0",
+    "@growthbook/growthbook": "^2.0.0",
+    "@intuitui-labs/form-builder-engine": "^0.3.0",
+    "@orpc/client": "2.0.0-beta.50",
+    "@orpc/contract": "2.0.0-beta.50",
+    "@orpc/server": "2.0.0-beta.50",
+    "@orpc/tanstack-query": "2.0.0-beta.50",
+    "@powersync/common": "2.5.0",
+    "@powersync/drizzle-driver": "0.8.0",
+    "@powersync/react": "2.2.0",
+    "@powersync/web": "2.6.0",
     "@repo/database": "workspace:*",
     "@repo/policies": "workspace:*",
     "@repo/schema": "workspace:*",
-    "@sentry/browser": "10.64.0",
-    "@supabase/postgrest-js": "2.117.2",
-    "@supabase/supabase-js": "2.117.2",
-    "@tanstack/react-query": "^5.104.1",
-    "@zenstackhq/server": "^3.9.4",
-    "@zenstackhq/zod": "3.8.3",
+    "@repo/verger-core": "workspace:*",
+    "@sentry/browser": "10.78.0",
+    "@supabase/postgrest-js": "2.119.0",
+    "@supabase/supabase-js": "^2.119.0",
+    "@tanstack/react-pacer": "^0.24.1",
+    "@tanstack/react-query": "^5.107.1",
+    "@xstate/effect": "1.0.0-beta.1",
+    "@zenstackhq/zod": "3.10.1",
     "date-fns": "^4.4.0",
-    "drizzle-orm": "^0.45.3",
-    "effect": "^4.0.2",
+    "drizzle-orm": "0.45.4",
+    "effect": "^4.1.4",
     "fast-json-patch": "^3.1.1",
-    "hono": "^4.13.13",
-    "i18next": "^26.4.2",
-    "inngest": "^4.21.1",
+    "hono": "5.0.0-rc.1",
+    "i18next": "^26.7.1",
+    "inngest": "^4.26.2",
     "isomorphic-webcrypto": "^2.3.8",
-    "pino": "^10.3.1",
-    "react-i18next": "^17.0.15",
-    "uuid": "^14.0.2",
-    "zod": "4.6.5"
+    "pino": "^10.4.0",
+    "react-i18next": "^17.1.12",
+    "uuid": "^14.0.3",
+    "xstate": "6.0.0-beta.2",
+    "zod": "4.6.7"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

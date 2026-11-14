@@ -28,6 +28,7 @@ const _gradingCoverage = assertContractCoverage(
       'updateGradingSettings',
       'saveGradeDraft',
       'publishGrade',
+      'getSchoolPublishedGradingCompletion',
     ],
   }),
 );

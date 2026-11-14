@@ -1,0 +1,9 @@
+{
+  "valid": true,
+  "engineUsed": "native_hermesc",
+  "simulationTier": "NATIVE_HERMESC_BYTECODE",
+  "compilerPath": "C:\\x\\node_modules\\.pnpm\\hermes-compiler@260318099.0.4\\node_modules\\hermes-compiler\\hermesc\\win64-bin\\hermesc.exe",
+  "bytecodeSizeBytes": 454,
+  "status": "compiled",
+  "bytecodeVerified": true
+}

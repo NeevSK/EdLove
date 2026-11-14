@@ -10,7 +10,7 @@ export type {
   DailyAttendance,
   DailyAttendanceStatus,
   GradeClassSubject,
-} from './AcademicLifecycle';
+} from '@repo/core/logic/schemas/academic-lifecycle.schema';
 export type {
   Actor,
   ActorRelationship,
@@ -19,13 +19,11 @@ export type {
 } from './Actor';
 export type { PaginatedResponse, PaginationParams } from './API';
 export type { Assignment } from './Assignment';
-export type {
-  AttendanceRecord,
-  AttendanceStatus,
-  StudentAttendance,
-} from './Attendance';
+export type { AttendanceRecord } from './Attendance';
+export type { AttendanceStatus, StudentAttendance } from '../logic/schemas/attendance.schema';
 export type { AuthorityTier, Capacity } from './Authority';
-export type { Classroom, ClassroomStudent, StudentAcademicRecord } from './Classroom';
+export type { Classroom, ClassroomStudent } from './Classroom';
+export type { StudentAcademicRecord } from '../logic/schemas/classroom.schema';
 export type { ClassroomNote } from './ClassroomNote';
 export type {
   AnnouncementWithAuthor,
@@ -71,13 +69,13 @@ export type {
   GradeMark,
   GradeMarkPublicationState,
   Term,
-} from './GradeDomain';
+} from '@repo/core/logic/schemas/grade-domain.schema';
 export type { StudentGroup } from './Group';
-export type { Bond, Perspective } from './Identity';
+export type { CitizenshipTier } from './Identity';
+export type { Bond, Perspective } from '../logic/schemas/identity.schema';
 export type {
   FieldAnalytics,
   InstitutionalAsset,
-  InventoryCategory,
   InventoryCondition,
   InventoryItem,
   InventoryRequest,
@@ -97,11 +95,8 @@ export type {
   ProfileStackParamList,
   SelfStackParamList,
 } from './navigation';
-export type {
-  ClassroomJoinRequest,
-  RequestStatus,
-  SchoolJoinRequest,
-} from './Onboarding';
+export type { ClassroomJoinRequest, RequestStatus } from './Onboarding';
+export type { SchoolJoinRequest } from '../logic/schemas/identity.schema';
 export type {
   CapabilityKey,
   CapabilityResource,
@@ -113,6 +108,7 @@ export {
   type JoinClassPayload,
   type JoinGroupPayload,
   type JoinSchoolPayload,
+  type LinkDevicePayload,
   QR_VERSION,
   type QRAction,
   type QRPayload,
@@ -149,7 +145,8 @@ export type {
 export type { PrivacyLevel, SocialLink, SocialPlatform } from './Social';
 export type { StaffAttendance, StaffAttendanceStatus } from './StaffAttendance';
 export type { LeaveStatus, LeaveType, StaffLeave } from './StaffLeave';
-export type { BulkStudent, Student } from './Student';
+export type { BulkStudent } from './Student';
+export type { Student } from '../logic/schemas/student.schema';
 export type { Task } from './Task';
 export type { TeacherNote } from './TeacherNote';
 export type {
@@ -165,17 +162,10 @@ export type {
   TenantContext,
 } from './Tenancy';
 export type { ThuthimalGift } from './Thuthimal';
-export type {
-  GraphLink,
-  GraphNode,
-  KnowledgeTopology,
-  LayoutResult,
-  LinkRelationship,
-  MappingTopologyZod,
-  PerspectiveId,
-  PulseMetricsZod,
-} from './topology';
-export type { AuthSession, LoginData, ProfileStats, SignUpData, User } from './User';
+export type { GraphLink, GraphNode, KnowledgeTopology, LayoutResult, LinkRelationship, PerspectiveId } from './topology';
+export type { MappingTopologyZod, PulseMetricsZod } from '../logic/schemas/dashboard.schema';
+export type { LoginData, ProfileStats, SignUpData, User } from './User';
+export type { AuthSession } from './authSession';
 export type {
   PerspectiveRenderer,
   PerspectiveViewProps,
@@ -195,30 +185,32 @@ export type {
   WorkbenchTaskLocalStatePolicy,
   WorkbenchTaskResource,
 } from './Workbench';
-export type {
-  DomainFeature,
-  ResolvedWorkspaceSurface,
-  WorkspaceAppearance,
-  WorkspaceAppearanceMotion,
-  WorkspaceAppearancePreset,
-  WorkspaceLayout,
-  WorkspaceOwnerPackage,
-  WorkspaceRendererConfig,
-  WorkspaceRendererMode,
-  WorkspaceRendererPlatform,
-  WorkspaceRuntimePlatform,
-  WorkspaceSurfaceDefinition,
-  WorkspaceSwitcherDestination,
-  WorkspaceSwitcherTarget,
-  WorkspaceSwitcherTargetId,
-  WorkspaceZoneId,
-} from './Workspace';
+export type { DomainFeature, FloorWallpaperConfig, ResolvedWorkspaceSurface, SceneGroundMode, WallpaperPlaybackMode, WorkspaceAppearance, WorkspaceAppearanceMotion, WorkspaceAppearancePreset, WorkspaceLayout, WorkspaceOwnerPackage, WorkspaceRendererConfig, WorkspaceRendererMode, WorkspaceRendererPlatform, WorkspaceRuntimePlatform, WorkspaceSurfaceDefinition, WorkspaceSwitcherDestination, WorkspaceSwitcherTarget, WorkspaceSwitcherTargetId, WorkspaceWallpaper, WorkspaceZoneId } from './Workspace';
+export type { FeatureJourneySpec, FeatureLifecycleStage, ScreenSequenceStep, SensoryFeedbackProfile, WorkspaceRolePersona } from './domainEntry';
 export { APIError };
 
 // Base types
 export type DeviceInfo = DeviceMetadata & { uniqueId: string };
 export type AppConfig = { env: string; apiHost: string };
 export type AppContext = { user?: User; schoolId?: string };
+export * from './EducationalEconomics';
+export * from './FlowDAG';
+export {
+  FeatureJTBDGraphSchema,
+  FlowFallbackConditionSchema,
+  FlowFallbackEdgeSchema,
+  FlowNodeStepSchema,
+  FlowTriggerSchema,
+} from './domainEntry';
+export type {
+  FeatureJTBDGraph,
+  FlowFallbackCondition,
+  FlowFallbackEdge,
+  FlowNodeStep,
+  FlowTrigger,
+} from './domainEntry';
 export * from './Growth';
 export type { AppNotification, NotificationStatus } from './notifications';
 export * from './Perspective';
+export * from './CivicRole';
+export * from './PreferredName';

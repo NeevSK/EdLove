@@ -1,4 +1,4 @@
-import { colors, corners, shadows, spacing, typography } from '@repo/ui/theme';
+import { colors, corners, shadows, spacing, typography } from '@repo/ui/theme/Theme';
 
 export type ResponsiveShellMode =
   | 'mobile'

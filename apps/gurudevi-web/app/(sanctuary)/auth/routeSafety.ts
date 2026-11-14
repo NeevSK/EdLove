@@ -1,4 +1,5 @@
 import { normalizeAcceptedInternalRoute } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
+import { checkInternalHref } from '@repo/core/routing/internalHref';
 
 const sanctuaryPath = '/self';
 
@@ -13,7 +14,8 @@ export function safeReturnPath(candidate: string | null): string {
     const fullPath = `${destination.pathname}${destination.search}${destination.hash}`;
     const normalized = normalizeAcceptedInternalRoute(destination.pathname);
     if (!normalized) return sanctuaryPath;
-    return fullPath;
+    // Allowed by the deep-link allowlist, and a page that exists: the floor every destination passes.
+    return checkInternalHref(fullPath, 'web').ok ? fullPath : sanctuaryPath;
   } catch {
     return sanctuaryPath;
   }

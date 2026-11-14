@@ -1,0 +1,136 @@
+# Hand-verified auth & onboarding domain (main @ 175c036e, static; read-only). Evidence = grep + import trace.
+- id: auth:sign-up-email
+  task: user signs up with email + password
+  roles: [teacher, student, principal, parent]
+  mobile: {route: apps/gurudevi-mobile/app/auth.tsx (/auth), screen: packages/ui/src/screens/AuthScreen.tsx:399 authAPI.signUp, nav: "apps/gurudevi-mobile/app/welcome.tsx:31 router.push('/auth?mode=login') + mode toggle AuthScreen.tsx:481"}
+  web: {route: "apps/gurudevi-web/app/(sanctuary)/sign-up/page.tsx", screen: "sign-up/SignUpForm.tsx:30 runtime.client.auth.signUp -> :41 replace('/onboarding')", nav: "sign-in/page.tsx:28"}
+  api: packages/core/src/api/auth.ts:76 -> logic/managers/factory auth (Supabase Auth); no sanctuary-api proc
+  data: real (Supabase Auth)
+  status: LIVE
+- id: auth:sign-in-password
+  task: user signs in with email + password
+  roles: [teacher, student, principal, parent, admin, founder]
+  mobile: {route: /auth, screen: packages/ui/src/screens/AuthScreen.tsx:413 authAPI.signIn}
+  web: {route: "/sign-in", screen: "auth/SignInForm.tsx:29 auth.signInWithPassword", nav: "sign-up/SignUpForm.tsx:98"}
+  data: real (Supabase Auth)
+  status: LIVE
+- id: auth:oauth-google
+  task: user signs in with Google
+  roles: [teacher, student, principal, parent]
+  mobile: {screen: "AuthScreen.tsx:266 signInWithGoogleIdToken (native, apps/gurudevi-mobile/src/lib/googleSignIn) / :294 signInWithOAuth (browser)"}
+  web: {screen: "auth/PasswordlessEntry.tsx:66 auth.signInWithOAuth"}
+  data: real (Supabase Auth; provider config not verifiable statically)
+  status: LIVE
+- id: auth:magic-link
+  task: user signs in with magic link / email OTP
+  roles: [teacher, student, principal, parent]
+  mobile: {screen: "AuthScreen.tsx:501 authAPI.signInWithMagicLink", callback: "apps/gurudevi-mobile/app/auth/callback.tsx (deep link: app.json intent filter /auth/callback, app/+native-intent.tsx:28)"}
+  web: {screen: "auth/PasswordlessEntry.tsx:40 auth.signInWithOtp", callback: "(sanctuary)/auth/callback/page.tsx"}
+  data: real (Supabase Auth)
+  status: LIVE
+- id: auth:password-reset-web
+  task: user resets a forgotten password (web)
+  roles: [teacher, student, principal, parent]
+  web: {route: "/recovery -> /reset-password", screen: "auth/RecoveryForm.tsx:27 resetPasswordForEmail (next=/reset-password :23); auth/ResetPasswordForm.tsx:51 updateUser({password})", nav: "auth/SignInForm.tsx:100 link to /recovery; /reset-password reached from the email link"}
+  data: real (Supabase Auth)
+  status: LIVE
+- id: auth:password-reset-mobile
+  task: user resets a forgotten password (mobile app)
+  roles: [teacher, student, principal, parent]
+  evidence: "No resetPasswordForEmail/updateUser({password}) in apps/gurudevi-mobile or packages/ui/src/screens/AuthScreen*.tsx. packages/core/src/routing/routeManifest.ts:24 declares RESET_PASSWORD, but there is no mobile route file. Magic link is the only recovery path."
+  status: PLANNED
+  verification: {method: grep, terms: [resetPasswordForEmail, updateUser, reset-password, ResetPassword], hits: "web only", verdict: negative-on-mobile}
+- id: auth:device-account-recovery
+  task: user switches/recovers a saved device account
+  roles: [teacher, student, principal, parent]
+  mobile: {route: apps/gurudevi-mobile/app/account-recovery.tsx, screen: apps/gurudevi-mobile/src/screens/AccountRecoveryScreen.tsx (deviceAccounts), nav: "no inbound link (routeManifest.ts:27 lists it; no push/href found)"}
+  status: UI-UNWIRED
+- id: auth:passkey
+  task: user signs in / registers with a passkey
+  roles: [teacher, principal]
+  web_only: "packages/ui/src/screens/AuthScreen.web.tsx calls signInWithPasskey/registerPasskey (Expo web build only); not in apps/gurudevi-web"
+  status: PARTIAL
+- id: auth:totp-mfa
+  task: user enrolls/verifies TOTP MFA
+  roles: [principal, admin, founder]
+  evidence: "authAPI.enrollTotp/challengeAndVerifyTotp (packages/core/src/api/auth.ts) have no UI caller"
+  status: BACKEND-ONLY
+- id: auth:guest-then-link
+  task: guest explores, then secures the account (anonymous -> email)
+  roles: [teacher, student, parent]
+  mobile: {screen: "auth.tsx signInAnonymously; AuthScreen.tsx:370-377 linkAnonymousToEmail(capacity)"}
+  caveat: "Anonymous subjects then onboard via onboardingAPI.createInitialBond/completeOnboarding (packages/core/src/api/onboarding.ts:54/78 Hono REST, NO SERVER MOUNT since e383ef01). See OnboardingScreen.tsx:649-672."
+  status: PARTIAL
+- id: auth:sign-out
+  task: user signs out
+  roles: [teacher, student, principal, parent, admin, founder]
+  evidence: "web (sanctuary)/components/AccountSignOut.tsx (in SanctuaryShell) + app/auth/signout/route.ts; mobile packages/core/src/hooks/useAuthLifecycle.ts signOut"
+  status: LIVE
+- id: onboarding:role-selection
+  task: user chooses a capacity/role (teacher/student/principal/parent) during onboarding
+  roles: [teacher, student, principal, parent]
+  mobile: {route: "apps/gurudevi-mobile/app/onboarding.tsx -> packages/ui/src/screens/OnboardingWrapper.tsx -> OnboardingScreen.tsx (selectedCapacity :627/:862)", call: "OnboardingScreen.tsx:649-657 createInitialBondForSubject (authenticated -> createCanonicalInitialBond -> packages/core/src/api/onboardingClient.ts:68 orpcClient.onboarding.createInitialBond served; anonymous -> onboardingAPI.createInitialBond :657)", nav: "welcome.tsx:38, SignUpForm.tsx:41"}
+  web: {route: "(sanctuary)/onboarding/page.tsx", call: "OnboardingForm.tsx:65 createInitialBond (onboardingClient, served)"}
+  caveats: ["Expo-web variant OnboardingScreen.web.tsx:746/817/853 uses REST onboardingAPI.createInitialBond, which is a dead route", "Anonymous subjects use the REST path, which is dead"]
+  data: real (sanctuary-api onboarding.createInitialBond -> handlers/onboarding.ts:21)
+  status: LIVE
+  status_note: "LIVE on native mobile and gurudevi-web for signed-in users; broken on Expo web and for guests"
+- id: onboarding:complete
+  task: user completes onboarding
+  roles: [teacher, student, principal, parent]
+  call: "OnboardingScreen.tsx:669-672 completeOnboardingForSubject (authenticated -> completeCanonicalOnboarding, onboardingClient.ts:83 served; anonymous -> REST :672); web OnboardingForm.tsx:70"
+  status: LIVE
+  status_note: "same caveats as role selection"
+- id: onboarding:profile-setup
+  task: user sets display name / profile during onboarding
+  roles: [teacher, student, principal, parent]
+  call: "OnboardingScreen.tsx:948 identityAPI.modifyUserProfile -> packages/core/src/api/identity.ts:98 (oRPC served)"
+  status: LIVE
+- id: onboarding:invite-generate
+  task: principal generates invite codes for teachers/students
+  roles: [principal]
+  ui: "packages/admin/src/components/principal/InviteManager.tsx:71 api.school.generateInviteCode (in principal/founder/classroom workspace closures)"
+  data: "packages/core/src/api/school.ts:139 -> educational.institutions -> adapters/supabase/educational/schoolRepository.ts:172 insert into invite_codes (zmodel :790; remote_schema_backup.sql:11291)"
+  route: "/workspace/principal (role dispatch)"
+  caveat: "the principal route passes 'demo-school' when context lacks a schoolId (principal.tsx:19), ungated"
+  status: PARTIAL
+- id: onboarding:invite-qr-generate
+  task: principal/teacher shows an invite as a QR code
+  roles: [principal, teacher]
+  ui: "packages/scanner-kit/src/QRCodeGenerator.tsx + qr/QRShareButton.tsx, used in InviteManager.tsx, classroom/components/StudentList.tsx, admin/screens/PrincipalDashboard.tsx"
+  data: client-side render of the code
+  status: LIVE
+- id: onboarding:invite-redeem
+  task: invited user joins a school/classroom with an invite code or link
+  roles: [teacher, student, parent]
+  ui: "OnboardingScreen.tsx:703 resolveStoredInvite -> packages/core/src/lib/inviteCodes.ts:32 validateInviteCode (.from('invite_codes') :48) + incrementInviteCodeUsage :102; web short link apps/gurudevi-web/app/(sanctuary)/c/[code]/page.tsx -> /community?inviteCode=… / app deep link"
+  status: LIVE
+- id: onboarding:qr-scan
+  task: user scans a QR (join class / community / claim Thuthimal)
+  roles: [teacher, student, parent]
+  ui: "AuthScreen.tsx (ScannerModal) handleScan -> packages/core/src/native/flows/FlowResolver.ts resolveQR (Supabase classrooms/community_groups + orpc community.joinGroup); /qr route packages/scanner-kit/src/screens/QRHandlerScreen.tsx:42 (inbound: PushNotificationProvider.tsx:62, CommandPalette.web.tsx:187)"
+  status: LIVE
+  note: camera permissions are runtime-only and not verifiable statically
+- id: onboarding:invitation-welcome
+  task: invited user sees an invitation welcome screen
+  roles: [teacher, student]
+  ui: "apps/gurudevi-mobile/app/invitation-welcome.tsx -> @repo/community/onboarding InvitationWelcomeScreen; no inbound link/push found"
+  status: UI-UNWIRED
+- id: onboarding:school-create-first-principal
+  task: first principal / founder creates the school (bootstrap)
+  roles: [principal, founder]
+  ui: "packages/admin/src/components/school/CreateSchoolModal.tsx (PrincipalDashboard.tsx:139, FounderSchoolDashboard.tsx:196); packages/classroom/src/components/CreateSchoolModal.tsx; NoSchoolView.web.tsx:186. packages/admin/src/screens/SchoolCreationScreen.tsx is unrouted."
+  data: "school row via schoolRepository.createSchool (Supabase), then admin CreateSchoolModal.tsx:138 / classroom CreateSchoolModal.tsx:110 onboardingAPI.createFounderSchoolBond"
+  status: PARTIAL
+  blocker: "createFounderSchoolBond -> packages/core/src/api/onboarding.ts:90 (client.api as any).identity['school-founder-bond'].$post (Hono REST, NO SERVER MOUNT since e383ef01). The school is created but the founder bond throws."
+- id: onboarding:founder-school-bond
+  task: founder/principal is bonded to the school they created
+  roles: [principal, founder]
+  api: apps/sanctuary-api/src/core/handlers/onboarding.ts:260 createFounderSchoolBond (exists)
+  status: PARTIAL
+  blocker: "only client site is dead REST (onboarding.ts:90); no orpcClient.onboarding.createFounderSchoolBond caller"
+- id: onboarding:server-bootstrap-allowlist
+  task: (infra) bootstrap endpoints bypass double-gate for new users
+  roles: []
+  evidence: "apps/sanctuary-api/src/core/onboardingBootstrap.ts:2-6 (/api/onboarding/createInitialBond, completeOnboarding, /api/capabilities/bootstrap/v1)"
+  status: engineering

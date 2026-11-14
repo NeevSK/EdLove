@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { storage } from '../../lib/storage';
-import { createTenantStorageScope } from '../../lib/tenantStorage';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { storage } from '../../lib/storage.adapter';
+import { createTenantStorageScope } from '../../lib/tenantStorage.adapter';
 
 describe('Disaster Suite 5: Institutional & Multi-Tenant Partition Isolation', () => {
   beforeEach(() => {

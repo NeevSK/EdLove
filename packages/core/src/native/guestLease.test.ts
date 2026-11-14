@@ -1,5 +1,5 @@
+import { GUEST_LEASE_DAYS, getGuestLeaseStatus } from '@repo/core/native/guestLease';
 import { describe, expect, it } from 'vitest';
-import { getGuestLeaseStatus, GUEST_LEASE_DAYS } from '@repo/core/native/guestLease';
 
 const startedAt = new Date('2026-09-01T00:00:00.000Z');
 const lease = {

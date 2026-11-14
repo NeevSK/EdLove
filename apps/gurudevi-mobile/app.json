@@ -3,7 +3,7 @@
     "name": "Gurudevi Sanctuary",
     "slug": "gurudevi-sanctuary",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "gurudevi",
@@ -11,10 +11,13 @@
       "supportsTablet": true,
       "bundleIdentifier": "app.gurudevi.sanctuary",
       "buildNumber": "1",
-      "associatedDomains": [
-        "applinks:sanctuary.gurudevi.app",
-        "applinks:gurudevi.app"
-      ]
+      "associatedDomains": ["applinks:sanctuary.gurudevi.app", "applinks:gurudevi.app"],
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSMicrophoneUsageDescription": "Gurudevi Sanctuary requires microphone access to record reflective audio journal entries.",
+        "NSCameraUsageDescription": "Gurudevi Sanctuary requires camera access to scan school QR invites and capture classroom moments.",
+        "NSPhotoLibraryUsageDescription": "Gurudevi Sanctuary requires photo library access to upload profile avatars and educational documents."
+      }
     },
     "android": {
       "package": "app.gurudevi.sanctuary",
@@ -35,10 +38,7 @@
               "pathPrefix": "/callback"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -48,10 +48,7 @@
               "host": "qr"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -61,10 +58,7 @@
               "host": "invite"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -74,10 +68,7 @@
               "host": "c"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -124,10 +115,7 @@
               "pathPrefix": "/auth/callback"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
@@ -157,9 +145,7 @@
                   "targetName": "ExpoWidgetsTarget",
                   "bundleIdentifier": "app.gurudevi.sanctuary.ExpoWidgetsTarget",
                   "entitlements": {
-                    "com.apple.security.application-groups": [
-                      "group.app.gurudevi.sanctuary"
-                    ]
+                    "com.apple.security.application-groups": ["group.app.gurudevi.sanctuary"]
                   }
                 }
               ]
@@ -171,8 +157,52 @@
       "router": {}
     },
     "plugins": [
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./src/assets/fonts/world/AbhayaLibre-Regular.ttf",
+            "./src/assets/fonts/world/AbhayaLibre-SemiBold.ttf",
+            "./src/assets/fonts/world/Alegreya-Italic-VF.ttf",
+            "./src/assets/fonts/world/Alegreya-VF.ttf",
+            "./src/assets/fonts/world/AlegreyaSans-Bold.ttf",
+            "./src/assets/fonts/world/AlegreyaSans-Regular.ttf",
+            "./src/assets/fonts/world/Anybody-Italic-VF.ttf",
+            "./src/assets/fonts/world/Arima-VF.ttf",
+            "./src/assets/fonts/world/Catamaran-VF.ttf",
+            "./src/assets/fonts/world/CormorantGaramond-Italic-VF.ttf",
+            "./src/assets/fonts/world/CormorantGaramond-VF.ttf",
+            "./src/assets/fonts/world/Fraunces-Italic-VF.ttf",
+            "./src/assets/fonts/world/Fraunces-VF.ttf",
+            "./src/assets/fonts/world/GemunuLibre-VF.ttf",
+            "./src/assets/fonts/world/HindMadurai-Medium.ttf",
+            "./src/assets/fonts/world/HindMadurai-Regular.ttf",
+            "./src/assets/fonts/world/IBMPlexSans-Regular.ttf",
+            "./src/assets/fonts/world/Inter-VF.ttf",
+            "./src/assets/fonts/world/Jost-VF.ttf",
+            "./src/assets/fonts/world/Lora-Italic.ttf",
+            "./src/assets/fonts/world/Lora-Regular.ttf",
+            "./src/assets/fonts/world/MuktaMalar-Regular.ttf",
+            "./src/assets/fonts/world/MuktaMalar-SemiBold.ttf",
+            "./src/assets/fonts/world/Newsreader-Italic-VF.ttf",
+            "./src/assets/fonts/world/Newsreader-VF.ttf",
+            "./src/assets/fonts/world/NotoSansSinhala-VF.ttf",
+            "./src/assets/fonts/world/NotoSansSinhala-Width-VF.ttf",
+            "./src/assets/fonts/world/NotoSansTamil-VF.ttf",
+            "./src/assets/fonts/world/NotoSansTamil-Width-VF.ttf",
+            "./src/assets/fonts/world/NotoSerifSinhala-VF.ttf",
+            "./src/assets/fonts/world/NotoSerifTamil-VF.ttf",
+            "./src/assets/fonts/world/Nunito-VF.ttf",
+            "./src/assets/fonts/world/SpaceGrotesk-VF.ttf",
+            "./src/assets/fonts/world/Spectral-Italic.ttf",
+            "./src/assets/fonts/world/Spectral-Regular.ttf",
+            "./src/assets/fonts/world/Yaldevi-VF.ttf"
+          ]
+        }
+      ],
       "./plugins/withNdkVersion",
+      "./plugins/withAndroidDebugTrustAnchors",
+      "./plugins/withProfileableBuild",
       "./plugins/withGradleProperties",
       "./plugins/withGradleWrapperVersion",
       "./plugins/withSubprojectsBuildConfig",
@@ -214,7 +244,7 @@
       ],
       "expo-widgets",
       "expo-router",
-      "react-native-enriched-markdown",
+      "@sentry/react-native/expo",
       "react-native-nano-icons",
       "expo-background-task",
       "expo-status-bar",
@@ -228,7 +258,7 @@
     ],
     "owner": "neevsk",
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "fingerprint"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { type ResilienceOptions, withResilience } from '@repo/core/offline/resilience';
+import { type ResilienceOptions, withResilience } from '@repo/core/offline/resilience.adapter';
 
 export interface LocalFirstReadOptions<T> extends ResilienceOptions {
   fetchRemote: () => Promise<T>;
@@ -29,9 +29,16 @@ export async function writeLocalFirst<TPayload, TResult>(
   options: LocalFirstWriteOptions<TPayload, TResult>,
 ): Promise<TResult> {
   await options.enqueueLocal(payload);
-  const result = await options.commitRemote(payload);
-  if (options.onCommitted) {
-    await options.onCommitted(result);
+  try {
+    const result = await options.commitRemote(payload);
+    if (options.onCommitted) {
+      await options.onCommitted(result);
+    }
+    return result;
+  } catch (error) {
+    if (options.optimistic !== undefined) {
+      return options.optimistic;
+    }
+    throw error;
   }
-  return result;
 }

@@ -1,0 +1,81 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  icon?: string;
+  mode?: 'panel' | 'modal';
+}
+
+const { title, subtitle, icon, mode = 'panel' } = Astro.props;
+---
+
+<!-- 
+  NOW A DUAL-MODE TRIGGER
+  If mode='panel' (default), opens SidePanel (Left).
+  If mode='modal', opens CenterModal.
+-->
+
+<div class="expandable-trigger-wrapper" data-mode={mode}>
+  <button 
+    class="w-full text-left group p-8 rounded-2xl bg-white/40 border border-[var(--color-midnightInk)]/5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:bg-white/60 hover:border-[var(--color-agedGold)]/30 hover:shadow-[0_10px_40px_rgba(212,165,116,0.05)] transition-all duration-500 cursor-pointer flex items-center justify-between overflow-hidden relative shine-effect"
+    data-title={title}
+    data-subtitle={subtitle}
+    data-icon={icon}
+  >
+    <div class="flex items-center gap-6 relative z-10">
+      {icon && <span class="text-4xl filter drop-shadow-sm group-hover:scale-110 transition-transform duration-700 ease-out">{icon}</span>}
+      <div>
+        <h3 class="font-serif text-3xl text-[var(--color-midnightInk)] group-hover:text-[var(--color-agedGold)] transition-colors duration-500 leading-tight">{title}</h3>
+        {subtitle && <p class="font-sans text-[10px] text-[var(--color-midnightInk)]/40 uppercase tracking-[0.25em] mt-2 font-bold">{subtitle}</p>}
+      </div>
+    </div>
+    
+    <span class="px-4 py-2 text-[var(--color-agedGold)] bg-[var(--color-agedGold)]/10 rounded-full text-xs font-sans uppercase tracking-[0.2em] group-hover:bg-[var(--color-agedGold)] group-hover:text-white group-hover:translate-x-2 transition-all duration-500 font-bold relative z-10 border border-[var(--color-agedGold)]/20">
+        Reveal →
+    </span>
+  </button>
+
+  <!-- Hidden Content Store -->
+  <div class="hidden-content hidden">
+    <slot />
+  </div>
+</div>
+
+<script>
+  function initExpandableContent() {
+    const wrappers = document.querySelectorAll('.expandable-trigger-wrapper');
+
+    wrappers.forEach(wrapper => {
+      // Check if already bound to avoid duplicates in case of partial hydration issues, 
+      // though strict cleanup is better.
+      // Standard pattern: just attach. The elements are fresh if swapper replaces them.
+      // If elements persist, we might double bind.
+      
+      const btn = wrapper.querySelector('button');
+      const contentDiv = wrapper.querySelector('.hidden-content');
+      const mode = wrapper.getAttribute('data-mode') || 'panel';
+      
+      // Cleanup helper to remove potential old listeners? 
+      // Differs per element. Simpler to just ensure we don't attach if "bound".
+      if(btn?.getAttribute('data-bound') === 'true') return;
+      
+      btn?.addEventListener('click', () => {
+         const eventName = mode === 'modal' ? 'open-center-modal' : 'open-side-panel';
+         
+         const event = new CustomEvent(eventName, {
+             detail: {
+                 title: btn.getAttribute('data-title'),
+                 subtitle: btn.getAttribute('data-subtitle'),
+                 icon: btn.getAttribute('data-icon'),
+                 content: contentDiv?.innerHTML
+             }
+         });
+         window.dispatchEvent(event);
+      });
+      
+      btn?.setAttribute('data-bound', 'true');
+    });
+  }
+
+  document.addEventListener('astro:page-load', initExpandableContent);
+</script>

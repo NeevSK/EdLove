@@ -8,7 +8,8 @@ describe('external URI policy', () => {
     'http://localhost:3000/dev',
     'http://127.0.0.1:8081/dev',
     'gurudevi://auth/callback',
-    'mailto:support@gurudevi.app',
+    'mailto:support@gurudevi.lk',
+    'mailto:support@gurudevi.lk',
     'tel:+94770000000',
     'whatsapp://send?phone=94770000000',
   ])('accepts supported URI: %s', (uri) => {

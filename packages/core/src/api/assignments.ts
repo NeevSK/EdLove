@@ -74,3 +74,27 @@ export const assignmentsAPI = {
     return educational.assignments.delete(id);
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_ASSIGNMENTS,
+  MOCK_STUDENT_GRADES,
+  MOCK_STUDENT_SUBMISSIONS,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'assignments',
+  ghostMethods: [
+    'getAll',
+    'getByLesson',
+    'getUpcomingForStudent',
+    'getSubmissionHistoryForStudent',
+    'getRecentGradesOverviewForStudent',
+  ],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: (method) => {
+    if (method === 'getRecentGradesOverviewForStudent') return MOCK_STUDENT_GRADES;
+    if (method === 'getSubmissionHistoryForStudent') return MOCK_STUDENT_SUBMISSIONS;
+    return MOCK_ASSIGNMENTS;
+  },
+});

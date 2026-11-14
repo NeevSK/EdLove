@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2026-10-31T07:44:27.169Z",
+  "elapsedMs": 261,
+  "inventory": {
+    "totalWebRoutes": 76,
+    "totalMobileRoutes": 92,
+    "modularFlowDefinitions": 16,
+    "declaredFlowFiles": 1
+  },
+  "sampleRoutes": {
+    "web": [
+      "/authors/[id]",
+      "/journal",
+      "/journal/[slug]",
+      "/faq",
+      "/status",
+      "/thuthimal",
+      "/delete-account",
+      "/guidelines",
+      "/privacy",
+      "/terms",
+      "/support",
+      "/about",
+      "/",
+      "/account-recovery",
+      "/admin/analytics"
+    ],
+    "mobile": [
+      "/(modal)/app-settings",
+      "/(modal)/create-form",
+      "/(modal)/create-group",
+      "/(modal)/create-post",
+      "/(tabs)/community/announcements",
+      "/(tabs)/community/chat/[conversationId]",
+      "/(tabs)/community/direct-messages/[conversationId]",
+      "/(tabs)/community/direct-messages",
+      "/(tabs)/community/groups/[groupId]",
+      "/(tabs)/community/groups",
+      "/(tabs)/community",
+      "/(tabs)/community/profile/[id]",
+      "/(tabs)/library/collections/[id]",
+      "/(tabs)/library/contribute",
+      "/(tabs)/library/document/[resourceId]"
+    ]
+  },
+  "findings": []
+}

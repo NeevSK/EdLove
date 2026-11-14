@@ -1,20 +1,23 @@
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
   createStudentGoal,
   fetchStudentGoalsForView,
   updateStudentGoal,
-} from '@repo/self/api/selfFeatureRepository';
-import type { Goal } from '@repo/self/types';
+} from '@repo/self/data/selfFeature.data';
+import type { Goal } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const GOALS_CACHE_KEY = 'gurudevi-student-goals-cache';
 export function useStudentGoals(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const { isOnline } = useOfflineStatus();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<Error | null>(null);
-  const { viewDate, isPastView } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   useEffect(() => {
     if (!userId) return;
     const loadCache = async () => {

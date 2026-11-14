@@ -56,6 +56,27 @@ export const config = [
     },
   },
   {
+    // Reference-only web variants (tooling/reference-only.mjs). The web app is apps/gurudevi-web;
+    // .web files that shared code imports (tooling/live-web-files.json) stay linted.
+    ignores: [
+      '**/*.web.ts',
+      '**/*.web.tsx',
+      '!src/components/FeatureStateBoundary.web.tsx',
+      '!src/components/GatewayFooter.web.tsx',
+      '!src/components/GatewayHeader.web.tsx',
+      '!src/components/GatewayScreenShell.web.tsx',
+      '!src/components/WebScreenHeader.web.tsx',
+      '!src/engine/PostHogAnalytics.web.ts',
+      '!src/icons.web.ts',
+      '!src/screens/AppSettingsScreen.web.tsx',
+      '!src/screens/FormBuilderScreen.web.tsx',
+      '!src/screens/PublicFormScreen.web.tsx',
+      '!src/screens/SchoolProfileScreen.web.tsx',
+      '!src/screens/SelfScreen.web.tsx',
+      '!src/screens/VideoPlayerScreen.web.tsx',
+    ],
+  },
+  {
     ignores: [
       'dist/**',
       '**/.vercel/**',

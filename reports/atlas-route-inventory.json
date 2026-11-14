@@ -1,0 +1,769 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "generatedAt": "2026-10-23T19:15:41.094Z",
+    "generator": "scripts/audit-route-inventory.mjs",
+    "generatorVersion": "1.3.0",
+    "nodeVersion": "v24.22.1",
+    "sourceRevision": "921ba54650f65e420458bb3b97ad056383841466",
+    "workingTree": {
+      "dirty": true,
+      "statusSha256": "f6032c1087a1bea1aec3d7186b0cac7c245b4feb9ca8482d2bcdcdc70734f28b"
+    },
+    "inputsSha256": "d1ba588a00475b28e3db053ecf8af128aab4bdd0c0c6af4ea5b677bafc76b192",
+    "inputs": [
+      "apps/gurudevi-web/app/(marketing)/(editorial)/authors/[id]/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/(editorial)/journal/[slug]/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/(editorial)/journal/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/(info)/faq/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/(info)/thuthimal/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/(legal)/delete-account/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/(legal)/privacy/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/(legal)/terms/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/(support)/support/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/about/page.tsx",
+      "apps/gurudevi-web/app/(marketing)/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/analytics/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/documents/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/founder/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/agent-lab/assistant/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/agent-lab/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/auth/callback/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/c/[code]/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/forest/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/explore-intro/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/icon-lab/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/map/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/notifications/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/onboarding/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/profile/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/profile/security/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/qr/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/recovery/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/reset-password/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/school/[id]/articles/[slug]/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/school/[id]/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/self/attendance/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/self/browserFeatureRegistry.ts",
+      "apps/gurudevi-web/app/(sanctuary)/self/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/settings/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/sign-in/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/sign-up/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/welcome/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/badges/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/claim/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/climate/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/events/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/notices/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/plan/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/school/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/timetable/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/tuition/page.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "apps/gurudevi-web/app/prototypes/living-domain/page.tsx",
+      "apps/gurudevi-web/app/prototypes/self-quick-access/page.tsx",
+      "apps/gurudevi-web/app/prototypes/workbench-shell/page.tsx",
+      "apps/gurudevi-web/app/prototypes/worlds-showroom/page.tsx",
+      "apps/gurudevi-web/app/si/[section]/page.tsx",
+      "apps/gurudevi-web/app/si/page.tsx",
+      "apps/gurudevi-web/app/ta/[section]/page.tsx",
+      "apps/gurudevi-web/app/ta/page.tsx",
+      "apps/gurudevi-web/lib/sanctuary/deviceAccountRegistry.ts",
+      "scripts/audit-route-inventory.mjs"
+    ]
+  },
+  "scope": {
+    "routeFiles": "apps/gurudevi-web/app/**/page.{tsx,ts,jsx,js}",
+    "hrefSources": "apps/gurudevi-web/**/*Registry.{ts,tsx,js,jsx}",
+    "registryHrefClassifications": {
+      "counts": {
+        "resolved": 14,
+        "dynamic": 0,
+        "external": 0,
+        "unresolved": 0
+      },
+      "headless": {
+        "status": "unknown",
+        "reason": "This browser page/registry scan does not inventory headless endpoints or establish their absence."
+      }
+    },
+    "excludedDirectories": [
+      ".git",
+      ".next",
+      ".turbo",
+      "node_modules"
+    ],
+    "unsupportedNextFolderConventions": [
+      "parallel slots (@slot)",
+      "intercepting routes ((.), (..), (...))",
+      "private folders (_folder)",
+      "catch-all ([...slug])",
+      "optional catch-all ([[...slug]])"
+    ],
+    "detection": "Next.js page filesystem paths with route groups removed; literal root-relative href properties only",
+    "limitations": [
+      "Static source scan only; does not prove route authorization, runtime reachability, or implementation behavior.",
+      "Does not detect computed hrefs, JSX href attributes, navigation calls, or registry data imported from elsewhere.",
+      "Does not inventory route handlers, layouts, middleware, rewrites, or generated routes.",
+      "Registry classification covers only static href properties with string or template-literal values; arbitrary expressions and computed navigation are not evaluated. Headless endpoint coverage is unknown.",
+      "Dynamic segment matching uses positional placeholder normalization and does not evaluate parameter constraints."
+    ]
+  },
+  "routes": [
+    {
+      "route": "/",
+      "shape": "/",
+      "file": "apps/gurudevi-web/app/(marketing)/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/about",
+      "shape": "/about",
+      "file": "apps/gurudevi-web/app/(marketing)/about/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/admin/analytics",
+      "shape": "/admin/analytics",
+      "file": "apps/gurudevi-web/app/(sanctuary)/admin/analytics/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/admin/documents",
+      "shape": "/admin/documents",
+      "file": "apps/gurudevi-web/app/(sanctuary)/admin/documents/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/admin/forms/builder",
+      "shape": "/admin/forms/builder",
+      "file": "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/admin/founder",
+      "shape": "/admin/founder",
+      "file": "apps/gurudevi-web/app/(sanctuary)/admin/founder/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/agent-lab",
+      "shape": "/agent-lab",
+      "file": "apps/gurudevi-web/app/(sanctuary)/agent-lab/page.tsx",
+      "candidateClass": "non-product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/agent-lab/assistant",
+      "shape": "/agent-lab/assistant",
+      "file": "apps/gurudevi-web/app/(sanctuary)/agent-lab/assistant/page.tsx",
+      "candidateClass": "non-product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/auth/callback",
+      "shape": "/auth/callback",
+      "file": "apps/gurudevi-web/app/(sanctuary)/auth/callback/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/authors/[id]",
+      "shape": "/authors/[param]",
+      "file": "apps/gurudevi-web/app/(marketing)/(editorial)/authors/[id]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/c/[code]",
+      "shape": "/c/[param]",
+      "file": "apps/gurudevi-web/app/(sanctuary)/c/[code]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/community",
+      "shape": "/community",
+      "file": "apps/gurudevi-web/app/(sanctuary)/community/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/community/chat/[groupId]",
+      "shape": "/community/chat/[param]",
+      "file": "apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/community/dm/[userId]",
+      "shape": "/community/dm/[param]",
+      "file": "apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/community/forest",
+      "shape": "/community/forest",
+      "file": "apps/gurudevi-web/app/(sanctuary)/community/forest/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/delete-account",
+      "shape": "/delete-account",
+      "file": "apps/gurudevi-web/app/(marketing)/(legal)/delete-account/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/explore-intro",
+      "shape": "/explore-intro",
+      "file": "apps/gurudevi-web/app/(sanctuary)/explore-intro/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/faq",
+      "shape": "/faq",
+      "file": "apps/gurudevi-web/app/(marketing)/(info)/faq/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/icon-lab",
+      "shape": "/icon-lab",
+      "file": "apps/gurudevi-web/app/(sanctuary)/icon-lab/page.tsx",
+      "candidateClass": "non-product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/journal",
+      "shape": "/journal",
+      "file": "apps/gurudevi-web/app/(marketing)/(editorial)/journal/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/journal/[slug]",
+      "shape": "/journal/[param]",
+      "file": "apps/gurudevi-web/app/(marketing)/(editorial)/journal/[slug]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/library",
+      "shape": "/library",
+      "file": "apps/gurudevi-web/app/(sanctuary)/library/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/library/map",
+      "shape": "/library/map",
+      "file": "apps/gurudevi-web/app/(sanctuary)/library/map/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/library/reader/[bookId]",
+      "shape": "/library/reader/[param]",
+      "file": "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/library/video/[videoId]",
+      "shape": "/library/video/[param]",
+      "file": "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/notifications",
+      "shape": "/notifications",
+      "file": "apps/gurudevi-web/app/(sanctuary)/notifications/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/onboarding",
+      "shape": "/onboarding",
+      "file": "apps/gurudevi-web/app/(sanctuary)/onboarding/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/privacy",
+      "shape": "/privacy",
+      "file": "apps/gurudevi-web/app/(marketing)/(legal)/privacy/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/profile",
+      "shape": "/profile",
+      "file": "apps/gurudevi-web/app/(sanctuary)/profile/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/profile/security",
+      "shape": "/profile/security",
+      "file": "apps/gurudevi-web/app/(sanctuary)/profile/security/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/prototypes/living-domain",
+      "shape": "/prototypes/living-domain",
+      "file": "apps/gurudevi-web/app/prototypes/living-domain/page.tsx",
+      "candidateClass": "prototype",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/prototypes/self-quick-access",
+      "shape": "/prototypes/self-quick-access",
+      "file": "apps/gurudevi-web/app/prototypes/self-quick-access/page.tsx",
+      "candidateClass": "prototype",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/prototypes/workbench-shell",
+      "shape": "/prototypes/workbench-shell",
+      "file": "apps/gurudevi-web/app/prototypes/workbench-shell/page.tsx",
+      "candidateClass": "prototype",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/prototypes/worlds-showroom",
+      "shape": "/prototypes/worlds-showroom",
+      "file": "apps/gurudevi-web/app/prototypes/worlds-showroom/page.tsx",
+      "candidateClass": "prototype",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/qr",
+      "shape": "/qr",
+      "file": "apps/gurudevi-web/app/(sanctuary)/qr/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/recovery",
+      "shape": "/recovery",
+      "file": "apps/gurudevi-web/app/(sanctuary)/recovery/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/reset-password",
+      "shape": "/reset-password",
+      "file": "apps/gurudevi-web/app/(sanctuary)/reset-password/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/school/[id]",
+      "shape": "/school/[param]",
+      "file": "apps/gurudevi-web/app/(sanctuary)/school/[id]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/school/[id]/articles/[slug]",
+      "shape": "/school/[param]/articles/[param]",
+      "file": "apps/gurudevi-web/app/(sanctuary)/school/[id]/articles/[slug]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/self",
+      "shape": "/self",
+      "file": "apps/gurudevi-web/app/(sanctuary)/self/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/self/attendance",
+      "shape": "/self/attendance",
+      "file": "apps/gurudevi-web/app/(sanctuary)/self/attendance/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/settings",
+      "shape": "/settings",
+      "file": "apps/gurudevi-web/app/(sanctuary)/settings/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/si",
+      "shape": "/si",
+      "file": "apps/gurudevi-web/app/si/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/si/[section]",
+      "shape": "/si/[param]",
+      "file": "apps/gurudevi-web/app/si/[section]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/sign-in",
+      "shape": "/sign-in",
+      "file": "apps/gurudevi-web/app/(sanctuary)/sign-in/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/sign-up",
+      "shape": "/sign-up",
+      "file": "apps/gurudevi-web/app/(sanctuary)/sign-up/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/support",
+      "shape": "/support",
+      "file": "apps/gurudevi-web/app/(marketing)/(support)/support/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/ta",
+      "shape": "/ta",
+      "file": "apps/gurudevi-web/app/ta/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/ta/[section]",
+      "shape": "/ta/[param]",
+      "file": "apps/gurudevi-web/app/ta/[section]/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/terms",
+      "shape": "/terms",
+      "file": "apps/gurudevi-web/app/(marketing)/(legal)/terms/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/thuthimal",
+      "shape": "/thuthimal",
+      "file": "apps/gurudevi-web/app/(marketing)/(info)/thuthimal/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/welcome",
+      "shape": "/welcome",
+      "file": "apps/gurudevi-web/app/(sanctuary)/welcome/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace",
+      "shape": "/workspace",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/badges",
+      "shape": "/workspace/badges",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/badges/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/claim",
+      "shape": "/workspace/claim",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/claim/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/climate",
+      "shape": "/workspace/climate",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/climate/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/editorial",
+      "shape": "/workspace/editorial",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/events",
+      "shape": "/workspace/events",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/events/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/gradebook",
+      "shape": "/workspace/gradebook",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/kiosk",
+      "shape": "/workspace/kiosk",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/notices",
+      "shape": "/workspace/notices",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/notices/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/plan",
+      "shape": "/workspace/plan",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/plan/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/school",
+      "shape": "/workspace/school",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/school/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/submissions",
+      "shape": "/workspace/submissions",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/timetable",
+      "shape": "/workspace/timetable",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/timetable/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    },
+    {
+      "route": "/workspace/tuition",
+      "shape": "/workspace/tuition",
+      "file": "apps/gurudevi-web/app/(sanctuary)/workspace/tuition/page.tsx",
+      "candidateClass": "product-candidate",
+      "mappingStatus": "mapped-filesystem-shape",
+      "unsupportedConventions": []
+    }
+  ],
+  "duplicateRouteShapes": [],
+  "literalHrefProperties": [
+    {
+      "href": "/workspace",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace"
+    },
+    {
+      "href": "/workspace/badges",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/badges"
+    },
+    {
+      "href": "/workspace/claim",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/claim"
+    },
+    {
+      "href": "/workspace/climate",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/climate"
+    },
+    {
+      "href": "/workspace/editorial",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/editorial"
+    },
+    {
+      "href": "/workspace/events",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/events"
+    },
+    {
+      "href": "/workspace/gradebook",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/gradebook"
+    },
+    {
+      "href": "/workspace/kiosk",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/kiosk"
+    },
+    {
+      "href": "/workspace/notices",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/notices"
+    },
+    {
+      "href": "/workspace/plan",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/plan"
+    },
+    {
+      "href": "/workspace/school",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/school"
+    },
+    {
+      "href": "/workspace/submissions",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/submissions"
+    },
+    {
+      "href": "/workspace/timetable",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/timetable"
+    },
+    {
+      "href": "/workspace/tuition",
+      "source": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+      "candidateClass": "product-candidate",
+      "classification": "resolved",
+      "status": "filesystem-route-shape-match",
+      "shape": "/workspace/tuition"
+    }
+  ]
+}

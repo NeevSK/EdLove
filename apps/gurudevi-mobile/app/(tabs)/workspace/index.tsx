@@ -1,38 +1,40 @@
+import { View } from 'react-native';
 import { usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
-import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
+import { useAuthorityStatus } from '@repo/core/logic/permissions/hooks/useAuthority';
+import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
-import { Center, Pressable, Text } from '@repo/ui/primitives';
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import { GoTo } from '@repo/ui/components/native/navigation';
 import { resolveWorkspaceRoute } from '@/lib/workspace/routeResolution';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
+/** States sit on the world's own floor, never on a painted page. */
+const STATE = {
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingHorizontal: 24,
+} as const;
+
 export default function WorkspaceDispatcher() {
   const { context } = usePermissions();
   const { activePerspective } = usePerspectiveSwitch();
-  const { classroomId: requestedClassroomId, classroomName } = useLocalSearchParams<{
-    classroomId?: string;
-    classroomName?: string;
-  }>();
-  const loading = useCedarDecisionStore((state) => state.isLoading);
-  const permissionError = useCedarDecisionStore((state) => state.error);
-  const permissionSnapshotLoaded = useCedarDecisionStore((state) => state.snapshotLoaded);
-  const loadDecisions = useCedarDecisionStore((state) => state.loadDecisions);
-  const selectedClassroomId =
-    typeof requestedClassroomId === 'string' ? requestedClassroomId.trim() : '';
-  const selectedClassroomName = typeof classroomName === 'string' ? classroomName : undefined;
+  const {
+    isLoading: loading,
+    error: permissionError,
+    snapshotLoaded: permissionSnapshotLoaded,
+    loadDecisions,
+  } = useAuthorityStatus();
   const routeResolution = resolveWorkspaceRoute({
     userId: context.userId,
     capacity: context.activeBond?.capacity ?? context.primaryCapacity,
     contextClassroomId: context.classroomId,
-    requestedClassroomId: selectedClassroomId,
-    ...(selectedClassroomName ? { requestedClassroomName: selectedClassroomName } : {}),
+    requestedClassroomId: '',
     permissionSnapshotLoaded,
     isPermissionLoading: loading,
     permissionError,
+    isLocalGuest: isLocalGuestSessionId(context.userId),
     perspectiveKind: activePerspective.kind,
     perspectiveId: activePerspective.id,
   });
@@ -45,67 +47,43 @@ export default function WorkspaceDispatcher() {
 
   if (routeResolution.kind === 'loading') {
     return (
-      <Center className="flex-1 bg-phase-canvas">
-        <BrandPulse size={32} accessibilityLabel="Loading workspace" />
-      </Center>
+      <View style={STATE}>
+        <WaitingSign size={48} />
+      </View>
     );
   }
 
   if (routeResolution.kind === 'retryable-error') {
     return (
-      <Center className="flex-1 bg-phase-canvas">
-        <BrandedErrorState
+      <View style={STATE}>
+        <ErrorState
           title="Workspace access needs attention"
           message={routeResolution.message}
-        >
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Retry workspace access"
-            accessibilityHint="Retries restoring permissions for the current workspace"
-            onPress={retryPermissionResolution}
-            className="rounded-full bg-phase-primary px-5 py-3"
-          >
-            <Text className="font-semibold text-phase-world">Try again</Text>
-          </Pressable>
-        </BrandedErrorState>
-      </Center>
+          retry={{ label: 'Try again', onPress: retryPermissionResolution }}
+        />
+      </View>
     );
   }
 
   if (routeResolution.kind === 'permission-denied') {
     return (
-      <Center className="flex-1 bg-phase-canvas">
-        <BrandedErrorState
-          title="Workspace access is unavailable"
-          message={routeResolution.message}
-        />
-      </Center>
+      <View style={STATE}>
+        <ErrorState title="Workspace access is unavailable" message={routeResolution.message} />
+      </View>
     );
   }
 
   if (routeResolution.kind === 'empty') {
     return (
-      <Center className="flex-1 bg-phase-canvas px-6">
-        <BrandedEmptyState title="No classroom selected" message={routeResolution.message} />
-      </Center>
+      <View style={STATE}>
+        <EmptyState title="Workspace capability unavailable" message={routeResolution.message} />
+      </View>
     );
   }
 
-  if (routeResolution.target.kind === 'founder') {
-    return <Redirect href="/workspace/founder" />;
-  }
-  if (routeResolution.target.kind === 'principal') {
-    return <Redirect href="/workspace/principal" />;
-  }
-  if (routeResolution.target.kind === 'guardian') {
-    return <Redirect href="/workspace/guardian" />;
-  }
-  if (routeResolution.target.kind === 'personal') {
-    return <Redirect href="/workspace/classroom" />;
-  }
   if (routeResolution.target.kind === 'commercial') {
     return (
-      <Redirect
+      <GoTo
         href={{
           pathname: '/workspace/commercial/[batchId]',
           params: { batchId: routeResolution.target.perspectiveId || 'active' },
@@ -114,39 +92,12 @@ export default function WorkspaceDispatcher() {
     );
   }
 
-  if (routeResolution.target.kind === 'classroom') {
-    const selectedClassroomId = routeResolution.target.classroomId;
-
-    if (routeResolution.target.audience === 'student') {
-      return (
-        <Redirect
-          href={{
-            pathname: '/workspace/classroom/student/[classroomId]',
-            params: {
-              classroomId: selectedClassroomId,
-              ...(routeResolution.target.classroomName
-                ? { classroomName: routeResolution.target.classroomName }
-                : {}),
-            },
-          }}
-        />
-      );
-    }
-
-    return (
-      <Redirect
-        href={{
-          pathname: '/workspace/classroom/[classroomId]',
-          params: {
-            classroomId: selectedClassroomId,
-            ...(routeResolution.target.classroomName
-              ? { classroomName: routeResolution.target.classroomName }
-              : {}),
-          },
-        }}
+  return (
+    <View style={STATE}>
+      <ErrorState
+        title="Workspace capability unavailable"
+        message="This workspace capability is not active in the current API foundation. No changes were made to your account or data."
       />
-    );
-  }
-
-  return <Redirect href="/workspace/classroom" />;
+    </View>
+  );
 }

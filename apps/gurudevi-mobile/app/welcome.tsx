@@ -1,34 +1,26 @@
-import { BrandPulse } from '@repo/ui';
+import { getOrCreateLocalGuestSession } from '@repo/core/native/localGuestSession';
+import { WorldLoading } from '@repo/ui/components/native';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Center } from '@repo/ui/primitives';
-import { Platform } from 'react-native';
-import {
-  SanctuaryWelcomeScreen,
-  SpatialSanctuaryWelcomeScreen,
-  WelcomeScreen,
-} from '@repo/ui/screens';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import { Suspense, useCallback } from 'react';
-import { fireflyPrototypeArtwork } from '@/brand/mascotArtwork';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
+import { WelcomeScreen } from '@/screens/WelcomeScreen';
+import { DevelopmentScreenInteractiveMarker } from '@/telemetry/DevelopmentScreenInteractiveMarker';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
-  return (
-    <Center className="flex-1 bg-obsidian">
-      <BrandPulse accessibilityLabel="Loading welcome" />
-    </Center>
-  );
+  // The world's own waiting sign, on the floor (never a black screen between steps).
+  return <WorldLoading label="Loading welcome" fullscreen />;
 }
 
 export default function WelcomeRoute() {
-  const router = useRouter();
-  const params = useLocalSearchParams<{ legacy?: string; mode?: string }>();
+  const router = useNavigator();
   const routeState = useBootstrapRouteState('/welcome');
 
   const handleLogin = useCallback(() => {
-    router.push('/auth?mode=login');
+    router.replace('/auth');
   }, [router]);
 
   const handleGuest = useCallback(() => {
@@ -39,31 +31,26 @@ export default function WelcomeRoute() {
     }
   }, [router, routeState.isLocalGuestReady]);
 
-  // On Web by default (or when mode=spatial is requested), render the new decoupled SpatialSanctuaryWelcomeScreen
-  const useSpatialWeb = Platform.OS === 'web' && params.legacy !== '1';
+  const handleStartGuest = useCallback(async () => {
+    if (routeState.session?.user && routeState.session.user.is_anonymous !== true) {
+      router.replace('/');
+      return;
+    }
+    if (routeState.hasLocalGuestSession) {
+      handleGuest();
+      return;
+    }
+    // A guest is device-local: no server account exists until they sign in.
+    await getOrCreateLocalGuestSession();
+    router.push('/onboarding?entry=guest');
+  }, [handleGuest, routeState.hasLocalGuestSession, routeState.session?.user, router]);
 
   return (
     <ErrorBoundary name="WelcomeRoute">
       <Suspense fallback={<Fallback />}>
-        {params.legacy === '1' ? (
-          <WelcomeScreen
-            exploreArtwork={fireflyPrototypeArtwork}
-            onLogin={handleLogin}
-            onGuest={handleGuest}
-          />
-        ) : useSpatialWeb ? (
-          <SpatialSanctuaryWelcomeScreen
-            exploreArtwork={fireflyPrototypeArtwork}
-            onLogin={handleLogin}
-            onGuest={handleGuest}
-          />
-        ) : (
-          <SanctuaryWelcomeScreen
-            exploreArtwork={fireflyPrototypeArtwork}
-            onLogin={handleLogin}
-            onGuest={handleGuest}
-          />
-        )}
+        <WelcomeScreen onLogin={handleLogin} onStartGuest={handleStartGuest} />
+        <DevelopmentScreenInteractiveMarker screen="welcome" />
+        <ObserveInteractiveMarker params={{ entry_surface: 'welcome' }} />
       </Suspense>
     </ErrorBoundary>
   );

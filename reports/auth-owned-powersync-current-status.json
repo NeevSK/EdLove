@@ -1,0 +1,127 @@
+{
+  "connections": [
+    {
+      "id": "default",
+      "postgres_uri": "postgresql://db.qzoawolfkuwiuyaoiybz.supabase.co:5432/postgres",
+      "connected": true,
+      "errors": []
+    }
+  ],
+  "active_sync_rules": {
+    "version_label": "7",
+    "connections": [
+      {
+        "id": "default",
+        "tag": "default",
+        "slot_name": "powersync_69f985158d064eb85ee933e0_2_d3c2",
+        "initial_replication_done": true,
+        "last_lsn": "00000041/F20006B0",
+        "last_keepalive_ts": "2026-10-25T21:12:42.561Z",
+        "last_checkpoint_ts": "2026-10-25T21:12:42.563Z",
+        "replication_lag_bytes": 0,
+        "wal_status": "reserved",
+        "safe_wal_size": 553643184,
+        "max_slot_wal_keep_size": 536870912,
+        "tables": [
+          {
+            "schema": "public",
+            "name": "bonds",
+            "replication_id": [
+              "id",
+              "user_id",
+              "entity_id",
+              "entity_type",
+              "capacity",
+              "metadata",
+              "created_at",
+              "updated_at",
+              "status",
+              "valid_from",
+              "valid_until"
+            ],
+            "data_queries": true,
+            "parameter_queries": false,
+            "errors": []
+          },
+          {
+            "schema": "public",
+            "name": "school_memberships",
+            "replication_id": [
+              "id",
+              "user_id",
+              "school_id",
+              "role",
+              "status",
+              "start_date",
+              "end_date",
+              "is_primary",
+              "deleted_at",
+              "created_at",
+              "updated_at",
+              "deleted_by",
+              "deletion_reason",
+              "joined_at",
+              "left_at"
+            ],
+            "data_queries": true,
+            "parameter_queries": false,
+            "errors": []
+          },
+          {
+            "schema": "public",
+            "name": "classroom_students",
+            "replication_id": [
+              "id",
+              "classroom_id",
+              "student_id",
+              "full_name",
+              "invite_code",
+              "roll_number",
+              "enrolled_at",
+              "claimed_at",
+              "status",
+              "joined_at",
+              "notes"
+            ],
+            "data_queries": true,
+            "parameter_queries": false,
+            "errors": []
+          },
+          {
+            "schema": "public",
+            "name": "classrooms",
+            "replication_id": [
+              "id",
+              "school_id",
+              "teacher_id",
+              "grade_id",
+              "section_id",
+              "name",
+              "subject",
+              "description",
+              "color_theme",
+              "is_archived",
+              "created_at",
+              "updated_at",
+              "academic_year",
+              "created_by",
+              "handle",
+              "deleted_at",
+              "deleted_by",
+              "deletion_reason",
+              "kind"
+            ],
+            "data_queries": false,
+            "parameter_queries": true,
+            "errors": []
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "sync_config_source": "config",
+  "service": {
+    "version": "1.27.2"
+  }
+}

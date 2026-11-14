@@ -84,7 +84,7 @@ function publicSpecifierFor(filePath, fallback) {
   const relative = normalizeSpecifier(path.relative(uiRoot, filePath));
   if (relative === 'primitives.ts') return '@repo/ui/primitives';
   if (relative === 'icons.ts') return '@repo/ui/icons';
-  if (relative === 'theme/Theme.ts') return '@repo/ui/theme';
+  if (relative === 'theme/Theme.ts') return '@repo/ui/theme/Theme';
   if (relative.startsWith('hooks/')) return '@repo/ui/hooks';
   if (relative.startsWith('providers/')) return '@repo/ui/providers';
   if (relative.startsWith('context/')) return '@repo/ui/context';
@@ -144,7 +144,7 @@ function collectExportNames(entryFile, targetSpecifier, visited = new Set()) {
         publicSpecifier === '@repo/ui/providers' ||
         publicSpecifier === '@repo/ui/context' ||
         publicSpecifier === '@repo/ui/utils' ||
-        publicSpecifier === '@repo/ui/theme' ||
+        publicSpecifier === '@repo/ui/theme/Theme' ||
         publicSpecifier === '@repo/ui/primitives'
       ) {
         const nested = collectLocalExports(resolved);
@@ -235,7 +235,7 @@ for (const [name, specifier] of componentMap) exportMap.set(name, specifier);
 const screenMap = collectExportNames(path.join(uiRoot, 'screens', 'index.ts'), '@repo/ui/screens');
 for (const [name, specifier] of screenMap) exportMap.set(name, specifier);
 for (const name of collectLocalExports(path.join(uiRoot, 'theme', 'Theme.ts'))) {
-  exportMap.set(name, '@repo/ui/theme');
+  exportMap.set(name, '@repo/ui/theme/Theme');
 }
 for (const [name, _specifier] of collectExportNames(
   path.join(uiRoot, 'hooks', 'index.ts'),

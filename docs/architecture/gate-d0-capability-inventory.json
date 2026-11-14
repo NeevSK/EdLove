@@ -1,0 +1,1655 @@
+{
+  "schemaVersion": "1.3.0",
+  "sourceSnapshot": {
+    "algorithm": "sha256",
+    "semantics": "Deterministic digest of the code-unit-sorted unique evidence source files plus this inventory schema and checker, using current file contents. This verifies source snapshot freshness only; it does not prove behavior, runtime execution, deployment, or outcomes.",
+    "sourcePaths": [
+      "apps/gurudevi-mobile/supabase/migrations/20260316000000_audit_infrastructure.sql",
+      "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/SubmissionsFloor.tsx",
+      "apps/gurudevi-web/lib/domain/adapters/academic/academicHexagonalService.ts",
+      "apps/gurudevi-web/lib/domain/hooks/useAcademicDomain.ts",
+      "apps/gurudevi-web/lib/workspace/assignmentSubmissions.ts",
+      "apps/sanctuary-api/src/__tests__/admin.orpc.test.ts",
+      "apps/sanctuary-api/src/__tests__/assignment-settlement.test.ts",
+      "apps/sanctuary-api/src/__tests__/attendance-v1.orpc.test.ts",
+      "apps/sanctuary-api/src/__tests__/classroom-note-snapshot-integrity.test.ts",
+      "apps/sanctuary-api/src/__tests__/durableAgents.authorization.test.ts",
+      "apps/sanctuary-api/src/__tests__/history.orpc.test.ts",
+      "apps/sanctuary-api/src/__tests__/library.orpc.test.ts",
+      "apps/sanctuary-api/src/agents/studentSupport.ts",
+      "apps/sanctuary-api/src/core/assignmentSettlement.ts",
+      "apps/sanctuary-api/src/core/handlers/admin.ts",
+      "apps/sanctuary-api/src/core/handlers/attendanceV1.ts",
+      "apps/sanctuary-api/src/core/handlers/community.ts",
+      "apps/sanctuary-api/src/core/handlers/educational.ts",
+      "apps/sanctuary-api/src/core/handlers/erp.ts",
+      "apps/sanctuary-api/src/core/handlers/history.ts",
+      "apps/sanctuary-api/src/core/handlers/identity.ts",
+      "apps/sanctuary-api/src/core/handlers/library.ts",
+      "apps/sanctuary-api/src/core/routes/canonicalV1.ts",
+      "apps/sanctuary-api/src/core/routes/durableAgents.ts",
+      "apps/sanctuary-api/src/core/routes/payhereWebhook.ts",
+      "docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md",
+      "docs/architecture/gate-d0-capability-inventory.schema.json",
+      "packages/admin/src/approvals.ts",
+      "packages/admin/src/components/principal/LeaveApprovalSection.tsx",
+      "packages/core/src/api/admin.contract.ts",
+      "packages/core/src/api/assignmentSubmissionReplay.ts",
+      "packages/core/src/api/attendance-v1.orpc.contract.ts",
+      "packages/core/src/api/community.orpc.contract.ts",
+      "packages/core/src/api/community.ts",
+      "packages/core/src/api/durableAgents.contract.ts",
+      "packages/core/src/api/educational.contract.ts",
+      "packages/core/src/api/erp.contract.ts",
+      "packages/core/src/api/erp.ts",
+      "packages/core/src/api/hooks/community.hooks.ts",
+      "packages/core/src/api/identity.generated.ts",
+      "packages/core/src/api/identity.orpc.contract.ts",
+      "packages/core/src/api/identity.ts",
+      "packages/core/src/api/library.orpc.contract.ts",
+      "packages/core/src/api/staffManagement.ts",
+      "packages/core/src/logic/domains/attendanceCommand/contract.ts",
+      "packages/core/src/logic/domains/attendanceCommand/ports.ts",
+      "packages/core/src/logic/domains/attendanceCommand/service.test.ts",
+      "packages/core/src/logic/domains/attendanceCommand/service.ts",
+      "packages/core/src/logic/events/schemas.ts",
+      "packages/library/src/api/library.ts",
+      "packages/payments/src/__tests__/providers.test.ts",
+      "packages/payments/src/plugins/payhere.ts",
+      "packages/payments/src/plugins/stripe.ts",
+      "packages/profile/src/components/EditProfileModal.tsx",
+      "packages/profile/src/hooks/useProfile.ts",
+      "packages/self/src/api/self.ts",
+      "packages/self/src/api/wellbeingRepository.ts",
+      "packages/self/src/types/Wellbeing.ts",
+      "scripts/check-gate-d0-capability-inventory.mjs"
+    ],
+    "sha256": "824e6ca75f601bf884b85f88170fb569cb953605342df521a4d677dee9a5ac5e"
+  },
+  "records": [
+    {
+      "id": "admin.leave.approve",
+      "name": "Approve or reject a staff leave request",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "institutional leave decision mutation",
+      "maturity": "partial",
+      "actor": "Handler writes reviewed_by from authenticated context.user.id; client also sends an optional reviewedBy value which the handler does not use for the update.",
+      "scope": "Request identifies one leave UUID; inspected handler update is keyed by leave ID. Tenant/school boundary enforcement beyond unseen middleware/policy is unknown.",
+      "sensitivity": "Leave reason/detail and employee/reviewer identities are sensitive; no values reproduced. Classification, access, retention, and governance are unknown.",
+      "surfaces": [
+        "Principal LeaveApprovalSection",
+        "@repo/admin approvals adapter",
+        "@repo/core staffManagement API",
+        "Sanctuary API admin handler"
+      ],
+      "routes": [
+        {
+          "surface": "Sanctuary API oRPC",
+          "path": "/admin/leaves/:leaveId/approve",
+          "status": "resolved"
+        }
+      ],
+      "headless": {
+        "value": {
+          "status": "unknown",
+          "reason": "Principal UI and API handler were inspected; other UI reachability and headless applicability were not inspected."
+        },
+        "reason": "The bounded source trace does not establish all clients or deployment."
+      },
+      "packages": [
+        "@repo/admin",
+        "@repo/core",
+        "@repo/sanctuary-api"
+      ],
+      "exports": [
+        "LeaveApprovalSection is exported from @repo/admin components; staffManagementAPI is imported from @repo/core API client."
+      ],
+      "consumers": [
+        "packages/admin/src/components/principal/LeaveApprovalSection.tsx"
+      ],
+      "contract": "POST /admin/leaves/:leaveId/approve takes strict leave UUID and body approved:boolean plus optional reviewedBy UUID; response is success:boolean and contract metadata is admin update Staff.",
+      "authorization": "Handler applies doubleGateMiddleware and derives reviewed_by from context.user.id despite optional client reviewedBy. Tenant scope, reviewer role/policy enforcement, target leave ownership checks, and middleware internals are unknown.",
+      "persistence": "Handler calls staffLeave.update by leave ID, setting status to approved/rejected, reviewed_by to authenticated user ID, and reviewed_at to current time; returns Boolean(row). Transaction and persistence guarantees were not inspected.",
+      "sync": {
+        "status": "unknown",
+        "reason": "Offline behavior or synchronization was not inspected."
+      },
+      "fallback": "Principal UI catches decision errors, displays a retry-oriented toast, and refetches pending leaves after API success; backend failure modes are unknown.",
+      "recovery": {
+        "status": "unknown",
+        "reason": "Duplicate decisions, reversal, race/concurrency, audit/history, and uncertain response-loss behavior were not inspected."
+      },
+      "effects": [],
+      "evidence": [
+        {
+          "claimId": "a-leave-approval-contract",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/admin.contract.ts",
+          "line": 100,
+          "symbol": "adminContract.approveLeave",
+          "claim": "Contract declares POST /admin/leaves/:leaveId/approve with strict leave UUID, approved boolean, optional reviewedBy UUID, success response, and admin update Staff policy metadata.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Contract metadata does not prove tenant boundaries, role enforcement, audit, or deployment."
+        },
+        {
+          "claimId": "b-leave-client-adapter",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/staffManagement.ts",
+          "line": 116,
+          "symbol": "staffManagementAPI.approveLeave",
+          "claim": "Core API adapter sends leaveId, reviewedBy, and approved to the oRPC endpoint and returns result.success.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Client-supplied reviewer identity does not establish server trust or authorization."
+        },
+        {
+          "claimId": "c-leave-admin-wrapper",
+          "claimType": "source-observation",
+          "sourcePath": "packages/admin/src/approvals.ts",
+          "line": 33,
+          "symbol": "adminApprovalsAPI.approveLeave",
+          "claim": "Admin wrapper calls staffManagementAPI.approveLeave with principalId and approved=true; reject wrapper calls it with false.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Wrapper inputs do not establish principal role, tenant scope, or handler behavior."
+        },
+        {
+          "claimId": "d-leave-principal-ui",
+          "claimType": "source-observation",
+          "sourcePath": "packages/admin/src/components/principal/LeaveApprovalSection.tsx",
+          "line": 56,
+          "symbol": "LeaveApprovalSection.handleDecision",
+          "claim": "Principal UI passes leaveId, principalId, and decision to staffManagementAPI, refetches pending leaves after success, and catches failures to show a toast.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "UI behavior source does not prove server authorization, history visibility, or reliable outcome after response loss."
+        },
+        {
+          "claimId": "e-leave-handler-update",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/handlers/admin.ts",
+          "line": 125,
+          "symbol": "adminHandlers.approveLeave",
+          "claim": "Handler applies doubleGateMiddleware, updates staffLeave by leave ID, maps approved boolean to approved/rejected status, derives reviewed_by from context.user.id, timestamps reviewed_at, and returns success from row truthiness.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Middleware internals, tenant/target checks, transaction guarantees, audit/activity effects, and runtime outcome were not inspected."
+        },
+        {
+          "claimId": "f-leave-admin-test-source",
+          "claimType": "test-source",
+          "sourcePath": "apps/sanctuary-api/src/__tests__/admin.orpc.test.ts",
+          "line": 51,
+          "symbol": "admin leave approve smoke assertion",
+          "claim": "Unexecuted test source calls approveLeave with approved=true and asserts {success:true} in a broader admin API test.",
+          "observedAt": "2026-10-24",
+          "method": "Test source inspection only; test not executed",
+          "level": "none",
+          "engine": "Vitest test source",
+          "substitutions": [],
+          "limitations": "This is source-level test intent, not executed G1 proof or evidence of tenant/policy enforcement or durable history."
+        }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "No audit or growth effect was observed in the inspected approveLeave handler; middleware and database-layer effects were not inspected, so this is not a global absence claim. Retain partial status and unknown tenant boundary, policy enforcement, duplicate/reversal/race behavior, and user-visible decision history."
+    },
+    {
+      "id": "agents.student-support.run-draft",
+      "name": "Queue a student-support draft run",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "durable, scoped student-support synthesis workflow",
+      "maturity": "partial",
+      "actor": "Route requires a non-anonymous authenticated user. Enqueue resolves classroom/school scope from database relationships; the worker rechecks scope before reading evidence. External authority policy beyond these source checks is unknown.",
+      "scope": "One student, classroom, school, requested evidence scopes, optional focus prompt, and draft_only review mode. Worker can read attendance, grades, and wellbeing aggregates in live mode; deployed data coverage and policy boundaries beyond the inspected checks are unknown.",
+      "sensitivity": "Sensitive student identity and school/classroom identifiers, teacher/requester identity, attendance/grade/wellbeing evidence, focus prompts, and generated draft content may be persisted; no values reproduced. Purpose, consent, recipient access, retention, provider data governance, and automation-side effects are unknown.",
+      "surfaces": [
+        "Sanctuary API durable-agent route",
+        "Sanctuary API Inngest worker"
+      ],
+      "routes": [
+        {
+          "surface": "Sanctuary API",
+          "path": "/api/durable-agents/student-support",
+          "status": "resolved"
+        }
+      ],
+      "headless": {
+        "value": {
+          "status": "unknown",
+          "reason": "An API route and background worker are inspected; UI callers and deployment/headless applicability were not traced."
+        },
+        "reason": "Source establishes an API-to-worker flow, not whether callers are exclusively headless."
+      },
+      "packages": [
+        "@repo/core",
+        "@repo/database",
+        "@repo/sanctuary-api"
+      ],
+      "exports": [
+        "durableAgentRequestSchema and studentSupportRequestedEvent are imported by the Sanctuary API route/worker."
+      ],
+      "consumers": [
+        "apps/sanctuary-api/src/core/routes/durableAgents.ts",
+        "apps/sanctuary-api/src/agents/studentSupport.ts"
+      ],
+      "contract": "POST /api/durable-agents/student-support accepts mode, classroomId, optional studentId, optional demoScenario/focusPrompt, evidenceScopes, and draft_only reviewMode; student-support requires studentId. Response is a queued run with HTTP 202. The event schema constrains evidenceScopes to attendance/grades/wellbeing and includes resolved school/classroom/requester/run context.",
+      "authorization": "Route rejects missing/anonymous users and resolves classroom scope using classroom teacher or qualifying platform-admin/school bond, plus active enrollment when a student is supplied. Worker rechecks classroom/school/teacher and active enrollment and checks teacher/platform-admin/qualifying-school bond before evidence reads. Middleware and broader deployed policy are unknown.",
+      "persistence": "Route inserts public.durable_agent_runs and durable_agent_run_events before sending the Inngest request. Worker writes started/completed/failed events and updates run status; completed rows include summary_draft, evidence, and governor metadata. Database retention, access policy, transaction boundaries, and deletion behavior were not inspected.",
+      "sync": {
+        "status": "unknown",
+        "reason": "This trace covers server-side durable enqueue and worker execution; client offline synchronization was not inspected."
+      },
+      "fallback": "Synthesis conditionally attempts OpenAI Responses when OPENAI_API_KEY is present, then Anthropic Messages when ANTHROPIC_API_KEY is present, otherwise returns a deterministic local draft; provider availability/configuration at runtime is unknown. Failed/empty provider calls fall through to the next branch or deterministic draft in inspected source.",
+      "recovery": "Optional Idempotency-Key is scoped by actor and capability; a matching fingerprint replays the stored run and avoids another send, while a mismatched fingerprint conflicts. Without a supplied key, route generates a new key. Worker records failure and rethrows; uncertain enqueue/send failure, retries, duplicate event handling, response-loss recovery, and retention/replay duration are unknown.",
+      "effects": [
+        {
+          "id": "a-durable-run-record",
+          "kind": "other",
+          "name": "durable_agent_runs and durable_agent_run_events persistence",
+          "evidenceClaimIds": [
+            "c-durable-route-enqueue",
+            "d-worker-evidence-and-run-events"
+          ],
+          "payloadFields": [
+            "requested_by",
+            "teacher_id",
+            "school_id",
+            "classroom_id",
+            "student_id",
+            "request_payload",
+            "focusPrompt",
+            "evidenceScopes",
+            "summary_draft",
+            "evidence",
+            "governor"
+          ],
+          "purpose": {
+            "status": "unknown",
+            "reason": "Business and governance purpose beyond the source-observed draft workflow was not inspected."
+          },
+          "consent": {
+            "status": "unknown",
+            "reason": "Consent basis and controls were not inspected."
+          },
+          "audience": {
+            "status": "unknown",
+            "reason": "Run and evidence readers/recipients were not inspected."
+          },
+          "retention": {
+            "status": "unknown",
+            "reason": "Run and event retention policy was not inspected."
+          },
+          "downstreamStorage": "Route and worker source issue SQL writes to public.durable_agent_runs and public.durable_agent_run_events; database-level controls and further processing were not inspected.",
+          "deliveryFailure": {
+            "status": "unknown",
+            "reason": "Database failure and event-send failure outcomes were not executed or fully traced."
+          }
+        },
+        {
+          "id": "b-conditional-model-request",
+          "kind": "external-effect",
+          "name": "Conditional OpenAI Responses or Anthropic Messages synthesis request",
+          "evidenceClaimIds": [
+            "e-conditional-synthesis-provider"
+          ],
+          "payloadFields": [
+            "focusPrompt",
+            "evidence"
+          ],
+          "purpose": {
+            "status": "unknown",
+            "reason": "The worker uses conditional model synthesis for draft generation; provider-side purpose and governance were not inspected."
+          },
+          "consent": {
+            "status": "unknown",
+            "reason": "Consent basis for external provider requests was not inspected."
+          },
+          "audience": {
+            "status": "unknown",
+            "reason": "Provider access, recipients, and downstream audience were not inspected."
+          },
+          "retention": {
+            "status": "unknown",
+            "reason": "Provider and application retention for request content was not inspected."
+          },
+          "downstreamStorage": {
+            "status": "unknown",
+            "reason": "Provider-side storage/processing and deployment configuration were not inspected."
+          },
+          "deliveryFailure": "Inspected source falls through from failed/empty OpenAI result to Anthropic when configured, then to deterministic synthesis; actual configuration and runtime outcomes are unknown."
+        }
+      ],
+      "evidence": [
+        {
+          "claimId": "a-durable-agent-contract",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/durableAgents.contract.ts",
+          "line": 3,
+          "symbol": "durableAgentRequestSchema",
+          "claim": "Request schema defines demo/live mode, classroom UUID, optional student UUID and prompt/scenario, evidence scopes, and draft_only review mode.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Client contract source does not prove route availability, authorization, or persistence."
+        },
+        {
+          "claimId": "b-student-support-event",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/logic/events/schemas.ts",
+          "line": 122,
+          "symbol": "studentSupportRequestedEvent",
+          "claim": "Event contract carries run, mode, school/classroom/student/requester context, optional focusPrompt, draft_only reviewMode, and bounded attendance/grades/wellbeing evidence scopes.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Event schema is not proof of a deployed event consumer or event delivery."
+        },
+        {
+          "claimId": "c-durable-route-enqueue",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/routes/durableAgents.ts",
+          "line": 123,
+          "symbol": "enqueue",
+          "claim": "Route requires authenticated non-anonymous user, resolves authorized classroom scope, persists a durable run and requested event, sends the student-support Inngest event, and responds queued with HTTP 202; idempotent replay returns without another send.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Database and event service runtime outcomes, middleware internals, policy configuration, and deployment were not inspected."
+        },
+        {
+          "claimId": "d-worker-evidence-and-run-events",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/agents/studentSupport.ts",
+          "line": 30,
+          "symbol": "audit",
+          "claim": "Worker source records started/completed/failed run events, updates run state, rechecks scope before evidence reads, and on completion persists draft, evidence, and governor metadata.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Persistence guarantees, runtime worker execution, retention/access policy, and downstream use were not inspected."
+        },
+        {
+          "claimId": "e-conditional-synthesis-provider",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/agents/studentSupport.ts",
+          "line": 277,
+          "symbol": "synthesize",
+          "claim": "Synthesis source conditionally calls OpenAI Responses then Anthropic Messages if configured, with deterministic draft fallback after absent or unsuccessful provider results.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Provider credentials/configuration, actual invocation, provider-side processing, consent, and runtime results are unknown."
+        },
+        {
+          "claimId": "f-worker-registration",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/agents/studentSupport.ts",
+          "line": 503,
+          "symbol": "studentSupportRequested",
+          "claim": "Inngest function subscribes to studentSupportRequestedEvent and runs the parsed request through student-support-run step.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Registration does not prove deployment, delivery, retry behavior, or successful execution."
+        },
+        {
+          "claimId": "g-authorization-test-source",
+          "claimType": "test-source",
+          "sourcePath": "apps/sanctuary-api/src/__tests__/durableAgents.authorization.test.ts",
+          "line": 75,
+          "symbol": "student-support route authorization tests",
+          "claim": "Unexecuted test source asserts allowed classroom scope is submitted with server-derived school/requester context, rejects unauthorized scope without sending an event, and replays matching idempotency input without a second send.",
+          "observedAt": "2026-10-24",
+          "method": "Test source inspection only; tests not executed",
+          "level": "none",
+          "engine": "Vitest test source",
+          "substitutions": [],
+          "limitations": "These assertions are source-level test intent, not executed G1 evidence, real database/event delivery, or deployed authorization proof."
+        }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "This partial trace covers the durable student-support API enqueue and background worker. UI callers, deployment, provider configuration/use, consent, retention, recipients, and automation-side effects beyond persisted draft/run records remain unknown."
+    },
+    {
+      "id": "classroom.assignment.submit",
+      "name": "Submit assignment work",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "classroom assignment submission with two observed browser/client lanes",
+      "maturity": "partial",
+      "actor": "Receipt lane binds expected canonical account and server context.user.id; following local service lane receives the literal student-current-user from useAcademicDomain. Relationship between these identities and runtime authority is unknown.",
+      "scope": "Receipt lane includes assignment ID and nullable content, with server authority checking active school/classroom and student enrollment. Local service lane includes assignment ID, supplied student ID, content, and optional photo URL; scope binding is unknown.",
+      "sensitivity": "The durable receipt path carries student-authored text. The local path stores and queues text plus optional photo_url metadata; this inspected floor blocks file submissions before either call. Retention, encryption, and governance for both paths are unknown.",
+      "surfaces": [
+        "Browser submissions floor",
+        "@repo/core educational submission contract",
+        "Sanctuary API educational handler",
+        "Academic domain service"
+      ],
+      "routes": [
+        {
+          "surface": "Sanctuary API oRPC",
+          "path": "/educational/assignments/:assignmentId/submissions",
+          "status": "resolved"
+        }
+      ],
+      "headless": {
+        "value": {
+          "status": "unknown",
+          "reason": "A browser floor and API operation are present; other UI surfaces and headless applicability were not inspected."
+        },
+        "reason": "Source establishes a browser flow and API contract but not all UI reachability or deployment."
+      },
+      "packages": [
+        "@repo/core",
+        "@repo/sanctuary-api",
+        "apps/gurudevi-web"
+      ],
+      "exports": [
+        "@repo/core educational contract and assignment submission replay helper are imported by the browser submission workflow."
+      ],
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/SubmissionsFloor.tsx",
+        "apps/gurudevi-web/lib/domain/hooks/useAcademicDomain.ts"
+      ],
+      "contract": "Receipt API POST /educational/assignments/:assignmentId/submissions accepts strict assignment UUID, optional nullable content up to 100000 characters, and optional idempotencyKey; response is 201 submission. A separate local service lane returns queued_offline synthetic submission state.",
+      "authorization": "Receipt path asserts browser account binding before and after submit and server authority checks assignment/classroom active school scope plus active student enrollment under doubleGateMiddleware. Local synthetic service lane takes supplied studentId; equivalence to authenticated actor and eventual queue-handler authority were not inspected.",
+      "persistence": "Receipt settlement transaction claims or reads operation receipt, validates payload hash, creates or reuses assignment submission, writes sentinel audit, and commits receipt. Separate local lane caches a synthetic submission and enqueues custom classroom/create_assignment_submission containing content; queue storage/governance and eventual handler were not inspected.",
+      "sync": "Browser receipt lane retains queued command on rejection and removes it only after matching committed receipt. Local synthetic lane enqueues a custom mutation; processing/delivery semantics are unknown.",
+      "fallback": "SubmissionsFloor calls submitBrowserAssignment only when accountId and authSubjectId are truthy, then calls submitAssignment; behavior and intended relationship across the two paths, including no-key path outcomes, are unknown.",
+      "recovery": "Receipt replay uses commandId as idempotency key, checks account binding before/after transport calls, then fetches and validates a committed receipt. Legacy path creates a time-derived synthetic ID and custom queue command; duplicate, correction, retry, and response-loss behavior are unknown.",
+      "effects": [
+        {
+          "id": "a-settlement-audit",
+          "kind": "other",
+          "name": "Receipt-lane sentinelAuditLog assignment_submission_settled",
+          "evidenceClaimIds": [
+            "f-settlement-authority-audit-receipt"
+          ],
+          "payloadFields": [
+            "actor_id",
+            "resource_type",
+            "resource_id",
+            "details.assignmentId",
+            "details.operationId",
+            "details.replayed"
+          ],
+          "purpose": {
+            "status": "unknown",
+            "reason": "Audit purpose and governance were not inspected beyond the source action and fields."
+          },
+          "consent": {
+            "status": "unknown",
+            "reason": "Consent basis and controls were not inspected."
+          },
+          "audience": {
+            "status": "unknown",
+            "reason": "Audit readers and recipients were not inspected."
+          },
+          "retention": {
+            "status": "unknown",
+            "reason": "Audit retention policy was not inspected."
+          },
+          "downstreamStorage": "The receipt lane writes sentinelAuditLog within the same transaction as submission/receipt; further downstream processing was not inspected. This effect is not asserted for the local synthetic/cache/queue lane.",
+          "deliveryFailure": {
+            "status": "unknown",
+            "reason": "Downstream delivery and failure behavior were not inspected."
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "claimId": "a-two-call-browser-floor",
+          "claimType": "source-observation",
+          "sourcePath": "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/SubmissionsFloor.tsx",
+          "line": 58,
+          "symbol": "handleSubmit",
+          "claim": "When both accountId and authSubjectId are truthy, the floor awaits submitBrowserAssignment with assignment/content and then calls submitAssignment; if either is absent, only the latter call is made. Selected-file submissions are blocked before either call.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Call order is source-observed; runtime outcome, queue processing, and relationship between paths were not executed or established."
+        },
+        {
+          "claimId": "b-browser-durable-command",
+          "claimType": "source-observation",
+          "sourcePath": "apps/gurudevi-web/lib/workspace/assignmentSubmissions.ts",
+          "line": 171,
+          "symbol": "findOrCreateCommand",
+          "claim": "Browser workflow persists/reuses an assignment.submit command scoped educational, acquires a lease, invokes shared receipt replay, removes it after matching commit, and marks failures queued/auth_paused/conflict based on status.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Queue persistence implementation and actual browser runtime behavior were not inspected."
+        },
+        {
+          "claimId": "c-replay-account-and-receipt-checks",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/assignmentSubmissionReplay.ts",
+          "line": 39,
+          "symbol": "replayAssignmentSubmissionWithTransport",
+          "claim": "Shared replay validates command/account UUIDs, asserts account binding before and after submission and receipt lookup, sends command ID as idempotency key, and requires a matching committed receipt/result.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Transport implementation and production account/session behavior were not inspected in this bounded trace."
+        },
+        {
+          "claimId": "d-educational-contract",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/educational.contract.ts",
+          "line": 547,
+          "symbol": "educationalContract.submitAssignment",
+          "claim": "Contract declares POST /educational/assignments/:assignmentId/submissions, assignment UUID, optional nullable content capped at 100000 characters, optional idempotency key, and 201 submission response with create AssignmentSubmission policy metadata.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Contract declaration does not itself establish route mounting, policy enforcement, or durable settlement."
+        },
+        {
+          "claimId": "e-adapter-keyed-and-legacy-branches",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/handlers/educational.ts",
+          "line": 689,
+          "symbol": "educationalHandlers.submitAssignment",
+          "claim": "Handler applies doubleGateMiddleware; with idempotencyKey it calls settlement, while without the key it checks authority, finds an existing user/assignment row, and otherwise creates a submission using context.user.id.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Middleware internals, production route registration, and runtime behavior were not inspected."
+        },
+        {
+          "claimId": "f-settlement-authority-audit-receipt",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/assignmentSettlement.ts",
+          "line": 48,
+          "symbol": "settleAssignmentSubmission",
+          "claim": "Settlement derives account from server context, checks assignment authority, claims/locks a payload-matched receipt, creates or reuses the submission, writes sentinel audit, and commits the receipt in one transaction; handled database interruptions map to recoverable errors.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Database implementation guarantees, transaction isolation behavior in deployment, and real runtime outcomes were not inspected."
+        },
+        {
+          "claimId": "g-legacy-hook-identity",
+          "claimType": "source-observation",
+          "sourcePath": "apps/gurudevi-web/lib/domain/hooks/useAcademicDomain.ts",
+          "line": 49,
+          "symbol": "submitAssignment",
+          "claim": "Hook invokes academicHexagonalService.submitAssignment with studentId set to the literal student-current-user, then throttles academic submissions refreshes.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Identity mapping and queue settlement behavior were not inspected."
+        },
+        {
+          "claimId": "h-legacy-cache-and-queue",
+          "claimType": "source-observation",
+          "sourcePath": "apps/gurudevi-web/lib/domain/adapters/academic/academicHexagonalService.ts",
+          "line": 153,
+          "symbol": "academicHexagonalService.submitAssignment",
+          "claim": "Local academic service creates a time-derived synthetic submission, caches a pending-review view, and enqueues classroom/create_assignment_submission with assignment, supplied student ID, content, optional photo URL, and timestamp.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Cache storage governance, queue implementation and worker, runtime environment, and eventual server persistence were not inspected."
+        },
+        {
+          "claimId": "i-settlement-test-source",
+          "claimType": "test-source",
+          "sourcePath": "apps/sanctuary-api/src/__tests__/assignment-settlement.test.ts",
+          "line": 180,
+          "symbol": "binds submission, audit and payload-matched receipt settlement to the transaction",
+          "claim": "Unexecuted test source asserts transactional receipt claim/lock, active enrollment check, sentinel audit creation, and receipt commit ordering for settlement.",
+          "observedAt": "2026-10-24",
+          "method": "Test source inspection only; test not executed",
+          "level": "none",
+          "engine": "Vitest test source",
+          "substitutions": [],
+          "limitations": "Test source is not executed G1 evidence and uses substituted database/transaction fixtures."
+        }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "The inspected floor separately invokes a receipt workflow and a local synthetic/cache/queue service. Their relationship, intended authority, and runtime outcomes are unknown; this source observation does not imply causation or a confirmed defect."
+    },
+    {
+      "id": "classroom.attendance.batch-record",
+      "name": "Record a scoped attendance register",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-23",
+      "claimType": "source-observation",
+      "kind": "durable classroom mutation candidate",
+      "maturity": "partial",
+      "actor": "Server context principal; the command input excludes actor nomination.",
+      "scope": "Server-derived school and grade-class scope with persisted active-bond recheck in the adapter.",
+      "sensitivity": "Educational attendance records; finer classification and retention policy unknown.",
+      "surfaces": [
+        "Sanctuary API adapter"
+      ],
+      "routes": [
+        {
+          "surface": "Sanctuary API",
+          "path": "/api/v1/classroom/attendance/batch-record",
+          "status": "resolved"
+        },
+        {
+          "surface": "Native UI",
+          "path": {
+            "status": "unknown",
+            "reason": "Native caller linkage was not inspected."
+          },
+          "status": "unknown"
+        },
+        {
+          "surface": "Browser UI",
+          "path": {
+            "status": "unknown",
+            "reason": "Browser caller linkage was not inspected."
+          },
+          "status": "unknown"
+        }
+      ],
+      "headless": {
+        "value": {
+          "status": "unknown",
+          "reason": "An API endpoint is present; UI reachability was not inspected, so headless applicability is unknown."
+        },
+        "reason": "API presence alone does not establish a UI surface or a headless capability."
+      },
+      "packages": [
+        "@repo/sanctuary-api",
+        "@repo/core"
+      ],
+      "exports": [
+        {
+          "status": "unknown",
+          "reason": "Public export linkage was not inspected."
+        }
+      ],
+      "consumers": [
+        "apps/sanctuary-api/src/core/handlers/attendanceV1.ts"
+      ],
+      "contract": "Strict V1 command schema and typed response; API transport contract at POST /classroom/attendance/batch-record.",
+      "authorization": "Adapter applies doubleGateMiddleware, derives attendance:write from server context, checks command capability/scope, and rechecks persisted active bond and school; Cedar declaration internals were not inspected.",
+      "persistence": "Adapter uses a database transaction for receipt claim, attendance write, audit creation, and receipt completion; underlying database guarantees and migration were not inspected.",
+      "sync": {
+        "status": "unknown",
+        "reason": "Offline acceptance and settlement behavior were not inspected."
+      },
+      "fallback": {
+        "status": "unknown",
+        "reason": "Fallback and outage behavior were not inspected."
+      },
+      "recovery": {
+        "status": "unknown",
+        "reason": "Idempotency, receipt, replay, and correction behavior were not inspected."
+      },
+      "effects": [],
+      "evidence": [
+        {
+          "claimId": "a-canonical-v1-mount",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/routes/canonicalV1.ts",
+          "line": 15,
+          "symbol": "registerCanonicalV1Routes",
+          "claim": "The route registrar mounts /api/v1/* through the OpenAPI handler with prefix /api/v1; unmatched requests return 404.",
+          "observedAt": "2026-10-23",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Mount presence does not establish production registration or deployed reachability."
+        },
+        {
+          "claimId": "b-v1-adapter-authority-settlement",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/handlers/attendanceV1.ts",
+          "line": 224,
+          "symbol": "attendanceV1Router",
+          "claim": "The adapter applies doubleGateMiddleware, derives principal and classroom capability from server context, rechecks persisted active bond and school inside the transaction, and joins receipt claim, attendance write, audit, and receipt completion through a database transaction.",
+          "observedAt": "2026-10-23",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "This bounded trace did not inspect the internals of the Cedar policy, active-scope resolver, legacy attendance write, database schema/migrations, or runtime registration."
+        },
+        {
+          "claimId": "c-v1-contract-shape",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/attendance-v1.orpc.contract.ts",
+          "line": 15,
+          "symbol": "attendanceV1ORPCContract.batchRecord",
+          "claim": "The V1 contract exposes POST /classroom/attendance/batch-record with a typed command body and a response carrying capability, operationId, committed-or-replayed outcome, and recorded items.",
+          "observedAt": "2026-10-23",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Contract declaration does not by itself establish every route consumer or client compatibility."
+        },
+        {
+          "claimId": "d-command-contract-authority",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/logic/domains/attendanceCommand/contract.ts",
+          "line": 3,
+          "symbol": "AttendanceBatchRecordCommandSchema",
+          "claim": "The command has strict UUID/date/idempotency and 1..500 record validation, and its input deliberately excludes actor, school, role, and active scope.",
+          "observedAt": "2026-10-23",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "The contract does not establish the correctness of authority facts supplied by the adapter."
+        },
+        {
+          "claimId": "e-command-service-settlement",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/logic/domains/attendanceCommand/service.ts",
+          "line": 76,
+          "symbol": "executeAttendanceBatchRecord",
+          "claim": "The service validates input and server authority before transaction settlement; it distinguishes replay, payload conflict and in-progress state, records attendance, and completes a receipt, mapping uncertain/dependency outcomes to recoverable errors.",
+          "observedAt": "2026-10-23",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "The core service depends on supplied ports and cannot independently prove durable atomicity."
+        },
+        {
+          "claimId": "f-transaction-port-contract",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/logic/domains/attendanceCommand/ports.ts",
+          "line": 54,
+          "symbol": "AttendanceBatchTransactionPort",
+          "claim": "The declared transaction port groups receipt and attendance ports and documents that both must share one durable transaction.",
+          "observedAt": "2026-10-23",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "An interface and comment are not proof that every implementation satisfies durability or atomicity."
+        },
+        {
+          "claimId": "g-adapter-g1-evidence",
+          "claimType": "test-evidence",
+          "sourcePath": "apps/sanctuary-api/src/__tests__/attendance-v1.orpc.test.ts",
+          "line": 137,
+          "symbol": "attendance v1 canonical oRPC procedure",
+          "claim": "Vitest scenarios assert transaction settlement, replay without duplicate write, payload conflict rejection, rollback on audit failure, and rejection when persisted active scope is invalid.",
+          "observedAt": "2026-10-23",
+          "method": "Vitest focused V1 adapter suite; test source inspected, command not run for this trace",
+          "level": "G1",
+          "engine": "Vitest with substituted database and transaction fixture",
+          "substitutions": [
+            "Database",
+            "transaction state",
+            "active-scope data",
+            "audit persistence"
+          ],
+          "limitations": "Assertions cover the named fixture scenarios only; they do not prove real database behavior or deployed policy enforcement."
+        },
+        {
+          "claimId": "h-service-g1-evidence",
+          "claimType": "test-evidence",
+          "sourcePath": "packages/core/src/logic/domains/attendanceCommand/service.test.ts",
+          "line": 86,
+          "symbol": "executeAttendanceBatchRecord",
+          "claim": "Focused Vitest cases assert validation and scope rejection, commit, replay, idempotency conflict, dependency failure, and uncertain receipt completion.",
+          "observedAt": "2026-10-23",
+          "method": "Vitest focused service suite; test source inspected, command not run for this trace",
+          "level": "G1",
+          "engine": "Vitest with mocked ports",
+          "substitutions": [
+            "Receipt persistence",
+            "attendance repository",
+            "transaction implementation"
+          ],
+          "limitations": "A separate in-memory lost-response scenario exists in this file but is not claimed as G1 proof; no tests were run during this source trace."
+        },
+        {
+          "claimId": "i-document-candidate-context",
+          "claimType": "document-intent",
+          "sourcePath": "docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md",
+          "claim": "The prior Gate D draft names attendance batch-record as a capability example and states recovery semantics are required.",
+          "observedAt": "2026-10-23",
+          "method": "Document inspection",
+          "level": "none",
+          "engine": "document inspection",
+          "substitutions": [],
+          "limitations": "Document intent is not implementation evidence."
+        },
+        {
+          "claimId": "j-v1-url-test-source",
+          "claimType": "test-source",
+          "sourcePath": "apps/sanctuary-api/src/__tests__/attendance-v1.orpc.test.ts",
+          "line": 242,
+          "symbol": "app.request",
+          "claim": "The unexecuted test source constructs a Hono request for /api/v1/classroom/attendance/batch-record and later asserts a 200 response; this is test intent only.",
+          "observedAt": "2026-10-23",
+          "method": "Test source inspection only; test not executed",
+          "level": "none",
+          "engine": "Vitest test source",
+          "substitutions": [],
+          "limitations": "This records an assertion present in test source and is not runtime or route-registration proof."
+        }
+      ],
+      "documentClaims": [
+        {
+          "path": "docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md",
+          "claim": "Attendance batch record is a candidate capability; required authority and recovery card remain to be established.",
+          "status": "unverified"
+        }
+      ],
+      "driftDisposition": "No source comparison performed; retain as candidate and unknown until traced."
+    },
+    {
+      "id": "classroom.note.mutate-with-history",
+      "name": "Create, update, or delete a classroom note with history records",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "multi-operation classroom note lifecycle and audit seam",
+      "maturity": "partial",
+      "actor": "Mutation handler sets author_id on create and passes authenticated context.user.id as recorded_by for lifecycle events; database audit trigger independently captures auth.uid(), which may be null. Relationship between application context identity and database auth context is unknown.",
+      "scope": "One classroom note identified by UUID, including classroom, author, note type, visibility, pinned state, content snapshot, and lifecycle timestamps. Broader tenant enforcement beyond inspected handler gates and policy database is unknown.",
+      "sensitivity": "Private classroom narrative may include student educational or personal details, classroom and actor identifiers, and full historical content snapshots. Classification, consent, audience, retention, and deletion governance are unknown; no record values are reproduced.",
+      "surfaces": ["Sanctuary API educational note mutation and timeline handlers", "Sanctuary API classroom-note audit-history reader", "Core educational and history contracts"],
+      "routes": [
+        { "surface": "Sanctuary API oRPC", "path": "/educational/notes/:id (create/update/delete methods)", "status": "resolved" },
+        { "surface": "Sanctuary API oRPC", "path": "/educational/notes/:id/timeline", "status": "resolved" },
+        { "surface": "Sanctuary API history contract", "path": "/history/classroom-notes/:recordId", "status": "resolved" }
+      ],
+      "headless": {
+        "value": { "status": "unknown", "reason": "API contracts and handlers are present; all UI callers and deployment mode were not traced." },
+        "reason": "The bounded trace establishes API source, not whether the operation is exclusively headless."
+      },
+      "packages": ["@repo/core", "@repo/sanctuary-api"],
+      "exports": ["Core educational note lifecycle and history contracts are declared; runtime package export linkage and UI integration were not traced."],
+      "consumers": ["apps/sanctuary-api/src/core/handlers/educational.ts", "apps/sanctuary-api/src/core/handlers/history.ts"],
+      "contract": "Educational contract declares create/update/delete classroom-note operations and a note timeline; GET /history/classroom-notes/:recordId returns audit rows with old_data/new_data and actor projection.",
+      "authorization": "Mutation and lifecycle timeline handlers apply doubleGateMiddleware; audit history rejects anonymous users and resolves the note through context.db policy access before querying audit.logs. Gate internals, complete role/tenant boundaries, and effect of deleting the note on audit access are unknown.",
+      "persistence": "Each handler mutates classroomNote and separately creates a classroomNoteEvent lifecycle row; both are not shown in one transaction, so atomicity is unknown. An AFTER INSERT/UPDATE/DELETE trigger records full old/new row JSON in audit.logs. The history reader checks the note through the policy database, then queries raw audit.logs by UUID; deleted-note audit accessibility is unknown.",
+      "sync": { "status": "unknown", "reason": "Offline synchronization and replication behavior were not inspected." },
+      "fallback": { "status": "unknown", "reason": "Mutation, event-store, and trigger failure handling beyond visible sequential writes was not inspected." },
+      "recovery": { "status": "unknown", "reason": "Repair, replay, and recovery for mutation/event/audit divergence were not inspected." },
+      "effects": [
+        {
+          "id": "a-note-lifecycle-event-write", "kind": "other", "name": "classroomNoteEvent lifecycle snapshot write",
+          "evidenceClaimIds": ["b-note-handler-lifecycle-writes"],
+          "payloadFields": ["note_id", "classroom_id", "author_id", "event_type", "note_type", "visibility", "is_pinned", "snapshot.content", "recorded_by", "occurred_at", "effective_to"],
+          "purpose": { "status": "unknown", "reason": "Source records lifecycle snapshots and supports timeline reconstruction; broader purpose and governance were not inspected." },
+          "consent": { "status": "unknown", "reason": "Consent basis and controls for note-content history were not inspected." },
+          "audience": { "status": "unknown", "reason": "Complete reader population and disclosure rules were not inspected." },
+          "retention": { "status": "unknown", "reason": "Lifecycle-event retention policy was not inspected." },
+          "downstreamStorage": "Handler writes classroomNoteEvent after the note mutation as a separate operation; transactional coupling and downstream processing were not inspected.",
+          "deliveryFailure": { "status": "unknown", "reason": "Atomicity and repair behavior when lifecycle-event storage fails were not established." }
+        },
+        {
+          "id": "b-note-row-audit-trigger", "kind": "other", "name": "audit.logs classroom_notes row trigger",
+          "evidenceClaimIds": ["c-note-audit-trigger-snapshot"],
+          "payloadFields": ["table_name", "record_id", "action", "old_data (full row JSONB)", "new_data (full row JSONB)", "changed_by (nullable auth.uid)", "changed_at"],
+          "purpose": { "status": "unknown", "reason": "Source implements audit logging; policy and governance purpose were not inspected." },
+          "consent": { "status": "unknown", "reason": "Consent basis and controls for database audit snapshots were not inspected." },
+          "audience": { "status": "unknown", "reason": "Audit-log access policy and all readers were not inspected." },
+          "retention": { "status": "unknown", "reason": "No retention policy for audit.logs was established by the inspected migrations." },
+          "downstreamStorage": "Trigger writes old/new row snapshots to audit.logs; auth.uid attribution is nullable when unavailable. Further processing was not inspected.",
+          "deliveryFailure": { "status": "unknown", "reason": "Runtime trigger-failure behavior and operational recovery were not established." }
+        },
+        {
+          "id": "c-note-audit-history-reader", "kind": "other", "name": "getClassroomNoteHistory audit.logs projection",
+          "evidenceClaimIds": ["d-note-history-reader-scope"],
+          "payloadFields": ["record_id", "action", "old_data", "new_data", "changed_by", "changed_at", "author.full_name"],
+          "purpose": { "status": "unknown", "reason": "Contract describes authorized classroom-note audit history; broader reader purpose was not inspected." },
+          "consent": { "status": "unknown", "reason": "Consent basis for history access and disclosure was not inspected." },
+          "audience": { "status": "unknown", "reason": "Route is policy-gated, but complete authorized audiences and recipients were not established." },
+          "retention": { "status": "unknown", "reason": "History read does not establish audit-log retention or deletion behavior." },
+          "downstreamStorage": "Reader checks a surviving note with the policy database, then queries raw audit.logs by record UUID; whether deleted-note audit rows remain accessible is unknown.",
+          "deliveryFailure": { "status": "unknown", "reason": "Reader query failures and history availability after note deletion were not fully inspected." }
+        }
+      ],
+      "evidence": [
+        { "claimId": "a-note-contract-and-timeline", "claimType": "source-observation", "sourcePath": "packages/core/src/api/educational.contract.ts", "line": 607, "symbol": "educationalContract classroom note operations", "claim": "Educational contract declares create, update, delete note methods and a note timeline route under /educational/notes/:id.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "Contract declarations do not prove deployment, UI reachability, or runtime authorization." },
+        { "claimId": "b-note-handler-lifecycle-writes", "claimType": "source-observation", "sourcePath": "apps/sanctuary-api/src/core/handlers/educational.ts", "line": 104, "symbol": "noteEventData and classroom note mutation handlers", "claim": "Lifecycle payload snapshots note identity, classroom, author, content, type, visibility, pin state, timestamps, and recorded_by; create/update/delete handlers call classroomNoteEvent.create separately after mutation, with delete setting effective_to.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "Sequential handler calls do not establish transaction commits or runtime failure outcomes; database middleware was not traced." },
+        { "claimId": "c-note-audit-trigger-snapshot", "claimType": "source-observation", "sourcePath": "apps/gurudevi-mobile/supabase/migrations/20260316000000_audit_infrastructure.sql", "line": 5, "symbol": "audit.process_audit_log", "claim": "Audit infrastructure stores table and record identifiers, action, full old/new JSONB, nullable changed_by from auth.uid(), and changed_at; a separate migration attaches an AFTER row trigger to classroom_notes INSERT/UPDATE/DELETE.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "Migration source does not prove application in a target environment or establish audit.logs retention and access policy." },
+        { "claimId": "d-note-history-reader-scope", "claimType": "source-observation", "sourcePath": "apps/sanctuary-api/src/core/handlers/history.ts", "line": 208, "symbol": "historyRouter.getClassroomNoteHistory", "claim": "Reader requires a non-anonymous user, checks note existence through context.db, returns empty for a missing note, then queries audit.logs by classroom_notes UUID and projects old/new data plus nullable actor name.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "Trace does not establish audit-row visibility after note deletion or complete middleware semantics." },
+        { "claimId": "e-note-history-test-source", "claimType": "test-source", "sourcePath": "apps/sanctuary-api/src/__tests__/history.orpc.test.ts", "line": 228, "symbol": "getClassroomNoteHistory test source", "claim": "Unexecuted test source declares foreign-school teacher/principal denial, unresolved-note denial, missing-note empty response, old/new audit payload projection, and an OpenAPI history response assertion.", "observedAt": "2026-10-24", "method": "Test source inspection only; test not executed", "level": "none", "engine": "Vitest test source", "substitutions": [], "limitations": "Test source records assertions but no execution or runtime proof; authority and database are substituted in the harness." },
+        { "claimId": "f-note-snapshot-test-source", "claimType": "test-source", "sourcePath": "apps/sanctuary-api/src/__tests__/classroom-note-snapshot-integrity.test.ts", "line": 23, "symbol": "classroom note snapshot reconstruction test source", "claim": "Unexecuted test source declares as-of reconstruction for deleted/recreated note events and propagation of event-store failure.", "observedAt": "2026-10-24", "method": "Test source inspection only; test not executed", "level": "none", "engine": "Vitest test source", "substitutions": [], "limitations": "Mocked event storage and substituted authority do not prove mutation/event atomicity, audit-trigger behavior, retention, or production outcomes." }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "This partial trace links note mutations to separate lifecycle-event writes and a trigger-based full-row audit log. Atomicity between handler mutation and lifecycle event is unknown. The audit-history reader requires a surviving policy-readable note before querying raw audit rows; post-deletion audit accessibility is unknown. Private narrative and student/actor data are sensitive; auth.uid may be null. Retention, consent, complete reader policy, and deployment are unknown. No user-facing classroom-note history surface was traced. Tests are source evidence only and were not executed."
+    },
+    {
+      "id": "community.post.create",
+      "name": "Create a community post",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "community post mutation",
+      "maturity": "partial",
+      "actor": "Core mutation hook requires identifyActiveCitizen and an activeBond, passes its capacity as author_tier, and server handler sets author_id from context.user.id. Identity and authority mapping beyond those source observations is unknown.",
+      "scope": "Request includes groupId; handler writes context.schoolId to school_id. Group membership, school/group relationship validation, and scope policy enforcement were not inspected.",
+      "sensitivity": "Authored content, group/school identifiers, author role, and user identity linkage are involved. Moderation, visibility, classification, retention, and access governance are unknown.",
+      "surfaces": [
+        "@repo/community useCommunity hook",
+        "@repo/core community mutation hook",
+        "Sanctuary API community handler"
+      ],
+      "routes": [
+        {
+          "surface": "Sanctuary API oRPC",
+          "path": "/community/posts",
+          "status": "resolved"
+        }
+      ],
+      "headless": {
+        "value": {
+          "status": "unknown",
+          "reason": "Hook and API handler exist; UI reachability and headless applicability were not inspected."
+        },
+        "reason": "Source observations do not establish all user-interface surfaces or deployment."
+      },
+      "packages": [
+        "@repo/community",
+        "@repo/core",
+        "@repo/sanctuary-api"
+      ],
+      "exports": [
+        "@repo/community package root exports hooks including useCommunity; @repo/core community hooks call communityAPI."
+      ],
+      "consumers": [
+        {
+          "status": "unknown",
+          "reason": "Concrete screen/component callers of useCommunity.createPost were not traced in this bounded pass."
+        }
+      ],
+      "contract": "POST /community/posts accepts groupId UUID, trimmed content length 1..4000, postType length 1..64 defaulting to discussion, and authorTier length 1..64; response schema is z.any(). Client API also accepts visibility, but does not serialize it in this request.",
+      "authorization": "Core mutation hook checks identified citizen and activeBond; server handler uses doubleGateMiddleware, sets author_id from context.user.id and school_id from context.schoolId. Group membership checks and policy/middleware enforcement details were not inspected.",
+      "persistence": "Server handler calls context.db.post.create with group_id, author_id, school_id, content, post_type, and author_role, then returns mapPost(row). Transactional guarantees, moderation, and visibility behavior were not inspected.",
+      "sync": {
+        "status": "unknown",
+        "reason": "Offline queueing or synchronization was not inspected for createPost."
+      },
+      "fallback": {
+        "status": "unknown",
+        "reason": "Mutation/API failure behavior and retry semantics were not inspected."
+      },
+      "recovery": {
+        "status": "unknown",
+        "reason": "Idempotency, duplicate, correction, and response-loss behavior were not inspected."
+      },
+      "effects": [
+        {
+          "id": "a-community-post-created-growth-signal",
+          "kind": "growth-signal",
+          "name": "useCreatePostMutation.onSuccess: growthSignalsAPI.emitSilent",
+          "evidenceClaimIds": [
+            "b-community-mutation-identity-effect"
+          ],
+          "payloadFields": [
+            "user_id",
+            "event_type"
+          ],
+          "purpose": {
+            "status": "unknown",
+            "reason": "Signal purpose and use were not inspected."
+          },
+          "consent": {
+            "status": "unknown",
+            "reason": "Consent basis and controls were not inspected."
+          },
+          "audience": {
+            "status": "unknown",
+            "reason": "Signal recipients or audience were not inspected."
+          },
+          "retention": {
+            "status": "unknown",
+            "reason": "Signal retention was not inspected."
+          },
+          "downstreamStorage": {
+            "status": "unknown",
+            "reason": "Downstream storage and processing were not inspected."
+          },
+          "deliveryFailure": {
+            "status": "unknown",
+            "reason": "Emission delivery guarantees and failure behavior were not inspected."
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "claimId": "a-create-post-contract",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/community.orpc.contract.ts",
+          "line": 132,
+          "symbol": "communityORPCContract.createPost",
+          "claim": "The contract declares POST /community/posts with group UUID, content, postType, and authorTier fields, create Post policy metadata, and an unconstrained z.any response schema.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Contract metadata does not prove policy/middleware enforcement, membership checks, visibility/moderation rules, or deployment."
+        },
+        {
+          "claimId": "b-community-mutation-identity-effect",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/hooks/community.hooks.ts",
+          "line": 81,
+          "symbol": "useCreatePostMutation",
+          "claim": "Mutation requires identifyActiveCitizen and activeBond, supplies activeBond.capacity as author_tier, and its onSuccess callback emits community_post_created with storeUser.id as user_id.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "This call is scoped only to successful useCreatePostMutation callbacks. Direct communityAPI.createPost callers, including inspected useComposerLogic, bypass this hook; their signal behavior was not traced, so capability-wide signal emission is unknown. The inspected hook emission does not establish server authorization, consent, event delivery, audience, or purpose."
+        },
+        {
+          "claimId": "c-community-client-mapping",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/community.ts",
+          "line": 149,
+          "symbol": "communityAPI.createPost",
+          "claim": "Client API maps group_id/content/post_type/author_tier to groupId/content/postType/authorTier and does not include its accepted visibility parameter in the oRPC body.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Client mapping alone does not establish server-side visibility defaults or authorization."
+        },
+        {
+          "claimId": "d-community-server-create",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/handlers/community.ts",
+          "line": 227,
+          "symbol": "communityHandlers.createPost",
+          "claim": "Handler applies doubleGateMiddleware and persists group_id from request, author_id from authenticated context.user.id, school_id from context.schoolId, content, post_type, and author_role from request authorTier.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "No group membership check, middleware/policy internals, transaction guarantee, moderation/visibility behavior, or runtime result was established."
+        }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "Source-observed create path only; retain partial status and unknown group authorization, school/group scope semantics, author role validity, moderation, visibility, event purpose, and delivery behavior."
+    },
+    {
+      "id": "identity.profile.modify",
+      "name": "Modify a user profile",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "identity profile mutation",
+      "maturity": "partial",
+      "actor": "Client API uses target profile ID and may route same-ID anonymous session to local guest update; server handler writes the URL target ID. Actor-to-target authorization beyond inspected source is unknown.",
+      "scope": "RPC contract targets one UUID profile. Handler updates that user and resolves persisted active bond for the returned bootstrap; active-bond authorization or scope checks for the update were not established.",
+      "sensitivity": "Personal identity/profile attributes are involved. The edit modal caller includes NIC and student index identifiers, which are high-sensitivity identity/education identifiers; values are not reproduced. Classification, access, retention, and governance are unknown.",
+      "surfaces": [
+        "@repo/core identity/profile API",
+        "@repo/profile profile hook and edit modal",
+        "Sanctuary API identity handler"
+      ],
+      "routes": [
+        {
+          "surface": "Sanctuary API oRPC",
+          "path": "/identity/profile/:id",
+          "status": "resolved"
+        }
+      ],
+      "headless": {
+        "value": {
+          "status": "unknown",
+          "reason": "Profile hooks/modal and API handler exist; complete UI reachability and headless applicability were not inspected."
+        },
+        "reason": "The source trace does not establish all callers or deployment."
+      },
+      "packages": [
+        "@repo/core",
+        "@repo/profile",
+        "@repo/sanctuary-api"
+      ],
+      "exports": [
+        "Core identity API is exposed via the core API client; profile package re-exports profileAPI from that client."
+      ],
+      "consumers": [
+        "packages/profile/src/hooks/useProfile.ts",
+        "packages/profile/src/components/EditProfileModal.tsx"
+      ],
+      "contract": "PATCH /identity/profile/:id accepts UUID target and IdentitySchema.partial() body, returns IdentityBootstrapSchema. The inspected generated IdentitySchema lists id, email, name, display_name, first_name, last_name, identity_state, onboarding_completed, activeBond, and availableBonds; NIC/index_number are not listed. Actual field acceptance and persistence are not established.",
+      "authorization": "Contract metadata declares user update and handler uses doubleGateMiddleware, then updates input.params.id. The inspected handler body does not itself establish target-ID versus actor checks; middleware/policy enforcement and active-bond authorization are unknown.",
+      "persistence": "Handler converts empty email to null, calls context.db.user.update on target ID with request body, includes bonds, resolves persisted active bond, and returns bootstrap. Transactional guarantees and persistence policy were not inspected. Profile hook separately writes a local cache and enqueues updateProfileField before calling the API.",
+      "sync": "The profile hook enqueues updateProfileField in profile scope before API call and returns queued status on API error; queue delivery/reconciliation semantics are unknown. Other callers may not use this hook.",
+      "fallback": "Core identity API routes same-ID anonymous sessions to local guest update, which only copies display_name from the inspected method; otherwise it calls the oRPC endpoint. Broader guest behavior and server outage handling are unknown.",
+      "recovery": {
+        "status": "unknown",
+        "reason": "Idempotency, duplicate updates, correction, concurrency, and response-loss behavior were not inspected."
+      },
+      "effects": [
+        {
+          "id": "a-profile-hook-local-update",
+          "kind": "other",
+          "name": "useProfile.updateProfileField cache and outbox enqueue",
+          "evidenceClaimIds": [
+            "d-profile-hook-cache-queue"
+          ],
+          "payloadFields": [
+            "profile id",
+            "selected field",
+            "selected value"
+          ],
+          "purpose": "The inspected hook writes an updated profile snapshot to SafeZustandStorage and enqueues an updateProfileField mutation before its API call.",
+          "consent": {
+            "status": "unknown",
+            "reason": "Consent basis and controls were not inspected."
+          },
+          "audience": {
+            "status": "unknown",
+            "reason": "Local cache and queue readers/consumers were not inspected."
+          },
+          "retention": {
+            "status": "unknown",
+            "reason": "Cache/queue retention policy was not inspected."
+          },
+          "downstreamStorage": "The hook calls SafeZustandStorage.setItem and useMutationQueue.addToQueue; storage and queue internals were not inspected.",
+          "deliveryFailure": "The hook catches API failure, sets an error, and returns queued status; subsequent queue delivery and failure behavior are unknown."
+        }
+      ],
+      "evidence": [
+        {
+          "claimId": "a-profile-contract",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/identity.orpc.contract.ts",
+          "line": 159,
+          "symbol": "identityORPCContract.modifyUserProfile",
+          "claim": "The contract declares PATCH /identity/profile/:id, UUID path ID, partial IdentitySchema body, 200 IdentityBootstrapSchema response, and user update policy metadata.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Contract metadata does not establish actual writable fields, target/actor enforcement, active-bond checks, or deployment."
+        },
+        {
+          "claimId": "b-identity-schema-fields",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/identity.generated.ts",
+          "line": 48,
+          "symbol": "IdentitySchema",
+          "claim": "Generated identity schema contains id, email, name/display/first/last name, identity_state, onboarding_completed, activeBond, and availableBonds fields.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Schema fields do not prove which values the database accepts or what this operation authorizes callers to modify."
+        },
+        {
+          "claimId": "c-identity-client-branch",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/identity.ts",
+          "line": 120,
+          "symbol": "identityAPI.modifyUserProfile",
+          "claim": "Core client checks profile_core highway; same-ID anonymous session uses updateLocalGuestIdentity with display_name when supplied, while other calls invoke the oRPC mutation with target ID and updates cast as any.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Client branch does not prove guest storage behavior beyond arguments or server authorization."
+        },
+        {
+          "claimId": "d-profile-hook-cache-queue",
+          "claimType": "source-observation",
+          "sourcePath": "packages/profile/src/hooks/useProfile.ts",
+          "line": 187,
+          "symbol": "updateProfileField",
+          "claim": "This hook writes a merged profile snapshot to SafeZustandStorage, enqueues updateProfileField under profile scope, then calls profileAPI.updateProfile and reports queued on API failure.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Only this hook lane is described; other profile callers and queue reconciliation were not inspected."
+        },
+        {
+          "claimId": "e-identity-server-update",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/handlers/identity.ts",
+          "line": 233,
+          "symbol": "identityHandlers.modifyUserProfile",
+          "claim": "Handler normalizes empty email to null, updates context.db.user by input.params.id with request body, includes bonds, resolves persisted active bond for the updated ID, and returns an identity bootstrap.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Middleware/policy internals, target-versus-actor validation, active-bond authorization, DB transaction guarantees, and other effects were not inspected."
+        },
+        {
+          "claimId": "f-profile-modal-emitted-fields",
+          "claimType": "source-observation",
+          "sourcePath": "packages/profile/src/components/EditProfileModal.tsx",
+          "line": 168,
+          "symbol": "updates",
+          "claim": "EditProfileModal constructs updates with display_name, first_name, last_name, username, phone, bio, nic_number, and index_number; it conditionally adds avatar_url for selected file/HTTP avatar handling before calling profileAPI.updateProfile.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "These are caller-emitted fields only; their acceptance and persistence through IdentitySchema.partial() and the handler are unknown, and no values are reproduced."
+        }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "Source-observed contract/client/handler path only; keep writable fields, target/actor authority, active-bond enforcement, local queue outcome, and recovery semantics unknown."
+    },
+    {
+      "id": "library.resource.bookmark-toggle",
+      "name": "Toggle a resource bookmark",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "Library resource engagement mutation",
+      "maturity": "partial",
+      "actor": "Handler uses authenticated context.user.id; authorization internals were not inspected.",
+      "scope": "One resource bookmark for the authenticated user; optional classroom scope is not supplied by this package operation.",
+      "sensitivity": "User-resource engagement relationship; the observed impactRipple row includes actor, recipient, and resource identifiers plus a notification-like message field, without values reproduced here. Formal classification, consent, retention, and delivery governance are unknown.",
+      "surfaces": [
+        "@repo/library API",
+        "Sanctuary API oRPC handler"
+      ],
+      "routes": [
+        {
+          "surface": "Sanctuary API oRPC",
+          "path": "/library/resources/:id/engage",
+          "status": "resolved"
+        }
+      ],
+      "headless": {
+        "value": {
+          "status": "unknown",
+          "reason": "API operation is present; UI reachability and headless applicability were not fully inspected."
+        },
+        "reason": "API presence alone does not establish UI reachability or deployment."
+      },
+      "packages": [
+        "@repo/library",
+        "@repo/core",
+        "@repo/sanctuary-api"
+      ],
+      "exports": [
+        "@repo/library exports its API barrel; libraryAPI is exported from that API surface."
+      ],
+      "consumers": [
+        "packages/library/src/screens/LibraryScreen.web.tsx"
+      ],
+      "contract": "oRPC contract POST /library/resources/:id/engage accepts resource UUID and engagement_type; bookmarkResource supplies bookmark with toggle=true.",
+      "authorization": "Adapter calls recordEngagement and ignores its userId parameter; handler applies doubleGateMiddleware and uses context.user.id. Middleware/policy internals were not inspected.",
+      "persistence": "Handler transacts resourceEngagement create/delete and bookmark counter increment/decrement; when bookmarking another creator's resource it also creates an impactRipple row. Database engine/migration durability was not inspected.",
+      "sync": {
+        "status": "unknown",
+        "reason": "Offline acceptance and synchronization were not inspected."
+      },
+      "fallback": {
+        "status": "unknown",
+        "reason": "Client and server failure behavior beyond the source call path was not inspected."
+      },
+      "recovery": "With toggle=true, the source looks up an existing row by resource_id, user_id, and engagement_type; it does not include optional classroom_id in that lookup. Semantic behavior across classroom scopes, uniqueness guarantees, concurrency, duplicate effects, and uncertain retry/response-loss behavior are unknown.",
+      "effects": [
+        {
+          "id": "a-bookmark-creator-impact-ripple",
+          "kind": "other",
+          "name": "impactRipple row creation on first bookmark",
+          "evidenceClaimIds": [
+            "c-bookmark-transaction"
+          ],
+          "payloadFields": [
+            "recipient_user_id",
+            "actor_user_id",
+            "entity_id",
+            "ripple_type",
+            "warm_message_en",
+            "created_at"
+          ],
+          "purpose": {
+            "status": "unknown",
+            "reason": "The source creates a ripple row but its product purpose was not inspected."
+          },
+          "consent": {
+            "status": "unknown",
+            "reason": "Consent basis and controls were not inspected."
+          },
+          "audience": "The resource creator when present and different from the acting user, as selected by the handler.",
+          "retention": {
+            "status": "unknown",
+            "reason": "Retention policy was not inspected."
+          },
+          "downstreamStorage": "The source writes the row through tx.impactRipple.create; later delivery or storage beyond that table was not inspected.",
+          "deliveryFailure": {
+            "status": "unknown",
+            "reason": "Delivery semantics and failure handling were not inspected."
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "claimId": "a-bookmark-public-api",
+          "claimType": "source-observation",
+          "sourcePath": "packages/library/src/api/library.ts",
+          "line": 228,
+          "symbol": "rawLibraryAPI.bookmarkResource",
+          "claim": "The public API method ignores its supplied userId and calls the core API recordEngagement with bookmark and toggle=true.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "This package method does not establish route deployment, server authority, or persistence."
+        },
+        {
+          "claimId": "b-bookmark-contract",
+          "claimType": "source-observation",
+          "sourcePath": "packages/core/src/api/library.orpc.contract.ts",
+          "line": 229,
+          "symbol": "libraryORPCContract.engage",
+          "claim": "The oRPC contract declares POST /library/resources/:id/engage with UUID resource parameter, engagement type enum including bookmark, optional classroom ID and toggle, and create authority metadata.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Contract metadata does not prove middleware enforcement or route registration."
+        },
+        {
+          "claimId": "c-bookmark-transaction",
+          "claimType": "source-observation",
+          "sourcePath": "apps/sanctuary-api/src/core/handlers/library.ts",
+          "line": 484,
+          "symbol": "libraryHandlers.engage",
+          "claim": "Handler checks an optional classroom against context principal attributes, derives the actor from context.user.id, toggles a matching engagement in a transaction, updates bookmark counts, and creates an impactRipple row when a new bookmark targets another user's resource.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "The database adapter, migration guarantees, middleware policy, durable commit semantics, and ripple delivery were not inspected."
+        },
+        {
+          "claimId": "d-bookmark-g1-test-source",
+          "claimType": "test-source",
+          "sourcePath": "apps/sanctuary-api/src/__tests__/library.orpc.test.ts",
+          "line": 437,
+          "symbol": "records engagement through one transactional native procedure",
+          "claim": "Unexecuted test source calls the engage procedure with bookmark and toggle=true and asserts returned resource ID, user ID, and engagement type.",
+          "observedAt": "2026-10-24",
+          "method": "Test source inspection only; test not executed",
+          "level": "none",
+          "engine": "Vitest test source",
+          "substitutions": [],
+          "limitations": "This is test-source intent only, not executed G1 evidence or proof of real persistence/authorization."
+        }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "No source-to-document comparison performed; retain partial and unknown fields pending a broader trace."
+    },
+    {
+      "id": "payments.intent.create",
+      "name": "Create a database-backed payment intent",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "payment-intent database record; provider settlement not established",
+      "maturity": "partial",
+      "actor": "Handler uses authenticated context.user.id as payment-intent owner_id. Tenant or organization boundary and authorization policy details beyond doubleGateMiddleware are unknown.",
+      "scope": "Contract accepts positive amount, three-character currency, provider stripe/payhere, optional metadata, and optional idempotencyKey. Handler uppercases currency and stores a pending intent with provider integration marked database_intent_only. Payer/payee identity and tenant scope are not represented in the inspected request contract.",
+      "sensitivity": "Financial amount and currency, owner/user identifier, provider choice, and arbitrary metadata may be persisted; no values reproduced. Payer/payee identifiers, payment credentials, consent, access, and retention governance are unknown.",
+      "surfaces": ["@repo/core ERP API adapter", "Sanctuary API ERP handler"],
+      "routes": [
+        { "surface": "Sanctuary API oRPC", "path": "/erp/payments/intent", "status": "resolved" },
+        { "surface": "Sanctuary API webhook", "path": "/payments/payhere-webhook", "status": "resolved" }
+      ],
+      "headless": { "value": { "status": "unknown", "reason": "The API operation is inspected but UI callers and deployment/headless applicability were not traced." }, "reason": "An API contract and handler do not establish all callers or deployment." },
+      "packages": ["@repo/accounting", "@repo/core", "@repo/payments", "@repo/sanctuary-api"],
+      "exports": ["paymentsAPI.createPaymentIntent is exported through @repo/core ERP API; StripeProvider and PayHereProvider are exported by @repo/payments."],
+      "consumers": ["packages/core/src/api/erp.ts (adapter surface; bounded call-site search found no direct createPaymentIntent invocation)"],
+      "contract": "POST /erp/payments/intent declares amount as finite positive number, currency as three characters, provider stripe/payhere, optional metadata, optional idempotencyKey length 8–200, and a PaymentIntent response.",
+      "authorization": "Handler applies doubleGateMiddleware and derives owner_id from context.user.id. Contract metadata declares create Payments. Middleware internals, tenant binding, payer authority, and deployed policy enforcement are unknown.",
+      "persistence": "Create handler inserts a pending paymentIntent row with amount, uppercased currency, provider, and metadata containing owner_id plus provider_integration database_intent_only; optional idempotency key is namespaced by user and provider. Separately, the PayHere webhook source may validate a callback and mark a matching pending PayHere intent paid; it is outside the create handler trace, and deployment/runtime and Stripe settlement are unknown. Database transaction guarantees were not inspected.",
+      "sync": { "status": "unknown", "reason": "Offline or synchronization behavior was not inspected." },
+      "fallback": "Create handler sets provider_integration to database_intent_only and does not call a provider. A separate /payments/payhere-webhook route validates callback fields, merchant identity and signature, and source shows it can mark a matching pending PayHere intent paid for status_code 2 after amount/currency/provider checks. This is outside the create trace; deployment/runtime, Stripe settlement, and callback-to-create operation linkage are unknown. Separate Stripe/PayHere package plugins synthesize demo intents under demo conditions; their relationship to this handler is unknown.",
+      "recovery": "When idempotencyKey is supplied, handler constructs `${context.user.id}:${provider}:${providedKey}` and returns an existing row on lookup without comparing amount, currency, or metadata/request fingerprint. After create throws it looks up the same key and returns a found row; if none is found it raises an idempotency conflict. Mismatched-payload semantics, duplicate behavior without a key, reconciliation, correction/refund/reversal, audit/receipt semantics, and uncertain response-loss outcomes are unknown.",
+      "effects": [
+        { "id": "a-payment-intent-row-write", "kind": "other", "name": "paymentIntent database row persistence", "evidenceClaimIds": ["c-payment-intent-database-handler", "g-payment-intent-response-mapping"], "payloadFields": ["owner_id", "provider", "metadata.idempotency_key", "metadata", "status", "currency", "amount", "client_secret (response mapper field; create handler does not set it)"], "purpose": { "status": "unknown", "reason": "Business purpose and governance beyond the source-observed intent record were not inspected." }, "consent": { "status": "unknown", "reason": "Consent basis and controls were not inspected." }, "audience": { "status": "unknown", "reason": "Intent readers and recipients were not inspected." }, "retention": { "status": "unknown", "reason": "Payment intent retention policy was not inspected." }, "downstreamStorage": "Create handler writes paymentIntent through the database model and response mapper can expose client_secret if present in a stored row; handler does not set client_secret. Database controls and downstream processing were not inspected.", "deliveryFailure": { "status": "unknown", "reason": "Database write failure and response-loss outcomes were not executed or fully traced." } }
+      ],
+      "evidence": [
+        { "claimId": "a-payment-intent-contract", "claimType": "source-observation", "sourcePath": "packages/core/src/api/erp.contract.ts", "line": 78, "symbol": "erpContract.createPaymentIntent", "claim": "Contract declares POST /erp/payments/intent with positive amount, three-character currency, stripe/payhere provider, optional metadata and idempotency key, and PaymentIntent response.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "Contract does not prove invocation, provider transfer, settlement, authorization enforcement, or production route behavior." },
+        { "claimId": "b-payment-intent-client-adapter", "claimType": "source-observation", "sourcePath": "packages/core/src/api/erp.ts", "line": 48, "symbol": "paymentsAPI.createPaymentIntent", "claim": "Core adapter forwards amount, currency, provider, metadata, and idempotencyKey through the ERP oRPC client and parses a PaymentIntent response.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "Adapter source and bounded call-site search do not establish an active UI caller or runtime call." },
+        { "claimId": "c-payment-intent-database-handler", "claimType": "source-observation", "sourcePath": "apps/sanctuary-api/src/core/handlers/erp.ts", "line": 151, "symbol": "erpRouter.createPaymentIntent", "claim": "Handler uses doubleGateMiddleware, stores authenticated owner_id and database_intent_only metadata, persists a pending payment intent, and performs optional user/provider-scoped idempotency lookup/replay/conflict handling without a provider call in this handler.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "Middleware, database uniqueness/transaction guarantees, deployment, external payment settlement, audit, receipt, and runtime outcomes were not inspected." },
+        { "claimId": "d-stripe-demo-provider", "claimType": "source-observation", "sourcePath": "packages/payments/src/plugins/stripe.ts", "line": 7, "symbol": "StripeProvider.initializePayment", "claim": "Stripe package provider returns a synthetic pending demo intent in development/demo conditions and rejects direct live initialization outside those conditions; verification source also requires server webhook status in production.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "This package provider is not called by the inspected Sanctuary handler; no live provider or webhook behavior was established." },
+        { "claimId": "e-payhere-demo-provider", "claimType": "source-observation", "sourcePath": "packages/payments/src/plugins/payhere.ts", "line": 7, "symbol": "PayHereProvider.initializePayment", "claim": "PayHere package provider returns a synthetic pending demo intent in development/demo conditions and rejects direct live initialization outside those conditions; verification source also requires server webhook status in production.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "This package provider is not called by the inspected Sanctuary handler; no live provider or webhook behavior was established." },
+        { "claimId": "f-provider-demo-test-source", "claimType": "test-source", "sourcePath": "packages/payments/src/__tests__/providers.test.ts", "line": 23, "symbol": "StripeProvider and PayHereProvider tests", "claim": "Unexecuted test source asserts simulated demo intent shapes and production rejection behavior for provider initialization and verification.", "observedAt": "2026-10-24", "method": "Test source inspection only; test not executed", "level": "none", "engine": "Vitest test source", "substitutions": [], "limitations": "Test source is not executed G1 evidence and does not prove real provider integration, settlement, reconciliation, or API-handler behavior." },
+        { "claimId": "g-payment-intent-response-mapping", "claimType": "source-observation", "sourcePath": "apps/sanctuary-api/src/core/handlers/erp.ts", "line": 33, "symbol": "mapPaymentIntent", "claim": "Response mapper exposes id, amount, currency, status, provider, client_secret nullable, metadata, and timestamps from a payment-intent row; the create handler does not assign client_secret.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "Mapper field projection does not prove that a secret is present, returned at runtime, or safe for a particular audience." },
+        { "claimId": "h-payhere-webhook-callback", "claimType": "source-observation", "sourcePath": "apps/sanctuary-api/src/core/routes/payhereWebhook.ts", "line": 39, "symbol": "createPayhereWebhookRoutes", "claim": "Separate POST /payments/payhere-webhook source validates callback fields, expected merchant and signature; for status_code 2 it may update a matching pending PayHere intent to paid after ID, amount, currency, provider, and owner metadata checks.", "observedAt": "2026-10-24", "method": "Source inspection", "level": "none", "engine": "source inspection", "substitutions": [], "limitations": "This callback is outside the create handler trace; route deployment, runtime callback delivery, broader settlement semantics, and Stripe processing were not inspected." }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "This partial trace establishes a server-side database intent record, not by itself a provider transaction or completed payment. A separate PayHere callback source may mark a matched pending intent paid; operation linkage and deployment/runtime are unverified. UI invocation, payer/payee and tenant scope, Stripe settlement, reconciliation, correction/refund, audit, receipt, retention, and runtime outcomes remain unknown."
+    },
+    {
+      "id": "self.wellbeing.mood-log-create",
+      "name": "Create a wellbeing mood log",
+      "owner": "Gate D0 review; domain owner unknown",
+      "reviewedAt": "2026-10-24",
+      "claimType": "source-observation",
+      "kind": "wellbeing mood-log mutation",
+      "maturity": "partial",
+      "actor": "Authenticated user ID is passed by the repository caller; guest IDs use the guest data manager. Caller identity binding and server authority were not inspected.",
+      "scope": "The repository writes one mood value, optional note, user ID, and timestamp; authorization scope and retention are unknown.",
+      "sensitivity": "Mood score and optional wellbeing note; formal classification and retention policy unknown.",
+      "surfaces": [
+        "@repo/self API/repository export; user-interface reachability unknown"
+      ],
+      "routes": [
+        {
+          "surface": "Self API/repository",
+          "path": {
+            "status": "unknown",
+            "reason": "No public route or deployed transport was inspected for this operation."
+          },
+          "status": "unknown"
+        }
+      ],
+      "headless": {
+        "value": {
+          "status": "unknown",
+          "reason": "Repository/API code exists, but UI reachability and headless applicability were not inspected."
+        },
+        "reason": "No UI or deployment conclusion is supported by this bounded source trace."
+      },
+      "packages": [
+        "@repo/self",
+        "@repo/core"
+      ],
+      "exports": [
+        "packages/self/src/index.ts re-exports @repo/self/api and @repo/self/types; direct export of the repository helper was not verified from the API barrel."
+      ],
+      "consumers": [
+        "packages/self/src/hooks/useMoodLogs.ts"
+      ],
+      "contract": "MoodLog type includes id, user_id, mood_score, optional mood/note, and created_at. Public server transport contract was not inspected.",
+      "authorization": "selfAPI.logMood invokes a client-side assertAuthenticated guard for the RPC fallback; native local-write authorization and server enforcement were not inspected.",
+      "persistence": "Repository source shows guest writes delegated to GuestDataManager; non-web authenticated writes insert into local moodLogs and enqueue a logMood mutation; web/fallback delegates to selfAPI.logMood. Durable server persistence and queue settlement were not inspected.",
+      "sync": "Native non-web path enqueues a custom wellbeing mutation named logMood; delivery, retries, and settlement are unknown.",
+      "fallback": "Any failure in the non-web local-first block, including local insert or queue enrollment, falls through to selfAPI.logMood; behavior if RPC also fails is unknown.",
+      "recovery": {
+        "status": "unknown",
+        "reason": "No focused recovery/idempotency behavior or tests were inspected."
+      },
+      "effects": [
+        {
+          "id": "a-mood-checkin-growth-signal",
+          "kind": "growth-signal",
+          "name": "growthSignalsAPI.emitSilent",
+          "evidenceClaimIds": [
+            "b-mood-checkin-growth-signal"
+          ],
+          "payloadFields": [
+            "user_id",
+            "event_type",
+            "event_metadata.mood_score"
+          ],
+          "purpose": {
+            "status": "unknown",
+            "reason": "Purpose or use of this signal was not inspected."
+          },
+          "consent": {
+            "status": "unknown",
+            "reason": "Consent basis and controls were not inspected."
+          },
+          "audience": {
+            "status": "unknown",
+            "reason": "Signal recipients or audience were not inspected."
+          },
+          "retention": {
+            "status": "unknown",
+            "reason": "Signal retention was not inspected."
+          },
+          "downstreamStorage": {
+            "status": "unknown",
+            "reason": "Downstream storage and processing were not inspected."
+          },
+          "deliveryFailure": {
+            "status": "unknown",
+            "reason": "Emission delivery guarantees and failure behavior were not inspected."
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "claimId": "a-mood-log-type",
+          "claimType": "source-observation",
+          "sourcePath": "packages/self/src/types/Wellbeing.ts",
+          "line": 114,
+          "symbol": "MoodLog",
+          "claim": "MoodLog models a user-associated score, optional mood and note, and creation timestamp.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "A TypeScript interface is a client/domain shape, not proof of server validation or persistence."
+        },
+        {
+          "claimId": "b-mood-checkin-growth-signal",
+          "claimType": "source-observation",
+          "sourcePath": "packages/self/src/api/self.ts",
+          "line": 36,
+          "symbol": "selfAPI.logMood",
+          "claim": "After the mood RPC resolves, the client invokes growthSignalsAPI.emitSilent with event_type mood_checkin and event_metadata containing mood_score.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Only the local call site and named fields were inspected; purpose, consent, recipients, retention, storage, delivery, failures, and product or telemetry categorization are unverified."
+        },
+        {
+          "claimId": "c-mood-log-api-guard",
+          "claimType": "source-observation",
+          "sourcePath": "packages/self/src/api/self.ts",
+          "line": 10,
+          "symbol": "assertAuthenticated",
+          "claim": "The RPC helper rejects when the client store has no user or an anonymous user, then logMood calls the oRPC self.logMood method with score, mood, and note.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "This is client-side guard and call-site evidence only; it does not establish server authorization, transport route, or database write."
+        },
+        {
+          "claimId": "d-mood-log-repository",
+          "claimType": "source-observation",
+          "sourcePath": "packages/self/src/api/wellbeingRepository.ts",
+          "line": 89,
+          "symbol": "createMoodLog",
+          "claim": "The repository branches between guest manager, non-web local moodLogs insertion plus custom queue enrollment, and a selfAPI RPC fallback; local insert exceptions also reach the RPC fallback.",
+          "observedAt": "2026-10-24",
+          "method": "Source inspection",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "No queue implementation, database schema/migration, server route/service, or runtime behavior was inspected."
+        },
+        {
+          "claimId": "e-mood-log-focused-tests",
+          "claimType": "source-observation",
+          "sourcePath": "packages/self/src/api/wellbeingRepository.ts",
+          "line": 89,
+          "symbol": "createMoodLog",
+          "claim": "A bounded search found no focused test source for createMoodLog or logMood within packages/self.",
+          "observedAt": "2026-10-24",
+          "method": "Bounded test-file search",
+          "level": "none",
+          "engine": "source inspection",
+          "substitutions": [],
+          "limitations": "Search was limited to package Self and matching test/spec files; no wider integration or server tests were searched."
+        }
+      ],
+      "documentClaims": [],
+      "driftDisposition": "No source-to-document comparison performed; retain partial and unknown fields pending a broader bounded trace."
+    }
+  ]
+}

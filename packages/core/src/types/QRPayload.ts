@@ -14,7 +14,8 @@ export type QRAction =
   | 'claim_invite'
   | 'user_invite'
   | 'thuthimal_gift'
-  | 'share_resource';
+  | 'share_resource'
+  | 'link_device';
 
 /** Unified discriminated union for all QR payloads in the Gurudevi ecosystem */
 export type QRPayload =
@@ -24,7 +25,8 @@ export type QRPayload =
   | ClaimInvitePayload
   | UserInvitePayload
   | ThuthimalGiftPayload
-  | ShareResourcePayload;
+  | ShareResourcePayload
+  | LinkDevicePayload;
 
 /** Scanning joins the school AND its auto-created community group */
 export interface JoinSchoolPayload {
@@ -85,4 +87,15 @@ export interface ShareResourcePayload {
   resource_type: string;
   title: string;
   url?: string;
+}
+
+/** Ephemeral cross-device pairing challenge */
+export interface LinkDevicePayload {
+  v: typeof QR_VERSION;
+  action: 'link_device';
+  challenge_id: string;
+  target_install_id: string;
+  platform?: string;
+  expires_at?: string;
+  pairing_key?: string;
 }

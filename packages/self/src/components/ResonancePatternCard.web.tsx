@@ -7,7 +7,7 @@
 import { usePermissions } from '@repo/core/logic';
 import type { OrientationSeeds } from '@repo/profile';
 import { useOrientationInference } from '@repo/self/hooks/useOrientationInference';
-import type { EnergyForecast, MoodLog } from '@repo/self/types/Wellbeing';
+import type { EnergyForecast, MoodLog } from '@repo/core/types/Wellbeing';
 import { Activity, ArrowRight, Sparkles } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useMemo } from 'react';

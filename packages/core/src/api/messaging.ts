@@ -7,7 +7,7 @@
  */
 
 import { orpcClient } from '@repo/core/api/orpcClient';
-import type { TemporalScale } from '@repo/core/store/useTemporalStore';
+import type { TemporalScale } from '@repo/core/types/Temporal';
 
 function mapMessage(message: any) {
   return {

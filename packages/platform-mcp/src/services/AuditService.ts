@@ -101,6 +101,14 @@ function collectDeprecationIssues(
 export class AuditService {
   constructor(private document: DocumentService) {}
 
+  handleCedarAudit(scenarios: boolean) {
+    const result = runCommand(process.execPath, [
+      'packages/policies/scripts/audit-cedar.mjs',
+      ...(scenarios ? ['--scenarios'] : []),
+    ], { timeoutMs: 120_000, maxBuffer: 4 * 1024 * 1024 });
+    return toText(result.combined || result.error || 'Cedar audit returned no output.', !result.ok);
+  }
+
   handleAuditHygiene() {
     console.error('Running Hygiene Audit...');
     runPowerShellScript('scripts/check-hygiene.ps1');
@@ -567,6 +575,42 @@ export class AuditService {
     if (args.depsOnly) cliArgs.push('--deps-only');
 
     const result = runCommand('node', cliArgs);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleAuditSeams(args: { target?: string }) {
+    const target = args?.target || 'apps/gurudevi-mobile/src';
+    console.error(`Auditing Physical Native Seams for: ${target}...`);
+    const result = runCommand('node', ['scripts/audit-seams.mjs', target]);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleCheckTcdi(args?: { strict?: boolean }) {
+    console.error('Auditing Temporal Convolutional Dependency Intelligence (TCDI)...');
+    const cliArgs = ['scripts/check-tcdi.mjs'];
+    if (args?.strict) cliArgs.push('--strict');
+    const result = runCommand('node', cliArgs);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleVerifyHermes(args?: { target?: string }) {
+    const target = args?.target || 'apps/gurudevi-mobile/app/index.tsx';
+    console.error(`Verifying Hermes In-Memory Bytecode for: ${target}...`);
+    const result = runCommand('node', ['scripts/run-rn-terrain.mjs', 'verify:hermes', target]);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleVerifyYoga(args?: { target?: string }) {
+    const target = args?.target || 'apps/gurudevi-mobile/app/index.tsx';
+    console.error(`Verifying Yoga Headless Virtual Layout for: ${target}...`);
+    const result = runCommand('node', ['scripts/run-rn-terrain.mjs', 'verify:yoga', target]);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleDoctorAll(args?: { project?: string }) {
+    const project = args?.project || 'apps/gurudevi-mobile';
+    console.error(`Running Unified 5-Layer Ecosystem Doctor for: ${project}...`);
+    const result = runCommand('node', ['scripts/run-rn-terrain.mjs', 'doctor:all', project]);
     return toText(result.combined, !result.ok);
   }
 }

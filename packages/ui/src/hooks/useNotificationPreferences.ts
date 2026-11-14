@@ -1,8 +1,10 @@
-import { profile, type UserPreferences, useStore } from '@repo/core/logic';
+import { supabaseProfileRepository } from '@repo/core/adapters/supabase/profileRepository';
+import type { UserPreferences } from '@repo/core/types/UserPreferences';
+import { useAuthStore } from '@repo/core/store';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useNotificationPreferences = () => {
-  const userId = useStore((state) => state.user?.id);
+  const userId = useAuthStore((state) => state.user?.id);
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -11,7 +13,7 @@ export const useNotificationPreferences = () => {
     if (!userId) return;
     setLoading(true);
     try {
-      const prefs = await profile.getUserPreferences(userId);
+      const prefs = await supabaseProfileRepository.getUserPreferences(userId);
       setPreferences(prefs);
     } catch (error) {
       console.error('[useNotificationPreferences] Fetch failed:', error);
@@ -34,7 +36,7 @@ export const useNotificationPreferences = () => {
 
     setSaving(true);
     try {
-      await profile.updateUserPreferences(userId, updates);
+      await supabaseProfileRepository.updateUserPreferences(userId, updates);
     } catch (error) {
       console.error('[useNotificationPreferences] Update failed:', error);
       setPreferences(previousPrefs); // Rollback

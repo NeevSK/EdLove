@@ -11,6 +11,7 @@ function snapshot(
     hasActiveAccessToken: Boolean(userId),
     hasLiveCapacity: true,
     hasProfileName: true,
+    principalId: userId,
     identityAvailability: userId ? 'active' : 'unknown',
     isProfileForSession: Boolean(userId),
     isProfileResolving: false,

@@ -1,0 +1,586 @@
+diff --git a/apps/gurudevi-mobile/src/__tests__/entry/AuthQueryCacheBoundary.test.tsx b/apps/gurudevi-mobile/src/__tests__/entry/AuthQueryCacheBoundary.test.tsx
+index 5abd884bf..35294bbf3 100644
+--- a/apps/gurudevi-mobile/src/__tests__/entry/AuthQueryCacheBoundary.test.tsx
++++ b/apps/gurudevi-mobile/src/__tests__/entry/AuthQueryCacheBoundary.test.tsx
+@@ -1,53 +1,116 @@
+-import { act, create, type ReactTestRenderer } from 'react-test-renderer';
++import { scopedQueryKey } from '@repo/core/lib/clientStateFoundation';
++import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
++import { act, cleanup, render, waitFor } from '@testing-library/react';
+ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+ 
+ const mocks = vi.hoisted(() => ({
+-  clear: vi.fn(),
+-  useAuth: vi.fn(),
+-  useQueryClient: vi.fn(),
++  subjectId: 'credential-a',
++  token: 'token-a',
++  startEventsReceiver: vi.fn((_options: { getAuthToken: () => string }) => vi.fn()),
++  setupHermesMemoryShield: vi.fn(() => vi.fn()),
++}));
++const { accountStore } = await vi.hoisted(async () => {
++  const { createStore } = await import('zustand/vanilla');
++  return {
++    accountStore: createStore<{ user: { id: string } | null }>(() => ({
++      user: { id: 'account-a' },
++    })),
++  };
++});
++vi.mock('@repo/core', () => ({
++  useAuth: () => ({
++    session: mocks.subjectId ? { user: { id: mocks.subjectId }, access_token: mocks.token } : null,
++  }),
++}));
++vi.mock('@repo/core/store/useAuthStore', () => ({ useAuthStore: accountStore }));
++vi.mock('@repo/core/api/eventsReceiver', () => ({
++  startEventsReceiver: mocks.startEventsReceiver,
++}));
++vi.mock('@repo/core/efficiency', () => ({
++  setupHermesMemoryShield: mocks.setupHermesMemoryShield,
++}));
++vi.mock('@repo/core/logic/runtimeRegistry', () => ({
++  coreRuntime: { device: { getTotalMemory: () => null } },
++}));
++vi.mock('react-native', () => ({
++  AppState: { addEventListener: vi.fn(() => ({ remove: vi.fn() })) },
+ }));
+-
+-vi.mock('@repo/core', () => ({ useAuth: mocks.useAuth }));
+-vi.mock('@tanstack/react-query', () => ({ useQueryClient: mocks.useQueryClient }));
+ 
+ import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
+ 
+-describe('AuthQueryCacheBoundary', () => {
+-  let renderer: ReactTestRenderer;
+-  let subjectId: string | null;
+-
+-  beforeEach(() => {
+-    vi.clearAllMocks();
+-    subjectId = 'account-a';
+-    mocks.useAuth.mockImplementation(() => ({
+-      session: subjectId ? { user: { id: subjectId } } : null,
+-    }));
+-    mocks.useQueryClient.mockReturnValue({ clear: mocks.clear });
++let client: QueryClient;
++const accountKey = (principalId: string) => scopedQueryKey({ principalId }, ['profile']);
++function mount() {
++  return render(
++    <QueryClientProvider client={client}>
++      <AuthQueryCacheBoundary />
++    </QueryClientProvider>,
++  );
++}
++beforeEach(() => {
++  vi.clearAllMocks();
++  accountStore.setState({ user: { id: 'account-a' } });
++  mocks.subjectId = 'credential-a';
++  mocks.token = 'token-a';
++  client = new QueryClient();
++  client.setQueryData(accountKey('account-a'), 'A');
++  client.setQueryData(accountKey('account-b'), 'B');
++});
++afterEach(() => {
++  cleanup();
++  client.clear();
++});
+ 
++describe('canonical account Query boundary', () => {
++  it('isolates rapid A to B to A transitions without removing the replacement A query', async () => {
++    mount();
+     act(() => {
+-      renderer = create(<AuthQueryCacheBoundary />);
++      accountStore.setState({ user: { id: 'account-b' } });
++      accountStore.setState({ user: { id: 'account-a' } });
++      client.setQueryData(accountKey('account-a'), 'replacement A');
+     });
++    await Promise.resolve();
++    expect(client.getQueryData(accountKey('account-a'))).toBe('replacement A');
++    expect(client.getQueryData(accountKey('account-b'))).toBeUndefined();
+   });
+ 
+-  afterEach(() => {
+-    act(() => renderer.unmount());
++  it('preserves first-mount data and removes the outgoing account rather than its credential subject', async () => {
++    mount();
++    expect(client.getQueryData(accountKey('account-a'))).toBe('A');
++    const mutation = client
++      .getMutationCache()
++      .build(client, { mutationKey: ['outbox', 'account-a'] });
++    act(() => accountStore.setState({ user: { id: 'account-b' } }));
++    await waitFor(() => expect(client.getQueryData(accountKey('account-a'))).toBeUndefined());
++    expect(client.getQueryData(accountKey('account-b'))).toBe('B');
++    expect(client.getMutationCache().getAll()).toContain(mutation);
+   });
+-
+-  it('preserves cache on first mount and clears it once when the account changes', () => {
+-    expect(mocks.clear).not.toHaveBeenCalled();
+-
+-    subjectId = 'account-b';
+-    act(() => renderer.update(<AuthQueryCacheBoundary />));
+-    expect(mocks.clear).toHaveBeenCalledTimes(1);
+-
+-    act(() => renderer.update(<AuthQueryCacheBoundary />));
+-    expect(mocks.clear).toHaveBeenCalledTimes(1);
++  it('disposes the outgoing canonical namespace after sign-out', async () => {
++    mount();
++    act(() => accountStore.setState({ user: null }));
++    await waitFor(() => expect(client.getQueryData(accountKey('account-a'))).toBeUndefined());
++    expect(client.getQueryData(accountKey('account-b'))).toBe('B');
+   });
+-
+-  it('clears account-bound cache after sign-out', () => {
+-    subjectId = null;
+-    act(() => renderer.update(<AuthQueryCacheBoundary />));
+-
+-    expect(mocks.clear).toHaveBeenCalledTimes(1);
++  it('preserves account data when credentials rotate and restarts only the credential-owned stream', () => {
++    const view = mount();
++    mocks.subjectId = 'credential-a-rebound';
++    mocks.token = 'new-token';
++    view.rerender(
++      <QueryClientProvider client={client}>
++        <AuthQueryCacheBoundary />
++      </QueryClientProvider>,
++    );
++    expect(client.getQueryData(accountKey('account-a'))).toBe('A');
++    expect(mocks.startEventsReceiver).toHaveBeenCalledTimes(2);
++    expect(mocks.startEventsReceiver.mock.calls[1]?.[0].getAuthToken()).toBe('new-token');
++  });
++  it('does not dispose for a same-account profile update and releases its subscription on unmount', async () => {
++    const view = mount();
++    act(() => accountStore.setState({ user: { id: 'account-a' } }));
++    expect(client.getQueryData(accountKey('account-a'))).toBe('A');
++    view.unmount();
++    act(() => accountStore.setState({ user: null }));
++    await Promise.resolve();
++    expect(client.getQueryData(accountKey('account-a'))).toBe('A');
+   });
+ });
+diff --git a/apps/gurudevi-mobile/src/entry/AuthQueryCacheBoundary.tsx b/apps/gurudevi-mobile/src/entry/AuthQueryCacheBoundary.tsx
+index be0f1fb8b..b705127f1 100644
+--- a/apps/gurudevi-mobile/src/entry/AuthQueryCacheBoundary.tsx
++++ b/apps/gurudevi-mobile/src/entry/AuthQueryCacheBoundary.tsx
+@@ -1,12 +1,25 @@
+ import { useAuth } from '@repo/core';
+ import { startEventsReceiver } from '@repo/core/api/eventsReceiver';
+ import { setupHermesMemoryShield } from '@repo/core/efficiency';
++import { disposeAccountBoundaryQueries } from '@repo/core/lib/clientStateFoundation';
+ import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
++import { useAuthStore } from '@repo/core/store/useAuthStore';
+ import { useQueryClient } from '@tanstack/react-query';
+-import { useEffect, useRef } from 'react';
++import { useEffect } from 'react';
++import { AppState } from 'react-native';
++
++const nativeEventsLifecycle = {
++  subscribe({ onSleep, onWake }: { onSleep: () => void; onWake: () => void }) {
++    const subscription = AppState.addEventListener('change', (nextState) => {
++      if (nextState === 'active') onWake();
++      else onSleep();
++    });
++    return () => subscription.remove();
++  },
++};
+ 
+ /**
+- * 1. Clears account-bound query data whenever the authenticated subject changes.
++ * 1. Removes account-bound Query data without destroying MutationCache commands.
+  * 2. Maintains an active real-time SSE event stream for live cache invalidation
+  *    respecting Convivial Sleep on mobile backgrounding.
+  * 3. Activates The 2GB Android Device Shield (Hermes Memory Reclamation Engine)
+@@ -15,15 +28,19 @@ import { useEffect, useRef } from 'react';
+ export function AuthQueryCacheBoundary() {
+   const { session } = useAuth();
+   const queryClient = useQueryClient();
+-  const previousSubjectId = useRef<string | null | undefined>(undefined);
+   const subjectId = session?.user.id ?? null;
+ 
+-  useEffect(() => {
+-    if (previousSubjectId.current !== undefined && previousSubjectId.current !== subjectId) {
+-      queryClient.clear();
+-    }
+-    previousSubjectId.current = subjectId;
+-  }, [queryClient, subjectId]);
++  useEffect(
++    () =>
++      useAuthStore.subscribe((state, previous) => {
++        const outgoingAccountId = previous.user?.id ?? null;
++        if (outgoingAccountId === (state.user?.id ?? null)) return;
++        void disposeAccountBoundaryQueries(queryClient, outgoingAccountId).catch((error) => {
++          console.error('[Query cache] Account-bound query disposal failed:', error);
++        });
++      }),
++    [queryClient],
++  );
+ 
+   // Activate 2GB Android Device Shield & Hermes Memory Reclamation
+   useEffect(() => {
+@@ -49,13 +66,13 @@ export function AuthQueryCacheBoundary() {
+     return cleanup;
+   }, [queryClient]);
+ 
+-
+   useEffect(() => {
+     if (!subjectId || !session?.access_token) return;
+ 
+     const cleanup = startEventsReceiver({
+       queryClient,
+       getAuthToken: () => session.access_token,
++      lifecycle: nativeEventsLifecycle,
+       onError: (err) => {
+         if (__DEV__) {
+           console.warn('[SSE] Event stream warning:', err.message);
+@@ -68,4 +85,3 @@ export function AuthQueryCacheBoundary() {
+ 
+   return null;
+ }
+-
+diff --git a/apps/gurudevi-mobile/src/lib/queryClient.ts b/apps/gurudevi-mobile/src/lib/queryClient.ts
+index c07244f80..c6e4857d6 100644
+--- a/apps/gurudevi-mobile/src/lib/queryClient.ts
++++ b/apps/gurudevi-mobile/src/lib/queryClient.ts
+@@ -1,4 +1,25 @@
+-import { QueryClient } from '@tanstack/react-query';
++import { networkManager } from '@repo/core/logic/managers/NetworkManager';
++import { focusManager, onlineManager, QueryClient } from '@tanstack/react-query';
++import { AppState, Platform } from 'react-native';
++
++if (Platform.OS !== 'web') {
++  focusManager.setEventListener((setFocused) => {
++    const subscription = AppState.addEventListener('change', (state) =>
++      setFocused(state === 'active'),
++    );
++    if (typeof AppState.currentState === 'string') setFocused(AppState.currentState === 'active');
++    return () => subscription.remove();
++  });
++}
++
++onlineManager.setEventListener((setOnline) => {
++  // TanStack's online flag schedules reads; it is not mutation permission.
++  // Unknown must still allow a request attempt so startup cannot pause forever.
++  const update = () => setOnline(networkManager.getSnapshot().status !== 'offline');
++  const unsubscribe = networkManager.subscribe(update);
++  update();
++  return unsubscribe;
++});
+ 
+ export const queryClient = new QueryClient({
+   defaultOptions: {
+diff --git a/packages/core/src/lib/clientStateFoundation.test.ts b/packages/core/src/lib/clientStateFoundation.test.ts
+index 347a9c472..26bd8fcb9 100644
+--- a/packages/core/src/lib/clientStateFoundation.test.ts
++++ b/packages/core/src/lib/clientStateFoundation.test.ts
+@@ -1,9 +1,11 @@
+ import { QueryClient } from '@tanstack/react-query';
+-import { describe, expect, it } from 'vitest';
++import { describe, expect, it, vi } from 'vitest';
+ import {
++  abortableQueryRead,
+   assessProtocolAdmission,
+   CLIENT_STATE_REGISTRY,
+   createPersistedRecord,
++  disposeAccountBoundaryQueries,
+   disposeQueryScope,
+   invalidateQueryScope,
+   type PersistedRecordPolicy,
+@@ -61,6 +63,13 @@ describe('persisted record foundation', () => {
+ });
+ 
+ describe('scoped Query lifecycle', () => {
++  it('rejects a late non-abortable transport when Query cancels the read', async () => {
++    const controller = new AbortController();
++    const pending = abortableQueryRead(controller.signal, () => new Promise(() => {}));
++    controller.abort();
++    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
++  });
++
+   it('invalidates only the named scope without starting refetch work', async () => {
+     const client = new QueryClient();
+     const alpha = { principalId: 'alpha', tenantId: 'school-a', perspectiveId: 'teacher' };
+@@ -94,14 +103,96 @@ describe('scoped Query lifecycle', () => {
+     expect(client.getQueryData(scopedQueryKey(beta, ['profile']))).toEqual({ name: 'Beta' });
+     expect(client.getQueryData(['public', 'library'])).toEqual({ title: 'Public' });
+   });
++
++  it('clears legacy Query data at an account boundary without clearing mutations', async () => {
++    const client = new QueryClient();
++    const alpha = { principalId: 'alpha', tenantId: 'school-a', perspectiveId: 'teacher' };
++    const beta = { principalId: 'beta', tenantId: 'school-b', perspectiveId: 'teacher' };
++    const mutation = client.getMutationCache().build(client, {
++      mutationKey: ['command', 'alpha'],
++      mutationFn: async () => undefined,
++    });
++    client.setQueryData(scopedQueryKey(alpha, ['profile']), { name: 'Alpha' });
++    client.setQueryData(scopedQueryKey(beta, ['profile']), { name: 'Beta' });
++    client.setQueryData(['legacy', 'private-profile'], { name: 'Legacy Alpha' });
++
++    await expect(disposeAccountBoundaryQueries(client, 'alpha')).resolves.toEqual({
++      outgoingPrincipalId: 'alpha',
++      scopedQueryCount: 1,
++      legacyQueryCount: 1,
++    });
++    expect(client.getQueryData(scopedQueryKey(alpha, ['profile']))).toBeUndefined();
++    expect(client.getQueryData(['legacy', 'private-profile'])).toBeUndefined();
++    expect(client.getQueryData(scopedQueryKey(beta, ['profile']))).toEqual({ name: 'Beta' });
++    expect(client.getMutationCache().find({ mutationId: mutation.mutationId })).toBe(mutation);
++  });
++
++  it('does not remove newly created queries while outgoing cancellation is settling', async () => {
++    const client = new QueryClient();
++    const key = scopedQueryKey({ principalId: 'alpha' }, ['profile']);
++    client.setQueryData(key, 'old alpha');
++    client.setQueryData(['old-legacy'], 'old');
++    const cancel = client.cancelQueries.bind(client);
++    let release!: () => void;
++    const barrier = new Promise<void>((resolve) => {
++      release = resolve;
++    });
++    vi.spyOn(client, 'cancelQueries').mockImplementation(async (filters, options) => {
++      await cancel(filters, options);
++      await barrier;
++    });
++    const pending = disposeAccountBoundaryQueries(client, 'alpha');
++    await Promise.resolve();
++    expect(client.getQueryData(key)).toBeUndefined();
++    client.setQueryData(key, 'new alpha after return');
++    client.setQueryData(['new-legacy'], 'incoming data');
++    release();
++    await pending;
++    expect(client.getQueryData(key)).toBe('new alpha after return');
++    expect(client.getQueryData(['new-legacy'])).toBe('incoming data');
++    expect(client.getQueryData(['old-legacy'])).toBeUndefined();
++    client.clear();
++  });
++
++  it('cancels an outgoing read so late transport completion cannot repopulate its cache', async () => {
++    const client = new QueryClient();
++    const key = scopedQueryKey({ principalId: 'alpha' }, ['pending']);
++    let finish!: (value: string) => void;
++    const pending = client
++      .fetchQuery({
++        queryKey: key,
++        queryFn: ({ signal }) =>
++          abortableQueryRead(
++            signal,
++            () =>
++              new Promise<string>((resolve) => {
++                finish = resolve;
++              }),
++          ),
++      })
++      .catch(() => undefined);
++    await disposeAccountBoundaryQueries(client, 'alpha');
++    finish('old account result');
++    await pending;
++    expect(client.getQueryData(key)).toBeUndefined();
++    client.clear();
++  });
+ });
+ 
+ describe('state registry and XState admission', () => {
+   it('has one uniquely identified, classified entry for each reviewed state holder', () => {
+     const ids = CLIENT_STATE_REGISTRY.map((entry) => entry.id);
+     expect(new Set(ids).size).toBe(ids.length);
+-    expect(CLIENT_STATE_REGISTRY).toHaveLength(20);
++    expect(CLIENT_STATE_REGISTRY).toHaveLength(21);
+     expect(CLIENT_STATE_REGISTRY.every((entry) => entry.owner && entry.source)).toBe(true);
++    const perspective = CLIENT_STATE_REGISTRY.find((entry) => entry.id === 'perspective');
++    const scope = CLIENT_STATE_REGISTRY.find((entry) => entry.id === 'scope-session');
++    expect(perspective?.disposition).toBe('consolidated');
++    expect(perspective?.source).toBe(scope?.source);
++    expect(CLIENT_STATE_REGISTRY.find((entry) => entry.id === 'growth')).toMatchObject({
++      source: 'packages/core/src/hooks/useGrowthQuery.ts',
++      disposition: 'query',
++    });
+   });
+ 
+   it('rejects ceremony-only machines and admits a fully evidenced protocol', () => {
+diff --git a/packages/core/src/lib/clientStateFoundation.ts b/packages/core/src/lib/clientStateFoundation.ts
+index b10a7a507..d2cf5d2df 100644
+--- a/packages/core/src/lib/clientStateFoundation.ts
++++ b/packages/core/src/lib/clientStateFoundation.ts
+@@ -147,6 +147,36 @@ export function scopedQueryKey<T extends readonly unknown[]>(
+   return [...queryScopePrefix(scope), ...resourceKey];
+ }
+ 
++/**
++ * Makes an existing non-abortable transport respect a Query cancellation. The
++ * underlying transport can still settle, but its late value cannot repopulate
++ * a Query that was disposed during an account or scope transition.
++ */
++export function abortableQueryRead<T>(
++  signal: AbortSignal,
++  operation: () => Promise<T>,
++): Promise<T> {
++  if (signal.aborted) return Promise.reject(signal.reason);
++  return new Promise((resolve, reject) => {
++    const abort = () => {
++      const error = new Error('Query read aborted.');
++      error.name = 'AbortError';
++      reject(signal.reason ?? error);
++    };
++    signal.addEventListener('abort', abort, { once: true });
++    void operation().then(
++      (value) => {
++        signal.removeEventListener('abort', abort);
++        resolve(value);
++      },
++      (error) => {
++        signal.removeEventListener('abort', abort);
++        reject(error);
++      },
++    );
++  });
++}
++
+ function queryMatchesScope(query: Query, prefix: QueryScopePrefix): boolean {
+   const key = query.queryKey;
+   return prefix.every((segment, index) => key[index] === segment);
+@@ -162,6 +192,12 @@ export interface QueryScopeInvalidationResult {
+   readonly matchedQueryCount: number;
+ }
+ 
++export interface QueryAccountBoundaryDisposalResult {
++  readonly outgoingPrincipalId: string | null;
++  readonly scopedQueryCount: number;
++  readonly legacyQueryCount: number;
++}
++
+ /**
+  * Cancels and removes only queries bearing the supplied scope prefix. It never
+  * calls `QueryClient.clear()` and deliberately leaves mutations/outbox state to
+@@ -179,6 +215,42 @@ export async function disposeQueryScope(
+   return { scope: prefix, matchedQueryCount };
+ }
+ 
++/**
++ * Removes Query cache entries at an account boundary without touching the
++ * MutationCache. Scoped entries for the outgoing principal are removed by
++ * their namespace; legacy unscoped entries use the existing broad-query
++ * fallback until their resource family adopts `scopedQueryKey`.
++ */
++export async function disposeAccountBoundaryQueries(
++  queryClient: QueryClient,
++  outgoingPrincipalId: string | null,
++): Promise<QueryAccountBoundaryDisposalResult> {
++  const scopedPredicate = (query: Query) =>
++    query.queryKey[0] === 'scope' &&
++    typeof query.queryKey[1] === 'string' &&
++    query.queryKey[1] === outgoingPrincipalId;
++  const legacyPredicate = (query: Query) => query.queryKey[0] !== 'scope';
++  const scopedQueryCount = outgoingPrincipalId
++    ? queryClient.getQueryCache().findAll({ predicate: scopedPredicate }).length
++    : 0;
++  const legacyQueryCount = queryClient
++    .getQueryCache()
++    .findAll({ predicate: legacyPredicate }).length;
++
++  const capturedQueries = new Set(
++    queryClient.getQueryCache().findAll({
++      predicate: (query) =>
++        legacyPredicate(query) || (outgoingPrincipalId !== null && scopedPredicate(query)),
++    }),
++  );
++  const predicate = (query: Query) => capturedQueries.has(query);
++  const cancellation = queryClient.cancelQueries({ predicate });
++  queryClient.removeQueries({ predicate });
++  await cancellation;
++
++  return { outgoingPrincipalId, scopedQueryCount, legacyQueryCount };
++}
++
+ /**
+  * Marks only a scoped resource family stale without removing its cached data.
+  * `refetchType: 'none'` prevents a scope transition utility from implicitly
+@@ -214,6 +286,8 @@ export interface StateRegistryEntry {
+   readonly scope: PersistedRecordScope | 'component';
+   readonly disposition:
+     | 'retain'
++    | 'consolidated'
++    | 'query'
+     | 'query-review'
+     | 'scope-session-review'
+     | 'protocol-review'
+@@ -225,6 +299,22 @@ export interface StateRegistryEntry {
+  * that prevents this foundation from becoming another global state mechanism.
+  */
+ export const CLIENT_STATE_REGISTRY = [
++  {
++    id: 'scope-session',
++    source: 'packages/core/src/store/scopeSession.ts',
++    owner: 'identity',
++    stateClass: 'scope-session',
++    scope: 'principal',
++    disposition: 'retain',
++  },
++  {
++    id: 'perspective',
++    source: 'packages/core/src/store/scopeSession.ts',
++    owner: 'identity',
++    stateClass: 'scope-session',
++    scope: 'perspective',
++    disposition: 'consolidated',
++  },
+   {
+     id: 'auth',
+     source: 'packages/core/src/store/useAuthStore.ts',
+@@ -241,25 +331,17 @@ export const CLIENT_STATE_REGISTRY = [
+     scope: 'tenant',
+     disposition: 'scope-session-review',
+   },
+-  {
+-    id: 'perspective',
+-    source: 'packages/core/src/store/usePerspectiveStore.ts',
+-    owner: 'identity',
+-    stateClass: 'scope-session',
+-    scope: 'perspective',
+-    disposition: 'scope-session-review',
+-  },
+   {
+     id: 'feature',
+     source: 'packages/core/src/store/useFeatureStore.ts',
+     owner: 'platform',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+-    disposition: 'query-review',
++    disposition: 'retain',
+   },
+   {
+     id: 'entitlement',
+-    source: 'packages/core/src/store/useEntitlementStore.ts',
++    source: 'packages/core/src/hooks/useEntitlementQuery.ts',
+     owner: 'authorization',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -275,7 +357,7 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'notification',
+-    source: 'packages/core/src/store/useNotificationStore.ts',
++    source: 'packages/core/src/hooks/useScopedNotifications.ts',
+     owner: 'notification-domain',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -283,7 +365,7 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'device-security',
+-    source: 'packages/core/src/store/useDeviceSecurityStore.ts',
++    source: 'packages/core/src/hooks/useScopedDeviceSecurity.ts',
+     owner: 'security',
+     stateClass: 'server-state-candidate',
+     scope: 'principal',
+@@ -363,11 +445,11 @@ export const CLIENT_STATE_REGISTRY = [
+   },
+   {
+     id: 'growth',
+-    source: 'packages/core/src/store/useGrowthStore.ts',
++    source: 'packages/core/src/hooks/useGrowthQuery.ts',
+     owner: 'growth-domain',
+     stateClass: 'domain-projection-review',
+     scope: 'principal',
+-    disposition: 'split-review',
++    disposition: 'query',
+   },
+   {
+     id: 'temporal',

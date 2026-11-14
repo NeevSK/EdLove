@@ -48,3 +48,13 @@ export const lessonMaterialsAPI = {
     return educational.lessonMaterials.delete(id);
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_LESSON_MATERIALS } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'lessonMaterials',
+  ghostMethods: ['getAll', 'getByLesson'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_LESSON_MATERIALS,
+});

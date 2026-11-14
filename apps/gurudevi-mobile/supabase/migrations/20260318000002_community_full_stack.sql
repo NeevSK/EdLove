@@ -11,6 +11,14 @@
 -- 1. community_comments — full CRUD RLS
 -- ─────────────────────────────────────────────────────────────────────────────
 
+CREATE TABLE IF NOT EXISTS public.community_comments (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id uuid NOT NULL REFERENCES public.community_posts(id) ON DELETE CASCADE,
+    author_id uuid REFERENCES public.users(id) ON DELETE SET NULL,
+    content text NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+
 -- Ensure the table has RLS enabled (idempotent)
 ALTER TABLE IF EXISTS public.community_comments ENABLE ROW LEVEL SECURITY;
 
@@ -207,7 +215,13 @@ CREATE POLICY "notifications_update_own" ON public.notifications
 
 -- Backend (service_role) inserts notifications — no INSERT policy for anon/user needed
 -- But we grant SELECT on the realtime subscription:
-ALTER publication IF EXISTS supabase_realtime ADD TABLE public.notifications;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.notifications;
+  END IF;
+END;
+$$;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 8. Indexes for performance

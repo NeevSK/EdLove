@@ -1,0 +1,950 @@
+diff --git a/apps/gurudevi-mobile/src/entry/bootstrapRouteState.ts b/apps/gurudevi-mobile/src/entry/bootstrapRouteState.ts
+index 869f42175..fb12c1f8d 100644
+--- a/apps/gurudevi-mobile/src/entry/bootstrapRouteState.ts
++++ b/apps/gurudevi-mobile/src/entry/bootstrapRouteState.ts
+@@ -1,16 +1,18 @@
++import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
+ import {
+   getAuthRouteTarget,
+   getSessionIdentityMode,
+   type IdentityAvailability,
+   isResolvedAuthSubjectCurrent,
+   useAuth,
+-  useStore,
+ } from '@repo/core/logic';
+ import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+ import { getLocalGuestIdentity } from '@repo/core/native/guestIdentity';
+ import { getOrCreateGuestLease } from '@repo/core/native/guestLease';
+ import { setGuestScope } from '@repo/core/native/guestScope';
+-import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
++import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
++import { useScopeSessionStore } from '@repo/core/store/scopeSession';
++import { useAuthStore } from '@repo/core/store/useAuthStore';
+ import { useEffect, useState } from 'react';
+ 
+ import {
+@@ -30,19 +32,22 @@ export type BootstrapRouteState = {
+   session: AuthSession | null;
+   hasLiveCapacity: boolean;
+   hasProfileName: boolean;
++  principalId: string | null;
+   activeCapacity?: string | null;
+   isProfileForSession: boolean;
+   entitlement: Pick<
+-    ReturnType<typeof useEntitlementStore.getState>,
++    ReturnType<typeof useEntitlementQuery>,
+     'manifestLoaded' | 'readiness' | 'snapshotUserId'
+   >;
+   isGuestRouteStateLoading?: boolean;
++  hasLocalGuestSession?: boolean;
+   isLocalGuestReady?: boolean;
+ };
+ 
+ type LocalGuestRouteState = {
+   isLoading: boolean;
+   isReady: boolean;
++  localGuestId: string | null;
+ };
+ 
+ function useLocalGuestRouteState(
+@@ -51,40 +56,52 @@ function useLocalGuestRouteState(
+ ): LocalGuestRouteState {
+   const isAnonymous = getSessionIdentityMode(session) === 'anonymous';
+   const [state, setState] = useState<LocalGuestRouteState>({
+-    isLoading: isAnonymous,
++    isLoading: isAnonymous || session === null,
+     isReady: false,
++    localGuestId: null,
+   });
+ 
+   useEffect(() => {
+-    if (!isAnonymous || !session?.user.id) {
+-      setGuestScope(null);
+-      setState({ isLoading: false, isReady: false });
++    const anonymousGuestId = isAnonymous ? session?.user.id : null;
++    if (session?.user && !anonymousGuestId) {
++      setState({ isLoading: false, isReady: false, localGuestId: null });
+       return;
+     }
+ 
+     let active = true;
+-    setState({ isLoading: true, isReady: false });
+-    void getLocalGuestIdentity(session.user.id)
++    setState({ isLoading: true, isReady: false, localGuestId: null });
++    void (anonymousGuestId ? Promise.resolve({ id: anonymousGuestId }) : restoreLocalGuestSession())
++      .then((guestSession) => {
++        if (!guestSession) return null;
++        return getLocalGuestIdentity(guestSession.id).then((identity) => ({
++          identity,
++          userId: guestSession.id,
++        }));
++      })
+       .then(async (identity) => {
+-        if (!identity.onboarding_completed || !identity.activeBond?.capacity) {
+-          return { isReady: false };
++        if (
++          !identity ||
++          !identity.identity.onboarding_completed ||
++          !identity.identity.activeBond?.capacity
++        ) {
++          return { isReady: false, localGuestId: identity?.userId ?? null };
+         }
+-        setGuestScope(session.user.id);
+-        const lease = await getOrCreateGuestLease(session.user.id);
+-        return { isReady: !lease.isExpired };
++        setGuestScope(identity.userId);
++        const lease = await getOrCreateGuestLease(identity.userId);
++        return { isReady: !lease.isExpired, localGuestId: identity.userId };
+       })
+       .then((next) => {
+-        if (active) setState({ isLoading: false, isReady: next.isReady });
++        if (active) setState({ isLoading: false, ...next });
+       })
+       .catch((error: unknown) => {
+         console.warn('[entry] unable to restore local guest admission state:', error);
+-        if (active) setState({ isLoading: false, isReady: false });
++        if (active) setState({ isLoading: false, isReady: false, localGuestId: null });
+       });
+ 
+     return () => {
+       active = false;
+     };
+-  }, [isAnonymous, onboardingCompleted, session?.user.id]);
++  }, [isAnonymous, onboardingCompleted, session]);
+ 
+   return state;
+ }
+@@ -102,16 +119,34 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
+     resolvedAuthSubjectId,
+     session,
+   } = useAuth();
+-  const profile = useStore((state) => state.user);
+-  const activeBond = useStore((state) => state.activeBond);
+-  const onboardingCompleted = useStore((state) => state.onboardingCompleted);
++  const profile = useAuthStore((state) => state.user);
++  const scopeSnapshot = useScopeSessionStore((state) => state.snapshot);
++  const scopeTransitioning = useScopeSessionStore((state) => state.isTransitioning);
++  const onboardingCompleted = useAuthStore((state) => state.onboardingCompleted);
+   const profileBelongsToSession = Boolean(
+     profile?.id && isResolvedAuthSubjectCurrent(resolvedAuthSubjectId, session?.user.id),
+   );
++  const entitlementScopeIsCurrent =
++    !scopeTransitioning && scopeSnapshot?.principalId === (profile?.id ?? null);
++  const activeBond = entitlementScopeIsCurrent ? (scopeSnapshot?.activeBond ?? null) : null;
+   const hasLiveCapacity = Boolean(profileBelongsToSession && activeBond?.capacity);
+   const activeCapacity = profileBelongsToSession ? (activeBond?.capacity ?? null) : null;
+   const hasProfileName = Boolean(profileBelongsToSession && profile?.display_name?.trim());
+-  const { manifestLoaded, readiness, snapshotUserId } = useEntitlementStore();
++  const entitlement = useEntitlementQuery(
++    profileBelongsToSession ? (profile?.id ?? null) : null,
++    {
++      activeBondId: activeBond?.id ?? null,
++      activeEntityId: activeBond?.entity_id ?? null,
++      activeEntityType: activeBond?.entity_type ?? null,
++    },
++    Boolean(
++      profileBelongsToSession &&
++        entitlementScopeIsCurrent &&
++        identityAvailability === 'active' &&
++        getSessionIdentityMode(session) === 'authenticated',
++    ),
++  );
++  const { manifestLoaded, readiness, snapshotUserId } = entitlement;
+   const localGuest = useLocalGuestRouteState(session, onboardingCompleted);
+   const isAnonymous = getSessionIdentityMode(session) === 'anonymous';
+   const hasActiveAccessToken = Boolean(
+@@ -125,17 +160,20 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
+     identityAvailability,
+     isProfileResolving,
+     isSessionLoading: loading,
+-    onboardingCompleted: isAnonymous ? localGuest.isReady : onboardingCompleted,
++    onboardingCompleted:
++      isAnonymous || localGuest.localGuestId ? localGuest.isReady : onboardingCompleted,
+     pathname,
+     profileError,
+     session,
+     hasLiveCapacity,
+     activeCapacity,
+     hasProfileName,
++    principalId: profileBelongsToSession ? (profile?.id ?? null) : null,
+     isProfileForSession: profileBelongsToSession,
+     entitlement: { manifestLoaded, readiness, snapshotUserId },
+-    isGuestRouteStateLoading: isAnonymous && localGuest.isLoading,
+-    isLocalGuestReady: isAnonymous && localGuest.isReady,
++    isGuestRouteStateLoading: (isAnonymous || session === null) && localGuest.isLoading,
++    hasLocalGuestSession: Boolean(localGuest.localGuestId),
++    isLocalGuestReady: localGuest.isReady,
+   };
+ }
+ 
+@@ -149,6 +187,7 @@ export function getBootstrapRouteTarget(
+       hasActiveCapacity: false,
+       hasActiveAccessToken: state.hasActiveAccessToken,
+       hasSession: Boolean(state.session),
++      hasLocalGuestSession: state.hasLocalGuestSession,
+       identityAvailability: state.identityAvailability,
+       hasProfileForSession: state.isProfileForSession,
+       hasProfileName: state.hasProfileName,
+@@ -160,7 +199,7 @@ export function getBootstrapRouteTarget(
+     });
+   }
+   const hasCachedCapabilities = hasUsableOfflineCapabilitySnapshot({
+-    sessionUserId: state.session?.user.id,
++    sessionUserId: state.principalId ?? undefined,
+     snapshotUserId: state.entitlement.snapshotUserId,
+     manifestLoaded: state.entitlement.manifestLoaded,
+     readiness: state.entitlement.readiness,
+@@ -169,7 +208,7 @@ export function getBootstrapRouteTarget(
+     isSessionLoading: state.isSessionLoading,
+     isProfileResolving: state.isProfileResolving,
+     hasProfileError: Boolean(state.profileError),
+-    hasSession: Boolean(state.session),
++    hasSession: Boolean(state.session) || Boolean(state.hasLocalGuestSession),
+     guestOnboardingIntent: options.guestOnboardingIntent,
+     hasCachedCapabilities: hasCachedCapabilities || Boolean(state.isLocalGuestReady),
+     hasLiveCapacity: state.hasLiveCapacity || Boolean(state.isLocalGuestReady),
+@@ -180,6 +219,7 @@ export function getBootstrapRouteTarget(
+     hasActiveCapacity: readiness.hasActiveCapacity,
+     hasActiveAccessToken: state.hasActiveAccessToken,
+     hasSession: Boolean(state.session),
++    hasLocalGuestSession: state.hasLocalGuestSession,
+     identityAvailability: state.identityAvailability,
+     hasProfileForSession: state.isProfileForSession,
+     hasProfileName: state.hasProfileName || Boolean(state.isLocalGuestReady),
+diff --git a/packages/classroom/src/workspace/useTeacherClassroomWorkspaceData.ts b/packages/classroom/src/workspace/useTeacherClassroomWorkspaceData.ts
+index 028c12774..5df94872a 100644
+--- a/packages/classroom/src/workspace/useTeacherClassroomWorkspaceData.ts
++++ b/packages/classroom/src/workspace/useTeacherClassroomWorkspaceData.ts
+@@ -1,117 +1,43 @@
+ import { api } from '@repo/core/api/client';
+-import { workspaceLayoutServices } from '@repo/core/api/runtimes/workspaceLayout.runtime';
+ import { useTeacherClassroom } from '@repo/core/hooks';
+-import { useStore } from '@repo/core/logic';
+-import type { WorkspaceLayoutRecord } from '@repo/core/logic/schemas/workspace-layout.schema';
+-import { useCallback, useEffect, useMemo, useState } from 'react';
+-import { Platform } from 'react-native';
++import { useWorkspaceLayoutSync } from '@repo/core/native/useWorkspaceLayoutSync';
++import { useAuthStore } from '@repo/core/store/useAuthStore';
++import { useQuery } from '@tanstack/react-query';
++import { useCallback } from 'react';
+ 
+-type TeacherObservation = Awaited<
+-  ReturnType<typeof api.teacherInsights.listStudentObservations>
+->[number];
++const NO_SURFACE_DEFINITIONS: [] = [];
+ 
++/** Classroom reads use Query; layout edits use the shared durable patch protocol. */
+ export function useTeacherClassroomWorkspaceData(classroomId: string) {
+   const classroomState = useTeacherClassroom(classroomId);
+-  const currentUserId = useStore((state) => state.user?.id ?? '');
+-  const [assignments, setAssignments] = useState<any[]>([]);
+-  const [lessons, setLessons] = useState<any[]>([]);
+-  const [materials, setMaterials] = useState<any[]>([]);
+-  const [observations, setObservations] = useState<TeacherObservation[]>([]);
+-  const [noteCount, setNoteCount] = useState(0);
+-  const [isWorkspaceLoading, setIsWorkspaceLoading] = useState(true);
+-  const [workspaceError, setWorkspaceError] = useState<Error | null>(null);
+-  const [layout, setLayout] = useState<WorkspaceLayoutRecord | null>(null);
+-
+-  const layoutTarget = Platform.OS === 'web' ? 'web' : 'mobile';
+-
+-  const refreshWorkspace = useCallback(async () => {
+-    if (!classroomId) {
+-      setAssignments([]);
+-      setLessons([]);
+-      setMaterials([]);
+-      setObservations([]);
+-      setNoteCount(0);
+-      setIsWorkspaceLoading(false);
+-      return;
+-    }
+-
+-    setIsWorkspaceLoading(true);
+-    setWorkspaceError(null);
+-
+-    try {
+-      const [assignmentData, lessonData, materialData, observationData, notes, layoutData] =
+-        await Promise.all([
+-          api.assignments.getAll(classroomId),
+-          api.lessons.getAll(classroomId),
+-          api.lessonMaterials.getAll(classroomId),
+-          api.teacherInsights.listStudentObservations(classroomId),
+-          api.classroomNotes.getAll(classroomId),
+-          workspaceLayoutServices.getLayout(currentUserId, classroomId, layoutTarget),
+-        ]);
+-
+-      setAssignments(assignmentData || []);
+-      setLessons(lessonData || []);
+-      setMaterials(materialData || []);
+-      setObservations(observationData || []);
+-      setNoteCount(notes.length);
+-      setLayout(layoutData);
+-    } catch (error) {
+-      console.error('[useTeacherClassroomWorkspaceData] Failed to load workspace data:', error);
+-      setWorkspaceError(error instanceof Error ? error : new Error(String(error)));
+-    } finally {
+-      setIsWorkspaceLoading(false);
+-    }
+-  }, [classroomId, layoutTarget, currentUserId]);
+-
+-  const updateLayout = useCallback(
+-    async (newOrder: string[]) => {
+-      if (!layout || !currentUserId) return;
+-
+-      const updated = await workspaceLayoutServices.upsertLayout({
+-        userId: currentUserId,
+-        workspaceId: classroomId,
+-        layoutTarget,
+-        order: newOrder,
+-        hidden: layout.hidden,
+-        pinned: layout.pinned,
+-        zoneBySurface: layout.zone_by_surface as Record<string, string | number>,
+-        layoutVersion: layout.layout_version as 1,
+-        updatedAt: new Date().toISOString(),
+-      } as unknown as Parameters<typeof workspaceLayoutServices.upsertLayout>[0]);
+-
+-      setLayout(updated);
++  const currentUserId = useAuthStore((state) => state.user?.id ?? '');
++  const layoutState = useWorkspaceLayoutSync({
++    workspaceId: classroomId,
++    userId: currentUserId,
++    surfaces: NO_SURFACE_DEFINITIONS,
++  });
++  const reads = useQuery({
++    queryKey: ['teacher-classroom-workspace', currentUserId, classroomId],
++    enabled: Boolean(currentUserId && classroomId),
++    queryFn: async () => {
++      const [assignments, lessons, materials, observations, notes] = await Promise.all([
++        api.assignments.getAll(classroomId),
++        api.lessons.getAll(classroomId),
++        api.lessonMaterials.getAll(classroomId),
++        api.teacherInsights.listStudentObservations(classroomId),
++        api.classroomNotes.getAll(classroomId),
++      ]);
++      return { assignments, lessons, materials, observations, noteCount: notes.length };
+     },
+-    [layout, classroomId, layoutTarget, currentUserId],
+-  );
+-
+-  useEffect(() => {
+-    void refreshWorkspace();
+-  }, [refreshWorkspace]);
+-
+-  const summary = useMemo(() => {
+-    const concernCount = observations.filter((item) => item.observation_type === 'concern').length;
+-    const positiveCount = observations.filter(
+-      (item) => item.observation_type === 'positive',
+-    ).length;
+-
+-    return {
+-      studentCount: classroomState.students.length,
+-      assignmentCount: assignments.length,
+-      lessonCount: lessons.length,
+-      materialCount: materials.length,
+-      observationCount: observations.length,
+-      concernCount,
+-      positiveCount,
+-      noteCount,
+-    };
+-  }, [
+-    assignments.length,
+-    classroomState.students.length,
+-    lessons.length,
+-    materials.length,
+-    noteCount,
+-    observations,
+-  ]);
++  });
++  const assignments = reads.data?.assignments ?? [];
++  const lessons = reads.data?.lessons ?? [];
++  const materials = reads.data?.materials ?? [];
++  const observations = reads.data?.observations ?? [];
++  const noteCount = reads.data?.noteCount ?? 0;
++  const refreshWorkspace = useCallback(async () => {
++    await Promise.all([reads.refetch(), layoutState.refreshFromRemote()]);
++  }, [reads.refetch, layoutState.refreshFromRemote]);
+ 
+   return {
+     ...classroomState,
+@@ -120,11 +46,24 @@ export function useTeacherClassroomWorkspaceData(classroomId: string) {
+     materials,
+     noteCount,
+     observations,
+-    summary,
+-    workspaceError,
+-    layout,
+-    isLoading: classroomState.loading || isWorkspaceLoading,
++    summary: {
++      studentCount: classroomState.students.length,
++      assignmentCount: assignments.length,
++      lessonCount: lessons.length,
++      materialCount: materials.length,
++      observationCount: observations.length,
++      noteCount,
++      concernCount: observations.filter(
++        (item: { observation_type: string }) => item.observation_type === 'concern',
++      ).length,
++      positiveCount: observations.filter(
++        (item: { observation_type: string }) => item.observation_type === 'positive',
++      ).length,
++    },
++    workspaceError: reads.error ?? layoutState.syncError,
++    layout: layoutState.layout,
++    isLoading: classroomState.loading || reads.isLoading || !layoutState.isHydrated,
+     refreshWorkspace,
+-    updateLayout,
++    updateLayout: layoutState.saveSurfaceOrder,
+   };
+ }
+diff --git a/packages/core/src/lib/sync/registry.ts b/packages/core/src/lib/sync/registry.ts
+index 4fc43dc9d..623c69319 100644
+--- a/packages/core/src/lib/sync/registry.ts
++++ b/packages/core/src/lib/sync/registry.ts
+@@ -1,4 +1,6 @@
+ import { replayAssignmentSubmission } from '@repo/core/api/assignmentCommands';
++import { submitWorkspaceLayoutPatch } from '@repo/core/api/workspaceLayoutPatch';
++import { WorkspaceLayoutPatchSchema } from '@repo/core/logic/workspace/layoutPatch';
+ import { attendanceAPI } from '@repo/core/api/attendance';
+ import { api } from '@repo/core/api/client';
+ import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+@@ -27,6 +29,15 @@ function requireIdempotencyKey(context: MutationExecutionContext | undefined): s
+ }
+ 
+ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
++  'workspace.layout.patch': (variables: unknown, context) => {
++    const envelope = variables && typeof variables === 'object' && 'input' in variables
++      ? variables.input : undefined;
++    const patch = WorkspaceLayoutPatchSchema.parse(envelope);
++    if (!context?.userId || patch.userId !== context.userId) {
++      throw new Error('Workspace patch owner does not match the queued principal.');
++    }
++    return submitWorkspaceLayoutPatch(patch);
++  },
+   'assignment.submit': (variables, context) => replayAssignmentSubmission(variables, context ?? {}),
+   'classroom.attendance.batchRecord': async (vars) => {
+     const rows = vars?.rows ?? (Array.isArray(vars) ? vars : []);
+diff --git a/packages/core/src/native/useWorkspaceLayoutSync.ts b/packages/core/src/native/useWorkspaceLayoutSync.ts
+index 4dc60d035..13cda475f 100644
+--- a/packages/core/src/native/useWorkspaceLayoutSync.ts
++++ b/packages/core/src/native/useWorkspaceLayoutSync.ts
+@@ -1,5 +1,8 @@
+ import { workspaceLayoutAPI } from '@repo/core/api/workspaceLayout';
++import { submitWorkspaceLayoutPatch } from '@repo/core/api/workspaceLayoutPatch';
++import { storage } from '@repo/core/lib/storage';
+ import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
++import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+ import type { WorkspaceLayoutTarget } from '@repo/core/logic/schemas/workspace-layout.schema';
+ import {
+   createDefaultWorkspaceLayout,
+@@ -13,26 +16,31 @@ import {
+   setWorkspaceSurfacePinned,
+   setWorkspaceSurfaceZone,
+ } from '@repo/core/logic/workspace/canvas';
++import { buildWorkspaceLayoutIntentStorageKey } from '@repo/core/logic/workspace/layoutIntent';
++import type { WorkspaceLayoutPatch } from '@repo/core/logic/workspace/layoutPatch';
++import { WorkspaceLayoutSession } from '@repo/core/logic/workspace/layoutSession';
+ import {
+   buildWorkspaceLayoutStorageKey,
+-  choosePreferredWorkspaceLayout,
+   resolveWorkspaceLayoutTarget,
+   toWorkspaceLayoutRecord,
+-  toWorkspaceLayoutUpsert,
+   WORKSPACE_COMPACT_BREAKPOINT,
+   type WorkspaceLayoutPlatformKind,
+   type WorkspaceLayoutScreenClass,
+ } from '@repo/core/logic/workspace/layoutSync';
++import {
++  shouldRetryWorkspaceSync,
++  workspaceSyncRetryDelay,
++} from '@repo/core/logic/workspace/syncPolicy';
+ import type {
+   ResolvedWorkspaceSurface,
+   WorkspaceLayout,
+   WorkspaceSurfaceDefinition,
+   WorkspaceZoneId,
+ } from '@repo/core/types';
+-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
++import { useMutation, useQueryClient } from '@tanstack/react-query';
++import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
+ import { Platform, useWindowDimensions } from 'react-native';
+-
+-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
++import { z } from 'zod';
+ 
+ export interface UseWorkspaceLayoutSyncOptions<
+   TSurfaceId extends string = string,
+@@ -66,8 +74,10 @@ export interface UseWorkspaceLayoutSyncResult<
+   isSyncing: boolean;
+   syncError: Error | null;
+   refreshFromRemote: () => Promise<void>;
++  reapplyLocalChanges: () => Promise<void>;
+   setLayout: (next: WorkspaceLayout<TSurfaceId>) => void;
+   setSurfaceOrder: (order: TSurfaceId[]) => void;
++  saveSurfaceOrder: (order: TSurfaceId[]) => Promise<void>;
+   setSurfaceHidden: (surfaceId: TSurfaceId, hidden: boolean) => void;
+   setSurfacePinned: (surfaceId: TSurfaceId, pinned: boolean) => void;
+   setSurfaceZone: (surfaceId: TSurfaceId, zone: WorkspaceZoneId) => void;
+@@ -76,33 +86,6 @@ export interface UseWorkspaceLayoutSyncResult<
+   setGroupOrder: (groupOrder: string[]) => void;
+ }
+ 
+-const serializeLayout = <TSurfaceId extends string>(
+-  layout: WorkspaceLayout<TSurfaceId> | null,
+-): string => (layout ? JSON.stringify(layout) : 'null');
+-
+-const canUseRemoteSync = (
+-  userId: string | null | undefined,
+-  enableRemoteSync: boolean,
+-): userId is string => Boolean(enableRemoteSync && userId && UUID_PATTERN.test(userId));
+-
+-async function fetchRemoteLayout<TSurfaceId extends string>(
+-  userId: string,
+-  workspaceId: string,
+-  layoutTarget: WorkspaceLayoutTarget,
+-): Promise<WorkspaceLayout<TSurfaceId> | null> {
+-  const targeted = await workspaceLayoutAPI.getWorkspaceLayout(userId, workspaceId, layoutTarget);
+-  if (targeted) {
+-    return toWorkspaceLayoutRecord<TSurfaceId>(targeted);
+-  }
+-
+-  if (layoutTarget === 'shared') {
+-    return null;
+-  }
+-
+-  const shared = await workspaceLayoutAPI.getWorkspaceLayout(userId, workspaceId, 'shared');
+-  return shared ? toWorkspaceLayoutRecord<TSurfaceId>(shared) : null;
+-}
+-
+ export function useWorkspaceLayoutSync<
+   TSurfaceId extends string = string,
+   TCapabilityKey extends string = string,
+@@ -124,308 +107,134 @@ export function useWorkspaceLayoutSync<
+   TDefinition
+ >): UseWorkspaceLayoutSyncResult<TSurfaceId, TCapabilityKey, TDefinition> {
+   const dimensions = useWindowDimensions();
+-  const inferredPlatform: WorkspaceLayoutPlatformKind =
+-    platform ?? (Platform.OS === 'web' ? 'web' : 'native');
+-  const inferredScreenClass: WorkspaceLayoutScreenClass =
+-    screenClass ?? (dimensions.width < compactBreakpoint ? 'compact' : 'expanded');
+-  const layoutTarget = resolveWorkspaceLayoutTarget(inferredPlatform, inferredScreenClass);
+-
+-  const [layout, setLayoutState] = useState<WorkspaceLayout<TSurfaceId> | null>(null);
+-  const [isHydrated, setIsHydrated] = useState(false);
+-  const [isSyncing, setIsSyncing] = useState(false);
+-  const [syncError, setSyncError] = useState<Error | null>(null);
+-  const lastSyncedLayoutRef = useRef<string | null>(null);
+-
+-  const storageKey = userId
+-    ? buildWorkspaceLayoutStorageKey({
+-        userId,
+-        workspaceId,
+-        layoutTarget,
+-      })
+-    : null;
+-
+-  const defaultLayout = useMemo(
+-    () =>
+-      userId
+-        ? createDefaultWorkspaceLayout({
+-            workspaceId,
+-            userId,
+-            surfaces,
+-          })
+-        : null,
+-    [userId, workspaceId, surfaces],
++  const layoutTarget = resolveWorkspaceLayoutTarget(
++    platform ?? (Platform.OS === 'web' ? 'web' : 'native'),
++    screenClass ?? (dimensions.width < compactBreakpoint ? 'compact' : 'expanded'),
+   );
+-
+-  const layoutRef = useRef(layout);
+-  useEffect(() => {
+-    layoutRef.current = layout;
+-  }, [layout]);
+-
+-  const surfacesHash = useMemo(() => {
+-    return surfaces.map((s) => `${s.surfaceId}:${s.defaultZone}:${s.defaultOrder}`).join('|');
+-  }, [surfaces]);
+-
+-  const lastReconciledSurfacesRef = useRef('');
+-
+-  const setLayout = useCallback(
+-    (next: WorkspaceLayout<TSurfaceId>) => {
+-      setLayoutState(normalizeWorkspaceLayout(next, surfaces));
++  const client = useQueryClient();
++  const addToQueue = useMutationQueue((state) => state.addToQueue);
++  const { mutateAsync } = useMutation({
++    mutationFn: ({
++      patch,
++      isCurrent,
++    }: {
++      patch: WorkspaceLayoutPatch;
++      isCurrent: () => boolean;
++    }) => {
++      if (!isCurrent()) throw new Error('Workspace layout owner ended before transport.');
++      return submitWorkspaceLayoutPatch(patch);
+     },
+-    [surfaces],
+-  );
+-
+-  const refreshFromRemote = useCallback(async () => {
+-    if (!userId || !canUseRemoteSync(userId, enableRemoteSync)) return;
+-
+-    setIsSyncing(true);
+-    setSyncError(null);
+-    try {
+-      const remote = await fetchRemoteLayout<TSurfaceId>(userId, workspaceId, layoutTarget);
+-      if (!remote) return;
+-
+-      const normalizedRemote = normalizeWorkspaceLayout(remote, surfaces);
+-      const preferred = choosePreferredWorkspaceLayout({
+-        local: layoutRef.current,
+-        remote: normalizedRemote,
+-      });
+-
+-      if (preferred) {
+-        setLayoutState(preferred);
+-        lastSyncedLayoutRef.current = serializeLayout(preferred);
+-      }
+-    } catch (error) {
+-      setSyncError(error as Error);
+-    } finally {
+-      setIsSyncing(false);
+-    }
+-  }, [userId, enableRemoteSync, workspaceId, layoutTarget, surfaces]);
+-
+-  useEffect(() => {
+-    let isMounted = true;
+-
+-    const hydrate = async () => {
+-      if (!userId || !defaultLayout || !storageKey) {
+-        if (isMounted) {
+-          setLayoutState(null);
+-          setIsHydrated(true);
+-        }
+-        return;
+-      }
+-
+-      setIsHydrated(false);
+-      setSyncError(null);
+-
+-      try {
+-        const stored = await SafeZustandStorage.getItem(storageKey);
+-        const localLayout = stored
+-          ? normalizeWorkspaceLayout(JSON.parse(stored) as WorkspaceLayout<TSurfaceId>, surfaces)
+-          : defaultLayout;
+-
+-        let preferred = localLayout;
+-
+-        if (canUseRemoteSync(userId, enableRemoteSync)) {
+-          const remote = await fetchRemoteLayout<TSurfaceId>(userId, workspaceId, layoutTarget);
+-          const normalizedRemote = remote ? normalizeWorkspaceLayout(remote, surfaces) : null;
+-          preferred =
+-            choosePreferredWorkspaceLayout({
+-              local: localLayout,
+-              remote: normalizedRemote,
+-            }) ?? localLayout;
+-        }
+-
+-        if (!isMounted) return;
+-
+-        setLayoutState(preferred);
+-        lastSyncedLayoutRef.current = serializeLayout(preferred);
+-        lastReconciledSurfacesRef.current = surfacesHash;
+-      } catch (error) {
+-        if (!isMounted) return;
+-
+-        setSyncError(error as Error);
+-        setLayoutState(defaultLayout);
+-        lastSyncedLayoutRef.current = serializeLayout(defaultLayout);
+-        lastReconciledSurfacesRef.current = surfacesHash;
+-      } finally {
+-        if (isMounted) {
+-          setIsHydrated(true);
+-        }
+-      }
+-    };
+-
+-    void hydrate();
+-
+-    return () => {
+-      isMounted = false;
+-    };
+-  }, [
+-    userId,
+-    workspaceId,
+-    layoutTarget,
+-    storageKey,
+-    defaultLayout,
+-    surfaces,
+-    enableRemoteSync,
+-    surfacesHash,
+-  ]);
+-
+-  useEffect(() => {
+-    if (!layout || !storageKey || !isHydrated) return;
+-    void SafeZustandStorage.setItem(storageKey, JSON.stringify(layout));
+-  }, [layout, storageKey, isHydrated]);
+-
+-  useEffect(() => {
+-    if (!layout || !userId || !isHydrated || !canUseRemoteSync(userId, enableRemoteSync)) return;
+-
+-    const serialized = serializeLayout(layout);
+-    if (serialized === lastSyncedLayoutRef.current) return;
+-
+-    let isCancelled = false;
+-
+-    const timer = setTimeout(() => {
+-      const syncRemote = async () => {
+-        setIsSyncing(true);
+-        setSyncError(null);
+-
+-        try {
+-          await workspaceLayoutAPI.upsertWorkspaceLayout(
+-            toWorkspaceLayoutUpsert(layout, {
++    networkMode: 'always',
++    retry: shouldRetryWorkspaceSync,
++    retryDelay: workspaceSyncRetryDelay,
++  });
++  const remoteEnabled = Boolean(enableRemoteSync && z.uuid().safeParse(userId).success);
++
++  const session = useMemo(() => {
++    if (!userId) return null;
++    const identity = { userId, workspaceId, layoutTarget };
++    const cacheKey = buildWorkspaceLayoutStorageKey(identity);
++    const intentKey = buildWorkspaceLayoutIntentStorageKey(identity);
++    const initial = createDefaultWorkspaceLayout({ userId, workspaceId, surfaces });
++    return new WorkspaceLayoutSession(identity, initial, remoteEnabled, {
++      readLayout: async () => await SafeZustandStorage.getItem(cacheKey),
++      readIntent: async () => await SafeZustandStorage.getItem(intentKey),
++      writeLayout: async (layout) => {
++        await SafeZustandStorage.setItem(cacheKey, JSON.stringify(layout));
++      },
++      writeIntent: (intent) => storage.setAsync(intentKey, JSON.stringify(intent)),
++      readRemote: () =>
++        client.fetchQuery({
++          queryKey: ['workspace-layout', userId, workspaceId, layoutTarget],
++          networkMode: 'always',
++          retry: false,
++          staleTime: 0,
++          queryFn: async () => {
++            const row = await workspaceLayoutAPI.getWorkspaceLayout(
+               userId,
+               workspaceId,
+               layoutTarget,
+-            }),
+-          );
+-
+-          if (!isCancelled) {
+-            lastSyncedLayoutRef.current = serialized;
+-          }
+-        } catch (error) {
+-          if (!isCancelled) {
+-            setSyncError(error as Error);
+-          }
+-        } finally {
+-          if (!isCancelled) {
+-            setIsSyncing(false);
+-          }
+-        }
+-      };
+-
+-      void syncRemote();
+-    }, 1200);
+-
+-    return () => {
+-      isCancelled = true;
+-      clearTimeout(timer);
+-    };
+-  }, [layout, userId, workspaceId, layoutTarget, isHydrated, enableRemoteSync]);
+-
+-  useEffect(() => {
+-    if (!layout || !surfaces.length) return;
+-    if (lastReconciledSurfacesRef.current === surfacesHash) return;
+-
+-    setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) => {
+-      if (!current) return defaultLayout;
+-
+-      const normalized = normalizeWorkspaceLayout(current, surfaces);
+-      lastReconciledSurfacesRef.current = surfacesHash;
+-      return serializeLayout(normalized) === serializeLayout(current) ? current : normalized;
++            );
++            if (row) return toWorkspaceLayoutRecord(row);
++            if (layoutTarget === 'shared') return null;
++            const shared = await workspaceLayoutAPI.getWorkspaceLayout(
++              userId,
++              workspaceId,
++              'shared',
++            );
++            return shared ? toWorkspaceLayoutRecord(shared) : null;
++          },
++        }),
++      submit: (patch, isCurrent) => mutateAsync({ patch, isCurrent }),
++      enqueue: (patch) =>
++        addToQueue({
++          type: 'PATCH',
++          scope: 'workspace',
++          name: 'workspace.layout.patch',
++          variables: { input: patch },
++          userId,
++          operationId: patch.operationId,
++          inputHash: patch.inputHash,
++        }),
+     });
+-  }, [surfaces, defaultLayout, surfacesHash]);
+-
+-  const resolvedSurfaces = useMemo(
+-    () => (layout ? resolveWorkspaceSurfaceLayout(surfaces, layout) : []),
+-    [surfaces, layout],
+-  );
+-
+-  const setSurfaceOrder = useCallback(
+-    (order: TSurfaceId[]) =>
+-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+-        current ? setWorkspaceSurfaceOrder(current, order) : current,
+-      ),
+-    [],
+-  );
++    // Registry changes are projected below; they must not replace a draft owner.
++  }, [userId, workspaceId, layoutTarget, remoteEnabled, client, mutateAsync, addToQueue]);
+ 
+-  const setSurfaceHidden = useCallback(
+-    (surfaceId: TSurfaceId, hidden: boolean) =>
+-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+-        current ? setWorkspaceSurfaceHidden(current, surfaceId, hidden) : current,
+-      ),
+-    [],
++  const subscribe = useCallback(
++    (listener: () => void) => session?.subscribe(listener) ?? (() => undefined),
++    [session],
+   );
+-
+-  const setSurfacePinned = useCallback(
+-    (surfaceId: TSurfaceId, pinned: boolean) =>
+-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+-        current ? setWorkspaceSurfacePinned(current, surfaceId, pinned) : current,
+-      ),
+-    [],
+-  );
+-
+-  const setSurfaceZone = useCallback(
+-    (surfaceId: TSurfaceId, zone: WorkspaceZoneId) =>
+-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+-        current ? setWorkspaceSurfaceZone(current, surfaceId, zone) : current,
+-      ),
+-    [],
+-  );
+-
+-  const setAppearance = useCallback(
+-    (appearance: NonNullable<WorkspaceLayout<TSurfaceId>['appearance']>) =>
+-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+-        current ? setWorkspaceAppearance(current, appearance) : current,
+-      ),
+-    [],
+-  );
+-
+-  const resetAppearance = useCallback(
+-    () =>
+-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+-        current ? resetWorkspaceAppearance(current) : current,
+-      ),
+-    [],
+-  );
+-
+-  const setGroupOrder = useCallback(
+-    (groupOrder: string[]) =>
+-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+-        current ? setWorkspaceGroupOrder(current, groupOrder) : current,
+-      ),
+-    [],
+-  );
+-
+-  return useMemo(
+-    () => ({
+-      layout,
+-      surfaces: resolvedSurfaces,
+-      layoutTarget,
+-      isHydrated,
+-      isSyncing,
+-      syncError,
+-      refreshFromRemote,
+-      setLayout,
+-      setSurfaceOrder,
+-      setSurfaceHidden,
+-      setSurfacePinned,
+-      setSurfaceZone,
+-      setAppearance,
+-      resetAppearance,
+-      setGroupOrder,
+-    }),
+-    [
+-      layout,
+-      resolvedSurfaces,
+-      layoutTarget,
+-      isHydrated,
+-      isSyncing,
+-      syncError,
+-      refreshFromRemote,
+-      setLayout,
+-      setSurfaceOrder,
+-      setSurfaceHidden,
+-      setSurfacePinned,
+-      setSurfaceZone,
+-      setAppearance,
+-      resetAppearance,
+-      setGroupOrder,
+-    ],
++  const getSnapshot = useCallback(() => session?.getSnapshot() ?? null, [session]);
++  const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => null);
++  useEffect(() => {
++    if (!session) return;
++    void session.start();
++    return () => session.stop();
++  }, [session]);
++  const layout = snapshot
++    ? normalizeWorkspaceLayout(snapshot.layout as WorkspaceLayout<TSurfaceId>, surfaces)
++    : null;
++  const edit = useCallback(
++    (
++      update: (current: WorkspaceLayout) => WorkspaceLayout,
++      group: 'arrangement' | 'appearance' | 'groups',
++    ) => {
++      session?.edit(update, [group]);
++    },
++    [session],
+   );
++  const refreshFromRemote = useCallback(async () => {
++    if (session && remoteEnabled) await session.refresh();
++  }, [session, remoteEnabled]);
++  return {
++    layout,
++    surfaces: layout ? resolveWorkspaceSurfaceLayout(surfaces, layout) : [],
++    layoutTarget,
++    isHydrated: snapshot?.isHydrated ?? true,
++    isSyncing: snapshot?.isSyncing ?? false,
++    syncError: snapshot?.syncError ?? null,
++    refreshFromRemote,
++    reapplyLocalChanges: async () => {
++      await session?.reapply();
++    },
++    setLayout: (next) => session?.edit(() => next, ['arrangement', 'appearance', 'groups']),
++    setSurfaceOrder: (order) =>
++      edit((current) => setWorkspaceSurfaceOrder(current, order), 'arrangement'),
++    saveSurfaceOrder: async (order) => {
++      await session?.saveEdit(
++        (current) => setWorkspaceSurfaceOrder(current, order),
++        ['arrangement'],
++      );
++    },
++    setSurfaceHidden: (id, hidden) =>
++      edit((current) => setWorkspaceSurfaceHidden(current, id, hidden), 'arrangement'),
++    setSurfacePinned: (id, pinned) =>
++      edit((current) => setWorkspaceSurfacePinned(current, id, pinned), 'arrangement'),
++    setSurfaceZone: (id, zone) =>
++      edit((current) => setWorkspaceSurfaceZone(current, id, zone), 'arrangement'),
++    setAppearance: (appearance) =>
++      edit((current) => setWorkspaceAppearance(current, appearance), 'appearance'),
++    resetAppearance: () => edit(resetWorkspaceAppearance, 'appearance'),
++    setGroupOrder: (order) => edit((current) => setWorkspaceGroupOrder(current, order), 'groups'),
++  };
+ }

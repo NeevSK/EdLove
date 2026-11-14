@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -27,7 +28,7 @@ import {
 const subject = '00000000-0000-4000-8000-000000000001';
 const classroom: WorkspaceClassroom = {
   id: '00000000-0000-4000-8000-000000000010',
-  name: 'Learning group',
+  name: '5A',
   subject: null,
 };
 
@@ -52,21 +53,27 @@ afterEach(() => {
 });
 
 describe('Workspace attendance account boundary', () => {
-  it('uses verified browser credentials for the server-owned classroom list', async () => {
+  it('uses verified browser credentials for the server-owned grade class list', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
     setSession();
-    const fetchMock = vi
-      .fn<typeof fetch>()
-      .mockResolvedValue(jsonResponse([{ id: classroom.id, name: classroom.name, subject: null }]));
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+      jsonResponse([
+        {
+          id: classroom.id,
+          name: classroom.name,
+          academic_cycle_id: '00000000-0000-4000-8000-000000000040',
+          role: 'class_teacher',
+        },
+      ]),
+    );
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(loadAccountClassrooms(subject)).resolves.toEqual([classroom]);
 
     const [url, request] = fetchMock.mock.calls[0] ?? [];
-    expect(url).toBe(
-      `https://sanctuary.example/api/openapi/educational/classrooms/by-teacher?teacher_id=${subject}&limit=100`,
-    );
+    expect(url).toBe('https://sanctuary.example/api/openapi/attendance/my-grade-classes');
     expect(new Headers(request?.headers).get('Authorization')).toBe('Bearer session-token');
+    expect(request?.redirect).toBe('error');
   });
 
   it('rejects a session that changed accounts before issuing a request', async () => {
@@ -79,7 +86,39 @@ describe('Workspace attendance account boundary', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('reads roster and marks from protected routes and leaves unlinked students unmarkable', async () => {
+  it('forwards query cancellation to the protected classroom request', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
+    setSession();
+    const controller = new AbortController();
+    const fetchMock = vi.fn<typeof fetch>().mockImplementation(
+      (_input, init) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () =>
+            reject(new DOMException('aborted', 'AbortError')),
+          );
+        }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const pending = loadAccountClassrooms(subject, controller.signal);
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    controller.abort();
+
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    expect(fetchMock.mock.calls[0]?.[1]?.signal).toBe(controller.signal);
+  });
+
+  it('rejects an insecure API origin before session lookup or fetch', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'http://api.example.test');
+    const fetchMock = vi.fn<typeof fetch>();
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(loadAccountClassrooms(subject)).rejects.toThrow('not configured securely');
+    expect(mocks.getSession).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('reads roster and marks from protected routes and never uses the enrollment id as a student id', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://sanctuary.example');
     setSession();
     const fetchMock = vi
@@ -87,16 +126,16 @@ describe('Workspace attendance account boundary', () => {
       .mockResolvedValueOnce(
         jsonResponse([
           {
-            id: '00000000-0000-4000-8000-000000000020',
+            enrollment_id: '00000000-0000-4000-8000-000000000020',
             student_id: '00000000-0000-4000-8000-000000000030',
             full_name: 'Mina',
-            roll_number: 2,
+            avatar_url: null,
           },
           {
-            id: '00000000-0000-4000-8000-000000000021',
+            enrollment_id: '00000000-0000-4000-8000-000000000021',
             student_id: null,
             full_name: null,
-            roll_number: null,
+            avatar_url: null,
           },
         ]),
       )
@@ -117,7 +156,7 @@ describe('Workspace attendance account boundary', () => {
         id: '00000000-0000-4000-8000-000000000020',
         studentId: '00000000-0000-4000-8000-000000000030',
         name: 'Mina',
-        rollNumber: 2,
+        rollNumber: null,
         status: 'late',
       },
       {
@@ -129,6 +168,9 @@ describe('Workspace attendance account boundary', () => {
       },
     ]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      `https://sanctuary.example/api/openapi/attendance/grade-class-roster?gradeClassId=${classroom.id}&date=2026-09-17`,
+    );
   });
 
   it('sends a batch for linked students only and rechecks identity for mutation credentials', async () => {
@@ -142,7 +184,7 @@ describe('Workspace attendance account boundary', () => {
         id: '00000000-0000-4000-8000-000000000020',
         studentId: '00000000-0000-4000-8000-000000000030',
         name: 'Mina',
-        rollNumber: 2,
+        rollNumber: null,
         status: 'late',
       },
       {

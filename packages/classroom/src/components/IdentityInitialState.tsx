@@ -1,4 +1,5 @@
-import { type Capacity, useStore } from '@repo/core/logic';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
+import { type Capacity } from '@repo/core/logic';
 
 import { useThemedColors } from '@repo/ui/hooks';
 import {
@@ -28,7 +29,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
 
@@ -55,7 +56,7 @@ export default function IdentityInitialState({
 }: IdentityInitialStateProps) {
   const { t } = useTranslation();
   const colors = useThemedColors();
-  const setDemoMode = useStore((state) => state.setDemoMode);
+  const setDemoMode = useExperienceState((state) => state.setDemoMode);
 
   const getIdentityContent = () => {
     switch (capacity) {

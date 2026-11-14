@@ -1,8 +1,9 @@
 import { pdfUtils, type PDFAPI, type PDFGenerateOptions } from '@repo/library/api';
 import { useLoadedBytes } from '@repo/library/hooks/useLoadedBytes';
 import { saveBytes } from '@repo/library/utils/bytes';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
+import { WaitingSign } from '@repo/ui/components/native';
 import {
   ArrowLeft,
   ChevronDown,
@@ -25,14 +26,15 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export default function PDFEditorScreen() {
   const params = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
   const { bytes, loading, error } = useLoadedBytes(params);
 
   const [api, setApi] = useState<PDFAPI | null>(null);
@@ -115,16 +117,16 @@ export default function PDFEditorScreen() {
 
   if (loading) {
     return (
-      <ScreenWrapper>
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
         <Box className="flex-1 items-center justify-center p-8">
-          <BrandPulse size={28} />
+          <WaitingSign size={28} />
         </Box>
-      </ScreenWrapper>
+      </ScrollView></SafeAreaView>
     );
   }
 
   return (
-    <ScreenWrapper>
+    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
       <VStack className="gap-3 p-4">
         <HStack className="items-center gap-2">
           <Pressable onPress={() => router.back()} className="active:opacity-60">
@@ -314,7 +316,7 @@ export default function PDFEditorScreen() {
           </>
         ) : null}
       </VStack>
-    </ScreenWrapper>
+    </ScrollView></SafeAreaView>
   );
 }
 

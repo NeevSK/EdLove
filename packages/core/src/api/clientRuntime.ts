@@ -1,7 +1,17 @@
+import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
 import { hc } from 'hono/client';
+import { v7 as uuidv7 } from 'uuid';
+import { assertSecureApiUrl, secureApiFetch } from './transportSecurity';
 
 let tokenResolver: (() => Promise<string | null>) | null = null;
 let activeBondIdResolver: (() => Promise<string | null>) | null = null;
+let pqcWireEnabled = true;
+let poaSigner: ((payload: string) => Promise<string | null>) | null = null;
+
+export interface SessionContinuity {
+  accessToken: string;
+  subject: string;
+}
 
 export function registerTokenResolver(resolver: () => Promise<string | null>) {
   tokenResolver = resolver;
@@ -9,6 +19,22 @@ export function registerTokenResolver(resolver: () => Promise<string | null>) {
 
 export function registerActiveBondIdResolver(resolver: () => Promise<string | null>) {
   activeBondIdResolver = resolver;
+}
+
+export function setPqcWireEnabled(enabled: boolean) {
+  pqcWireEnabled = enabled;
+}
+
+export function registerPoaSigner(signer: (payload: string) => Promise<string | null>) {
+  poaSigner = signer;
+}
+
+export function assertActiveRequestAccount(expectedAccountId?: string) {
+  if (expectedAccountId && getActiveAccountId() !== expectedAccountId) {
+    throw Object.assign(new Error('The owning account must remain active for this request.'), {
+      status: 401,
+    });
+  }
 }
 
 /**
@@ -19,7 +45,17 @@ export function registerActiveBondIdResolver(resolver: () => Promise<string | nu
 export async function authenticatedSovereignFetch(
   input: RequestInfo | URL,
   requestInit?: RequestInit,
+  expectedAccountId?: string,
+  expectedSession?: SessionContinuity,
 ): Promise<Response> {
+  const requestUrl =
+    typeof input === 'string' || input instanceof URL
+      ? input
+      : typeof Request !== 'undefined' && input instanceof Request
+        ? input.url
+        : String(input);
+  assertSecureApiUrl(requestUrl);
+
   let token: string | null = null;
   if (tokenResolver) {
     try {
@@ -30,7 +66,20 @@ export async function authenticatedSovereignFetch(
   }
 
   const headers = new Headers(requestInit?.headers);
+  if (expectedSession) {
+    if (!token || token !== expectedSession.accessToken)
+      throw Object.assign(new Error('The authenticated session changed before dispatch.'), {
+        status: 401,
+      });
+    headers.set('X-Expected-Auth-Subject', expectedSession.subject);
+  }
   if (token) headers.set('Authorization', `Bearer ${token}`);
+
+  // Leaning towards Post-Quantum Cryptography (PQC) & Zero-Trust Wire
+  if (pqcWireEnabled) {
+    headers.set('x-pqc-kem', 'ML-KEM-768+X25519');
+    headers.set('x-sovereign-epoch', String(Date.now()));
+  }
 
   if (activeBondIdResolver) {
     try {
@@ -41,8 +90,44 @@ export async function authenticatedSovereignFetch(
     }
   }
 
+  assertActiveRequestAccount(expectedAccountId);
+
+  if (poaSigner && requestInit?.body && typeof requestInit.body === 'string') {
+    try {
+      const poaSignature = await poaSigner(requestInit.body);
+      if (poaSignature) headers.set('x-poa-sig', poaSignature);
+    } catch {
+      console.warn('[Sovereign Client] Proof-of-Authority signing failed.');
+    }
+  }
+
+  const method = (
+    requestInit?.method ?? (input instanceof Request ? input.method : 'GET')
+  ).toUpperCase();
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    if (!headers.has('Idempotency-Key') && !headers.has('X-Idempotency-Key')) {
+      const idempotencyKey = uuidv7();
+      headers.set('Idempotency-Key', idempotencyKey);
+      headers.set('X-Idempotency-Key', idempotencyKey);
+    }
+  }
+
+  let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+  let effectiveSignal = requestInit?.signal;
+  if (!effectiveSignal && typeof AbortController !== 'undefined') {
+    const controller = new AbortController();
+    timeoutTimer = setTimeout(() => {
+      controller.abort(new Error('Network request timed out'));
+    }, 15000);
+    effectiveSignal = controller.signal;
+  }
+
   try {
-    return await fetch(input, { ...requestInit, headers });
+    return await secureApiFetch(input, {
+      ...requestInit,
+      headers,
+      ...(effectiveSignal ? { signal: effectiveSignal } : {}),
+    });
   } catch (error) {
     const isNetworkFailure =
       error instanceof TypeError ||
@@ -56,7 +141,7 @@ export async function authenticatedSovereignFetch(
           error.message.includes('Failed to fetch')));
 
     if (isNetworkFailure) {
-      console.warn(`[Sovereign Client] Network offline or endpoint unreachable: ${String(input)}`);
+      console.warn('[Sovereign Client] Network offline or endpoint unreachable.');
       return new Response(JSON.stringify({ error: 'Network unavailable', offline: true }), {
         status: 503,
         statusText: 'Service Unavailable (Offline)',
@@ -68,15 +153,19 @@ export async function authenticatedSovereignFetch(
     }
 
     throw error;
+  } finally {
+    if (timeoutTimer) clearTimeout(timeoutTimer);
   }
 }
-
 
 export function createSovereignClient<T extends import('hono').Hono<any, any, any>>(
   baseUrl: string,
 ): ReturnType<typeof hc<T>> {
   return hc<T>(baseUrl, {
-    fetch: authenticatedSovereignFetch,
+    fetch: (input: RequestInfo | URL, requestInit?: RequestInit) => {
+      assertSecureApiUrl(baseUrl);
+      return authenticatedSovereignFetch(input, requestInit);
+    },
   });
 }
 

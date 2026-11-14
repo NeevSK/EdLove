@@ -1,3 +1,8 @@
+---
+name: security-best-practices
+description: "Authoritative security standards for data access, secret management, identity validation, and trust boundary protection. Use when modifying user identity checks, editing database schemas, writing Supabase policies, or handling authentication logic across the web/mobile app boundaries."
+---
+
 # Security & Trust Boundaries Playbook (security-best-practices)
 
 Authoritative security standards for data access, secret management, identity validation, and trust boundary protection.

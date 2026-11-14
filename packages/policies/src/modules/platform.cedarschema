@@ -1,0 +1,12 @@
+// Platform entities every domain namespace refers to. The principal is the account;
+// the bond it acts through carries capacity and citizenship (ReBAC). See
+// docs/architecture/authority-model.md.
+namespace Platform {
+  entity Account;
+  entity Bond {
+    capacity: String,
+    citizenship: String,
+    entityType: String,
+    entityId: String,
+  };
+}

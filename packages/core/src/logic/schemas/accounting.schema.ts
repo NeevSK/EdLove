@@ -25,7 +25,8 @@ export const FinancialTransactionSchema = makeModelSchema('FinancialTransaction'
  */
 export const BudgetSchema = makeModelSchema('Budget');
 
-export type Account = z.infer<typeof AccountSchema>;
-export type LedgerEntry = z.infer<typeof LedgerEntrySchema>;
-export type FinancialTransaction = z.infer<typeof FinancialTransactionSchema>;
-export type Budget = z.infer<typeof BudgetSchema>;
+/** Database rows (ZenStack models). The domain shapes live in types/; see AGENTS.md on contracts. */
+export type AccountRow = z.infer<typeof AccountSchema>;
+export type LedgerEntryRow = z.infer<typeof LedgerEntrySchema>;
+export type FinancialTransactionRow = z.infer<typeof FinancialTransactionSchema>;
+export type BudgetRow = z.infer<typeof BudgetSchema>;

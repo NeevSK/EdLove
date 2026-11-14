@@ -17,7 +17,8 @@ const TemporalContext = createContext<TemporalContextType | undefined>(undefined
  * Adheres to the "WOAH" principle for premium visual transitions.
  */
 export const TemporalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { viewDate, viewMode } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const viewMode = useTemporalStore((s) => s.viewMode);
 
   const value = useMemo(() => {
     const now = new Date();

@@ -11,7 +11,7 @@ import {
   shadowViolet,
   shroud,
   templeGold,
-} from '@repo/ui/theme';
+} from '@repo/ui/theme/Theme';
 
 /**
  * Time of Day Types

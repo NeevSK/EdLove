@@ -68,3 +68,18 @@ export const classroomStudentsAPI = {
     return educational.classroomStudents.remove(id);
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_STUDENTS } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'classroomStudents',
+  ghostMethods: ['getAll'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: (_method, args) => {
+    const classroomId = args?.[0] as string | undefined;
+    if (!classroomId) return MOCK_STUDENTS;
+    const filtered = MOCK_STUDENTS.filter((s: any) => s.classroom_id === classroomId);
+    return filtered.length > 0 ? filtered : MOCK_STUDENTS;
+  },
+});

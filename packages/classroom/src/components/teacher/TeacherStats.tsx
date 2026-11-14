@@ -1,5 +1,5 @@
-import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
+import { Text, View } from 'react-native';
 
 interface TeacherStatCardProps {
   label: string;
@@ -15,23 +15,23 @@ export const TeacherStatCard: React.FC<TeacherStatCardProps> = ({
   const accentDotClass = accentColorClass;
 
   return (
-    <Box className="rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-7 overflow-hidden relative">
-      <Box
+    <View className="rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-7 overflow-hidden relative">
+      <View
         className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-[0.03] ${accentColorClass}`}
       />
 
-      <VStack className="gap-5">
-        <HStack className="items-center justify-between">
+      <View className="gap-5">
+        <View className="flex-row items-center justify-between">
           <Text className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuary-text-tertiary">
             {label}
           </Text>
-          <Box className={`h-2.5 w-2.5 rounded-full ${accentDotClass}`} />
-        </HStack>
-        <Heading className="text-3xl text-sanctuary-text font-black tracking-tighter">
+          <View className={`h-2.5 w-2.5 rounded-full ${accentDotClass}`} />
+        </View>
+        <Text className="text-3xl text-sanctuary-text font-black tracking-tighter">
           {value}
-        </Heading>
-      </VStack>
-    </Box>
+        </Text>
+      </View>
+    </View>
   );
 };
 
@@ -69,12 +69,14 @@ export const TeacherStats: React.FC<TeacherStatsProps> = ({ stats }) => {
   ];
 
   return (
-    <HStack className="flex-wrap gap-4">
+    <View className="flex-row flex-wrap gap-4">
       {statItems.map((item) => (
-        <Box key={item.label} className="min-w-[160px] flex-1">
+        <View key={item.label} className="min-w-[160px] flex-1">
           <TeacherStatCard {...item} />
-        </Box>
+        </View>
       ))}
-    </HStack>
+    </View>
   );
 };
+
+export default TeacherStats;

@@ -1,0 +1,316 @@
+import type {
+  CapacityFacts,
+  DataSaver,
+  ExitReason,
+  ExitRecord,
+  FrameStages,
+  FrameState,
+  VergerConfig,
+  VergerEvent,
+  NetworkTransport,
+  SensorId,
+  ThermalStatus,
+  ThreadRoleName,
+  TrimSeverity,
+} from '@repo/verger-core';
+
+/**
+ * When the payload was sensed: CLOCK_MONOTONIC milliseconds, the clock of JavaScript's
+ * `performance.now()` on Android. Added by `VergerSense.emit` to every payload; optional so a
+ * module built before it still maps.
+ */
+export interface NativeSensed {
+  readonly sensedAtMs?: number;
+}
+
+/** Payloads exactly as `VergerSense.kt` emits them. */
+export interface NativeFrameWindow extends NativeSensed {
+  readonly startMs: number;
+  readonly endMs: number;
+  readonly frames: number;
+  readonly averageMs: number;
+  readonly targetMs: number;
+  readonly worstMs: number;
+  readonly droppedRatio: number;
+  readonly state: FrameState;
+  /** `gpuMs` is null before Android 12, where GPU time is not reported. */
+  readonly stages?: (Omit<FrameStages, 'gpuMs'> & { readonly gpuMs: number | null }) | null;
+}
+export interface NativeThermal extends NativeSensed {
+  readonly status: ThermalStatus | null;
+  readonly headroom: number | null;
+}
+export interface NativeMemoryTrim extends NativeSensed {
+  readonly severity: TrimSeverity;
+  readonly level: number;
+}
+export interface NativePowerSaver extends NativeSensed {
+  readonly saver: boolean;
+}
+export interface NativeThreadLoad extends NativeSensed {
+  readonly intervalMs: number;
+  readonly processCores: number;
+  readonly cores: Readonly<Partial<Record<ThreadRoleName, number>>>;
+  readonly topOtherName: string;
+  readonly topOtherCores: number;
+  readonly rssMb: number | null;
+}
+/** The device's CPU headroom (API 36, R11), 0 to 100; null while the platform has no value. */
+export interface NativeCpuHeadroom extends NativeSensed {
+  readonly percent: number | null;
+}
+/** This app's bytes since boot (B3.1); -1 where the platform does not count. */
+export interface NativeDataUsage extends NativeSensed {
+  readonly totalBytes: number;
+}
+export interface NativeMemory extends NativeSensed {
+  readonly availableMb: number;
+  readonly thresholdMb: number;
+  readonly lowMemory: boolean;
+  readonly rssMb: number | null;
+}
+/** The default network as `NetworkSignals.kt` builds it; bandwidth is bucketed natively. */
+export interface NativeNetwork extends NativeSensed {
+  readonly transport: NetworkTransport;
+  readonly validated: boolean | null;
+  readonly metered: boolean | null;
+  readonly downKbps: number | null;
+  readonly dataSaver: DataSaver | null;
+}
+/** The battery as `BatterySignals.kt` builds it; temperature rounded to half a degree natively. */
+export interface NativeBattery extends NativeSensed {
+  readonly levelPercent: number | null;
+  readonly pluggedIn: boolean | null;
+  readonly temperatureC: number | null;
+}
+/** What a hardware lever actually did; for diagnostics and telemetry, not for decisions. */
+export interface NativeLever extends NativeSensed {
+  readonly lever: 'refresh-cap' | 'cpu-boost';
+  readonly requested: number | boolean | null;
+  readonly applied: boolean;
+  readonly modeId?: number;
+}
+
+export interface NativeCapacity {
+  readonly totalMemoryBytes?: number | null;
+  readonly isLowRamDevice?: boolean | null;
+  readonly memoryClassMb?: number | null;
+  readonly sdkInt?: number | null;
+  readonly cpuCores?: number | null;
+  readonly refreshRateHz?: number | null;
+  readonly supportsRenderEffect?: boolean;
+  readonly supportsRuntimeShader?: boolean;
+  readonly supportsThermalHeadroom?: boolean;
+  readonly supportsFrameDeadline?: boolean;
+  readonly supportsGpuDuration?: boolean;
+  readonly supportsCpuHints?: boolean;
+  readonly refreshRatesHz?: readonly number[];
+  readonly largeMemoryClassMb?: number;
+  readonly buildFingerprint?: string | null;
+}
+
+/** One entry of `readExits`, as `DeviceFacts.kt` returns it. */
+export interface NativeExit {
+  readonly reason?: string;
+  readonly atWallMs?: number;
+  readonly foreground?: boolean;
+  readonly pid?: number;
+}
+
+const EXIT_REASONS: readonly ExitReason[] = [
+  'crash',
+  'native-crash',
+  'anr',
+  'excessive-resource',
+  'low-memory',
+  'user',
+  'self',
+  'signaled',
+  'other',
+];
+
+/**
+ * Native exit records to verger-core's. Malformed entries are dropped; an unknown reason name
+ * becomes `other` (a newer platform reason is not evidence of a failure).
+ */
+export function toExitRecords(
+  native: readonly NativeExit[] | null | undefined,
+): ExitRecord[] | null {
+  // Null means the platform keeps no record (below API 30): unknown, not "nothing ended".
+  if (!Array.isArray(native)) return null;
+  const out: ExitRecord[] = [];
+  for (const entry of native) {
+    if (typeof entry?.atWallMs !== 'number' || !Number.isFinite(entry.atWallMs)) continue;
+    const reason = EXIT_REASONS.includes(entry.reason as ExitReason)
+      ? (entry.reason as ExitReason)
+      : 'other';
+    const pid =
+      typeof entry.pid === 'number' && Number.isInteger(entry.pid) && entry.pid > 0
+        ? { pid: entry.pid }
+        : {};
+    out.push({ reason, atWallMs: entry.atWallMs, foreground: entry.foreground === true, ...pid });
+  }
+  return out;
+}
+
+export type VergerAndroidEvents = {
+  onFrameWindow: (event: NativeFrameWindow) => void;
+  onThermal: (event: NativeThermal) => void;
+  onMemoryTrim: (event: NativeMemoryTrim) => void;
+  onPowerSaver: (event: NativePowerSaver) => void;
+  onThreadLoad: (event: NativeThreadLoad) => void;
+  onMemory: (event: NativeMemory) => void;
+  onLever: (event: NativeLever) => void;
+  onNetwork: (event: NativeNetwork) => void;
+  onBattery: (event: NativeBattery) => void;
+  onCpuHeadroom: (event: NativeCpuHeadroom) => void;
+  onDataUsage: (event: NativeDataUsage) => void;
+};
+
+/** What `start` accepts; every threshold is taken from verger's own config. */
+export interface NativeSenseConfig {
+  readonly windowMs: number;
+  readonly minSamples: number;
+  readonly stressRatio: number;
+  readonly stressDroppedRatio: number;
+  readonly comfortRatio: number;
+  readonly comfortDroppedRatio: number;
+  readonly jankFrameFactor: number;
+  readonly headroomWarm: number;
+  readonly saturationCores: number;
+  readonly cpuHeadroomBusyPercent: number;
+  /** Which native sensors run; absent means all (`Sensors.kt`). */
+  readonly sensors?: Readonly<Record<SensorId, boolean>>;
+}
+
+/** The frame window the golden vectors were generated with. */
+export const FRAME_WINDOW_MS = 500;
+
+export function senseConfigFrom(
+  config: VergerConfig,
+  windowMs = FRAME_WINDOW_MS,
+  sensors?: Readonly<Record<SensorId, boolean>>,
+): NativeSenseConfig {
+  return {
+    ...(sensors ? { sensors } : {}),
+    windowMs,
+    minSamples: config.minSamples,
+    stressRatio: config.stressRatio,
+    stressDroppedRatio: config.stressDroppedRatio,
+    comfortRatio: config.comfortRatio,
+    comfortDroppedRatio: config.comfortDroppedRatio,
+    jankFrameFactor: config.jankFrameFactor,
+    headroomWarm: config.headroomWarm,
+    saturationCores: config.saturationCores,
+    cpuHeadroomBusyPercent: config.cpuHeadroomBusyPercent,
+  };
+}
+
+const finite = (value: number | null | undefined): number | null =>
+  typeof value === 'number' && Number.isFinite(value) ? value : null;
+
+export function toCapacityFacts(native: NativeCapacity | null | undefined): CapacityFacts {
+  return {
+    totalMemoryBytes: finite(native?.totalMemoryBytes),
+    isLowRamDevice: typeof native?.isLowRamDevice === 'boolean' ? native.isLowRamDevice : null,
+    memoryClassMb: finite(native?.memoryClassMb),
+    sdkInt: finite(native?.sdkInt),
+    cpuCores: finite(native?.cpuCores),
+    refreshRateHz: finite(native?.refreshRateHz),
+    supportsRenderEffect: native?.supportsRenderEffect === true,
+    supportsRuntimeShader: native?.supportsRuntimeShader === true,
+    refreshRatesHz: Array.isArray(native?.refreshRatesHz)
+      ? native.refreshRatesHz.filter(
+          (hz) => typeof hz === 'number' && Number.isFinite(hz) && hz > 0,
+        )
+      : [],
+    supportsCpuHints: native?.supportsCpuHints === true,
+    buildFingerprint:
+      typeof native?.buildFingerprint === 'string' && native.buildFingerprint.length > 0
+        ? native.buildFingerprint
+        : null,
+  };
+}
+
+export type NativeEvent =
+  | { readonly name: 'onFrameWindow'; readonly payload: NativeFrameWindow }
+  | { readonly name: 'onThermal'; readonly payload: NativeThermal }
+  | { readonly name: 'onMemoryTrim'; readonly payload: NativeMemoryTrim }
+  | { readonly name: 'onPowerSaver'; readonly payload: NativePowerSaver }
+  | { readonly name: 'onThreadLoad'; readonly payload: NativeThreadLoad }
+  | { readonly name: 'onMemory'; readonly payload: NativeMemory }
+  | { readonly name: 'onNetwork'; readonly payload: NativeNetwork }
+  | { readonly name: 'onBattery'; readonly payload: NativeBattery }
+  | { readonly name: 'onCpuHeadroom'; readonly payload: NativeCpuHeadroom }
+  | { readonly name: 'onDataUsage'; readonly payload: NativeDataUsage };
+
+/**
+ * Native payload to verger event. `at` is the JavaScript clock at receipt, which verger's timing
+ * runs on; `sensedAt` is when the platform sensed it. On Android both are CLOCK_MONOTONIC
+ * milliseconds, as are a frame window's start and end, so all of them join exactly.
+ */
+export function toVergerEvent(event: NativeEvent, at: number): VergerEvent {
+  const sensedAt = finite(event.payload.sensedAtMs);
+  const mapped = eventOf(event, at);
+  return sensedAt === null ? mapped : { ...mapped, sensedAt };
+}
+
+function eventOf(event: NativeEvent, at: number): VergerEvent {
+  switch (event.name) {
+    case 'onFrameWindow': {
+      const { state: _state, stages, sensedAtMs: _sensedAtMs, ...window } = event.payload;
+      if (!stages) return { type: 'frame-window', at, window };
+      const gpuMs = stages.gpuMs ?? Number.NaN;
+      return { type: 'frame-window', at, window: { ...window, stages: { ...stages, gpuMs } } };
+    }
+    case 'onThermal':
+      return {
+        type: 'thermal',
+        at,
+        status: event.payload.status,
+        headroom: finite(event.payload.headroom),
+      };
+    case 'onMemoryTrim':
+      return { type: 'memory-trim', at, severity: event.payload.severity };
+    case 'onPowerSaver':
+      return { type: 'power', at, saver: event.payload.saver };
+    case 'onThreadLoad':
+      return {
+        type: 'thread-load',
+        at,
+        cores: event.payload.cores,
+        processCores: event.payload.processCores,
+      };
+    case 'onMemory':
+      return {
+        type: 'memory-state',
+        at,
+        availableMb: event.payload.availableMb,
+        thresholdMb: event.payload.thresholdMb,
+        lowMemory: event.payload.lowMemory,
+      };
+    case 'onNetwork':
+      return {
+        type: 'network',
+        at,
+        transport: event.payload.transport,
+        validated: event.payload.validated,
+        metered: event.payload.metered,
+        downKbps: finite(event.payload.downKbps),
+        dataSaver: event.payload.dataSaver,
+      };
+    case 'onBattery':
+      return {
+        type: 'battery',
+        at,
+        levelPercent: finite(event.payload.levelPercent),
+        pluggedIn: event.payload.pluggedIn,
+        temperatureC: finite(event.payload.temperatureC),
+      };
+    case 'onCpuHeadroom':
+      return { type: 'cpu-headroom', at, percent: finite(event.payload.percent) };
+    case 'onDataUsage':
+      // A count that is not a finite number is an uncounted platform, as -1 is.
+      return { type: 'data-usage', at, totalBytes: finite(event.payload.totalBytes) ?? -1 };
+  }
+}

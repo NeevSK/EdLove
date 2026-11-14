@@ -1,8 +1,6 @@
 /** Transport client for authenticated feature-discovery tracking. */
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import type { FeatureUsage } from '@repo/core/api/tracking.contract';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const trackingAPI = {
   async logFeatureUsage(
@@ -11,32 +9,26 @@ export const trackingAPI = {
     interactionType = 'exploration',
   ): Promise<FeatureUsage | null> {
     try {
-      const response = await (client.api as any).tracking.features.$post({
-        json: { featureName, interactionType },
+      const response = await orpcClient.tracking.logFeatureUsage({
+        body: { featureName, interactionType },
       });
-      if (!response.ok) {
-        console.warn(`[trackingAPI] Failed to log feature usage for ${featureName} (${response.status})`);
-        return null;
-      }
-      return (await response.json()) as FeatureUsage;
+      return response as FeatureUsage;
     } catch (error) {
-      console.warn(`[trackingAPI] Offline or unreachable when logging feature usage for ${featureName}:`, error);
+      console.warn(
+        `[trackingAPI] Offline or unreachable when logging feature usage for ${featureName}:`,
+        error,
+      );
       return null;
     }
   },
 
   async getExploredFeatures(_userId: string): Promise<string[]> {
     try {
-      const response = await (client.api as any).tracking.features.$get();
-      if (!response.ok) {
-        console.warn(`[trackingAPI] Failed to fetch explored features (${response.status})`);
-        return [];
-      }
-      return (await response.json()) as string[];
+      const response = await orpcClient.tracking.listExploredFeatures();
+      return response as string[];
     } catch (error) {
       console.warn('[trackingAPI] Offline or unreachable when fetching explored features:', error);
       return [];
     }
   },
 };
-

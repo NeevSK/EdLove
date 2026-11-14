@@ -1,6 +1,6 @@
 import { useClassPerformance, usePredictions, useStudentPerformance } from '@repo/analytics/hooks';
 import { GPAInsights, PerformanceDashboard } from '@repo/analytics/ui';
-import { Card } from '@repo/ui/components/SanctuaryCard';
+
 import { HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 interface EnhancedAnalyticsDashboardProps {
@@ -31,29 +31,29 @@ export default function EnhancedAnalyticsDashboard({
     <ScrollView className="flex-1 bg-[#FCF9F2]">
       <VStack className="p-4" space="md">
         {/* Header */}
-        <Card className="p-6 mb-4">
+        <div className="p-4 rounded-2xl border border-phase-border bg-phase-surface">
           <Text className="text-2xl font-bold text-[#2A2318] mb-1">
             {'\uD83D\uDCCA'} Analytics Dashboard
           </Text>
           <Text className="text-base text-[#6B6480] mb-4">
             {studentId ? 'Student Performance' : classId ? 'Class Analytics' : 'School Overview'}
           </Text>
-        </Card>
+        </div>
 
         {/* Student Performance View */}
         {studentId && studentPerformance && (
-          <Card>
+          <div className="p-4 rounded-2xl border border-phase-border bg-phase-surface">
             <PerformanceDashboard
               metrics={studentPerformance}
               insights={[]} // Will be populated by InsightGenerator
               recommendations={[]} // Will be populated by InsightGenerator
             />
-          </Card>
+          </div>
         )}
 
         {/* Class Performance View */}
         {classId && classPerformance && (
-          <Card className="p-4">
+          <div className="p-4 rounded-2xl border border-phase-border bg-phase-surface">
             <VStack space="md">
               <Text className="text-lg font-semibold text-[#2A2318] mb-2">
                 {'\uD83D\uDCC8'} Class Performance
@@ -113,7 +113,7 @@ export default function EnhancedAnalyticsDashboard({
                 ))}
               </VStack>
             </VStack>
-          </Card>
+          </div>
         )}
 
         {/* GPA Insights */}
@@ -127,7 +127,7 @@ export default function EnhancedAnalyticsDashboard({
         )}
 
         {/* Quick Stats */}
-        <Card className="p-4">
+        <div className="p-4 rounded-2xl border border-phase-border bg-phase-surface">
           <Text className="text-lg font-semibold text-[#2A2318] mb-2">
             {'\uD83C\uDFAF'} Quick Actions
           </Text>
@@ -145,7 +145,7 @@ export default function EnhancedAnalyticsDashboard({
               {'\uD83D\uDEA8'} Set up at-risk alerts
             </Text>
           </VStack>
-        </Card>
+        </div>
       </VStack>
     </ScrollView>
   );

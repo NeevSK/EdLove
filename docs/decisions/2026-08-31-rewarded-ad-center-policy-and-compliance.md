@@ -18,6 +18,29 @@ An **Opt-in Rewarded Ad Center** ("Negentropy Hub" / "Energy Reservoir") allows 
 
 This document formalizes the regulatory compliance, app store policies, anti-fraud standards, and cryptographic verification specifications required to launch this system.
 
+## 0. Sanctuary Boundary: The Sole Permitted Sponsor-Media Place
+
+The Energy Reservoir is the **only** place in Gurudevi where sponsor media may
+be offered. It is a distinct Profile destination which the user opens by
+choice; it is not a component pattern available to other product teams.
+
+The following are prohibited: banners, interstitials, feed insertions,
+notifications that pressure a viewing decision, placement in groups or direct
+messages, and sponsor media in Classroom, Self, Library, Community, Household,
+or any core workflow. No core safety, reflection, educational record, or human
+connection may be conditional on viewing sponsor media.
+
+The exchange must state the reward before playback, permit exit at any time,
+avoid streaks or other pressure mechanics, and be available only to eligible
+users under the child-safety and privacy rules below. It is an optional path to
+virtual capacity such as AI usage—not a charge on human attention or a substitute
+for equitable core access.
+
+Sponsors, reward rules, and material changes to this policy must be disclosed
+in a public stewardship record. Funding never purchases user data, editorial
+placement, feature access, governance control, exclusivity, or authority over
+Gurudevi's core commitments.
+
 ---
 
 ## 1. App Store & Platform Compliance Policies

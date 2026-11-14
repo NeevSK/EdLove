@@ -1,7 +1,7 @@
+import { View, Text } from 'react-native';
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
 import { getFeatureDefinition } from '@repo/self/features/featureCatalog';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { Box, Text } from '@repo/ui/primitives';
+import { WaitingSign } from '@repo/ui/components/native';
 import React, { Suspense } from 'react';
 
 export type SelfFeatureRendererProps = {
@@ -24,6 +24,11 @@ const componentMap: Record<
   PulseDashboard: React.lazy(() =>
     import('@repo/self/components/PulseDashboard').then((m) => ({
       default: m.PulseDashboard as unknown as React.ComponentType<SelfFeatureRendererProps>,
+    })),
+  ),
+  BreathGuide: React.lazy(() =>
+    import('@repo/self/components/BreathGuide').then((m) => ({
+      default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
   MoodLotus: React.lazy(() =>
@@ -76,18 +81,13 @@ const componentMap: Record<
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
-  ReframeWizard: React.lazy(() =>
-    import('@repo/self/components/ReframeWizard').then((m) => ({
-      default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
-    })),
-  ),
   TomorrowPrep: React.lazy(() =>
     import('@repo/self/components/TomorrowPrep').then((m) => ({
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
-  RemindersManager: React.lazy(() =>
-    import('@repo/self/components/RemindersManager').then((m) => ({
+  RemindersPanel: React.lazy(() =>
+    import('@repo/self/components/RemindersPanel').then((m) => ({
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
@@ -106,13 +106,18 @@ const componentMap: Record<
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
-  WarmMirrorCard: React.lazy(() =>
-    import('@repo/self/components/WarmMirrorCard').then((m) => ({
+  ProgressTree: React.lazy(() =>
+    import('@repo/self/components/ProgressTree').then((m) => ({
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
-  ProgressTree: React.lazy(() =>
-    import('@repo/self/components/ProgressTree').then((m) => ({
+  EnergyForecast: React.lazy(() =>
+    import('@repo/self/components/EnergyForecast').then((m) => ({
+      default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
+    })),
+  ),
+  WindDownRitual: React.lazy(() =>
+    import('@repo/self/components/WindDownRitual').then((m) => ({
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
@@ -120,10 +125,10 @@ const componentMap: Record<
 
 function Fallback({ label }: { label: string }) {
   return (
-    <Box className="py-6 items-center gap-2">
-      <BrandPulse size={20} />
+    <View className="py-6 items-center gap-2">
+      <WaitingSign size={20} />
       <Text className="text-xs text-ink/50">Loading {label}…</Text>
-    </Box>
+    </View>
   );
 }
 
@@ -137,11 +142,11 @@ export function SelfFeatureRenderer({
   const Lazy = resolvedComponentId ? componentMap[resolvedComponentId] : undefined;
   if (!Lazy) {
     return (
-      <Box className="py-4 px-4 rounded-2xl bg-amber-50 border border-amber-200">
+      <View className="py-4 px-4 rounded-2xl bg-amber-50 border border-amber-200">
         <Text className="text-xs text-amber-800">
           Feature {featureId} ({resolvedComponentId ?? 'unknown'}) not yet mapped.
         </Text>
-      </Box>
+      </View>
     );
   }
   return (

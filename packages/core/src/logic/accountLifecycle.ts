@@ -92,9 +92,7 @@ function isEffectAllowedForCommand(
     case 'request-deletion':
       return effect.kind === 'request-deletion' && effect.accountId === command.accountId;
     case 'cancel-deletion-request':
-      return (
-        effect.kind === 'cancel-deletion-request' && effect.accountId === command.accountId
-      );
+      return effect.kind === 'cancel-deletion-request' && effect.accountId === command.accountId;
   }
 }
 

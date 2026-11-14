@@ -60,6 +60,27 @@ export const nativeDeviceProvider = {
   }),
   addPowerStateListener: (listener: (lowPowerMode: boolean) => void) =>
     Battery.addLowPowerModeListener(({ lowPowerMode }) => listener(lowPowerMode)),
+  getPressureState: async () => {
+    try {
+      const { requireOptionalNativeModule } = require('expo-modules-core');
+      const mod = requireOptionalNativeModule('GurudeviRuntimePressure');
+      if (mod?.getSnapshotAsync) {
+        return await mod.getSnapshotAsync();
+      }
+    } catch {}
+    return { memory: 'unknown' as const, thermal: 'unknown' as const };
+  },
+  addPressureListener: (listener: (snapshot: { memory: 'unknown' | 'normal' | 'constrained' | 'severe'; thermal: 'unknown' | 'normal' | 'constrained' | 'severe' }) => void) => {
+    try {
+      const { requireOptionalNativeModule } = require('expo-modules-core');
+      const mod = requireOptionalNativeModule('GurudeviRuntimePressure');
+      if (mod?.addListener) {
+        const sub = mod.addListener('pressureChanged', listener);
+        return { remove: () => sub.remove() };
+      }
+    } catch {}
+    return { remove: () => undefined };
+  },
 };
 
 export const nativeHapticsProvider: HapticsProvider = {
@@ -257,6 +278,8 @@ export const webRuntimeEnvironment: CoreRuntimeEnvironment = {
     getTotalMemory: () => null,
     getPowerState: async () => ({ lowPowerMode: false }),
     addPowerStateListener: () => ({ remove: () => undefined }),
+    getPressureState: async () => ({ memory: 'unknown' as const, thermal: 'unknown' as const }),
+    addPressureListener: () => ({ remove: () => undefined }),
   },
   haptics: {
     impactLight: () => undefined,

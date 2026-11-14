@@ -1,5 +1,7 @@
+import { useAuthStore } from '@repo/core/store';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { type Message, useAIAgent } from '@repo/ai/hooks/useAIAgent';
-import { useDomainFeature, useStore } from '@repo/core/logic';
+import { useDomainFeature } from '@repo/core/logic';
 import { ChatComposer } from '@repo/ui/components/ChatComposer';
 import { MessageBubble } from '@repo/ui/components/MessageBubble';
 import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
@@ -7,10 +9,8 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { ChatProvider, useChatScrollToIndex } from '@repo/ui/context/ChatContext';
 import { ChevronLeft, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, useTheme, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { Platform, StyleSheet } from 'react-native';
@@ -22,9 +22,10 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export default function AIAssistantScreen() {
-  const router = useRouter();
+  const router = useNavigator();
   const { gradientNodes, glass, text } = useTheme();
   const { t } = useTranslation();
   const { result: aiFeature } = useDomainFeature('ai-assistant');
@@ -39,7 +40,7 @@ export default function AIAssistantScreen() {
     privacyMode,
     setPrivacyMode,
   } = useAIAgent();
-  const userRole = useStore((state) => state.activeBond?.capacity ?? null);
+  const userRole = useScopeSessionStore((state) => state.snapshot?.activeBond?.capacity ?? null);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -71,7 +72,7 @@ export default function AIAssistantScreen() {
           <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}>
             <Pressable
               accessibilityRole="button"
-              onPress={() => safeBack('/self')}
+              onPress={() => router.back('/self')}
               style={[styles.backButton, { backgroundColor: glass.surface.bg }]}
             >
               <ChevronLeft color={text.primary} size={24} />

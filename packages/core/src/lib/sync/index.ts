@@ -1,10 +1,10 @@
 export * from '@repo/core/lib/sync/errorClassifier';
-export * from '@repo/core/lib/sync/eventBus';
+export * from '@repo/core/lib/sync/eventBus.adapter';
 export * from '@repo/core/lib/sync/hooks/useOptimisticMerge';
 export * from '@repo/core/lib/sync/hooks/useSyncStatus';
 export * from '@repo/core/lib/sync/idempotency';
-export * from '@repo/core/lib/sync/MutationAuditLog';
+export * from '@repo/core/lib/sync/mutationAuditLog.store';
 export * from '@repo/core/lib/sync/registry';
-export { default as SyncManager } from '@repo/core/lib/sync/sync/SyncManager';
-export * from '@repo/core/lib/sync/types';
-export * from '@repo/core/lib/sync/useMutationQueue';
+export { default as SyncOrchestrator } from '@repo/core/lib/sync/sync/SyncOrchestrator';
+export * from '@repo/core/lib/sync/mutationQueue.store';
+export * from '@repo/core/types/mutationQueue';

@@ -1,5 +1,5 @@
+import { View, Text, Pressable } from 'react-native';
 import { Plus } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 
 interface StepHierarchyProps {
@@ -34,15 +34,15 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
   };
 
   return (
-    <VStack className="gap-6">
-      <Box>
-        <Heading size="sm" className="mb-2">
+    <View className="gap-6">
+      <View>
+        <Text className="mb-2">
           {t('schoolSetup.academicLevels')}
-        </Heading>
-        <Text size="xs" className="text-phaseText-secondary mb-4">
+        </Text>
+        <Text className="text-xs text-phaseText-secondary mb-4">
           {t('schoolSetup.academicLevelsDesc')}
         </Text>
-        <VStack className="gap-2">
+        <View className="gap-2">
           {COMMON_LEVELS.map((level) => {
             const isSelected = data.levels.includes(level.id);
             return (
@@ -52,34 +52,34 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
                 onPress={() => toggleLevel(level.id)}
                 className={`p-3 rounded-xl border ${isSelected ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-interactive/10 bg-phase-canvas'}`}
               >
-                <HStack className="justify-between items-center">
+                <View className="flex-row items-center justify-between items-center">
                   <Text className={isSelected ? 'text-phase-accent' : 'text-phaseText-primary'}>
                     {t(level.labelKey)}
                   </Text>
-                  {isSelected && <Box className="w-2 h-2 rounded-full bg-phase-accent" />}
-                </HStack>
+                  {isSelected && <View className="w-2 h-2 rounded-full bg-phase-accent" />}
+                </View>
               </Pressable>
             );
           })}
-        </VStack>
-      </Box>
+        </View>
+      </View>
 
-      <Box className="mt-4">
-        <Heading size="sm" className="mb-2">
+      <View className="mt-4">
+        <Text className="mb-2">
           {t('schoolSetup.orgSections')}
-        </Heading>
-        <Text size="xs" className="text-phaseText-secondary mb-4">
+        </Text>
+        <Text className="text-xs text-phaseText-secondary mb-4">
           {t('schoolSetup.orgSectionsDesc')}
         </Text>
 
         {/* Placeholder for section adding - will enhance in future phases if needed */}
-        <Box className="p-8 rounded-xl border-2 border-dashed border-phase-interactive/10 items-center justify-center">
-          <Icon as={Plus} size={24} color="var(--phase-text-secondary)" />
-          <Text size="sm" className="text-phaseText-secondary mt-2">
+        <View className="p-8 rounded-xl border-2 border-dashed border-phase-interactive/10 items-center justify-center">
+          <Plus size={24} color="var(--phase-text-secondary)" />
+          <Text className="text-sm text-phaseText-secondary mt-2">
             {t('schoolSetup.addCustomSection')}
           </Text>
-        </Box>
-      </Box>
-    </VStack>
+        </View>
+      </View>
+    </View>
   );
 }

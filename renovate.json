@@ -8,13 +8,27 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["^expo", "^react-native"],
+      "matchPackagePatterns": ["^expo", "^@expo", "^react-native", "^@react-native"],
       "enabled": false,
-      "description": "Disable automated updates for Expo and React Native core to avoid breaking SDK 55 compliance."
+      "description": "Disable automated updates for Expo and React Native core to maintain Expo SDK 58 and React Native 0.88 compliance."
+    },
+    {
+      "matchPackageNames": [
+        "typescript",
+        "react-native-reanimated",
+        "react-native-gesture-handler",
+        "react-native-worklets",
+        "react-native-mmkv",
+        "react-native-nitro-modules",
+        "react-native-skia",
+        "@shopify/react-native-skia"
+      ],
+      "enabled": false,
+      "description": "Tier 1 Critical Native Architecture (Sacred Pins per AGENTS.md). Manual upgrade only via Cautious Upgrade Protocol."
     },
     {
       "groupName": "Dev Tooling",
-      "matchPackageNames": ["typescript", "eslint", "prettier", "@biomejs/biome"],
+      "matchPackageNames": ["eslint", "prettier", "@biomejs/biome"],
       "automerge": true
     },
     {
@@ -24,8 +38,5 @@
       "automerge": true
     }
   ],
-  "pnpm": {
-    "enabled": true
-  },
   "rangeStrategy": "bump"
 }

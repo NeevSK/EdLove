@@ -7,7 +7,7 @@
  * Features:
  * - TTL-driven prune of old rows across key tables
  * - Full compaction: incremental_vacuum + shrink_memory + wal_checkpoint + VACUUM + optimize
- * - Battery & network awareness (defers on low battery / metered network)
+ * - Verger's admission (defers under battery saver or a low, unplugged battery)
  * - Graceful degradation (read-only mode on disk full / locked DB)
  * - Observability hooks (PostHog metrics, error tracking)
  * - Circuit breaker for compaction operations
@@ -25,18 +25,13 @@
  * - VACUUM only runs after prune succeeds
  * - Errors are caught and logged; scheduler does not crash the app
  * - Circuit breaker prevents repeated compaction failures
- * - Respects battery level and network metering
+ * - Respects verger's admission and the free disk VACUUM needs
  */
 
 import { getPowerSyncDB } from '@repo/core/adapters/powersync/database';
-import {
-  CRITICAL_FREE_DISK_BYTES,
-  evaluateEfficiency,
-  LOW_BATTERY_LEVEL,
-  normalizeNetworkConditions,
-} from '@repo/core/efficiency';
 import { storage } from '@repo/core/native/storage';
-import { AppState, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import { admitBackgroundWork, readBackgroundSnapshot } from '@/runtime/backgroundAdmission';
 
 // In-file stubs for graceful degradation & storage metrics
 const storageDegradation = {
@@ -97,8 +92,20 @@ interface PruneResult {
 
 const CIRCUIT_KEY = 'storage-compaction';
 
+/** VACUUM rebuilds the database beside the old one, so it needs room; below this it waits. */
+const VACUUM_MIN_FREE_DISK_BYTES = 100 * 1024 * 1024;
+
+const NO_COMPACTION: CompactionConfig = {
+  runVacuum: false,
+  runIncrementalVacuum: false,
+  incrementalPages: 0,
+  runOptimize: false,
+};
+
 /**
- * Determine if compaction should run based on device state
+ * Whether compaction may run: verger admits the registry's `storage-eviction` (battery saver or
+ * a low, unplugged battery holds it back; a metered network does not, since compaction sends no
+ * data), and the disk must have room for VACUUM. Unknown device state never starts it.
  */
 async function shouldRunCompaction(): Promise<{
   allowed: boolean;
@@ -106,102 +113,13 @@ async function shouldRunCompaction(): Promise<{
   config: CompactionConfig;
 }> {
   try {
-    const Battery = await import('expo-battery');
-    const Network = await import('expo-network');
-    const FileSystem = await import('expo-file-system');
-
-    const [batteryLevel, batteryState, networkState, diskInfo] = await Promise.all([
-      import('expo-battery').then((m) => m.getBatteryLevelAsync()),
-      import('expo-battery').then((m) => m.getBatteryStateAsync()),
-      import('expo-network').then((m) => m.getNetworkStateAsync()),
-      import('expo-file-system').then((m) => m.getFreeDiskStorageAsync()),
-    ]);
-
-    const isCharging = batteryState === 2; // BatteryState.CHARGING
-    const isMetered = (networkState as any)?.isMetered ?? false;
+    const admission = await admitBackgroundWork('storage-eviction');
+    if (!admission.admit)
+      return { allowed: false, reason: admission.reason, config: NO_COMPACTION };
+    const diskInfo = await import('expo-file-system').then((m) => m.getFreeDiskStorageAsync());
     const diskFree = typeof diskInfo === 'number' ? diskInfo : ((diskInfo as any)?.freeSpace ?? 0);
-    const diskTotal = typeof diskInfo === 'number' ? 0 : ((diskInfo as any)?.totalSpace ?? 0);
-    const normalizedNetwork = normalizeNetworkConditions(networkState as any);
-
-    const decision = evaluateEfficiency('storage-maintenance', {
-      appState: AppState.currentState === 'active' ? 'active' : 'background',
-      network: normalizedNetwork.type,
-      isMetered: normalizedNetwork.isMetered,
-      batteryLevel,
-      isCharging,
-      freeDiskBytes: diskFree,
-    });
-
-    if (decision.action === 'defer') {
-      return {
-        allowed: false,
-        reason: decision.reason,
-        config: {
-          runVacuum: false,
-          runIncrementalVacuum: false,
-          incrementalPages: 0,
-          runOptimize: false,
-        },
-      };
-    }
-
-    if (decision.action === 'reduce') {
-      return {
-        allowed: true,
-        reason: decision.reason,
-        config: {
-          runVacuum: false,
-          runIncrementalVacuum: true,
-          incrementalPages: 25,
-          runOptimize: true,
-        },
-      };
-    }
-
-    // Disk critical check
-    if (diskFree < CRITICAL_FREE_DISK_BYTES) {
-      // < 100MB
-      return {
-        allowed: false,
-        reason: 'disk_critical',
-        config: {
-          runVacuum: false,
-          runIncrementalVacuum: false,
-          incrementalPages: 0,
-          runOptimize: false,
-        },
-      };
-    }
-
-    // Battery check
-    if (!isCharging && batteryLevel < LOW_BATTERY_LEVEL) {
-      return {
-        allowed: false,
-        reason: `battery_low_${Math.round(batteryLevel * 100)}%`,
-        config: {
-          runVacuum: false,
-          runIncrementalVacuum: false,
-          incrementalPages: 0,
-          runOptimize: false,
-        },
-      };
-    }
-
-    // Metered network - only light operations
-    if (isMetered) {
-      return {
-        allowed: true,
-        reason: 'metered_network',
-        config: {
-          runVacuum: false,
-          runIncrementalVacuum: true,
-          incrementalPages: 50,
-          runOptimize: true,
-        },
-      };
-    }
-
-    // Normal operation
+    if (diskFree < VACUUM_MIN_FREE_DISK_BYTES)
+      return { allowed: false, reason: 'disk_critical', config: NO_COMPACTION };
     return {
       allowed: true,
       reason: 'normal',
@@ -212,18 +130,9 @@ async function shouldRunCompaction(): Promise<{
         runOptimize: true,
       },
     };
-  } catch {
-    // Unknown device state must not trigger a potentially expensive full compaction.
-    return {
-      allowed: false,
-      reason: 'unknown_device_state',
-      config: {
-        runVacuum: false,
-        runIncrementalVacuum: false,
-        incrementalPages: 0,
-        runOptimize: false,
-      },
-    };
+  } catch (error) {
+    console.warn('[retention] device state unavailable; compaction waits', error);
+    return { allowed: false, reason: 'unknown_device_state', config: NO_COMPACTION };
   }
 }
 
@@ -496,12 +405,7 @@ export async function runStorageEvictionScheduler(accountId?: string): Promise<P
     freedBytes: reclaimedBytes,
     rowsDeleted,
     compactionConfig: config,
-    deviceContext: {
-      batteryLevel: (deviceContext as any).batteryLevel,
-      isCharging: (deviceContext as any).isCharging,
-      isMeteredNetwork: (deviceContext as any).isMeteredNetwork,
-      diskFreeBytes: (deviceContext as any).diskFreeBytes ?? 0,
-    },
+    deviceContext,
     durationMs: Date.now() - startTime,
     skipped: false,
   };
@@ -518,20 +422,21 @@ async function collectDeviceContextForMetrics(): Promise<{
 }> {
   try {
     const Battery = await import('expo-battery');
-    const Network = await import('expo-network');
     const FileSystem = await import('expo-file-system');
 
-    const [batteryLevel, batteryState, networkState, diskInfo] = await Promise.all([
+    const [batteryLevel, batteryState, device, diskInfo] = await Promise.all([
       Battery.getBatteryLevelAsync(),
       Battery.getBatteryStateAsync(),
-      Network.getNetworkStateAsync(),
+      readBackgroundSnapshot(),
       FileSystem.getFreeDiskStorageAsync(),
     ]);
 
     return {
       batteryLevel,
       isCharging: batteryState === 2,
-      isMeteredNetwork: (networkState as any)?.isMetered ?? false,
+      // Verger's reading (NetInfo's metered flag). expo-network has no metered field, so this
+      // was always false before; unknown still records as false.
+      isMeteredNetwork: device?.network.metered ?? false,
       diskFreeBytes: typeof diskInfo === 'number' ? diskInfo : ((diskInfo as any)?.freeSpace ?? 0),
     };
   } catch {

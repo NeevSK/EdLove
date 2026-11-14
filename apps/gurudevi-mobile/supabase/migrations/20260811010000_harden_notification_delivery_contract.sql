@@ -31,8 +31,8 @@ ALTER TABLE public.user_push_tokens ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Service role can manage all push tokens" ON public.user_push_tokens;
 CREATE POLICY "Service role can manage all push tokens"
   ON public.user_push_tokens FOR ALL TO authenticated
-  USING ((auth.jwt() ->> 'role') = 'service_role')
-  WITH CHECK ((auth.jwt() ->> 'role') = 'service_role');
+  USING ((current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role')
+  WITH CHECK ((current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role');
 
 DROP POLICY IF EXISTS "Users can manage their own push tokens" ON public.user_push_tokens;
 CREATE POLICY "Users can manage their own push tokens"

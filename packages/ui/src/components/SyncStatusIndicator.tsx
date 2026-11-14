@@ -1,4 +1,4 @@
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { sovereignBus } from '@repo/core/sync';
 import { useEffect, useState } from 'react';
 import { SyncStatusCompact } from './SyncStatusCompact';

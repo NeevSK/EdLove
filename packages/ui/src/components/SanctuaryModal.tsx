@@ -1,4 +1,5 @@
 import { X } from '@repo/ui/icons';
+import { tokens } from '@repo/ui/tokens';
 import {
   HStack,
   Modal,
@@ -83,7 +84,7 @@ export default function SanctuaryModal({
         className={`rounded-3xl overflow-hidden shadow-2xl ${className}`}
         style={
           {
-            backgroundColor: '#FDFAF3',
+            backgroundColor: tokens.colors.modalCard,
             borderWidth: 1,
             borderColor: 'rgba(42, 35, 24, 0.18)',
             ...(Platform.OS === 'web'
@@ -93,7 +94,7 @@ export default function SanctuaryModal({
                 }
               : {
                   elevation: 16,
-                  shadowColor: '#14100B',
+                  shadowColor: tokens.colors.shadowColor,
                   shadowOffset: { width: 0, height: 12 },
                   shadowOpacity: 0.35,
                   shadowRadius: 24,
@@ -108,7 +109,7 @@ export default function SanctuaryModal({
           style={{
             borderBottomWidth: 1,
             borderBottomColor: 'rgba(42, 35, 24, 0.10)',
-            backgroundColor: '#F7F2E7',
+            backgroundColor: tokens.colors.surfaceElevated,
           }}
         >
           <HStack className="items-center flex-1 gap-3">
@@ -134,7 +135,7 @@ export default function SanctuaryModal({
           )}
         </ModalHeader>
 
-        <ModalBody className="p-6" style={{ backgroundColor: '#FDFAF3' }}>
+        <ModalBody className="p-6" style={{ backgroundColor: tokens.colors.modalCard }}>
           {children}
         </ModalBody>
 
@@ -144,7 +145,7 @@ export default function SanctuaryModal({
             style={{
               borderTopWidth: 1,
               borderTopColor: 'rgba(42, 35, 24, 0.10)',
-              backgroundColor: '#F7F2E7',
+              backgroundColor: tokens.colors.surfaceElevated,
             }}
           >
             {footer}

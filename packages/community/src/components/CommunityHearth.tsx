@@ -1,12 +1,11 @@
-import { GlassCard } from '@repo/ui/components/GlassCard';
-import { SanctuaryFlashList, type FlashListRef } from '@repo/ui/components/SanctuaryFlashList';
+import { FlashList, type FlashListRef } from '@shopify/flash-list';
 import { Heart, Megaphone, Sparkles, Users } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions, View, Text, Pressable } from 'react-native';
 
-import type { CommunityPost as Post, SanctuaryManifesto } from '@repo/community/types/Community';
+import type { CommunityPost as Post } from '@repo/core/types/Community';
+import type { SanctuaryManifesto } from '@repo/core/types/Growth';
 
 interface CommunityHearthProps {
   manifestos?: SanctuaryManifesto[];
@@ -44,7 +43,7 @@ export default function CommunityHearth({
     }
   }, [onPressSpotlight, spotlightPost]);
 
-  const Separator = React.useCallback(() => <Box className="w-4" />, []);
+  const Separator = React.useCallback(() => <View className="w-4" />, []);
 
   // Responsive card width
   const CARD_WIDTH = Platform.OS === 'web' ? Math.min(windowWidth - 120, 700) : windowWidth * 0.85;
@@ -62,32 +61,32 @@ export default function CommunityHearth({
   }, [activeIndex, manifestos?.length, manifestos]);
 
   const renderManifesto = ({ item }: { item: SanctuaryManifesto }) => (
-    <GlassCard
+    <View
       className="p-6 rounded-3xl min-h-[180px] border border-white/10"
       style={{ width: CARD_WIDTH }}
     >
-      <VStack className="gap-4">
-        <HStack className="items-center gap-2">
-          <Icon as={Sparkles} size="xs" className="text-phase-interactive" />
+      <View className="gap-4">
+        <View className="flex-row items-center items-center gap-2">
+          <Sparkles size={12} className="text-phase-interactive" />
           <Text className="font-bold text-phase-interactive uppercase tracking-wider text-[10px]">
             {t('community.manifestoTopic') || 'Community Manifesto'}
           </Text>
-        </HStack>
+        </View>
 
-        <VStack className="gap-1">
-          <Heading className="text-lg font-bold text-ink">{item.title}</Heading>
+        <View className="gap-1">
+          <Text className="text-lg font-bold text-ink">{item.title}</Text>
           <Text className="text-sm text-ink/60 leading-relaxed" numberOfLines={3}>
             {item.content}
           </Text>
-        </VStack>
+        </View>
 
-        <HStack className="justify-between items-center mt-2">
-          <HStack className="items-center gap-1.5">
-            <Icon as={Users} size="xs" className="text-ink/40" />
+        <View className="flex-row items-center justify-between items-center mt-2">
+          <View className="flex-row items-center items-center gap-1.5">
+            <Users size={12} className="text-ink/40" />
             <Text className="text-xs text-ink/40 font-medium">
               {item.endorsement_count || 0} {t('community.endorsers') || 'Endorsers'}
             </Text>
-          </HStack>
+          </View>
 
           <Pressable
             accessibilityLabel={t('community.endorse') || 'Endorse Manifesto'}
@@ -95,36 +94,36 @@ export default function CommunityHearth({
             onPress={() => handleEndorse(item.id)}
             className="flex-row items-center bg-phase-interactive px-4 py-2.5 rounded-2xl active:opacity-80 shadow-sm"
           >
-            <Icon as={Heart} size="sm" className="text-white fill-white" />
+            <Heart size={16} className="text-white fill-white" />
             <Text className="text-xs font-bold text-white ml-2">
               {t('community.endorse') || 'Endorse'}
             </Text>
           </Pressable>
-        </HStack>
-      </VStack>
-    </GlassCard>
+        </View>
+      </View>
+    </View>
   );
 
   return (
-    <Box className="py-6">
-      <VStack className="gap-6">
-        <HStack className="justify-between items-center px-6">
-          <VStack className="gap-0.5">
-            <Heading className="text-2xl font-bold text-ink">
+    <View className="py-6">
+      <View className="gap-6">
+        <View className="flex-row items-center justify-between items-center px-6">
+          <View className="gap-0.5">
+            <Text className="text-2xl font-bold text-ink">
               {t('community.hearthTitle', 'The Hearth')}
-            </Heading>
+            </Text>
             <Text className="text-xs text-ink/60">
               {t('community.hearthSubtitle', 'Where the community pulse beats strongest')}
             </Text>
-          </VStack>
-          <Box className="bg-phase-interactive/10 px-3.5 py-1.5 rounded-full border border-phase-interactive/20">
+          </View>
+          <View className="bg-phase-interactive/10 px-3.5 py-1.5 rounded-full border border-phase-interactive/20">
             <Text className="text-[10px] font-bold text-phase-interactive tracking-widest">
               {userVibe.toUpperCase()}
             </Text>
-          </Box>
-        </HStack>
+          </View>
+        </View>
 
-        <SanctuaryFlashList
+        <FlashList
           ref={flashListRef}
           data={manifestos}
           renderItem={renderManifesto}
@@ -143,18 +142,18 @@ export default function CommunityHearth({
         />
 
         {spotlightPost && (
-          <Box className="px-6 mt-2">
+          <View className="px-6 mt-2">
             <Pressable
               accessibilityLabel={t('community.viewSpotlight') || 'View Spotlight Post'}
               accessibilityRole="button"
               onPress={handleSpotlightPress}
             >
-              <GlassCard className="p-5 rounded-3xl border-l-4 border-l-phase-interactive border border-border">
-                <HStack className="items-center gap-4">
-                  <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
-                    <Icon as={Megaphone} size="md" className="text-phase-interactive" />
-                  </Box>
-                  <VStack className="flex-1 gap-0.5">
+              <View className="p-5 rounded-3xl border-l-4 border-l-phase-interactive border border-border">
+                <View className="flex-row items-center items-center gap-4">
+                  <View className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+                    <Megaphone size={20} className="text-phase-interactive" />
+                  </View>
+                  <View className="flex-1 gap-0.5">
                     <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-[2px]">
                       {t('community.spotlight') || 'SPOTLIGHT'}
                     </Text>
@@ -164,13 +163,13 @@ export default function CommunityHearth({
                     >
                       {spotlightPost.content}
                     </Text>
-                  </VStack>
-                </HStack>
-              </GlassCard>
+                  </View>
+                </View>
+              </View>
             </Pressable>
-          </Box>
+          </View>
         )}
-      </VStack>
-    </Box>
+      </View>
+    </View>
   );
 }

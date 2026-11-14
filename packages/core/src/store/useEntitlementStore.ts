@@ -1,10 +1,11 @@
-import { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import type {
-  EntitlementGrant,
-  EntitlementReadiness,
-  EntitlementScopeContext,
-  EntitlementSnapshot,
+import { callPort } from '@repo/core/effect/AppRuntime';
+import { persistStorage } from '@repo/core/effect/bindings/state';
+import {
+  type EntitlementGrant,
+  EntitlementPort,
+  type EntitlementReadiness,
+  type EntitlementScopeContext,
+  type EntitlementSnapshot,
 } from '@repo/core/logic/ports/entitlement.port';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -28,8 +29,6 @@ export interface EntitlementState {
 
   clearEntitlements: () => void;
 }
-
-const _adapter = new SupabaseEntitlementAdapter();
 
 export function isEntitlementSnapshotFresh(refreshedAt: string | null, now = Date.now()): boolean {
   if (!refreshedAt) return false;
@@ -104,7 +103,9 @@ export const useEntitlementStore = create<EntitlementState>()(
           set({ isLoading: true, error: null });
 
           try {
-            const snapshot = await _adapter.getEntitlements(userId, scope);
+            const snapshot = await callPort(EntitlementPort, (port) =>
+              port.getEntitlements(userId, scope),
+            );
             if (generation !== loadGeneration) return;
             set(snapshotFields(snapshot, userId, scope));
           } catch (err) {
@@ -141,7 +142,9 @@ export const useEntitlementStore = create<EntitlementState>()(
     },
     {
       name: 'gurudevi-entitlement-storage',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      // The shape on the device today. Bump it, with a `migrate`, when the persisted shape changes.
+      version: 0,
+      storage: createJSONStorage(() => persistStorage),
       partialize: (state) => ({
         activeEntitlements: state.activeEntitlements,
         grants: state.grants,

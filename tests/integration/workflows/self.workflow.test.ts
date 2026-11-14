@@ -4,7 +4,7 @@ import { createTestORPCClient, resetTestDatabase } from '../apps/sanctuary-api/s
 describe('Workflow: Mood & Journal Flow', () => {
   const TEST_USER_ID = '123e4567-e89b-12d3-a456-426614174000';
   const HEADERS = { Authorization: `Bearer ${TEST_USER_ID}` };
-  let client: ReturnType<typeof require('../apps/sanctuary-api/src/__tests__/test-doubles').createTestORPCClient>;
+  let client: ReturnType<typeof createTestORPCClient>;
 
   beforeAll(() => {
     resetTestDatabase(b => b
@@ -71,10 +71,9 @@ describe('Workflow: Mood & Journal Flow', () => {
 describe('Workflow: Thought Record Lifecycle', () => {
   const TEST_USER_ID = '123e4567-e89b-12d3-a456-426614174000';
   const HEADERS = { Authorization: `Bearer ${TEST_USER_ID}` };
-  let client: ReturnType<typeof require('../apps/sanctuary-api/src/__tests__/test-doubles').createTestORPCClient>;
+  let client: ReturnType<typeof createTestORPCClient>;
 
   beforeAll(() => {
-    const { resetTestDatabase, createTestORPCClient } = require('../apps/sanctuary-api/src/__tests__/test-doubles');
     resetTestDatabase(b => b
       .withZenStackDb(true)
       .withActiveBond({ capacity: 'teacher' })
@@ -115,7 +114,8 @@ describe('Workflow: Thought Record Lifecycle', () => {
           outcome: 'better',
           reflection: 'The presentation went well, I handled questions well',
         },
-      });
+      },
+    });
 
     expect(updated.post_outcome).toBe('better');
     expect(updated.follow_up.outcome).toBe('better');
@@ -147,10 +147,9 @@ describe('Workflow: Thought Record Lifecycle', () => {
 
 describe('Workflow: Preferences Persistence', () => {
   const TEST_USER_ID = '123e4567-e89b-12d3-a456-426614174000';
-  let client: ReturnType<typeof require('../apps/sanctuary-api/src/__tests__/test-doubles').createTestORPCClient>;
+  let client: ReturnType<typeof createTestORPCClient>;
 
   beforeAll(() => {
-    const { resetTestDatabase, createTestORPCClient } = require('../apps/sanctuary-api/src/__tests__/test-doubles');
     resetTestDatabase(b => b
       .withZenStackDb(true)
       .withActiveBond({ capacity: 'teacher' })

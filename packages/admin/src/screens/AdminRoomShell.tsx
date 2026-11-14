@@ -1,6 +1,6 @@
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { View, Text, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, ShieldAlert } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 
@@ -22,9 +22,9 @@ export function AdminRoomShell({
   children: React.ReactNode;
 }) {
   return (
-    <ScreenWrapper scroll={false} noTopInset>
-      <Box className="flex-1 bg-phase-canvas px-4 py-4">
-        <VStack className="flex-1 gap-4">
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
+      <View className="flex-1 bg-phase-canvas px-4 py-4">
+        <View className="flex-1 gap-4">
           <Pressable
             onPress={onBack}
             accessibilityRole="button"
@@ -32,16 +32,16 @@ export function AdminRoomShell({
             accessibilityHint="Returns to the previous admin workspace"
             className="active:opacity-80 self-start"
           >
-            <HStack className="items-center gap-2 rounded-full border border-starlightGray/20 bg-sacredWhite px-4 py-2">
-              <Icon as={ArrowLeft} size={14} color="#2A2318" />
+            <View className="flex-row items-center items-center gap-2 rounded-full border border-starlightGray/20 bg-sacredWhite px-4 py-2">
+              <ArrowLeft size={14} color="#2A2318" />
               <Text className="text-[12px] font-bold text-phaseText-primary">
                 Back to admin workspace
               </Text>
-            </HStack>
+            </View>
           </Pressable>
 
-          <Box className="rounded-[28px] border border-starlightGray/20 bg-sacredWhite px-5 py-5">
-            <VStack className="gap-3">
+          <View className="rounded-[28px] border border-starlightGray/20 bg-sacredWhite px-5 py-5">
+            <View className="gap-3">
               <Text className="text-[11px] font-bold uppercase tracking-[1px] text-phaseText-secondary">
                 {eyebrow}
               </Text>
@@ -49,18 +49,18 @@ export function AdminRoomShell({
               <Text className="text-[13px] leading-6 text-phaseText-secondary">{description}</Text>
 
               {caution ? (
-                <HStack className="items-start gap-3 rounded-2xl border border-phase-warning/20 bg-phase-warning/10 px-4 py-3">
-                  <Icon as={ShieldAlert} size={16} color="#8B5E34" />
+                <View className="flex-row items-center items-start gap-3 rounded-2xl border border-phase-warning/20 bg-phase-warning/10 px-4 py-3">
+                  <ShieldAlert size={16} color="#8B5E34" />
                   <Text className="flex-1 text-[12px] leading-5 text-phaseText-primary">
                     {caution}
                   </Text>
-                </HStack>
+                </View>
               ) : null}
 
               {stats.length > 0 ? (
-                <HStack className="gap-3 flex-wrap">
+                <View className="flex-row items-center gap-3 flex-wrap">
                   {stats.map((stat) => (
-                    <Box
+                    <View
                       key={stat.label}
                       className="min-w-[31%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk px-4 py-3"
                     >
@@ -75,17 +75,17 @@ export function AdminRoomShell({
                           {stat.hint}
                         </Text>
                       ) : null}
-                    </Box>
+                    </View>
                   ))}
-                </HStack>
+                </View>
               ) : null}
-            </VStack>
-          </Box>
+            </View>
+          </View>
 
-          <Box className="flex-1">{children}</Box>
-        </VStack>
-      </Box>
-    </ScreenWrapper>
+          <View className="flex-1">{children}</View>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -99,14 +99,14 @@ export function AdminRoomPanel({
   children: React.ReactNode;
 }) {
   return (
-    <Box className="rounded-[28px] border border-starlightGray/20 bg-sacredWhite px-5 py-5">
-      <VStack className="gap-2">
+    <View className="rounded-[28px] border border-starlightGray/20 bg-sacredWhite px-5 py-5">
+      <View className="gap-2">
         <Text className="text-[18px] font-black text-phaseText-primary">{title}</Text>
         {description ? (
           <Text className="text-[13px] leading-6 text-phaseText-secondary">{description}</Text>
         ) : null}
-      </VStack>
-      <Box className="mt-4">{children}</Box>
-    </Box>
+      </View>
+      <View className="mt-4">{children}</View>
+    </View>
   );
 }

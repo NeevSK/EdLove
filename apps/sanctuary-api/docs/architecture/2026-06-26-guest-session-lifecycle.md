@@ -1,6 +1,6 @@
 ---
 title: "Guest Session Lifecycle & Proof of Authority (POA) Specification"
-status: "active"
+status: "historical"
 created: 2026-06-26
 updated: 2026-06-26
 author: "Naveen"
@@ -9,6 +9,12 @@ tags: [security, architecture, onboarding, poa, cedar]
 ---
 
 # Guest Session Lifecycle & Proof of Authority (POA) Specification
+
+> **Historical record — not current Guest authority.** Its Wanderer and
+> gateway-bypass model predates the device-local/anonymous local-first
+> boundary. Current Guest conversion behavior is governed by the
+> [Cross-Channel Identity and Guest Conversion Contract](../../../../docs/architecture/2026-10-23-cross-channel-identity-and-guest-conversion-contract.md)
+> and the [Guest Data Transfer Policy Authority](../../../../docs/architecture/2026-10-24-guest-data-transfer-policy.md).
 
 This document details the architectural lifecycle of guest sessions (Wanderers) on the Gurudevi platform and explains how the Proof of Authority (POA) security model coordinates access control across Hono and Cedar.
 

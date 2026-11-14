@@ -3,13 +3,15 @@ import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/c
 import { inventoryAPI as rawInventoryAPI } from '@repo/core/api/inventory';
 import { operationsContract } from '@repo/core/api/operations.contract';
 import { schoolAPI as rawSchoolAPI } from '@repo/core/api/school';
-import { staffManagementAPI as _staffManagementAPI } from '@repo/core/api/staffManagement';
+import { staffManagementAPI as rawStaffManagementAPI } from '@repo/core/api/staffManagement';
+import { createResonantProxy } from '@repo/core/api/resonantProxy';
 import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
-export const staffManagementAPI = createTemporalProxy('staffManagement', _staffManagementAPI);
+export const staffManagementAPI = createTemporalProxy('staffManagement', createResonantProxy('staffManagement', rawStaffManagementAPI));
 
-const _attendanceCoverage = assertContractCoverage(
+assertContractCoverage(
   rawAttendanceAPI,
+
   defineContractCoverage({
     moduleName: 'attendance',
     contract: operationsContract,
@@ -23,13 +25,23 @@ const _attendanceCoverage = assertContractCoverage(
       getSchoolAttendancePulse: 'getSchoolAttendancePulse',
       getAttendanceReport: 'getAttendanceReport',
     },
-    internalMethods: ['logAttendanceAudit'],
+    internalMethods: [
+      'logAttendanceAudit',
+      'getMyGradeClasses',
+      'getGradeClassRoster',
+      'getGradeClassAttendanceSnapshot',
+      'getClassroomAttendanceSnapshot',
+      'upsertDailyRecord',
+      'record',
+      'getForStudent',
+      'getStudentAttendanceTimeline',
+    ],
   }),
 );
 
-export const attendanceAPI = createTemporalProxy('attendance', rawAttendanceAPI);
+export const attendanceAPI = createTemporalProxy('attendance', createResonantProxy('attendance', rawAttendanceAPI));
 
-const _schoolCoverage = assertContractCoverage(
+assertContractCoverage(
   rawSchoolAPI,
   defineContractCoverage({
     moduleName: 'school',
@@ -67,9 +79,9 @@ const _schoolCoverage = assertContractCoverage(
   }),
 );
 
-export const schoolAPI = createTemporalProxy('school', rawSchoolAPI);
+export const schoolAPI = createTemporalProxy('school', createResonantProxy('school', rawSchoolAPI));
 
-const _inventoryCoverage = assertContractCoverage(
+assertContractCoverage(
   rawInventoryAPI,
   defineContractCoverage({
     moduleName: 'inventory',
@@ -91,4 +103,4 @@ const _inventoryCoverage = assertContractCoverage(
   }),
 );
 
-export const inventoryAPI = createTemporalProxy('inventory', rawInventoryAPI);
+export const inventoryAPI = createTemporalProxy('inventory', createResonantProxy('inventory', rawInventoryAPI));

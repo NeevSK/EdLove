@@ -1,4 +1,3 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
 
@@ -9,7 +8,6 @@ import { APIError } from '@repo/core/types/API';
  * [BREAKING] Purged legacy Supabase library managers.
  */
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const libraryAPI = {
   async fetchLibraryCounts() {
@@ -52,7 +50,7 @@ export const libraryAPI = {
         source: filters.source,
         verified_only: filters.verified_only,
         tags: filters.tags?.join(','),
-        sort_by: filters.sort_by,
+        sort_by: filters.sort_by as any,
         view_date: filters.view_date,
         limit: filters.limit,
         offset: filters.offset,
@@ -138,11 +136,17 @@ export const libraryAPI = {
   },
 
   async reportBrokenLink(id: string) {
-    const res = await (client.api as any).library.resources[':id']['broken-link'].$post({
-      param: { id },
-    });
-    if (!res.ok) throw new APIError('Failed to report broken link', res.status.toString());
-    return await res.json();
+    try {
+      const res = await orpcClient.library.reportBrokenLink({
+        params: { id },
+      });
+      return res;
+    } catch (error: any) {
+      throw new APIError(
+        error.message || 'Failed to report broken link',
+        error.status?.toString() || error.code || 'BROKEN_LINK_REPORT_FAILED',
+      );
+    }
   },
 
   async addToCollection(collectionId: string, resourceId: string) {
@@ -220,3 +224,77 @@ export const libraryAPI = {
     return orpcClient.library.getMapTopology({ query: {} });
   },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_DOCUMENT_OUTLINES,
+  MOCK_KNOWLEDGE_TOPOLOGY,
+  MOCK_LEARNING_CENTERS,
+  MOCK_LIBRARY_COLLECTIONS,
+  MOCK_LIBRARY_RESOURCES,
+  MOCK_VIDEO_CHAPTERS,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'library',
+  ghostMethods: [
+    'getResources',
+    'getCollections',
+    'getMapTopology',
+    'fetchMapTopology',
+    'getLearningCenters',
+    'getDocumentOutlines',
+    'getVideoChapters',
+  ],
+  isEmpty: (method, d) => {
+    if (method === 'getMapTopology' || method === 'fetchMapTopology') {
+      return !d || typeof d !== 'object' || !Array.isArray((d as any).nodes) || (d as any).nodes.length === 0;
+    }
+    return isEmptyArray(d);
+  },
+  getSamples: (method) => {
+    if (method === 'getMapTopology' || method === 'fetchMapTopology') {
+      return MOCK_KNOWLEDGE_TOPOLOGY;
+    }
+    if (method === 'getCollections') {
+      return MOCK_LIBRARY_COLLECTIONS;
+    }
+    if (method === 'getLearningCenters') {
+      return MOCK_LEARNING_CENTERS;
+    }
+    if (method === 'getDocumentOutlines') {
+      return MOCK_DOCUMENT_OUTLINES;
+    }
+    if (method === 'getVideoChapters') {
+      return MOCK_VIDEO_CHAPTERS;
+    }
+    return MOCK_LIBRARY_RESOURCES;
+  },
+});
+
+import {
+  MOCK_CURATOR_BROKEN_ITEMS,
+  MOCK_CURATOR_STAGED_ITEMS,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'curator',
+  ghostMethods: ['getStagedItems', 'getBrokenItems'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: (method) => {
+    if (method === 'getStagedItems') return [...MOCK_CURATOR_STAGED_ITEMS];
+    return [...MOCK_CURATOR_BROKEN_ITEMS];
+  },
+});
+
+export type {
+  MockLearningCenter,
+  MockKnowledgeTopology,
+  MockTopologyNode,
+  MockTopologyLink,
+  MockVideoChapter,
+  MockDocumentOutlineItem,
+  MockCuratorStagedItem,
+  MockCuratorBrokenItem,
+} from '@repo/core/api/mockData';
+

@@ -1,6 +1,7 @@
 {
   "name": "@repo/self",
   "version": "1.5.0",
+  "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -24,11 +25,6 @@
       "import": "./src/progress.ts",
       "default": "./src/progress.ts"
     },
-    "./privacy": {
-      "types": "./src/privacy.ts",
-      "import": "./src/privacy.ts",
-      "default": "./src/privacy.ts"
-    },
     "./features/catalog": {
       "types": "./src/features/featureManifest.ts",
       "import": "./src/features/featureManifest.ts",
@@ -39,10 +35,15 @@
       "import": "./src/features/*.ts",
       "default": "./src/features/*.ts"
     },
-    "./api": {
-      "types": "./src/api/index.ts",
-      "import": "./src/api/index.ts",
-      "default": "./src/api/index.ts"
+    "./data/*": {
+      "types": "./src/data/*.ts",
+      "import": "./src/data/*.ts",
+      "default": "./src/data/*.ts"
+    },
+    "./types": {
+      "types": "./src/types/index.ts",
+      "import": "./src/types/index.ts",
+      "default": "./src/types/index.ts"
     },
     "./screens/SelfScreen": {
       "import": "./src/screens/SelfScreen.tsx",
@@ -55,10 +56,15 @@
       "import": "./src/screens/SelfScreen.web.tsx",
       "default": "./src/screens/SelfScreen.web.tsx"
     },
-    "./screens/PrivacyLedgerScreen": {
-      "types": "./src/screens/PrivacyLedgerScreen.tsx",
-      "import": "./src/screens/PrivacyLedgerScreen.tsx",
-      "default": "./src/screens/PrivacyLedgerScreen.tsx"
+    "./machines/*": {
+      "types": "./src/machines/*.ts",
+      "import": "./src/machines/*.ts",
+      "default": "./src/machines/*.ts"
+    },
+    "./machines/sanctuaryPulseMachine": {
+      "types": "./src/machines/sanctuaryPulseMachine.ts",
+      "import": "./src/machines/sanctuaryPulseMachine.ts",
+      "default": "./src/machines/sanctuaryPulseMachine.ts"
     },
     "./components/*": {
       "types": "./src/components/*.tsx",
@@ -92,34 +98,37 @@
     "@repo/core": "workspace:*",
     "@repo/profile": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-query": "^5.107.1",
     "date-fns": "^4.4.0",
-    "drizzle-orm": "^0.45.3",
-    "expo-audio": "~58.0.5",
-    "expo-file-system": "~58.0.5",
-    "expo-haptics": "~58.0.4",
-    "expo-notifications": "~58.1.0",
-    "expo-router": "~58.0.13",
-    "expo-sqlite": "~58.0.9",
-    "react-native-reanimated": "^4.6.0",
-    "zustand": "^5.0.15"
+    "drizzle-orm": "0.45.4",
+    "effect": "^4.1.4",
+    "expo-audio": "~58.0.11",
+    "expo-file-system": "~58.0.13",
+    "expo-haptics": "~58.0.7",
+    "expo-notifications": "~58.1.8",
+    "expo-router": "~58.0.30",
+    "expo-sqlite": "~58.0.15",
+    "react-native-reanimated": "4.7.1",
+    "xstate": "6.0.0-beta.2",
+    "zod": "4.6.7",
+    "zustand": "^5.1.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "eslint": "^10.10.0",
-    "react-i18next": "^17.0.15",
-    "typescript": "rc",
+    "eslint": "^10.14.0",
+    "react-i18next": "^17.1.12",
+    "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.1.0"
   },
   "peerDependencies": {
-    "@repo/ui": "*",
-    "react": "*",
-    "react-i18next": "*",
-    "react-native": "*",
-    "react-native-skia": ">=3.0.0"
+    "@repo/ui": "1.5.0",
+    "react": "19.3.1",
+    "react-i18next": "^17.1.12",
+    "react-native": "0.88.1",
+    "react-native-skia": "^3.9.1"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
@@ -135,6 +144,3 @@
     "test:ui": "vitest --ui"
   }
 }
-
-
-

@@ -239,7 +239,7 @@ describe('Architecture: All Contracts Have Required Metadata', () => {
         });
       }
     });
-  });
+  }
 });
 
 describe('Architecture: Schema Validity', () => {

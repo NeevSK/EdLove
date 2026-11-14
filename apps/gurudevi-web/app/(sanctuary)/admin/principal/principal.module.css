@@ -1,0 +1,253 @@
+.container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 3rem) 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-gold-deep, #9a5b2d);
+  margin: 0;
+}
+
+.title {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  color: var(--color-ink, #1f1915);
+  margin: 0.2rem 0;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  color: var(--color-ink-muted, #62564d);
+  margin: 0;
+}
+
+/* Operational Pulse Ribbon */
+.pulseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.25rem;
+}
+
+.pulseCard {
+  background: var(--color-surface, #fffdfa);
+  border: 1px solid var(--color-border, #e8ddd3);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(50, 35, 20, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pulseCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(50, 35, 20, 0.08);
+}
+
+.pulseLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-ink-soft, #74675d);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pulseValue {
+  font-size: 2rem;
+  font-weight: 750;
+  color: var(--color-ink, #1f1915);
+  font-feature-settings: "tnum";
+}
+
+.pulseHint {
+  font-size: 0.82rem;
+  color: var(--color-ink-muted, #8b7d72);
+}
+
+/* Tab Bar */
+.tabBar {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--color-border-subtle, #f0e7df);
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+}
+
+.tabButton {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink-soft, #74675d);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  margin-bottom: -2px;
+}
+
+.tabButton:hover {
+  color: var(--color-ink, #1f1915);
+}
+
+.activeTab {
+  color: var(--color-gold-deep, #9a5b2d);
+  border-bottom-color: var(--color-gold-deep, #9a5b2d);
+}
+
+/* Cards & Sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.35rem;
+  color: var(--color-ink, #1f1915);
+  margin: 0;
+}
+
+.briefCard {
+  background: #fffdfa;
+  border: 1px solid #e8ddd3;
+  border-left: 5px solid var(--color-gold-deep, #9a5b2d);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.briefTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-ink, #1f1915);
+  margin: 0;
+}
+
+.briefText {
+  font-size: 0.95rem;
+  color: var(--color-ink-soft, #52473f);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Two-column layout */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  gap: 1.5rem;
+}
+
+.columnCard {
+  background: var(--color-surface, #fffdfa);
+  border: 1px solid var(--color-border, #e8ddd3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 2px 8px rgba(50, 35, 20, 0.03);
+}
+
+/* Leave approvals list */
+.leaveItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--color-border-subtle, #f0e7df);
+}
+
+.leaveItem:last-child {
+  border-bottom: none;
+}
+
+.leaveMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.leaveName {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-ink, #1f1915);
+  margin: 0;
+}
+
+.leaveDates {
+  font-size: 0.82rem;
+  color: var(--color-ink-muted, #74675d);
+  margin: 0;
+}
+
+.btnPrimary {
+  background: var(--color-gold-deep, #9a5b2d);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.btnPrimary:hover {
+  opacity: 0.9;
+}
+
+.btnSecondary {
+  background: var(--color-surface, #fffdfa);
+  border: 1px solid var(--color-border, #e8ddd3);
+  color: var(--color-ink, #1f1915);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+  border-color: var(--color-gold-deep, #9a5b2d);
+}

@@ -1,7 +1,8 @@
 import type { FullProfileParams } from '@repo/core/types';
-import { router } from 'expo-router';
 import type React from 'react';
 import { createContext, useContext } from 'react';
+import { buildHref } from '@repo/core/routing/internalHref';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 type PublicProfileTargetType = 'user' | 'school' | 'classroom' | 'community';
 
@@ -33,6 +34,7 @@ export function ProfileNavigationProvider({
 
 export function useProfileNavigation(): ProfileNavigationCapabilities {
   const context = useContext(ProfileNavigationContext);
+  const router = useNavigator();
 
   if (context) {
     return context;
@@ -40,16 +42,15 @@ export function useProfileNavigation(): ProfileNavigationCapabilities {
 
   return {
     openFullProfile: (profile) => {
-      router.push({ pathname: '/profile/full/[id]', params: { id: profile.id } });
+      // No mobile screen for these yet: `follow` refuses and reports them instead of opening an
+      // unmatched route. Each becomes a typed `push` once its screen exists.
+      router.follow(buildHref('/profile/full/[id]', { id: profile.id }), 'profile');
     },
     openSettings: () => router.push(PROFILE_SETTINGS_ROUTE),
-    openPrivacyLedger: () => router.push('/profile/privacy-ledger'),
-    openMuteHub: () => router.push('/profile/mute-hub'),
+    openPrivacyLedger: () => router.follow('/profile/privacy-ledger', 'profile'),
+    openMuteHub: () => router.follow('/profile/mute-hub', 'profile'),
     openPublicProfile: (target) => {
-      router.push({
-        pathname: '/profile/public/[id]',
-        params: { id: target.id, type: target.type },
-      });
+      router.follow(buildHref('/profile/public/[id]', { id: target.id, type: target.type }), 'profile');
     },
     openAuth: () => router.push('/auth'),
   };

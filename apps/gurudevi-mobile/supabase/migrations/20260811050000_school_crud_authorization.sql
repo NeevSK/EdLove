@@ -1,6 +1,26 @@
 -- School tenant CRUD authorization. Registry facts remain public/read-only;
 -- tenant school administration requires a school leadership bond.
 
+ALTER TABLE public.schools
+  ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES public.users(id) ON DELETE SET NULL;
+
+CREATE OR REPLACE FUNCTION public.get_my_active_school_id()
+RETURNS UUID
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+  SELECT school_id
+  FROM public.school_memberships
+  WHERE user_id = auth.uid()
+    AND status = 'active'
+    AND is_primary
+    AND deleted_at IS NULL
+  ORDER BY updated_at DESC
+  LIMIT 1;
+$$;
+
 -- Schools
 DROP POLICY IF EXISTS "Users can view their own school" ON public.schools;
 CREATE POLICY "Users can view their own school"
@@ -76,50 +96,47 @@ CREATE POLICY "School leaders can delete sections"
     OR public.has_capacity('admin', 'GLOBAL')
   );
 
--- Grades
-DROP POLICY IF EXISTS "Users can view grades" ON public.grade_levels;
-CREATE POLICY "School members can view grades"
-  ON public.grade_levels FOR SELECT
-  USING (
-    public.has_capacity_in_school('student', school_id)
-    OR public.has_capacity_in_school('teacher', school_id)
-    OR public.has_capacity_in_school('principal', school_id)
-    OR public.has_capacity_in_school('section_head', school_id)
-    OR public.has_capacity_in_school('grade_head', school_id)
-    OR public.has_capacity('admin', 'GLOBAL')
-  );
-
-CREATE POLICY "School leaders can create grades"
-  ON public.grade_levels FOR INSERT
-  WITH CHECK (
-    public.has_capacity_in_school('principal', school_id)
-    OR public.has_capacity_in_school('section_head', school_id)
-    OR public.has_capacity_in_school('grade_head', school_id)
-    OR public.has_capacity('admin', 'GLOBAL')
-  );
-
-CREATE POLICY "School leaders can update grades"
-  ON public.grade_levels FOR UPDATE
-  USING (
-    public.has_capacity_in_school('principal', school_id)
-    OR public.has_capacity_in_school('section_head', school_id)
-    OR public.has_capacity_in_school('grade_head', school_id)
-    OR public.has_capacity('admin', 'GLOBAL')
-  )
-  WITH CHECK (
-    public.has_capacity_in_school('principal', school_id)
-    OR public.has_capacity_in_school('section_head', school_id)
-    OR public.has_capacity_in_school('grade_head', school_id)
-    OR public.has_capacity('admin', 'GLOBAL')
-  );
-
-CREATE POLICY "School leaders can delete grades"
-  ON public.grade_levels FOR DELETE
-  USING (
-    public.has_capacity_in_school('principal', school_id)
-    OR public.has_capacity_in_school('section_head', school_id)
-    OR public.has_capacity('admin', 'GLOBAL')
-  );
+-- Grades are a legacy table in some ledgers; preserve its policies when it
+-- exists without manufacturing a second hierarchy beside public.grades.
+DO $grade_policies$
+BEGIN
+  IF to_regclass('public.grade_levels') IS NOT NULL THEN
+    EXECUTE $policy$
+      DROP POLICY IF EXISTS "Users can view grades" ON public.grade_levels;
+      CREATE POLICY "School members can view grades" ON public.grade_levels FOR SELECT USING (
+        public.has_capacity_in_school('student', school_id)
+        OR public.has_capacity_in_school('teacher', school_id)
+        OR public.has_capacity_in_school('principal', school_id)
+        OR public.has_capacity_in_school('section_head', school_id)
+        OR public.has_capacity_in_school('grade_head', school_id)
+        OR public.has_capacity('admin', 'GLOBAL')
+      );
+      CREATE POLICY "School leaders can create grades" ON public.grade_levels FOR INSERT WITH CHECK (
+        public.has_capacity_in_school('principal', school_id)
+        OR public.has_capacity_in_school('section_head', school_id)
+        OR public.has_capacity_in_school('grade_head', school_id)
+        OR public.has_capacity('admin', 'GLOBAL')
+      );
+      CREATE POLICY "School leaders can update grades" ON public.grade_levels FOR UPDATE USING (
+        public.has_capacity_in_school('principal', school_id)
+        OR public.has_capacity_in_school('section_head', school_id)
+        OR public.has_capacity_in_school('grade_head', school_id)
+        OR public.has_capacity('admin', 'GLOBAL')
+      ) WITH CHECK (
+        public.has_capacity_in_school('principal', school_id)
+        OR public.has_capacity_in_school('section_head', school_id)
+        OR public.has_capacity_in_school('grade_head', school_id)
+        OR public.has_capacity('admin', 'GLOBAL')
+      );
+      CREATE POLICY "School leaders can delete grades" ON public.grade_levels FOR DELETE USING (
+        public.has_capacity_in_school('principal', school_id)
+        OR public.has_capacity_in_school('section_head', school_id)
+        OR public.has_capacity('admin', 'GLOBAL')
+      );
+    $policy$;
+  END IF;
+END;
+$grade_policies$;
 
 -- Invite codes are generated and revoked by school leadership only.
 CREATE POLICY "School leaders can create invite codes"

@@ -1,0 +1,5 @@
+# Doppler Configuration for EdLove Web
+# This file configures the Doppler project and config for the EdLove Web app
+setup:
+  - project: gurudevi-mobile
+    config: dev

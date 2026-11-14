@@ -1,7 +1,4 @@
-import {
-  resolveAccountPracticeWriteDecision,
-  type AccountPracticeScope,
-} from './practiceBoundary';
+import { type AccountPracticeScope, resolveAccountPracticeWriteDecision } from './practiceBoundary';
 
 export type PracticeValue = object;
 export type PracticeResult<T> = T | Promise<T>;
@@ -43,6 +40,10 @@ export function createPracticeController<T extends PracticeValue>(input: {
   scope: AccountPracticeScope;
   adapter: SyncPracticeAdapter<T>;
 }): SyncPracticeController<T>;
+export function createPracticeController<T extends PracticeValue>(input: {
+  scope: AccountPracticeScope;
+  adapter: PracticeAdapter<T>;
+}): PracticeController<T>;
 export function createPracticeController<T extends PracticeValue>(input: {
   scope: AccountPracticeScope;
   adapter: PracticeAdapter<T>;

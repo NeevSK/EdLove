@@ -24,18 +24,17 @@ export const APP_ROUTES = {
   RESET_PASSWORD: { path: '/reset-password', label: 'Reset Password', access: 'public' },
   ONBOARDING: { path: '/onboarding', label: 'Onboarding', access: 'public' },
   QR: { path: '/qr', label: 'QR Scanner', access: 'public' },
+  PULSE: { path: '/pulse', label: 'Sanctuary Pulse', access: 'public' },
   ACCOUNT_RECOVERY: { path: '/account-recovery', label: 'Account Recovery', access: 'public' },
 
   // Core Sanctuary destinations (Protected)
   SELF: { path: '/self', label: 'Self Sanctuary', access: 'authenticated' },
+  PROFILE: { path: '/profile', label: 'User Profile', access: 'authenticated' },
   WORKSPACE: { path: '/workspace', label: 'Classroom Workspace', access: 'authenticated' },
   COMMUNITY: { path: '/community', label: 'Community Resonance', access: 'authenticated' },
   LIBRARY: { path: '/library', label: 'Knowledge Sanctuary', access: 'authenticated' },
-  PROFILE: { path: '/profile', label: 'Citizen Profile', access: 'authenticated' },
   NOTIFICATIONS: { path: '/notifications', label: 'Notifications', access: 'authenticated' },
   SETTINGS: { path: '/settings', label: 'Settings', access: 'authenticated' },
-  THUTHIMAL_CLAIM: { path: '/thuthimal-claim', label: 'Thuthimal Claim', access: 'authenticated' },
-  AI_ASSISTANT: { path: '/a-i-assistant', label: 'AI Assistant', access: 'authenticated' },
 } as const satisfies Record<string, RouteDefinition>;
 
 export type AppRouteKey = keyof typeof APP_ROUTES;

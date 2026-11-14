@@ -1,7 +1,8 @@
 export { BrandedEmptyState } from './components/BrandedEmptyState';
 export { BrandPulse } from './components/BrandPulse';
 export { ErrorState as BrandedErrorState } from './components/ErrorState';
-export { color, duration, easing, scale } from './components/motion';
+export { color, easing } from './components/motion';
+export { duration, scale } from './tokens/motion';
 export {
   ShimmerBlock,
   SkeletonCard as BrandedSkeletonCard,

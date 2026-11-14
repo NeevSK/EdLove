@@ -1,6 +1,10 @@
-import { useTracking } from '@repo/core/hooks';
+import { useAuthStore } from '@repo/core/store';
+import { useScaffoldDismissal } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-import { useStore } from '@repo/core/store/useStore';
+import { usePublishAIContext } from '@repo/core';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { useRouter } from 'expo-router';
+
 import { FeaturePicker } from '@repo/self/components/FeaturePicker';
 import { RoleWeightEditor } from '@repo/self/components/RoleWeightEditor';
 import { SelfCanvas } from '@repo/self/components/SelfCanvas';
@@ -13,13 +17,18 @@ import { resolveFeatureSet } from '@repo/self/features/featureResolver';
 import { describeSelfCanvasPersistence } from '@repo/self/features/selfCanvasPersistence';
 import { useSelfCanvasStore } from '@repo/self/features/selfCanvasStore';
 import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useSanctuaryHealth } from '@repo/self/hooks/useSanctuaryHealth';
+import { useUIStore } from '@repo/core/store';
+import { FireflyMascot, sensoryFeedback } from '@repo/ui';
+
+import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
+
+import { AppHeader } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
 import { WorkspaceSettingsSurface } from '@repo/ui/components/workspace/WorkspaceSettingsSurface';
-import { Box, Pressable, Text } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 function getSubtitle(roles: string[]): string {
@@ -34,17 +43,17 @@ type PermissionResolution = {
 };
 
 export default function SelfScreenUnified() {
-  const { discoverFeature } = useTracking();
   const { can, context } = usePermissions();
   const [permissionRetryNonce, setPermissionRetryNonce] = useState(0);
-  const storeUserId = useStore((s) => s.user?.id);
+  const storeUserId = useAuthStore(s => s.user?.id);
   const userId = (context as unknown as { userId?: string | null }).userId ?? storeUserId ?? null;
 
-  useEffect(() => {
-    void discoverFeature('section_self');
-  }, [discoverFeature]);
+  const { mindfulMinutesToday, recoverySignal } = useSanctuaryHealth();
+  const setBreathingOpen = useUIStore((s) => s.setBreathingOpen);
+  const { isDismissed: isDay0ScaffoldDismissed, completeScaffold: dismissDay0Scaffold } =
+    useScaffoldDismissal('self_day0_reflection_scaffold', 1);
 
-  const store = useSelfCanvasStore();
+  const store = useSelfCanvasStore((s) => s);
   useEffect(() => {
     void store.hydrate(userId);
   }, [userId, store.hydrate]);
@@ -147,6 +156,50 @@ export default function SelfScreenUnified() {
     () => getPinnedFeatures(),
     [getPinnedFeatures, store.features.customOrder, store.features.hiddenIds],
   );
+  const router = useRouter();
+
+  // Publish non-private 'today' zone Self signals into the Policy-Driven AI Context Engine
+  const todaySpaceLabels = useMemo(
+    () =>
+      featureSet.selected
+        .filter((f) => (store.features.zoneOverrides[f.id] ?? f.defaultZone) !== 'private')
+        .map((f) => f.label)
+        .slice(0, 6),
+    [featureSet.selected, store.features.zoneOverrides],
+  );
+
+  const selfContextSummary = useMemo(
+    () => `Sadhana · ${mindfulMinutesToday}m mindful · ${todaySpaceLabels.length} active spaces`,
+    [mindfulMinutesToday, todaySpaceLabels.length],
+  );
+
+  usePublishAIContext('self', selfContextSummary, [
+    {
+      slotId: 'self.mindful_pulse',
+      summary: `${mindfulMinutesToday} mindful minutes today · Somatic recovery level: ${recoverySignal?.level ?? 'serene'}`,
+    },
+    {
+      slotId: 'self.active_spaces',
+      summary:
+        todaySpaceLabels.length > 0
+          ? `Active Today & Growth spaces: ${todaySpaceLabels.join(', ')}`
+          : 'Exploring personal sanctuary spaces',
+    },
+  ]);
+
+  useRegisterFAB({
+    tabType: 'self',
+    visible: true,
+    onBreathingReset: () => setBreathingOpen(true),
+    contextSummary: selfContextSummary,
+    onOpenAICompanion: (opts?: { mode?: 'saved' | 'incognito'; tab?: 'chat' | 'agent'; threadId?: string }) => {
+      const params = new URLSearchParams();
+      if (opts?.mode) params.set('mode', opts.mode);
+      if (opts?.tab) params.set('tab', opts.tab);
+      const qs = params.toString();
+      router.push((qs ? `/a-i-assistant?${qs}` : '/a-i-assistant') as any);
+    },
+  });
 
   const handleToggleHidden = useCallback(
     (id: string, hidden: boolean) => store.setHidden(id, hidden),
@@ -165,50 +218,36 @@ export default function SelfScreenUnified() {
 
   if (!store.isHydrated) {
     return (
-      <ScreenWrapper>
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
         <Box className="py-12 items-center gap-3">
-          <BrandPulse size={28} />
+          <WaitingSign size={48} />
           <Text className="text-xs font-semibold text-ink/50">Gathering your spaces…</Text>
         </Box>
-      </ScreenWrapper>
+      </ScrollView></SafeAreaView>
     );
   }
 
   if (permissionResolution.error) {
     return (
-      <ScreenWrapper>
-        <BrandedErrorState
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
+        <ErrorState
           title="Your sanctuary permissions could not settle"
           message={permissionResolution.error}
-        >
-          <Pressable
-            onPress={() => setPermissionRetryNonce((value) => value + 1)}
-            accessibilityRole="button"
-            accessibilityLabel="Try resolving sanctuary permissions again"
-          >
-            <Text className="text-phase-interactive font-bold">Try again</Text>
-          </Pressable>
-        </BrandedErrorState>
-      </ScreenWrapper>
+          retry={{ label: 'Try again', onPress: () => setPermissionRetryNonce((value) => value + 1) }}
+        />
+      </ScrollView></SafeAreaView>
     );
   }
 
   if (accessible.length === 0) {
     return (
-      <ScreenWrapper>
-        <BrandedEmptyState
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
+        <EmptyState
           title="Your sanctuary is waiting for its first space"
           message="There are no spaces available to this account yet. If this seems unexpected, check again or ask your school administrator to review your access."
-        >
-          <Pressable
-            onPress={() => setPermissionRetryNonce((value) => value + 1)}
-            accessibilityRole="button"
-            accessibilityLabel="Check sanctuary access again"
-          >
-            <Text className="text-phase-interactive font-bold">Check again</Text>
-          </Pressable>
-        </BrandedEmptyState>
-      </ScreenWrapper>
+          action={{ label: 'Check again', onPress: () => setPermissionRetryNonce((value) => value + 1) }}
+        />
+      </ScrollView></SafeAreaView>
     );
   }
 
@@ -216,14 +255,86 @@ export default function SelfScreenUnified() {
   const persistenceFeedback = describeSelfCanvasPersistence(store.persistenceState);
 
   return (
-    <ScreenWrapper scroll>
-      <GlobalHeader title="Sadhana" subtitle={getSubtitle(roles)} />
+    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
+      <AppHeader title="Sadhana" eyebrow={getSubtitle(roles)} />
       <Box className="px-4 pt-2 pb-6 gap-4">
         <Box className="rounded-2xl bg-phase-surface border border-border p-3">
           <Text className="text-xs font-bold text-ink/60">
             Roles: {roles.join(' + ') || 'student'} · {accessible.length} spaces · Pin to prioritize
             and hide to declutter
           </Text>
+        </Box>
+
+        {!isDay0ScaffoldDismissed ? (
+          <Box className="rounded-3xl border border-phase-interactive/30 bg-phase-surface p-5 shadow-sm">
+            <HStack className="items-center gap-4">
+              <FireflyMascot size={64} mode="glowing" role="guide" />
+              <VStack className="flex-1 gap-1">
+                <Text className="text-xs font-bold uppercase tracking-wider text-phase-interactive">
+                  Welcome to Sadhana
+                </Text>
+                <Text className="text-sm font-semibold text-ink">
+                  {roles.includes('student')
+                    ? 'Center your study rhythm, capture your thoughts, and nurture your joy jar.'
+                    : roles.includes('teacher')
+                      ? 'Take a mindful pause between classes and cultivate peaceful presence.'
+                      : roles.includes('principal')
+                        ? 'Contemplate your leadership vision with clarity and equanimity.'
+                        : 'Calibrate your nervous system with quiet moments of self-reflection.'}
+                </Text>
+              </VStack>
+            </HStack>
+            <HStack className="mt-4 items-center justify-between gap-3">
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-xl border-border"
+                onPress={() => {
+                  hapticLight();
+                  dismissDay0Scaffold();
+                }}
+              >
+                <ButtonText className="text-xs text-ink/60">I know my way around</ButtonText>
+              </Button>
+              <Button
+                size="sm"
+                className="rounded-xl bg-phase-interactive"
+                onPress={() => {
+                  hapticSuccess();
+                  setBreathingOpen(true);
+                  dismissDay0Scaffold();
+                }}
+              >
+                <ButtonText className="text-xs text-white font-bold">Take a Mindful Breath</ButtonText>
+              </Button>
+            </HStack>
+          </Box>
+        ) : null}
+
+        {/* Sovereign Somatic Sanctuary & Health Port Card */}
+        <Box className="flex-row items-center justify-between gap-3 rounded-2xl border border-phase-interactive/20 bg-phase-surface p-4 shadow-sm">
+          <Box className="flex-1">
+            <Text className="text-xs font-bold uppercase tracking-wider text-phase-interactive">
+              Somatic Sanctuary • {recoverySignal?.level ?? 'serene'}
+            </Text>
+            <Text className="mt-1 text-sm font-semibold text-phase-text-primary">
+              {mindfulMinutesToday} mindful min today
+            </Text>
+            <Text className="text-xs text-ink/60">
+              Sovereign on-device sync • Calibrate your nervous system
+            </Text>
+          </Box>
+          <Pressable
+            onPress={() => {
+              sensoryFeedback.emit('milestone');
+              setBreathingOpen(true);
+            }}
+            className="rounded-full bg-phase-interactive px-4 py-2"
+            accessibilityRole="button"
+            accessibilityLabel="Open Sanctuary Pulse breathing space"
+          >
+            <Text className="text-xs font-bold text-white">Breathe</Text>
+          </Pressable>
         </Box>
         {persistenceFeedback.label ? (
           <Box
@@ -287,6 +398,6 @@ export default function SelfScreenUnified() {
           pinnedIds={pinnedIds}
         />
       </Box>
-    </ScreenWrapper>
+    </ScrollView></SafeAreaView>
   );
 }

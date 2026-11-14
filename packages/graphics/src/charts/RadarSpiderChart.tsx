@@ -1,5 +1,5 @@
-import { Card } from '@repo/ui/components/SanctuaryCard';
-import { Theme } from '@repo/ui/theme';
+import { Surface } from '@repo/ui/components/native';
+import { Theme } from '@repo/ui/theme/Theme';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 interface RadarPoint {
@@ -42,7 +42,7 @@ export function RadarChart({
   });
 
   return (
-    <Card style={[styles.container, { width: size, height: size }]}>
+    <Surface tone="raised" style={[styles.container, { width: size, height: size }]}>
       {title && <Text style={styles.title}>{title}</Text>}
 
       <View style={[styles.chartContainer, { width: size, height: size }]}>
@@ -158,7 +158,7 @@ export function RadarChart({
           ]}
         />
       </View>
-    </Card>
+    </Surface>
   );
 }
 
@@ -193,7 +193,7 @@ export function SpiderChart({
   });
 
   return (
-    <Card style={[styles.container, { width: size, height: size }]}>
+    <Surface tone="raised" style={[styles.container, { width: size, height: size }]}>
       {title && <Text style={styles.title}>{title}</Text>}
 
       <View style={[styles.chartContainer, { width: size, height: size }]}>
@@ -297,7 +297,7 @@ export function SpiderChart({
           ]}
         />
       </View>
-    </Card>
+    </Surface>
   );
 }
 

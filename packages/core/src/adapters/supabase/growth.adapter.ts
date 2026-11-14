@@ -499,3 +499,5 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
     if (error) throw new APIError('Failed to unendorse manifesto', error.code, error);
   }
 }
+
+export const supabaseGrowthAdapter = new SupabaseGrowthAdapter();

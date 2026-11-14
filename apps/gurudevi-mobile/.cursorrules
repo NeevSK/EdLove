@@ -1,0 +1,6 @@
+# React Native Grounding & Safety Gate
+You are operating under the RN-Terrain Deterministic Control Plane.
+1. Ground every package before modifying RN code via 'rn-terrain compass <pkg>' or MCP tcdi_compass.
+2. Obsolete APIs (useAnimatedGestureHandler, interpolateNode, AsyncStorage from 'react-native', NativeModules.MMKV) are strictly blocked.
+3. Every JSX ScrollView must have bounded flex or contentContainerStyle dimensions.
+4. Nitro Modules require NitroModules.createHybridObject<Spec>('HybridName').

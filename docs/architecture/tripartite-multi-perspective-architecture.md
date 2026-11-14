@@ -151,4 +151,19 @@ To ensure high-performance SQL indexing, PowerSync replication, and database nor
 2. **Immutable Identity, Mutable Presentation**: When a tutor modifies a custom alias, subject name, or schedule, the `batch_id` remains immutable. Cached drafts, student marks, and attendance records remain 100% stable.
 3. **Clean RLS & ReBAC Policy Evaluation**: Supabase RLS and Cedar policies evaluate relational joins (`EXISTS (SELECT 1 FROM bonds WHERE id = :activeBondId AND user_id = auth.uid())`) without regex splitting or string extraction.
 
+---
+
+## 7. Atomic Synchronous State Synchronization (`usePerspectiveStore`)
+
+To eliminate cross-lens data corruption and hydration latency, perspective state is managed by the atomic, persistent `usePerspectiveStore` (`@repo/core/store/usePerspectiveStore`):
+
+1. **Synchronous Local-First Switching**:
+   - Switching perspectives does not run an unbuffered network query. The active lens (`SanctuaryPerspective`) updates synchronously.
+2. **Deterministic Cedar Decision Cache Eviction**:
+   - Calling `switchPerspective(id)` immediately calls `useCedarDecisionStore.getState().clearDecisions()`. This prevents decisions computed under Royal College from bleeding into a Personal Studio or Private Tuition workbench.
+3. **Sovereign Event Bus Coordination**:
+   - The store emits `perspective:transition_started` and `perspective:transition_completed` over `sovereignBus`, allowing active query observers and SQLite replication streams to rescope transparently.
+4. **Offline Persistence**:
+   - Active and available perspectives are persisted via `SafeZustandStorage` under the key `gurudevi-perspective-storage`, surviving app restarts with 0ms boot latency.
+
 

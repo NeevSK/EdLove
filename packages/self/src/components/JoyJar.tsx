@@ -1,34 +1,21 @@
 /**
  * JOY JAR
  * Captures small teaching sparks, student breakthroughs, and great questions.
- * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in handlers.
+ * Standardized to October 29+ UI Kit architecture.
  */
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useJoyJar } from '@repo/self/hooks/useJoyJar';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import { BookOpen, MessageSquare, Plus, Save, Sparkles, Star, User, X } from '@repo/ui/icons';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  InputField,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
+import { Button, Surface, Text as KitText } from '@repo/ui/components/native';
+import { BookOpen, LogIn, MessageSquare, Plus, Save, Sparkles, Star, User, X } from '@repo/ui/icons';
+import { useWorld } from '@repo/ui/theme/native';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FadeInUp, SlideInRight } from 'react-native-reanimated';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import Animated, { FadeInUp, SlideInRight } from 'react-native-reanimated';
 
 interface JoyJarProps {
   userId?: string;
@@ -40,6 +27,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
   const { t } = useTranslation();
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
+  const { tokens } = useWorld();
 
   const { joyMoments, refreshData, isLoading, addJoyMoment, error } = useJoyJar(
     activeUserId ?? undefined,
@@ -92,65 +80,74 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
       label: t('self.breakthrough') || 'Breakthrough',
       emoji: '🎉',
       icon: Star,
-      color: 'text-sanctuarySaffron',
     },
     {
       id: 'question',
       label: t('self.question') || 'Great Question',
       emoji: '❓',
       icon: MessageSquare,
-      color: 'text-skyBlue',
     },
     {
       id: 'connection',
       label: t('self.connection') || 'Connection',
       emoji: '💫',
       icon: BookOpen,
-      color: 'text-emeraldGreen',
     },
     {
       id: 'other',
       label: t('self.other') || 'Other',
       emoji: '✨',
       icon: Sparkles,
-      color: 'text-templeGold',
     },
   ];
 
   if (isLoading && activeUserId) {
     return (
-      <VStack className="p-lg gap-lg">
-        <SkeletonCard height={48} />
-        <SkeletonCard height={80} />
-        <SkeletonCard height={80} />
-      </VStack>
+      <View className="p-4 gap-4">
+        <Surface tone="raised" style={{ height: 48, borderRadius: 12 }} />
+        <Surface tone="raised" style={{ height: 80, borderRadius: 16 }} />
+        <Surface tone="raised" style={{ height: 80, borderRadius: 16 }} />
+      </View>
     );
   }
 
   if (!activeUserId) {
-    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
+    return (
+      <Surface tone="raised" style={{ padding: 24, alignItems: 'center', borderRadius: 16 }}>
+        <Sparkles size={36} color={tokens.lamp} />
+        <KitText kind="title" align="center" style={{ marginTop: 12 }}>
+          {t('invitation.guestTitle') || 'Welcome to the Joy Jar'}
+        </KitText>
+        <KitText kind="body" tone="soft" align="center" style={{ marginTop: 6 }}>
+          {t('invitation.guestDesc') || 'Sign in to collect sparks of inspiration and student breakthroughs.'}
+        </KitText>
+        <View style={{ marginTop: 16 }}>
+          <Button label="Sign In" icon={LogIn} onPress={() => router.push('/auth')} />
+        </View>
+      </Surface>
+    );
   }
 
   return (
-    <VStack className="gap-lg">
+    <View className="gap-6">
       {/* Header */}
-      <VStack className="gap-1">
-        <HStack className="items-center gap-2">
-          <Icon as={Sparkles} className="text-sanctuarySaffron" size={24} />
-          <Heading className="text-sacredWhite" size="lg">
+      <View className="gap-1">
+        <View className="flex-row items-center gap-2">
+          <Sparkles size={24} color={tokens.lamp} />
+          <Text className="text-sacredWhite text-xl font-bold">
             {t('self.joyJar') || 'Joy Jar'}
-          </Heading>
-        </HStack>
+          </Text>
+        </View>
         <Text className="text-mistGray text-sm italic">
           {t('self.joyJarDesc') ||
             'Capture the small sparks that keep the flame of teaching alive.'}
         </Text>
-      </VStack>
+      </View>
 
       {!showForm ? (
-        <VStack className="gap-md">
+        <View className="gap-4">
           {error ? (
-            <HStack className="items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
+            <View className="flex-row items-center justify-between gap-3 rounded-2xl border border-emberRed/30 bg-emberRed/10 p-4">
               <Text className="flex-1 text-sm text-mistGray" accessibilityRole="alert">
                 {error} Showing the last available moments.
               </Text>
@@ -161,40 +158,37 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
               >
                 <Text className="font-bold text-sanctuarySaffron">Retry</Text>
               </Pressable>
-            </HStack>
+            </View>
           ) : null}
+
           <Button
+            label={t('self.captureJoy') || 'Add a Spark'}
+            icon={Plus}
+            variant="primary"
+            size="lg"
+            disabled={componentDisabled}
             onPress={() => {
               hapticLight();
               setShowForm(true);
             }}
-            isDisabled={componentDisabled}
-            className="bg-sanctuarySaffron rounded-full py-4 shadow-xl shadow-sanctuarySaffron/20"
-          >
-            <HStack className="gap-2 items-center">
-              <Icon as={Plus} className="text-obsidian" size={20} />
-              <ButtonText className="text-obsidian font-black uppercase tracking-wider text-sm">
-                {t('self.captureJoy') || 'Add a Spark'}
-              </ButtonText>
-            </HStack>
-          </Button>
+          />
 
           <ScrollView className="max-h-[500px]" showsVerticalScrollIndicator={false}>
-            <VStack className="gap-4 pb-20">
+            <View className="gap-4 pb-20">
               {joyMoments.map((moment, index) => {
                 const catInfo = categories.find((c) => c.id === moment.category) || categories[3];
                 return (
-                  <AnimatedView key={moment.id} entering={SlideInRight.delay(index * 100)}>
-                    <Box className="p-6 bg-white/5 rounded-2xl border border-white/5 shadow-sm border-l-4 border-l-sanctuarySaffron">
-                      <HStack className="justify-between items-start">
-                        <VStack className="flex-1 mr-4 gap-2">
+                  <Animated.View key={moment.id} entering={SlideInRight.delay(index * 100)}>
+                    <View className="p-5 bg-white/5 rounded-2xl border border-white/5 border-l-4 border-l-sanctuarySaffron">
+                      <View className="flex-row justify-between items-start">
+                        <View className="flex-1 mr-4 gap-2">
                           {moment.student_name && (
-                            <HStack className="items-center gap-2">
-                              <Icon as={User} size={10} className="text-sanctuarySaffron" />
+                            <View className="flex-row items-center gap-1.5">
+                              <User size={12} color={tokens.lamp} />
                               <Text className="text-sanctuarySaffron text-[10px] font-black uppercase tracking-widest">
                                 {moment.student_name}
                               </Text>
-                            </HStack>
+                            </View>
                           )}
                           <Text className="text-sacredWhite text-[15px] leading-relaxed font-medium">
                             "{moment.moment_description}"
@@ -206,54 +200,57 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                               year: 'numeric',
                             })}
                           </Text>
-                        </VStack>
-                        <Box className="bg-white/5 p-2 rounded-full border border-white/10">
+                        </View>
+                        <View className="bg-white/5 p-2 rounded-full border border-white/10 items-center justify-center">
                           <Text className="text-2xl">{catInfo?.emoji || '✨'}</Text>
-                        </Box>
-                      </HStack>
-                    </Box>
-                  </AnimatedView>
+                        </View>
+                      </View>
+                    </View>
+                  </Animated.View>
                 );
               })}
 
               {joyMoments.length === 0 && (
-                <Box className="py-10">
-                  <PositiveInvitation
-                    icon={Sparkles}
-                    title={t('self.startCapturing') || 'Collect your first spark of inspiration.'}
-                  />
-                </Box>
+                <Surface tone="raised" style={{ padding: 24, alignItems: 'center', borderRadius: 16 }}>
+                  <Sparkles size={32} color={tokens.lamp} />
+                  <KitText kind="title" align="center" style={{ marginTop: 8 }}>
+                    {t('self.startCapturing') || 'Collect your first spark of inspiration.'}
+                  </KitText>
+                  <KitText kind="caption" tone="soft" align="center" style={{ marginTop: 4 }}>
+                    Breakthroughs, questions, or moments of connection.
+                  </KitText>
+                </Surface>
               )}
-            </VStack>
+            </View>
           </ScrollView>
-        </VStack>
+        </View>
       ) : (
-        <AnimatedView entering={FadeInUp}>
-          <VStack className="gap-6 bg-white/5 p-lg rounded-3xl border border-white/10">
+        <Animated.View entering={FadeInUp}>
+          <View className="gap-6 bg-white/5 p-5 rounded-3xl border border-white/10">
             {/* Student Name */}
-            <VStack className="gap-2">
+            <View className="gap-2">
               <Text className="text-mistGray text-xs uppercase font-black tracking-widest px-1">
                 {t('self.studentName') || 'Whose spark was it? (Optional)'}
               </Text>
-              <Box className="bg-obsidian rounded-xl border border-white/10">
-                <InputField
+              <View className="bg-obsidian rounded-xl border border-white/10 px-4 py-2">
+                <TextInput
                   placeholder={t('self.exampleStudent') || 'e.g. Rahul, Class 10B'}
                   value={studentName}
                   onChangeText={setStudentName}
                   accessibilityLabel="Student name"
                   accessibilityHint="Optional name or class connected to this spark"
-                  className="text-sacredWhite h-12 px-4"
-                  placeholderTextColor="rgba(255,255,255,0.2)"
+                  className="text-sacredWhite h-10"
+                  placeholderTextColor={tokens.inkFaint}
                 />
-              </Box>
-            </VStack>
+              </View>
+            </View>
 
             {/* Category Selection */}
-            <VStack className="gap-3">
+            <View className="gap-3">
               <Text className="text-mistGray text-xs uppercase font-black tracking-widest px-1">
                 {t('self.category') || 'Nature of the spark'}
               </Text>
-              <HStack className="gap-2 flex-wrap">
+              <View className="flex-row gap-2 flex-wrap">
                 {categories.map((cat) => (
                   <Pressable
                     key={cat.id}
@@ -264,9 +261,9 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                     accessibilityRole="radio"
                     accessibilityLabel={cat.label}
                     accessibilityState={{ selected: category === cat.id }}
-                    className={`flex-row items-center gap-2 px-4 py-3 rounded-full border-2 transition-all ${
+                    className={`flex-row items-center gap-2 px-4 py-2.5 rounded-full border-2 ${
                       category === cat.id
-                        ? 'bg-sanctuarySaffron border-sanctuarySaffron shadow-md'
+                        ? 'bg-sanctuarySaffron border-sanctuarySaffron'
                         : 'bg-white/5 border-white/10'
                     }`}
                   >
@@ -280,59 +277,58 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
                     </Text>
                   </Pressable>
                 ))}
-              </HStack>
-            </VStack>
+              </View>
+            </View>
 
             {/* Moment Description */}
-            <VStack className="gap-3">
+            <View className="gap-3">
               <Text className="text-mistGray text-xs uppercase font-black tracking-widest px-1">
                 {t('self.momentDescription') || 'The Moment'}
               </Text>
-              <Box className="bg-obsidian rounded-xl border border-white/10 p-4 min-h-[140px]">
-                <InputField
+              <View className="bg-obsidian rounded-xl border border-white/10 p-3 min-h-[120px]">
+                <TextInput
                   placeholder={t('self.momentDescriptionPlaceholder') || 'What made you smile?'}
                   value={momentDescription}
                   onChangeText={setMomentDescription}
                   accessibilityLabel="Joy moment description"
                   accessibilityHint="Describe the teaching spark you want to remember"
                   multiline
-                  className="text-sacredWhite text-base text-start align-top"
-                  placeholderTextColor="rgba(255,255,255,0.2)"
+                  className="text-sacredWhite text-base"
+                  placeholderTextColor={tokens.inkFaint}
                 />
-              </Box>
-            </VStack>
+              </View>
+            </View>
 
             {/* Actions */}
-            <HStack className="gap-3 mt-2">
-              <Button
+            <View className="flex-row gap-3 mt-2">
+              <Pressable
                 onPress={() => {
                   hapticLight();
                   setShowForm(false);
                   setStudentName('');
                   setMomentDescription('');
                 }}
-                variant="outline"
-                className="flex-1 border-white/10 h-14 rounded-full"
+                className="flex-1 border border-white/10 h-12 rounded-full items-center justify-center"
+                accessibilityRole="button"
+                accessibilityLabel="Cancel"
               >
-                <Icon as={X} size={20} className="text-mistGray" />
-              </Button>
+                <X size={20} color={tokens.inkSoft} />
+              </Pressable>
 
-              <Button
-                onPress={handleSaveMoment}
-                isDisabled={!momentDescription.trim() || isSaving}
-                className="flex-[3] bg-emeraldGreen h-14 rounded-full shadow-lg shadow-emeraldGreen/20"
-              >
-                <HStack className="items-center gap-2">
-                  <Icon as={Save} size={18} className="text-white" />
-                  <ButtonText className="text-white font-black uppercase tracking-widest text-sm">
-                    Seal in Jar
-                  </ButtonText>
-                </HStack>
-              </Button>
-            </HStack>
-          </VStack>
-        </AnimatedView>
+              <View className="flex-[3]">
+                <Button
+                  label="Seal in Jar"
+                  icon={Save}
+                  variant="primary"
+                  size="lg"
+                  disabled={!momentDescription.trim() || isSaving}
+                  onPress={handleSaveMoment}
+                />
+              </View>
+            </View>
+          </View>
+        </Animated.View>
       )}
-    </VStack>
+    </View>
   );
 }

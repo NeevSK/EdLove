@@ -1,6 +1,8 @@
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, Button, ButtonText, Heading, Text, VStack } from '@repo/ui/primitives';
+import { AppHeader } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button, Text } from '@repo/ui/components/native';
+import React from 'react';
+import { View } from 'react-native';
 
 export type ClassroomAccessStateKind = 'missing' | 'unavailable';
 
@@ -16,34 +18,33 @@ export function ClassroomAccessState({
   const missing = kind === 'missing';
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
-      <GlobalHeader
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
+      <AppHeader
         title={missing ? 'Choose a classroom' : 'Classroom unavailable'}
-        showBack
         onBack={onBack}
       />
-      <Box className="flex-1 justify-center items-center p-6">
-        <VStack className="gap-3 items-center max-w-[420px]">
-          <Heading className="text-phase-text-primary text-xl text-center">
+      <View className="flex-1 justify-center items-center p-6">
+        <View className="gap-3 items-center max-w-[420px]">
+          <Text kind="title" align="center">
             {missing ? 'No classroom selected' : 'This classroom cannot be opened'}
-          </Heading>
-          <Text className="text-phase-text-secondary text-center leading-6">
+          </Text>
+          <Text kind="body" tone="soft" align="center" style={{ lineHeight: 24 }}>
             {missing
               ? 'Return to your workspace and choose a classroom to continue.'
               : 'It may no longer exist, or your current access does not include it. Return to the workspace to choose an available classroom.'}
           </Text>
           {onRetry ? (
-            <Button
-              accessibilityLabel="Retry opening classroom"
-              onPress={onRetry}
-              className="mt-2 rounded-full bg-phase-accent px-5"
-            >
-              <ButtonText className="text-sacredWhite font-bold">Try again</ButtonText>
-            </Button>
+            <View style={{ marginTop: 8 }}>
+              <Button
+                label="Try again"
+                onPress={onRetry}
+                variant="primary"
+              />
+            </View>
           ) : null}
-        </VStack>
-      </Box>
-    </ScreenWrapper>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 

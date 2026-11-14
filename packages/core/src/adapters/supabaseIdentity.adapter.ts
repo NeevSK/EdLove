@@ -1,43 +1,35 @@
+import {
+  assertSupabaseSessionContinuity,
+  readSupabaseSession,
+  type SessionContinuity,
+} from '@repo/core/adapters/supabase/sessionContinuity';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/clientRuntime';
-import type { Identity } from '@repo/core/api/identity.generated';
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
+import { CanonicalAccountIdSchema } from '@repo/core/logic/schemas/identity.schema';
+import {
+  CompleteProfileSchema,
+  type ProfileCompletionDetails,
+  UserProfilePatchSchema,
+} from '@repo/core/logic/schemas/profileUpdate.schema';
 import { APIError } from '@repo/core/types/API';
-import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
+import type { Identity } from '@repo/core/types/Identity';
+import type { Bond, Perspective } from '@repo/core/logic/schemas/identity.schema';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import type { User } from '@repo/core/types/User';
-import { strictRetryPolicy, tryPromise } from '@repo/core/utils/effect';
-import { Data, Duration, Effect, Option, pipe } from 'effect';
-
-// ─── Token Resolver (unchanged) ──────────────────────────────────
-
-registerTokenResolver(async () => {
-  try {
-    const { data } = await supabaseClient.auth.getSession();
-    return data?.session?.access_token ?? null;
-  } catch {
-    return null;
-  }
-});
-
-registerActiveBondIdResolver(async () => {
-  try {
-    const { data } = await supabaseClient.auth.getUser();
-    if (!data?.user?.id) return null;
-    const persisted = await storage.getStringAsync(`active_perspective_${data.user.id}`);
-    if (!persisted) return null;
-    const parsed = JSON.parse(persisted) as { activeBond?: { id?: string } };
-    return parsed.activeBond?.id ?? null;
-  } catch {
-    return null;
-  }
-});
+import { retryTransient, strictRetryPolicy } from '@repo/core/utils/effect';
+import { Duration, Effect, pipe, Schema } from 'effect';
 
 // ─── Effect helpers ──────────────────────────────────────────────
 
-class SupabaseQueryError extends Data.TaggedError('SupabaseQueryError')<{
-  readonly message: string;
-}> {}
+export class SupabaseQueryError extends Schema.TaggedError<SupabaseQueryError>()(
+  'SupabaseQueryError',
+  {
+    message: Schema.String,
+    /** PostgREST or Postgres code (`42501`, `PGRST116`), so the failure classifier can read it. */
+    code: Schema.optional(Schema.String),
+  },
+) {}
 
 function supabaseCall<T>(
   fn: () => PromiseLike<{ data: T; error: any }>,
@@ -49,10 +41,15 @@ function supabaseCall<T>(
     }),
     Effect.flatMap(({ data, error }) =>
       error
-        ? Effect.fail(new SupabaseQueryError({ message: error.message ?? String(error) }))
+        ? Effect.fail(
+            new SupabaseQueryError({
+              message: error.message ?? String(error),
+              code: typeof error.code === 'string' ? error.code : undefined,
+            }),
+          )
         : Effect.succeed(data as T),
     ),
-    Effect.retry(strictRetryPolicy),
+    Effect.retry(retryTransient(strictRetryPolicy)),
     Effect.timeout(Duration.seconds(15)),
     Effect.catchTag('TimeoutError', () =>
       Effect.fail(new SupabaseQueryError({ message: 'Supabase query timed out' })),
@@ -63,7 +60,9 @@ function supabaseCall<T>(
 function runEffect<T>(effect: Effect.Effect<T, SupabaseQueryError, never>): Promise<T> {
   return Effect.runPromise(
     effect.pipe(
-      Effect.catch((e: SupabaseQueryError) => Effect.fail(new APIError(e.message, 'SUPABASE_ERROR'))),
+      Effect.catch((e: SupabaseQueryError) =>
+        Effect.fail(new APIError(e.message, 'SUPABASE_ERROR')),
+      ),
     ),
   );
 }
@@ -71,107 +70,77 @@ function runEffect<T>(effect: Effect.Effect<T, SupabaseQueryError, never>): Prom
 // ─── Adapter ─────────────────────────────────────────────────────
 
 export class SupabaseIdentityAdapter implements IIdentityPort {
-  private cachedInternalId: string | null = null;
-  private activePerspective: Perspective | null = null;
-  private cachedAuthUid: string | null = null;
-
   async resolveInternalId(provider: string, providerUserId: string): Promise<string | null> {
-    if (provider === 'supabaseClient' && this.cachedInternalId) {
-      return this.cachedInternalId;
-    }
-
-    const result = await runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('auth_identities')
-          .select('user_id')
-          .eq('provider', provider)
-          .eq('provider_user_id', providerUserId)
-          .maybeSingle(),
-      ),
-    );
-
-    const resolvedId = (result as { user_id?: string } | null)?.user_id ?? null;
-
-    if (provider === 'supabaseClient' && resolvedId) {
-      this.cachedInternalId = resolvedId;
-    }
-
-    return resolvedId;
+    if (provider !== 'supabase') return null;
+    const session = await readSupabaseSession();
+    if (session?.user.id !== providerUserId) return null;
+    const identity = await this.resolveSessionIdentity({
+      accessToken: session.access_token,
+      subject: providerUserId,
+    });
+    return identity?.id ?? null;
   }
 
   async linkIdentity(userId: string, provider: string, providerUserId: string): Promise<void> {
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient.from('auth_identities').upsert(
-          {
-            user_id: userId,
-            provider,
-            provider_user_id: providerUserId,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'provider,provider_user_id' },
-        ),
-      ),
-    );
-
-    if (provider === 'supabaseClient') {
-      this.cachedInternalId = userId;
+    const accountId = await this.resolveInternalId(provider, providerUserId);
+    if (!accountId || accountId !== userId) {
+      throw new APIError(
+        'Identity linking requires trusted provider provisioning.',
+        'IDENTITY_LINK_REQUIRED',
+      );
     }
   }
 
   async identifyActiveCitizen(): Promise<Identity | null> {
-    const { data } = await supabaseClient.auth.getUser();
-    const user = data?.user;
-    if (!user) {
-      this.cachedInternalId = null;
-      return null;
+    const session = await readSupabaseSession();
+    if (!session) return null;
+    return this.resolveSessionIdentity({
+      accessToken: session.access_token,
+      subject: session.user.id,
+    });
+  }
+
+  private async resolveSessionIdentity(expectedSession: SessionContinuity): Promise<Identity> {
+    // The account id isn't the credential subject; the database resolves it from the session.
+    const { data: accountId, error: accountError } = await supabaseClient.rpc('get_my_id');
+    if (accountError) {
+      throw new APIError(
+        'Unable to resolve the authenticated account identity.',
+        'IDENTITY_UNAVAILABLE',
+      );
     }
-    const authUid = user.id;
-
-    if (this.cachedInternalId && this.cachedAuthUid !== authUid) {
-      this.cachedInternalId = null;
+    const id = CanonicalAccountIdSchema.parse(accountId);
+    const [{ data: user, error: userError }, { data: bonds, error: bondsError }] =
+      await Promise.all([
+        supabaseClient
+          .from('users')
+          .select('id, email, display_name, onboarding_completed')
+          .eq('id', id)
+          .single(),
+        supabaseClient
+          .from('bonds')
+          .select('*')
+          .eq('user_id', id)
+          .eq('status', 'active')
+          .order('created_at', { ascending: true }),
+      ]);
+    if (userError || bondsError || !user) {
+      throw new APIError(
+        'Unable to resolve the authenticated account identity.',
+        'IDENTITY_UNAVAILABLE',
+      );
     }
-
-    let internalId = this.cachedInternalId;
-
-    if (!internalId) {
-      internalId = await this.resolveInternalId('supabaseClient', authUid);
-      this.cachedAuthUid = authUid;
-
-      if (!internalId) {
-        const legacyResult = await runEffect(
-          supabaseCall(() =>
-            supabaseClient.from('users').select('id').eq('id', authUid).maybeSingle(),
-          ).pipe(Effect.map(Option.fromNullishOr)),
-        );
-
-        if (Option.isSome(legacyResult)) {
-          const legacyId = (legacyResult.value as any).id;
-          await this.linkIdentity(legacyId, 'supabaseClient', authUid);
-          internalId = legacyId;
-        } else {
-          await this.linkIdentity(authUid, 'supabaseClient', authUid);
-          internalId = authUid;
-        }
-      }
-      this.cachedInternalId = internalId;
-    }
-
-    if (!internalId) return null;
-
-    const profile = await this.getProfile(internalId);
-    const perspective = await this.getActivePerspective();
-    if (!perspective) return null;
-
-    return {
-      id: internalId,
-      email: profile.email ?? null,
-      name: profile.display_name || undefined,
-      onboarding_completed: !!profile.onboarding_completed,
-      activeBond: (perspective.activeBond || null) as Bond | null,
-      availableBonds: (perspective.availableBonds || []) as Bond[],
+    const availableBonds = (bonds ?? []) as Bond[];
+    const identity: Identity = {
+      id,
+      email: user.email,
+      display_name: user.display_name,
+      onboarding_completed: user.onboarding_completed === true,
+      availableBonds,
+      activeBond: availableBonds[0] ?? null,
     };
+    await assertSupabaseSessionContinuity(expectedSession);
+    return identity;
   }
 
   async getProfile(userId: string): Promise<User> {
@@ -225,42 +194,12 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async getActivePerspective(): Promise<Perspective | null> {
-    if (this.activePerspective) return this.activePerspective;
-
-    const { data } = await supabaseClient.auth.getUser();
-    if (!data?.user) return null;
-
-    let userId = this.cachedInternalId;
-    if (!userId) {
-      const authUid = data.user.id;
-      userId = await this.resolveInternalId('supabaseClient', authUid);
-      if (!userId) userId = authUid;
-    }
-
-    const bonds = await this.getBonds(userId);
-    if (bonds.length === 0) return null;
-
-    const persisted = await storage.getStringAsync(`active_perspective_${userId}`);
-    if (persisted) {
-      try {
-        const parsed = JSON.parse(persisted);
-        const activeBond = bonds.find((b) => b.id === parsed.activeBond?.id);
-        if (activeBond) {
-          this.activePerspective = { activeBond, availableBonds: bonds };
-          return this.activePerspective;
-        }
-      } catch {
-        // ignore JSON parse error
-      }
-    }
-
-    this.activePerspective = {
-      activeBond: bonds[0]!,
-      availableBonds: bonds,
+    const identity = await this.identifyActiveCitizen();
+    if (!identity) return null;
+    return {
+      activeBond: identity.activeBond ?? null,
+      availableBonds: identity.availableBonds,
     };
-    storage.set(`active_perspective_${userId}`, JSON.stringify(this.activePerspective));
-
-    return this.activePerspective;
   }
 
   async switchPerspective(entityId: string, capacity: Capacity): Promise<void> {
@@ -268,178 +207,51 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (!identity) throw new Error('Not authenticated');
     const userId = identity.id;
 
-    const bonds = await this.getBonds(userId);
-    const targetBond = bonds.find((b) => b.entity_id === entityId && b.capacity === capacity);
+    const bonds = identity.availableBonds;
+    const targetBond = bonds.find((b: Bond) => b.entity_id === entityId && b.capacity === capacity);
 
     if (!targetBond) {
       throw new Error(`User does not have a Bond for Entity ${entityId} with Capacity ${capacity}`);
     }
 
-    this.activePerspective = {
-      activeBond: targetBond,
-      availableBonds: bonds,
-    };
-    storage.set(`active_perspective_${userId}`, JSON.stringify(this.activePerspective));
+    const selected: Identity = { ...identity, activeBond: targetBond };
+    if (selected.id !== userId || selected.activeBond?.id !== targetBond.id) {
+      throw new APIError(
+        'Scope selection did not match the requested account and bond.',
+        'SCOPE_SELECTION_CONFLICT',
+      );
+    }
+    storage.set(
+      `active_perspective_${userId}`,
+      JSON.stringify({
+        activeBond: selected.activeBond,
+        availableBonds: selected.availableBonds,
+      }),
+    );
   }
 
-  async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
-    const identity = context.userId
-      ? ({ id: context.userId } as { id: string })
-      : await this.identifyActiveCitizen();
-    if (!identity) throw new Error('Not authenticated');
-    const userId = identity.id;
-
-    const profile = await runEffect(
-      supabaseCall(() =>
-        supabaseClient.from('users').select('is_anonymous').eq('id', userId).single(),
-      ).pipe(Effect.map((r: any) => r as { is_anonymous: boolean | null })),
-    );
-
-    const isSupabaseAnonymous = profile?.is_anonymous === true;
-    const citizenship: 'THIRD_CLASS' | 'SECOND_CLASS' = isSupabaseAnonymous
-      ? 'THIRD_CLASS'
-      : 'SECOND_CLASS';
-
-    let username =
-      typeof context.username === 'string' ? context.username.trim().toLowerCase() : null;
-    if (username && !/^[a-z0-9_-]{3,30}$/.test(username)) {
-      username = null;
-    }
-
-    let full_name = typeof context.fullName === 'string' ? context.fullName.trim() : '';
-    if (!full_name) {
-      const first = typeof context.firstName === 'string' ? context.firstName.trim() : '';
-      const last = typeof context.lastName === 'string' ? context.lastName.trim() : '';
-      full_name = [first, last].filter(Boolean).join(' ');
-    }
-    if (!full_name) {
-      full_name =
-        typeof context.displayName === 'string' ? context.displayName.trim() : 'Sanctuary User';
-    }
-    if (!full_name || full_name.length === 0) {
-      full_name = 'Sanctuary User';
-    }
-
-    const display_name =
-      typeof context.displayName === 'string' && context.displayName.trim()
-        ? context.displayName.trim()
-        : full_name || 'Gurudevi User';
-
-    let finalPersonalClassroomId: string | null = null;
-    {
-      const isTeacherOrPrincipal = [
-        'teacher',
-        'principal',
-        'section_head',
-        'grade_head',
-        'founder',
-        'assistant_principal',
-        'developer',
-      ].includes(orientation);
-
-      let classroomType = 'unrelated_classroom';
-      let classroomName = `${display_name}'s Personal Workspace`;
-
-      if (isTeacherOrPrincipal) {
-        classroomType = 'teacher_classroom';
-        classroomName = `${display_name}'s Classroom`;
-      } else if (orientation === 'student') {
-        classroomType = 'student_classroom';
-        classroomName = `${display_name}'s Student Workspace`;
-      }
-
-      const pcResult = await Effect.runPromise(
-        supabaseCall(() =>
-          supabaseClient
-            .from('personal_classrooms')
-            .insert({
-              name: classroomName,
-              type: classroomType,
-              user_id: userId,
-            })
-            .select('id')
-            .single(),
-        ).pipe(
-          Effect.catch((e: SupabaseQueryError) => {
-            console.error(
-              '[createInitialBond] Failed to initialize personal classroom record:',
-              e.message,
-            );
-            return Effect.succeed(null);
-          }),
-        ),
+  async createInitialBond(orientation: Capacity, context: Record<string, unknown>): Promise<void> {
+    const identity = await this.identifyActiveCitizen();
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+    if (context.userId !== undefined && context.userId !== identity.id) {
+      throw new APIError(
+        'The requested account does not match the authenticated account.',
+        'AUTH_ACCOUNT_MISMATCH',
       );
-
-      if (pcResult) {
-        finalPersonalClassroomId = (pcResult as any).id;
-      }
     }
-
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .update({
-            display_name,
-            full_name,
-            first_name: context.firstName ?? null,
-            last_name: context.lastName ?? null,
-            username,
-            identity_state: isSupabaseAnonymous ? 'anonymous' : 'identifying',
-            school_id: null,
-            citizenship,
-            capacity: orientation,
-          })
-          .eq('id', userId),
-      ),
-    );
-
-    const entity_type = 'PERSONAL_CLASSROOM';
-    const entity_id = finalPersonalClassroomId || 'PERSONAL_WORKSPACE';
-
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient.from('bonds').upsert(
-          {
-            user_id: userId,
-            entity_id,
-            entity_type,
-            capacity: orientation,
-            metadata: context.metadata || {},
-          },
-          { onConflict: 'user_id,entity_id,capacity' },
-        ),
-      ),
-    );
-
-    this.activePerspective = null;
+    throw new APIError('Identity onboarding is not admitted by the v1 foundation.', 'UNSUPPORTED');
   }
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<void> {
-    const normalizedUpdates: Record<string, unknown> = { ...updates };
-    if ('email' in normalizedUpdates && normalizedUpdates.email === '') {
-      normalizedUpdates.email = null;
+    const identity = await this.identifyActiveCitizen();
+    if (!identity || identity.id !== userId) {
+      throw new APIError(
+        'The requested account does not match the authenticated account.',
+        'AUTH_ACCOUNT_MISMATCH',
+      );
     }
-
-    if (
-      'first_name' in normalizedUpdates ||
-      'last_name' in normalizedUpdates ||
-      'display_name' in normalizedUpdates
-    ) {
-      const firstName =
-        typeof normalizedUpdates.first_name === 'string' ? normalizedUpdates.first_name : null;
-      const lastName =
-        typeof normalizedUpdates.last_name === 'string' ? normalizedUpdates.last_name : null;
-      const displayName =
-        typeof normalizedUpdates.display_name === 'string' ? normalizedUpdates.display_name : '';
-      const resolvedName =
-        displayName || [firstName, lastName].filter(Boolean).join(' ') || 'Gurudevi User';
-      normalizedUpdates.display_name = resolvedName;
-    }
-
-    await runEffect(
-      supabaseCall(() => supabaseClient.from('users').update(normalizedUpdates).eq('id', userId)),
-    );
+    const body = UserProfilePatchSchema.parse(updates);
+    await runEffect(supabaseCall(() => supabaseClient.from('users').update(body).eq('id', userId)));
   }
 
   async blockUser(blockerId: string, blockedId: string): Promise<void> {
@@ -464,111 +276,44 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     );
   }
 
-  async completeProfile(userId: string, data: any): Promise<void> {
-    await runEffect(
-      supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .update({
-            display_name:
-              data.displayName ||
-              [data.firstName, data.lastName].filter(Boolean).join(' ') ||
-              'Gurudevi User',
-            first_name: data.firstName ?? null,
-            last_name: data.lastName ?? null,
-            username: data.username ?? null,
-            identity_state: 'onboarded',
-            capacity_label: data.capacityLabel,
-            bio: data.bio,
-            index_number: data.indexNumber,
-            nic_number: data.nicNumber,
-            profile_completed: true,
-          })
-          .eq('id', userId),
-      ),
-    );
+  async completeProfile(userId: string, data: ProfileCompletionDetails): Promise<void> {
+    const identity = await this.identifyActiveCitizen();
+    if (!identity || identity.id !== userId) {
+      throw new APIError(
+        'The requested account does not match the authenticated account.',
+        'AUTH_ACCOUNT_MISMATCH',
+      );
+    }
+    const body = CompleteProfileSchema.parse({
+      display_name:
+        data.displayName ||
+        [data.firstName, data.lastName].filter(Boolean).join(' ') ||
+        'Gurudevi User',
+      first_name: data.firstName ?? null,
+      last_name: data.lastName ?? null,
+      username: data.username ?? null,
+      capacity_label: data.capacityLabel,
+      bio: data.bio,
+      index_number: data.indexNumber,
+      nic_number: data.nicNumber,
+    });
+    await runEffect(supabaseCall(() => supabaseClient.from('users').update(body).eq('id', userId)));
   }
 
   async completeOnboarding(userId: string): Promise<void> {
-    const self = this;
-
-    await Effect.runPromise(
-      Effect.gen(function* () {
-        const bonds = yield* tryPromise(() => self.getBonds(userId)).pipe(
-          Effect.catch(() => Effect.succeed<Bond[]>([])),
-        );
-
-        if (bonds.length === 0) {
-          const profile = yield* tryPromise(() => self.getProfile(userId)).pipe(
-            Effect.catch(() => Effect.succeed(null)),
-          );
-
-          if (profile) {
-            const capacity = (profile as any).capacity || 'teacher';
-
-            const pc = yield* supabaseCall(() =>
-              supabaseClient
-                .from('personal_classrooms')
-                .insert({
-                  name: `${(profile as any).display_name || 'Sanctuary'}'s Workspace`,
-                  type: capacity === 'student' ? 'student_classroom' : 'teacher_classroom',
-                  user_id: userId,
-                })
-                .select('id')
-                .single(),
-            ).pipe(
-              Effect.catch((e: SupabaseQueryError) => {
-                console.error(
-                  '[completeOnboarding] Failed to create default personal classroom:',
-                  e.message,
-                );
-                return Effect.succeed(null);
-              }),
-            );
-
-            if (pc) {
-              yield* supabaseCall(() =>
-                supabaseClient.from('bonds').upsert(
-                  {
-                    user_id: userId,
-                    entity_id: (pc as any).id,
-                    entity_type: 'PERSONAL_CLASSROOM',
-                    capacity: capacity,
-                    metadata: {},
-                  },
-                  { onConflict: 'user_id,entity_id,capacity' },
-                ),
-              ).pipe(
-                Effect.catch((e: SupabaseQueryError) => {
-                  console.error(
-                    '[completeOnboarding] Failed to create default PERSONAL_CLASSROOM bond:',
-                    e.message,
-                  );
-                  return Effect.void;
-                }),
-              );
-            }
-          }
-        }
-      }).pipe(
-        Effect.catch((e: unknown) => {
-          console.warn('[completeOnboarding] Failed to check/create default sanctuary:', e);
-          return Effect.void;
-        }),
-      ),
-    );
-
+    const identity = await this.identifyActiveCitizen();
+    if (!identity || identity.id !== userId) {
+      throw new APIError(
+        'The requested account does not match the authenticated account.',
+        'AUTH_ACCOUNT_MISMATCH',
+      );
+    }
     await runEffect(
       supabaseCall(() =>
-        supabaseClient
-          .from('users')
-          .update({
-            onboarding_completed: true,
-            onboarding_completed_at: new Date().toISOString(),
-            identity_state: 'onboarded',
-          })
-          .eq('id', userId),
+        supabaseClient.from('users').update({ onboarding_completed: true }).eq('id', userId),
       ),
     );
   }
 }
+
+export const supabaseIdentityAdapter = new SupabaseIdentityAdapter();

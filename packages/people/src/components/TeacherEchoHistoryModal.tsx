@@ -1,5 +1,4 @@
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Dialog , WorldSkeleton } from '@repo/ui/components/native';
 import { Box, Button, ButtonText, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import { useEffect, useState } from 'react';
@@ -73,9 +72,9 @@ export default function TeacherEchoHistoryModal({
         >
           {loading ? (
             <VStack space="md">
-              <SkeletonCard />
-              <SkeletonCard />
-              <SkeletonCard />
+              <WorldSkeleton height={150} />
+              <WorldSkeleton height={150} />
+              <WorldSkeleton height={150} />
             </VStack>
           ) : loadError ? (
             <Box className="px-12 py-20 items-center justify-center mt-10 gap-4">
@@ -191,6 +190,6 @@ export default function TeacherEchoHistoryModal({
           )}
         </ScrollView>
       </Box>
-    </SanctuaryModal>
+    </Dialog>
   );
 }

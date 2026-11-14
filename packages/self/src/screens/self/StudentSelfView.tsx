@@ -1,5 +1,6 @@
 import { useBanyanGrowth } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import WelcomeModal from '@repo/self/components/WelcomeModal';
@@ -8,8 +9,8 @@ import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useSanctuaryRegistry } from '@repo/self/hooks/useSanctuaryRegistry';
 import { JournalSection, MoodSection, StudentPulse } from '@repo/self/views/sections';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { VStack } from '@repo/ui/primitives';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -27,8 +28,8 @@ export default function StudentSelfView() {
   const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
   const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
 
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
 
   const domainContent = registeredDomains.map((domain) => {
     // Custom handling for the Journey domain (Holistic)
@@ -36,11 +37,11 @@ export default function StudentSelfView() {
       return {
         ...domain,
         content: (
-          <VStack space="lg" style={{ padding: 20 }}>
+          <View style={{ padding: 20, gap: 16 }}>
             <JournalSection entries={journalEntries} loading={loadingJournals} />
             <MoodSection logs={moodHistory} loading={loadingMoods} />
             <StudentPulse banyan={banyan} loading={banyanLoading} />
-          </VStack>
+          </View>
         ),
       };
     }
@@ -50,10 +51,7 @@ export default function StudentSelfView() {
       id: fId,
       label: fId.replace('_', ' '), // Default label, registry might override
       content: (
-        <SelfFeatureRenderer
-          featureId={canonicalSelfFeatureId(fId)}
-          userId={userId ?? undefined}
-        />
+        <SelfFeatureRenderer featureId={canonicalSelfFeatureId(fId)} userId={userId ?? undefined} />
       ),
       // Specific history overrides if needed
       historyContent:
@@ -64,7 +62,7 @@ export default function StudentSelfView() {
   });
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="student"
         description={t('self.studentDescription')}
@@ -74,6 +72,6 @@ export default function StudentSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

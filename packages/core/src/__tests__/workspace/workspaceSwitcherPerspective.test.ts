@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
+import { describe, expect, it } from 'vitest';
 
 describe('Workspace Switcher Perspective Binding', () => {
   const availablePerspectives: SanctuaryPerspective[] = [

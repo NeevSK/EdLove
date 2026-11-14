@@ -1,32 +1,23 @@
-import { authAPI, identityAPI } from '@repo/core/api/client';
-import { useStore } from '@repo/core/logic';
-import { GuestDataManager } from '@repo/core/native';
+import { useAuthStore } from '@repo/core/store';
+import { GuestStorage } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
   createTimetablePeriod,
   deleteTimetablePeriod,
   fetchTimetablePeriods,
   updateTimetablePeriod,
-} from '@repo/self/api/selfFeatureRepository';
+} from '@repo/self/data/selfFeature.data';
 import { useCallback, useEffect, useState } from 'react';
 
 const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
 
-import type { Period } from '@repo/self/types';
+import type { Period } from '@repo/core/types/Wellbeing';
 export const useTimetable = (activeDay: number) => {
-  const isOnline = useStore((state) => state.isOnline);
+  const authUser = useAuthStore((state) => state.user);
   const [periods, setPeriods] = useState<Period[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  // Check anonymous status on mount
-  useEffect(() => {
-    const checkAnonymous = async () => {
-      const anon = await authAPI.isAnonymous();
-      setIsAnonymous(anon);
-    };
-    checkAnonymous();
-  }, []);
+  const isAnonymous = !authUser || authUser.is_anonymous;
   // Initial load from cache or guest storage
   useEffect(() => {
     let cancelled = false;
@@ -34,7 +25,7 @@ export const useTimetable = (activeDay: number) => {
       try {
         if (isAnonymous) {
           // Load from guest storage
-          const guestPeriods = await GuestDataManager.getTimetable(activeDay);
+          const guestPeriods = await GuestStorage.getTimetable(activeDay);
           const mappedPeriods = guestPeriods.map((gp) => ({
             id: gp.localId,
             user_id: 'guest',
@@ -67,7 +58,7 @@ export const useTimetable = (activeDay: number) => {
   }, [activeDay, isAnonymous]);
   const fetchPeriods = useCallback(async () => {
     // Skip Supabase fetch for anonymous users - they use local storage only
-    if (isAnonymous || !isOnline) {
+    if (isAnonymous) {
       setLoading(false);
       return;
     }
@@ -88,7 +79,7 @@ export const useTimetable = (activeDay: number) => {
     } finally {
       setLoading(false);
     }
-  }, [activeDay, isAnonymous, isOnline, periods.length]);
+  }, [activeDay, isAnonymous, periods.length]);
   useEffect(() => {
     void fetchPeriods();
   }, [fetchPeriods]);
@@ -107,7 +98,7 @@ export const useTimetable = (activeDay: number) => {
     try {
       if (isAnonymous) {
         // Guest mode: Save to local storage
-        const guestPeriod = await GuestDataManager.addTimetablePeriod({
+        const guestPeriod = await GuestStorage.addTimetablePeriod({
           day_of_week: period.day_of_week,
           period_number: period.period_number,
           subject: period.subject || '',
@@ -129,7 +120,7 @@ export const useTimetable = (activeDay: number) => {
         );
       } else {
         // Authenticated mode: Save to Supabase
-        const myId = await identityAPI.getMyInternalId();
+        const myId = authUser?.id;
         if (!myId) throw new Error('Not authenticated');
         const data = await createTimetablePeriod(myId, period);
         // Replace temp with real
@@ -148,7 +139,7 @@ export const useTimetable = (activeDay: number) => {
     try {
       if (isAnonymous) {
         // Guest mode: Update local storage
-        await GuestDataManager.updateTimetablePeriod(id, updates as Partial<Period>);
+        await GuestStorage.updateTimetablePeriod(id, updates as Partial<Period>);
       } else {
         // Authenticated mode: Update Supabase
         await updateTimetablePeriod(id, updates);
@@ -165,7 +156,7 @@ export const useTimetable = (activeDay: number) => {
     try {
       if (isAnonymous) {
         // Guest mode: Delete from local storage
-        await GuestDataManager.deleteTimetablePeriod(id);
+        await GuestStorage.deleteTimetablePeriod(id);
       } else {
         // Authenticated mode: Delete from Supabase
         await deleteTimetablePeriod(id);

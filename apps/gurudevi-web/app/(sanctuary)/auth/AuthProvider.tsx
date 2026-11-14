@@ -1,7 +1,6 @@
-'use client';
-
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { browserAuthRuntime, type BrowserAuthRuntime, type BrowserSession } from './browserAuth';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { SignOutIncompleteError, sanctuarySignOut } from '@/lib/sanctuary/signOut';
+import { type BrowserAuthRuntime, type BrowserSession, browserAuthRuntime } from './browserAuth';
 
 type AuthState = Readonly<{
   status: 'loading' | 'authenticated' | 'signed-out' | 'unavailable';
@@ -50,15 +49,24 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   };
 
   const signOut = async () => {
-    if (!runtime) return;
-    await runtime.client.auth.signOut({ scope: 'local' });
+    try {
+      await sanctuarySignOut();
+    } catch (cause) {
+      setState({
+        status:
+          cause instanceof SignOutIncompleteError && cause.localCleanupComplete
+            ? 'signed-out'
+            : 'unavailable',
+        session: null,
+        error: cause instanceof Error ? cause : new Error('Sign-out could not be completed.'),
+      });
+      return;
+    }
     setState({ status: 'signed-out', session: null, error: null });
   };
 
   return (
-    <AuthContext.Provider value={{ state, refresh, signOut }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ state, refresh, signOut }}>{children}</AuthContext.Provider>
   );
 }
 
@@ -66,4 +74,9 @@ export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
+}
+
+/** The auth context, or null outside AuthProvider (for boundaries that may render without it). */
+export function useOptionalAuth() {
+  return useContext(AuthContext) ?? null;
 }

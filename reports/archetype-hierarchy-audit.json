@@ -1,0 +1,1053 @@
+{
+  "timestamp": "2026-11-01T14:50:35.794Z",
+  "totalFiles": 79,
+  "totalEdges": 138,
+  "tiersSummary": [
+    {
+      "tierKey": "TIER_0_SCHEMA",
+      "rank": 0,
+      "name": "Tier 0: Contract / Schema / Type",
+      "icon": "📜",
+      "description": "Pure data contracts, Zod schemas, TypeScript types, and constants",
+      "fileCount": 16,
+      "totalLoc": 3096,
+      "topologicalSpan": "L0..L5",
+      "files": [
+        {
+          "path": "packages/core/src/logic/schemas/capacity.schema.ts",
+          "name": "capacity.schema.ts",
+          "loc": 24,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/store/types/featureFlags.ts",
+          "name": "featureFlags.ts",
+          "loc": 34,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/Identity.ts",
+          "name": "Identity.ts",
+          "loc": 78,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/authorization.ts",
+          "name": "authorization.ts",
+          "loc": 93,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/adapters/powersync/schema.ts",
+          "name": "schema.ts",
+          "loc": 700,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/constants/SriLankanSchools.ts",
+          "name": "SriLankanSchools.ts",
+          "loc": 874,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/runtime.ts",
+          "name": "runtime.ts",
+          "loc": 173,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/Errors.ts",
+          "name": "Errors.ts",
+          "loc": 191,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/Social.ts",
+          "name": "Social.ts",
+          "loc": 23,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/logic/schemas/identity.schema.ts",
+          "name": "identity.schema.ts",
+          "loc": 214,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/Perspective.ts",
+          "name": "Perspective.ts",
+          "loc": 83,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/API.ts",
+          "name": "API.ts",
+          "loc": 42,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/logic/schemas/user.schema.ts",
+          "name": "user.schema.ts",
+          "loc": 156,
+          "topologicalLayer": 2,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/Tenancy.ts",
+          "name": "Tenancy.ts",
+          "loc": 57,
+          "topologicalLayer": 3,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/User.ts",
+          "name": "User.ts",
+          "loc": 117,
+          "topologicalLayer": 4,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        },
+        {
+          "path": "packages/core/src/types/index.ts",
+          "name": "index.ts",
+          "loc": 237,
+          "topologicalLayer": 5,
+          "archetypeKey": "TIER_0_SCHEMA",
+          "archetypeName": "Tier 0: Contract / Schema / Type",
+          "rank": 0,
+          "icon": "📜"
+        }
+      ]
+    },
+    {
+      "tierKey": "TIER_1_PORT",
+      "rank": 1,
+      "name": "Tier 1: Port / Boundary Interface",
+      "icon": "🔌",
+      "description": "Abstract interfaces defining external capabilities for DIP",
+      "fileCount": 4,
+      "totalLoc": 186,
+      "topologicalSpan": "L0..L3",
+      "files": [
+        {
+          "path": "packages/core/src/logic/ports/entitlement.port.ts",
+          "name": "entitlement.port.ts",
+          "loc": 99,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_1_PORT",
+          "archetypeName": "Tier 1: Port / Boundary Interface",
+          "rank": 1,
+          "icon": "🔌"
+        },
+        {
+          "path": "packages/core/src/logic/ports/authz.port.ts",
+          "name": "authz.port.ts",
+          "loc": 42,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_1_PORT",
+          "archetypeName": "Tier 1: Port / Boundary Interface",
+          "rank": 1,
+          "icon": "🔌"
+        },
+        {
+          "path": "packages/core/src/logic/interfaces/network.port.ts",
+          "name": "network.port.ts",
+          "loc": 25,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_1_PORT",
+          "archetypeName": "Tier 1: Port / Boundary Interface",
+          "rank": 1,
+          "icon": "🔌"
+        },
+        {
+          "path": "packages/core/src/logic/ports/featureRollout.port.ts",
+          "name": "featureRollout.port.ts",
+          "loc": 20,
+          "topologicalLayer": 3,
+          "archetypeKey": "TIER_1_PORT",
+          "archetypeName": "Tier 1: Port / Boundary Interface",
+          "rank": 1,
+          "icon": "🔌"
+        }
+      ]
+    },
+    {
+      "tierKey": "TIER_2_LOGIC",
+      "rank": 2,
+      "name": "Tier 2: Pure Domain Logic",
+      "icon": "⚙️",
+      "description": "Deterministic business evaluators, manifests, and pure calculators",
+      "fileCount": 23,
+      "totalLoc": 2193,
+      "topologicalSpan": "L0..L5",
+      "files": [
+        {
+          "path": "packages/core/src/logic/permissions/bondScope.ts",
+          "name": "bondScope.ts",
+          "loc": 36,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/registry/citizenship.ts",
+          "name": "citizenship.ts",
+          "loc": 54,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/permissions/signature.ts",
+          "name": "signature.ts",
+          "loc": 123,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/lib/accountScope.ts",
+          "name": "accountScope.ts",
+          "loc": 27,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/monitoring/breadcrumbs.ts",
+          "name": "breadcrumbs.ts",
+          "loc": 62,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/lib/sync/eventBus.ts",
+          "name": "eventBus.ts",
+          "loc": 169,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/ui/src/utils/haptics.ts",
+          "name": "haptics.ts",
+          "loc": 145,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/utils/edloveUuidV8.ts",
+          "name": "edloveUuidV8.ts",
+          "loc": 199,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/monitoring/index.ts",
+          "name": "index.ts",
+          "loc": 12,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/ui/src/utils/classNames.ts",
+          "name": "classNames.ts",
+          "loc": 10,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/lib/security/transportSecurity.ts",
+          "name": "transportSecurity.ts",
+          "loc": 71,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/ui/src/sensory/index.ts",
+          "name": "index.ts",
+          "loc": 3,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/permissions/accessContext.ts",
+          "name": "accessContext.ts",
+          "loc": 39,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/permissions/baselineCapabilities.ts",
+          "name": "baselineCapabilities.ts",
+          "loc": 39,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/registry/domainEntry.ts",
+          "name": "domainEntry.ts",
+          "loc": 306,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/runtimeRegistry.ts",
+          "name": "runtimeRegistry.ts",
+          "loc": 118,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/lib/devicePreferences.ts",
+          "name": "devicePreferences.ts",
+          "loc": 46,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/managers/NetworkManager.ts",
+          "name": "NetworkManager.ts",
+          "loc": 70,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+          "name": "sanctuaryFeature.ts",
+          "loc": 179,
+          "topologicalLayer": 2,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+          "name": "featureLifecycleManifest.ts",
+          "loc": 350,
+          "topologicalLayer": 2,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/lib/experienceState.ts",
+          "name": "experienceState.ts",
+          "loc": 83,
+          "topologicalLayer": 2,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/lib/featureRolloutSnapshot.ts",
+          "name": "featureRolloutSnapshot.ts",
+          "loc": 43,
+          "topologicalLayer": 4,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        },
+        {
+          "path": "packages/core/src/logic/managers/featureFlag.factory.ts",
+          "name": "featureFlag.factory.ts",
+          "loc": 9,
+          "topologicalLayer": 5,
+          "archetypeKey": "TIER_2_LOGIC",
+          "archetypeName": "Tier 2: Pure Domain Logic",
+          "rank": 2,
+          "icon": "⚙️"
+        }
+      ]
+    },
+    {
+      "tierKey": "TIER_3_ADAPTER",
+      "rank": 3,
+      "name": "Tier 3: Adapter / Infra / Storage",
+      "icon": "💾",
+      "description": "Concrete implementations of ports (PowerSync, Supabase, SQLite, MMKV)",
+      "fileCount": 15,
+      "totalLoc": 1512,
+      "topologicalSpan": "L0..L10",
+      "files": [
+        {
+          "path": "packages/core/src/lib/storage.ts",
+          "name": "storage.ts",
+          "loc": 40,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/native/guestScope.ts",
+          "name": "guestScope.ts",
+          "loc": 38,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/adapters/powersync/powersync-shim.ts",
+          "name": "powersync-shim.ts",
+          "loc": 81,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
+          "name": "singleActivePowerSyncRuntime.ts",
+          "loc": 125,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/adapters/powersync/databaseRegistry.ts",
+          "name": "databaseRegistry.ts",
+          "loc": 66,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/lib/scopedStateStorage.ts",
+          "name": "scopedStateStorage.ts",
+          "loc": 69,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/lib/authStorage.ts",
+          "name": "authStorage.ts",
+          "loc": 36,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/lib/storageWrapper.ts",
+          "name": "storageWrapper.ts",
+          "loc": 37,
+          "topologicalLayer": 2,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/adapters/supabaseClient.ts",
+          "name": "supabaseClient.ts",
+          "loc": 89,
+          "topologicalLayer": 2,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/native/localGuestSession.ts",
+          "name": "localGuestSession.ts",
+          "loc": 96,
+          "topologicalLayer": 3,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+          "name": "growthBookFeatureRollout.adapter.ts",
+          "loc": 233,
+          "topologicalLayer": 4,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/lib/authProfileStorage.ts",
+          "name": "authProfileStorage.ts",
+          "loc": 114,
+          "topologicalLayer": 6,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+          "name": "secureDrizzleProxy.ts",
+          "loc": 194,
+          "topologicalLayer": 8,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/adapters/powersync/database.ts",
+          "name": "database.ts",
+          "loc": 122,
+          "topologicalLayer": 9,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        },
+        {
+          "path": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+          "name": "supabaseEntitlement.adapter.ts",
+          "loc": 172,
+          "topologicalLayer": 10,
+          "archetypeKey": "TIER_3_ADAPTER",
+          "archetypeName": "Tier 3: Adapter / Infra / Storage",
+          "rank": 3,
+          "icon": "💾"
+        }
+      ]
+    },
+    {
+      "tierKey": "TIER_4_STORE",
+      "rank": 4,
+      "name": "Tier 4: State Store (Zustand)",
+      "icon": "📦",
+      "description": "Reactive client state containers and snapshot selectors",
+      "fileCount": 7,
+      "totalLoc": 964,
+      "topologicalSpan": "L2..L11",
+      "files": [
+        {
+          "path": "packages/core/src/store/scopeSession.ts",
+          "name": "scopeSession.ts",
+          "loc": 166,
+          "topologicalLayer": 2,
+          "archetypeKey": "TIER_4_STORE",
+          "archetypeName": "Tier 4: State Store (Zustand)",
+          "rank": 4,
+          "icon": "📦"
+        },
+        {
+          "path": "packages/core/src/store/useFeatureStore.ts",
+          "name": "useFeatureStore.ts",
+          "loc": 126,
+          "topologicalLayer": 6,
+          "archetypeKey": "TIER_4_STORE",
+          "archetypeName": "Tier 4: State Store (Zustand)",
+          "rank": 4,
+          "icon": "📦"
+        },
+        {
+          "path": "packages/core/src/store/slices/auth.slice.ts",
+          "name": "auth.slice.ts",
+          "loc": 21,
+          "topologicalLayer": 6,
+          "archetypeKey": "TIER_4_STORE",
+          "archetypeName": "Tier 4: State Store (Zustand)",
+          "rank": 4,
+          "icon": "📦"
+        },
+        {
+          "path": "packages/core/src/store/useAuthStore.ts",
+          "name": "useAuthStore.ts",
+          "loc": 28,
+          "topologicalLayer": 7,
+          "archetypeKey": "TIER_4_STORE",
+          "archetypeName": "Tier 4: State Store (Zustand)",
+          "rank": 4,
+          "icon": "📦"
+        },
+        {
+          "path": "packages/core/src/store/useCedarDecisionStore.ts",
+          "name": "useCedarDecisionStore.ts",
+          "loc": 250,
+          "topologicalLayer": 10,
+          "archetypeKey": "TIER_4_STORE",
+          "archetypeName": "Tier 4: State Store (Zustand)",
+          "rank": 4,
+          "icon": "📦"
+        },
+        {
+          "path": "packages/core/src/store/useEntitlementStore.ts",
+          "name": "useEntitlementStore.ts",
+          "loc": 166,
+          "topologicalLayer": 11,
+          "archetypeKey": "TIER_4_STORE",
+          "archetypeName": "Tier 4: State Store (Zustand)",
+          "rank": 4,
+          "icon": "📦"
+        },
+        {
+          "path": "packages/core/src/store/usePerspectiveStore.ts",
+          "name": "usePerspectiveStore.ts",
+          "loc": 207,
+          "topologicalLayer": 11,
+          "archetypeKey": "TIER_4_STORE",
+          "archetypeName": "Tier 4: State Store (Zustand)",
+          "rank": 4,
+          "icon": "📦"
+        }
+      ]
+    },
+    {
+      "tierKey": "TIER_5_HOOK",
+      "rank": 5,
+      "name": "Tier 5: Application Facade / Hook",
+      "icon": "🪝",
+      "description": "High-level hooks orchestrating multiple stores for client UI",
+      "fileCount": 1,
+      "totalLoc": 284,
+      "topologicalSpan": "L12..L12",
+      "files": [
+        {
+          "path": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+          "name": "useSanctuaryFeature.ts",
+          "loc": 284,
+          "topologicalLayer": 12,
+          "archetypeKey": "TIER_5_HOOK",
+          "archetypeName": "Tier 5: Application Facade / Hook",
+          "rank": 5,
+          "icon": "🪝"
+        }
+      ]
+    },
+    {
+      "tierKey": "TIER_6_UI",
+      "rank": 6,
+      "name": "Tier 6: Presentation UI",
+      "icon": "🎨",
+      "description": "User-facing components, prompts, action buttons, and guards",
+      "fileCount": 13,
+      "totalLoc": 954,
+      "topologicalSpan": "L0..L13",
+      "files": [
+        {
+          "path": "packages/ui/src/icons.ts",
+          "name": "icons.ts",
+          "loc": 2,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/primitives.ts",
+          "name": "primitives.ts",
+          "loc": 71,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/ui/spinner/index.tsx",
+          "name": "index.tsx",
+          "loc": 20,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/ui/view/index.tsx",
+          "name": "index.tsx",
+          "loc": 99,
+          "topologicalLayer": 0,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/ui/pressable/index.tsx",
+          "name": "index.tsx",
+          "loc": 69,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/ui/text/index.tsx",
+          "name": "index.tsx",
+          "loc": 73,
+          "topologicalLayer": 1,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/ui/button/index.tsx",
+          "name": "index.tsx",
+          "loc": 218,
+          "topologicalLayer": 2,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/SanctuaryButton.tsx",
+          "name": "SanctuaryButton.tsx",
+          "loc": 160,
+          "topologicalLayer": 3,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/PositiveInvitation.tsx",
+          "name": "PositiveInvitation.tsx",
+          "loc": 116,
+          "topologicalLayer": 4,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+          "name": "SchoolJoinPrompt.tsx",
+          "loc": 21,
+          "topologicalLayer": 5,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/prompts/SignupPrompt.tsx",
+          "name": "SignupPrompt.tsx",
+          "loc": 21,
+          "topologicalLayer": 5,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+          "name": "UpgradePrompt.tsx",
+          "loc": 26,
+          "topologicalLayer": 5,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        },
+        {
+          "path": "packages/ui/src/components/SanctuaryGuard.tsx",
+          "name": "SanctuaryGuard.tsx",
+          "loc": 58,
+          "topologicalLayer": 13,
+          "archetypeKey": "TIER_6_UI",
+          "archetypeName": "Tier 6: Presentation UI",
+          "rank": 6,
+          "icon": "🎨"
+        }
+      ]
+    }
+  ],
+  "violations": {
+    "adapterCouplingCount": 11,
+    "adapterCoupling": [
+      {
+        "sourceFile": "useAuthStore.ts",
+        "sourcePath": "packages/core/src/store/useAuthStore.ts",
+        "sourceTier": "Tier 4: State Store (Zustand)",
+        "targetFile": "authProfileStorage.ts",
+        "targetPath": "packages/core/src/lib/authProfileStorage.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "authProfileStorage",
+          "restoreIdentityProfile"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "useCedarDecisionStore.ts",
+        "sourcePath": "packages/core/src/store/useCedarDecisionStore.ts",
+        "sourceTier": "Tier 4: State Store (Zustand)",
+        "targetFile": "database.ts",
+        "targetPath": "packages/core/src/adapters/powersync/database.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "getDrizzleDB"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "useCedarDecisionStore.ts",
+        "sourcePath": "packages/core/src/store/useCedarDecisionStore.ts",
+        "sourceTier": "Tier 4: State Store (Zustand)",
+        "targetFile": "localGuestSession.ts",
+        "targetPath": "packages/core/src/native/localGuestSession.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "isLocalGuestSessionId"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "useEntitlementStore.ts",
+        "sourcePath": "packages/core/src/store/useEntitlementStore.ts",
+        "sourceTier": "Tier 4: State Store (Zustand)",
+        "targetFile": "supabaseEntitlement.adapter.ts",
+        "targetPath": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "SupabaseEntitlementAdapter"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "useEntitlementStore.ts",
+        "sourcePath": "packages/core/src/store/useEntitlementStore.ts",
+        "sourceTier": "Tier 4: State Store (Zustand)",
+        "targetFile": "storageWrapper.ts",
+        "targetPath": "packages/core/src/lib/storageWrapper.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "SafeZustandStorage"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "useFeatureStore.ts",
+        "sourcePath": "packages/core/src/store/useFeatureStore.ts",
+        "sourceTier": "Tier 4: State Store (Zustand)",
+        "targetFile": "storage.ts",
+        "targetPath": "packages/core/src/lib/storage.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "storage"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "useFeatureStore.ts",
+        "sourcePath": "packages/core/src/store/useFeatureStore.ts",
+        "sourceTier": "Tier 4: State Store (Zustand)",
+        "targetFile": "guestScope.ts",
+        "targetPath": "packages/core/src/native/guestScope.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "getGuestScopeRevision",
+          "guestStorageKey"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "usePerspectiveStore.ts",
+        "sourcePath": "packages/core/src/store/usePerspectiveStore.ts",
+        "sourceTier": "Tier 4: State Store (Zustand)",
+        "targetFile": "storageWrapper.ts",
+        "targetPath": "packages/core/src/lib/storageWrapper.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "SafeZustandStorage"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "featureFlag.factory.ts",
+        "sourcePath": "packages/core/src/logic/managers/featureFlag.factory.ts",
+        "sourceTier": "Tier 2: Pure Domain Logic",
+        "targetFile": "growthBookFeatureRollout.adapter.ts",
+        "targetPath": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "GrowthBookFeatureRolloutAdapter"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "experienceState.ts",
+        "sourcePath": "packages/core/src/lib/experienceState.ts",
+        "sourceTier": "Tier 2: Pure Domain Logic",
+        "targetFile": "scopedStateStorage.ts",
+        "targetPath": "packages/core/src/lib/scopedStateStorage.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "createScopedStateStorage"
+        ],
+        "isTypeOnly": false
+      },
+      {
+        "sourceFile": "devicePreferences.ts",
+        "sourcePath": "packages/core/src/lib/devicePreferences.ts",
+        "sourceTier": "Tier 2: Pure Domain Logic",
+        "targetFile": "storage.ts",
+        "targetPath": "packages/core/src/lib/storage.ts",
+        "targetTier": "Tier 3: Adapter / Infra / Storage",
+        "symbols": [
+          "storage"
+        ],
+        "isTypeOnly": false
+      }
+    ],
+    "schemaRuntimeInHookCount": 2,
+    "schemaRuntimeInHook": [
+      {
+        "hookFile": "useSanctuaryFeature.ts",
+        "hookPath": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "schemaFile": "capacity.schema.ts",
+        "schemaPath": "packages/core/src/logic/schemas/capacity.schema.ts",
+        "symbols": [
+          "CapacitySchema"
+        ]
+      },
+      {
+        "hookFile": "useSanctuaryFeature.ts",
+        "hookPath": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "schemaFile": "user.schema.ts",
+        "schemaPath": "packages/core/src/logic/schemas/user.schema.ts",
+        "symbols": [
+          "UserContextSchema"
+        ]
+      }
+    ],
+    "chainBypassesCount": 1,
+    "chainBypasses": [
+      {
+        "hookFile": "useSanctuaryFeature.ts",
+        "hookPath": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "portFile": "entitlement.port.ts",
+        "portPath": "packages/core/src/logic/ports/entitlement.port.ts",
+        "symbols": [
+          "resolveScopedEntitlement"
+        ]
+      }
+    ]
+  }
+}

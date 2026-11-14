@@ -18,7 +18,7 @@ import {
   silk,
   starlightGray,
   vellum,
-} from '@repo/ui/theme';
+} from '@repo/ui/theme/Theme';
 
 // Extend the default config with our Sanctuary colors
 // This allows using bg="$sanctuarySaffron" instead of sanctuarySaffron

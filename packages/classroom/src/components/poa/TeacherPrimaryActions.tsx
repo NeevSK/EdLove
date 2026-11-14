@@ -1,43 +1,46 @@
-import { } from '@repo/core/logic';
 import { SanctuaryGuard } from '@repo/ui';
 import { Plus, ScanLine } from '@repo/ui/icons';
-import { Button, ButtonText, HStack, Icon } from '@repo/ui/primitives';
+import { useWorld } from '@repo/ui/theme/native';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 export function TeacherPrimaryActions({ onCreateClassroom }: { onCreateClassroom: () => void }) {
+  const { tokens } = useWorld();
+
   return (
-    <HStack className="gap-4 flex-wrap items-center">
+    <View className="gap-4 flex-row flex-wrap items-center">
       <SanctuaryGuard action="create" subject="Classroom" requirement={{ citizenshipRequired: 3 }}>
-        <Button
-          action="primary"
+        <Pressable
           onPress={() => {
             hapticLight();
             onCreateClassroom();
           }}
-          className="bg-templeGold rounded-full px-8 h-14 shadow-lg shadow-templeGold/20 active:opacity-85"
+          className="bg-templeGold rounded-full px-8 h-14 shadow-lg shadow-templeGold/20 active:opacity-85 justify-center"
         >
-          <HStack className="items-center gap-2.5">
-            <Icon as={Plus} size="sm" className="text-black" />
-            <ButtonText className="text-black font-black uppercase text-[10px] tracking-[0.2em]">
+          <View className="flex-row items-center gap-2.5">
+            <Plus size={16} color={tokens.onLamp} />
+            <Text className="text-black font-black uppercase text-[10px] tracking-[0.2em]">
               Create Classroom
-            </ButtonText>
-          </HStack>
-        </Button>
+            </Text>
+          </View>
+        </Pressable>
       </SanctuaryGuard>
       <SanctuaryGuard action="read" subject="Classroom" requirement={{ citizenshipRequired: 3 }}>
-        <Button
-          variant="outline"
-          className="rounded-full px-8 h-14 border-phase-canvas bg-phase-surface/50 shadow-sm active:bg-phase-canvas/20"
+        <Pressable
+          className="rounded-full px-8 h-14 border border-phase-canvas bg-phase-surface/50 shadow-sm active:bg-phase-canvas/20 justify-center"
           onPress={hapticLight}
         >
-          <HStack className="items-center gap-2.5">
-            <Icon as={ScanLine} size="sm" className="text-phaseText-primary" />
-            <ButtonText className="text-phaseText-primary font-black uppercase text-[10px] tracking-[0.2em]">
+          <View className="flex-row items-center gap-2.5">
+            <ScanLine size={16} color={tokens.ink} />
+            <Text className="text-phaseText-primary font-black uppercase text-[10px] tracking-[0.2em]">
               Scan QR
-            </ButtonText>
-          </HStack>
-        </Button>
+            </Text>
+          </View>
+        </Pressable>
       </SanctuaryGuard>
-    </HStack>
+    </View>
   );
 }
+
+export default TeacherPrimaryActions;

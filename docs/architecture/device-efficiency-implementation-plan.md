@@ -1,6 +1,21 @@
+---
+title: "Gurudevi Storage, Battery, and Network Implementation Plan"
+status: "superseded"
+superseded_by: "docs/engineering/runtime-performance/device-efficiency-implementation-plan.md"
+created: 2026-08-31
+updated: 2026-10-19
+author: "Naveen"
+scribe: "Antigravity"
+tags: [performance, runtime-performance, device-efficiency]
+---
+
+> [!NOTE]
+> This document has been relocated to the centralized performance suite:
+> **[`docs/engineering/runtime-performance/device-efficiency-implementation-plan.md`](file:///c:/x/docs/engineering/runtime-performance/device-efficiency-implementation-plan.md)**.
+
 # Gurudevi storage, battery, and network implementation plan
 
-Status: active plan  
+Status: superseded (relocated to `docs/engineering/runtime-performance/`)  
 Created: 2026-08-31  
 Related guidance: [device-efficiency-guidance.md](./device-efficiency-guidance.md)
 

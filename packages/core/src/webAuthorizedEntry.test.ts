@@ -7,24 +7,29 @@ const activeScope = {
   entityType: 'PERSONAL_CLASSROOM',
   roles: ['TEACHER'],
 } as const;
+const accountId = '01234567-89ab-8101-8000-010203040506';
 
 describe('mapAuthorizedEntry', () => {
   it('maps complete authoritative facts into a route-safe ready result', () => {
     expect(
       mapAuthorizedEntry({
         kind: 'active',
+        accountId,
         authSubjectId: 'auth-subject-1',
         displayName: 'Nadeesha',
         onboardingCompleted: true,
         activeCapacity: 'TEACHER',
+        primaryCapacity: 'TEACHER',
         primaryScopeRole: 'TEACHER',
         activeScope,
       }),
     ).toEqual({
       kind: 'ready',
+      accountId,
       authSubjectId: 'auth-subject-1',
       displayName: 'Nadeesha',
       activeCapacity: 'TEACHER',
+      primaryCapacity: 'TEACHER',
       primaryScopeRole: 'TEACHER',
       activeScope,
     });
@@ -35,10 +40,12 @@ describe('mapAuthorizedEntry', () => {
       'requires a display name',
       {
         kind: 'active',
+        accountId,
         authSubjectId: 'subject',
         displayName: ' ',
         onboardingCompleted: true,
         activeCapacity: 'TEACHER',
+        primaryCapacity: 'TEACHER',
         primaryScopeRole: 'TEACHER',
         activeScope,
       },
@@ -48,10 +55,12 @@ describe('mapAuthorizedEntry', () => {
       'requires completed onboarding',
       {
         kind: 'active',
+        accountId,
         authSubjectId: 'subject',
         displayName: 'Nadeesha',
         onboardingCompleted: false,
         activeCapacity: 'TEACHER',
+        primaryCapacity: 'TEACHER',
         primaryScopeRole: 'TEACHER',
         activeScope,
       },
@@ -61,10 +70,12 @@ describe('mapAuthorizedEntry', () => {
       'requires a server-selected active scope',
       {
         kind: 'active',
+        accountId,
         authSubjectId: 'subject',
         displayName: 'Nadeesha',
         onboardingCompleted: true,
         activeCapacity: null,
+        primaryCapacity: null,
         primaryScopeRole: null,
         activeScope: null,
       },
@@ -78,10 +89,28 @@ describe('mapAuthorizedEntry', () => {
     expect(
       mapAuthorizedEntry({
         kind: 'active',
+        accountId,
         authSubjectId: '',
         displayName: 'Nadeesha',
         onboardingCompleted: true,
         activeCapacity: 'TEACHER',
+        primaryCapacity: 'TEACHER',
+        primaryScopeRole: 'TEACHER',
+        activeScope,
+      }),
+    ).toMatchObject({ kind: 'unavailable', reason: 'invalid-authoritative-entry' });
+  });
+
+  it('rejects missing or malformed canonical account IDs', () => {
+    expect(
+      mapAuthorizedEntry({
+        kind: 'active',
+        accountId: 'not-a-uuid',
+        authSubjectId: 'subject',
+        displayName: 'Nadeesha',
+        onboardingCompleted: true,
+        activeCapacity: 'TEACHER',
+        primaryCapacity: 'TEACHER',
         primaryScopeRole: 'TEACHER',
         activeScope,
       }),

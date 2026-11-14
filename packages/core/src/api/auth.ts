@@ -1,4 +1,5 @@
 import { auth } from '@repo/core/logic/managers/factory';
+import type { PasswordChangeConfirmation } from '@repo/core/logic/ports/auth.port';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 
 export const authAPI = {
@@ -28,6 +29,34 @@ export const authAPI = {
 
   async signInWithMagicLink(email: string) {
     return auth.signInWithMagicLink(email);
+  },
+
+  async requestPasswordRecovery(email: string, redirectTo?: string) {
+    return auth.requestPasswordRecovery(email, redirectTo);
+  },
+
+  async updatePassword(password: string, confirmation?: PasswordChangeConfirmation) {
+    return auth.updatePassword(password, confirmation);
+  },
+
+  async requestPasswordReauthentication() {
+    return auth.requestPasswordReauthentication();
+  },
+
+  async unlinkIdentity(identityId: string, expectedSubject?: string) {
+    return auth.unlinkIdentity(identityId, expectedSubject);
+  },
+
+  async linkAnonymousEmail(email: string, emailRedirectTo?: string) {
+    return auth.linkAnonymousEmail(email, emailRedirectTo);
+  },
+
+  async signInWithPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpRequest) {
+    return auth.signInWithPhoneOtp(params);
+  },
+
+  async verifyPhoneOtp(params: import('@repo/core/logic/ports/auth.port').PhoneOtpVerification) {
+    return auth.verifyPhoneOtp(params);
   },
 
   async exchangeCodeForSession(code: string) {
@@ -81,7 +110,12 @@ export const authAPI = {
     return auth.signInAnonymously();
   },
 
-  async linkAnonymousToEmail(email: string, password: string, fullName: string, capacity: Capacity) {
+  async linkAnonymousToEmail(
+    email: string,
+    password: string,
+    fullName: string,
+    capacity: Capacity,
+  ) {
     return auth.linkAnonymousToEmail(email, password, fullName, capacity);
   },
 
@@ -92,7 +126,7 @@ export const authAPI = {
   onAuthStateChange(
     callback: (
       event: import('@repo/core/logic/ports/auth.port').AuthChangeEvent,
-      session: import('@repo/core/logic/ports/auth.port').AuthSession | null,
+      session: import('@repo/core/types/authSession').AuthSession | null,
     ) => void | Promise<void>,
   ) {
     return auth.onAuthStateChange(callback);
@@ -118,3 +152,16 @@ export const authAPI = {
     return auth.getAccountLifecycleStatus();
   },
 };
+
+import { registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_USER_PROFILES } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'user',
+  ghostMethods: ['getProfile'],
+  isEmpty: (_, d) => !d || !(d as any).id,
+  getSamples: (_method, args) => {
+    const role = (args?.[0] as string | undefined) ?? 'teacher';
+    return MOCK_USER_PROFILES[role] ?? MOCK_USER_PROFILES.teacher;
+  },
+});

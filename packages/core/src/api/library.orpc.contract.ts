@@ -12,6 +12,34 @@ const libraryAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
     policy: { action, subject: 'Library' },
   }) as const;
 
+export const LibraryResourceReadSchema = LibraryResourceSchema.extend({
+  creator_avatar_url: z.string().nullable(),
+  engagement_count: z.number().int().nonnegative().optional(),
+});
+
+const LibraryCollectionReadFieldsSchema = LibraryCollectionSchema.omit({
+  id: true,
+  creator_id: true,
+}).extend({
+  creator_name: z.string().nullable(),
+  creator_avatar_url: z.string().nullable(),
+  nodes: z.array(LibraryResourceReadSchema).optional(),
+  resources: z.array(LibraryResourceReadSchema).optional(),
+});
+
+export const LibraryCollectionReadSchema = z.union([
+  LibraryCollectionReadFieldsSchema.extend({
+    id: z.uuid(),
+    creator_id: LibraryCollectionSchema.shape.creator_id,
+    is_virtual: z.literal(false).optional(),
+  }),
+  LibraryCollectionReadFieldsSchema.extend({
+    id: z.string().regex(/^(subject|topic):.+$/),
+    creator_id: z.literal('system'),
+    is_virtual: z.literal(true),
+  }),
+]);
+
 export const libraryORPCContract = {
   getCounts: {
     method: 'get',
@@ -53,7 +81,7 @@ export const libraryORPCContract = {
       }),
     },
     responses: {
-      200: { schema: z.array(LibraryResourceSchema), description: 'Retrieve resources' },
+      200: { schema: z.array(LibraryResourceReadSchema), description: 'Retrieve resources' },
     },
     metadata: libraryAuthority('read'),
   },
@@ -63,7 +91,7 @@ export const libraryORPCContract = {
     path: '/library/resources/:id',
     request: { params: z.object({ id: z.uuid() }) },
     responses: {
-      200: { schema: LibraryResourceSchema, description: 'Retrieve single resource' },
+      200: { schema: LibraryResourceReadSchema, description: 'Retrieve single resource' },
     },
     metadata: libraryAuthority('read'),
   },
@@ -81,7 +109,7 @@ export const libraryORPCContract = {
       }),
     },
     responses: {
-      200: { schema: z.array(LibraryResourceSchema), description: 'Search library resources' },
+      200: { schema: z.array(LibraryResourceReadSchema), description: 'Search library resources' },
     },
     metadata: libraryAuthority('read'),
   },
@@ -97,7 +125,10 @@ export const libraryORPCContract = {
       }),
     },
     responses: {
-      200: { schema: z.array(LibraryResourceSchema), description: 'Retrieve bookmarked resources' },
+      200: {
+        schema: z.array(LibraryResourceReadSchema),
+        description: 'Retrieve bookmarked resources',
+      },
     },
     metadata: libraryAuthority('read'),
   },
@@ -123,7 +154,7 @@ export const libraryORPCContract = {
       }),
     },
     responses: {
-      200: { schema: LibraryResourceSchema, description: 'Create a library resource' },
+      200: { schema: LibraryResourceReadSchema, description: 'Create a library resource' },
     },
     metadata: libraryAuthority('create'),
   },
@@ -154,7 +185,7 @@ export const libraryORPCContract = {
         .refine((value) => Object.keys(value).length > 0, 'At least one field is required'),
     },
     responses: {
-      200: { schema: LibraryResourceSchema, description: 'Update a library resource' },
+      200: { schema: LibraryResourceReadSchema, description: 'Update a library resource' },
     },
     metadata: libraryAuthority('update'),
   },
@@ -177,7 +208,7 @@ export const libraryORPCContract = {
     path: '/library/resources/:id/verify',
     request: { params: z.object({ id: z.uuid() }) },
     responses: {
-      200: { schema: LibraryResourceSchema, description: 'Verify a library resource' },
+      200: { schema: LibraryResourceReadSchema, description: 'Verify a library resource' },
     },
     metadata: libraryAuthority('update'),
   },
@@ -230,7 +261,7 @@ export const libraryORPCContract = {
       }),
     },
     responses: {
-      200: { schema: z.array(LibraryCollectionSchema), description: 'Retrieve collections' },
+      200: { schema: z.array(LibraryCollectionReadSchema), description: 'Retrieve collections' },
     },
     metadata: libraryAuthority('read'),
   },
@@ -243,7 +274,7 @@ export const libraryORPCContract = {
       query: z.object({ view_date: z.string().datetime().optional() }),
     },
     responses: {
-      200: { schema: LibraryCollectionSchema, description: 'Retrieve single collection' },
+      200: { schema: LibraryCollectionReadSchema, description: 'Retrieve single collection' },
     },
     metadata: libraryAuthority('read'),
   },
@@ -276,7 +307,7 @@ export const libraryORPCContract = {
       }),
     },
     responses: {
-      200: { schema: LibraryCollectionSchema, description: 'Create a library collection' },
+      200: { schema: LibraryCollectionReadSchema, description: 'Create a library collection' },
     },
     metadata: libraryAuthority('create'),
   },
@@ -327,7 +358,7 @@ export const libraryORPCContract = {
         .refine((value) => Object.keys(value).length > 0, 'At least one field is required'),
     },
     responses: {
-      200: { schema: LibraryCollectionSchema, description: 'Update a library collection' },
+      200: { schema: LibraryCollectionReadSchema, description: 'Update a library collection' },
     },
     metadata: libraryAuthority('update'),
   },
@@ -350,12 +381,12 @@ export const libraryORPCContract = {
     path: '/library/collections/:id/fork',
     request: { params: z.object({ id: z.uuid() }) },
     responses: {
-      200: { schema: LibraryCollectionSchema, description: 'Fork a library collection' },
+      200: { schema: LibraryCollectionReadSchema, description: 'Fork a library collection' },
     },
     metadata: libraryAuthority('create'),
   },
 };
 
-export type LibraryCollection = z.infer<typeof LibraryCollectionSchema>;
-export type LibraryResource = z.infer<typeof LibraryResourceSchema>;
+export type LibraryCollection = z.infer<typeof LibraryCollectionReadSchema>;
+export type LibraryResource = z.infer<typeof LibraryResourceReadSchema>;
 export type ResourceEngagement = z.infer<typeof ResourceEngagementSchema>;

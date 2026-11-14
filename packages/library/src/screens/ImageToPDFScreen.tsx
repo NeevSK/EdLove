@@ -1,11 +1,13 @@
 import { ImageToPDFAPI, type ImageToPDFOptions } from '@repo/library/api';
 import { saveBytes } from '@repo/library/utils/bytes';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
 import { ArrowLeft, Layers, Save } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const FIT_MODES = ['contain', 'cover', 'fill', 'width', 'height'] as const;
 
@@ -22,7 +24,7 @@ interface ConvertResult {
 export default function ImageToPDFScreen() {
   const params = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
 
   const imageUris = useMemo(() => {
     const raw = typeof params.uris === 'string' ? params.uris.split(',') : [];
@@ -72,7 +74,7 @@ export default function ImageToPDFScreen() {
   };
 
   return (
-    <ScreenWrapper>
+    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
       <VStack className="gap-3 p-4">
         <HStack className="items-center gap-2">
           <Pressable onPress={() => router.back()} className="active:opacity-60">
@@ -169,6 +171,6 @@ export default function ImageToPDFScreen() {
           </>
         ) : null}
       </VStack>
-    </ScreenWrapper>
+    </ScrollView></SafeAreaView>
   );
 }

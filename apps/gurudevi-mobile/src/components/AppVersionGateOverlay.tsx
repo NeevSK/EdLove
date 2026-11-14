@@ -1,16 +1,18 @@
-import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating';
-import { BrandPulse } from '@repo/ui';
-import React from 'react';
-import { Linking, Modal, StyleSheet, Text, View, Pressable } from 'react-native';
+import { useVersionGatingStore } from '@repo/core/lib/sync/versionGating.store';
+import { Button, Surface, Text } from '@repo/ui/components/native';
+import { useWorld } from '@repo/ui/theme/native';
+import { Linking, Modal, ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
- * AppVersionGateOverlay
+ * AppVersionGateOverlay, worn by the world.
  *
- * Renders:
- * 1. An un-dismissible full-screen modal when `status === 'HARD_BLOCK'` (Force Update).
- * 2. A non-blocking banner at top of the screen when `status === 'SOFT_NUDGE'` (Recommended Update).
+ * 1. HARD_BLOCK: a full-screen page that cannot be dismissed (update required).
+ * 2. SOFT_NUDGE: a quiet card under the status bar (an update is recommended).
  */
 export function AppVersionGateOverlay() {
+  const t = useWorld().tokens;
+  const insets = useSafeAreaInsets();
   const isBlocked = useVersionGatingStore((state) => state.isBlocked);
   const status = useVersionGatingStore((state) => state.status);
   const updateUrl = useVersionGatingStore((state) => state.updateUrl);
@@ -28,52 +30,55 @@ export function AppVersionGateOverlay() {
     }
   };
 
-  // 1. HARD_BLOCK: Fullscreen un-dismissible blocking modal
   if (isBlocked || status === 'HARD_BLOCK') {
     return (
-      <Modal visible={true} transparent={false} animationType="fade" statusBarTranslucent>
-        <View style={styles.hardBlockContainer}>
-          <BrandPulse size={48} tintColor="#D4843A" />
-          <Text style={styles.hardBlockTitle}>Critical Update Required</Text>
-          <Text style={styles.hardBlockMessage}>
-            Your installed version (v{currentInstalledVersion}) is no longer supported. To protect
-            your data and security, you must update to at least v{minSupportedVersion} to continue.
-          </Text>
-          {releaseNotes ? (
-            <View style={styles.notesContainer}>
-              <Text style={styles.notesText}>{releaseNotes}</Text>
-            </View>
-          ) : null}
-          <Pressable
-            style={styles.primaryButton}
-            onPress={handleOpenStore}
-            className="active:opacity-85"
-          >
-            <Text style={styles.primaryButtonText}>Update Gurudevi</Text>
-          </Pressable>
-        </View>
+      <Modal
+        visible
+        transparent={false}
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => undefined}
+      >
+        <ScrollView
+          style={{ backgroundColor: t.ground }}
+          contentContainerStyle={[
+            styles.block,
+            { paddingTop: insets.top + 32, paddingBottom: insets.bottom + 32 },
+          ]}
+        >
+          <Surface tone="raised" style={styles.card}>
+            <Text kind="title" align="center" role="heading">
+              Update Gurudevi to continue
+            </Text>
+            <Text kind="body" tone="soft" align="center">
+              This version (v{currentInstalledVersion}) is no longer supported. To keep your data
+              safe, please update to v{minSupportedVersion} or newer.
+            </Text>
+            {releaseNotes ? (
+              <View style={[styles.notes, { backgroundColor: t.sunken }]}>
+                <Text kind="caption">{releaseNotes}</Text>
+              </View>
+            ) : null}
+            <Button label="Update Gurudevi" variant="primary" fullWidth onPress={handleOpenStore} />
+          </Surface>
+        </ScrollView>
       </Modal>
     );
   }
 
-  // 2. SOFT_NUDGE: Non-blocking top notification banner
   if (status === 'SOFT_NUDGE' && !hasDismissedSoftNudge) {
     return (
-      <View style={styles.softNudgeBanner}>
-        <View style={styles.softNudgeContent}>
-          <Text style={styles.softNudgeTitle}>Update Available</Text>
-          <Text style={styles.softNudgeSubtitle}>
-            A newer version of Gurudevi is ready for you.
-          </Text>
-        </View>
-        <View style={styles.softNudgeActions}>
-          <Pressable onPress={handleOpenStore} style={styles.updateActionBtn}>
-            <Text style={styles.updateActionText}>Update</Text>
-          </Pressable>
-          <Pressable onPress={dismissSoftNudge} style={styles.dismissActionBtn}>
-            <Text style={styles.dismissActionText}>Later</Text>
-          </Pressable>
-        </View>
+      <View pointerEvents="box-none" style={[styles.nudgeWrap, { top: insets.top + 8 }]}>
+        <Surface tone="raised" style={styles.nudge} accessibilityLiveRegion="polite">
+          <View style={styles.nudgeText}>
+            <Text kind="label">Update available</Text>
+            <Text kind="caption" tone="soft">
+              A newer version of Gurudevi is ready for you.
+            </Text>
+          </View>
+          <Button label="Later" variant="quiet" size="sm" onPress={dismissSoftNudge} />
+          <Button label="Update" variant="primary" size="sm" onPress={handleOpenStore} />
+        </Surface>
       </View>
     );
   }
@@ -82,104 +87,17 @@ export function AppVersionGateOverlay() {
 }
 
 const styles = StyleSheet.create({
-  hardBlockContainer: {
-    flex: 1,
-    backgroundColor: '#20140E',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  hardBlockTitle: {
-    color: '#F5EDD6',
-    fontSize: 22,
-    fontWeight: '700',
-    marginTop: 24,
-    textAlign: 'center',
-  },
-  hardBlockMessage: {
-    color: '#D8C8B8',
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: 'center',
-    marginTop: 12,
-    maxWidth: 320,
-  },
-  notesContainer: {
-    backgroundColor: 'rgba(212, 132, 58, 0.1)',
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 16,
-    maxWidth: 320,
-    borderWidth: 1,
-    borderColor: 'rgba(212, 132, 58, 0.2)',
-  },
-  notesText: {
-    color: '#E8A76B',
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  primaryButton: {
-    backgroundColor: '#D4843A',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    marginTop: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    maxWidth: 280,
-  },
-  primaryButtonText: {
-    color: '#20140E',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  softNudgeBanner: {
-    backgroundColor: '#2B1B14',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: '#D4843A40',
-  },
-  softNudgeContent: {
-    flex: 1,
-    marginRight: 12,
-  },
-  softNudgeTitle: {
-    color: '#F5EDD6',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  softNudgeSubtitle: {
-    color: '#D8C8B8',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  softNudgeActions: {
+  block: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24 },
+  card: { width: '100%', maxWidth: 480, alignSelf: 'center', gap: 16, padding: 24 },
+  notes: { padding: 12, borderRadius: 10 },
+  nudgeWrap: { position: 'absolute', left: 12, right: 12, zIndex: 100, alignItems: 'center' },
+  nudge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    width: '100%',
+    maxWidth: 520,
+    padding: 12,
   },
-  updateActionBtn: {
-    backgroundColor: '#D4843A',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-  },
-  updateActionText: {
-    color: '#20140E',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  dismissActionBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-  },
-  dismissActionText: {
-    color: '#A09080',
-    fontSize: 12,
-  },
+  nudgeText: { flex: 1, minWidth: 0, gap: 2 },
 });

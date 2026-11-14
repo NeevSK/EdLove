@@ -44,8 +44,10 @@ if (!i18n.isInitialized && !i18n.isInitializing) {
         useSuspense: false, //  Don't use suspense in React Native
       },
 
-      // Debugging (set to true during development)
-      debug: __DEV__,
+      // The complete locale catalogue is large. Emitting it in development
+      // serialises every translation through Logcat during bootstrap without
+      // adding user-facing diagnostic value.
+      debug: false,
 
       // Namespace
       defaultNS: 'translation',

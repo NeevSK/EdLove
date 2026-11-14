@@ -2,7 +2,7 @@
  * Pure helpers for the guided-reflection engine.
  * Clean-room pattern (inspiration: CBT follow-up re-checks).
  */
-import type { ReframeOutcome, ThoughtRecord } from './types';
+import type { ReframeOutcome, ThoughtRecord } from '../../types/reflection';
 
 /**
  * Derive the shift outcome from pre/post mood when the user did not rate it

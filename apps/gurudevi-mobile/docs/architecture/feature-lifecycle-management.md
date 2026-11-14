@@ -2,7 +2,7 @@
 title: "Gurudevi Feature Lifecycle Management"
 status: "active"
 created: 2026-07-26
-updated: 2026-08-31
+updated: 2026-10-19
 author: "Codex"
 tags: [feature-management, app-catalog, growthbook, lifecycle, governance]
 ---
@@ -46,6 +46,17 @@ AppCatalog boot validates every manifest record with the lifecycle schema before
 Rollout snapshot fallback is lifecycle-aware: launched release and operational controls retain their safe default when a remote key is absent, while beta and experiment flags fail closed until GrowthBook returns an explicit value.
 
 Persisted snapshots are a last-known-good continuity mechanism, not an indefinite authority. They have a seven-day freshness window. After that window, stale beta and experiment values are discarded and resolve to their safe disabled default; stale operational values remain available as emergency controls until a fresh GrowthBook evaluation arrives. Snapshot source and stale status are retained for diagnostics.
+
+### GrowthBook renderer contract
+
+`resolveFlags(context)` owns attribute writes. The SDK renderer subscription must
+only evaluate and publish the current snapshot: GrowthBook 1.8.0 calls its
+renderer from `setAttributes()`, so calling `resolveFlags()` inside that renderer
+creates an endless microtask chain. On Android this starves JavaScript input
+handling and native UI updates after `FeatureProvider` mounts. Unsubscribe clears
+the renderer with `setRenderer(null)`. The regression test uses the installed SDK
+with initialization, storage, and analytics substituted; it exercises attribute
+updates, payload updates, and unsubscribe rather than mocking the renderer away.
 
 GrowthBook exposure callbacks emit the privacy-minimal typed `feature_exposed`
 product event containing only the feature key and evaluated value plus the

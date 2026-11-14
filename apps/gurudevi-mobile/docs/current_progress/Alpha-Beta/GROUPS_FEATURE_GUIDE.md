@@ -332,7 +332,7 @@ WHERE email = 'your-email@example.com';
 
 ```typescript
 // .env
-FOUNDER_EMAILS=founder@gurudevi.com,admin@gurudevi.com
+FOUNDER_EMAILS=founder@gurudevi.lk,admin@gurudevi.lk
 
 // In your auth callback
 const FOUNDER_EMAILS = process.env.FOUNDER_EMAILS?.split(',') || [];

@@ -1,0 +1,3 @@
+// The rewards domain's Cedar namespace. It permits nothing until a subdomain card
+// is admitted; see docs/architecture/module-structure.md#cedar-as-modules-too.
+namespace Rewards {}

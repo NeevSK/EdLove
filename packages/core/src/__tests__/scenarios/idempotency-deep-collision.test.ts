@@ -1,7 +1,20 @@
+import {
+  generateIdempotencyKey,
+  getConsistentIdempotencyKey,
+} from '@repo/core/lib/sync/idempotency';
 import { describe, expect, it } from 'vitest';
-import { generateIdempotencyKey, getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 
 describe('Disaster Suite 2: Deeply Nested Key Sorting & Deterministic Idempotency Hardening', () => {
+  it('preserves own prototype-named JSON fields in fingerprints', async () => {
+    const value = JSON.parse('{"nested":{"__proto__":{"value":1},"constructor":"own"}}');
+    const different = JSON.parse('{"nested":{"__proto__":{"value":2},"constructor":"own"}}');
+    expect(await getConsistentIdempotencyKey(value)).not.toBe(
+      await getConsistentIdempotencyKey(different),
+    );
+    expect(await getConsistentIdempotencyKey(value)).not.toBe(
+      await getConsistentIdempotencyKey({ nested: { constructor: 'own' } }),
+    );
+  });
   it('generates identical SHA-256 hash regardless of object key order at deep nesting levels', async () => {
     // Object A with randomized deep key order
     const objA = {

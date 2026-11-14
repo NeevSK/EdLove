@@ -6,7 +6,7 @@
  */
 
 import { useStudentGoals } from '@repo/self/hooks/useStudentGoals';
-import type { Goal } from '@repo/self/types';
+import type { Goal } from '@repo/core/types/Wellbeing';
 import { Circle, CircleCheck, Target } from '@repo/ui/icons';
 import { useState } from 'react';
 

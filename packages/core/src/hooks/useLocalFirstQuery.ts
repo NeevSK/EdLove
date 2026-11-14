@@ -1,9 +1,9 @@
 import { isLocalOnlyIdentity } from '@repo/core/logic/auth/identityState';
-import { SafeZustandStorage } from '@repo/core/storage-wrapper';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { persistStorage as SafeZustandStorage } from '@repo/core/effect/bindings/state';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { useStore } from '@repo/core/store/useStore';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export interface UseLocalFirstQueryOptions<TData> {
   queryKey: string;
@@ -15,6 +15,10 @@ export interface UseLocalFirstQueryOptions<TData> {
 }
 
 export type LocalFirstQueryOptions<TData> = UseLocalFirstQueryOptions<TData>;
+
+interface Cached<TData> {
+  readonly value: TData | null;
+}
 
 export interface LocalFirstQueryResult<TData> {
   data: TData | null;
@@ -28,11 +32,15 @@ export interface LocalFirstQueryResult<TData> {
 /**
  * useLocalFirstQuery
  *
- * Canonical foundation for all product domain hooks (Web + Mobile).
- * 1. Instant Cache Hydration: Loads from SafeZustandStorage on mount with 0 delay.
- * 2. Guest-Mode Isolation: Executes guestResolver with zero cloud network calls.
- * 3. Remote Sync: Executes fetcher only when authenticated and online.
- * 4. Fault Resilience: Retains cached data on network failures without throwing.
+ * Canonical foundation for product domain hooks (web and mobile), on TanStack Query:
+ * 1. **Instant cache.** A device query reads the stored copy (or, for a local-only identity,
+ *    `guestResolver`) without waiting for the network.
+ * 2. **Guest isolation.** A local-only identity never calls `fetcher`.
+ * 3. **Remote sync.** A live query runs `fetcher` when signed in; TanStack's online manager
+ *    pauses it while offline, keeps only the newest response, and cancels superseded ones (the
+ *    old hand-rolled sequence counter). Results are saved for next time.
+ * 4. **Fault resilience.** A failed or empty fetch leaves the stored copy on screen; the
+ *    QueryClient policy decides whether to retry (`worthRetrying`).
  */
 export function useLocalFirstQuery<TData>({
   queryKey,
@@ -45,141 +53,72 @@ export function useLocalFirstQuery<TData>({
   const user = useAuthStore((s) => s.user);
   const isAnonymous = Boolean(!user || user.is_anonymous);
   const isLocalOnly = isLocalOnlyIdentity(user);
-  const isOnline = useStore((s) => s.isOnline);
+  const { status: networkStatus } = useOfflineStatus();
   const viewDate = useTemporalStore((s) => s.viewDate);
+  const queryClient = useQueryClient();
 
   const activeUserId = customUserId || user?.id || (isAnonymous ? 'guest' : null);
+  const storageKey = `${queryKey}:${activeUserId ?? 'anon'}:${viewDate}`;
+  const liveKey = ['localFirst', queryKey, activeUserId ?? 'anon', viewDate] as const;
+  const deviceKey = [...liveKey, 'device'] as const;
 
-  const [data, setDataState] = useState<TData | null>(initialData);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isOfflineState, setIsOfflineState] = useState<boolean>(!isOnline);
-
-  const fetcherRef = useRef(fetcher);
-  fetcherRef.current = fetcher;
-
-  const guestResolverRef = useRef(guestResolver);
-  guestResolverRef.current = guestResolver;
-
-  const storageKey = useMemo(() => {
-    return `${queryKey}:${activeUserId ?? 'anon'}:${viewDate}`;
-  }, [queryKey, activeUserId, viewDate]);
-
-  // 1. Instant Cache Hydration
-  useEffect(() => {
-    if (!enabled) {
-      setIsLoading(false);
-      return;
-    }
-
-    let active = true;
-    const hydrate = async () => {
-      try {
-        if (isLocalOnly && guestResolverRef.current) {
-          const guestResult = await guestResolverRef.current();
-          if (active && guestResult !== null && guestResult !== undefined) {
-            setDataState(guestResult);
-            setIsLoading(false);
-            return;
-          }
-        }
-
-        const raw = await SafeZustandStorage.getItem(storageKey);
-        if (active && raw) {
-          setDataState(JSON.parse(raw));
-        }
-      } catch (err) {
-        console.warn(`[useLocalFirstQuery] Cache hydration error for ${storageKey}:`, err);
-      } finally {
-        if (active) setIsLoading(false);
+  // Cached values are wrapped (`{ value }`), so a generic TData can never be mistaken for one of
+  // TanStack's updater or placeholder functions.
+  const stored = useQuery({
+    queryKey: deviceKey,
+    queryFn: async (): Promise<Cached<TData>> => {
+      if (isLocalOnly && guestResolver) {
+        const guest = await guestResolver();
+        if (guest !== null && guest !== undefined) return { value: guest };
       }
-    };
-
-    void hydrate();
-    return () => {
-      active = false;
-    };
-  }, [enabled, isLocalOnly, storageKey]);
-
-  const sequenceRef = useRef(0);
-
-  // 2. Background Sync / Remote Fetch
-  const syncRemote = useCallback(async () => {
-    if (!enabled) return;
-
-    const currentSequence = ++sequenceRef.current;
-
-    if (isLocalOnly) {
-      if (guestResolverRef.current) {
-        try {
-          const guestResult = await guestResolverRef.current();
-          if (
-            currentSequence === sequenceRef.current &&
-            guestResult !== null &&
-            guestResult !== undefined
-          ) {
-            setDataState(guestResult);
-          }
-        } catch (e) {
-          console.warn(`[useLocalFirstQuery] Guest resolver error for ${queryKey}:`, e);
-        }
-      }
-      return;
-    }
-
-    if (!activeUserId || !isOnline) {
-      setIsOfflineState(true);
-      return;
-    }
-
-    try {
-      const remoteData = await fetcherRef.current(activeUserId, viewDate);
-      // Discard stale out-of-order responses if a newer request was dispatched
-      if (
-        currentSequence === sequenceRef.current &&
-        remoteData !== null &&
-        remoteData !== undefined
-      ) {
-        setDataState(remoteData);
-        setIsOfflineState(false);
-        void SafeZustandStorage.setItem(storageKey, JSON.stringify(remoteData));
-      }
-    } catch (error) {
-      if (currentSequence === sequenceRef.current) {
-        console.warn(`[useLocalFirstQuery] Remote fetch error for ${queryKey}:`, error);
-        setIsOfflineState(true);
-      }
-    }
-  }, [activeUserId, enabled, isLocalOnly, isOnline, queryKey, storageKey, viewDate]);
-
-  useEffect(() => {
-    void syncRemote();
-  }, [syncRemote]);
-
-  const setData = useCallback(
-    (updater: TData | null | ((prev: TData | null) => TData | null)) => {
-      setDataState((prev) => {
-        const next =
-          typeof updater === 'function'
-            ? (updater as (p: TData | null) => TData | null)(prev)
-            : updater;
-        if (next !== null && next !== undefined) {
-          void SafeZustandStorage.setItem(storageKey, JSON.stringify(next));
-        }
-        return next;
-      });
+      const raw = await SafeZustandStorage.getItem(storageKey);
+      return { value: raw ? (JSON.parse(raw) as TData) : null };
     },
-    [storageKey],
-  );
+    enabled,
+    networkMode: 'always',
+    staleTime: Number.POSITIVE_INFINITY,
+  });
 
-  return useMemo(
-    () => ({
-      data,
-      isLoading,
-      isOffline: isOfflineState || !isOnline,
-      isAnonymous,
-      refetch: syncRemote,
-      setData,
-    }),
-    [data, isLoading, isOfflineState, isOnline, isAnonymous, syncRemote, setData],
-  );
+  const live = useQuery({
+    queryKey: liveKey,
+    queryFn: async (): Promise<Cached<TData>> => {
+      const remote = activeUserId ? await fetcher(activeUserId, viewDate) : null;
+      if (remote === null || remote === undefined) {
+        return queryClient.getQueryData<Cached<TData>>(deviceKey) ?? { value: null };
+      }
+      void SafeZustandStorage.setItem(storageKey, JSON.stringify(remote));
+      return { value: remote };
+    },
+    enabled: enabled && !isLocalOnly && Boolean(activeUserId),
+    placeholderData: stored.data,
+    // The stored copy stays on screen; the screen shows `isOffline`, so no toast.
+    meta: { feedback: 'silent', operation: `localFirst.${queryKey}` },
+  });
+
+  const data = live.data?.value ?? stored.data?.value ?? initialData;
+
+  const setData = (updater: TData | null | ((prev: TData | null) => TData | null)) => {
+    const next =
+      typeof updater === 'function'
+        ? (updater as (previous: TData | null) => TData | null)(data)
+        : updater;
+    queryClient.setQueryData<Cached<TData>>(deviceKey, { value: next });
+    queryClient.setQueryData<Cached<TData>>(liveKey, { value: next });
+    if (next !== null && next !== undefined) {
+      void SafeZustandStorage.setItem(storageKey, JSON.stringify(next));
+    }
+  };
+
+  const refetch = async () => {
+    await (isLocalOnly ? stored.refetch() : live.refetch());
+  };
+
+  return {
+    data,
+    isLoading: enabled && stored.isPending,
+    isOffline: live.isError || networkStatus === 'offline',
+    isAnonymous,
+    refetch,
+    setData,
+  };
 }

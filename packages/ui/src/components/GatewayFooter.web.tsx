@@ -3,6 +3,13 @@ import type React from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * @deprecated Legacy RN Web footer from the multi-target migration era.
+ * In accordance with AGENTS.md monorepo boundaries, RN Web (`*.web.tsx`) is being retired.
+ * Browser-native web footers should be consumed directly from `apps/gurudevi-web`
+ * (`GatewayFooter.tsx` or `MarketingFooter.tsx`).
+ * Scheduled for removal in a future release.
+ */
 export const GatewayFooter: React.FC = () => {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
@@ -87,6 +94,22 @@ export const GatewayFooter: React.FC = () => {
         >
           Community Guidelines
         </a>
+        <a
+          href={EXTERNAL_URLS.deleteAccount}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: '13px',
+            fontWeight: 600,
+            color: 'var(--ink-ghost, #7A6E5F)',
+            textDecoration: 'none',
+            transition: 'color 0.2s',
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          Account &amp; Data
+        </a>
       </div>
       <div
         style={{
@@ -97,7 +120,21 @@ export const GatewayFooter: React.FC = () => {
         }}
       >
         <span>
-          {t('welcome.footer') || 'Part of the EdLove Constellation · Made with 💖 in Sri Lanka'}
+          Part of the{' '}
+          <a
+            href={EXTERNAL_URLS.edlove}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: 'inherit',
+              fontWeight: 700,
+              textDecoration: 'underline',
+              textUnderlineOffset: '2.5px',
+            }}
+          >
+            EdLove Foundation
+          </a>{' '}
+          · Made with ❤️ in Sri Lanka 🇱🇰
         </span>
         <br />
         <span style={{ opacity: 0.8, fontSize: '11px', marginTop: '4px', display: 'inline-block' }}>

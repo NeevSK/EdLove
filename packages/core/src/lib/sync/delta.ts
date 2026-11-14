@@ -132,7 +132,10 @@ export const DeltaResonance = {
 
     const originalBytes = new TextEncoder().encode(originalStr).length;
     const patchBytes = new TextEncoder().encode(patchStr).length;
-    const savings = originalBytes > 0 ? Math.max(0, Math.round(((originalBytes - patchBytes) / originalBytes) * 100)) : 0;
+    const savings =
+      originalBytes > 0
+        ? Math.max(0, Math.round(((originalBytes - patchBytes) / originalBytes) * 100))
+        : 0;
 
     return {
       originalBytes,

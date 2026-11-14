@@ -1,4 +1,4 @@
-import { realtime } from '@repo/core/logic/managers/factory';
+import { supabaseRealtimeAdapter } from '@repo/core/adapters/realtime/supabase.adapter';
 import type { RealtimePresenceSubscription } from '@repo/core/logic/ports/realtime.port';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -23,7 +23,7 @@ export function useMapPresence(channelName: string = 'presence:map:global') {
   const subscriptionRef = useRef<RealtimePresenceSubscription<MapPresence> | null>(null);
 
   useEffect(() => {
-    const subscription = realtime.subscribePresence<MapPresence>(channelName, {
+    const subscription = supabaseRealtimeAdapter.subscribePresence<MapPresence>(channelName, {
       onSync: (flattened) => {
         // Only keep presences that have some coordinate data
         setPresences(

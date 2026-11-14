@@ -1,5 +1,7 @@
+import { SOVEREIGN_ORPC_URL } from '@repo/core/api/base';
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import {
   createPersistenceIdentity,
   derivePersistenceKey,
@@ -60,6 +62,19 @@ const practiceStudents = [
   { id: 'practice-student-3', studentId: 'practice-student-3', name: 'Mira Anand', rollNumber: 3 },
 ];
 
+export function getCanonicalSampleStudents(): readonly WorkspaceStudent[] {
+  return [
+    { id: 'sample-s1', studentId: 'sample-s1', name: 'Amara Senanayake', rollNumber: 1, status: 'present' },
+    { id: 'sample-s2', studentId: 'sample-s2', name: 'Bawantha Fernando', rollNumber: 2, status: 'present' },
+    { id: 'sample-s3', studentId: 'sample-s3', name: 'Charith Wickramasinghe', rollNumber: 3, status: 'late' },
+    { id: 'sample-s4', studentId: 'sample-s4', name: 'Dulani Jayawardena', rollNumber: 4, status: 'present' },
+    { id: 'sample-s5', studentId: 'sample-s5', name: 'Eshana Perera', rollNumber: 5, status: 'absent' },
+    { id: 'sample-s6', studentId: 'sample-s6', name: 'Fathima Rizwan', rollNumber: 6, status: 'present' },
+    { id: 'sample-s7', studentId: 'sample-s7', name: 'Gayan Alwis', rollNumber: 7, status: 'present' },
+    { id: 'sample-s8', studentId: 'sample-s8', name: 'Hiruni Mendis', rollNumber: 8, status: 'present' },
+  ];
+}
+
 function practiceStorageKey(accountId: string): string {
   const scope = createAccountPracticeScope({
     accountId,
@@ -72,15 +87,23 @@ function practiceStorageKey(accountId: string): string {
 function readPracticeMarks(accountId: string): Record<string, Record<string, AttendanceStatus>> {
   const key = practiceStorageKey(accountId);
   try {
-    const value: unknown = JSON.parse(window.localStorage.getItem(key) ?? '{"version":1,"dates":{}}');
+    const value: unknown = JSON.parse(
+      window.localStorage.getItem(key) ?? '{"version":1,"dates":{}}',
+    );
     if (!isRecord(value) || value.version !== practiceVersion || !isRecord(value.dates))
-      throw new Error('The saved attendance practice workspace is unreadable. It has not been removed.');
+      throw new Error(
+        'The saved attendance practice workspace is unreadable. It has not been removed.',
+      );
     const dates = Object.entries(value.dates).map(([date, marks]) => {
       if (!isRecord(marks))
-        throw new Error('The saved attendance practice workspace is unreadable. It has not been removed.');
+        throw new Error(
+          'The saved attendance practice workspace is unreadable. It has not been removed.',
+        );
       const validMarks = statusMap(marks);
       if (Object.keys(validMarks).length !== Object.keys(marks).length)
-        throw new Error('The saved attendance practice workspace has invalid marks. It has not been removed.');
+        throw new Error(
+          'The saved attendance practice workspace has invalid marks. It has not been removed.',
+        );
       return [date, validMarks] as const;
     });
     return Object.fromEntries(dates);
@@ -90,7 +113,10 @@ function readPracticeMarks(accountId: string): Record<string, Record<string, Att
   }
 }
 
-export function loadAccountPracticeAttendance(accountId: string, date: string): Readonly<{
+export function loadAccountPracticeAttendance(
+  accountId: string,
+  date: string,
+): Readonly<{
   classroom: WorkspaceClassroom;
   students: readonly WorkspaceStudent[];
 }> {
@@ -126,7 +152,9 @@ export function saveAccountPracticeAttendance(
       JSON.stringify({ version: practiceVersion, dates: { ...allDates, [date]: marks } }),
     );
   } catch {
-    throw new Error('The browser could not keep this local attendance practice. Free storage and retry.');
+    throw new Error(
+      'The browser could not keep this local attendance practice. Free storage and retry.',
+    );
   }
 }
 
@@ -292,6 +320,12 @@ export function restoreAccountAttendanceDraft(
 function apiOrigin(): string {
   const value = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/+$/, '');
   if (!value) throw new Error('Workspace services are not configured in this browser.');
+  try {
+    assertSecureApiUrl(value);
+    assertSecureApiUrl(SOVEREIGN_ORPC_URL);
+  } catch {
+    throw new Error('Workspace services are not configured securely in this browser.');
+  }
   return value;
 }
 
@@ -327,8 +361,9 @@ function attendanceStatus(value: unknown): AttendanceStatus {
 async function accountFetch(
   path: string,
   expectedSubjectId: string,
-  init?: RequestInit,
+  init?: RequestInit & { signal?: AbortSignal },
 ): Promise<unknown> {
+  const origin = apiOrigin();
   const supabase = createBrowserSupabaseClient();
   if (!supabase) throw new Error('Sign in to use your Workspace.');
   const { data, error } = await supabase.auth.getSession();
@@ -344,7 +379,7 @@ async function accountFetch(
 
   let response: Response;
   try {
-    response = await fetch(`${apiOrigin()}${path}`, {
+    response = await fetch(`${origin}${path}`, {
       ...init,
       headers: {
         Authorization: `Bearer ${session.access_token}`,
@@ -352,8 +387,10 @@ async function accountFetch(
         ...init?.headers,
       },
       cache: 'no-store',
+      redirect: 'error',
     });
-  } catch {
+  } catch (cause) {
+    if (init?.signal?.aborted) throw cause;
     throw new Error('Workspace could not reach Sanctuary. Check your connection and retry.');
   }
   if (response.status === 401 || response.status === 403)
@@ -362,22 +399,23 @@ async function accountFetch(
   return response.json();
 }
 
-async function openApiGet(path: string, expectedSubjectId: string): Promise<unknown> {
-  return accountFetch(`/api/openapi${path}`, expectedSubjectId);
-}
-
+/**
+ * Attendance model A: the "classrooms" offered here are the caller's grade classes
+ * (grade_classes, e.g. 5A), because daily_attendance is keyed by grade_class_id.
+ * Subject classrooms (classrooms.id) are not attendance targets.
+ */
 export async function loadAccountClassrooms(
   subjectId: string,
+  signal?: AbortSignal,
 ): Promise<readonly WorkspaceClassroom[]> {
-  const result = await openApiGet(
-    `/educational/classrooms/by-teacher?teacher_id=${encodeURIComponent(subjectId)}&limit=100`,
-    subjectId,
-  );
-  if (!Array.isArray(result)) throw new Error('Workspace received an invalid classroom list.');
+  const result = await accountFetch('/api/openapi/attendance/my-grade-classes', subjectId, {
+    signal,
+  });
+  if (!Array.isArray(result)) throw new Error('Workspace received an invalid class list.');
   return result.filter(isRecord).map((row) => ({
-    id: requiredString(row.id, 'classroom identity'),
-    name: requiredString(row.name, 'classroom name'),
-    subject: typeof row.subject === 'string' ? row.subject : null,
+    id: requiredString(row.id, 'grade class identity'),
+    name: requiredString(row.name, 'grade class name'),
+    subject: null,
   }));
 }
 
@@ -385,12 +423,19 @@ export async function loadAccountAttendance(
   classroom: WorkspaceClassroom,
   date: string,
   subjectId: string,
+  signal?: AbortSignal,
 ): Promise<readonly WorkspaceStudent[]> {
+  const gradeClassId = encodeURIComponent(classroom.id);
   const [rosterValue, attendanceValue] = await Promise.all([
-    openApiGet(`/educational/classrooms/${encodeURIComponent(classroom.id)}/students`, subjectId),
-    openApiGet(
-      `/attendance/classroom?gradeClassId=${encodeURIComponent(classroom.id)}&date=${encodeURIComponent(date)}`,
+    accountFetch(
+      `/api/openapi/attendance/grade-class-roster?gradeClassId=${gradeClassId}&date=${encodeURIComponent(date)}`,
       subjectId,
+      { signal },
+    ),
+    accountFetch(
+      `/api/openapi/attendance/classroom?gradeClassId=${gradeClassId}&date=${encodeURIComponent(date)}`,
+      subjectId,
+      { signal },
     ),
   ]);
   if (!Array.isArray(rosterValue) || !Array.isArray(attendanceValue))
@@ -403,18 +448,19 @@ export async function loadAccountAttendance(
     );
   }
   return rosterValue.filter(isRecord).map((row) => {
-    const id = requiredString(row.id, 'roster identity');
+    const id = requiredString(row.enrollment_id, 'enrollment identity');
+    // Enrollments always reference a users row (shadow learners have one too). Never use the
+    // enrollment id as a student id: the server rejects ids that are not enrolled students.
     const studentId = typeof row.student_id === 'string' && row.student_id ? row.student_id : null;
-    const rollNumber = typeof row.roll_number === 'number' ? row.roll_number : null;
     return {
       id,
       studentId,
       name:
         typeof row.full_name === 'string' && row.full_name.trim()
           ? row.full_name
-          : `Learner ${rollNumber ?? id.slice(0, 6)}`,
-      rollNumber,
-      status: studentId ? (attendanceByStudent.get(studentId) ?? 'present') : 'present',
+          : `Learner ${id.slice(0, 6)}`,
+      rollNumber: null,
+      status: (studentId && attendanceByStudent.get(studentId)) || 'present',
     };
   });
 }
@@ -425,6 +471,7 @@ export async function saveAccountAttendance(
   students: readonly WorkspaceStudent[],
   expectedSubjectId: string,
 ): Promise<void> {
+  apiOrigin();
   const supabase = createBrowserSupabaseClient();
   if (!supabase) throw new Error('Sign in to save attendance to your Workspace.');
   const { data, error } = await supabase.auth.getSession();

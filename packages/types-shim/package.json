@@ -1,6 +1,7 @@
 {
   "name": "@repo/types-shim",
   "version": "0.0.2",
+  "type": "module",
   "description": "A dummy shim to satisfy legacy @types/react-native peer dependencies",
   "private": true,
   "types": "index.d.ts",
@@ -19,10 +20,10 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^10.10.0",
-    "typescript": "rc",
+    "eslint": "^10.14.0",
+    "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.1.0"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

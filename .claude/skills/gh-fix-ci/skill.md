@@ -1,3 +1,8 @@
+---
+name: gh-fix-ci
+description: "Core instructions for debugging failing GitHub Actions pipelines, fixing monorepo build-graph errors, and resolving CI check blockers. Use when checking or fixing files in .github/workflows/, resolving build failures on CI, or fixing lint/test regressions before merging."
+---
+
 # CI/CD & Pipeline Synchronization Playbook (gh-fix-ci)
 
 Core instructions for debugging failing GitHub Actions pipelines, fixing monorepo build-graph errors, and resolving CI check blockers.

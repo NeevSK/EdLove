@@ -1,0 +1,192 @@
+{
+  "timestamp": "2026-11-02T13:28:02.727Z",
+  "totalFiles": 804,
+  "classifiedCount": 538,
+  "unclassifiedCount": 266,
+  "percentage": 67,
+  "summary": [
+    {
+      "key": "SCHEMA",
+      "name": "Schema",
+      "tier": 0,
+      "suffix": ".schema.ts",
+      "description": "Runtime data validation and Zod contracts",
+      "count": 34
+    },
+    {
+      "key": "TYPE",
+      "name": "Type Definition",
+      "tier": 0,
+      "suffix": ".types.ts | types/*.ts",
+      "description": "Compile-time pure TypeScript interfaces and types",
+      "count": 54
+    },
+    {
+      "key": "PORT",
+      "name": "Port / Interface",
+      "tier": 1,
+      "suffix": ".port.ts | interfaces/*.ts",
+      "description": "Abstract boundary contracts for Dependency Inversion",
+      "count": 24
+    },
+    {
+      "key": "DOMAIN_ENTITY",
+      "name": "Entity / Domain Logic",
+      "tier": 2,
+      "suffix": "*.ts in logic/ or domain/",
+      "description": "Pure business invariants, rules, and algorithms",
+      "count": 175
+    },
+    {
+      "key": "DOMAIN_SERVICE",
+      "name": "Domain Service",
+      "tier": 2,
+      "suffix": "*Service.ts",
+      "description": "Stateless domain coordinators",
+      "count": 1
+    },
+    {
+      "key": "ADAPTER",
+      "name": "Adapter",
+      "tier": 3,
+      "suffix": ".adapter.ts | *Adapter.ts",
+      "description": "Concrete implementation of ports binding to external technologies",
+      "count": 54
+    },
+    {
+      "key": "REPOSITORY",
+      "name": "Repository",
+      "tier": 3,
+      "suffix": "*Repository.ts",
+      "description": "Data access and persistence mapping for domain aggregates",
+      "count": 18
+    },
+    {
+      "key": "STORE",
+      "name": "Store",
+      "tier": 4,
+      "suffix": "use*Store.ts | *Store.ts",
+      "description": "Reactive client state container (Zustand)",
+      "count": 17
+    },
+    {
+      "key": "SLICE",
+      "name": "Slice",
+      "tier": 4,
+      "suffix": ".slice.ts",
+      "description": "Sub-partition of composite store state and actions",
+      "count": 3
+    },
+    {
+      "key": "HOOK",
+      "name": "Hook",
+      "tier": 5,
+      "suffix": "use*.ts | use*.tsx",
+      "description": "React lifecycle facade connecting UI to state and services",
+      "count": 62
+    },
+    {
+      "key": "FLOW",
+      "name": "Flow / Coordinator",
+      "tier": 5,
+      "suffix": ".flow.ts | *Coordinator.ts",
+      "description": "Multi-step transactional saga or user journey",
+      "count": 25
+    },
+    {
+      "key": "BARREL",
+      "name": "Barrel / Index",
+      "tier": -1,
+      "suffix": "index.ts | index.tsx",
+      "description": "Public boundary export catalog",
+      "count": 14
+    },
+    {
+      "key": "SYNC_ENGINE",
+      "name": "Sync Engine & Outbox",
+      "tier": 3,
+      "suffix": "lib/sync/*.ts",
+      "description": "Offline-first outbox, deltas, receipts, and mutation replay engine",
+      "count": 16
+    },
+    {
+      "key": "STORAGE_DRIVER",
+      "name": "Storage Driver",
+      "tier": 3,
+      "suffix": "*Storage.ts | guestScope.ts",
+      "description": "Low-level persistence drivers and key resolvers (MMKV, local session)",
+      "count": 15
+    },
+    {
+      "key": "TELEMETRY",
+      "name": "Telemetry & Observability",
+      "tier": 3,
+      "suffix": "monitoring/*.ts",
+      "description": "Crash reporting (Sentry), events (PostHog), breadcrumbs, and safe telemetry",
+      "count": 10
+    },
+    {
+      "key": "RESILIENCE_EFFECT",
+      "name": "Resilience & Effect Runtime",
+      "tier": 2,
+      "suffix": "effect/*.ts | circuit-breaker.ts",
+      "description": "Composable fiber concurrency, retry schedules, and circuit breakers",
+      "count": 6
+    },
+    {
+      "key": "PROVIDER",
+      "name": "React Context Provider",
+      "tier": 5,
+      "suffix": "*Provider.tsx",
+      "description": "React tree dependency injection and capability hydration roots",
+      "count": 4
+    },
+    {
+      "key": "MATH_SPATIAL",
+      "name": "Static Geometry & Constants",
+      "tier": 0,
+      "suffix": "spatial/*.ts | constants/*.ts",
+      "description": "Static geo-spatial coordinates, centroids, and school registries",
+      "count": 6
+    }
+  ],
+  "unclassifiedSample": [
+    "adapters/powersync/schema.ts",
+    "ai/contextRegistry.ts",
+    "ai/platformManifest.ts",
+    "api/academicCycles.ts",
+    "api/admin.contract.ts",
+    "api/admin.orpc.contract.ts",
+    "api/agent.contract.ts",
+    "api/agent.orpc.contract.ts",
+    "api/agent.ts",
+    "api/announcements.orpc.contract.ts",
+    "api/announcements.ts",
+    "api/appContract.ts",
+    "api/assignmentCommands.ts",
+    "api/assignments.ts",
+    "api/assignmentSubmissionReplay.ts",
+    "api/assignmentSubmissionTransport.ts",
+    "api/attendance-v1.orpc.contract.ts",
+    "api/attendance.orpc.contract.ts",
+    "api/attendance.ts",
+    "api/audit-poa-runtime.ts",
+    "api/auth.ts",
+    "api/authorization.ts",
+    "api/base.ts",
+    "api/capabilities.ts",
+    "api/capabilityFoundation.ts",
+    "api/channel.orpc.contract.ts",
+    "api/chatCommands.ts",
+    "api/circles.ts",
+    "api/classroom.ts",
+    "api/classroomGroups.ts"
+  ],
+  "unclassifiedTotalCount": 266,
+  "paretoBreakdown": {
+    "libCount": 33,
+    "nativeCount": 12,
+    "vergerCount": 7,
+    "otherCount": 214
+  }
+}

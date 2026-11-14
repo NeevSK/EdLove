@@ -1,7 +1,9 @@
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { createWisdomNote, fetchWisdomNotes } from '@repo/self/api/selfFeatureRepository';
-import type { WisdomNote } from '@repo/self/types';
+import { createWisdomNote, fetchWisdomNotes } from '@repo/self/data/selfFeature.data';
+import type { WisdomNote } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const WISDOM_CACHE_KEY = 'gurudevi-wisdom-cache';
@@ -13,8 +15,9 @@ const WISDOM_CACHE_KEY = 'gurudevi-wisdom-cache';
  * - Syncs with Supabase in background.
  */
 export function useWisdom(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
-  const { viewDate, isPastView } = useTemporalStore();
+  const { isOnline } = useOfflineStatus();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   const [notes, setNotes] = useState<WisdomNote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

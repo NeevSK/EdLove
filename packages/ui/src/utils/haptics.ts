@@ -123,3 +123,22 @@ export async function hapticBreathing() {
   await new Promise((resolve) => setTimeout(resolve, 200));
   hapticImpact('light');
 }
+
+/**
+ * One entry point for the kit's feedback grammar (`theme/feedback.ts`): play a
+ * haptic by kind. Components name an event; `useFeedback` picks the kind.
+ */
+export function haptic(kind: import('../theme/feedback').HapticKind) {
+  switch (kind) {
+    case 'selection':
+      return hapticSelection();
+    case 'success':
+      return hapticSuccess();
+    case 'warning':
+      return hapticWarning();
+    case 'error':
+      return hapticError();
+    default:
+      return hapticImpact(kind);
+  }
+}

@@ -1,19 +1,20 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { community, educational, notification, profile } from '@repo/core/logic/managers/factory';
+import { orpcClient } from '@repo/core/api/orpcClient';
+import {
+  auth,
+  community,
+  educational,
+  notification,
+  profile,
+} from '@repo/core/logic/managers/factory';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import { CompleteProfileSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { trackProductEvent } from '@repo/core/monitoring';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
 import { APIError } from '@repo/core/types/API';
-import type { Perspective } from '@repo/core/types/Identity';
-import type {
-  ClassroomJoinRequest,
-  RequestStatus,
-  SchoolJoinRequest,
-} from '@repo/core/types/Onboarding';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+import type { Perspective } from '@repo/core/logic/schemas/identity.schema';
+import type { ClassroomJoinRequest, RequestStatus } from '@repo/core/types/Onboarding';
+import type { SchoolJoinRequest } from '@repo/core/logic/schemas/identity.schema';
 
 /**
  * Onboarding API (Sovereign Orchestration)
@@ -31,8 +32,8 @@ export const onboardingAPI = {
 
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
     trackProductEvent('onboarding_started');
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    const guestUser = sessionData.session?.user;
+    const session = await auth.getSession();
+    const guestUser = session?.user;
     if (guestUser?.is_anonymous) {
       setGuestScope(guestUser.id);
       const bondId = globalThis.crypto?.randomUUID?.() ?? `guest-bond-${guestUser.id}`;
@@ -51,18 +52,21 @@ export const onboardingAPI = {
       });
       return;
     }
-    const res = await (client.api as any).identity['initial-bond'].$post({
-      json: { orientation, context },
+    const res = await orpcClient.onboarding.createInitialBond({
+      body: {
+        orientation,
+        confirmCapacityChange: false,
+        context: (context as Record<string, unknown>) || {},
+      },
     });
-    if (!res.ok) {
-      throw new APIError('Failed to create initial bond', res.status.toString());
+    if (!res.success) {
+      throw new APIError('Failed to create initial bond', 'INITIAL_BOND_FAILED');
     }
-    await res.json();
   },
 
-  async completeOnboarding(userId: string): Promise<void> {
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    if (sessionData.session?.user?.is_anonymous && sessionData.session.user.id === userId) {
+  async completeOnboarding(userId: string, idempotencyKey?: string): Promise<void> {
+    const session = await auth.getSession();
+    if (session?.user?.is_anonymous && session.user.id === userId) {
       setGuestScope(userId);
       const local = await getLocalGuestIdentity(userId);
       if (!local.activeBond || !local.activeBond.capacity) {
@@ -75,38 +79,39 @@ export const onboardingAPI = {
       trackProductEvent('onboarding_completed');
       return;
     }
-    const res = await (client.api as any).identity['complete-onboarding'].$post({
-      json: { userId },
+    const res = await orpcClient.onboarding.completeOnboarding({
+      body: idempotencyKey ? { idempotencyKey } : {},
     });
-    if (!res.ok) {
-      throw new APIError('Failed to complete onboarding', res.status.toString());
+    if (!res.success) {
+      throw new APIError('Failed to complete onboarding', 'ONBOARDING_FAILED');
     }
-    await res.json();
     trackProductEvent('onboarding_completed');
   },
 
   /** Creates the founder's verified school bond after an official school is created. */
   async createFounderSchoolBond(userId: string, schoolId: string): Promise<string> {
-    const res = await (client.api as any).identity['school-founder-bond'].$post({
-      json: { schoolId },
-    });
-    const data = await res.json().catch(() => null);
-    if (!res.ok || !data?.success || typeof data.bondId !== 'string') {
+    try {
+      const res = await orpcClient.onboarding.createFounderSchoolBond({
+        body: { schoolId },
+      });
+      return res.bondId;
+    } catch (error: any) {
       throw new APIError(
-        data?.message || 'School founder bond was not established',
-        res.status.toString() || 'SCHOOL_BOND_NOT_CREATED',
+        error?.message || 'School founder bond was not established',
+        error?.code || 'SCHOOL_BOND_NOT_CREATED',
       );
     }
-    return data.bondId;
   },
 
   async revokeSchoolBond(userId: string, schoolId: string): Promise<void> {
-    const res = await (client.api as any).identity['school-bond'][schoolId].$delete();
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
+    try {
+      await orpcClient.onboarding.revokeSchoolBond({
+        params: { schoolId },
+      });
+    } catch (error: any) {
       throw new APIError(
-        data?.message || 'School bond was not revoked',
-        res.status.toString() || 'SCHOOL_BOND_NOT_REVOKED',
+        error?.message || 'School bond was not revoked',
+        error?.code || 'SCHOOL_BOND_NOT_REVOKED',
       );
     }
   },
@@ -240,17 +245,25 @@ export const onboardingAPI = {
     lastName?: string,
     username?: string,
   ): Promise<void> {
-    // identity.completeProfile was a helper that set multiple fields
-    await profile.updateProfile(userId, {
-      display_name: displayName,
-      first_name: firstName ?? null,
-      last_name: lastName ?? null,
-      username: username ?? null,
-      capacity_label: capacityLabel,
-      bio,
-      index_number: indexNumber,
-      nic_number: nicNumber,
-      profile_completed: true,
-    });
+    const { identity } = await import('../logic/managers/factory');
+    const activeIdentity = await identity.identifyActiveCitizen();
+    if (!activeIdentity || activeIdentity.id !== userId) {
+      throw new APIError('The authenticated account changed.', 'AUTH_ACCOUNT_MISMATCH');
+    }
+    await orpcClient.onboarding.completeProfile(
+      {
+        body: CompleteProfileSchema.parse({
+          display_name: displayName,
+          first_name: firstName ?? null,
+          last_name: lastName ?? null,
+          username: username ?? null,
+          capacity_label: capacityLabel,
+          bio,
+          index_number: indexNumber,
+          nic_number: nicNumber,
+        }),
+      },
+      { context: { expectedAccountId: userId, retry: 0 } },
+    );
   },
 };

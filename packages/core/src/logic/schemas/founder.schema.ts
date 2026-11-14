@@ -49,14 +49,28 @@ export const EcosystemPulseSchema = z.object({
   weather: z.enum(['radiant', 'lush', 'steady', 'resting', 'quiet']),
   pulses: z.array(
     z.object({
-      school_id: z.uuid(),
+      school_id: z.string(),
       school_name: z.string(),
       weather: z.string(),
-      health: z.number(),
+      active_classrooms: z.number(),
     }),
   ),
-  computed_at: z.string().datetime(),
 });
+
+/**
+ * PlatformBroadcastSchema - Real transactional announcements sent across sanctuaries.
+ */
+export const PlatformBroadcastSchema = z.object({
+  id: z.string().uuid(),
+  sender_id: z.string(),
+  title: z.string().min(1),
+  message: z.string().min(1),
+  severity: z.enum(['info', 'advisory', 'urgent', 'critical']).default('info'),
+  target_school_ids: z.array(z.string()).default([]), // Empty array = global broadcast
+  created_at: z.string().datetime(),
+});
+
+export type PlatformBroadcast = z.infer<typeof PlatformBroadcastSchema>;
 
 /**
  * GlobalUserSchema - User representation for ecosystem-wide listing.

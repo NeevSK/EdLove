@@ -3,3 +3,4 @@ export * from '@repo/classroom/components/teacher/TeacherAssignmentsSidebar';
 export * from '@repo/classroom/components/teacher/TeacherClassroomList';
 export * from '@repo/classroom/components/teacher/TeacherSnapshot';
 export * from '@repo/classroom/components/teacher/TeacherStats';
+export * from '@repo/classroom/components/teacher/TeacherActivePeriodCard';

@@ -1,18 +1,17 @@
 import { useReducedMotion } from '@repo/core/hooks/useAccessibility';
 import type { SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import type { SelfNavigatorMode } from '@repo/self/hooks/useSelfNavigatorMode';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { EmptyState, ErrorState } from '@repo/ui/components/native';
+import { WaitingSign } from '@repo/ui/components/native';
+
 import { useBreakpoint, useResponsiveGrid } from '@repo/ui/components/layout';
-import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { FlashList } from '@shopify/flash-list';
 import { Layers, LayoutGrid } from '@repo/ui/icons';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticMedium, hapticSelection } from '@repo/ui/utils/haptics';
 import React, { useCallback, useState } from 'react';
-import { Platform, useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions, View, Text, Pressable } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 
@@ -111,7 +110,7 @@ export function SelfNavigator({
             margin: isTiled ? 6 : 0,
           }}
         >
-          <Box
+          <View
             className="w-16 h-16 rounded-full p-[3px] justify-center items-center mb-1 border-2"
             style={{
               borderColor: feature.domainColor,
@@ -119,7 +118,7 @@ export function SelfNavigator({
               opacity: isActive ? 1 : 0.85,
             }}
           >
-            <Box
+            <View
               className="w-full h-full rounded-[30px] bg-white justify-center items-center shadow-sm"
               style={
                 isActive
@@ -129,16 +128,16 @@ export function SelfNavigator({
             >
               <Text className="text-2xl">{getEmoji(feature)}</Text>
               {isPinned && (
-                <Box
+                <View
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full justify-center items-center border-2 border-white shadow-sm"
                   style={{ backgroundColor: feature.domainColor }}
                 >
-                  <Box accessible={false} className="w-1.5 h-1.5 rounded-full bg-white" />
-                </Box>
+                  <View accessible={false} className="w-1.5 h-1.5 rounded-full bg-white" />
+                </View>
               )}
-            </Box>
-          </Box>
-          <Box
+            </View>
+          </View>
+          <View
             className={`w-1 h-1 rounded-full mb-1 ${isActive ? '' : 'bg-transparent'}`}
             style={isActive ? { backgroundColor: feature.domainColor } : {}}
           />
@@ -159,44 +158,26 @@ export function SelfNavigator({
 
   if (isLoading) {
     return (
-      <VStack className="py-8 items-center gap-3">
-        <BrandPulse size={28} />
+      <View className="py-8 items-center gap-3">
+        <WaitingSign size="sm" />
         <Text className="text-xs font-semibold" style={{ color: tokens.colors.textMuted }}>
           Gathering your spaces…
         </Text>
-      </VStack>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <BrandedErrorState title="Spaces are resting" message={error.message}>
-        {onRetry ? (
-          <Pressable
-            onPress={onRetry}
-            accessibilityRole="button"
-            className="px-4 py-2 rounded-full"
-            style={{
-              backgroundColor: tokens.colors.surfaceElevated,
-              borderWidth: 1,
-              borderColor: tokens.colors.border,
-            }}
-          >
-            <Text className="text-xs font-bold" style={{ color: tokens.colors.ink }}>
-              Try again
-            </Text>
-          </Pressable>
-        ) : null}
-      </BrandedErrorState>
+      <ErrorState title="Spaces are resting" message={error.message} retry={onRetry ? { label: "Try again", onPress: onRetry } : undefined} />
     );
   }
 
   if (features.length === 0) {
     return (
-      <BrandedEmptyState
+      <EmptyState
         title="A quiet space is ready"
         message="Your Self spaces will appear here when they have something to share."
-        subtle
       />
     );
   }
@@ -205,8 +186,8 @@ export function SelfNavigator({
   const colWidthPct = `${100 / tiledCols}%`;
 
   return (
-    <VStack className="gap-1" onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
-      <HStack className="justify-between items-center px-md pb-2">
+    <View className="gap-1" onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
+      <View className="flex-row items-center justify-between items-center px-md pb-2">
         <Text
           className="text-[11px] font-bold uppercase tracking-widest"
           style={{ color: tokens.colors.textMuted }}
@@ -232,7 +213,7 @@ export function SelfNavigator({
             <LayoutGrid size={16} color={tokens.colors.ink} />
           )}
         </Pressable>
-      </HStack>
+      </View>
 
       <Animated.View
         layout={reducedMotion ? undefined : Layout.springify()}
@@ -240,7 +221,7 @@ export function SelfNavigator({
         exiting={reducedMotion ? undefined : FadeOut.duration(180)}
       >
         {mode === 'carousel' ? (
-          <SanctuaryFlashList
+          <FlashList
             data={features}
             renderItem={renderItem}
             horizontal={!isLandscape}
@@ -255,7 +236,7 @@ export function SelfNavigator({
             getItemType={(item) => (item.id === 'mirrors' ? 'insight' : 'regular')}
           />
         ) : (
-          <Box
+          <View
             className="px-md"
             style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}
           >
@@ -275,7 +256,7 @@ export function SelfNavigator({
                 {renderItem({ item: feature })}
               </Animated.View>
             ))}
-          </Box>
+          </View>
         )}
       </Animated.View>
       {/* Graceful helper: hint only on first visit, web narrow already mobile */}
@@ -284,6 +265,6 @@ export function SelfNavigator({
           Tip: switch to carousel for quick glide
         </Text>
       ) : null}
-    </VStack>
+    </View>
   );
 }

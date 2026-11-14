@@ -19,6 +19,12 @@ node_modules
 
 # Temporary files
 _tmp_*
+*.tmp
+*.bak
+*.db
+*.sqlite
+*.sqlite3
+data/
 
 # Doppler fallback files are encrypted, machine-bound cache artifacts.
 # They must not be committed or used as the workspace source of truth.
@@ -70,6 +76,10 @@ yarn-error.log*
 ## IDEs
 .vscode/
 .idea/
+.cursor/
+.codex/
+**/.codex/
+**/.agents/state/
 .claude/*
 !.claude/skills/
 .devin/
@@ -163,6 +173,15 @@ TEST_INFRA.md
 TEST_READY.md
 DEAD_ENDS.md
 reports/*.png
+reports/mobile-performance/device-profiles.sqlite*
 
 # Bundle visualizer and route bundle analysis reports
 apps/gurudevi-mobile/reports/
+
+.vercel
+
+# Headless scene screenshots (pnpm scene:shots)
+.scene-shots/
+
+# World fonts built by scripts/fonts/build-world-fonts.py that do not ship yet
+.world-fonts/

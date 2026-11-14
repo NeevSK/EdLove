@@ -1,0 +1,1632 @@
+{
+  "totalFiles": 79,
+  "bypassCount": 40,
+  "sameSeamBypasses": [
+    {
+      "from": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+      "fromLayer": 2,
+      "to": "packages/core/src/logic/registry/citizenship.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+        "packages/core/src/logic/permissions/accessContext.ts",
+        "packages/core/src/logic/registry/citizenship.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/lib/storageWrapper.ts",
+      "fromLayer": 2,
+      "to": "packages/core/src/lib/storage.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/lib/storageWrapper.ts",
+        "packages/core/src/lib/devicePreferences.ts",
+        "packages/core/src/lib/storage.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/ui/button/index.tsx",
+      "fromLayer": 2,
+      "to": "packages/ui/src/utils/classNames.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/ui/button/index.tsx",
+        "packages/ui/src/components/ui/text/index.tsx",
+        "packages/ui/src/utils/classNames.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/SanctuaryButton.tsx",
+      "fromLayer": 3,
+      "to": "packages/ui/src/utils/classNames.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/SanctuaryButton.tsx",
+        "packages/ui/src/components/ui/button/index.tsx",
+        "packages/ui/src/utils/classNames.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/SanctuaryButton.tsx",
+      "fromLayer": 3,
+      "to": "packages/ui/src/utils/haptics.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/SanctuaryButton.tsx",
+        "packages/ui/src/components/ui/button/index.tsx",
+        "packages/ui/src/utils/haptics.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/PositiveInvitation.tsx",
+      "fromLayer": 4,
+      "to": "packages/ui/src/utils/haptics.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/PositiveInvitation.tsx",
+        "packages/ui/src/components/SanctuaryButton.tsx",
+        "packages/ui/src/utils/haptics.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/lib/featureRolloutSnapshot.ts",
+      "fromLayer": 4,
+      "to": "packages/core/src/store/types/featureFlags.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/lib/featureRolloutSnapshot.ts",
+        "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+        "packages/core/src/store/types/featureFlags.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+      "fromLayer": 5,
+      "to": "packages/ui/src/icons.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+        "packages/ui/src/components/PositiveInvitation.tsx",
+        "packages/ui/src/icons.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/prompts/SignupPrompt.tsx",
+      "fromLayer": 5,
+      "to": "packages/ui/src/icons.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/prompts/SignupPrompt.tsx",
+        "packages/ui/src/components/PositiveInvitation.tsx",
+        "packages/ui/src/icons.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+      "fromLayer": 5,
+      "to": "packages/ui/src/icons.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+        "packages/ui/src/components/PositiveInvitation.tsx",
+        "packages/ui/src/icons.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/logic/managers/featureFlag.factory.ts",
+      "fromLayer": 5,
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "toLayer": 3,
+      "alternatePath": [
+        "packages/core/src/logic/managers/featureFlag.factory.ts",
+        "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+        "packages/core/src/logic/ports/featureRollout.port.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/store/useFeatureStore.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "toLayer": 3,
+      "alternatePath": [
+        "packages/core/src/store/useFeatureStore.ts",
+        "packages/core/src/lib/featureRolloutSnapshot.ts",
+        "packages/core/src/logic/ports/featureRollout.port.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/store/useFeatureStore.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/store/types/featureFlags.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/store/useFeatureStore.ts",
+        "packages/core/src/lib/featureRolloutSnapshot.ts",
+        "packages/core/src/store/types/featureFlags.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/lib/authProfileStorage.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/lib/accountScope.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/lib/authProfileStorage.ts",
+        "packages/core/src/lib/experienceState.ts",
+        "packages/core/src/lib/scopedStateStorage.ts",
+        "packages/core/src/lib/accountScope.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/lib/authProfileStorage.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/native/guestScope.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/lib/authProfileStorage.ts",
+        "packages/core/src/lib/experienceState.ts",
+        "packages/core/src/lib/scopedStateStorage.ts",
+        "packages/core/src/native/guestScope.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/adapters/powersync/database.ts",
+      "fromLayer": 9,
+      "to": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/databaseRegistry.ts",
+        "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/store/useEntitlementStore.ts",
+      "fromLayer": 11,
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/store/useEntitlementStore.ts",
+        "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+        "packages/core/src/logic/ports/entitlement.port.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Entitlements & Monetization Seam",
+      "vSeam": "Entitlements & Monetization Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/store/usePerspectiveStore.ts",
+      "fromLayer": 11,
+      "to": "packages/core/src/types/Perspective.ts",
+      "toLayer": 1,
+      "alternatePath": [
+        "packages/core/src/store/usePerspectiveStore.ts",
+        "packages/core/src/store/useCedarDecisionStore.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+        "packages/core/src/store/scopeSession.ts",
+        "packages/core/src/types/Perspective.ts"
+      ],
+      "pathLength": 6,
+      "uSeam": "Perspective & Workspace Seam",
+      "vSeam": "Perspective & Workspace Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/logic/permissions/bondScope.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/useCedarDecisionStore.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+        "packages/core/src/logic/permissions/bondScope.ts"
+      ],
+      "pathLength": 5,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/types/Identity.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/scopeSession.ts",
+        "packages/core/src/types/Identity.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "isSameSeam": true
+    }
+  ],
+  "folderReports": [
+    {
+      "folder": "packages/ui/src/components",
+      "fileCount": 3,
+      "minLayer": 3,
+      "maxLayer": 13,
+      "span": 10,
+      "files": [
+        {
+          "name": "SanctuaryButton.tsx",
+          "layer": 3,
+          "loc": 160
+        },
+        {
+          "name": "PositiveInvitation.tsx",
+          "layer": 4,
+          "loc": 116
+        },
+        {
+          "name": "SanctuaryGuard.tsx",
+          "layer": 13,
+          "loc": 58
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/adapters/powersync",
+      "fileCount": 6,
+      "minLayer": 0,
+      "maxLayer": 9,
+      "span": 9,
+      "files": [
+        {
+          "name": "schema.ts",
+          "layer": 0,
+          "loc": 700
+        },
+        {
+          "name": "powersync-shim.ts",
+          "layer": 0,
+          "loc": 81
+        },
+        {
+          "name": "singleActivePowerSyncRuntime.ts",
+          "layer": 0,
+          "loc": 125
+        },
+        {
+          "name": "databaseRegistry.ts",
+          "layer": 1,
+          "loc": 66
+        },
+        {
+          "name": "secureDrizzleProxy.ts",
+          "layer": 8,
+          "loc": 194
+        },
+        {
+          "name": "database.ts",
+          "layer": 9,
+          "loc": 122
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/store",
+      "fileCount": 6,
+      "minLayer": 2,
+      "maxLayer": 11,
+      "span": 9,
+      "files": [
+        {
+          "name": "scopeSession.ts",
+          "layer": 2,
+          "loc": 166
+        },
+        {
+          "name": "useFeatureStore.ts",
+          "layer": 6,
+          "loc": 126
+        },
+        {
+          "name": "useAuthStore.ts",
+          "layer": 7,
+          "loc": 28
+        },
+        {
+          "name": "useCedarDecisionStore.ts",
+          "layer": 10,
+          "loc": 250
+        },
+        {
+          "name": "useEntitlementStore.ts",
+          "layer": 11,
+          "loc": 166
+        },
+        {
+          "name": "usePerspectiveStore.ts",
+          "layer": 11,
+          "loc": 207
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/lib",
+      "fileCount": 9,
+      "minLayer": 0,
+      "maxLayer": 6,
+      "span": 6,
+      "files": [
+        {
+          "name": "accountScope.ts",
+          "layer": 0,
+          "loc": 27
+        },
+        {
+          "name": "storage.ts",
+          "layer": 0,
+          "loc": 40
+        },
+        {
+          "name": "devicePreferences.ts",
+          "layer": 1,
+          "loc": 46
+        },
+        {
+          "name": "scopedStateStorage.ts",
+          "layer": 1,
+          "loc": 69
+        },
+        {
+          "name": "authStorage.ts",
+          "layer": 1,
+          "loc": 36
+        },
+        {
+          "name": "storageWrapper.ts",
+          "layer": 2,
+          "loc": 37
+        },
+        {
+          "name": "experienceState.ts",
+          "layer": 2,
+          "loc": 83
+        },
+        {
+          "name": "featureRolloutSnapshot.ts",
+          "layer": 4,
+          "loc": 43
+        },
+        {
+          "name": "authProfileStorage.ts",
+          "layer": 6,
+          "loc": 114
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/types",
+      "fileCount": 10,
+      "minLayer": 0,
+      "maxLayer": 5,
+      "span": 5,
+      "files": [
+        {
+          "name": "Identity.ts",
+          "layer": 0,
+          "loc": 78
+        },
+        {
+          "name": "authorization.ts",
+          "layer": 0,
+          "loc": 93
+        },
+        {
+          "name": "runtime.ts",
+          "layer": 0,
+          "loc": 173
+        },
+        {
+          "name": "Errors.ts",
+          "layer": 0,
+          "loc": 191
+        },
+        {
+          "name": "Social.ts",
+          "layer": 0,
+          "loc": 23
+        },
+        {
+          "name": "Perspective.ts",
+          "layer": 1,
+          "loc": 83
+        },
+        {
+          "name": "API.ts",
+          "layer": 1,
+          "loc": 42
+        },
+        {
+          "name": "Tenancy.ts",
+          "layer": 3,
+          "loc": 57
+        },
+        {
+          "name": "User.ts",
+          "layer": 4,
+          "loc": 117
+        },
+        {
+          "name": "index.ts",
+          "layer": 5,
+          "loc": 237
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic/managers",
+      "fileCount": 2,
+      "minLayer": 1,
+      "maxLayer": 5,
+      "span": 4,
+      "files": [
+        {
+          "name": "NetworkManager.ts",
+          "layer": 1,
+          "loc": 70
+        },
+        {
+          "name": "featureFlag.factory.ts",
+          "layer": 5,
+          "loc": 9
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic/ports",
+      "fileCount": 3,
+      "minLayer": 0,
+      "maxLayer": 3,
+      "span": 3,
+      "files": [
+        {
+          "name": "entitlement.port.ts",
+          "layer": 0,
+          "loc": 99
+        },
+        {
+          "name": "authz.port.ts",
+          "layer": 0,
+          "loc": 42
+        },
+        {
+          "name": "featureRollout.port.ts",
+          "layer": 3,
+          "loc": 20
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/native",
+      "fileCount": 2,
+      "minLayer": 0,
+      "maxLayer": 3,
+      "span": 3,
+      "files": [
+        {
+          "name": "guestScope.ts",
+          "layer": 0,
+          "loc": 38
+        },
+        {
+          "name": "localGuestSession.ts",
+          "layer": 3,
+          "loc": 96
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic/permissions",
+      "fileCount": 5,
+      "minLayer": 0,
+      "maxLayer": 2,
+      "span": 2,
+      "files": [
+        {
+          "name": "bondScope.ts",
+          "layer": 0,
+          "loc": 36
+        },
+        {
+          "name": "signature.ts",
+          "layer": 0,
+          "loc": 123
+        },
+        {
+          "name": "accessContext.ts",
+          "layer": 1,
+          "loc": 39
+        },
+        {
+          "name": "baselineCapabilities.ts",
+          "layer": 1,
+          "loc": 39
+        },
+        {
+          "name": "sanctuaryFeature.ts",
+          "layer": 2,
+          "loc": 179
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic/schemas",
+      "fileCount": 3,
+      "minLayer": 0,
+      "maxLayer": 2,
+      "span": 2,
+      "files": [
+        {
+          "name": "capacity.schema.ts",
+          "layer": 0,
+          "loc": 24
+        },
+        {
+          "name": "identity.schema.ts",
+          "layer": 1,
+          "loc": 214
+        },
+        {
+          "name": "user.schema.ts",
+          "layer": 2,
+          "loc": 156
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic/registry",
+      "fileCount": 3,
+      "minLayer": 0,
+      "maxLayer": 2,
+      "span": 2,
+      "files": [
+        {
+          "name": "citizenship.ts",
+          "layer": 0,
+          "loc": 54
+        },
+        {
+          "name": "domainEntry.ts",
+          "layer": 1,
+          "loc": 306
+        },
+        {
+          "name": "featureLifecycleManifest.ts",
+          "layer": 2,
+          "loc": 350
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src/components/prompts",
+      "fileCount": 3,
+      "minLayer": 5,
+      "maxLayer": 5,
+      "span": 0,
+      "files": [
+        {
+          "name": "SchoolJoinPrompt.tsx",
+          "layer": 5,
+          "loc": 21
+        },
+        {
+          "name": "SignupPrompt.tsx",
+          "layer": 5,
+          "loc": 21
+        },
+        {
+          "name": "UpgradePrompt.tsx",
+          "layer": 5,
+          "loc": 26
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src",
+      "fileCount": 2,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "icons.ts",
+          "layer": 0,
+          "loc": 2
+        },
+        {
+          "name": "primitives.ts",
+          "layer": 0,
+          "loc": 71
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/monitoring",
+      "fileCount": 2,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "breadcrumbs.ts",
+          "layer": 0,
+          "loc": 62
+        },
+        {
+          "name": "index.ts",
+          "layer": 0,
+          "loc": 12
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src/utils",
+      "fileCount": 2,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "haptics.ts",
+          "layer": 0,
+          "loc": 145
+        },
+        {
+          "name": "classNames.ts",
+          "layer": 0,
+          "loc": 10
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/store/types",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "featureFlags.ts",
+          "layer": 0,
+          "loc": 34
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/lib/sync",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "eventBus.ts",
+          "layer": 0,
+          "loc": 169
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic/utils",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "edloveUuidV8.ts",
+          "layer": 0,
+          "loc": 199
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/constants",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "SriLankanSchools.ts",
+          "layer": 0,
+          "loc": 874
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/lib/security",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "transportSecurity.ts",
+          "layer": 0,
+          "loc": 71
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src/components/ui/spinner",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "index.tsx",
+          "layer": 0,
+          "loc": 20
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src/components/ui/view",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "index.tsx",
+          "layer": 0,
+          "loc": 99
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic/interfaces",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "network.port.ts",
+          "layer": 0,
+          "loc": 25
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src/sensory",
+      "fileCount": 1,
+      "minLayer": 0,
+      "maxLayer": 0,
+      "span": 0,
+      "files": [
+        {
+          "name": "index.ts",
+          "layer": 0,
+          "loc": 3
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic",
+      "fileCount": 1,
+      "minLayer": 1,
+      "maxLayer": 1,
+      "span": 0,
+      "files": [
+        {
+          "name": "runtimeRegistry.ts",
+          "layer": 1,
+          "loc": 118
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src/components/ui/pressable",
+      "fileCount": 1,
+      "minLayer": 1,
+      "maxLayer": 1,
+      "span": 0,
+      "files": [
+        {
+          "name": "index.tsx",
+          "layer": 1,
+          "loc": 69
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src/components/ui/text",
+      "fileCount": 1,
+      "minLayer": 1,
+      "maxLayer": 1,
+      "span": 0,
+      "files": [
+        {
+          "name": "index.tsx",
+          "layer": 1,
+          "loc": 73
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/adapters",
+      "fileCount": 1,
+      "minLayer": 2,
+      "maxLayer": 2,
+      "span": 0,
+      "files": [
+        {
+          "name": "supabaseClient.ts",
+          "layer": 2,
+          "loc": 89
+        }
+      ]
+    },
+    {
+      "folder": "packages/ui/src/components/ui/button",
+      "fileCount": 1,
+      "minLayer": 2,
+      "maxLayer": 2,
+      "span": 0,
+      "files": [
+        {
+          "name": "index.tsx",
+          "layer": 2,
+          "loc": 218
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/adapters/feature-rollout",
+      "fileCount": 1,
+      "minLayer": 4,
+      "maxLayer": 4,
+      "span": 0,
+      "files": [
+        {
+          "name": "growthBookFeatureRollout.adapter.ts",
+          "layer": 4,
+          "loc": 233
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/store/slices",
+      "fileCount": 1,
+      "minLayer": 6,
+      "maxLayer": 6,
+      "span": 0,
+      "files": [
+        {
+          "name": "auth.slice.ts",
+          "layer": 6,
+          "loc": 21
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/adapters/supabase",
+      "fileCount": 1,
+      "minLayer": 10,
+      "maxLayer": 10,
+      "span": 0,
+      "files": [
+        {
+          "name": "supabaseEntitlement.adapter.ts",
+          "layer": 10,
+          "loc": 172
+        }
+      ]
+    },
+    {
+      "folder": "packages/core/src/logic/permissions/hooks",
+      "fileCount": 1,
+      "minLayer": 12,
+      "maxLayer": 12,
+      "span": 0,
+      "files": [
+        {
+          "name": "useSanctuaryFeature.ts",
+          "layer": 12,
+          "loc": 284
+        }
+      ]
+    }
+  ],
+  "bypasses": [
+    {
+      "from": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+      "fromLayer": 2,
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+        "packages/core/src/logic/permissions/accessContext.ts",
+        "packages/core/src/logic/ports/entitlement.port.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Entitlements & Monetization Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+      "fromLayer": 2,
+      "to": "packages/core/src/logic/registry/citizenship.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+        "packages/core/src/logic/permissions/accessContext.ts",
+        "packages/core/src/logic/registry/citizenship.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/lib/storageWrapper.ts",
+      "fromLayer": 2,
+      "to": "packages/core/src/lib/storage.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/lib/storageWrapper.ts",
+        "packages/core/src/lib/devicePreferences.ts",
+        "packages/core/src/lib/storage.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/ui/button/index.tsx",
+      "fromLayer": 2,
+      "to": "packages/ui/src/utils/classNames.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/ui/button/index.tsx",
+        "packages/ui/src/components/ui/text/index.tsx",
+        "packages/ui/src/utils/classNames.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/SanctuaryButton.tsx",
+      "fromLayer": 3,
+      "to": "packages/ui/src/utils/classNames.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/SanctuaryButton.tsx",
+        "packages/ui/src/components/ui/button/index.tsx",
+        "packages/ui/src/utils/classNames.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/SanctuaryButton.tsx",
+      "fromLayer": 3,
+      "to": "packages/ui/src/utils/haptics.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/SanctuaryButton.tsx",
+        "packages/ui/src/components/ui/button/index.tsx",
+        "packages/ui/src/utils/haptics.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/PositiveInvitation.tsx",
+      "fromLayer": 4,
+      "to": "packages/ui/src/utils/haptics.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/PositiveInvitation.tsx",
+        "packages/ui/src/components/SanctuaryButton.tsx",
+        "packages/ui/src/utils/haptics.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/lib/featureRolloutSnapshot.ts",
+      "fromLayer": 4,
+      "to": "packages/core/src/store/types/featureFlags.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/lib/featureRolloutSnapshot.ts",
+        "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+        "packages/core/src/store/types/featureFlags.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+      "fromLayer": 4,
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "toLayer": 2,
+      "alternatePath": [
+        "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+        "packages/core/src/logic/ports/featureRollout.port.ts",
+        "packages/core/src/logic/schemas/user.schema.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Cross-Cutting Primitives",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+      "fromLayer": 5,
+      "to": "packages/ui/src/icons.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+        "packages/ui/src/components/PositiveInvitation.tsx",
+        "packages/ui/src/icons.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/prompts/SignupPrompt.tsx",
+      "fromLayer": 5,
+      "to": "packages/ui/src/icons.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/prompts/SignupPrompt.tsx",
+        "packages/ui/src/components/PositiveInvitation.tsx",
+        "packages/ui/src/icons.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+      "fromLayer": 5,
+      "to": "packages/ui/src/icons.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+        "packages/ui/src/components/PositiveInvitation.tsx",
+        "packages/ui/src/icons.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "UI Presentation & Prompts Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/logic/managers/featureFlag.factory.ts",
+      "fromLayer": 5,
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "toLayer": 3,
+      "alternatePath": [
+        "packages/core/src/logic/managers/featureFlag.factory.ts",
+        "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+        "packages/core/src/logic/ports/featureRollout.port.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/store/useFeatureStore.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/lib/storage.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/store/useFeatureStore.ts",
+        "packages/core/src/logic/managers/featureFlag.factory.ts",
+        "packages/core/src/adapters/feature-rollout/growthBookFeatureRollout.adapter.ts",
+        "packages/core/src/lib/storage.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/store/useFeatureStore.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/logic/ports/featureRollout.port.ts",
+      "toLayer": 3,
+      "alternatePath": [
+        "packages/core/src/store/useFeatureStore.ts",
+        "packages/core/src/lib/featureRolloutSnapshot.ts",
+        "packages/core/src/logic/ports/featureRollout.port.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/store/useFeatureStore.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "toLayer": 2,
+      "alternatePath": [
+        "packages/core/src/store/useFeatureStore.ts",
+        "packages/core/src/logic/ports/featureRollout.port.ts",
+        "packages/core/src/logic/schemas/user.schema.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Cross-Cutting Primitives",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/store/useFeatureStore.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/store/types/featureFlags.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/store/useFeatureStore.ts",
+        "packages/core/src/lib/featureRolloutSnapshot.ts",
+        "packages/core/src/store/types/featureFlags.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Feature Flags & Rollout Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/lib/authProfileStorage.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/lib/accountScope.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/lib/authProfileStorage.ts",
+        "packages/core/src/lib/experienceState.ts",
+        "packages/core/src/lib/scopedStateStorage.ts",
+        "packages/core/src/lib/accountScope.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/lib/authProfileStorage.ts",
+      "fromLayer": 6,
+      "to": "packages/core/src/native/guestScope.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/lib/authProfileStorage.ts",
+        "packages/core/src/lib/experienceState.ts",
+        "packages/core/src/lib/scopedStateStorage.ts",
+        "packages/core/src/native/guestScope.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+      "fromLayer": 8,
+      "to": "packages/core/src/types/Errors.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+        "packages/core/src/store/useAuthStore.ts",
+        "packages/core/src/lib/authProfileStorage.ts",
+        "packages/core/src/types/index.ts",
+        "packages/core/src/types/API.ts",
+        "packages/core/src/types/Errors.ts"
+      ],
+      "pathLength": 6,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Cross-Cutting Primitives",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/adapters/powersync/database.ts",
+      "fromLayer": 9,
+      "to": "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/databaseRegistry.ts",
+        "packages/core/src/adapters/powersync/singleActivePowerSyncRuntime.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Auth Session, Storage & Sync Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/store/useCedarDecisionStore.ts",
+      "fromLayer": 10,
+      "to": "packages/core/src/adapters/powersync/schema.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/store/useCedarDecisionStore.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/schema.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Cedar Authorization Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+      "fromLayer": 10,
+      "to": "packages/core/src/adapters/powersync/schema.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/schema.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Entitlements & Monetization Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/store/useEntitlementStore.ts",
+      "fromLayer": 11,
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "toLayer": 2,
+      "alternatePath": [
+        "packages/core/src/store/useEntitlementStore.ts",
+        "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+        "packages/core/src/store/useAuthStore.ts",
+        "packages/core/src/lib/authProfileStorage.ts",
+        "packages/core/src/lib/storageWrapper.ts"
+      ],
+      "pathLength": 7,
+      "uSeam": "Entitlements & Monetization Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/store/useEntitlementStore.ts",
+      "fromLayer": 11,
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/store/useEntitlementStore.ts",
+        "packages/core/src/adapters/supabase/supabaseEntitlement.adapter.ts",
+        "packages/core/src/logic/ports/entitlement.port.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "Entitlements & Monetization Seam",
+      "vSeam": "Entitlements & Monetization Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/store/usePerspectiveStore.ts",
+      "fromLayer": 11,
+      "to": "packages/core/src/lib/storageWrapper.ts",
+      "toLayer": 2,
+      "alternatePath": [
+        "packages/core/src/store/usePerspectiveStore.ts",
+        "packages/core/src/store/useAuthStore.ts",
+        "packages/core/src/lib/authProfileStorage.ts",
+        "packages/core/src/lib/storageWrapper.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "Perspective & Workspace Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/store/usePerspectiveStore.ts",
+      "fromLayer": 11,
+      "to": "packages/core/src/store/useAuthStore.ts",
+      "toLayer": 7,
+      "alternatePath": [
+        "packages/core/src/store/usePerspectiveStore.ts",
+        "packages/core/src/store/useCedarDecisionStore.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+        "packages/core/src/store/useAuthStore.ts"
+      ],
+      "pathLength": 5,
+      "uSeam": "Perspective & Workspace Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/store/usePerspectiveStore.ts",
+      "fromLayer": 11,
+      "to": "packages/core/src/types/Perspective.ts",
+      "toLayer": 1,
+      "alternatePath": [
+        "packages/core/src/store/usePerspectiveStore.ts",
+        "packages/core/src/store/useCedarDecisionStore.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+        "packages/core/src/store/scopeSession.ts",
+        "packages/core/src/types/Perspective.ts"
+      ],
+      "pathLength": 6,
+      "uSeam": "Perspective & Workspace Seam",
+      "vSeam": "Perspective & Workspace Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/logic/permissions/bondScope.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/useCedarDecisionStore.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+        "packages/core/src/logic/permissions/bondScope.ts"
+      ],
+      "pathLength": 5,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/logic/ports/entitlement.port.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+        "packages/core/src/logic/ports/entitlement.port.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Entitlements & Monetization Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+      "toLayer": 2,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/useFeatureStore.ts",
+        "packages/core/src/lib/featureRolloutSnapshot.ts",
+        "packages/core/src/logic/registry/featureLifecycleManifest.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/logic/schemas/capacity.schema.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/usePerspectiveStore.ts",
+        "packages/core/src/types/Perspective.ts",
+        "packages/core/src/logic/schemas/capacity.schema.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Cross-Cutting Primitives",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/logic/schemas/user.schema.ts",
+      "toLayer": 2,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/useFeatureStore.ts",
+        "packages/core/src/logic/schemas/user.schema.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Cross-Cutting Primitives",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/store/useAuthStore.ts",
+      "toLayer": 7,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/usePerspectiveStore.ts",
+        "packages/core/src/store/useAuthStore.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Auth Session, Storage & Sync Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/store/useCedarDecisionStore.ts",
+      "toLayer": 10,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/usePerspectiveStore.ts",
+        "packages/core/src/store/useCedarDecisionStore.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Cedar Authorization Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/store/types/featureFlags.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/logic/registry/featureLifecycleManifest.ts",
+        "packages/core/src/store/types/featureFlags.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Feature Flags & Rollout Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/store/scopeSession.ts",
+      "toLayer": 2,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/useCedarDecisionStore.ts",
+        "packages/core/src/adapters/powersync/database.ts",
+        "packages/core/src/adapters/powersync/secureDrizzleProxy.ts",
+        "packages/core/src/store/scopeSession.ts"
+      ],
+      "pathLength": 5,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Perspective & Workspace Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/types/Identity.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/store/scopeSession.ts",
+        "packages/core/src/types/Identity.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "isSameSeam": true
+    },
+    {
+      "from": "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+      "fromLayer": 12,
+      "to": "packages/core/src/types/authorization.ts",
+      "toLayer": 0,
+      "alternatePath": [
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+        "packages/core/src/logic/permissions/baselineCapabilities.ts",
+        "packages/core/src/types/authorization.ts"
+      ],
+      "pathLength": 4,
+      "uSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "vSeam": "Cedar Authorization Seam",
+      "isSameSeam": false
+    },
+    {
+      "from": "packages/ui/src/components/SanctuaryGuard.tsx",
+      "fromLayer": 13,
+      "to": "packages/core/src/logic/permissions/sanctuaryFeature.ts",
+      "toLayer": 2,
+      "alternatePath": [
+        "packages/ui/src/components/SanctuaryGuard.tsx",
+        "packages/core/src/logic/permissions/hooks/useSanctuaryFeature.ts",
+        "packages/core/src/logic/permissions/sanctuaryFeature.ts"
+      ],
+      "pathLength": 3,
+      "uSeam": "UI Presentation & Prompts Seam",
+      "vSeam": "ReBAC Identity & Sanctuary Feature Seam",
+      "isSameSeam": false
+    }
+  ]
+}

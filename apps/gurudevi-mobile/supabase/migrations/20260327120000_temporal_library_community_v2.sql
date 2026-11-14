@@ -249,10 +249,20 @@ ALTER TABLE public.collection_nodes ADD COLUMN IF NOT EXISTS added_by uuid REFER
 -- Handle legacy constraint names if we are transitioning from an old schema
 DO $$ 
 BEGIN 
-    IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'library_collection_items_collection_id_fkey') THEN
+    IF EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'library_collection_items_collection_id_fkey'
+          AND conrelid = 'public.collection_nodes'::regclass
+    ) THEN
         ALTER TABLE public.collection_nodes RENAME CONSTRAINT library_collection_items_collection_id_fkey TO collection_nodes_collection_id_fkey;
     END IF;
-    IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'library_collection_items_item_id_fkey') THEN
+    IF EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'library_collection_items_item_id_fkey'
+          AND conrelid = 'public.collection_nodes'::regclass
+    ) THEN
         ALTER TABLE public.collection_nodes RENAME CONSTRAINT library_collection_items_item_id_fkey TO collection_nodes_node_id_fkey;
     END IF;
 END $$;
@@ -532,6 +542,7 @@ SELECT
     c.creator_id
 FROM public.collections c
 CROSS JOIN LATERAL unnest(COALESCE(c.resource_ids, '{}'::uuid[])) WITH ORDINALITY AS resources(resource_id, ordinality)
+JOIN public.nodes node ON node.id = resource_id
 LEFT JOIN LATERAL unnest(COALESCE(c.sequence_order, '{}'::integer[])) WITH ORDINALITY AS sequence(sequence_idx, idx)
     ON idx = ordinality
 ON CONFLICT (collection_id, node_id) DO NOTHING;

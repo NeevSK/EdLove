@@ -2,9 +2,18 @@ import { z } from 'zod';
 
 export const WorkspaceLayoutVersionSchema = z.union([z.literal(1), z.literal(2)]);
 
+export const WorkspaceWallpaperSchema = z.object({
+  provider: z.literal('cloudinary'),
+  url: z.url(),
+  publicId: z.string().min(1),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+});
+
 export const WorkspaceAppearanceSchema = z.object({
   preset: z.enum(['default', 'dawn', 'garden', 'night']).default('default'),
   motion: z.enum(['off', 'subtle']).default('off'),
+  wallpaper: WorkspaceWallpaperSchema.optional(),
 });
 
 export const WorkspaceLayoutTargetSchema = z.enum(['shared', 'web', 'mobile']);
@@ -31,6 +40,8 @@ export const WorkspaceLayoutRecordSchema = z.object({
   is_default: z.boolean().default(true),
   surface_metadata: z.record(z.string(), z.unknown()).default({}),
   layout_version: WorkspaceLayoutVersionSchema.default(2),
+  revision: z.number().int().nonnegative().default(0),
+  last_operation_id: z.uuid().nullable().default(null),
   created_at: z.string(),
   updated_at: z.string(),
 });

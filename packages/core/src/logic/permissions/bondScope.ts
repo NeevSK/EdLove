@@ -1,7 +1,5 @@
 import { BOND_ENTITY_TYPES } from '@repo/policies/authorizationRegistry';
 
-/** PERSONAL_CLASSROOM remains persisted compatibility data while the product
- * language treats it as the user's personal sanctuary perspective. */
 export { BOND_ENTITY_TYPES };
 
 export type BondEntityType = (typeof BOND_ENTITY_TYPES)[number];
@@ -24,7 +22,7 @@ export function resolveBondScope(bond: BondScopeInput | null | undefined) {
     } as const;
   }
 
-  const isPersonal = bond.entity_type === 'PERSONAL' || bond.entity_type === 'PERSONAL_CLASSROOM';
+  const isPersonal = bond.entity_type === 'PERSONAL';
   return {
     activeBondId: bond.id,
     activeEntityId: bond.entity_id,

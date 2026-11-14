@@ -1,0 +1,283 @@
+{
+  "about": "What the native module sends to JavaScript, held as one contract both sides test against: Kotlin builds each payload from its inputs and must produce exactly `payload`; TypeScript maps each `payload` and must produce exactly `event` (with `at` = 0).",
+  "network": [
+    {
+      "case": "Wi-Fi, validated, unmetered",
+      "inputs": {
+        "present": true,
+        "wifi": true,
+        "cellular": false,
+        "ethernet": false,
+        "validated": true,
+        "metered": false,
+        "kbps": 30000,
+        "dataSaverStatus": "disabled"
+      },
+      "payload": {
+        "transport": "wifi",
+        "validated": true,
+        "metered": false,
+        "downKbps": 16384,
+        "dataSaver": "disabled"
+      },
+      "event": {
+        "type": "network",
+        "at": 0,
+        "transport": "wifi",
+        "validated": true,
+        "metered": false,
+        "downKbps": 16384,
+        "dataSaver": "disabled"
+      }
+    },
+    {
+      "case": "cellular, metered, Data Saver on",
+      "inputs": {
+        "present": true,
+        "wifi": false,
+        "cellular": true,
+        "ethernet": false,
+        "validated": true,
+        "metered": true,
+        "kbps": 1500,
+        "dataSaverStatus": "enabled"
+      },
+      "payload": {
+        "transport": "cellular",
+        "validated": true,
+        "metered": true,
+        "downKbps": 1024,
+        "dataSaver": "enabled"
+      },
+      "event": {
+        "type": "network",
+        "at": 0,
+        "transport": "cellular",
+        "validated": true,
+        "metered": true,
+        "downKbps": 1024,
+        "dataSaver": "enabled"
+      }
+    },
+    {
+      "case": "cellular, this app allowlisted under Data Saver",
+      "inputs": {
+        "present": true,
+        "wifi": false,
+        "cellular": true,
+        "ethernet": false,
+        "validated": true,
+        "metered": true,
+        "kbps": 5000,
+        "dataSaverStatus": "allowlisted"
+      },
+      "payload": {
+        "transport": "cellular",
+        "validated": true,
+        "metered": true,
+        "downKbps": 4096,
+        "dataSaver": "allowlisted"
+      },
+      "event": {
+        "type": "network",
+        "at": 0,
+        "transport": "cellular",
+        "validated": true,
+        "metered": true,
+        "downKbps": 4096,
+        "dataSaver": "allowlisted"
+      }
+    },
+    {
+      "case": "Wi-Fi behind a captive portal: not validated, bandwidth unknown",
+      "inputs": {
+        "present": true,
+        "wifi": true,
+        "cellular": false,
+        "ethernet": false,
+        "validated": false,
+        "metered": false,
+        "kbps": 0,
+        "dataSaverStatus": "disabled"
+      },
+      "payload": {
+        "transport": "wifi",
+        "validated": false,
+        "metered": false,
+        "downKbps": null,
+        "dataSaver": "disabled"
+      },
+      "event": {
+        "type": "network",
+        "at": 0,
+        "transport": "wifi",
+        "validated": false,
+        "metered": false,
+        "downKbps": null,
+        "dataSaver": "disabled"
+      }
+    },
+    {
+      "case": "no network",
+      "inputs": {
+        "present": false,
+        "wifi": false,
+        "cellular": false,
+        "ethernet": false,
+        "validated": null,
+        "metered": null,
+        "kbps": 0,
+        "dataSaverStatus": "disabled"
+      },
+      "payload": {
+        "transport": "none",
+        "validated": null,
+        "metered": null,
+        "downKbps": null,
+        "dataSaver": "disabled"
+      },
+      "event": {
+        "type": "network",
+        "at": 0,
+        "transport": "none",
+        "validated": null,
+        "metered": null,
+        "downKbps": null,
+        "dataSaver": "disabled"
+      }
+    }
+  ],
+  "battery": [
+    {
+      "case": "half full, on battery, warm",
+      "inputs": {
+        "level": 50,
+        "scale": 100,
+        "plugged": 0,
+        "tenths": 372
+      },
+      "payload": {
+        "levelPercent": 50,
+        "pluggedIn": false,
+        "temperatureC": 37.0
+      },
+      "event": {
+        "type": "battery",
+        "at": 0,
+        "levelPercent": 50,
+        "pluggedIn": false,
+        "temperatureC": 37.0
+      }
+    },
+    {
+      "case": "low, on battery, hot",
+      "inputs": {
+        "level": 15,
+        "scale": 100,
+        "plugged": 0,
+        "tenths": 468
+      },
+      "payload": {
+        "levelPercent": 15,
+        "pluggedIn": false,
+        "temperatureC": 46.5
+      },
+      "event": {
+        "type": "battery",
+        "at": 0,
+        "levelPercent": 15,
+        "pluggedIn": false,
+        "temperatureC": 46.5
+      }
+    },
+    {
+      "case": "full, on its charger (plugged in, not charging)",
+      "inputs": {
+        "level": 255,
+        "scale": 255,
+        "plugged": 1,
+        "tenths": 301
+      },
+      "payload": {
+        "levelPercent": 100,
+        "pluggedIn": true,
+        "temperatureC": 30.0
+      },
+      "event": {
+        "type": "battery",
+        "at": 0,
+        "levelPercent": 100,
+        "pluggedIn": true,
+        "temperatureC": 30.0
+      }
+    },
+    {
+      "case": "extras missing",
+      "inputs": {
+        "level": -1,
+        "scale": -1,
+        "plugged": -1,
+        "tenths": -2147483648
+      },
+      "payload": {
+        "levelPercent": null,
+        "pluggedIn": null,
+        "temperatureC": null
+      },
+      "event": {
+        "type": "battery",
+        "at": 0,
+        "levelPercent": null,
+        "pluggedIn": null,
+        "temperatureC": null
+      }
+    }
+  ],
+  "dataUsage": [
+    {
+      "case": "counted: received plus sent",
+      "inputs": {
+        "rx": 3145728,
+        "tx": 524288
+      },
+      "payload": {
+        "totalBytes": 3670016
+      },
+      "event": {
+        "type": "data-usage",
+        "at": 0,
+        "totalBytes": 3670016
+      }
+    },
+    {
+      "case": "nothing moved since boot",
+      "inputs": {
+        "rx": 0,
+        "tx": 0
+      },
+      "payload": {
+        "totalBytes": 0
+      },
+      "event": {
+        "type": "data-usage",
+        "at": 0,
+        "totalBytes": 0
+      }
+    },
+    {
+      "case": "the platform does not count",
+      "inputs": {
+        "rx": -1,
+        "tx": -1
+      },
+      "payload": {
+        "totalBytes": -1
+      },
+      "event": {
+        "type": "data-usage",
+        "at": 0,
+        "totalBytes": -1
+      }
+    }
+  ]
+}

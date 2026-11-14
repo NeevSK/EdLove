@@ -7,7 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';
 import { type HapticImpact, hapticImpact } from '../utils/haptics';
-import { duration, easingPoints, scale } from './motion';
+import { duration, easingPoints, scale } from '../tokens/motion';
 
 const standardEasing = Easing.bezier(
   easingPoints.standard[0],

@@ -2,7 +2,11 @@
 
 import { spawnSync } from 'node:child_process';
 
-const checks = ['scripts/i18n/audit-keys.mjs', 'scripts/i18n/check-inline-fallbacks.js'];
+const checks = [
+  'scripts/i18n/audit-keys.mjs',
+  'scripts/i18n/check-inline-fallbacks.js',
+  'scripts/i18n/check-orthography.mjs',
+];
 
 for (const check of checks) {
   const result = spawnSync(process.execPath, [check], { stdio: 'inherit' });

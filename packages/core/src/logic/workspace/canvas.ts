@@ -51,6 +51,25 @@ export interface WorkspaceZoneLayoutGroup<
 
 const unique = <TValue>(values: TValue[]): TValue[] => Array.from(new Set(values));
 
+/** Moves one declared group without changing its identity or any other group's order. */
+export function moveWorkspaceGroup<TGroupId extends string>(
+  groupOrder: readonly TGroupId[],
+  groupId: TGroupId,
+  direction: 'up' | 'down',
+): TGroupId[] {
+  const index = groupOrder.indexOf(groupId);
+  const target = direction === 'up' ? index - 1 : index + 1;
+  if (index < 0 || target < 0 || target >= groupOrder.length) return [...groupOrder];
+
+  const next = [...groupOrder];
+  const current = next[index];
+  const destination = next[target];
+  if (current === undefined || destination === undefined) return next;
+  next[index] = destination;
+  next[target] = current;
+  return next;
+}
+
 export function resolveWorkspaceGroupOrder<TGroupId extends string>(
   stored: readonly string[] | undefined,
   defaults: readonly TGroupId[],

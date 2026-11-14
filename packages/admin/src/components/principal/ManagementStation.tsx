@@ -1,5 +1,5 @@
+import { View, Text, Pressable } from 'react-native';
 import { ArrowRight, LayoutGrid, Milestone, NotebookPen, UserPlus } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useTranslation } from 'react-i18next';
@@ -22,37 +22,37 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
       accessibilityHint={`Opens ${description}`}
       className="flex-1 bg-phase-surface p-5 rounded-[24px] border border-phase-border active:scale-[0.98] transition-all shadow-sm"
     >
-      <HStack className="justify-between items-center">
-        <HStack className="gap-4 items-center">
-          <Box className="p-3 rounded-xl bg-phase-interactive/10 border border-phase-interactive/10">
-            <Icon as={LucideIcon} size="md" className="text-phase-interactive" />
-          </Box>
-          <VStack className="gap-0.5">
+      <View className="flex-row items-center justify-between items-center">
+        <View className="flex-row items-center gap-4 items-center">
+          <View className="p-3 rounded-xl bg-phase-interactive/10 border border-phase-interactive/10">
+            <LucideIcon size={20} className="text-phase-interactive" />
+          </View>
+          <View className="gap-0.5">
             <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">
               {label}
             </Text>
             <Text className="text-[10px] font-bold text-phaseText-secondary uppercase tracking-widest opacity-60">
               {description}
             </Text>
-          </VStack>
-        </HStack>
-        <Icon as={ArrowRight} size="xs" className="text-phaseText-muted/20" />
-      </HStack>
+          </View>
+        </View>
+        <ArrowRight size={12} className="text-phaseText-muted/20" />
+      </View>
     </Pressable>
   );
 
   return (
-    <Box className="bg-phase-interactive rounded-[40px] p-2 shadow-xl">
-      <Box className="p-6 bg-phase-interactive rounded-[38px] border border-dashed border-white/20">
-        <VStack className="gap-6">
-          <HStack className="justify-between items-center px-2">
+    <View className="bg-phase-interactive rounded-[40px] p-2 shadow-xl">
+      <View className="p-6 bg-phase-interactive rounded-[38px] border border-dashed border-white/20">
+        <View className="gap-6">
+          <View className="flex-row items-center justify-between items-center px-2">
             <Text className="text-[11px] font-black text-white uppercase tracking-[2px]">
               {t('principal.management.station') || 'Management Station'}
             </Text>
-            <Box className="w-2 h-2 rounded-full bg-white opacity-40" />
-          </HStack>
+            <View className="w-2 h-2 rounded-full bg-white opacity-40" />
+          </View>
 
-          <VStack className="gap-3">
+          <View className="gap-3">
             <ActionItem
               icon={LayoutGrid}
               label={t('principal.management.hierarchy') || 'System Hierarchy'}
@@ -77,9 +77,9 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
               description={t('principal.management.cyclesDesc') || 'Governed Terms'}
               target="cycles"
             />
-          </VStack>
-        </VStack>
-      </Box>
-    </Box>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }

@@ -1,11 +1,6 @@
-import { captureAuthenticatedDeviceAccount } from '@repo/core/accounts/authenticatedAccountCapture';
-import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
-import { disconnectPowerSync } from '@repo/core/adapters/powersync/database';
-import { authAPI } from '@repo/core/api/auth';
-import { assertHighway } from '@repo/core/api/highways';
-import { identityAPI } from '@repo/core/api/identity';
-import { schoolAPI } from '@repo/core/api/school';
-import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
+import { authAPI } from '@repo/core/auth';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
+import { openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
 import {
   getSessionIdentityMode,
   type IdentityAvailability,
@@ -13,20 +8,34 @@ import {
   isCurrentIdentityResolutionGeneration,
 } from '@repo/core/logic/auth/identityState';
 import { resolveAuthProfile } from '@repo/core/logic/auth/profileResolution';
-import { realtime } from '@repo/core/logic/managers/factory';
-import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
-import { clearAuthSubject, identifyAuthSubject, initSentry } from '@repo/core/monitoring';
-import { useStore } from '@repo/core/store/useStore';
-import type { User } from '@repo/core/types';
+import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
+import {
+  clearScopeSessionCompatibility,
+  commitIdentityScopeSession,
+} from '@repo/core/store/scopeSessionCoordinator';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { APIError } from '@repo/core/types/API';
-import type { Bond } from '@repo/core/types/Identity';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
+import { authLifecycle } from '@repo/core/effect/bindings/auth';
+import { sessionScope } from '@repo/core/effect/bindings/state';
 
-export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticatedAccountCapture';
+const {
+  deviceAccounts,
+  captureAuthenticatedDeviceAccount,
+  disconnectPowerSync,
+  identity,
+  realtime,
+} = authLifecycle;
+const { initSentry, identifyAuthSubject, clearAuthSubject } = authLifecycle.telemetry;
+
+export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticatedAccountCapture.adapter';
 
 /** Throttle minimum interval for mobile AppState wake-up profile reconciliation. */
 const APP_STATE_RECONCILE_THROTTLE_MS = 60_000;
+const REMEMBERED_SESSION_ERROR = 'Unable to retain refreshed device credentials.';
 
 /**
  * useAuthLifecycle
@@ -34,7 +43,7 @@ const APP_STATE_RECONCILE_THROTTLE_MS = 60_000;
  * Orchestrates the "Reactive Capability Sync" and session management.
  * Hardened for offline cold start, battery doze mode, and mobile token churn.
  */
-export function useAuthLifecycle() {
+export function useAuthLifecycle(readLocalGuestId?: () => Promise<string | null>) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
@@ -54,35 +63,17 @@ export function useAuthLifecycle() {
   const previousUserIdRef = useRef<string | null>(null);
   const lastReconciledAtRef = useRef<number>(Date.now());
 
-  const setUser = useStore((state) => state.setUser);
-  const setPerspective = useStore((state) => state.setPerspective);
-  const setAvailableBonds = useStore((state) => state.setAvailableBonds);
-  const setSchoolType = useStore((state) => state.setSchoolType);
-  const setOnboardingCompleted = useStore((state) => state.setOnboardingCompleted);
-  const setAuthSession = useStore((state) => state.setAuthSession);
-  const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
-  const setDemoMode = useStore((state) => state.setDemoMode);
+  const setUser = useAuthStore((state) => state.setUser);
+  const setDemoMode = useExperienceState((state) => state.setDemoMode);
 
   const clearDerivedIdentityState = useCallback(() => {
+    clearScopeSessionCompatibility();
     setUser(null);
-    setPerspective(null);
-    setAvailableBonds([]);
-    setSchoolType(null);
-    setOnboardingCompleted(false);
     setIdentityAvailability('unknown');
     resolvedAuthSubjectIdRef.current = null;
     setResolvedAuthSubjectId(null);
     setAccountLifecycleStatus(null);
-  }, [
-    setAccountLifecycleStatus,
-    setAvailableBonds,
-    setIdentityAvailability,
-    setResolvedAuthSubjectId,
-    setOnboardingCompleted,
-    setPerspective,
-    setSchoolType,
-    setUser,
-  ]);
+  }, [setAccountLifecycleStatus, setIdentityAvailability, setResolvedAuthSubjectId, setUser]);
 
   const hasVerifiedLocalIdentityForSubject = useCallback(
     async (
@@ -117,7 +108,31 @@ export function useAuthLifecycle() {
       const isFirstLoad = !hasBootstrappedRef.current;
       const resolutionGeneration = identityResolutionGenerationRef.current + 1;
       identityResolutionGenerationRef.current = resolutionGeneration;
+      const isCurrentResolution = () =>
+        isCurrentIdentityResolutionGeneration(
+          resolutionGeneration,
+          identityResolutionGenerationRef.current,
+        );
       const authSubjectId = sessionToCapture?.user.id ?? null;
+      const restoreVerifiedLocalIdentity = async (): Promise<boolean> => {
+        const existingUser = useAuthStore.getState().user;
+        const hasMatchingLocalUser = await hasVerifiedLocalIdentityForSubject(
+          existingUser?.id,
+          authSubjectId,
+        );
+        if (!isCurrentResolution()) return false;
+        if (hasMatchingLocalUser) {
+          setIdentityAvailability('active');
+          resolvedAuthSubjectIdRef.current = authSubjectId;
+          setResolvedAuthSubjectId(authSubjectId);
+          if (existingUser && sessionScope.activeAccountId() === existingUser.id) {
+            openReplayAdmission(existingUser.id);
+          }
+        } else {
+          clearDerivedIdentityState();
+        }
+        return true;
+      };
       setIsProfileResolving(true);
       setProfileError(null);
       if (isFirstLoad) {
@@ -126,42 +141,32 @@ export function useAuthLifecycle() {
       try {
         const resolution = await resolveAuthProfile(sessionToCapture ?? null, {
           identifyActiveCitizen: async () => {
-            assertHighway('identity_bootstrap', 'direct-api');
-            return identityAPI.identifyActiveCitizen();
+            return identity.identifyActiveCitizen();
           },
           getAccountLifecycleStatus: () => authAPI.getAccountLifecycleStatus(),
-          getSchoolType: async (schoolId) => {
-            try {
-              const schoolData = await schoolAPI.getSchool(schoolId);
-              return (schoolData?.type as SchoolType | undefined) ?? null;
-            } catch {
-              return null;
-            }
-          },
+          getSchoolType: async () => null,
         });
 
-        if (
-          !isCurrentIdentityResolutionGeneration(
-            resolutionGeneration,
-            identityResolutionGenerationRef.current,
-          )
-        ) {
-          return;
-        }
+        if (!isCurrentResolution()) return;
 
         if (resolution.kind === 'active') {
           const { identity, schoolType } = resolution;
+          await commitIdentityScopeSession({
+            principalId: identity.id,
+            availableBonds: identity.availableBonds,
+            selectedBond: identity.activeBond,
+            schoolType,
+          });
+          if (!isCurrentResolution()) return;
           setIdentityAvailability('active');
           resolvedAuthSubjectIdRef.current = authSubjectId;
           setResolvedAuthSubjectId(authSubjectId);
           setAccountLifecycleStatus(null);
-          setUser(identity as unknown as User);
-          setAvailableBonds(identity.availableBonds as unknown as Bond[]);
-          setPerspective({
-            activeBond: identity.activeBond as unknown as Bond | undefined,
-            availableBonds: identity.availableBonds as unknown as Bond[],
+          setUser({
+            ...identity,
+            email: identity.email ?? null,
+            display_name: identity.display_name ?? 'Gurudevi User',
           });
-
           await captureAuthenticatedDeviceAccount({
             capturedSessionKeys: capturedSessionKeysRef.current,
             capturingSessionKeys: capturingSessionKeysRef.current,
@@ -169,14 +174,14 @@ export function useAuthLifecycle() {
             resolvedAuthSubjectId: authSubjectId,
             session: sessionToCapture ?? null,
           });
+          if (!isCurrentResolution()) return;
 
-          setOnboardingCompleted(Boolean(identity.onboarding_completed));
-          setSchoolType(schoolType);
+          if (sessionScope.activeAccountId() === identity.id) openReplayAdmission(identity.id);
 
           identifyAuthSubject({
             id: identity.id,
-            email: identity.email,
-            displayName: identity.display_name,
+            email: identity.email ?? null,
+            displayName: identity.display_name ?? 'Gurudevi User',
           });
         } else if (resolution.kind === 'inactive') {
           clearDerivedIdentityState();
@@ -194,42 +199,19 @@ export function useAuthLifecycle() {
           // resolution.kind === 'unavailable'
           // Non-destructive offline fallback: If a valid local user exists in persisted storage,
           // preserve their offline state and mark identity active rather than kicking them to onboarding.
-          const existingUser = useStore.getState().user;
-          const hasMatchingLocalUser = await hasVerifiedLocalIdentityForSubject(
-            existingUser?.id,
-            authSubjectId,
-          );
-
-          if (hasMatchingLocalUser) {
-            setIdentityAvailability('active');
-            resolvedAuthSubjectIdRef.current = authSubjectId;
-            setResolvedAuthSubjectId(authSubjectId);
-          } else {
-            clearDerivedIdentityState();
-          }
+          if (!(await restoreVerifiedLocalIdentity())) return;
 
           if (resolution.profileError) {
             setProfileError(resolution.profileError);
           }
         }
       } catch (error) {
+        if (!isCurrentResolution()) return;
         console.warn('❌ Profile: Fetching encountered an error:', error);
-        const existingUser = useStore.getState().user;
-        if (await hasVerifiedLocalIdentityForSubject(existingUser?.id, authSubjectId)) {
-          setIdentityAvailability('active');
-          resolvedAuthSubjectIdRef.current = authSubjectId;
-          setResolvedAuthSubjectId(authSubjectId);
-        } else {
-          clearDerivedIdentityState();
-        }
+        if (!(await restoreVerifiedLocalIdentity())) return;
         setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
       } finally {
-        if (
-          isCurrentIdentityResolutionGeneration(
-            resolutionGeneration,
-            identityResolutionGenerationRef.current,
-          )
-        ) {
+        if (isCurrentResolution()) {
           setIsProfileResolving(false);
           if (isFirstLoad) {
             setIsProfileLoading(false);
@@ -240,21 +222,44 @@ export function useAuthLifecycle() {
         }
       }
     },
-    [
-      clearDerivedIdentityState,
-      hasVerifiedLocalIdentityForSubject,
-      setUser,
-      setPerspective,
-      setAvailableBonds,
-      setSchoolType,
-      setOnboardingCompleted,
-    ],
+    [clearDerivedIdentityState, hasVerifiedLocalIdentityForSubject, setUser],
   );
 
   const refreshProfile = useCallback(async () => {
+    const generation = authEventGenerationRef.current;
     const currentSession = await authAPI.getAuthSession();
+    if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
     await fetchAndSetUserProfile(currentSession);
   }, [fetchAndSetUserProfile]);
+
+  const retainRefreshedDeviceSession = useCallback(
+    async (current: AuthSession | null, generation: number) => {
+      try {
+        const retained = await deviceAccounts.retainRefreshedSession(current);
+        if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
+        if (retained) {
+          setProfileError((error) => (error === REMEMBERED_SESSION_ERROR ? null : error));
+        } else {
+          await fetchAndSetUserProfile(current);
+        }
+      } catch {
+        if (!isCurrentAuthBootstrapGeneration(generation, authEventGenerationRef.current)) return;
+        setProfileError(REMEMBERED_SESSION_ERROR);
+        console.warn('[auth] Refreshed device credential retention failed.');
+      }
+    },
+    [fetchAndSetUserProfile],
+  );
+
+  const handleAppStateChange = useEffectEvent((nextState: AppStateStatus) => {
+    if (nextState !== 'active' || getSessionIdentityMode(session) !== 'authenticated') return;
+    const now = Date.now();
+    if (now - lastReconciledAtRef.current < APP_STATE_RECONCILE_THROTTLE_MS) return;
+    lastReconciledAtRef.current = now;
+    refreshProfile().catch((error) => {
+      console.warn('Auth: Background AppState profile refresh failed', error);
+    });
+  });
 
   useEffect(() => {
     // 1. Initialize error monitoring. Product analytics is initialized by the
@@ -271,9 +276,39 @@ export function useAuthLifecycle() {
         ) {
           return;
         }
+        const initialSubjectId = initialSession?.user?.id ?? null;
+        const persistedScopePrincipalId =
+          useScopeSessionStore.getState().snapshot?.principalId ??
+          useAuthStore.getState().user?.id ??
+          null;
+        if (persistedScopePrincipalId) {
+          let hasMatchingOwner = await hasVerifiedLocalIdentityForSubject(
+            persistedScopePrincipalId,
+            initialSubjectId,
+          );
+          if (!initialSession && readLocalGuestId) {
+            try {
+              const localGuestId = await readLocalGuestId();
+              const currentUser = useAuthStore.getState().user;
+              const currentScope = useScopeSessionStore.getState().snapshot;
+              hasMatchingOwner =
+                localGuestId === persistedScopePrincipalId &&
+                currentUser?.id === localGuestId &&
+                currentUser.is_anonymous === true &&
+                currentScope?.principalId === localGuestId;
+            } catch (error) {
+              console.warn('[auth] unable to verify local guest ownership:', error);
+            }
+          }
+          if (
+            !isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)
+          ) {
+            return;
+          }
+          if (!hasMatchingOwner) clearDerivedIdentityState();
+        }
         setSession(initialSession);
-        setAuthSession(initialSession);
-        previousUserIdRef.current = initialSession?.user?.id ?? null;
+        previousUserIdRef.current = initialSubjectId;
 
         const sessionMode = getSessionIdentityMode(initialSession);
         if (sessionMode === 'authenticated') {
@@ -282,19 +317,25 @@ export function useAuthLifecycle() {
           clearDerivedIdentityState();
         }
       } catch (error) {
+        if (!isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current))
+          return;
         if (error instanceof APIError) {
           if (
             error.message?.includes('Refresh Token') ||
             (error as { status?: number }).status === 400
           ) {
             await authAPI.signOut({ scope: 'local' });
+            if (
+              !isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)
+            )
+              return;
             setSession(null);
-            setAuthSession(null);
           }
         }
       } finally {
-        setLoading(false);
-        setAuthSessionResolved(true);
+        if (isCurrentAuthBootstrapGeneration(bootstrapGeneration, authEventGenerationRef.current)) {
+          setLoading(false);
+        }
       }
     };
 
@@ -306,34 +347,37 @@ export function useAuthLifecycle() {
     } = authAPI.onAuthStateChange(async (event, currentSession) => {
       authEventGenerationRef.current += 1;
       setSession(currentSession);
-      setAuthSession(currentSession);
-      setAuthSessionResolved(true);
+      setLoading(false);
 
       const currentUserId = currentSession?.user?.id ?? null;
+      const isSubjectChanged = currentUserId !== previousUserIdRef.current;
       const isTokenOnlyRefresh =
         event === 'TOKEN_REFRESHED' &&
         currentUserId !== null &&
         currentUserId === previousUserIdRef.current;
 
       previousUserIdRef.current = currentUserId;
+      const currentMode = getSessionIdentityMode(currentSession);
+      if (isSubjectChanged || currentMode !== 'authenticated') {
+        identityResolutionGenerationRef.current += 1;
+        setIsProfileResolving(false);
+        setIsProfileLoading(false);
+        setProfileError(null);
+      }
 
-      if (isTokenOnlyRefresh) {
-        // Only the auth token refreshed in the background for the same active user.
-        // Skip redundant remote RPCs to preserve radio bandwidth and battery.
+      if (isSubjectChanged) {
+        clearDerivedIdentityState();
+      }
+
+      if (isTokenOnlyRefresh && currentMode === 'authenticated') {
+        await retainRefreshedDeviceSession(currentSession, authEventGenerationRef.current);
         return;
       }
 
-      const currentMode = getSessionIdentityMode(currentSession);
       if (currentMode === 'authenticated') {
         await fetchAndSetUserProfile(currentSession);
       } else if (currentSession?.user) {
-        setUser(null);
-        setPerspective(null);
-        setAvailableBonds([]);
-        setSchoolType(null);
-        setOnboardingCompleted(false);
-        setIdentityAvailability('unknown');
-        setAccountLifecycleStatus(null);
+        clearDerivedIdentityState();
       } else if (event === 'SIGNED_OUT') {
         clearAuthSubject();
         clearDerivedIdentityState();
@@ -343,19 +387,6 @@ export function useAuthLifecycle() {
       }
     });
 
-    // 4. Mobile AppState Wake-Up Reconciler
-    const handleAppStateChange = (nextState: AppStateStatus) => {
-      if (nextState === 'active' && getSessionIdentityMode(session) === 'authenticated') {
-        const now = Date.now();
-        if (now - lastReconciledAtRef.current >= APP_STATE_RECONCILE_THROTTLE_MS) {
-          lastReconciledAtRef.current = now;
-          refreshProfile().catch((e) => {
-            console.warn('Auth: Background AppState profile refresh failed', e);
-          });
-        }
-      }
-    };
-
     const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
 
     checkSession().catch((e) => {
@@ -363,25 +394,23 @@ export function useAuthLifecycle() {
     });
 
     return () => {
+      authEventGenerationRef.current += 1;
+      identityResolutionGenerationRef.current += 1;
       subscription.unsubscribe();
       appStateSubscription.remove();
     };
   }, [
-    setAuthSession,
-    setAuthSessionResolved,
     clearDerivedIdentityState,
     fetchAndSetUserProfile,
+    hasVerifiedLocalIdentityForSubject,
+    retainRefreshedDeviceSession,
     refreshProfile,
     setDemoMode,
     setUser,
-    setPerspective,
-    setAvailableBonds,
-    setSchoolType,
-    setOnboardingCompleted,
   ]);
 
   // 4. Realtime Profile Updates (Capability Sync)
-  const currentUser = useStore((state) => state.user);
+  const currentUser = useAuthStore((state) => state.user);
   useEffect(() => {
     if (!currentUser?.id || getSessionIdentityMode(session) !== 'authenticated') return;
 

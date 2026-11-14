@@ -7,8 +7,7 @@
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { EmptyState , WorldSkeleton } from '@repo/ui/components/native';
 import { Battery, BatteryLow, BatteryMedium, Zap } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
@@ -138,10 +137,10 @@ export default function EnergyForecast({
   if (dataLoading && activeUserId) {
     return (
       <VStack className="p-lg gap-lg">
-        <SkeletonCard height={80} />
+        <WorldSkeleton height={80} />
         <HStack className="justify-between px-md">
           {[1, 2, 3, 4, 5].map((i) => (
-            <SkeletonCard key={i} height={60} className="w-14" />
+            <WorldSkeleton key={i} height={60} width={56} />
           ))}
         </HStack>
       </VStack>
@@ -149,7 +148,11 @@ export default function EnergyForecast({
   }
 
   if (!activeUserId) {
-    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
+    return <EmptyState
+        title="Sign in to use this"
+        message="Everything else in Self keeps working on this device."
+        action={{ label: 'Sign in', onPress: () => router.push('/auth') }}
+      />;
   }
 
   if (historyError) {

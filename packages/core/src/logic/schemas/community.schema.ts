@@ -12,7 +12,7 @@ export const CommunityGroupSchema = makeModelSchema('Group').extend({
   is_moderator: z.boolean().default(false),
 });
 
-export type CommunityGroup = z.infer<typeof CommunityGroupSchema>;
+export type CommunityGroupRow = z.infer<typeof CommunityGroupSchema>;
 
 /**
  * GroupMemberSchema - Membership in a collective.

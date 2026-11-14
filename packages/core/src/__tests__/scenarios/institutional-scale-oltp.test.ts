@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { AppSchema } from '@repo/core/adapters/powersync/schema';
+import { describe, expect, it } from 'vitest';
 
 describe('Institutional Scale & Relational Topology Suite', () => {
   it('defines composite B-tree indexes for official institutional tables in local schema', () => {

@@ -1,6 +1,6 @@
-import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { useSelfCanvas, DEFAULT_SELF_CATEGORIES } from '../../lib/canvas/useSelfCanvas';
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_SELF_CATEGORIES, useSelfCanvas } from '../../lib/canvas/useSelfCanvas';
 
 describe('useSelfCanvas Headless Arrangement Engine (G1)', () => {
   const originalInnerWidth = window.innerWidth;

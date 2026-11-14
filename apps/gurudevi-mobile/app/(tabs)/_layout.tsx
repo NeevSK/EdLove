@@ -1,41 +1,104 @@
+import { supabaseIdentityAdapter } from '@repo/core/adapters/supabaseIdentity.adapter';
 import { createSupabaseGuardianRepository } from '@repo/core/adapters/supabase/guardianRepository';
-import { createSupabaseSchoolInviteRepository } from '@repo/core/adapters/supabase/schoolInviteRepository';
+import {
+  claimAndSelectSchoolInvite,
+  createSupabaseSchoolInviteRepository,
+} from '@repo/core/adapters/supabase/schoolInviteRepository';
 import { createSupabaseTuitionBatchRepository } from '@repo/core/adapters/supabase/tuitionBatchRepository';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { useNotifications, useRewards } from '@repo/core/hooks';
+import { useScopedNotifications } from '@repo/core/hooks';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import {
   isLocalOnlyIdentity,
   resolveWorkspaceSwitcherTargets,
+  useAuth,
   usePermissions,
+  workspaceRoomNameOf,
   usePerspectiveSwitch,
-  useStore,
 } from '@repo/core/logic';
-import { BreathGuide } from '@repo/self/wellbeing';
-import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
-import { CommercialBatchModal } from '@repo/ui/components/CommercialBatchModal';
-import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import { ActiveSubTabStrip, DomainSubHeader } from '@repo/ui';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
-import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
-import { LinkWardModal } from '@repo/ui/components/LinkWardModal';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useUIStore } from '@repo/core/store/useUIStore';
+import { BreathGuide } from '@repo/self/wellbeing';
+import { ActiveSubTabStrip } from '@repo/ui';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+import {
+  connectionStatusOf,
+  Sheet,
+  Text as WText,
+  useFloorPresence,
+  WorldHeader,
+  WorldPicker,
+  YouSheet,
+} from '@repo/ui/components/native';
+import { useFidelityOptional, useThemeContextOptional } from '@repo/ui/context';
+import { updateComfort, useComfort } from '@repo/ui/context/ComfortPreferences';
+import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
+import { type KitIconProps, shellLayoutOf, worldName } from '@repo/ui/theme';
 import { PerspectiveSwitcherSheet } from '@repo/ui/components/PerspectiveSwitcherSheet';
 import { SchoolInviteCodeModal } from '@repo/ui/components/SchoolInviteCodeModal';
-import { Bell, FileText, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons/native';
-import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
+import {
+  Bell,
+  ChevronLeft,
+  Compass,
+  Heart,
+  LifeBuoy,
+  Library,
+  School,
+  Sparkles,
+  User,
+  Users,
+  Wind,
+  X,
+} from '@repo/ui/icons/native';
+import { Box, Modal, ModalContent, Pressable } from '@repo/ui/primitives';
+import { useWorld } from '@repo/ui/theme/native';
 import { tokens } from '@repo/ui/tokens';
-import { router, Tabs, useGlobalSearchParams, usePathname } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useGlobalSearchParams, usePathname } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { Tabs } from 'expo-router/js-tabs';
+import { type ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
+import { ScrollView, StatusBar, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSnapshotRefresh } from '@/boot/useSnapshotRefresh';
+import { NativeShellTabs } from '@/components/navigation/NativeShellTabs';
+import { AssistantSheet } from '@/components/shell/AssistantSheet';
+import { RoomFab } from '@/components/shell/RoomFab';
+import { type CommonActions, ROOM_NAMES } from '@/components/shell/roomActions';
+import { ShellTabBar } from '@/components/shell/ShellTabBar';
+import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
+import { useShellVariant } from '@/lib/navigation/shellVariant';
+import { useShellProbe } from '@/lib/navigation/useShellProbe';
 import { getNativeShellConfig } from '@/lib/responsiveShell';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
+import { PLACE_ROUTES } from '@repo/core/logic/places/placeRoutes';
+import type { WorkspaceSwitcherTarget } from '@repo/core/types/Workspace';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const EMPTY_DOMAIN_TABS: readonly string[] = [];
 
+/** The rooms' signs, drawn by the world's rooms bar. */
+const TAB_ICONS = {
+  library: Library,
+  workspace: School,
+  self: Heart,
+  community: Users,
+  profile: User,
+} as unknown as Readonly<Record<string, ComponentType<KitIconProps>>>;
+
+function greetingFor(hour: number): string {
+  if (hour < 5) return 'Good night';
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export const unstable_settings = {
-  initialRouteName: 'self',
+  // SDK 58 reads `anchor`; `initialRouteName` still works but is deprecated.
+  anchor: 'self',
 };
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -51,7 +114,11 @@ export default function TabsLayout() {
 }
 
 function TabsLayoutContent() {
+  const router = useNavigator();
   const pathname = usePathname();
+  // The shell is dressed by the chosen world, like every screen inside it.
+  const wornWorld = useWorld();
+  const wt = wornWorld.tokens;
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const shell = useMemo(
@@ -60,31 +127,40 @@ function TabsLayoutContent() {
   );
   const { context, can } = usePermissions();
   const userId = context.userId;
-  const user = useStore((state) => state.user);
+  const user = useAuthStore((state) => state.user);
+  const { refreshProfile } = useAuth();
+  useSnapshotRefresh();
   const isLocalGuest = isLocalOnlyIdentity(user);
-  const { newAchievements } = useRewards();
-  const { unreadCount } = useNotifications(isLocalGuest ? null : userId);
-  const showToast = useStore((state) => state.showToast);
+  const { unreadCount } = useScopedNotifications(isLocalGuest ? null : userId);
+  // The rooms are named in the person's language (Sinhala and Tamil words run longer; the bar
+  // fits them). English stays the fallback for any missing word.
+  const { t } = useTranslation();
+  // Offline is ordinary here: say it quietly on the header (or the sideways rail), with what is kept.
+  const network = useOfflineStatus().status;
+  const queued = useMutationQueue((s) => s.queue.length);
+  const failed = useMutationQueue((s) => s.deadLetterQueue.length);
+  const syncing = useMutationQueue((s) => s.isSyncing);
+  const connection = useMemo(
+    () => connectionStatusOf({ network, queued, syncing, failed }),
+    [network, queued, syncing, failed],
+  );
+
   const displayName = user?.display_name?.split(' ')[0] || user?.email || 'Gurudevi';
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [currentAchievement, setCurrentAchievement] = useState('');
-  const previousAchievementsRef = useRef<string[]>([]);
-  const isBreathingOpen = useStore((state) => state.isBreathingOpen ?? false);
-  const setBreathingOpen = useStore((state) => state.setBreathingOpen ?? (() => {}));
+  const isBreathingOpen = useUIStore((state) => state.isBreathingOpen);
+  const setBreathingOpen = useUIStore((state) => state.setBreathingOpen);
 
   // Multi-Perspective State
   const {
     availablePerspectives,
     activePerspective,
     switchPerspective,
-    addPerspective,
     hydratePerspectivesFromDatabase,
   } = usePerspectiveSwitch();
   const [isPerspectiveSwitcherOpen, setPerspectiveSwitcherOpen] = useState(false);
-  const [catalogSheetTab, setCatalogSheetTab] = useState<'workspace' | 'self' | 'library' | 'community' | 'profile' | null>(null);
+  const [catalogSheetTab, setCatalogSheetTab] = useState<
+    'workspace' | 'self' | 'library' | 'community' | 'profile' | null
+  >(null);
   const [isInviteCodeModalOpen, setInviteCodeModalOpen] = useState(false);
-  const [isCommercialModalOpen, setCommercialModalOpen] = useState(false);
-  const [isLinkWardModalOpen, setLinkWardModalOpen] = useState(false);
 
   // Auto-reconcile perspective entities from Postgres / PowerSync SQLite on boot
   useEffect(() => {
@@ -132,7 +208,7 @@ function TabsLayoutContent() {
         canManageTeacherDashboard: can('manage', 'TeacherDashboard'),
         canManageStudentDashboard: can('manage', 'StudentDashboard'),
         hasPrimaryInstitution: Boolean(user?.school_id),
-        hasMountedGuardianWorkspace: true,
+        hasMountedGuardianWorkspace: false,
         availablePerspectives,
         activePerspectiveId: activePerspective.id,
       }),
@@ -142,32 +218,48 @@ function TabsLayoutContent() {
   const isWorkspace = pathname.startsWith('/workspace');
   const perspectiveLabel = activePerspective.displayName || 'Personal Sanctuary';
   const perspectiveKind = activePerspective.kind;
+  // The work room wears the person's role where they stand: Classroom, School, Learning, Family.
+  const workspaceRoom = workspaceRoomNameOf({
+    capacity:
+      activePerspective.kind === 'institutional'
+        ? activePerspective.capacity
+        : activePerspective.kind === 'commercial'
+          ? activePerspective.role
+          : activePerspective.kind === 'guardian'
+            ? 'guardian'
+            : (context.activeBond?.capacity ??
+              activePerspective.civicRole ??
+              context.primaryCapacity),
+    commercial: activePerspective.kind === 'commercial',
+  });
+  const roomLabels = useMemo(
+    () =>
+      Object.fromEntries(
+        (Object.keys(ROOM_NAMES) as (keyof typeof ROOM_NAMES)[]).map((room) => [
+          room,
+          room === 'workspace'
+            ? t(workspaceRoom.key, { defaultValue: workspaceRoom.fallback })
+            : t(`tabs.${room}`, { defaultValue: ROOM_NAMES[room] }),
+        ]),
+      ) as Record<keyof typeof ROOM_NAMES, string>,
+    [t, workspaceRoom.key, workspaceRoom.fallback],
+  );
 
-  const title = getNavigationTitle(pathname);
+  const navTitle = getNavigationTitle(pathname);
+  // The work room's front screen carries the room's role name, never "Workspace".
+  const title = navTitle === 'Workspace' ? roomLabels.workspace : navTitle;
+
+  // A/B: the custom tab bar or the system one (NativeTabs), measured on this phone either way.
+  const shellChoice = useShellVariant();
+  const markTabPress = useShellProbe(shellChoice, pathname);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
     document.title = `Gurudevi · ${title}`;
   }, [title]);
 
-  useEffect(() => {
-    if (newAchievements === previousAchievementsRef.current) return;
-    previousAchievementsRef.current = newAchievements;
-
-    if (newAchievements.length === 0 || showCelebration) return;
-    const first = newAchievements[0];
-    if (!first) return;
-
-    const timer = setTimeout(() => {
-      setCurrentAchievement(first);
-      setShowCelebration(true);
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, [newAchievements, showCelebration]);
-
   const handleSelectWorkspaceTarget = useCallback(
-    (target: any) => {
+    (target: WorkspaceSwitcherTarget) => {
       if (isLocalGuest) {
         showToast('Create an account to access shared workspaces.', 'info');
         return;
@@ -176,13 +268,9 @@ function TabsLayoutContent() {
       if (target.perspectiveId) {
         switchPerspective(target.perspectiveId);
       }
-      if (target.destination?.kind === 'route') {
-        router.push(target.destination.name as any);
-      } else if (target.destination?.kind === 'tab') {
-        router.push(`/(tabs)/${target.destination.name}` as any);
-      }
+      if (target.destination) router.push(PLACE_ROUTES.mobile[target.destination.place]);
     },
-    [isLocalGuest, showToast, switchPerspective],
+    [isLocalGuest, showToast, switchPerspective, router],
   );
 
   const handleRedeemInviteCode = useCallback(
@@ -197,100 +285,37 @@ function TabsLayoutContent() {
         showToast('Create an account before joining a school.', 'info');
         return;
       }
-      const newId = `bond_${payload.schoolId}_${Date.now().toString(36)}`;
-      const newPerspective = {
-        id: newId,
-        kind: 'institutional' as const,
-        displayName: `${payload.schoolName} (${payload.capacity.toUpperCase()})`,
-        schoolId: payload.schoolId,
-        schoolName: payload.schoolName,
-        capacity: payload.capacity,
-        roles: payload.roles,
-      };
-
-      addPerspective(newPerspective);
-      setInviteCodeModalOpen(false);
-      switchPerspective(newId);
-
-      // Async DB persistence
-      if (user?.id) {
-        try {
-          const repo = createSupabaseSchoolInviteRepository(supabaseClient);
-          await repo.verifyAndRedeemInviteCode(payload.code, user.id);
-        } catch (err) {
-          console.warn('[handleRedeemInviteCode] DB sync notice:', err);
-        }
-      }
-    },
-    [addPerspective, isLocalGuest, showToast, switchPerspective, user?.id],
-  );
-
-  const handleCreateCommercialBatch = useCallback(
-    async (batch: any) => {
-      if (isLocalGuest) {
-        showToast('Create an account before creating a shared batch.', 'info');
+      if (!user?.id) {
+        showToast('Your account must finish loading before joining a school.', 'info');
         return;
       }
-      addPerspective(batch);
-      setCommercialModalOpen(false);
-      switchPerspective(batch.id);
-      router.push(`/workspace/commercial/${batch.id}` as any);
-
-      // Async DB persistence
-      if (user?.id) {
-        try {
-          const repo = createSupabaseTuitionBatchRepository(supabaseClient);
-          await repo.createBatch(user.id, {
-            instituteId: batch.instituteId === 'independent' ? undefined : batch.instituteId,
-            subjectName: batch.subjectName,
-            gradeLevel: batch.grade,
-            medium: batch.medium,
-            schedule: batch.batchName,
-            customAlias: batch.customAlias,
-            role: batch.role,
-          });
-        } catch (err) {
-          console.warn('[handleCreateCommercialBatch] DB sync notice:', err);
-        }
+      try {
+        const repo = createSupabaseSchoolInviteRepository(supabaseClient);
+        await claimAndSelectSchoolInvite({
+          repository: repo,
+          identity: supabaseIdentityAdapter,
+          refreshIdentity: refreshProfile,
+          code: payload.code,
+          userId: user.id,
+        });
+        setInviteCodeModalOpen(false);
+      } catch (err) {
+        console.warn('[handleRedeemInviteCode] School invite claim failed:', err);
+        showToast(
+          'We could not confirm that school membership. Your current scope is unchanged.',
+          'error',
+        );
       }
     },
-    [addPerspective, isLocalGuest, showToast, switchPerspective, user?.id],
-  );
-
-  const handleLinkWard = useCallback(
-    async (wardPerspective: any) => {
-      if (isLocalGuest) {
-        showToast('Create an account before linking a ward.', 'info');
-        return;
-      }
-      addPerspective(wardPerspective);
-      setLinkWardModalOpen(false);
-      switchPerspective(wardPerspective.id);
-
-      // Async DB persistence
-      if (user?.id) {
-        try {
-          const repo = createSupabaseGuardianRepository(supabaseClient);
-          await repo.linkGuardianToStudent(
-            user.id,
-            wardPerspective.wardUserId,
-            wardPerspective.relationship || 'parent',
-            wardPerspective.schoolId,
-          );
-        } catch (err) {
-          console.warn('[handleLinkWard] DB sync notice:', err);
-        }
-      }
-    },
-    [addPerspective, isLocalGuest, showToast, switchPerspective, user?.id],
+    [isLocalGuest, refreshProfile, showToast, user?.id],
   );
 
   const currentDomain = useMemo<'workspace' | 'self' | 'library' | 'community' | 'profile'>(() => {
     if (pathname.startsWith('/workspace')) return 'workspace';
-    if (pathname.startsWith('/self')) return 'self';
     if (pathname.startsWith('/library')) return 'library';
     if (pathname.startsWith('/community')) return 'community';
-    return 'profile';
+    if (pathname.startsWith('/profile')) return 'profile';
+    return 'self';
   }, [pathname]);
 
   const globalParams = useGlobalSearchParams<{ feature?: string }>();
@@ -304,6 +329,8 @@ function TabsLayoutContent() {
     }
     return pathname === `/${currentDomain}` || pathname === `/${currentDomain}/`;
   }, [currentDomain, globalParams.feature, pathname]);
+  // A room's home shows the whole floor; inside a room it shows only behind the header.
+  useFloorPresence(isDomainRoot ? 'full' : 'band');
 
   const domainTabs = useActiveSubTabsStore(
     (s) => s.tabsByDomain[currentDomain] ?? EMPTY_DOMAIN_TABS,
@@ -312,361 +339,356 @@ function TabsLayoutContent() {
   const headerStyle = useActiveSubTabsStore((s) => s.preferences.headerStyle);
   const autoHideChromeOnScroll = useActiveSubTabsStore((s) => s.preferences.autoHideChromeOnScroll);
   const isChromeVisible = useActiveSubTabsStore((s) => s.isChromeVisible);
+  const setChromeVisible = useActiveSubTabsStore((s) => s.setChromeVisible);
+  // A new screen always arrives with its chrome; only reading tucks it away.
+  useEffect(() => {
+    setChromeVisible(true);
+  }, [pathname, setChromeVisible]);
   const returnToDomainOverview = useCallback(() => {
-    const overviewRoute: Record<typeof currentDomain, '/workspace' | '/self' | '/library' | '/community' | '/profile'> = {
-      workspace: '/workspace',
-      self: '/self',
-      library: '/library',
-      community: '/community',
-      profile: '/profile',
-    };
-    router.replace(overviewRoute[currentDomain]);
-  }, [currentDomain]);
+    router.replace(PLACE_ROUTES.mobile[currentDomain]);
+  }, [currentDomain, router]);
 
-  const globalHeaderRightAction = (
-    <Box
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: tokens.spacing.sm,
-        paddingHorizontal: shell.header.horizontalPadding - tokens.spacing.md,
-      }}
-    >
-      {pathname.startsWith('/workspace') ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Open editorial workspace"
-          accessibilityHint="Write or review editorial submissions"
-          onPress={() => router.push('/workspace/editorial')}
-          style={{
-            width: tokens.interaction.minTouchTarget,
-            height: tokens.interaction.minTouchTarget,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: tokens.radii.full,
-            backgroundColor: tokens.semantic.surface.interactive,
-          }}
-        >
-          <FileText size={18} color={tokens.semantic.text.primary} />
-        </Pressable>
-      ) : null}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Open notifications"
-        accessibilityHint="Navigates to the notifications page to view updates"
-        onPress={() => router.push('/notifications')}
-        style={{
-          position: 'relative',
-          width: tokens.interaction.minTouchTarget,
-          height: tokens.interaction.minTouchTarget,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: tokens.radii.full,
-          backgroundColor: tokens.semantic.surface.interactive,
-        }}
-      >
-        <Bell size={18} color={tokens.semantic.text.primary} />
-        {unreadCount > 0 ? (
-          <Box
-            style={{
-              position: 'absolute',
-              top: 7,
-              right: 8,
-              minWidth: 16,
-              height: 16,
-              borderRadius: 8,
-              backgroundColor: tokens.colors.primary,
-              paddingHorizontal: 4,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Text
-              style={{
-                color: tokens.semantic.text.inverse,
-                fontSize: tokens.typography.sizes.xs,
-                fontWeight: '800',
-              }}
-            >
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </Text>
-          </Box>
-        ) : null}
-      </Pressable>
+  // The shell's shape, chosen by the person in "You"; the rooms move to a rail on wide screens.
+  const headerLayout = useActiveSubTabsStore((s) => s.preferences.headerLayout) ?? 'greeting';
+  const tabBarChoice = useActiveSubTabsStore((s) => s.preferences.tabBarLayout) ?? 'auto';
+  const assistantChoice = useActiveSubTabsStore((s) => s.preferences.assistantButton) ?? 'tutii';
+  const updatePreferences = useActiveSubTabsStore((s) => s.updatePreferences);
+  // Width, height and aspect: a phone on its side is held like a game (the rail is the HUD).
+  const layout = useMemo(
+    () => shellLayoutOf(width, tabBarChoice, height),
+    [width, height, tabBarChoice],
+  );
+  const hud = layout.stance === 'hud';
+  // The person's hand puts the action by their dominant thumb (and, sideways, the rail opposite).
+  const comfort = useComfort();
+  const { hand } = comfort;
+  const railSide = hud && hand === 'left' ? 'right' : 'left';
+  // A screen reader moves through the page by swipes, so a bar that tucks away on scroll (and
+  // leaves the reader's reach while tucked) would strand the person: with one on, chrome stays.
+  const { isScreenReaderEnabled } = useAccessibility();
+  // An open side panel covers the screen: the chrome tucks away under it with the same motion as
+  // scrolling, and returns when the panel closes. The panel is modal, so nothing is out of reach.
+  const chromeCovered = useActiveSubTabsStore((s) => s.chromeCovers > 0);
+  const chromeShown =
+    !chromeCovered && (!autoHideChromeOnScroll || isChromeVisible || isScreenReaderEnabled);
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Open settings"
-        accessibilityHint="Navigates to the settings page to configure user preferences"
-        onPress={() => router.push('/settings')}
-        style={{
-          width: tokens.interaction.minTouchTarget,
-          height: tokens.interaction.minTouchTarget,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: tokens.radii.full,
-          backgroundColor: tokens.semantic.surface.interactive,
+  const [youOpen, setYouOpen] = useState(false);
+  const [worldOpen, setWorldOpen] = useState(false);
+  const [assistant, setAssistant] = useState<{ open: boolean; guide: boolean }>({
+    open: false,
+    guide: false,
+  });
+  const { worldId, setWorld } = useThemeContextOptional();
+  const { fidelityLevel, setFidelityLevel } = useFidelityOptional();
+
+  const goBack = useCallback(() => {
+    if (currentDomain === 'self') router.push('/self');
+    else if (currentDomain === 'workspace') router.push('/workspace');
+    else router.back();
+  }, [currentDomain, router]);
+
+  const subTabs =
+    showActiveSubTabs && (!isDomainRoot || domainTabs.length > 0) ? (
+      <ActiveSubTabStrip domain={currentDomain} onReturnToOverview={returnToDomainOverview} />
+    ) : null;
+
+  const renderHeader = () => {
+    // The oldest choice, kept: no header at all, only the task strip under the status bar.
+    if (headerStyle === 'minimal_tabs_only') {
+      return <View style={{ paddingTop: insets.top }}>{subTabs}</View>;
+    }
+    return (
+      <WorldHeader
+        // Reading down shrinks the header to one quiet line; reading up brings it back.
+        // A small window (split screen) keeps the header to one line.
+        layout={chromeShown && !layout.tight ? headerLayout : 'compact'}
+        posture={isDomainRoot ? 'home' : 'inside'}
+        room={roomLabels[currentDomain]}
+        title={title}
+        greeting={`${greetingFor(new Date().getHours())}, ${displayName}`}
+        person={{
+          name: user?.display_name || displayName,
+          src: user?.avatar_url ?? undefined,
         }}
-      >
-        <Settings size={18} color={tokens.semantic.text.primary} />
-      </Pressable>
-    </Box>
+        onYou={() => setYouOpen(true)}
+        onBack={goBack}
+        icons={{ back: ChevronLeft as ComponentType<KitIconProps> }}
+        notifications={{
+          count: unreadCount,
+          label: 'Notifications',
+          icon: Bell as ComponentType<KitIconProps>,
+          onPress: () => router.push('/notifications'),
+        }}
+        assistant={{
+          label: assistantChoice === 'tutii' ? 'Tutii, help and guide' : 'Assistant',
+          icon: (assistantChoice === 'tutii' ? LifeBuoy : Sparkles) as ComponentType<KitIconProps>,
+          onPress: () => setAssistant({ open: true, guide: false }),
+        }}
+        perspective={
+          isWorkspace
+            ? {
+                label: perspectiveLabel,
+                switchLabel: 'Switch perspective',
+                onPress: () => setPerspectiveSwitcherOpen(true),
+              }
+            : undefined
+        }
+        below={chromeShown ? subTabs : null}
+        hud={hud}
+        status={connection}
+      />
+    );
+  };
+
+  // Held sideways, the header's photo, help and bell ride on the rail instead.
+  const railHud = hud
+    ? {
+        person: {
+          name: user?.display_name || displayName,
+          src: user?.avatar_url ?? undefined,
+          label: `${user?.display_name || displayName}: you, settings and help`,
+          onPress: () => setYouOpen(true),
+        },
+        actions: [
+          {
+            key: 'assistant',
+            label: assistantChoice === 'tutii' ? 'Tutii, help and guide' : 'Assistant',
+            icon: (assistantChoice === 'tutii'
+              ? LifeBuoy
+              : Sparkles) as ComponentType<KitIconProps>,
+            onPress: () => setAssistant({ open: true, guide: false }),
+          },
+          {
+            key: 'notifications',
+            label: 'Notifications',
+            icon: Bell as ComponentType<KitIconProps>,
+            onPress: () => router.push('/notifications'),
+            badge: unreadCount > 0 ? unreadCount : undefined,
+            badgeLabel: unreadCount > 0 ? `${unreadCount} unread` : undefined,
+          },
+        ],
+        status: connection,
+      }
+    : undefined;
+
+  const fabCommon = useMemo<CommonActions>(
+    () => ({
+      breathe: {
+        label: 'Breathing reset',
+        icon: Wind as ComponentType<KitIconProps>,
+        onPress: () => setBreathingOpen(true),
+      },
+      ask: {
+        label: assistantChoice === 'tutii' ? 'Ask Tutii' : 'Ask the assistant',
+        icon: Sparkles as ComponentType<KitIconProps>,
+        onPress: () => setAssistant({ open: true, guide: false }),
+      },
+      more:
+        currentDomain === 'self' || currentDomain === 'workspace'
+          ? {
+              label: `Everything in ${roomLabels[currentDomain]}`,
+              icon: Compass as ComponentType<KitIconProps>,
+              onPress: () => setCatalogSheetTab(currentDomain),
+            }
+          : undefined,
+      // On a tall phone held upright, the header's bell is beyond the thumb: the action carries it.
+      notices:
+        layout.aspect === 'tall' && layout.posture === 'portrait'
+          ? {
+              label: unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications',
+              icon: Bell as ComponentType<KitIconProps>,
+              onPress: () => router.push('/notifications'),
+            }
+          : undefined,
+    }),
+    [assistantChoice, currentDomain, setBreathingOpen, layout.aspect, layout.posture, unreadCount, router],
+  );
+
+  // Space the floating action keeps above the rooms bar.
+  const fabBottom = hud
+    ? Math.max(insets.bottom, 12) + 4
+    : layout.tabs === 'rail'
+      ? insets.bottom + 20
+      : layout.tabs === 'floating'
+        ? Math.max(insets.bottom, 8) + 6 + 64 + 16
+        : Math.max(insets.bottom, 6) + 62 + 16;
+
+  const nativeTabs = (
+    <NativeShellTabs
+      header={renderHeader()}
+      onTabPress={markTabPress}
+      showLabels={shell.visibleChrome.tabLabels}
+      labels={roomLabels}
+    />
   );
 
   return (
-    <>
-      <Tabs
-        screenOptions={{
-          headerShown: !autoHideChromeOnScroll || isChromeVisible,
-          tabBarHideOnKeyboard: true,
-          tabBarShowLabel: shell.visibleChrome.tabLabels,
-          tabBarStyle: {
-            minHeight: shell.tabBar.minHeight,
-            paddingTop: shell.tabBar.paddingTop,
-            paddingBottom: shell.tabBar.paddingBottom,
-            backgroundColor: tokens.semantic.surface.canvas,
-            borderTopColor: tokens.semantic.border.subtle,
-            display: !autoHideChromeOnScroll || isChromeVisible ? 'flex' : 'none',
-          },
-          tabBarLabelStyle: {
-            fontSize: tokens.typography.sizes.xs,
-            fontWeight: '600',
-          },
-          header: () => {
-            if (headerStyle === 'minimal_tabs_only') {
-              return (
-                <Box>
-                  {showActiveSubTabs && (
-                    <ActiveSubTabStrip
-                      domain={currentDomain}
-                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
-                      onReturnToOverview={returnToDomainOverview}
-                    />
-                  )}
-                </Box>
-              );
-            }
+    <View style={{ flex: 1 }}>
+      {/* A phone on its side gives the status bar's row back to the world, like a game. */}
+      {/* The clock and battery follow the world's mode (sunlight turns a night world light). */}
+      <StatusBar
+        hidden={hud}
+        animated
+        barStyle={wornWorld.mode === 'dark' ? 'light-content' : 'dark-content'}
+      />
+      {/* The system tab bar is a bottom bar only: sideways (the HUD) and on tablets, where the
+          rooms belong in a side rail, both variants use the world's rail. */}
+      {shellChoice.variant === 'native' && layout.tabs !== 'rail' ? (
+        nativeTabs
+      ) : (
+        <Tabs
+          tabBar={(props) => (
+            <ShellTabBar
+              {...props}
+              layout={layout.tabs}
+              icons={TAB_ICONS}
+              labels={roomLabels}
+              holds={{ self: true, workspace: true }}
+              signals={{ community: unreadCount > 0 }}
+              hidden={!chromeShown}
+              hud={railHud}
+              side={railSide}
+            />
+          )}
+          screenOptions={{
+            headerShown: true,
+            tabBarHideOnKeyboard: true,
+            tabBarPosition: layout.tabs === 'rail' ? railSide : 'bottom',
+            header: renderHeader,
+            // Screens are see-through: the one floor under the app shows behind them.
+            sceneStyle: { backgroundColor: 'transparent' },
+          }}
+        >
+          <Tabs.Screen
+            name="library"
+            listeners={{ tabPress: () => markTabPress('library') }}
+            options={{ title: 'Library' }}
+          />
+          <Tabs.Screen
+            name="workspace"
+            listeners={{
+              tabPress: () => markTabPress('workspace'),
+              tabLongPress: () => setCatalogSheetTab('workspace'),
+            }}
+            options={{ title: roomLabels.workspace }}
+          />
+          <Tabs.Screen
+            name="self"
+            listeners={{
+              tabPress: () => markTabPress('self'),
+              tabLongPress: () => setCatalogSheetTab('self'),
+            }}
+            options={{ title: 'Self' }}
+          />
+          <Tabs.Screen
+            name="community"
+            listeners={{ tabPress: () => markTabPress('community') }}
+            options={{ title: 'Community' }}
+          />
+          <Tabs.Screen
+            name="profile"
+            listeners={{ tabPress: () => markTabPress('profile') }}
+            options={{ title: 'Profile' }}
+          />
+          <Tabs.Screen
+            name="notifications"
+            options={{
+              href: null,
+            }}
+          />
+          <Tabs.Screen
+            name="settings"
+            options={{
+              href: null,
+            }}
+          />
+        </Tabs>
+      )}
 
-            if (headerStyle === 'compact_domain') {
-              return (
-                <Box>
-                  <DomainSubHeader
-                    title={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
-                    subtitle={isWorkspace ? undefined : displayName}
-                    domain={currentDomain}
-                    perspectivePill={
-                      isWorkspace
-                        ? {
-                            label: perspectiveLabel,
-                            onPress: () => setPerspectiveSwitcherOpen(true),
-                          }
-                        : undefined
-                    }
-                    unreadCount={unreadCount}
-                    onBackPress={
-                      !isDomainRoot
-                        ? () => {
-                            if (currentDomain === 'self') router.push('/self' as any);
-                            else if (currentDomain === 'workspace') router.push('/workspace' as any);
-                            else router.back();
-                          }
-                        : undefined
-                    }
-                    onNotificationsPress={() => router.push('/notifications')}
-                    onSettingsPress={() => router.push('/settings')}
-                    onCatalogPress={() => setCatalogSheetTab(currentDomain)}
-                  />
-                  {showActiveSubTabs && (
-                    <ActiveSubTabStrip
-                      domain={currentDomain}
-                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
-                      onReturnToOverview={returnToDomainOverview}
-                    />
-                  )}
-                </Box>
-              );
-            }
-
-            if (headerStyle === 'classic_global') {
-              return (
-                <Box>
-                  <GlobalHeader
-                    title={isWorkspace ? undefined : title}
-                    subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
-                    perspectivePill={
-                      isWorkspace
-                        ? {
-                            label: perspectiveLabel,
-                            kind: perspectiveKind,
-                            onPress: () => setPerspectiveSwitcherOpen(true),
-                          }
-                        : undefined
-                    }
-                    rightAction={globalHeaderRightAction}
-                  />
-                  {showActiveSubTabs && (
-                    <ActiveSubTabStrip
-                      domain={currentDomain}
-                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
-                      onReturnToOverview={returnToDomainOverview}
-                    />
-                  )}
-                </Box>
-              );
-            }
-
-            // 'adaptive' (SMART DEFAULT)
-            if (!isDomainRoot) {
-              return (
-                <Box>
-                  <DomainSubHeader
-                    title={title}
-                    subtitle={currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)}
-                    domain={currentDomain}
-                    perspectivePill={
-                      isWorkspace
-                        ? {
-                            label: perspectiveLabel,
-                            onPress: () => setPerspectiveSwitcherOpen(true),
-                          }
-                        : undefined
-                    }
-                    unreadCount={unreadCount}
-                    onBackPress={() => {
-                      if (currentDomain === 'self') {
-                        router.push('/self' as any);
-                      } else if (currentDomain === 'workspace') {
-                        router.push('/workspace' as any);
-                      } else {
-                        router.back();
-                      }
-                    }}
-                    onNotificationsPress={() => router.push('/notifications')}
-                    onSettingsPress={() => router.push('/settings')}
-                    onCatalogPress={() => setCatalogSheetTab(currentDomain)}
-                  />
-                  {showActiveSubTabs && (
-                    <ActiveSubTabStrip
-                      domain={currentDomain}
-                      onAddTabPress={() => setCatalogSheetTab(currentDomain)}
-                      onReturnToOverview={returnToDomainOverview}
-                    />
-                  )}
-                </Box>
-              );
-            }
-
-            // Default Overview Screen under GlobalHeader (no redundant subheader!)
-            return (
-              <Box>
-                <GlobalHeader
-                  title={isWorkspace ? undefined : title}
-                  subtitle={shell.header.subtitleVisible && !isWorkspace ? displayName : undefined}
-                  perspectivePill={
-                    isWorkspace
-                      ? {
-                          label: perspectiveLabel,
-                          kind: perspectiveKind,
-                          onPress: () => setPerspectiveSwitcherOpen(true),
-                        }
-                      : undefined
-                  }
-                  rightAction={globalHeaderRightAction}
-                />
-                {showActiveSubTabs && domainTabs.length > 0 && (
-                  <ActiveSubTabStrip
-                    domain={currentDomain}
-                    onAddTabPress={() => setCatalogSheetTab(currentDomain)}
-                    onReturnToOverview={returnToDomainOverview}
-                  />
-                )}
-              </Box>
-            );
-          },
-        }}
-      >
-        <Tabs.Screen
-          name="library"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("library") }}
-          options={{
-            title: 'Library',
-            tabBarIcon: ({ color, size }) => <Library color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="workspace"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("workspace") }}
-          options={{
-            title: 'Workspace',
-            tabBarIcon: ({ color, size }) => <School color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="self"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("self") }}
-          options={{
-            title: 'Self',
-            tabBarIcon: ({ color, size, focused }) => (
-              <Box
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: size + 16,
-                  height: size + 16,
-                  borderRadius: tokens.radii.full,
-                  backgroundColor: focused ? tokens.semantic.surface.interactive : 'transparent',
-                }}
-              >
-                <Heart
-                  color={focused ? tokens.colors.primary : color}
-                  size={size + 2}
-                  strokeWidth={focused ? 2.4 : 2}
-                  fill={focused ? tokens.colors.primary : 'transparent'}
-                />
-              </Box>
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="community"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("community") }}
-          options={{
-            title: 'Community',
-            tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          listeners={{ tabLongPress: () => setCatalogSheetTab("profile") }}
-          options={{
-            title: 'Profile',
-            tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="notifications"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            href: null,
-          }}
-        />
-      </Tabs>
-
-      <AchievementUnlockOverlay
-        title={currentAchievement}
-        visible={showCelebration}
-        onHide={() => setShowCelebration(false)}
+      <RoomFab
+        room={currentDomain}
+        pathname={pathname}
+        atHome={isDomainRoot}
+        bottom={fabBottom}
+        side={hand}
+        right={
+          (hand === 'left' ? insets.left : insets.right) +
+          (hud ? 16 : 20) +
+          // On a tablet the rail stays left; a left-handed action sits just beside it.
+          (layout.tabs === 'rail' && railSide === hand ? 88 : 0)
+        }
+        common={fabCommon}
+        roomName={roomLabels[currentDomain]}
+        hidden={!chromeShown}
       />
 
-            <TabFeatureCatalogSheet
-        isOpen={Boolean(catalogSheetTab)}
+      <YouSheet
+        open={youOpen}
+        onClose={() => setYouOpen(false)}
+        person={{
+          name: user?.display_name || displayName,
+          src: user?.avatar_url ?? undefined,
+          detail: isLocalGuest ? 'On this phone only' : (user?.email ?? undefined),
+        }}
+        perspective={{
+          label: perspectiveLabel,
+          onPress: () => setPerspectiveSwitcherOpen(true),
+        }}
+        world={{ name: worldName(worldId), onPress: () => setWorldOpen(true) }}
+        visualDetail={{
+          value: fidelityLevel,
+          onChange: (v) => void setFidelityLevel(v),
+        }}
+        reading={{ onPress: () => router.push('/reading') }}
+        sunlight={{
+          value: comfort.sunlight,
+          onChange: (v) => updateComfort({ sunlight: v }),
+        }}
+        companions={{ onPress: () => router.push('/companions') }}
+        showcase={{ onPress: () => router.push('/world-showcase') }}
+        shell={{
+          headerLayout,
+          onHeaderLayout: (v) => updatePreferences({ headerLayout: v }),
+          tabBarLayout: tabBarChoice,
+          onTabBarLayout: (v) => updatePreferences({ tabBarLayout: v }),
+          tabBarNote:
+            layout.tabs === 'rail' ? 'On this wide screen the rooms sit in a rail' : undefined,
+          assistant: assistantChoice,
+          onAssistant: (v) => updatePreferences({ assistantButton: v }),
+        }}
+        onProfile={() => router.push('/profile')}
+        onGuide={() => setAssistant({ open: true, guide: true })}
+        onHelp={() => setAssistant({ open: true, guide: false })}
+        onSettings={() => router.push('/settings')}
+      />
+
+      <Sheet open={worldOpen} onClose={() => setWorldOpen(false)} title="Your world">
+        <ScrollView style={{ flexShrink: 1 }}>
+          <WorldPicker
+            label="Your world"
+            value={worldId}
+            onChange={(id) => {
+              setWorldOpen(false);
+              void setWorld(id);
+            }}
+          />
+        </ScrollView>
+      </Sheet>
+
+      <AssistantSheet
+        roomName={roomLabels[currentDomain]}
+        open={assistant.open}
+        startOnGuide={assistant.guide}
+        onClose={() => setAssistant({ open: false, guide: false })}
+        room={currentDomain}
+        mode={assistantChoice}
+        onAsk={() => router.push('/a-i-assistant')}
+      />
+
+      <TabFeatureCatalogSheet
+        isOpen={catalogSheetTab === 'self' || catalogSheetTab === 'workspace'}
         onClose={() => setCatalogSheetTab(null)}
-        activeTabKey={catalogSheetTab || 'workspace'}
+        activeTabKey={catalogSheetTab === 'self' ? 'self' : 'workspace'}
       />
 
       <PerspectiveSwitcherSheet
@@ -674,17 +696,9 @@ function TabsLayoutContent() {
         onClose={() => setPerspectiveSwitcherOpen(false)}
         targets={workspaceTargets}
         onSelectTarget={handleSelectWorkspaceTarget}
-        onAddCommercialBatch={() => {
-          setPerspectiveSwitcherOpen(false);
-          setCommercialModalOpen(true);
-        }}
         onLinkSchoolBond={() => {
           setPerspectiveSwitcherOpen(false);
           setInviteCodeModalOpen(true);
-        }}
-        onLinkWard={() => {
-          setPerspectiveSwitcherOpen(false);
-          setLinkWardModalOpen(true);
         }}
         onManagePerspectives={() => {
           setPerspectiveSwitcherOpen(false);
@@ -698,27 +712,15 @@ function TabsLayoutContent() {
         onRedeemCode={handleRedeemInviteCode}
       />
 
-      <CommercialBatchModal
-        isOpen={isCommercialModalOpen}
-        onClose={() => setCommercialModalOpen(false)}
-        onCreateBatch={handleCreateCommercialBatch}
-      />
-
-      <LinkWardModal
-        isOpen={isLinkWardModalOpen}
-        onClose={() => setLinkWardModalOpen(false)}
-        onLinkWard={handleLinkWard}
-      />
-
       <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
-        <ModalContent className="bg-phase-canvas">
+        <ModalContent style={{ backgroundColor: wt.ground }}>
           <Box
             style={{
               paddingTop: shell.modal.contentPadding,
               paddingBottom: tokens.spacing.md,
               paddingHorizontal: shell.modal.contentPadding,
               borderBottomWidth: 1,
-              borderBottomColor: tokens.semantic.border.subtle,
+              borderBottomColor: wt.line,
             }}
           >
             <Box
@@ -729,23 +731,8 @@ function TabsLayoutContent() {
               }}
             >
               <Box>
-                <Text
-                  style={{
-                    color: tokens.semantic.text.primary,
-                    fontSize: tokens.typography.sizes.lg,
-                    fontWeight: '700',
-                  }}
-                >
-                  Breathing Reset
-                </Text>
-                <Text
-                  style={{
-                    color: tokens.semantic.text.secondary,
-                    fontSize: tokens.typography.sizes.xs,
-                  }}
-                >
-                  1 minute of peace
-                </Text>
+                <WText kind="title">Breathing Reset</WText>
+                <WText kind="caption">1 minute of peace</WText>
               </Box>
               <Pressable
                 accessibilityRole="button"
@@ -758,10 +745,10 @@ function TabsLayoutContent() {
                   borderRadius: tokens.radii.full,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: tokens.semantic.surface.interactive,
+                  backgroundColor: wt.sunken,
                 }}
               >
-                <X size={18} color={tokens.semantic.text.primary} />
+                <X size={18} color={wt.ink} />
               </Pressable>
             </Box>
           </Box>
@@ -776,6 +763,6 @@ function TabsLayoutContent() {
           </Box>
         </ModalContent>
       </Modal>
-    </>
+    </View>
   );
 }

@@ -1,0 +1,97 @@
+/**
+ * Dev Telemetry Catcher & Metro Terminal Inspector
+ *
+ * Intercepts Expo Observe TTI markers, route events, and governor decisions
+ * during local development (__DEV__ = true).
+ *
+ * Features:
+ * - Outputs clean, human-readable timing diagnostics to the Metro terminal
+ * - Maintains an in-memory Ring Buffer of the last 50 events for on-device inspection
+ * - Operates with zero cloud latency and zero vendor lock-in
+ */
+
+import { saveDevelopmentTelemetry } from './localDevelopmentTelemetry';
+
+export interface TelemetryDevRecord {
+  id: string;
+  timestamp: number;
+  category: 'observe' | 'governor' | 'sync' | 'error';
+  name: string;
+  durationMs?: number;
+  attributes?: Record<string, unknown>;
+}
+
+class DevTelemetryCatcher {
+  private readonly buffer: TelemetryDevRecord[] = [];
+  private readonly maxBufferSize = 50;
+
+  record(event: Omit<TelemetryDevRecord, 'id' | 'timestamp'>, options: { print?: boolean } = {}) {
+    const record: TelemetryDevRecord = {
+      ...event,
+      id: Math.random().toString(36).substring(2, 9),
+      timestamp: Date.now(),
+    };
+
+    saveDevelopmentTelemetry({
+      source: 'runtime',
+      name: record.name,
+      attributes: { ...record },
+      timestampMs: typeof event.attributes?.at_ms === 'number' ? event.attributes.at_ms : undefined,
+      wallTimeMs:
+        typeof event.attributes?.wall_time_ms === 'number'
+          ? event.attributes.wall_time_ms
+          : undefined,
+    });
+
+    this.buffer.unshift(record);
+    if (this.buffer.length > this.maxBufferSize) {
+      this.buffer.pop();
+    }
+
+    if (options.print !== false && typeof __DEV__ !== 'undefined' && __DEV__) {
+      this.printToConsole(record);
+    }
+  }
+
+  getRecentEvents(): readonly TelemetryDevRecord[] {
+    return this.buffer;
+  }
+
+  clear() {
+    this.buffer.length = 0;
+  }
+
+  private printToConsole(record: TelemetryDevRecord) {
+    const time = new Date(record.timestamp).toLocaleTimeString();
+    switch (record.category) {
+      case 'observe':
+        console.log(
+          `%c[Observe DEV] %c${time} | ⏱️ ${record.name} | TTI: ${record.durationMs ?? 'marker'}ms`,
+          'color: #00D4BB; font-weight: bold;',
+          'color: #888;',
+          record.attributes ?? '',
+        );
+        break;
+      case 'governor':
+        console.log(
+          `%c[Governor DEV] %c${time} | 🛡️ ${record.name}`,
+          'color: #FFB020; font-weight: bold;',
+          'color: #888;',
+          record.attributes ?? '',
+        );
+        break;
+      case 'sync':
+        console.log(
+          `%c[Sync DEV] %c${time} | 🔄 ${record.name}`,
+          'color: #7B61FF; font-weight: bold;',
+          'color: #888;',
+          record.attributes ?? '',
+        );
+        break;
+      default:
+        console.log(`[Telemetry DEV] ${time} | ${record.name}`, record.attributes);
+    }
+  }
+}
+
+export const devTelemetryCatcher = new DevTelemetryCatcher();

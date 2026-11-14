@@ -1,23 +1,24 @@
 ---
 title: "Gurudevi Sanctuary Permission System Architecture"
-status: "superseded"
+status: "canonical-harmonized"
 created: 2026-06-01
-updated: 2026-07-26
+updated: 2026-11-01
 author: "Naveen"
-tags: [architecture, permissions, historical]
-superseded_by: "../apps/gurudevi-mobile/docs/architecture/identity-app-device-lifecycle.md"
+scribe: "Antigravity"
+tags: [architecture, permissions, rebac, citizenship, cedar]
 ---
 
 # Gurudevi — Sanctuary Permission System Architecture
 
-> Superseded on 2026-07-26 by [Identity, App, Device, and Account Lifecycle](../apps/gurudevi-mobile/docs/architecture/identity-app-device-lifecycle.md).
-> This document remains as historical design context. Its `WANDERER` gate,
-> anonymous no-bond rule, old citizenship ordering, and gate order
-> (entitlement before Cedar) are not current policy. The current gate order is
-> Cedar → entitlement per [ADR-005](../../apps/gurudevi-mobile/docs/decisions/005-feature-gate-order-and-context-ownership.md).
-> Draft 1 — June 2026
-> Companion to: gurudevi-architecture-draft-1.md, gurudevi-data-state-lifecycle.md
-> This document covers the intended design of the permission system — the three gates, Cedar as unified authz, flag taxonomy, and intersection with the data/state lifecycle.
+> **CANONICAL RECONCILIATION NOTICE (2026-11-01)**:
+> This architecture has been unified under the **Canonical ReBAC Covenant**:
+> 1. **Citizenship lives inside the `Bond`**: A user does not have a floating citizenship column. Their active `Bond` determines their civic standing:
+>    - `entity_type: 'SCHOOL'` -> `FIRST_CLASS` (Institutional Accountability).
+>    - `entity_type: 'PERSONAL'` -> `SECOND_CLASS` (Personal Studio Autonomy).
+>    - `entity_type: 'PLATFORM'` -> `THIRD_CLASS` (Guest / Nomad Explorer).
+> 2. **Operational Identity is Capacity via Bond**: Account is immutable UUIDv8 (`public.users.id`). Roles do not exist; Capacity (`teacher`, `student`, `principal`) is bestowed by an active Bond.
+> 3. **Cedar WASM PDP**: Cedar is the sole authoritative policy evaluator. CASL is completely removed.
+> 4. **Synchronous Local Gates**: `usePermissions` and `useSanctuaryFeature` evaluate locally in 0ms using atomic stores (`usePerspectiveStore`, `useCedarDecisionStore`, `useEntitlementStore`). TanStack Query is purged from UI gating.
 
 ---
 

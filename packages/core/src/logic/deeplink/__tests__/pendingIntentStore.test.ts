@@ -5,7 +5,7 @@ import {
   LEGACY_DEFERRED_DEEP_LINK_KEY,
   pendingIntentStore,
   usePendingIntentStore,
-} from '../pendingIntentStore';
+} from '../pendingIntent.store';
 
 describe('pendingIntentStore (G0 Sovereign Intent Store Tests)', () => {
   beforeEach(() => {
@@ -57,9 +57,7 @@ describe('pendingIntentStore (G0 Sovereign Intent Store Tests)', () => {
       timestamp: expiredTimestamp,
     });
 
-    expect(
-      isPendingIntentExpired(usePendingIntentStore.getState().pendingIntent, now),
-    ).toBe(true);
+    expect(isPendingIntentExpired(usePendingIntentStore.getState().pendingIntent, now)).toBe(true);
 
     // getPendingIntent automatically purges expired intents
     expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();

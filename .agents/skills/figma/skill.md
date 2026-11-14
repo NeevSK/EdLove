@@ -1,42 +1,21 @@
 ---
 name: figma
-description: Use the Figma MCP server to fetch design context, screenshots, variables, and assets from Figma, and to translate Figma nodes into production code. Trigger when a task involves Figma URLs, node IDs, design-to-code implementation, or Figma MCP setup and troubleshooting.
+description: "End-to-end Figma integration: translating designs to code with 1:1 visual fidelity, Code Connect component mapping, design system token generation, and Plugin API manipulation. Trigger when working with Figma URLs, node IDs, designing components, or generating library tokens."
 ---
 
-# Figma MCP
+# Figma Suite Director
 
-Use the Figma MCP server for Figma-driven implementation. For setup and debugging details (env vars, config, verification), see `references/figma-mcp-config.md`.
+Hierarchical director for translating Figma designs to production code, managing Code Connect, and synchronizing design system tokens.
 
-## Figma MCP Integration Rules
-These rules define how to translate Figma inputs into code for this project and must be followed for every Figma-driven change.
+## Progressive Disclosure Router
 
-### Required flow (do not skip)
-1. Run get_design_context first to fetch the structured representation for the exact node(s).
-2. If the response is too large or truncated, run get_metadata to get the high-level node map and then re-fetch only the required node(s) with get_design_context.
-3. Run get_screenshot for a visual reference of the node variant being implemented.
-4. Only after you have both get_design_context and get_screenshot, download any assets needed and start implementation.
-5. Translate the output (usually React + Tailwind) into this project's conventions, styles and framework. Reuse the project's color tokens, components, and typography wherever possible.
-6. Validate against Figma for 1:1 look and behavior before marking complete.
+Consult the targeted domain reference based on your task intent:
 
-### Implementation rules
-- Treat the Figma MCP output (React + Tailwind) as a representation of design and behavior, not as final code style.
-- Replace Tailwind utility classes with the project's preferred utilities/design-system tokens when applicable.
-- Reuse existing components (e.g., buttons, inputs, typography, icon wrappers) instead of duplicating functionality.
-- Use the project's color system, typography scale, and spacing tokens consistently.
-- Respect existing routing, state management, and data-fetch patterns already adopted in the repo.
-- Strive for 1:1 visual parity with the Figma design. When conflicts arise, prefer design-system tokens and adjust spacing or sizes minimally to match visuals.
-- Validate the final UI against the Figma screenshot for both look and behavior.
-
-### Asset handling
-- The Figma MCP Server provides an assets endpoint which can serve image and SVG assets.
-- IMPORTANT: If the Figma MCP Server returns a localhost source for an image or an SVG, use that image or SVG source directly.
-- IMPORTANT: DO NOT import/add new icon packages, all the assets should be in the Figma payload.
-- IMPORTANT: do NOT use or create placeholders if a localhost source is provided.
-
-### Link-based prompting
-- The server is link-based: copy the Figma frame/layer link and give that URL to the MCP client when asking for implementation help.
-- The client cannot browse the URL but extracts the node ID from the link; always ensure the link points to the exact node/variant you want.
-
-## References
-- `references/figma-mcp-config.md` — setup, verification, troubleshooting, and link-based usage reminders.
-- `references/figma-tools-and-prompts.md` — tool catalog and prompt patterns for selecting frameworks/components and fetching metadata.
+| Task Intent | Target Reference | Key Workflows & Triggers |
+| :--- | :--- | :--- |
+| **Design to Code** | [`references/implement-design.md`](./references/implement-design.md) | Translate Figma nodes to React/React Native components with 1:1 visual fidelity |
+| **Code Connect** | [`references/code-connect.md`](./references/code-connect.md) | Map code components directly to Figma design components |
+| **Design System & Tokens** | [`references/generate-library.md`](./references/generate-library.md) | Build variables/tokens, theming (light/dark modes), foundation documentation |
+| **Design System Rules** | [`references/design-system-rules.md`](./references/design-system-rules.md) | Custom project rules for Figma-to-code workflows |
+| **Plugin API & Writes** | [`references/plugin-api-use.md`](./references/plugin-api-use.md) | Automated Figma canvas mutations via Plugin API |
+| **Create Files & Canvases** | [`references/create-new-file.md`](./references/create-new-file.md) | Scaffold new Figma or FigJam files |

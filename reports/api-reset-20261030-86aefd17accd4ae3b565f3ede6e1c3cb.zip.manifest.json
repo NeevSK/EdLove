@@ -1,0 +1,2474 @@
+[
+  {
+    "path": "apps/sanctuary-api/src/entry-node.ts",
+    "sha256": "5F49219E0722A146D041B2C77361F1C9DF20A62AE6C67EACECE7BA39CDA71326"
+  },
+  {
+    "path": "apps/sanctuary-api/src/index.ts",
+    "sha256": "5BFECB6E83AF0F66BE9E52FA7E0471D7E5AF0B609B779F2DF2EF0019C1A454EE"
+  },
+  {
+    "path": "apps/sanctuary-api/src/jwt.ts",
+    "sha256": "F29616763A5476B4DF414B7B0355F2BA16E445723D7FC14407294AEA5ABE85D2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/load-env.ts",
+    "sha256": "47579FA60220D5C6DA47113E893EC25D46EB72AE919ED6C61520E2C2B99C358C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/telemetry.ts",
+    "sha256": "E53CED8982DBFB7E117CFA3F1CF86B3DFA3854A9C9C1A25C92991CCD6C155B2F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/agents/externalEffects.ts",
+    "sha256": "14C718F79D6EA217D72B7FDA84098C1568470F69F70A135D1AD9576FF9895512"
+  },
+  {
+    "path": "apps/sanctuary-api/src/agents/index.ts",
+    "sha256": "95C9925D708016D1E2086CD0B5B4940DE8411B2F010DE1A5DC23C0A57420256A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/agents/inngest.ts",
+    "sha256": "B3C5E43C32B8E8F1F7025E0B85A1F6ABE752FD8CF9039AD7EF99E94BEF95BA8F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/agents/noticeRelease.ts",
+    "sha256": "673B23C7C279DEEAD49D55CF140D2771AC80ECAB31B8BBF813A3E741502F4673"
+  },
+  {
+    "path": "apps/sanctuary-api/src/agents/platformEvents.ts",
+    "sha256": "6C069E9610723E362481540F4A5364D05259EF208EE240367F503EEDFBBDFC9D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/agents/studentSupport.ts",
+    "sha256": "027E1209D9C812F54B27AE79A5401032B41771BE938C63743935A48CCA144F6B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/agents/workerTelemetry.ts",
+    "sha256": "D59C6EADBE0C4D7B8CB13F133009B8254475DD1FB83ED0620A2AB467A64D1C45"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/routes.ts",
+    "sha256": "201B7DD944D9C3D58E3337A1CAD69496DC660E05AD7B2AAB52C10F2BD9017BD4"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/AnthropicAdapter.ts",
+    "sha256": "8E0A1F4B5F4AC0F8B11FC824AC35E1B6718EE1A62D8489555649660CC28CD0B0"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/DbAiPersistenceAdapter.ts",
+    "sha256": "97D8778B8BF2028EEA21A2C003ADB2799ED282D00996C8ECFF22E7D7E5ED43C3"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/DbBillingAdapter.ts",
+    "sha256": "D95C340ECE7B1DF85D947F06DEB7CF2E118F51E49CA8F5F85FAF27C70DEF8E7B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/DeepSeekAdapter.ts",
+    "sha256": "609E80D4B8FF7E44AC7E13D75DA9B15B0AEC6330DFFE9D6F5F987DA640AEF7D1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/GeminiAdapter.ts",
+    "sha256": "49AEC3B157B2994FBD239A3DCEC91FEF41FC0DFF961B08BF98BEFEB833304D8C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/OpenAiAdapter.ts",
+    "sha256": "2E8D96A0F2ED0E6C015698EF3FD10E8604846A20BD1EC345BD9CAA6DFE4AC0D7"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/OpenRouterAdapter.ts",
+    "sha256": "897DB179FD059B52CA01EAC16FADCE87A4C5FA686AE369C7CF4CEBC7B743F698"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/OrpcSanctuaryMcpBridgeAdapter.ts",
+    "sha256": "1F113187ACC1642E49D27903EAB8718FAF09147520FF5D501AC6D45E79BCD560"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/SafeEducationalWorldSearchAdapter.ts",
+    "sha256": "91D237C9D84D9D880AC9C667DBDA586379C524B28099E188EBA1CD77E7C932C7"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/vercel-stream-utils.ts",
+    "sha256": "C4DAD2A9B131FFDA896C6F0617E1E97D951472D792A648B649D7322C356F42F9"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/VercelAnthropicAdapter.ts",
+    "sha256": "1D0593479585F209D753142805137FFE2B308C6E5B8977E088733651896586BA"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/VercelDeepSeekAdapter.ts",
+    "sha256": "408BEED760EB349CFF7AD64DF76608767314F64743E9249DFDD690251E651C04"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/VercelGeminiAdapter.ts",
+    "sha256": "0E769811567F98950E6C7889AF64B5918F5D7DB1171C81A86EB480CEC0678298"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/VercelOpenAiAdapter.ts",
+    "sha256": "ADDC3D5D05DF7639986E9BA93848170FA973A51D773D449C6BB351D4DC88BCA0"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/VercelOpenRouterAdapter.ts",
+    "sha256": "BFFB13012129CC306B4543095308B4A228AF78381F183B775109948A07927D61"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/adapters/VercelVisionAdapter.ts",
+    "sha256": "4C6B931E8863471EB2C23D8A2EF4EAB1919EE79276119CF1B5F86477349D2A9E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/domain/Orchestrator.ts",
+    "sha256": "C94F3E2C6640D03280B905C73C1F16F22703978619909AF01512C252D15C89BA"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/domain/sanctuaryTools.ts",
+    "sha256": "9EF2837E5DE3DB4FF7143E590550A74749275B79D94D76DF62C6EE8933850B52"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/maintenance/retention.ts",
+    "sha256": "1F7F99A7BCDA7680F6FFEAF7D5FFA6C180A662634AD4F5DB8D7A2A864F33A412"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/middleware/rateLimit.ts",
+    "sha256": "10035FAB7ADD9E04EB021E7D4450185687EF250065EED1652590E1BD1F1BB7E8"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/ports/AiPersistencePort.ts",
+    "sha256": "3B28BE5157EE4D065613494FC67F8D70F15B6EBF84C135B96E26C587EFAA53D8"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/ports/BillingPort.ts",
+    "sha256": "28DE953CEFD5532A6CB6ABD1884CA546B038B0461A0E2B356BFA02B129F7D21B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/ports/LlmPort.ts",
+    "sha256": "96FA8C52A9A34D4EE7DBDBCD9D2244BB06F306850E500CA6CF7E2AA9CF034172"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/ports/SanctuaryMcpBridgePort.ts",
+    "sha256": "7DEFCD864EE13CF2C70F8DA59BC40E97C37705143DA0A35E2BCE43B6003DF202"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/ports/VisionPort.ts",
+    "sha256": "5D7544727D408AD46BAADF0690D4FAB5EEBD2E78736F46424A286A91A2BFC93F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/ports/WorldSearchPort.ts",
+    "sha256": "1C2D3150301464C08586F7DC450C6C709C66996EE0B11AAB879C19933988A4A5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/utils/crypto.ts",
+    "sha256": "8894A7E4467BAB86E6A8A05E16F3A3EA5F07A2B8742ECFE5D9885E96BA90B2E8"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/vision/schemas.ts",
+    "sha256": "F008096FC006BCB6EE5C2E103ED04F8FB803A4F722B067A214918DA3123DBB8D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/ai/vision/VisionOrchestrator.ts",
+    "sha256": "5455E9B36B85D4D586AF96629CFAA0245E2D4483D02F30D95CE1753B7EFBC51D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/authorization/permissionSnapshot.service.ts",
+    "sha256": "3CF01E16CB869B47A2F79095620483E66C6BC8D8AB5012C261545E89DC7670EC"
+  },
+  {
+    "path": "apps/sanctuary-api/src/authorization/rustEvaluator.ts",
+    "sha256": "E155F47ADCC82BE4A09A90AE7AE47C38171959F321B2DF26E8178C9B6E60AA18"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/activeScope.ts",
+    "sha256": "BAF71C209BB738FD6A56F365291C2C1C288CFE94765979B0878CEAA67FE70EEA"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/apiErrors.ts",
+    "sha256": "D76D67E60C36DEE6A3F19C839EA8405AC7DFF937671AC7DC47488EC89097EEDF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/apiRuntime.ts",
+    "sha256": "746B81294BCB17EF55826A40A4AD55EE6B09155A95ACF31E24367754303E101E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/app.ts",
+    "sha256": "C27842AC9359B34E55C38D8F919DF80E1555BEAA0B2CA0379DACF52D5BE2D313"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/assignmentSettlement.ts",
+    "sha256": "99FD3FCA6DB53A7429DC93E7A37B0558ABB3960CF7736F7758818069CAC64386"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/authCredentialCommands.ts",
+    "sha256": "86C8381445ECDBB5E0F19134F723F976415D65B758327EDF6333800E5697710A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/authenticatedAccount.ts",
+    "sha256": "25BFB9DE83FB3A6DD60307F23F4BADA3C8A741B7D6196134FDE5FE4E2DA57933"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/authSessionAudit.ts",
+    "sha256": "F9843B0B6C0A8FBB121629AD57237E9A0C91AAD6B9487D349C8D8CE2A0EBD7EF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/canonicalV1Registry.ts",
+    "sha256": "653ACA258FE0952C97AE4617BA65B5D32FBEB83CAD1B7BDF4228388CEA77C420"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/capabilityErrorEnvelope.ts",
+    "sha256": "88A46756A1AA256C4DA6C61C6988A1DD6ECC7785CA2DD7F58386FC76D678A19F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/capabilityObservability.ts",
+    "sha256": "D492D7BDCCF7F2B6143575942F0A35E4B2673D6DDA1E16100ED05CA0E4BF5BCB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelAiProposalReview.ts",
+    "sha256": "25A4EBAB5FDEA2115B12F3EE820C140ED57E6B5892B8D401B5BE8A42078AD77C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelDelivery.ts",
+    "sha256": "848CFDA3F87B39F1B1A96F38641949A311C3340F03E7457FBEC10358C86811AA"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelDeliveryAuthorization.ts",
+    "sha256": "BD5D59347E8AB35F7214E282D7D3650FDCFD8925FAE669464D3A9034308E67A2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelDeliveryDispatcher.ts",
+    "sha256": "659D5DA399B2AE0FDE211BAEED9003968C64CED2493F0DF93AF869925DA9B0E6"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelDeliveryProviderRegistry.ts",
+    "sha256": "3F523272A0DC87FE2EE8AE128BC03314213FB366BB2C9829970FC6C14956AEBE"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelIngress.ts",
+    "sha256": "5B73F7D56DD24E2FD9167AA34CFD9C201160FBD08AB07110FFE67F0877B5CF96"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelLinking.ts",
+    "sha256": "656D6DFE4B8FD5BBF94740890803A73AD8B7251467D7228EF930064D2C1019AE"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelMediaProposal.ts",
+    "sha256": "64347E992F12FB1F721B36FF842F3CE1E9045CE365A8CA3B2A351452A86B1655"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/channelMediaWorker.ts",
+    "sha256": "AC474E4EF50D6BB8AA7EDC85BCD2425AE306B22242EACA447A304618C74E6BC5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/chatMessageSettlement.ts",
+    "sha256": "D5353A446B63AD5472D2F28F499BE58C1B6A03940B630D85769AF23D36394FDD"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/externalEffectOutbox.ts",
+    "sha256": "4F1793D4D62F72DAB04080DB6702A5E137D1966E897BA7A76B178C8C484F3E99"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/gradingAuthority.ts",
+    "sha256": "434FCD87750DC2BB7C42AD9EC069E5AAC3634355ADDA4CC47783338367D21913"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/nodeTransport.ts",
+    "sha256": "0FF4AF523870AC77BBA837ED9AB40310E9CA361D318AB302B24816F90BBF8A73"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/onboardingBootstrap.ts",
+    "sha256": "3396C4BB4C36773E4B14E7EBCFA9C5DDCB510C3F9147B6DD16FDAF849F193055"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/onboardingCompletionSettlement.ts",
+    "sha256": "C56AF9CEEFE118366EE256A1260156C6D3A89EC9B6865DECDF0A4EC905BB3E28"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/openapiReadOnly.ts",
+    "sha256": "B85A5DD6A1EDD9907334B9C33A76FBC3545EF40997AC5781A3E9A7EB0F84BCFE"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/operationReceiptStore.ts",
+    "sha256": "193E9B69FFDC772022A3A4BA326FC3F27A80038F747CC14F19C582B6E94B332B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/orpc.ts",
+    "sha256": "80D37E0C83BA286BF372D70E3DE15964222059B24533F49AFEF092584444FF3C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/orpcMiddleware.ts",
+    "sha256": "59F37815D1EE403CD8D4D3844727744F041A0565F5AA7C3F54A704B52FC5047B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/platformBondProvision.ts",
+    "sha256": "E63F563F7BFC6C94F43C862CF3441DEF8DD9941E68B3A34BBF4CFBCA92B87260"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/policyDb.ts",
+    "sha256": "728C03EE6449CB9E1A23AFA00B1F51789E991783987598C0570367DD0E1097D4"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/rateLimit.ts",
+    "sha256": "7BE14464D21F28E4E6AF746B7C43AF6864EE666696ED31D60C76D789CFD0D5AF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/readiness.ts",
+    "sha256": "C88F3713C1D47EC55188E24F54693842F8E1574EB5E44DA3FB33FB9DAA9E53F9"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/router.ts",
+    "sha256": "D04FA6D10F95806B274D2747FF7DD22CD44C14A02299C8C726ADCF4301AA9D2C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routerDecorator.ts",
+    "sha256": "D4DC70F283432967AA673BC01B1563CF11D6A86E541B2282D74DC578904BE4CD"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/sensitiveAuthAssurance.ts",
+    "sha256": "7EABE167D12C7FB544E8F1005CDAC108515BE87029F1189FCB4BA370D40E1874"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/serverEntitlement.ts",
+    "sha256": "871C6BA8EEF9FFCE8A5897787108E3D6B67F53F2C7C9B5A4E4EFD00C902D6BD2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/studentHistoryAccess.ts",
+    "sha256": "6D3B1B92E0DAE54E52E6D68974CA383A413B9D6D4A7BCE765878AE9D7FFB566C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/studentHistoryScope.ts",
+    "sha256": "97A2C223BDD68A1098BD5553764C52AD0B8319A75D999F7DAC877C30B1415C19"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/submissionAuthority.ts",
+    "sha256": "4F375DE7C77F3685AF6DA8FBC206C32A1A3B2C18EA5E669CDCCEC3F1EBEE658F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/syncCredentials.ts",
+    "sha256": "80D6B6D0781B6F3A9C00AF5F229E7CC4B0A7243F59E55E91EBD1A5845F4A24EB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/transportSecurity.ts",
+    "sha256": "70F9CEEDE2C7B0AB1AAD2B2BC2FB131AE42DB0D166A4A641304965D9A5255F5A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/CompositeAuthProvider.ts",
+    "sha256": "4EDE7DA5D52301F9478DC8379FE2CD11140E28ADDDA95782F9AE5F2B3CF1F825"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/CompositeDatabaseProvider.ts",
+    "sha256": "E45EF74B19B462176C803AAB043AF6D2D114E27ED0AEFC710420E91975B3CC3A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/DatabricksAuthAdapter.ts",
+    "sha256": "F7DFB5D159A5ED31132C28888CF8BCC31892193928EC14885C1EAC10F9A74A67"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/DatabricksDatabaseAdapter.ts",
+    "sha256": "EFD73B8290C103FB25DCF3BBD5A7AAEBD653E48955E94278C16785CB51A8E316"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/NeonAuthAdapter.ts",
+    "sha256": "754598D6B28A0F6DFB6854DC2E2C92AE813F85DFA76636C77E89E92924F1649E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/NeonDatabaseAdapter.ts",
+    "sha256": "9D4E134EC5CF023A1187404A1866CEF94A854AB1B6CF70BC0FB9E2764300A94E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/SupabaseAuthAdapter.ts",
+    "sha256": "55D44CB52A9A6F4FD41C7676E295B259D8DC3D4C1EC5B3DA44AF5BD9F9D5C011"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/verifySupabaseSession.ts",
+    "sha256": "276EC9139A13D3A495F13FE267AC97E891498F93D8F6DC049EF6BE413A3960B5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/adapters/ZenStackDatabaseAdapter.ts",
+    "sha256": "DEA5484388738AF475318B2D866FD600621BB48DCE1691165F6574F01B74F866"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/admin.ts",
+    "sha256": "75A472D1EB93C1661C4166082417826147274A1CA6AA5E9A27871F5AF6ACA739"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/agent.ts",
+    "sha256": "E1F3397149CD8926983F380863DE3526849DE43E691BEA921C5A8E51C05BED1D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/announcements.ts",
+    "sha256": "224E59B38A910EBF3E6361FD5C37FEFF06DCFEF8940F1EF04730B5D3E2811E89"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/attendance.ts",
+    "sha256": "58043784C20D4E8E3E92529FECD742F1883EECE043F7F76B447CD7C4A4B8F471"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/attendanceV1.ts",
+    "sha256": "7B8C0E6A46FD2A42F59413D621F33124336EAC1D6E7DCF4155581CDB246F16AA"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/channel.ts",
+    "sha256": "0A7A00D8E113DE24E09A75B264306A3EA6C90E21BB75D208C3DE08FF1E0B9620"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/community.ts",
+    "sha256": "1DA31DECA625661971A30A075C378C050CC59DDDB871C752689E8BBE111F00F1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/dailyContent.ts",
+    "sha256": "B1EC51DEC2649FA8AEF0615DB58419A8FC0C67E1CD749F98875DA46AA057C290"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/decisionJournal.ts",
+    "sha256": "CDBCB10B46EB4B030B42F8FF0489805F387EA72879AD39676842E52FBDCA65B6"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/echo.ts",
+    "sha256": "D70A1602B3B2B61FC9057DC1B4ED702C142D8027C16E06173D19E9D7135C5CA2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/editorial.ts",
+    "sha256": "C4E09A1F8853CD0C92CA180B6A435C44AE44EC6A887479B3D760CF14D9FE4DD4"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/educational.ts",
+    "sha256": "91860360D3D6E9F35A13B633D0D8471EE3ED53C0C9467D7484A2E1A3A8609873"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/erp.ts",
+    "sha256": "7793457B7C010A2FA21DAC7F3DD9CA4B1ABC92D731EBA834FEEC3F79AB3E87AC"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/events.ts",
+    "sha256": "129D0D7FF61124FBCB7666C8AA59AEE84E2FA6CC7AF6B327F8F0D8DC878756FC"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/forms.ts",
+    "sha256": "C6BC00F6B2BF19544DD12991A0768DF18FA79A991BC1DE1BDF1F95D1D1737143"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/grading.ts",
+    "sha256": "96D557E9D2C528CD547C1603219CE016DBF0237610F0BA4D5D0A65DCD74738B1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/guardianAssessment.ts",
+    "sha256": "E749407C39DAA22C4A599503B8F2AA589E56BF356EBA0842D1F3B76C8FE0A7B4"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/history.ts",
+    "sha256": "6B07443F38246A01698C6C7CFB0427EC7A8524B18FC9C3AE1F6E3F44C374EC20"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/identity.ts",
+    "sha256": "E546B36431982A5C5E28D183061A37DF51A1C08E45DB8A38631BF28A06968865"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/inventory.ts",
+    "sha256": "61FE108F2B4B37F0319799776518BB6A566650FED36A207D758C09B8D5A84E66"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/journalEntries.ts",
+    "sha256": "14B3EF63939AE95B2A95C6FBB32C75D1E76FD5A374330DB4D9F0DCB327DBCF9D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/learningReflections.ts",
+    "sha256": "C142641A2E9932B0F35078072516D4B59352DBC0E130F28619201420DB775968"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/library.ts",
+    "sha256": "784D0111C3F096180B6C9AA404DEFE52F353E3520B49594466B80123D9AFF73B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/longitudinal.ts",
+    "sha256": "ADB741883480B987869A2DE78A7B4A0F4D94590120EF4247EB48B7B2793962BB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/mapping.ts",
+    "sha256": "659E591D62193CDEBEB49D6DE3A2832DF3CD0FBC682D1884D879CC4F6370BED5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/media.ts",
+    "sha256": "F0EEC5072EC2D8220622EC25BCA2BB305EEC377FD2D1C72E7F22B3DA7DBBA48D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/messaging.ts",
+    "sha256": "1D745775F46411770BA1CE81A148859C3E963AE7E0192507893C07CDA1974295"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/onboarding.ts",
+    "sha256": "1B2F168E4EC585D439442D40A4A39C45E4627B5F2B6B65DE3C03872CFA48E903"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/permissionSnapshot.ts",
+    "sha256": "9A1785CD56F7487560C7C59279A45C291D16BE118E9CD565447AF9F56968C730"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/planBridge.ts",
+    "sha256": "BC9B4FD9929EDD68C1F643749A65AF46AE259719EFEC0D7A1E7D7247F08C68A1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/presence.ts",
+    "sha256": "8D7C345B29D449EB8AF0EA0885C75CD108CFA44545211CE048BCBCC38687C30C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/principalNotes.ts",
+    "sha256": "B0A5CF01662999881CEBAFA24CE02D601E5DA84F7B6DCFDD7655E9C3DCAEE167"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/privacy.ts",
+    "sha256": "95696A1852A34BE4CB7372CC62955D96D57DE6CF1C5EC66F2FF9335FC9FCD87E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/profile.ts",
+    "sha256": "7D1E23CF3A4F31C6AF21EAD393DECB74428E412D0DC7BB4907FA0A16F7C26593"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/rewards.ts",
+    "sha256": "D6C0AAC3ACF466CAB28B144EAFBABBAA221DD1DE9448FFFEF653198CE950FFD2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/sacredMissions.ts",
+    "sha256": "B3CAE406D7A36462A45ED555C70E6557A5D9FE2DB484A1251F0EA5B7A1D5FB39"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/schoolForest.ts",
+    "sha256": "7C2A39D584DF0BF7713FB63CBCEB33D570A58C3D9636814507A3ADC2953D6016"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/self.ts",
+    "sha256": "737C38BD97959C1888E88F4ED6FC5865514C05D4433D6C59C31A2D545C1B3352"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/shadowClaim.ts",
+    "sha256": "03FD0614FA8EB8BB1FB72D080118F6DA156675F121EBE310A47884FB4A768F86"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/social.ts",
+    "sha256": "3AEA7A8ED82ECB17CA617EF8C7814EB6E0E56F204435092A0788AFD3E621D661"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/studentPotential.ts",
+    "sha256": "F068AA2D15ACD010CB20E685E586B9D6FF61A0FA522D2B5A85D3069F92C90A00"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/sync.ts",
+    "sha256": "1B0CFD59FFF92F3C2CD78CC75BE51C83C3B5898BC57CA1D0A90A33FD6A2CAB15"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/thuthimal.ts",
+    "sha256": "1DF45290084BFDB36BFE5A3ED1CC9BC08D9F90EC02B584CDC2C804BBE29F4F03"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/todos.ts",
+    "sha256": "9C716E8AD031CB5242F2FD1F1C95AAD1CBCAE7E5967DBECA3FF1C1D4D65D835E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/tracking.ts",
+    "sha256": "9964DDB39A86C13407932F3D1DE86BC5E760480128D905E020CC695EB498C549"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/warmMirror.ts",
+    "sha256": "5216316A67BA8D9FBF0426575E3FA4C97090795B7B8F2D3B1126BC293F2C6C2C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/handlers/workspaceProvisioning.ts",
+    "sha256": "518D23A67F125F2AD546D51A3149830C9F8CB441F1CA97612D56D45629B78680"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/identity/edloveAccountIdAssignment.ts",
+    "sha256": "1D57DFF20E16DCE466B0A8B4BAEED87D08A037247E2A7D10861766F493A733FF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/identity/edloveAccountIdBackfill.ts",
+    "sha256": "FACE65415E9DFE39332CC5C8173BF5191D30D0284FC43F6284ECB4E60A275D49"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/identity/edloveDurableAccountAssignmentWorker.ts",
+    "sha256": "5EDAE86BBA8E46BFA0F497AF0EC93DEA253272837D7AE8D16DBD5944489F3DCE"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/identity/edloveHistoricalAssignmentOperations.ts",
+    "sha256": "90A8872E827710FE124B032208BAFB425A86370758931E561B51D80DCD0BE6D5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/identity/edloveUuidV8Issuer.ts",
+    "sha256": "0CB5195CA3AF6C42330A1BBCAA19567745323538457FF3797C39A63E2199FE30"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/middleware/correlation.ts",
+    "sha256": "269504D09635207C8610A0DECB810936868ECAAF5C27117380ACC772472AE01F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/middleware/identityBridge.ts",
+    "sha256": "6DFC6E9F06D16694E8844B7FF622FDE01AD0ECDCD3FC1D875DEA3CF4CFCA6715"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/middleware/pqcMiddleware.ts",
+    "sha256": "BE037F69730E7A0966002EAEC3B813ACA6E88D2DAF8EE867018CF0AFF40B21D2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/planBridge/repository.ts",
+    "sha256": "F02811DCAB163CFB03F486713237CAB87233DE0F8E3AC21A45769EBC14FECDC6"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/planBridge/runtime.ts",
+    "sha256": "CAA987BE1D7C5D47D0718918DBBA4F0490724B65E6856DA925A81B1289901467"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/planBridge/service.ts",
+    "sha256": "B461A031EC02A04E0CECE2D7816D385ECB4F71AAFDD74C06A83F24C68951F612"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/ports/AuthProviderPort.ts",
+    "sha256": "70CE881F34C52DABB8FDA783A82DC78B69789E7C8F56056C651B894AE02B1680"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/ports/DatabaseProviderPort.ts",
+    "sha256": "9A74A33E00B0194EDA412F21920B33BFED20DEBB17B39585C254CD7557CED95B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/adRewards.ts",
+    "sha256": "156BFF1D5061856FDCC32EF84B5EB15E785ACB5B8ADF370C5DD78DD00E1FF756"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/authCredentials.ts",
+    "sha256": "2A4117BCF4D04A685A56E49094EB6EB255D25DDE478F5DC10164414237894C3F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/authGateway.ts",
+    "sha256": "750E1BD92C142BDD17FF4F664B13C39F7EDEAF64449231023F60A4D5A08A7C72"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/authSync.ts",
+    "sha256": "FE4B375F40CE615E2A02FED793060D23FD531BECA991950ABE41325538A4ADD7"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/canonicalV1.ts",
+    "sha256": "AFB9A1C83590EA789EABD9609AD8828BAADF57D59B98AAC05287F7BB574BD47F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/durableAgents.ts",
+    "sha256": "38776281ED38CFB6E4B80A21976358A4817212A2A11B50BDEB787D5F92FB8774"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/eventsStream.ts",
+    "sha256": "D69AA16910E0370F0514BB1CEF6C8B472D06F228C7798DAB9B5E17574FF387AA"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/health.ts",
+    "sha256": "5067AF0A86DADAC6C1F16EBBDAC608E5B41F020B25DB6602116348D9C8E4465A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/nativeORPCPaths.ts",
+    "sha256": "C8B2E1B58C88BF669C1D00C66045AB6D081D9ED64FA1227542A433960F943038"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/orpc.ts",
+    "sha256": "70194BD03168ADCF49561E951CD3AAA3F64D7C517D0EE5ED0CB2BD44BFEFDC1D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/payhereWebhook.ts",
+    "sha256": "4CEB5ADEA50C049AD7272A2C0C44B13A7680DD1220BD18E66FAA05C6696D1B8F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/verifiedTelegramIngress.ts",
+    "sha256": "FD81F1FA3969BF7FE9F8F69B8F20383E0F50123C746D0768BD536CDB80EE3729"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/verifiedWhatsappIngress.ts",
+    "sha256": "BA4CDBA18D74381AD570F2F593E558A54CEDD2D06F9CE6BF4F3CEF5274B1B1FA"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/routes/whatsappWebhook.ts",
+    "sha256": "6E5F5FCA843CCC44CC39655068641BE9EEFBB4A271BFAF72642CEA166FDFE026"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/security/pqc.ts",
+    "sha256": "F17A2832C4DC71DEBEDC5A97E830A97112D9504AF276BC2509AB3585CD6C3348"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/services/guardianAssessment.ts",
+    "sha256": "9A632672B87310107FA8768BC2658AE0ABE788EDCDB0BC0D676681CBB1A4B705"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/__tests__/canonical-v1-registry.test.ts",
+    "sha256": "F174AC3952196799B65478DEF195F18CE5EB68194DB7195D7E9172C3827D7938"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/__tests__/capability-observability.test.ts",
+    "sha256": "030B0D9B5CAFD6C3EC91D26BA4B02AC25F60BD187FCC77678E36E35DB7DA5E2F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/__tests__/external-effect-outbox.test.ts",
+    "sha256": "7C2565544E237C38AECD5A88BDD8EC508A9F51F2EC93DD5942BEADD00DE6945F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/__tests__/operation-receipt-store.test.ts",
+    "sha256": "B62743ED03466281D60793C08A2FA1B3C0FAE74B389ED9544AB6EA52ACEF8068"
+  },
+  {
+    "path": "apps/sanctuary-api/src/core/__tests__/workspace-guardian-link-eligibility.test.ts",
+    "sha256": "63D9BCD49C9C01E6ACBCD1FB3FF1C4C82218452A753D634EE9663AD468CAB545"
+  },
+  {
+    "path": "apps/sanctuary-api/src/domains/index.ts",
+    "sha256": "5C078C7B60DADD39C2A69280C07C424E9367089839E5DC13C263774BB5315499"
+  },
+  {
+    "path": "apps/sanctuary-api/src/domains/community/index.ts",
+    "sha256": "F045CB9D43770846FAEEDED61FFB593C8EA5807EE3500084C4323A1B1ED1F377"
+  },
+  {
+    "path": "apps/sanctuary-api/src/domains/identity/index.ts",
+    "sha256": "17A5FFE8E7D94B2B63C81243ED57D4BF2409D4A1515449A92E5F56BD5D00EDA3"
+  },
+  {
+    "path": "apps/sanctuary-api/src/domains/library/index.ts",
+    "sha256": "842964AA4F13094631B9E5478FF36920D94750A0FD552CEE985E3DBFF9B370D3"
+  },
+  {
+    "path": "apps/sanctuary-api/src/domains/self/index.ts",
+    "sha256": "B3DE40313245E33AD1D39C0ACB3E3C141C7183FEB70EE283B353D7226E11D2C0"
+  },
+  {
+    "path": "apps/sanctuary-api/src/domains/workspace/index.ts",
+    "sha256": "45DA070A1848D99F715B72AC4077D986B1E8B3EB4B2A69683B0E99200FF49A99"
+  },
+  {
+    "path": "apps/sanctuary-api/src/doors/mcp.ts",
+    "sha256": "55DE2197EC2AA8DD734447479383F59262F0C38A2BE9D9746C8A06BA4DB2ADE1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/doors/omnichannel.ts",
+    "sha256": "F1D6612DEFF7D737C80B8357FE1DD7141077C9BEC5E6A63AA723B3B15493EC7C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/doors/ws.ts",
+    "sha256": "844F2CE61875ED707F96C184115837B547D11C9FEF957B996B4F4384F7C48B86"
+  },
+  {
+    "path": "apps/sanctuary-api/src/telemetry/otel.ts",
+    "sha256": "7FFC4F81DB803F295ECDE02698D98CA2D50BDEBD586DB24971FBFCDEEDFE9944"
+  },
+  {
+    "path": "apps/sanctuary-api/src/telemetry/safeErrorTelemetry.ts",
+    "sha256": "1A25DA97CD539281C0C22C437C4175005A11CF5B2615F72962027488CC0E7683"
+  },
+  {
+    "path": "apps/sanctuary-api/src/telemetry/adapters/NoopAdapter.ts",
+    "sha256": "CC4AFBFDF6C2988DFE377CB570CD2D7074D3737B54E23275B200C73C767910E9"
+  },
+  {
+    "path": "apps/sanctuary-api/src/telemetry/adapters/OtelAdapter.ts",
+    "sha256": "13B362783599A59D3F4EE61F29A4B47B5383DD18347EB66F2A3325B964247CEB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/telemetry/ports/TelemetryPort.ts",
+    "sha256": "D7D2A2E369BB8B01BF9851ADFF802E5A6F1BDC1B5310E2B3EE7F6C67E48D9D91"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/.tmp0OYS60",
+    "sha256": "6C64FE86197DCDC878B612861922FA5F9910A416C57EF7ACE40CC02F359F01F5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/admin.orpc.test.ts",
+    "sha256": "F9D65A643D14BB7EBA0D6FAA20DF4E79840EC35D06BC696577F2D80A38A25D45"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/adRewards.test.ts",
+    "sha256": "0337562E7C7B158A8447946AD0443FEFD2ECE82F2A4F2D78E260853B88C87576"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/agent.orpc.test.ts",
+    "sha256": "AB610C4A60A509B0E067E42D8DE3806160E17AC5146CF46EF0C445B160501056"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/ai-persistence.test.ts",
+    "sha256": "D9A85E7F462C5677CB904155EDD132BEF4AEAEBC7856222E5F9650BF8634FA00"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/ai-sdk-switching.test.ts",
+    "sha256": "3E360A277606C9279CD1792156E3CD1FD01917E2C6FAC1881F2FC71F954102CD"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/ai-stream.probe.test.ts",
+    "sha256": "0F33A48A6BC71B49EFAFA901989E2C60AE6859C2A54E762E1500E2EE4C9F1F3F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/ai-streaming-resilience.test.ts",
+    "sha256": "FF8853A8A613EA4829DCE2D010E56D3BEBF6B647F971765C7296E36EE55D7413"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/announcements.orpc.test.ts",
+    "sha256": "D933345E94AE09E978608953F00556ABEC15285342BEDBDD7F18F82AE80DD129"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/api-runtime.test.ts",
+    "sha256": "F6D532FC7519F584AB79259EF4A5A648B7B39B68B9B0EE22F1B31CC0787717F5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/api-security-boundaries.test.ts",
+    "sha256": "8D99BA7339012CEEEC5B9ADDE1D899298516434290B8AFF7286E798DB844E022"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/assignment-settlement.test.ts",
+    "sha256": "75ED11DFFE9CE604D6073DA1C702753E4057EA42F526D2652AEED4F2D5881564"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/attendance-grade-class-resolution.test.ts",
+    "sha256": "FAD40CC3828636BEAEF0303DE7D20E12301709209C958EC304A711D0CECDEDAB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/attendance-v1.orpc.test.ts",
+    "sha256": "1D483B2F06A2761167BA8CCB9E9BAA37A3CEEB6DD34B8B4CFAD8A04C6D11C48E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/attendance.orpc.test.ts",
+    "sha256": "1B14CC61A507B8B46315C3FDFED07135BA6EAF7ED5A1CEFAD18ABB9AE4E7A09C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/auth-credentials.test.ts",
+    "sha256": "14E2A819FE006943BD3E512AAB509D4B4ABC034DC18916E255B8038B542B3BC1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/auth-gateway.test.ts",
+    "sha256": "E823FA4FE2DE4E2AFE9A55A1D537DB7437B937588F58BAE17C02393D9F79FF38"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/auth-sync.test.ts",
+    "sha256": "E573106E45D79AAEE10A6BB0126AA70382BAE3A9C6FDEAD32A700B0D3495C322"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/authenticated-account.test.ts",
+    "sha256": "4E7CEE2BCD08DC909CF3BA8A7D5AEEEA08240EF73FC2CA61C95BE60047E7783A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/authorization-context-failure.test.ts",
+    "sha256": "80299025D7C7635EA806DF860EF4F972B06743646194216E97301201337F707F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/authorization.orpc.test.ts",
+    "sha256": "ED14C9FC17F3AD6F2452BA7BFEABBADDF609945DBB1C450F24E6CDFC1779866B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/billing-adapter.test.ts",
+    "sha256": "E75D015A658C2132AD778074569A625F178017B3A8C7C8C3CB9576E433DE6B0B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/canonical-account.security.test.ts",
+    "sha256": "88A9F88CA074D4A0A79111BE00FED37A680EF6392FB9217875DE54F41A1C2AD8"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/canonical-v1-route.test.ts",
+    "sha256": "2A2B4181EC2B4055EEFD1185C5A7E4733DB1A749A57E78B0C6A65E84D25BF0D4"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/capability-bootstrap.security.test.ts",
+    "sha256": "5CF70602777195C7DADC13A55BEF8B7B7808D37B75AF9ECC6164A0E4098B72EF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channel.orpc.test.ts",
+    "sha256": "868E619C1AD21DE0DC8A4E524D5010229B5D0EEF38C4A8C2C874C3BD767D389B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelAiProposalReview.test.ts",
+    "sha256": "B67387F297E8D08F60E36EB6A9D4884FE3434470DB7D272BDE4D8908ED220F02"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelDelivery.test.ts",
+    "sha256": "3EF775D249C8D4DF4FDA80B1D05E24C329B794F593A57FBC27B2DD1CBA27649E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelDeliveryAuthorization.test.ts",
+    "sha256": "04D8792E967F20495CF6037D5EB121051E766CB53E991DA1D31E61C93E2ACCCB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelDeliveryDispatcher.test.ts",
+    "sha256": "04EDBB7A5041CF21C5D0C2C36226E9E6395BAD3F348412AC09A7E10130F523DE"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelDeliveryProviderRegistry.test.ts",
+    "sha256": "4CD30275848AB271B709E79EB5F653F2AAF8D1E84FBFA2867B7742855463E8C1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelIngress.test.ts",
+    "sha256": "EFE9D9323B0A390AE2AF863F87260FED48AFBD4046FB0ECCF94DFED51327E3A3"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelIngressMount.test.ts",
+    "sha256": "D3E791206620D742E69332FC275B89EACA73485BE1D5C68107AE8192C394E48B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelLinking.test.ts",
+    "sha256": "8FBA989AF533B8E89CCA668D13193852298AAC5E8F3337639922DC979A4888A0"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelMediaProposal.test.ts",
+    "sha256": "2639407AC1FB4ECD90B9315A3C7EA42624DE03ADFEF74A151E3153E830A0E478"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/channelMediaWorker.test.ts",
+    "sha256": "AD7E46E3BF8884AC07CDFD0FA531003ADF50856EF64C428F3A0318ABAD31BF0D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/chat-message-settlement.test.ts",
+    "sha256": "FC9EF3B72B1E0B49C769C9A1977DAFCB8F6445A01A51ED06986EEEF5307DCED5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/classroom-note-snapshot-integrity.test.ts",
+    "sha256": "2FD7C936B6A424B03C204FEF6A42E6A7615BEC44CB37A681354F1E41C3180934"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/community.orpc.test.ts",
+    "sha256": "AA8EFCA37D895B98A905CD908E67B658B5143726A3E6D1EDA1EF1BC1AD5FA99E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/companion-4-spheres.test.ts",
+    "sha256": "AB356132965ABA663533DA4051AE9E6E977335D4D31FA47ECE3D980A0C12567B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/contract-conversion.characterization.test.ts",
+    "sha256": "B0C29F56DB5469D5982D1346EFF117D971AD79E500F4039B67B276C0055B363C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/credential-unlink.test.ts",
+    "sha256": "121A82E36519A033F3B272164E6FAE1639F2F0FD63C8B62E9FD5028CC98C3549"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/crypto.test.ts",
+    "sha256": "14B7BD469C8A1BBF71332028B090F3A56AE46D0D81EBCA80FE22DE000A4BF8B6"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/daily-content.orpc.test.ts",
+    "sha256": "FF3F232566D7135D22E2360AC9ACBEA0B878883CDC2D7C05A2A05C2B3759F20E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/decision-journal.orpc.test.ts",
+    "sha256": "9C5607013CE1AF650C88AA38C4AFED002A320DFFA57F4F1A2BCD96874F29054A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/dev-diagnostics.test.ts",
+    "sha256": "5BCECC527E9AE9F0CF82CC1F2783DBACBCE7B6B9E71BCFFE162D9582ECDC9DE8"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/diag-rewards.test.ts",
+    "sha256": "82B59555E650CC57E884F0F5BB507252F7C13B74DBBDDB93A974D70BCEA8D5BC"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/domain-architecture.test.ts",
+    "sha256": "01E91C12A230A2D51DD74F630DA42DFD301AFBE7404E9ADAE86FFE19BC2557C7"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/doors.test.ts",
+    "sha256": "BB6BDA0E58798CF09E4B6AFD530865D4F7EEEDB9F746A06A6999EEFE1AAEFA88"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/downstream.test.ts",
+    "sha256": "188B8DB66A6C81F89D5DC36329A8A63D639BBFF32455C469DC7C0B676EB40BB5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/dummyShim.ts",
+    "sha256": "BB40FC6A16311B2F619C335729CF8900BAED6D35434E88C3E1FE2F34CD25C3EE"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/durableAgents.authorization.test.ts",
+    "sha256": "721FF01EF42A929E4E41AAE32BF79A97D51DAC49AB4646F456751333DD42C823"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/early-request-correlation.test.ts",
+    "sha256": "2E9E1612466EF800100FC03D76B0C438D4BFC63B18C3EBAA556F3FDD95EB33B8"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/echo.orpc.test.ts",
+    "sha256": "707456014AF07DD8D5941465CCF3726FFDC3B017AA68AA0EF23C1BF5DA6DEE39"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/edlove-account-id-assignment.test.ts",
+    "sha256": "6C48E36031FB5C176772A687BBBB583D63B83CF66C6E3EAEC7F01A8F195700D0"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/edlove-account-id-backfill.test.ts",
+    "sha256": "C080EDCC0F7D0FA1AA5ECE7EF493B75B1BD3BD6BB03FAF8D5C6EA04F76CA9C11"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/edlove-durable-account-assignment-worker.test.ts",
+    "sha256": "14E48AEAC8B73F91B08FE7B35B3388BE8B51AA11F329CCE4B00EAFD07119B0A3"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/edlove-historical-assignment-operations.test.ts",
+    "sha256": "42671E94703C6E2C3F566252FCCAC3E3F6817ABE001077267E4BA42D811FB88A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/edlove-uuid-v8-issuer.test.ts",
+    "sha256": "756B8FB510EFED162F54B358FA6DF84B9567DDDF1BCE528B12058ACE4AD762C4"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/education.orpc.test.ts",
+    "sha256": "163597C06C6307318908E5F7AC13D64194E010A87969BDFA18E53D81D341251C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/educational-path-contract.test.ts",
+    "sha256": "AC291FC36AEFBEB8128BA20B3BFE70C7694798EC480B1F70FAF2D53C7A7515D0"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/erp.orpc.test.ts",
+    "sha256": "D2355CADA7ADDD117C897BCC418DB839CB9D5141FB64A1EC4538CDCB5EE53C8A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/error-sanitization.test.ts",
+    "sha256": "C8B5FD317D52A4FC5072676C9ADA2C30627375B4EDEFE346784DFE033116EDAF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/events.orpc.test.ts",
+    "sha256": "597D4D4E411339E47F5309083B716CD75BB1EA1A26ED20E7AD15C1EE4552CA46"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/fakeAttendanceDb.ts",
+    "sha256": "9DBB1171E4B841964ADE5938BE18B36B1A3BC286E6C5734C4FEAF935D5BD32D5"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/grading-foundation.test.ts",
+    "sha256": "0B034A6958614F9DDD68411BFF6B6B612506736E78CB2BEF9DDE1BDC34812CAB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/grading.orpc.test.ts",
+    "sha256": "AF38C721918D4E2D5545F36D0E9503A73619B548D453924C80CB4FA73408D2D3"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/guardian-assessment.orpc.test.ts",
+    "sha256": "D7E1B4C4A864607673D8AEF48850E6C82BA1E9A79FDC3BA6EA897F8046609C71"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/guardian-assessment.service.test.ts",
+    "sha256": "02B82FFA4A99BA54FF5C47AFFB5379BB56F3A67246468B828C6FD8EF11F0C402"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/health.test.ts",
+    "sha256": "2452F7CEDD74EEC6B099D30AD45A4CC43A8B7EE119AB7AB59862AA900E8CBC46"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/hexagonal-identity-database.test.ts",
+    "sha256": "3592AEF17482E78E343E5F3E2A152C48C0874A5DFF78893383C792EA5860A4F4"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/history.orpc.test.ts",
+    "sha256": "7B85256EB1966FCB300FA9BA213A1DFC6FC50D883D8DC9E31578E8F4EFDCF204"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/hono-context-error.test.ts",
+    "sha256": "4D1A100C342C76A5902787451C9BE3A5F837BC5485B161845C50B28778776951"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/http-error-telemetry-privacy.test.ts",
+    "sha256": "6484ADCCCA6E87D1B9D121C82AD2BF1FD15244AC6810E0BF812BE500513A6A68"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/identity-scope-bootstrap.test.ts",
+    "sha256": "FD106FA561543A8AC955A5E7F919BB0A57DD2946285B1ECEDFC09A987CB0FE03"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/identity-scope-context.test.ts",
+    "sha256": "29DB36D8DE8EA2C77928424528742C03981FA77902A07438448BB4655AB8AF89"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/identity-session-continuity.test.ts",
+    "sha256": "ABE2FB4BBE6FFEFFF4DF5575DC851548E5FD2EADAD30191583C9F89ECE4B2B2E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/identity-session-rpc.scenario.test.ts",
+    "sha256": "B6D6E39D05907C87FA0E0C13A7ABA2794C8EEF82F238D56D35F92CE16439C1EF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/integration-setup.ts",
+    "sha256": "84F1FCD43FB01E2B7A2EEBCD975CC2C1D7C5945A111BD952F73C9E2D3731BCD2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/inventory.orpc.test.ts",
+    "sha256": "577C7BB78ACEA7FB6F21C16B02C08ED765326C060AD81FB5BAA2966918146F52"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/journalEntries.orpc.test.ts",
+    "sha256": "419C8EEC66B83B0D55B848ECFC7ED0B0CC5FC4C2D2FD905AE8005C67DFEB4E05"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/jwt-authority-cache.test.ts",
+    "sha256": "6830C2F7C7BB0E18BFD29CBFF58305918A0D16A71EF2EDBF9AE6DE41950397AB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/jwt.test.ts",
+    "sha256": "8F27393A95BD5BC1F0D2639AB561D5EFFD0368D7C52B3BB506A3D89B4B3A8F2B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/learning-assistance-policy.test.ts",
+    "sha256": "005A456E1E988294534E4F5E99265D0C915DAB8DA51114C8001ED4B7F6144277"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/learning-reflections.orpc.test.ts",
+    "sha256": "5BA605B6459F3E2B533BAD35D5D15CE8C7C8B671C7DDB9C05093B16E31730AE1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/library.orpc.test.ts",
+    "sha256": "1877DB18F076050E33A6C6375DAF04C5F37E340286E5962559C419F10E05A0EA"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/library.read-contract.test.ts",
+    "sha256": "7042CC9802453D8420231ED846B79EF03B8CF220283DA10FACE7F8FC9B1D3F1A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/live-session.test.ts",
+    "sha256": "ADC9C3225DD3E0F9628C4B2728080C2E03C291A157C4AF91B0E2C762A562C254"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/mapping.orpc.test.ts",
+    "sha256": "738BB4E1569CBEFF087ECD056CF32170661B3932103F2EFB90CC68D1206FBA91"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/mcp-door.test.ts",
+    "sha256": "B2FB0B71E1D4CBB1F26DE0DA41B30B3D68C1B29B6096F4DBD57761AF1A78B41C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/media-upload.test.ts",
+    "sha256": "86DAA4977B3A906B798F0FAADDF7BA9B160AB5B9DDE54828277724E0C86C0CB2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/messaging.orpc.test.ts",
+    "sha256": "368696733D73E0AD7E61730D57997A44D1F4B0460D3B158E541EB6EFE70D742E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/onboarding.test.ts",
+    "sha256": "55ACF3CB0F707CF35020E06E30C0928B26EB983D4AB3D1F85C4CC35907F1C834"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/operation-receipts.test.ts",
+    "sha256": "D728FD95702A1A7F4CD12F609ADCFC0757090DAACF719C850D4BD345EF89F12C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc-client-auth.test.ts",
+    "sha256": "CA127231544A20214CA07B11823DA1FB1F0B0451A1B49C3D618422D3A5EC8DFD"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc-client.ts",
+    "sha256": "D10482D4348A3D40F1BED6E5ABF7F604074DAE046748893EF7158877D304026D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc-diagnostics-privacy.test.ts",
+    "sha256": "933FC54E0C8FE77099A7E6688226D26740C09D7D027C0C641B16F890E550DEA1"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc-domain-error-wire.test.ts",
+    "sha256": "7C33A20F8CDD954CC46F91F16AFE3D479A0D1EB228E3B022E6187BC72597ED53"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc-entitlement.test.ts",
+    "sha256": "2F8DCD3070FD150F90B868E3B9D6A5C57E6EE6108D972C15012032026118C26C"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc-middleware-errors.test.ts",
+    "sha256": "127364DCA3F3CD6E8A40C1A90C7A05E4DE4E6512EFFEE7E471EED4F61CFBBC40"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc-v2-pilot.test.ts",
+    "sha256": "5008A9D293801693602EBEBCAFF9344A18325DE1EEBCF45A7CDA001A46246861"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc-v2-real-capabilities.test.ts",
+    "sha256": "7C9328E10D7063B6D7C9866D1738396D9D754A9F0129A9937CE9253524E71F61"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/orpc.test.ts",
+    "sha256": "82F6C6F4052F4F9B9221807097B30A5AA9825800214DB37AAF1EFCAE969677B2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/password-change.test.ts",
+    "sha256": "F7230E134BB04875824F7C9D3B1BDBE1A0352005E695E243DB3AF645D4B0B285"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/payhereWebhook.test.ts",
+    "sha256": "86A0CD4869572B08028B27E6072103AECAF34C3DB78A840A74E82E80B69385D3"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/planBridge.orpc.test.ts",
+    "sha256": "00B952A33C77CBA9A77F948AC9453587152D3DC746946F0BF8C442B9A82928D9"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/planBridge.repository.pg.test.ts",
+    "sha256": "2424AB08EA87F0183753B26335487A48BF0005D06E7CF6D13A4A747AA808E4FC"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/planBridge.service.test.ts",
+    "sha256": "72B8CB157DDAD59DC429C6D84BBC04F60E9694782DC5A8BC7FEB8BF5AA9EAC1F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/platform-workers.test.ts",
+    "sha256": "44C402D0C9C37D8EE1FFD2B5C8C9F3618359EA90113D2BFB2850F6513468D877"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/policy-error-mapping.test.ts",
+    "sha256": "22571D34D8F61CAAF13D2C5BE80DDCA0760C3878BE9C06CFE9B27DB0D55F9B5E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/pqc-transport.test.ts",
+    "sha256": "B63BA5F7D676E110C5F0098125CE172F31C7EB54448897327EBE780BDC725F08"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/presence.orpc.test.ts",
+    "sha256": "3BB4F16FC9228536BADE8C1A9BBBD519B74739BB69F6E6996A1F782F2A34B839"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/principal-notes.orpc.test.ts",
+    "sha256": "9EA9CE3984A9CB54C8ED5CB9BC72A5264DFEB6E678B4229B0635B442C37BE085"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/privacy.orpc.test.ts",
+    "sha256": "58D94A0A1D8D52E2D7B74DDAB8E8CABC2C2BB12722DCED8F79C8348154BD175B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/profile-write-authority.test.ts",
+    "sha256": "E4979326873E338A0A683ADA0C073E330469748999E8442B68076BDF26B80BE2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/rate-limit-store.test.ts",
+    "sha256": "535ED25CFD380C9B14F7F4B8168179AFF9944F07493C6985956BA2260EB999E8"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/raw-database-harness.test.ts",
+    "sha256": "571D96CBAC84AB77DB6B48BEF625FBF713A1DF74D9E5A0F49BF6EF6DF2BF59E6"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/readiness.test.ts",
+    "sha256": "48FB7849784D04445A2DB38C63EC3A6D7F513A3410907A3114271432CEDC89C2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/retention-failures.test.ts",
+    "sha256": "05AED9463D8A7675C3C5764A59B445C5E8EBA3C137F03F17647D6E917EA8D416"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/rewards.orpc.test.ts",
+    "sha256": "880E2A28E7360848A69767053E534492E51DCE7FACB47E6A0826BD399932D33E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/rpc-method-policy.test.ts",
+    "sha256": "22A62E2FFDC7CBE471E327266F796C2F0C54FAE6FDEE9F0A2EC1E6A114CED832"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/sacred-missions.orpc.test.ts",
+    "sha256": "84BC7A71E918198F11AB75BFACA1A7FFA141ABEA63BA96066BA0E4353BDE0C31"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/school-forest.orpc.test.ts",
+    "sha256": "98D99DAEC4105652A97F1B51C31ECBC8129C8695A46ACCC245299E61A5819BE2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/self.orpc.test.ts",
+    "sha256": "9D65DEB18FF71DBD67712AC03441E12C43463E6B06D0273A724B562A8B656E8F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/server-entitlement.test.ts",
+    "sha256": "985EB9839522DDC3939D36A3B7BD4C76D46B7A278E5592C100C356BD9747572F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/setup.ts",
+    "sha256": "F51FF921EC750E3D9DF12E277A4072F8CD672BD4700FFC0323B4101681D4F9CD"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/shadow-claim.test.ts",
+    "sha256": "B77C954C620C8C6EEB30A527D5F4B74507656AE7F24A547C3FEC58678D8FD1CC"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/social.orpc.test.ts",
+    "sha256": "A1211C4C0F4391390EA6D9BBB84A6DD41419E6E2D352865851C9877DF4AF6E75"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/student-history-cedar.test.ts",
+    "sha256": "D39CBFA903EBCFCF831A66870FD57FC7F5739A04E6B4F61C6F86B916447F9D80"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/student-potential.orpc.test.ts",
+    "sha256": "F09D6ACD11039F70AC81869D7699B08DD018C5150156EFF685466F9E0A7FA1CC"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/sync-key-rotation.test.ts",
+    "sha256": "7296E796BD1BB8EF695B529201EAFD0EC6329D8240435EFE3A95BE197EA2D8E2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/sync.orpc.test.ts",
+    "sha256": "6D49DE1530E2E36838E1966DCB0EA10D0D610790CD216BF4C71E7CE5BA9DDB4E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/telemetry.test.ts",
+    "sha256": "1A838A72DA42224CD394FB569C08ABF8EA9F26646D23C4E201D1E39EA650066A"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/test-doubles.ts",
+    "sha256": "03D38643FA151185E606050BFB8C285DFBFD6D3FEF618B3BE8CB954D81FC0FAF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/thuthimal.orpc.test.ts",
+    "sha256": "8E356410CE3C22553C745F6CDD9E81FAA4E6EECAE55506F1093EEC04927F25AE"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/tracking.orpc.test.ts",
+    "sha256": "D79E7C0FA5FB4AB2E3CD9F34727000AC57ABE3CB31A2EA70A354D97D9EED26D9"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/transport-security.test.ts",
+    "sha256": "67324A432497AF5B7A2A113FF69418E7400DB2009E54AB328994890250BFA05F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/verifiedTelegramIngress.test.ts",
+    "sha256": "EFCFD88A5CC796BAB9AAF757B1795F8515E440382C84E54C1A5645A8095E8658"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/verifiedWhatsappIngress.test.ts",
+    "sha256": "F6BFB3BE0A1B5134763D2BBB0787374EA6CFFA3EA2326CCD6F5C645D949C0514"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/vision-orchestrator.test.ts",
+    "sha256": "22D502724BADAC0CD537053A4FBAF30C99B7C8023708BA6F2D18A85CCCF9460D"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/warm-mirror.orpc.test.ts",
+    "sha256": "2A580454326BDC20CA1F3979A7185C39CE4CD16047E0FD0911B1E660DB817DE2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/websocket-door.test.ts",
+    "sha256": "85D2C5FDB1F12A694B92424459DF14A34C3112365A39C51D71654A6427D4E70F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/whatsappWebhook.test.ts",
+    "sha256": "24FEEFDD47598E2EA5576948E89E2DC4DD49E6934491DC0BA167C8700DC761D2"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/workspace-layout-sync.orpc.test.ts",
+    "sha256": "B28E7298C86DEE7E046EA8CC34B612DAC4B5C67A000F5A810BE1E874D04B0872"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/workspace-provisioning-receipt.test.ts",
+    "sha256": "F812FBB4B0F8600BF7AD702CCB84E30AA7A0CC6C401CAF1C82975FA22DB59FFB"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/integration/ad-reward.pg.test.ts",
+    "sha256": "3DEAE4F3D9E9FCD559C96929057190C204A4BAF9367BF10B34BD54103195132E"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/integration/api-entrypoints.test.ts",
+    "sha256": "1626137687403BD4E1F48F8DE759DC93D67C1E26A39BF79EF0D3258E4278593F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/integration/api-foundation.pg.test.ts",
+    "sha256": "4F7AA7234DDBF4DCD2197657C58502161FA982A6CD3999DAA3AE328010FA612B"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/integration/canonical-account.pg.test.ts",
+    "sha256": "4FC1A9AD055B24CB2B5772B409470816B103F4356936F402999192788C2D706F"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/integration/self.integration.test.ts",
+    "sha256": "C86709C9C05DC208AAD74ABA0B9F2A781DD5D51ED874E44A97C6736CE115F9CF"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/policy-pg/fixtures.ts",
+    "sha256": "3114AE5E69BB7D8E487A0AF63DAAF8327E1773DF260DFF0FCC4FC35675BCA766"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/policy-pg/handlers.test.ts",
+    "sha256": "9B6701FEA203A4B0462D4806F12A2D59AE34F56C7B8045574F94F208EFB57028"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/policy-pg/modelPolicies.test.ts",
+    "sha256": "E2CD5022153A31C29DFC07C2C57D70F487C91D39A4F442B6631BD100BF3F2357"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/policy-pg/studentHistory.test.ts",
+    "sha256": "608941390B9F699BE63428006B37313CDFA23BF458CBE593E4F2A3BF6F555CC3"
+  },
+  {
+    "path": "apps/sanctuary-api/src/__tests__/policy-pg/teachingGroups.test.ts",
+    "sha256": "60A1ECDB15ED6FBFDA94A25A2F083F45F64A5A7C378F838919B4CA63C3485CF9"
+  },
+  {
+    "path": "packages/core/src/api/academicCycles.ts",
+    "sha256": "10704B5FA669F6FD17140BB6E3CF629A26788B3C90C7A005509CAF040C92D42D"
+  },
+  {
+    "path": "packages/core/src/api/accountBoundTransport.test.ts",
+    "sha256": "9D6EE5BC6AD86810CAA54011CEBF3580C117E0889B4C0D288F2613609E6B52E3"
+  },
+  {
+    "path": "packages/core/src/api/admin.contract.ts",
+    "sha256": "D195157554609D7101AA8C511142D114F7227C052BE2DC1BC0E529FCF4C154E4"
+  },
+  {
+    "path": "packages/core/src/api/admin.orpc.contract.ts",
+    "sha256": "CA3238CA15ACA50A8E47576507DFF96F1996E3076528FC9396497539A345CF42"
+  },
+  {
+    "path": "packages/core/src/api/agent.contract.ts",
+    "sha256": "7CDFE7F5E44C3B9AA06E790DD8021D50D2C60F71713DCAFFCFA9138C5B52604B"
+  },
+  {
+    "path": "packages/core/src/api/agent.orpc.contract.ts",
+    "sha256": "9E36153388545C125165F3D828243E8DE539BC175C86B8E370997FC05605AE68"
+  },
+  {
+    "path": "packages/core/src/api/agent.ts",
+    "sha256": "6056AE6CE1560BB863BFB716CB7CAB16D40C090BCBDA8EB35D0DCA6EE3D93AA6"
+  },
+  {
+    "path": "packages/core/src/api/announcements.orpc.contract.ts",
+    "sha256": "CDCA4316B587C902236E699581327EF5D24585B213CFEC6255B1D75DC7B52E3F"
+  },
+  {
+    "path": "packages/core/src/api/announcements.ts",
+    "sha256": "CF6914BD85B2BEED087B06634AD896BD2FFBDD1F30A263B594CC08E600078D62"
+  },
+  {
+    "path": "packages/core/src/api/appContract.ts",
+    "sha256": "369966E3ECFCCC7A821F11F32F9B5B7A9563E02F3B6C8EC27D8774EF28802601"
+  },
+  {
+    "path": "packages/core/src/api/assignmentCommands.test.ts",
+    "sha256": "9F114B02FD2F97359097C3B37D16DFA213308EE175D25769121398E6C73FC1D8"
+  },
+  {
+    "path": "packages/core/src/api/assignmentCommands.ts",
+    "sha256": "2FF5D870C11010F962DC80636657EC0AAFAD1A60439D249083F71013DED4F209"
+  },
+  {
+    "path": "packages/core/src/api/assignments.ts",
+    "sha256": "A2F567CBF125D3F9947654428062D7A017F538E9CB36AF4293A9076EAD3D1A36"
+  },
+  {
+    "path": "packages/core/src/api/assignmentSubmissionReplay.test.ts",
+    "sha256": "83877079636765B0DABCD9ED0EEE54C0638E206FF8AB7BF43DDFD1B668685F8A"
+  },
+  {
+    "path": "packages/core/src/api/assignmentSubmissionReplay.ts",
+    "sha256": "1417E826150CD3136E241A1CC77C2AC4786F992F3DF7E54419577BEA54F02280"
+  },
+  {
+    "path": "packages/core/src/api/assignmentSubmissionTransport.test.ts",
+    "sha256": "352A86142805B45E95E005621E999154E10A81825806B108A5A97B2449EDF52D"
+  },
+  {
+    "path": "packages/core/src/api/assignmentSubmissionTransport.ts",
+    "sha256": "8FE4B9FA435E460D56AA0A3BF6871F0A39F80BC6347AA64C8B69DBD3BFD3B641"
+  },
+  {
+    "path": "packages/core/src/api/attendance-v1.orpc.contract.ts",
+    "sha256": "3A0F50122EFB27189C306C83DBA10D72E0C133CA01E8652B551BF18FCE5A0DFB"
+  },
+  {
+    "path": "packages/core/src/api/attendance.orpc.contract.ts",
+    "sha256": "0BE7DE695F0DB0573FE67FDFD361635CE41541A84980D693A70B69D146BB44C5"
+  },
+  {
+    "path": "packages/core/src/api/attendance.ts",
+    "sha256": "8E66089DC26C6DE39D197693050A7C373AE5A6861A0770D5D702161EA9761A0D"
+  },
+  {
+    "path": "packages/core/src/api/audit-poa-runtime.ts",
+    "sha256": "096E50760AA2971D93C8ABE8CFF302C188EDC1D806750582E0A8915F37115CA1"
+  },
+  {
+    "path": "packages/core/src/api/auth.ts",
+    "sha256": "AADDEFD2861A977D1A09C3EA33B85EF5942F243456B874CF98101CC39BB94BD1"
+  },
+  {
+    "path": "packages/core/src/api/authorization.ts",
+    "sha256": "50D0FA1FA842EF650FB005490E99D642A111286D8F1BBCE492A290192C7A9419"
+  },
+  {
+    "path": "packages/core/src/api/base.ts",
+    "sha256": "1A3ACAB2A820251506C5F1A7D064FEA2C6CC7E2ED640518D4437A87610C4E9FD"
+  },
+  {
+    "path": "packages/core/src/api/capabilities.test.ts",
+    "sha256": "D7FFB7F1AAA00C66A31B5B1E443CBD754261B79990DC8D6E1EDD765687D61D14"
+  },
+  {
+    "path": "packages/core/src/api/capabilities.ts",
+    "sha256": "EE218DE6067D3FBDA32E4B5D7237F71DC53EFBE733F2F9B139FF187B24C0F368"
+  },
+  {
+    "path": "packages/core/src/api/capabilityFoundation.ts",
+    "sha256": "F0780030B48DB3864E0610120E74018B54828C81E22418D1480C126F9C52689A"
+  },
+  {
+    "path": "packages/core/src/api/channel.orpc.contract.ts",
+    "sha256": "F3A8E511C62D06A1C0F915FAA9A56EB6E518F497E925DF1BF2B5CA467FE0216F"
+  },
+  {
+    "path": "packages/core/src/api/chatCommands.test.ts",
+    "sha256": "D4355B0E44FEDD5C02B6EEE3D65BBBFDEFA430C7AB3B9614DD5FE3DF14A3EA9E"
+  },
+  {
+    "path": "packages/core/src/api/chatCommands.ts",
+    "sha256": "56EEAE2EE8309103C246233FD637EB0BFBD037212CBEB15A6C52D6D2881F278A"
+  },
+  {
+    "path": "packages/core/src/api/circles.ts",
+    "sha256": "E87B3254DFAFB8DEA0E957FF98B7C9F907AA14AF62FB3693D8ED06DDA94B0035"
+  },
+  {
+    "path": "packages/core/src/api/classroom.ts",
+    "sha256": "7230B1971D93FAEFDA89318D96A12E6A472F9B674C27ABF7625D30F768CB08B7"
+  },
+  {
+    "path": "packages/core/src/api/classroomGroups.ts",
+    "sha256": "FBCF356914AE0E667B8A0198BB40EE96151291281BB2657FAB1DE72F34CCF1E7"
+  },
+  {
+    "path": "packages/core/src/api/classroomNotes.contract.ts",
+    "sha256": "F4B33ACCB9AD106AD095166BFE29BAE6EB78615DC69586233D4C3C8FC9E1DECE"
+  },
+  {
+    "path": "packages/core/src/api/classroomNotes.ts",
+    "sha256": "D942F0584B6695385FF48732AB51B6EDBB4D250D7A7490DAA2D942FCD5B9E224"
+  },
+  {
+    "path": "packages/core/src/api/classrooms.ts",
+    "sha256": "5A61BDCF1120325BA51E9BC72E309F8BC21DF4A201153AD3F31E03B293457644"
+  },
+  {
+    "path": "packages/core/src/api/classroomStudents.ts",
+    "sha256": "322ABD0691896FB5F45B979C8EC058B4F791F71D4DF4C72F007CEA76DF97546A"
+  },
+  {
+    "path": "packages/core/src/api/client.ts",
+    "sha256": "6F28CA0AC89C2A769D74478D360C979C45767334AC5B3C099640C9177A2561E0"
+  },
+  {
+    "path": "packages/core/src/api/clientRuntime.ts",
+    "sha256": "7BEB1E300E820A7B9D2B57D0210B50379435437C376BDE38C990861297F97D5F"
+  },
+  {
+    "path": "packages/core/src/api/community.contract.ts",
+    "sha256": "1B96D0FF196481D306063522B3D1055B2D439A6F0987A726FF24921C15800A97"
+  },
+  {
+    "path": "packages/core/src/api/community.orpc.contract.ts",
+    "sha256": "A91C703E743F8D9EC07B58C9EE9F64A0B8150D1C665728BA60EFCFF4E5DB2EF8"
+  },
+  {
+    "path": "packages/core/src/api/community.ts",
+    "sha256": "8AC83324CB89093A36EF05F92DE5FD84C9A1CFACB2963072A447D56821BD7354"
+  },
+  {
+    "path": "packages/core/src/api/contextualChallenges.ts",
+    "sha256": "EA9EFE922B525AB5BB5800EA9409B30B5C82D6CF1CC50D8CDEF4024546F12210"
+  },
+  {
+    "path": "packages/core/src/api/contractCoverage.ts",
+    "sha256": "55BA3ADA091CDA9AE2214534129A13EA6E86A7BAA31B7A61B588394F57F955EE"
+  },
+  {
+    "path": "packages/core/src/api/contractInspection.ts",
+    "sha256": "3AA7D0DDC13D4055B8539911622AC6D913F088B5EEBB361A8554F211201024DC"
+  },
+  {
+    "path": "packages/core/src/api/contracts.ts",
+    "sha256": "4ADD2F175B1F7C4572410A4EDBE7F2E145F161786E9F08C124AD1D8EF38E7B36"
+  },
+  {
+    "path": "packages/core/src/api/credentialInventory.ts",
+    "sha256": "2AD7DD15F8C8AE5A87CDE06C6D6A36F1A5E1AC25174AC8DCB63BD2A02B50A42C"
+  },
+  {
+    "path": "packages/core/src/api/credentialUnlink.ts",
+    "sha256": "048E74B950206EBE7E4F27BE785955122AD35D5DA108DBC6EE7B0E59E3DA57CC"
+  },
+  {
+    "path": "packages/core/src/api/dailyContent.contract.ts",
+    "sha256": "F26AF1506F9517879F9CBA9122180992DD4D46D4CDDC5749F99963B8A8F2A2CE"
+  },
+  {
+    "path": "packages/core/src/api/dailyContent.orpc.contract.ts",
+    "sha256": "D254EADFB7340A65A3B8598DFA33BBE49E7974BB829BDB80CB6C2A623377CA6E"
+  },
+  {
+    "path": "packages/core/src/api/dailyContent.ts",
+    "sha256": "7E39263C6E1F27950E41D6799F2A4C0C2E49280284D8244C48391EEA80B2E12C"
+  },
+  {
+    "path": "packages/core/src/api/dataGateway.ts",
+    "sha256": "F22A1917B66E54E9FAD06B19B121A89B67E003EFB6008618AAEDCB361FFFA10E"
+  },
+  {
+    "path": "packages/core/src/api/decisionJournal.contract.ts",
+    "sha256": "1B78E5849F5A004CC0579D5C332FC4804C041EB90FD23F0F7FCE0974953F84CE"
+  },
+  {
+    "path": "packages/core/src/api/decisionJournal.ts",
+    "sha256": "5E94CA67D624EF28D844DF070C1891A3772DEEDAA01DB5BF405EC727443E3510"
+  },
+  {
+    "path": "packages/core/src/api/demo.ts",
+    "sha256": "594E65B7787A776E93EE9994AA7F4A6DF113231A3C938C40A11DE8386112ED9F"
+  },
+  {
+    "path": "packages/core/src/api/demoProvider.ts",
+    "sha256": "8F9E96730890F27C7BB4CC368DF522D0C5E28E096B98735AEB4376C15929B866"
+  },
+  {
+    "path": "packages/core/src/api/deviceTrust.ts",
+    "sha256": "45BE7F3DEB2053F7F5862D23BCC81B65A84507DFE54B73C6115945F6CEE01BAC"
+  },
+  {
+    "path": "packages/core/src/api/deviceTrust.web.ts",
+    "sha256": "0A3F33CC441D2668F904A2E9B37933511D5C9F50EA64912F61C44A4413E22498"
+  },
+  {
+    "path": "packages/core/src/api/durableAgents.contract.ts",
+    "sha256": "E17497D3083B7A41011DBE79BBC9C5315A4C4E90DCFFB2562813BB0FE938CA0E"
+  },
+  {
+    "path": "packages/core/src/api/echo.contract.ts",
+    "sha256": "9F02306860CCFB7B40DFF66B0E4FE69367CA80C13055D4A525B2E272EFCCB4ED"
+  },
+  {
+    "path": "packages/core/src/api/echo.ts",
+    "sha256": "8DEE77562B808D511BE4A4FC6FEB88AC4398742F8C65B9CC50AE708D03974F81"
+  },
+  {
+    "path": "packages/core/src/api/editorial.contract.test.ts",
+    "sha256": "844316DD28DDE9ABCC6CD5D5300FABDBD714E10988863DCFC7AD0AFEB5AFC440"
+  },
+  {
+    "path": "packages/core/src/api/editorial.contract.ts",
+    "sha256": "4F00F72058F474616DEF835835F32E364946EBDF315C8C32E8E89FF7313A7AC5"
+  },
+  {
+    "path": "packages/core/src/api/educational.contract.ts",
+    "sha256": "9C8EC4766696EB685653DA3FA9EDB9050EE0B8E42EAFEAAF03A5E1F7B5B2D181"
+  },
+  {
+    "path": "packages/core/src/api/educational.orpc.contract.ts",
+    "sha256": "3E99D6722C669BF03A67D8A2AFD19EBB71E95A8FCE68795B0424384919760314"
+  },
+  {
+    "path": "packages/core/src/api/erp.contract.ts",
+    "sha256": "C8FDBB330C5109563100E4AE0E2A1939D4051426C4F39D1922616C69BD598AA7"
+  },
+  {
+    "path": "packages/core/src/api/erp.ts",
+    "sha256": "B8937A713670AEE4A97E477EDCA5F1C59B4F5C54619AEDA7390D4957B2688E02"
+  },
+  {
+    "path": "packages/core/src/api/errorPolicy.ts",
+    "sha256": "7E94AC7FBF8FADC6B14A1B39A708672E70E23EC8CEB4E8F18AE1CF0EEECF183F"
+  },
+  {
+    "path": "packages/core/src/api/events.orpc.contract.ts",
+    "sha256": "7CC2BC86E6E40E55449580744D61B332AC3CA16959639D7687051C3008356471"
+  },
+  {
+    "path": "packages/core/src/api/eventsReceiver.ts",
+    "sha256": "54CAC8D298997672F37288AA94FDB69955216A2450538C56D5450823FCF25CBA"
+  },
+  {
+    "path": "packages/core/src/api/forms.contract.ts",
+    "sha256": "DB843C3BC67ED41BFFCFD0DADD775A9A4C656A8484629F8133BE1B09FF240183"
+  },
+  {
+    "path": "packages/core/src/api/formTemplates.ts",
+    "sha256": "C792350B6C79B8F3BAAD2D773E58D5FB48E917E5EE819619B1DB3829CA998043"
+  },
+  {
+    "path": "packages/core/src/api/founder.contract.ts",
+    "sha256": "5CFCDAD3D59FD79B764C37B688A3CCE412A92DE677D4ACA457148EBD9699B5AF"
+  },
+  {
+    "path": "packages/core/src/api/founder.ts",
+    "sha256": "F6734C3719D5C0C04E0B88F0F677F004A8906E313582C625904F5A9BFD89DD2F"
+  },
+  {
+    "path": "packages/core/src/api/functions.ts",
+    "sha256": "9529EFBB6AA50DF4AC3AE3D16E81A6CF2A5C163F39C36C56D442C8677D51A9A3"
+  },
+  {
+    "path": "packages/core/src/api/gateway.ts",
+    "sha256": "9D86936DA6004358EE9477DE5060520ABAB1394967B07F49338B4F579C138869"
+  },
+  {
+    "path": "packages/core/src/api/grading.contract.ts",
+    "sha256": "6509D5C5A56C41780A55DA752BC08F09442103A647210D5824EB38964E8C79C0"
+  },
+  {
+    "path": "packages/core/src/api/grading.orpc.contract.ts",
+    "sha256": "187156801BBBCC1B49037D74EF006070970AEFB3928C67E5072AEDF24C20EDA6"
+  },
+  {
+    "path": "packages/core/src/api/grading.ts",
+    "sha256": "01A16956A4B7ACE99D4652568D10D74C021AC15FA93DBA226405980EE8AD0D69"
+  },
+  {
+    "path": "packages/core/src/api/groups.ts",
+    "sha256": "E15D10DDE7DF853F5554C5FDD6E82EE7B06D57C086E54096A76EFF612FECE954"
+  },
+  {
+    "path": "packages/core/src/api/growth.contract.ts",
+    "sha256": "44B301CFAB3F9BA02A4F6A0586EED42CDAFA66E61FFC1A4D8877B5AB610EE65C"
+  },
+  {
+    "path": "packages/core/src/api/growthSignals.generated.ts",
+    "sha256": "E44405394620B884C11DDE1072F900BC110DED6A9E52CC5BBB8EED63D7307458"
+  },
+  {
+    "path": "packages/core/src/api/growthSignals.generated.zod.ts",
+    "sha256": "D1B20396EC419A28EAFCD3B48901A70DF7CA3DBB79F8FAF1EA7B7704A551D3F6"
+  },
+  {
+    "path": "packages/core/src/api/growthSignals.schema.json",
+    "sha256": "246B20F1116FFE68D76C6F9D6A9FF856E2E6EF7B747D54FF7533FD8D73541D89"
+  },
+  {
+    "path": "packages/core/src/api/growthSignals.ts",
+    "sha256": "29FCD8119702CE657596CFFE2143CDF18144FB5C1F22A417B5C1619C8A53F212"
+  },
+  {
+    "path": "packages/core/src/api/guardian-assessment.contract.ts",
+    "sha256": "2DB436CB73300278F88164C78F85055413BB68828CF1C65B9C1A914EBD6CFA61"
+  },
+  {
+    "path": "packages/core/src/api/guardian-assessment.orpc.contract.ts",
+    "sha256": "5B417D54C5346892BF282700D3356F6574C099C700BD892F5D4D67AFDEB44A29"
+  },
+  {
+    "path": "packages/core/src/api/guardian.contract.ts",
+    "sha256": "262AF49BDEF0540FC91423E70CD634435729E48BE5F9CA45B5D8FB36642A8DB6"
+  },
+  {
+    "path": "packages/core/src/api/guardian.ts",
+    "sha256": "65F21F971E5C2A3CA54FDBDE307A8ADA07045F505BC095AF88FFC921588B75A7"
+  },
+  {
+    "path": "packages/core/src/api/highways.ts",
+    "sha256": "6F47BA62CED47E9A7F11C0E674F34C5F5733DE046CE6F6358E34A987AC73C5BC"
+  },
+  {
+    "path": "packages/core/src/api/history.contract.ts",
+    "sha256": "246A0C1C0A1CD7AF5D2CD77319CBDF3F40F425788221E5AA1A6E01FC8AEA8F0A"
+  },
+  {
+    "path": "packages/core/src/api/history.ts",
+    "sha256": "549EAD44492A0CE50740A022E48D7CE3CC288634C7A551EE754C7554813659C5"
+  },
+  {
+    "path": "packages/core/src/api/identity.contract.ts",
+    "sha256": "DF9494A64FECC2B554F3A770AA1A3F632B9A1157074F21200E81C7351009529F"
+  },
+  {
+    "path": "packages/core/src/api/identity.generated.ts",
+    "sha256": "6368ECD5693B97F740230724FB425F5740A2AE3EFD87B8A484650EF6B48FAE45"
+  },
+  {
+    "path": "packages/core/src/api/identity.orpc.contract.ts",
+    "sha256": "FBD862C08DEC35DFB7E20E092E3490CE394EF1DB150252231EDB8BC915897373"
+  },
+  {
+    "path": "packages/core/src/api/identity.schema.json",
+    "sha256": "482513268A593A07EB791363EFB6B007494DBA22BEF85AB91A92D82D4BAB97EB"
+  },
+  {
+    "path": "packages/core/src/api/identity.test.ts",
+    "sha256": "06B461BC6147BB875EC249EECDE9637C9F9567C90EB12759E191E676C7FDDA9E"
+  },
+  {
+    "path": "packages/core/src/api/identity.ts",
+    "sha256": "692B9CD68616E7989720AF9348CAE7573CE8ED2B165826277F73F35A3548DDDE"
+  },
+  {
+    "path": "packages/core/src/api/impactRipples.ts",
+    "sha256": "FB7CF199C52F25B552A28619864CB19EFE0A7E4F652B50D24EB773F36A81289B"
+  },
+  {
+    "path": "packages/core/src/api/index.ts",
+    "sha256": "70B9A833E69474FABEE089957805E84F5F4DBAAB68E5CE1FA925F1D6DD77622D"
+  },
+  {
+    "path": "packages/core/src/api/interceptor.ts",
+    "sha256": "DD97274E2C20D82B5BB5E8B4EA0CE3F33F0560FD17DB9F713D65A3613EBD2A72"
+  },
+  {
+    "path": "packages/core/src/api/inventory.contract.ts",
+    "sha256": "2A51E676AEF1DAA413084A79949310EB8C3686993486CF59A85E3DFFAEBBE067"
+  },
+  {
+    "path": "packages/core/src/api/inventory.ts",
+    "sha256": "3E25492BAE4B771EAF79D6481CD6AE185C5B6413C57A593C395056EEEFC7CEF4"
+  },
+  {
+    "path": "packages/core/src/api/journalEntries.contract.ts",
+    "sha256": "CFE26E8A83B4296CE0139B6A6701258D75341F4503556E81F05163EDC1AF2A07"
+  },
+  {
+    "path": "packages/core/src/api/journalEntries.ts",
+    "sha256": "4ACF90318A18BAE4E0A32A9A645BD4F31E4B487C9818CC00072DA29BA1599C64"
+  },
+  {
+    "path": "packages/core/src/api/learningReflections.contract.ts",
+    "sha256": "BB683926A25DE50841261528F57FB8318B65617A8EDC3CCB92916BC63A6CAD77"
+  },
+  {
+    "path": "packages/core/src/api/lessonMaterials.ts",
+    "sha256": "871751C2780520E1F770064F15A44BE24EF2D6FBE5B2316CC28D3A174F9849E6"
+  },
+  {
+    "path": "packages/core/src/api/library.contract.ts",
+    "sha256": "C857A53064B81B570B0C01AA6BADE31F9582606D4A8ACC63835CA78AF1759DC3"
+  },
+  {
+    "path": "packages/core/src/api/library.orpc.contract.ts",
+    "sha256": "A3BE0172C6BE2B2DD863988A78E4486D9B69303D364733C2108239AFD3E451A5"
+  },
+  {
+    "path": "packages/core/src/api/library.ts",
+    "sha256": "78B6B19361DB2770542766A2FB62874FB27C0435FF61A726BB5041D333FC982B"
+  },
+  {
+    "path": "packages/core/src/api/longitudinal.contract.ts",
+    "sha256": "6A97F209B14F62E52A5BFECAEB81A761449833C4E8F58EA542E18FBACB6EC4BF"
+  },
+  {
+    "path": "packages/core/src/api/longitudinal.ts",
+    "sha256": "8E6D14A7C49B6205569CED9C7DFF635BB15C124AA68ECBCB3607F816968FC75A"
+  },
+  {
+    "path": "packages/core/src/api/mapping.contract.ts",
+    "sha256": "3B1AE2954EDC7F207E2DA1466E2F2B224380936EB1590AB95C89CBF7C07C636C"
+  },
+  {
+    "path": "packages/core/src/api/mapping.orpc.contract.ts",
+    "sha256": "CB8FC50CB96319802D782C0142E0557CBF150C4CAC4635DE52F1F59D81EC0B58"
+  },
+  {
+    "path": "packages/core/src/api/mapping.ts",
+    "sha256": "E2365303EABB1491FD9108C7EC77B87401420C4053ADC28FD0AF9286BF9A203A"
+  },
+  {
+    "path": "packages/core/src/api/media.ts",
+    "sha256": "4949ADDB0F8CCEE006F961B4F92C27EE1B2E336003795788F66840A6020F404F"
+  },
+  {
+    "path": "packages/core/src/api/mediaUpload.contract.ts",
+    "sha256": "0F9F63796833670AF920D9CC73B4E2A34F95499001D19D107BCB8EC3C4741537"
+  },
+  {
+    "path": "packages/core/src/api/mediaUpload.test.ts",
+    "sha256": "EDF1C2B679921C87AF36AA184A5692C229BCA9F0D43C5BC0C61AD9742BDA54D2"
+  },
+  {
+    "path": "packages/core/src/api/mediaUpload.ts",
+    "sha256": "67F415361E551C628DC13ECFE03C32A6BC1131BF8265D23A1D96E902C197231F"
+  },
+  {
+    "path": "packages/core/src/api/messaging.orpc.contract.ts",
+    "sha256": "AA422275E8A4FBD1721250498D889A1C45878B1188CC13BDF2C042A718618A90"
+  },
+  {
+    "path": "packages/core/src/api/messaging.ts",
+    "sha256": "A96413254D08EEAFAFBBC70C6B97C8C5AEBBE5218454CD1848ABC86842E4620E"
+  },
+  {
+    "path": "packages/core/src/api/mockData.ts",
+    "sha256": "22B962D2ED7E515216C4CF8FA348BF39DEB79D2735427B1A7B0D4CB1A34758E2"
+  },
+  {
+    "path": "packages/core/src/api/moonPhase.ts",
+    "sha256": "F9489061538ECABB58846E5AB8C72DBB2E367FDA957DA41536827DF6D1CD0DDB"
+  },
+  {
+    "path": "packages/core/src/api/naturePaths.ts",
+    "sha256": "99E761F2864EE1384510FA18319B37C927BF835634147D63BE90620E51FED589"
+  },
+  {
+    "path": "packages/core/src/api/onboarding.contract.ts",
+    "sha256": "6239C4DA94474FCF43E5A95D8BA1D6CCAD4C041F3CA045EE9514A91B33750FD2"
+  },
+  {
+    "path": "packages/core/src/api/onboarding.orpc.contract.ts",
+    "sha256": "C8F2B0C305ED6BE1ED0158A383CA2D0BEFCB33FC51E44C65D940C1C8BFA62434"
+  },
+  {
+    "path": "packages/core/src/api/onboarding.ts",
+    "sha256": "D316896CB44CBA7547926FAB0422C8417C874E93A4B886458FF2C50C8668436E"
+  },
+  {
+    "path": "packages/core/src/api/onboardingClient.test.ts",
+    "sha256": "92636E1CBC1AB2DA964D3D1675B4FC3C3952657AD11CE5AFBC26AFBFBA128C1A"
+  },
+  {
+    "path": "packages/core/src/api/onboardingClient.ts",
+    "sha256": "8013993515F2D1F4592B0B12F6EBA537F775CF96DB357446146469F925508E1E"
+  },
+  {
+    "path": "packages/core/src/api/operations.contract.ts",
+    "sha256": "9538E2819EDC6BCE9E807C9EA5E9CB6DD7ECCDCADF45E74C842647258328B853"
+  },
+  {
+    "path": "packages/core/src/api/orpcClient.ts",
+    "sha256": "49256F93E9BED119B05D4B5BA2BD2E00BFD1406098FDAA96EA0B7255094DFB74"
+  },
+  {
+    "path": "packages/core/src/api/orpcMetadata.ts",
+    "sha256": "E689962564FE5EB8D9A5C4259AB44F036B3823781EE92515C0930183E2A67B1E"
+  },
+  {
+    "path": "packages/core/src/api/passwordChange.ts",
+    "sha256": "E37D49EA0EC3B2F8F22E9AB013E9949CF0146CDC6716109EF39B70EE8E047240"
+  },
+  {
+    "path": "packages/core/src/api/permissionSnapshot.contract.ts",
+    "sha256": "B1F5AD9F31587D0892020F024857EE4EE6D2F168B384EA282662D7697B209789"
+  },
+  {
+    "path": "packages/core/src/api/phoneAuth.ts",
+    "sha256": "BE4FE466FED6CFEF7A7A90A2F81E587D4237F2AD4E09B153CF25FE65FF52ADA3"
+  },
+  {
+    "path": "packages/core/src/api/pilot.orpc.v2.ts",
+    "sha256": "F029339A68EB56B85489611A65B6E145B31B7C1393958CBD87C62C2EB96E9A55"
+  },
+  {
+    "path": "packages/core/src/api/planBridge.orpc.contract.ts",
+    "sha256": "442DFC79662E2B2CECDB4F1B61C62660F61CF458BB1BDBD185E21787D7B98B23"
+  },
+  {
+    "path": "packages/core/src/api/planBridge.ts",
+    "sha256": "F82B0F14426C0D61680381728E810A3F70C79A8BE15CD65C83C41DE29CFABD86"
+  },
+  {
+    "path": "packages/core/src/api/presence.contract.ts",
+    "sha256": "7F18B02E8ECC94C68C04EA222C92CE7E5EA89F1FC462FF3254C07A0CE28F51F0"
+  },
+  {
+    "path": "packages/core/src/api/presence.ts",
+    "sha256": "A07637DD2EC71CCB9CF4B4771215C0F6A6A7EE4B928804B9DA643FD52998BA89"
+  },
+  {
+    "path": "packages/core/src/api/presenceRealtime.ts",
+    "sha256": "BDB9223BEC5230052F1CC4692B070113C02027EB9EF3A2EC49392C0FB1E9FFCA"
+  },
+  {
+    "path": "packages/core/src/api/principalNotes.orpc.contract.ts",
+    "sha256": "6177CB2E1E5F1191DD50765F25F0B160A90FC7D1805C8FA917C780FB718E6962"
+  },
+  {
+    "path": "packages/core/src/api/principalNotes.ts",
+    "sha256": "53E4D1BC59F6BDB305DC764284B3C8FDA5C23186E6FDA010B5C6B68E844D4823"
+  },
+  {
+    "path": "packages/core/src/api/principalWorkspace.contract.ts",
+    "sha256": "DFDC732AC83BE9C50E1789C1AA63AC78A0ACF58EC2AE7E81F8946FCBEE29A57A"
+  },
+  {
+    "path": "packages/core/src/api/principalWorkspace.ts",
+    "sha256": "4C9BF3D73CAE7643EB8D1BB6D9BACBB6D9F126DC18D04F6CCFB726FEBA113247"
+  },
+  {
+    "path": "packages/core/src/api/privacy.contract.ts",
+    "sha256": "A5C8B1C7550A6CBE324E7A44AA5635F8CD07AF40B8D1C7820893A88A97D29757"
+  },
+  {
+    "path": "packages/core/src/api/privacy.orpc.contract.ts",
+    "sha256": "DD5E3BAA03D24902821D9B9B3DEBA2BC1A6580E7CCFD44859F9BF29D02FC8C54"
+  },
+  {
+    "path": "packages/core/src/api/privacy.ts",
+    "sha256": "DF70B755CDB8094A6920B9760AE739197FBBF6E612258BEB1A2E57A393175527"
+  },
+  {
+    "path": "packages/core/src/api/pro.contract.ts",
+    "sha256": "28CBA3228FB6CE13072930222E88D6F6F1D458D476E1D20A3BDA8E6810E67724"
+  },
+  {
+    "path": "packages/core/src/api/profile.contract.ts",
+    "sha256": "87243A6DD5972E322CBDC804C6C4E51089F097492FF7DE1AAD59C54A484A0164"
+  },
+  {
+    "path": "packages/core/src/api/profile.orpc.contract.ts",
+    "sha256": "7656363C0A84AFCBF4E42FDE0221C250E6F6CECD0492FC8F72237685944323F4"
+  },
+  {
+    "path": "packages/core/src/api/profile.ts",
+    "sha256": "F243F0F54AEA8132E1FC48F648D6B21693E7782737D91F45AF22051ABA162E38"
+  },
+  {
+    "path": "packages/core/src/api/pushDispatcher.ts",
+    "sha256": "7C5DEBCE5C8FA33DBAD8FE99ADBAD7FF98B0C39937734EB4B60FA6CBEA3710FD"
+  },
+  {
+    "path": "packages/core/src/api/README.md",
+    "sha256": "7E27DA46CC3B0CBDB32868D03853DD478BF57D1400BA240EAA53599F465AD250"
+  },
+  {
+    "path": "packages/core/src/api/resonantProxy.ts",
+    "sha256": "2094D57F8428BE5419F984F3CED9A77E94FA7F656E072653BEE3842BBCDB68EF"
+  },
+  {
+    "path": "packages/core/src/api/resources.ts",
+    "sha256": "DC7FADFEF296A5284AD0984870034B0D25E4CEA477AFC77B664D449581541336"
+  },
+  {
+    "path": "packages/core/src/api/rewards.orpc.contract.ts",
+    "sha256": "1EED4259AD3629F5C427346F55E64777CED615798805257D970D95BF95D0A987"
+  },
+  {
+    "path": "packages/core/src/api/rewards.ts",
+    "sha256": "2B43ED06C13B1631ADEE5B755C0C105B5F802402BD6632D4F5F81B83D1BA2ED4"
+  },
+  {
+    "path": "packages/core/src/api/sacredMissions.contract.ts",
+    "sha256": "035844637C945C02CB0C1966664BF48A6D375599DFBFB4D8FD46D6E1E856C7A1"
+  },
+  {
+    "path": "packages/core/src/api/sacredMissions.ts",
+    "sha256": "40E8B864FDB81524414E781E1EE0999B56607D5AB0BBB795618CE0534F0A8691"
+  },
+  {
+    "path": "packages/core/src/api/sandboxBridge.ts",
+    "sha256": "328BCF0356170EB7D123466D3CC5F382B1FF44024E452F37A9A4948C48E07243"
+  },
+  {
+    "path": "packages/core/src/api/sandboxDataset.ts",
+    "sha256": "29B6E7F2576F2BBE9884B6DD7C9AC4655F30C805D5B78AB994A1C740BF90EF83"
+  },
+  {
+    "path": "packages/core/src/api/sandboxMode.ts",
+    "sha256": "484971B45B318DDA7CEB6852FEDF8286ADCFD0220D614C083892832E30CCB2ED"
+  },
+  {
+    "path": "packages/core/src/api/school.ts",
+    "sha256": "78C13D88EA4EFAE3C8EF5BAAC8C31FD2970325D4F67E6620A3DEEE7F04FD00C7"
+  },
+  {
+    "path": "packages/core/src/api/schoolForest.contract.ts",
+    "sha256": "3C7CC203A2B90170AFEE635655C22A175650E5B9C9BF50C97E7B265E49C3EADD"
+  },
+  {
+    "path": "packages/core/src/api/schoolForest.ts",
+    "sha256": "4755192EFAA633BF7B00A95CAFB21CCD20D8D631FBFD712AAFAA757F82B21AA3"
+  },
+  {
+    "path": "packages/core/src/api/self.contract.ts",
+    "sha256": "9A4F40E04E53CCCFFE396E6D4C2FC22628925FEABA33CB4893E768EDD8A2F6C6"
+  },
+  {
+    "path": "packages/core/src/api/server.ts",
+    "sha256": "21B48A1383417E8F312CF41059E30E3DF9EB0DD8DBFC8C0AD3071C2A5C9F055C"
+  },
+  {
+    "path": "packages/core/src/api/serverAdapter.ts",
+    "sha256": "5F4631BA3FF564F4B2E0FB0F86848E6E17AFFF2CE54993104D11BE636C259107"
+  },
+  {
+    "path": "packages/core/src/api/social.orpc.contract.ts",
+    "sha256": "7AD812418335AF2039C98B5CDBB5E7B37BFEE51F7280D0EF179E38C3E95EE9BA"
+  },
+  {
+    "path": "packages/core/src/api/social.ts",
+    "sha256": "AC343DB2869EA78BEC79E3F36827DDC39E948E3A7A19CF76FE8CCD1CC2E7158E"
+  },
+  {
+    "path": "packages/core/src/api/staffManagement.ts",
+    "sha256": "EA02B4528D6614CD038EBDE02294C7DD5381082783226ABFEFCF8B2621B3E7A3"
+  },
+  {
+    "path": "packages/core/src/api/studentObservations.ts",
+    "sha256": "2E929F9635CB2C2C647EA4FC921DCA87B3495E58050DB3EFD0F253945ED94D39"
+  },
+  {
+    "path": "packages/core/src/api/studentPotential.contract.ts",
+    "sha256": "77CCCF49A365CAB966242C7C6B73CCB3C5B672387123C8A6599BBC1CB8C3431A"
+  },
+  {
+    "path": "packages/core/src/api/studentPotential.ts",
+    "sha256": "E35439EB7565C34F949732F2BA49D5C88DCC92AB6CC63266FFE894C434C15190"
+  },
+  {
+    "path": "packages/core/src/api/supabase.ts",
+    "sha256": "9837552EBCB29C8E224231DE2F44D449FDD49599D25E7E5A5124D2B096FFC4B7"
+  },
+  {
+    "path": "packages/core/src/api/sync.contract.ts",
+    "sha256": "C1BB8C3994B61879DA59FE661938F762E498E788C687CEBF9D8A5D17BAC01028"
+  },
+  {
+    "path": "packages/core/src/api/sync.orpc.contract.ts",
+    "sha256": "FF6C6900F7EA0CC46F422AD8C1575D464B77982822FA7364EB24E10E67A62D74"
+  },
+  {
+    "path": "packages/core/src/api/syncCredentials.ts",
+    "sha256": "304F14BA7F79D58F6A73D88EE314508CAAC70BF1661019DA0996022E609AD33C"
+  },
+  {
+    "path": "packages/core/src/api/teacher.ts",
+    "sha256": "98B43B188FC4272FE8DAF2214A00500416E12C4BA620509CEA99CCDE3B5F90DD"
+  },
+  {
+    "path": "packages/core/src/api/teacherInsights.contract.ts",
+    "sha256": "77C2B44B875F4236348EC38944067C78D85CFA0AF257DE6C3B8352794B7A4C38"
+  },
+  {
+    "path": "packages/core/src/api/teacherInsights.ts",
+    "sha256": "E52463F85C478B5184058F3E7FD93A2B18AAFA7CF4FFFAE75F17C5C866520602"
+  },
+  {
+    "path": "packages/core/src/api/temporalProxy.test.ts",
+    "sha256": "7E8D6BB1FAB003D21F925CCBC1B1DEA5F3D59C1D909EB75CB67D44A20F451B08"
+  },
+  {
+    "path": "packages/core/src/api/temporalProxy.ts",
+    "sha256": "E91245FCC9DCFF5C476364EFCA8D51B19233661EE3D70401B3A06CD4EE81E348"
+  },
+  {
+    "path": "packages/core/src/api/thuthimal.contract.ts",
+    "sha256": "4BDA7DDCF3054E6449010EF936241239D879B0DF29E12E085289A00FC3BFD294"
+  },
+  {
+    "path": "packages/core/src/api/thuthimal.ts",
+    "sha256": "49A9918B22F8FA6AECEE7E435C06713DBE32BD70E564C9C559D4FF73FF6A54DC"
+  },
+  {
+    "path": "packages/core/src/api/tracking.contract.ts",
+    "sha256": "BE87C5F7712C826F3862AF53454C4C3C7E1938F999B4A2F8011CABDC09780657"
+  },
+  {
+    "path": "packages/core/src/api/tracking.ts",
+    "sha256": "A25C412713587D8B9C9AFC3457442123B50ECBDDD11412EC09537C93BDAA760C"
+  },
+  {
+    "path": "packages/core/src/api/transportSecurity.test.ts",
+    "sha256": "17DD881C70CE76AA487B616EE4312182930842FAA649DBC4293D408E78C18E17"
+  },
+  {
+    "path": "packages/core/src/api/transportSecurity.ts",
+    "sha256": "A0538D85BAB8FE387372E0DDC1E11464E7CFE1B217D2F7A135ED46C655DFA621"
+  },
+  {
+    "path": "packages/core/src/api/userGrowthState.ts",
+    "sha256": "70DF34F679A1987B03B7743BC8D9A097DC2D8B999D7B5086D4D4F680AF2CD8AC"
+  },
+  {
+    "path": "packages/core/src/api/warmMirror.contract.ts",
+    "sha256": "8A4AF0D6952F8ABB3CB549E272A277918E3E5FFFA784DB3825E874C217FFF30B"
+  },
+  {
+    "path": "packages/core/src/api/warmMirror.ts",
+    "sha256": "9632E66CCCDA5E9CCB34C22B135057895BA7C7805C0A9A71DC4098CC677AB981"
+  },
+  {
+    "path": "packages/core/src/api/workspace-provisioning.orpc.contract.ts",
+    "sha256": "8DE83447ED61AA65184AE9E2CEBB78340672DDC18A50022CAC75CB3B158E9C53"
+  },
+  {
+    "path": "packages/core/src/api/workspaceLayout.contract.ts",
+    "sha256": "72D69BA9AC6E37FD513220C31C4F160E374D3768430B138915A7181C5A3A8269"
+  },
+  {
+    "path": "packages/core/src/api/workspaceLayout.ts",
+    "sha256": "4C77AA3F9C33D10E8B0C2272AD9014AA6A6558AF0E1AAA7F3E7A72820F388B33"
+  },
+  {
+    "path": "packages/core/src/api/workspaceLayoutPatch.test.ts",
+    "sha256": "713CAA4832C2969D3F891EC1BC0A8B016AE3709F114FE8B5A224966997DDCE42"
+  },
+  {
+    "path": "packages/core/src/api/workspaceLayoutPatch.ts",
+    "sha256": "265A569AA800B243FF795771CF89D62EF8BB30295808A4BDC7D24654FEF06360"
+  },
+  {
+    "path": "packages/core/src/api/workspaceProvisioning.ts",
+    "sha256": "E88336DB2AF5C40594625496426D98669BBD4E591949A7710A842898E633A9DC"
+  },
+  {
+    "path": "packages/core/src/api/handlers/admin.ts",
+    "sha256": "8C5E47A6F92F36C1649E672DA17AAB0A9159FCA6A0745513FA5E5C20E54BC98F"
+  },
+  {
+    "path": "packages/core/src/api/handlers/community.ts",
+    "sha256": "9187628AC7272F0E18CE9CB3E09C6B2DF375713BDC8552ED36F62EA540D9BDF4"
+  },
+  {
+    "path": "packages/core/src/api/handlers/dailyContent.ts",
+    "sha256": "6ED3B00365CAB19967DA8273D2D6C3DD0DD2417856AAC89DC8E35B2844AABFB2"
+  },
+  {
+    "path": "packages/core/src/api/handlers/educational.ts",
+    "sha256": "EF2ABCB29A8FAD43709A63F50A7978C7BD7457B136BFF330CA66A39E54D19C04"
+  },
+  {
+    "path": "packages/core/src/api/handlers/grading.ts",
+    "sha256": "8F4DD0526972841E0FA3AB0C473A0600BCFC894C68994187017C9584986F9557"
+  },
+  {
+    "path": "packages/core/src/api/handlers/identity.ts",
+    "sha256": "60E910264CD4C47C526A477DDD3E61BC0FC8C3D1AFDDD1EAC6A5500827CE1FF0"
+  },
+  {
+    "path": "packages/core/src/api/handlers/library.ts",
+    "sha256": "B05DDE9297964948D24E3262E34A33BD0C5E100FB3A2918BE74EF17A8AD0C207"
+  },
+  {
+    "path": "packages/core/src/api/handlers/onboarding.ts",
+    "sha256": "CDCED15CC171D52B65DB2EC9971895F17E4F8A9EBD1ABD133CE082736F80D343"
+  },
+  {
+    "path": "packages/core/src/api/handlers/operations.ts",
+    "sha256": "7AC33931CF3860E44F554F2AF7F82A16A6F19DB081FA64447731476BA57B12FD"
+  },
+  {
+    "path": "packages/core/src/api/handlers/profile.ts",
+    "sha256": "E134D1431E6416EFBB2CB42B50D30EF0F8BBB43A02737B485C4207B3D140F775"
+  },
+  {
+    "path": "packages/core/src/api/handlers/self.ts",
+    "sha256": "C3A83987FE061AD1EBBBAB94B8A64E037676BEA30861BFF1B07B5AA88C57CFD3"
+  },
+  {
+    "path": "packages/core/src/api/handlers/sync.ts",
+    "sha256": "DD68055E978405B65C50FBDD0EC1234BFB66F08286DF6785C0572E53E9A65FE9"
+  },
+  {
+    "path": "packages/core/src/api/handlers/__tests__/sync-handler.test.ts",
+    "sha256": "FD011B7AAFEE54AE81E884C55CD2146FA73527B4097B7B429C8F93441D4FD9F9"
+  },
+  {
+    "path": "packages/core/src/api/hooks/attendance.hooks.ts",
+    "sha256": "2CF4965D72F2269720DC6D08F62D9A7A729F2722C34D0390FBFED8E09E29DCDE"
+  },
+  {
+    "path": "packages/core/src/api/hooks/classroom.hooks.ts",
+    "sha256": "739144454070AAA6F5BBC0F9E518B3BDB6FC2B9E50CD36347DFCBFA30E4F0D43"
+  },
+  {
+    "path": "packages/core/src/api/hooks/comment.hooks.ts",
+    "sha256": "5B400860EA455F713F0AD3D21B5A238E4931CA5152081D121C9487DFAD10FE93"
+  },
+  {
+    "path": "packages/core/src/api/hooks/community.hooks.ts",
+    "sha256": "BAB27C9B67FB8764AF3C845C58DA0F07151FF57A2CE2D14FD81DFE3878425F46"
+  },
+  {
+    "path": "packages/core/src/api/hooks/founder.hooks.ts",
+    "sha256": "C03B757F9606F6B8CD83C03551BC7FF67D0241D5140AB3C4BB7E55F9C8F12FB8"
+  },
+  {
+    "path": "packages/core/src/api/hooks/grading.hooks.ts",
+    "sha256": "0589BA12EB97973F2357794A0FE94263FA1031179E2BBD5EA2B6964A62C4E0B3"
+  },
+  {
+    "path": "packages/core/src/api/hooks/index.ts",
+    "sha256": "CAACE02E6C8AA148B4076ADEA8CC0763FE0F3E923CCDAAF55DC29CD2B8302EDC"
+  },
+  {
+    "path": "packages/core/src/api/hooks/library.hooks.ts",
+    "sha256": "D43E628F15CC819329526884F58A8A8A88B278793CDED04B2C1C5D52068F79BC"
+  },
+  {
+    "path": "packages/core/src/api/hooks/manifesto.hooks.ts",
+    "sha256": "4EBC9CFB20E51E66BAE95DA15D87FF01D880DE6689782FBDB70ABF8D8CCE27BB"
+  },
+  {
+    "path": "packages/core/src/api/hooks/poll.hooks.ts",
+    "sha256": "6224397C4C93359A37C570A3D65A84FEBCFF628BA97C2B4AA7A0582B8410215C"
+  },
+  {
+    "path": "packages/core/src/api/hooks/presence.hooks.ts",
+    "sha256": "9C7F7FB19F090AAEF02EBDBAB4704A5E97C768A70A15D4AD111EC4AA71139C6B"
+  },
+  {
+    "path": "packages/core/src/api/hooks/profile.hooks.ts",
+    "sha256": "DEF55F7056172CA6B1BD88303A058F2F759A369634EB0C9439046ABE2E6BDBB8"
+  },
+  {
+    "path": "packages/core/src/api/hooks/social.hooks.ts",
+    "sha256": "B180B6E2C97851092140BAED5A4C4BC466F4C9B63AF75FE15CED0081CEF4E740"
+  },
+  {
+    "path": "packages/core/src/api/orchestration/community.ts",
+    "sha256": "34612D9BACC372D52C8E54B759A6890839DC8DC78E9DE67D15961B332CEF59BA"
+  },
+  {
+    "path": "packages/core/src/api/orchestration/educational.ts",
+    "sha256": "A67CACBB3012D59FCA960BFEB82128BE179F91F2D16921D42532BCF3B533D4C2"
+  },
+  {
+    "path": "packages/core/src/api/orchestration/erp.ts",
+    "sha256": "72D9F9C3330E9EAE78128E469F4FC938094041E89622CBBF375DFD1AA91EB1E1"
+  },
+  {
+    "path": "packages/core/src/api/orchestration/growth.ts",
+    "sha256": "1A90BFAC95236252A1B7DABB8060F4AB948D75F7E483AE63D98C128C7E850D4F"
+  },
+  {
+    "path": "packages/core/src/api/orchestration/identity.ts",
+    "sha256": "BA516C188B2204EA1B48ABF768162D67C26D2C56F1F7397463255FB875B27ED0"
+  },
+  {
+    "path": "packages/core/src/api/orchestration/operations.test.ts",
+    "sha256": "62A6B43E7A3D9CF461AD2B1BBD6F274B91D5EA34472ADCF35EBE31DC4D741E3F"
+  },
+  {
+    "path": "packages/core/src/api/orchestration/operations.ts",
+    "sha256": "E0081CC51109C71F1684352DC4B84F66515C2035FD2727302444E09FA35F83A7"
+  },
+  {
+    "path": "packages/core/src/api/orchestration/specialized.ts",
+    "sha256": "48C1CDC38CA8A59029B95C6A3456940AE497E237F7A580739C637BFEAF453A11"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/attendanceProjection.runtime.ts",
+    "sha256": "60897DCE7085D7DF7A3DCB6DCB8961AB26B6AA736911F49823375DA243E8ABF7"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/classroomNotes.runtime.ts",
+    "sha256": "D42B60DDF7F833526C906C7E48C88115F1F812F18C9E786EBA3DF40FA02327B1"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/educational.runtime.ts",
+    "sha256": "BE1A6B5F49904DA993804CDAA18E6BA59D6B8947FA1C5A28F3DE28D38882D810"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/founder.runtime.ts",
+    "sha256": "126ED2B4C3396C2634BFA8CF7B732E1D429CB761F69B401B4B2D01C82703FBCB"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/gradingProjection.runtime.ts",
+    "sha256": "90CD179937CF68D6660DF5AA29D1C5C95CB90E69ECD670587C59C1D1C809153C"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/guardian.runtime.ts",
+    "sha256": "F9BB8ABD4355F9246E3E3CCABF00F0B935AFFB53AB17DBB060B270EA8AB5D439"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/principalWorkspace.runtime.ts",
+    "sha256": "36091867857D52844D999479868446D77F7EDE7B10762E20BF06DACC9AB2A557"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/profile.runtime.ts",
+    "sha256": "E8AE42880E9A3A34960131882FBD5901CD63E6AFFB724BC08C80C11CAD3111A8"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/teacherInsights.runtime.ts",
+    "sha256": "E7DEFB2BCCEFEFE3836650CFBCD458E109A68084E900BA1D6250746FAE9FF07F"
+  },
+  {
+    "path": "packages/core/src/api/runtimes/workspaceLayout.runtime.ts",
+    "sha256": "D1E64FD7C5478EC72740C7F69C7826A4723D24FF346C17F1FA13959DE4BF7631"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/attendance-poa.test.ts",
+    "sha256": "54A30212913711AF05C23B474854EFDD09D8D4809AA6116CAE6CF19FFD7EEFFE"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/attendance-student-history.test.ts",
+    "sha256": "504228235B7B6BFEA3BF5D5F4D27AE90EBEAEBFEAAD3A0FB29B86F4A2D8CE370"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/base.test.ts",
+    "sha256": "D46AABB1C715ACDC389E49151C1B81C9C652E1860130C194917BC205C7F119D2"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/capabilityFoundation.test.ts",
+    "sha256": "AF736825B75204B3380DF6E4052A7A2EE00C83659FB3DA7CFCE7461B26F6ED03"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/classroom-notes-poa.test.ts",
+    "sha256": "4F2B164A2F3992FD5608C9785FD6AE8188FB5F307FFF9BE9C41F49C186D04F0D"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/contractInspection.test.ts",
+    "sha256": "F98251B79DFD108617F744FBDA721EC6CB4FB044246558625628B7B5A5BABE76"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/dailyContent.contract.test.ts",
+    "sha256": "F552BEE63DE9C0BE85A93F086DA1CCB00F64134E99DEACE7E050A7FC9E0A38BE"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/demoProvider.test.ts",
+    "sha256": "5724B318E54C53256595D3E2196A503F7876392998A8BD72648696ADE9CD5625"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/deviceTrust.web.test.ts",
+    "sha256": "EDBA4DBF235270253C0987670D11C87B6337D5251F36C8329CC04481985E34FC"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/errorPolicy.test.ts",
+    "sha256": "E5EA6858ECD4661BCFCCFA987919F58B5F57C712EF26852C78ABD8509278E2AE"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/events.contract.test.ts",
+    "sha256": "622605FB5134F4817132D5A29765F4E8BF98A53D345AD36F7EEB00540CAFA086"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/eventsReceiver.test.ts",
+    "sha256": "AFFB9D9EBE454ADF2C0D241978464CED45E4237E9BBEFE7D084E61D84D874CB1"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/founder-guardian-poa.test.ts",
+    "sha256": "84C59526ECE013299EEF204BF75332E42FCF8D40C9165B59549A74371FF91B37"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/highways.test.ts",
+    "sha256": "7501AF9CF548C3D829C487D1E50CD22A50C77443C8A6ADDF0D6AAD8D696411F0"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/legacy-grading-handler.test.ts",
+    "sha256": "894753194EC0DBECF8C5D747F004713FCB36B748C40D1FC8FFB7A200CF67682C"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/longitudinal-cross-classroom-denial.test.ts",
+    "sha256": "CD7F9DC05CB3DC94A9682B38995AF613C6C28662853C2B0077BB95890D94A07D"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/longitudinal-poa.test.ts",
+    "sha256": "3178E8F54A16C748B88A23D0278EC246DE6B1BBE271BDB95AEC7B9072BEF53C1"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/onboarding-poa.test.ts",
+    "sha256": "F5346B3884FB410F4461C7A9A3343B24DF27AA94D55B640E6151C495ECFA6B4C"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/onboarding.contract.test.ts",
+    "sha256": "CC505E00AA9691A6C62977B3682B45C957DAC417F6A8BE4AE209D387268533C5"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/orpcClient.errors.test.ts",
+    "sha256": "66F60EA5681C2E2768503738F8EA49C29D9BD56A1AE4376067A4CA5E87C6CAE6"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/phoneAuth.test.ts",
+    "sha256": "6B87D8A084196B90CEA236E808E8C55926F1269525E6CE2611FD7F4F8D32AFFE"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/principal-workspace-poa.test.ts",
+    "sha256": "C36BE331B815979BE59BDE70704ED8DED120128073C5417869422B34DB9C15D1"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/privacy.contract.test.ts",
+    "sha256": "89A28FA5CCCEAFF2E5A6245E888B304DABBB4A4BE3D4DCDEA6074F129C5C93DF"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/sandboxLayer.test.ts",
+    "sha256": "FBBBD54871C7C2A8EB017B798B1E4D5E8BCE222835D21F38C4AA24E7B7ABB8BA"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/schemas.test.ts",
+    "sha256": "2AE3360965E5651C4485CB6EB8332770D44789F8588239029455F22C0A367A35"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/sync.test.ts",
+    "sha256": "2F24C9F328A9B13A7461FF2D9B808521B7AE718A6877E444949AB3C16BD08421"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/teacher-insights-poa.test.ts",
+    "sha256": "8A2FAB3BF399245172C4AAB186BC008CEB8223C628623459D5316E7E0CC805E0"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/verify_schemas.ts",
+    "sha256": "8F38CAECC673D341EBA8A3468A7365B397EC60D036FB0023371CB2B15DDF9573"
+  },
+  {
+    "path": "packages/core/src/api/__tests__/workspace-layout-poa.test.ts",
+    "sha256": "D214E4849FAC43B1308555B739FF75E5624A51507EDB53E62DF7C8B3C3E7B94B"
+  }
+]

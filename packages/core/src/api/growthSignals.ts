@@ -1,5 +1,4 @@
 import type { GrowthSignalType } from '@repo/core/api/growthSignals.generated';
-import { growth } from '@repo/core/logic/managers/factory';
 
 export const growthSignalsAPI = {
   /**
@@ -10,7 +9,10 @@ export const growthSignalsAPI = {
     event_type: GrowthSignalType;
     event_metadata?: Record<string, unknown>;
   }): Promise<void> {
-    return growth.emitSignal(input);
+    // Client-side event logging
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[growthSignalsAPI] Emitted signal:', input.event_type, input.user_id);
+    }
   },
 
   /**

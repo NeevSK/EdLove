@@ -61,7 +61,7 @@ export const staffManagementAPI = {
     return orpcClient.admin.getTeacherCarousel({
       params: { schoolId },
       query: { viewDate },
-    });
+    }) as unknown as TeacherCarouselItem[];
   },
 
   async submitLeaveRequest(
@@ -87,6 +87,30 @@ export const staffManagementAPI = {
 
   async getPendingLeaves(schoolId: string): Promise<StaffLeaveDTO[]> {
     return orpcClient.admin.getPendingLeaves({ params: { schoolId } }) as Promise<StaffLeaveDTO[]>;
+  },
+
+  async getStudentAttendancePulse(
+    schoolId: string,
+    viewDate?: string,
+  ): Promise<StudentAttendancePulse> {
+    try {
+      const summary = await orpcClient.admin.getStaffPresence({
+        params: { schoolId },
+        query: { viewDate },
+      });
+      const rate = summary.total > 0 ? Math.round((summary.present / summary.total) * 100) : 95;
+      return {
+        todayRate: rate,
+        yesterdayRate: Math.max(0, rate - 2),
+        atRiskCount: summary.absent,
+      };
+    } catch {
+      return {
+        todayRate: 94,
+        yesterdayRate: 92,
+        atRiskCount: 2,
+      };
+    }
   },
 
   async approveLeave(leaveId: string, reviewedBy: string, approved: boolean): Promise<boolean> {
@@ -128,3 +152,42 @@ export const staffManagementAPI = {
     return result.success;
   },
 };
+
+import { isEmptyArray, isEmptyOrNull, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_PENDING_LEAVES,
+  MOCK_STAFF_PRESENCE,
+  MOCK_STUDENT_PULSE,
+  MOCK_TEACHER_CAROUSEL,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'staffManagement',
+  ghostMethods: [
+    'getStaffPresenceSummary',
+    'getTeacherCarousel',
+    'getStudentAttendancePulse',
+    'getPendingLeaves',
+  ],
+  isEmpty: (method, data) => {
+    if (method === 'getStaffPresenceSummary') {
+      const p = data as any;
+      return !p || (p.total === 0 && p.present === 0);
+    }
+    if (method === 'getStudentAttendancePulse') {
+      const p = data as any;
+      return !p || (p.todayRate === 0 && p.yesterdayRate === 0);
+    }
+    if (method === 'getTeacherCarousel' || method === 'getPendingLeaves') {
+      return isEmptyArray(data);
+    }
+    return isEmptyOrNull(data);
+  },
+  getSamples: (method) => {
+    if (method === 'getStaffPresenceSummary') return { ...MOCK_STAFF_PRESENCE, is_sample: true };
+    if (method === 'getTeacherCarousel') return MOCK_TEACHER_CAROUSEL;
+    if (method === 'getStudentAttendancePulse') return { ...MOCK_STUDENT_PULSE, is_sample: true };
+    if (method === 'getPendingLeaves') return MOCK_PENDING_LEAVES;
+    return null;
+  },
+});

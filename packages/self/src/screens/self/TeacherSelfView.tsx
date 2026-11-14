@@ -1,5 +1,6 @@
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
@@ -31,8 +32,8 @@ import type {
   DerivedHistoryEntry,
   DerivedHistoryPoint,
 } from '@repo/ui/components/DerivedHistoryView';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, VStack } from '@repo/ui/primitives';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,8 +59,8 @@ export default function TeacherSelfView() {
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
   const [_isPulseDashboardOpen, _setIsPulseDashboardOpen] = useState(true);
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
   const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
   const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
   const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
@@ -71,22 +72,22 @@ export default function TeacherSelfView() {
       id: log.id,
       label: new Date(log.created_at).toLocaleDateString(undefined, { weekday: 'short' }),
       value: log.mood_score * 20,
-      detail: log.mood,
+      detail: log.mood ?? undefined,
     }));
   const moodHistoryEntries: DerivedHistoryEntry[] = moodHistory.slice(0, 10).map((log) => ({
     id: log.id,
     title: log.mood ? `${log.mood} mood` : 'Mood check-in',
     timestamp: new Date(log.created_at).toLocaleDateString(),
-    description: log.note,
+    description: log.note ?? undefined,
     kind: 'reflection',
   }));
 
   const holisticSection = (
-    <VStack space="lg" style={{ padding: 20 }}>
+    <View style={{ padding: 20, gap: 16 }}>
       <JournalSection entries={journalEntries} loading={loadingJournals} />
       <MoodSection logs={moodHistory} loading={loadingMoods} />
       <TeacherPulse banyan={banyan} loading={banyanLoading} />
-    </VStack>
+    </View>
   );
 
   const handleMoodSelect = async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
@@ -105,7 +106,7 @@ export default function TeacherSelfView() {
   };
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="teacher"
         description={t('self.teacherDescription')}
@@ -198,7 +199,7 @@ export default function TeacherSelfView() {
                 id: 'energy_forecast',
                 label: 'Energy Rhythm',
                 content: (
-                  <Box
+                  <View
                     style={{
                       padding: 24,
                       backgroundColor: 'rgba(255,255,255,0.03)',
@@ -206,7 +207,7 @@ export default function TeacherSelfView() {
                     }}
                   >
                     <EnergyBarChart bars={forecasts.slice().reverse()} height={80} />
-                  </Box>
+                  </View>
                 ),
               },
               {
@@ -255,10 +256,10 @@ export default function TeacherSelfView() {
           },
         ]}
         sideBar={
-          <VStack space="lg">
+          <View style={{ gap: 16 }}>
             <WarmMirrorCard text={warmMirrorText} />
             <ImpactRipplesCard ripples={ripples} />
-          </VStack>
+          </View>
         }
       />
 
@@ -266,6 +267,6 @@ export default function TeacherSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

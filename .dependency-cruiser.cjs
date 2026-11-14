@@ -1,3 +1,4 @@
+const LIVE_WEB_FILES = require('./tooling/live-web-files.json');
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
   forbidden: [
@@ -163,13 +164,13 @@ module.exports = {
       name: 'no-db-leaks-to-apps',
       severity: 'error',
       comment:
-        'Apps and Domain packages must not import directly from the Database. Use @repo/core/types instead.',
+        'Apps and domain packages must not import the database or the generated schema directly. Use @repo/core/types or @repo/core/logic/schemas: core owns the contracts, so an upstream schema change is absorbed in one place.',
       from: {
-        path: '^(apps/|packages/(?!core|database|types-shim))',
+        path: '^(apps/|packages/(?!core|database|schema|types-shim))',
         pathNot: ['\\.test\\.ts$', '^apps/sanctuary-api/'],
       },
       to: {
-        path: '^packages/database/',
+        path: '^packages/(database|schema)/',
       },
     },
     {
@@ -219,7 +220,14 @@ module.exports = {
   ],
   options: {
     exclude: {
-      path: ['\\.vercel', 'node_modules', 'dist', '\\.turbo'],
+      path: [
+        '\\.vercel',
+        'node_modules',
+        'dist',
+        '\\.turbo',
+        // Reference-only web variants (tooling/reference-only.mjs); the web app is apps/gurudevi-web.
+        `^(?!apps/gurudevi-web/)${LIVE_WEB_FILES.map((f) => `(?!${f.replace(/\./g, '\.')}$)`).join('')}.*\.web\.tsx?$`,
+      ],
     },
     doNotFollow: {
       path: ['node_modules', 'dist', '.turbo', '\\.vercel'],

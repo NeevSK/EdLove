@@ -1,6 +1,7 @@
 import { UniversalModal } from '@repo/ui/components/UniversalModal';
 import { X } from '@repo/ui/icons';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import type React from 'react';
 import { Dimensions } from 'react-native';
 
@@ -47,7 +48,7 @@ export default function SanctuaryModal({
       <Box
         className={`rounded-2xl overflow-hidden max-w-[95vw] ${sizeClasses[size]} ${className}`}
         style={{
-          backgroundColor: '#FDFAF3',
+          backgroundColor: tokens.colors.modalCard,
           borderWidth: 1,
           borderColor: 'rgba(42, 35, 24, 0.18)',
           boxShadow:
@@ -60,7 +61,7 @@ export default function SanctuaryModal({
           style={{
             borderBottomWidth: 1,
             borderBottomColor: 'rgba(42, 35, 24, 0.10)',
-            backgroundColor: '#F7F2E7',
+            backgroundColor: tokens.colors.surfaceElevated,
           }}
         >
           <HStack className="gap-3 items-center flex-1">
@@ -88,7 +89,7 @@ export default function SanctuaryModal({
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1 }}
           style={{
-            backgroundColor: '#FDFAF3',
+            backgroundColor: tokens.colors.modalCard,
             maxHeight: Dimensions.get('window').height * 0.7,
           }}
         >
@@ -100,7 +101,7 @@ export default function SanctuaryModal({
           <Box
             className="p-6"
             style={{
-              backgroundColor: '#F7F2E7',
+              backgroundColor: tokens.colors.surfaceElevated,
               borderTopWidth: 1,
               borderTopColor: 'rgba(42, 35, 24, 0.10)',
             }}

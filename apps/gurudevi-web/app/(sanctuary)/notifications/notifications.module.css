@@ -1,0 +1,213 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 56rem;
+  margin: 0 auto;
+  font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
+}
+
+.headerBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+}
+
+.titleArea h1 {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.75rem;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.titleArea p {
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+.actionsArea {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.markAllButton {
+  min-height: 44px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  background: var(--color-paper-light, #fffdf8);
+  color: var(--color-ink, #131e27);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.markAllButton:hover {
+  border-color: var(--color-action, #a85022);
+  color: var(--color-action, #a85022);
+}
+
+.filterTabs {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.filterTab {
+  min-height: 44px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
+  background: var(--color-paper-light, #fffdf8);
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.filterTab:hover {
+  border-color: var(--color-action, #a85022);
+  color: var(--color-ink, #131e27);
+}
+
+.filterTab[aria-selected="true"] {
+  background: var(--color-action, #a85022);
+  border-color: var(--color-action, #a85022);
+  color: #ffffff;
+}
+
+.notificationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notificationCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.notificationCard[data-unread="true"] {
+  border-left: 4px solid var(--color-action, #a85022);
+  background: color-mix(
+    in srgb,
+    var(--color-paper-light, #fffdf8) 96%,
+    var(--color-action, #a85022)
+  );
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: var(--color-paper, #f7f2e8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
+  font-size: 1.1rem;
+  color: var(--color-action, #a85022);
+  flex-shrink: 0;
+}
+
+.cardBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.cardTime {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft, #453c35);
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.cardMessage {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft, #453c35);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.dismissButton {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft, #453c35);
+  cursor: pointer;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: color 0.15s ease;
+}
+
+.dismissButton:hover {
+  color: var(--color-action, #a85022);
+  background: rgba(168, 80, 34, 0.08);
+}
+
+.emptyState {
+  padding: 4rem 1.5rem;
+  text-align: center;
+  background: var(--color-paper-light, #fffdf8);
+  border-radius: 0.75rem;
+  border: 1px dashed var(--color-line, rgba(104, 94, 85, 0.2));
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.emptyTitle {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.25rem;
+  color: var(--color-ink, #131e27);
+  margin: 0 0 0.25rem;
+}
+
+.emptyText {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft, #453c35);
+  margin: 0;
+}

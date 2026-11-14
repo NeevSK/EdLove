@@ -9,10 +9,8 @@ export interface UserAccessContext {
   roles: SelfViewRole[];
 }
 
-export interface AccessibleFeature extends SelfFeatureDefinition {
-  roleAffinity: number;
-  isGeneral: boolean;
-}
+/** A feature this person is offered: related to one of their roles, and every capability granted. */
+export type AccessibleFeature = SelfFeatureDefinition;
 
 export type FeatureAccessDenial = 'capability' | 'citizenship';
 
@@ -38,6 +36,12 @@ class CapabilityPolicy implements Policy {
     return feature.requiredCapabilities.every((c) => caps.has(c));
   }
 }
+/** Product relevance: the feature is for one of the person's roles. */
+class RolePolicy implements Policy {
+  isAllowed(feature: SelfFeatureDefinition, ctx: UserAccessContext): boolean {
+    return feature.roles.some((role) => ctx.roles.includes(role));
+  }
+}
 class CitizenshipPolicy implements Policy {
   isAllowed(feature: SelfFeatureDefinition, ctx: UserAccessContext): boolean {
     return feature.minCitizenship === undefined || ctx.citizenshipLevel <= feature.minCitizenship;
@@ -50,6 +54,7 @@ class AccessPolicyComposite implements Policy {
   }
 }
 const defaultComposite = new AccessPolicyComposite([
+  new RolePolicy(),
   new CapabilityPolicy(),
   new CitizenshipPolicy(),
 ]);
@@ -62,18 +67,10 @@ export function resolveAccessibleFeatures(
   composite: AccessPolicyComposite = defaultComposite,
 ): AccessibleFeature[] {
   const caps = new Set(context.capabilities);
-  const roles = context.roles;
-  return (Object.values(FEATURE_CATALOG) as SelfFeatureDefinition[])
-    .filter((f) => composite.isAllowed(f, context, caps))
-    .map((feature) => {
-      const weights = feature.roleWeights ?? {};
-      const isGeneral = Object.keys(weights).length === 0;
-      const roleAffinity = isGeneral ? 50 : Math.max(0, ...roles.map((r) => weights[r] ?? 0));
-      return { ...feature, roleAffinity, isGeneral } as AccessibleFeature;
-    });
+  return Object.values(FEATURE_CATALOG).filter((f) => composite.isAllowed(f, context, caps));
 }
 
-export { AccessPolicyComposite, CapabilityPolicy, CitizenshipPolicy };
+export { AccessPolicyComposite, CapabilityPolicy, CitizenshipPolicy, RolePolicy };
 
 /**
  * Derive roles from capabilities using a pure fallback (mirrors roleResolution.ts but supports multi-role).
@@ -119,4 +116,78 @@ export function deriveRolesFromCapabilities(
     }
   }
   return roles.length > 0 ? roles : ['student'];
+}
+
+export interface CreateSelfAccessContextOptions {
+  userId?: string | null;
+  role?: string | null;
+  roles?: readonly string[];
+  capacities?: string[];
+  capabilities?: string[];
+  isExplore?: boolean;
+}
+
+/**
+ * Creates an authoritative access context for the Self practice catalog.
+ * In explore / guest mode, full trial capabilities are provided to test delivered browser practices safely.
+ * When a user holds multiple capacities (e.g. Principal + Teacher), capabilities from all held roles are unified.
+ */
+export function createSelfAccessContext(
+  options: CreateSelfAccessContextOptions = {},
+): UserAccessContext {
+  const rawRoles =
+    options.roles && options.roles.length > 0
+      ? options.roles
+      : options.role
+        ? [options.role]
+        : ['teacher'];
+  const resolvedRoles = rawRoles.map((r) => r.toLowerCase() as SelfViewRole);
+  const normalizedRole = resolvedRoles[0] ?? 'teacher';
+  const isGuestOrExplore =
+    options.isExplore ||
+    !options.userId ||
+    options.userId === 'explore-guest' ||
+    options.userId === 'explore' ||
+    options.userId === 'anonymous';
+
+  const baseCapabilities = [
+    'read:SelfJourney',
+    'read:InnerPulse',
+    'read:SelfCare',
+    'read:SelfReflection',
+  ];
+
+  const roleCapabilities: Record<SelfViewRole, string[]> = {
+    student: ['read:StudentDashboard'],
+    teacher: ['read:TeacherDashboard'],
+    principal: ['read:PrincipalDashboard'],
+    founder: ['read:TeacherDashboard', 'read:PrincipalDashboard'],
+    admin: ['read:StudentDashboard', 'read:TeacherDashboard', 'read:PrincipalDashboard'],
+    guardian: [],
+  };
+
+  const collectedRoleCapabilities = resolvedRoles.flatMap((r) => roleCapabilities[r] ?? []);
+
+  const capabilities = isGuestOrExplore
+    ? [
+        ...baseCapabilities,
+        'read:StudentDashboard',
+        'read:TeacherDashboard',
+        'read:PrincipalDashboard',
+      ]
+    : Array.from(
+        new Set([
+          ...baseCapabilities,
+          ...(options.capabilities ?? []),
+          ...collectedRoleCapabilities,
+        ]),
+      );
+
+  return {
+    userId: options.userId ?? null,
+    capabilities,
+    capacities: options.capacities ?? resolvedRoles,
+    citizenshipLevel: 1,
+    roles: resolvedRoles,
+  };
 }

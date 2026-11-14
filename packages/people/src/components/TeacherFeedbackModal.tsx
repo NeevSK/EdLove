@@ -1,5 +1,5 @@
 import { teacherFeedbackAPI } from '@repo/people/feedback';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Dialog } from '@repo/ui/components/native';
 import { ChevronDown, CircleCheck, Heart, MessageSquare, TriangleAlert } from '@repo/ui/icons';
 import {
   Box,
@@ -198,6 +198,6 @@ export default function TeacherFeedbackModal({
           </Text>
         </Box>
       </VStack>
-    </SanctuaryModal>
+    </Dialog>
   );
 }

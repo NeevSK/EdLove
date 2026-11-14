@@ -61,8 +61,8 @@ export const PublishedSchoolGradingCompletionSchema = z.object({
   publishedEntries: z.number().int().min(0),
 });
 
-export type Grade = z.infer<typeof StudentGradeSchema>;
-export type ClassroomGradingSettings = z.infer<typeof ClassroomGradingSettingsSchema>;
+export type StudentGradeRow = z.infer<typeof StudentGradeSchema>;
+export type ClassroomGradingSettingsRow = z.infer<typeof ClassroomGradingSettingsSchema>;
 export type Assessment = z.infer<typeof AssessmentSchema>;
 export type GradebookSnapshot = z.infer<typeof GradebookSnapshotSchema>;
 export type PublishedStudentGradesSnapshot = z.infer<typeof PublishedStudentGradesSnapshotSchema>;
@@ -72,6 +72,5 @@ export type PublishedSchoolGradingCompletion = z.infer<
 >;
 
 // Aliases for backward compatibility or semantic clarity in classroom package
-export type StudentGrade = Grade;
 export type StudentGradebookSnapshot = GradebookSnapshot;
 export type SanctuaryGradeMark = z.infer<typeof SanctuaryGradeMarkSchema>;

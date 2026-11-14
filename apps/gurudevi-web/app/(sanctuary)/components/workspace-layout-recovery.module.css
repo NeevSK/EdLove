@@ -1,0 +1,31 @@
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-light) 88%, transparent);
+  color: var(--ink);
+}
+.notice p {
+  margin: 0;
+  line-height: 1.5;
+}
+.notice button {
+  min-height: 2.75rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background: var(--paper);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.notice button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}

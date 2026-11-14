@@ -1,82 +1,32 @@
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
+import type { UIExperienceRepository } from '@repo/core/logic/ports/uiExperience.port';
 import { APIError } from '@repo/core/types/API';
+import type { TemporalView } from '@repo/core/types/Temporal';
+import type {
+  HeatmapItem,
+  JourneyEvent,
+  PendingAttendanceItem,
+  PendingGradingItem,
+  SnapshotMomentRecord,
+  StudentGoal,
+} from '@repo/core/types/uiExperience';
 import type { SupabaseClient } from '@supabase/supabase-js';
-
-export interface JourneyEventRecord {
-  id: string;
-  timestamp: string;
-  type: 'mood' | 'journal' | 'growth' | 'reward' | 'moment' | 'impact' | 'system';
-  title: string;
-  description?: string;
-  metadata?: Record<string, unknown>;
-  accentColor?: string;
-}
-
-export interface StudentGoalRecord {
-  id: string;
-  title: string;
-  status: 'pending' | 'completed' | 'in_progress';
-  target_date: string;
-}
-
-export interface SnapshotMomentRecord {
-  id: string;
-  user_id: string;
-  resonance_date: string;
-  label: string;
-  metadata: Record<string, unknown>;
-  created_at: string;
-}
-
-export interface PendingAttendanceItem {
-  classroomId: string;
-  classroomName: string;
-}
-
-export interface PendingGradingItem {
-  assignmentId: string;
-  assignmentTitle: string;
-  classroomId: string;
-  classroomName: string;
-  ungradedCount: number;
-}
-
-export interface HeatmapItem {
-  date: string;
-  intensity: number;
-  count: number;
-}
-
-export interface UIExperienceRepository {
-  getMoodJourneyEvents(userId: string): Promise<JourneyEventRecord[]>;
-  getJournalJourneyEvents(userId: string): Promise<JourneyEventRecord[]>;
-  getGrowthJourneyEvents(userId: string): Promise<JourneyEventRecord[]>;
-  getRewardJourneyEvents(userId: string): Promise<JourneyEventRecord[]>;
-  getMomentJourneyEvents(userId: string): Promise<JourneyEventRecord[]>;
-  getStudentGoals(userId: string): Promise<StudentGoalRecord[]>;
-  createSnapshotMoment(input: {
-    userId: string;
-    resonanceDate: string;
-    label: string;
-    metadata: Record<string, unknown>;
-  }): Promise<SnapshotMomentRecord>;
-  getPendingActions(teacherId: string): Promise<{
-    attendancePending: PendingAttendanceItem[];
-    gradingPending: PendingGradingItem[];
-  }>;
-  getTemporalHeatmap(userId: string, range: { start: string; end: string }): Promise<HeatmapItem[]>;
-}
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export const createSupabaseUIExperienceRepository = (
   supabase: SupabaseClient,
 ): UIExperienceRepository => ({
-  async getMoodJourneyEvents(userId: string): Promise<JourneyEventRecord[]> {
+  async getMoodJourneyEvents(userId: string, view: TemporalView): Promise<JourneyEvent[]> {
     let query = supabase.from('mood_logs').select('*').eq('user_id', userId);
-    query = applyTemporalFilter(query, {
-      column: 'created_at',
-      mode: 'event_time',
-      capability: 'event_stream',
-    });
+    query = applyTemporalFilter(
+      query,
+      {
+        column: 'created_at',
+        mode: 'event_time',
+        capability: 'event_stream',
+      },
+      view,
+    );
 
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw new APIError('Failed to fetch mood journey events', error.code, error);
@@ -91,13 +41,17 @@ export const createSupabaseUIExperienceRepository = (
     }));
   },
 
-  async getJournalJourneyEvents(userId: string): Promise<JourneyEventRecord[]> {
+  async getJournalJourneyEvents(userId: string, view: TemporalView): Promise<JourneyEvent[]> {
     let query = supabase.from('journal_entries').select('*').eq('user_id', userId);
-    query = applyTemporalFilter(query, {
-      column: 'created_at',
-      mode: 'event_time',
-      capability: 'event_stream',
-    });
+    query = applyTemporalFilter(
+      query,
+      {
+        column: 'created_at',
+        mode: 'event_time',
+        capability: 'event_stream',
+      },
+      view,
+    );
 
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw new APIError('Failed to fetch journal journey events', error.code, error);
@@ -112,13 +66,17 @@ export const createSupabaseUIExperienceRepository = (
     }));
   },
 
-  async getGrowthJourneyEvents(userId: string): Promise<JourneyEventRecord[]> {
+  async getGrowthJourneyEvents(userId: string, view: TemporalView): Promise<JourneyEvent[]> {
     let query = supabase.from('growth_milestones').select('*').eq('user_id', userId);
-    query = applyTemporalFilter(query, {
-      column: 'created_at',
-      mode: 'event_time',
-      capability: 'event_stream',
-    });
+    query = applyTemporalFilter(
+      query,
+      {
+        column: 'created_at',
+        mode: 'event_time',
+        capability: 'event_stream',
+      },
+      view,
+    );
 
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw new APIError('Failed to fetch growth journey events', error.code, error);
@@ -133,7 +91,7 @@ export const createSupabaseUIExperienceRepository = (
     }));
   },
 
-  async getRewardJourneyEvents(userId: string): Promise<JourneyEventRecord[]> {
+  async getRewardJourneyEvents(userId: string): Promise<JourneyEvent[]> {
     const { data, error } = await supabase
       .from('user_rewards_versions')
       .select('id, operation, recorded_at, snapshot')
@@ -153,7 +111,7 @@ export const createSupabaseUIExperienceRepository = (
     }));
   },
 
-  async getMomentJourneyEvents(userId: string): Promise<JourneyEventRecord[]> {
+  async getMomentJourneyEvents(userId: string): Promise<JourneyEvent[]> {
     const { data, error } = await supabase
       .from('whispered_moments')
       .select('id, moment_key, moment_name_en, moment_name_si, awarded_at')
@@ -172,7 +130,7 @@ export const createSupabaseUIExperienceRepository = (
     }));
   },
 
-  async getStudentGoals(userId: string): Promise<StudentGoalRecord[]> {
+  async getStudentGoals(userId: string): Promise<StudentGoal[]> {
     const { data, error } = await supabase
       .from('student_goals')
       .select('*')
@@ -323,3 +281,5 @@ export const createSupabaseUIExperienceRepository = (
     }));
   },
 });
+
+export const supabaseUIExperienceRepository = createSupabaseUIExperienceRepository(supabaseClient);

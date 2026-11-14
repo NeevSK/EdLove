@@ -1,5 +1,5 @@
 import { normalizeAcceptedInternalRoute } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
-import { Data, Effect } from 'effect';
+import { Effect, Schema } from 'effect';
 
 export type AuthCallbackPurpose = 'sign-in' | 'sign-up' | 'recovery' | 'link-identity';
 
@@ -16,21 +16,26 @@ export type AuthCallbackAttemptResult =
   | Readonly<{ kind: 'accepted'; attempt: AuthCallbackAttempt }>
   | Readonly<{ kind: 'rejected'; reason: 'missing' | 'expired' | 'replayed' | 'account-changed' }>;
 
-export class InvalidAuthCallbackAttempt extends Data.TaggedError('InvalidAuthCallbackAttempt')<{
-  readonly reason: 'id' | 'return-path' | 'ttl';
-}> {}
+export class InvalidAuthCallbackAttempt extends Schema.TaggedError<InvalidAuthCallbackAttempt>()(
+  'InvalidAuthCallbackAttempt',
+  {
+    reason: Schema.Literals(['id', 'return-path', 'ttl']),
+  },
+) {}
 
 const MAX_ATTEMPT_TTL_MS = 15 * 60 * 1000;
 const ATTEMPT_ID = /^[A-Za-z0-9_-]{16,128}$/;
 
-export function issueAuthCallbackAttempt(input: Readonly<{
-  id: string;
-  purpose: AuthCallbackPurpose;
-  returnPath: string;
-  issuedAt: number;
-  ttlMs: number;
-  subjectId: string | null;
-}>): Effect.Effect<AuthCallbackAttempt, InvalidAuthCallbackAttempt> {
+export function issueAuthCallbackAttempt(
+  input: Readonly<{
+    id: string;
+    purpose: AuthCallbackPurpose;
+    returnPath: string;
+    issuedAt: number;
+    ttlMs: number;
+    subjectId: string | null;
+  }>,
+): Effect.Effect<AuthCallbackAttempt, InvalidAuthCallbackAttempt> {
   return Effect.gen(function* () {
     if (!ATTEMPT_ID.test(input.id)) {
       return yield* Effect.fail(new InvalidAuthCallbackAttempt({ reason: 'id' }));
@@ -39,7 +44,8 @@ export function issueAuthCallbackAttempt(input: Readonly<{
       return yield* Effect.fail(new InvalidAuthCallbackAttempt({ reason: 'ttl' }));
     }
     const returnPath = normalizeAcceptedInternalRoute(input.returnPath);
-    if (!returnPath) return yield* Effect.fail(new InvalidAuthCallbackAttempt({ reason: 'return-path' }));
+    if (!returnPath)
+      return yield* Effect.fail(new InvalidAuthCallbackAttempt({ reason: 'return-path' }));
     return { ...input, returnPath, expiresAt: input.issuedAt + input.ttlMs };
   });
 }

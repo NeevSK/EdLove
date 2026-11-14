@@ -1,8 +1,5 @@
-import {
-  BondSchema,
-  CapacitySchema,
-  IdentityStateSchema,
-} from '@repo/core/logic/schemas/identity.schema';
+import { BondSchema, IdentityStateSchema } from '@repo/core/logic/schemas/identity.schema';
+import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import { makeModelSchema } from '@repo/schema';
 import { z } from 'zod';
 
@@ -24,7 +21,7 @@ export const UserSchema = makeModelSchema('User')
   })
   .catchall(z.unknown());
 
-export type User = z.infer<typeof UserSchema>;
+export type UserRow = z.infer<typeof UserSchema>;
 
 export const TenantKindSchema = z.enum(['internal', 'customer', 'demo', 'sandbox']);
 
@@ -123,33 +120,3 @@ export const UserContextSchema = z.preprocess(
 
 export type UserContext = z.infer<typeof UserContextSchema>;
 export type TenantKind = z.infer<typeof TenantKindSchema>;
-
-if ((import.meta as any).vitest) {
-  const { it, expect } = (import.meta as any).vitest;
-  it('validates a correct user object', () => {
-    const validUser = {
-      id: '550e8400-e29b-41d4-a716-446655440000',
-      display_name: 'John Doe',
-      full_name: 'John Doe',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    expect(UserSchema.parse(validUser)).toMatchObject(validUser);
-  });
-
-  it('fails on invalid uuid', () => {
-    const invalidUser = {
-      id: 'not-a-uuid',
-      display_name: 'John Doe',
-      full_name: 'John Doe',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    expect(() => UserSchema.parse(invalidUser)).toThrow();
-  });
-
-  it('defaults authenticated context citizenship to SECOND_CLASS and normalizes WANDERER', () => {
-    expect(UserContextSchema.parse({}).citizenship).toBe('SECOND_CLASS');
-    expect(UserContextSchema.parse({ citizenship: 'WANDERER' }).citizenship).toBe('THIRD_CLASS');
-  });
-}

@@ -7,6 +7,10 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import { EntryStartupBoundary } from '@/entry/EntryStartupBoundary';
 
+// Native-owned transition: the visible React boot surface is already mounted
+// before the handoff service releases this splash.
+SplashScreen.setOptions({ duration: 220, fade: true });
+
 void SplashScreen.preventAutoHideAsync().catch(() => {
   // The visible startup boundary owns recovery if the native call is unavailable.
 });
@@ -16,8 +20,8 @@ try {
     dispatchInDebug: false,
     dispatchingEnabled: true,
     environment: process.env.EXPO_PUBLIC_APP_ENV ?? process.env.NODE_ENV ?? 'production',
-    integrations: { expoRouter: true },
-    sampleRate: 0.2,
+    integrations: { 'expo-router': true },
+    sampleRate: process.env.EXPO_PUBLIC_APP_ENV === 'performance' ? 1 : 0.2,
   });
 } catch (error) {
   console.warn('[observe] configuration unavailable:', error);

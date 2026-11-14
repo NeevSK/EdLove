@@ -1,6 +1,6 @@
-import { Card } from '@repo/ui/components/SanctuaryCard';
-import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
-import { colors } from '@repo/ui/theme';
+import { View, Text } from 'react-native';
+import { Surface } from '@repo/ui/components/native';
+import { colors } from '@repo/ui/theme/Theme';
 import { formatGPA, getGradeColor } from '@repo/analytics/utils/analyticsHelpers';
 
 interface GPAInsightsProps {
@@ -30,14 +30,14 @@ export function GPAInsights({
         : colors.warning;
 
   return (
-    <Card className="rounded-3xl bg-white/70 px-6 py-6">
+    <Surface tone="raised" className="rounded-3xl bg-white/70 px-6 py-6">
       <Text className="mb-5 text-xl font-bold" style={{ color: colors.text }}>
         GPA Insights
       </Text>
 
-      <VStack className="gap-5">
-        <HStack className="w-full justify-around gap-4">
-          <VStack className="flex-1 items-center gap-1">
+      <View className="gap-5">
+        <View className="flex-row items-center w-full justify-around gap-4">
+          <View className="flex-1 items-center gap-1">
             <Text className="text-center text-xs" style={{ color: colors.textSecondary }}>
               Current GPA
             </Text>
@@ -49,10 +49,10 @@ export function GPAInsights({
             >
               {formatGPA(currentGPA)}
             </Text>
-          </VStack>
+          </View>
 
           {predictedGPA !== undefined ? (
-            <VStack className="flex-1 items-center gap-1">
+            <View className="flex-1 items-center gap-1">
               <Text className="text-center text-xs" style={{ color: colors.textSecondary }}>
                 Predicted GPA
               </Text>
@@ -64,45 +64,45 @@ export function GPAInsights({
               >
                 {formatGPA(predictedGPA)}
               </Text>
-            </VStack>
+            </View>
           ) : null}
-        </HStack>
+        </View>
 
-        <Box className="items-center gap-1">
+        <View className="items-center gap-1">
           <Text className="text-sm" style={{ color: colors.textSecondary }}>
             Performance Trend
           </Text>
           <Text className="text-base font-semibold" style={{ color: trendColor }}>
             {trendDirection.charAt(0).toUpperCase() + trendDirection.slice(1)}
           </Text>
-        </Box>
+        </View>
 
-        <VStack className="gap-2">
+        <View className="gap-2">
           <Text className="text-sm" style={{ color: colors.text }}>
             Target: {formatGPA(targetGPA)}
           </Text>
-          <Box
+          <View
             className="h-2 w-full overflow-hidden rounded-full"
             style={{ backgroundColor: colors.border }}
           >
-            <Box
+            <View
               className="h-full rounded-full"
               style={{
                 width: `${Math.min(100, Math.max(0, (currentGPA / 4.0) * 100))}%`,
                 backgroundColor: isOnTrack ? colors.success : colors.warning,
               }}
             />
-          </Box>
+          </View>
           <Text className="text-xs" style={{ color: colors.textSecondary }}>
             {gapToTarget > 0 ? `${formatGPA(gapToTarget)} to target` : 'Target achieved!'}
           </Text>
-        </VStack>
+        </View>
 
-        <VStack className="gap-2 pt-2">
+        <View className="gap-2 pt-2">
           <Text className="text-base font-semibold" style={{ color: colors.text }}>
             Recommendations
           </Text>
-          <VStack className="gap-2">
+          <View className="gap-2">
             {generateRecommendations(currentGPA, trendDirection, gapToTarget).map(
               (recommendation) => (
                 <Text
@@ -114,10 +114,10 @@ export function GPAInsights({
                 </Text>
               ),
             )}
-          </VStack>
-        </VStack>
-      </VStack>
-    </Card>
+          </View>
+        </View>
+      </View>
+    </Surface>
   );
 }
 

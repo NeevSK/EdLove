@@ -1,0 +1,77 @@
+diff --git a/apps/sanctuary-api/src/core/app.ts b/apps/sanctuary-api/src/core/app.ts
+index ae4a5b669..849baa685 100644
+--- a/apps/sanctuary-api/src/core/app.ts
++++ b/apps/sanctuary-api/src/core/app.ts
+@@ -279,6 +279,7 @@ async function sha256Hex(value: string): Promise<string> {
+ }
+ 
+ // Mount core security and transport optimization middlewares
++app.use('*', requestId());
+ app.use('*', secureHeaders());
+ app.use('*', compress());
+ app.use('*', bodyLimit({ maxSize: 5 * 1024 * 1024 })); // 5MB limit
+@@ -381,9 +382,6 @@ app.use('/api/*', rateLimitHandler);
+ // Logger (structured request/response logging)
+ app.use('*', logger());
+ 
+-// Request ID (built-in — available via c.get('requestId'))
+-app.use('*', requestId());
+-
+ // Correlation ID propagation (W3C traceparent/tracestate)
+ app.use('/api/*', extractCorrelationIdMiddleware());
+ 
+@@ -419,23 +417,25 @@ if (process.env.SENTRY_DSN) {
+ app.route('/', healthRoutes);
+ 
+ // Dev Diagnostics Pipeline: Ingests aggregated mobile error reports in development
+-app.post('/dev/diagnostics', async (c) => {
+-  const body = await c.req.json().catch(() => null);
+-  if (body) {
+-    loggerInstance.warn({ devCrashReport: body }, '🚨 [MOBILE DEV CRASH REPORT INGESTED]');
+-    try {
+-      const fs = await import('node:fs/promises');
+-      await fs.writeFile(
+-        'c:/x/apps/gurudevi-mobile/scratch/latest_mobile_errors.json',
+-        JSON.stringify(body, null, 2),
+-        'utf-8',
+-      );
+-    } catch (fsErr) {
+-      console.warn('Could not write dev diagnostics scratch file:', fsErr);
++if (process.env.NODE_ENV === 'development') {
++  app.post('/dev/diagnostics', async (c) => {
++    const body = await c.req.json().catch(() => null);
++    if (body) {
++      loggerInstance.warn({ devCrashReport: body }, '🚨 [MOBILE DEV CRASH REPORT INGESTED]');
++      try {
++        const fs = await import('node:fs/promises');
++        await fs.writeFile(
++          'c:/x/apps/gurudevi-mobile/scratch/latest_mobile_errors.json',
++          JSON.stringify(body, null, 2),
++          'utf-8',
++        );
++      } catch (fsErr) {
++        console.warn('Could not write dev diagnostics scratch file:', fsErr);
++      }
+     }
+-  }
+-  return c.json({ ok: true, received: Boolean(body) });
+-});
++    return c.json({ ok: true, received: Boolean(body) });
++  });
++}
+ 
+ app.use('/api/*', async (c, next) => {
+   // 1. Resolve User from Header using Authoritative Asymmetric Cryptographic JWT Verification
+diff --git a/packages/core/src/types/API.ts b/packages/core/src/types/API.ts
+index 5b822f82d..f609be3a3 100644
+--- a/packages/core/src/types/API.ts
++++ b/packages/core/src/types/API.ts
+@@ -3,7 +3,7 @@ import { SovereignError } from '@repo/core/types/Errors';
+ export class APIError extends SovereignError {
+   public readonly code: string;
+   public readonly reportedToTelemetry: boolean;
+-  public override readonly cause?: unknown;
++  public override readonly cause: unknown = undefined;
+ 
+   constructor(message: string, code = 'API_ERROR', details?: unknown, reportedToTelemetry = false, cause?: unknown) {
+     const normalizedCode = code;

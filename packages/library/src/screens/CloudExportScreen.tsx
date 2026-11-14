@@ -1,8 +1,9 @@
 import { getCloudAPI, type CloudImportResult } from '@repo/library/api';
 import { useLoadedBytes } from '@repo/library/hooks/useLoadedBytes';
 import { saveBytes } from '@repo/library/utils/bytes';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
+import { WaitingSign } from '@repo/ui/components/native';
 import { ArrowLeft, Check, Cloud, Download, Key, Link2 } from '@repo/ui/icons';
 import {
   Box,
@@ -16,17 +17,18 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking } from 'react-native';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 type Provider = 'google' | 'microsoft';
 
 export default function CloudExportScreen() {
   const params = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
   const { bytes, loading, error, detected } = useLoadedBytes(params);
 
   const [provider, setProvider] = useState<Provider>('google');
@@ -163,16 +165,16 @@ export default function CloudExportScreen() {
 
   if (loading) {
     return (
-      <ScreenWrapper>
+      <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
         <Box className="flex-1 items-center justify-center p-8">
-          <BrandPulse size={28} />
+          <WaitingSign size={28} />
         </Box>
-      </ScreenWrapper>
+      </ScrollView></SafeAreaView>
     );
   }
 
   return (
-    <ScreenWrapper>
+    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
       <VStack className="gap-3 p-4">
         <HStack className="items-center gap-2">
           <Pressable onPress={() => router.back()} className="active:opacity-60">
@@ -340,6 +342,6 @@ export default function CloudExportScreen() {
           </>
         ) : null}
       </VStack>
-    </ScreenWrapper>
+    </ScrollView></SafeAreaView>
   );
 }

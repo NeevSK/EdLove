@@ -1,0 +1,21 @@
+plugins {
+  id 'com.android.library'
+  id 'org.jetbrains.kotlin.android'
+}
+
+group = 'app.gurudevi.runtimepressure'
+version = '1.0.0'
+
+android {
+  namespace 'app.gurudevi.runtimepressure'
+  compileSdk rootProject.ext.compileSdkVersion
+
+  defaultConfig {
+    minSdk rootProject.ext.minSdkVersion
+    targetSdk rootProject.ext.targetSdkVersion
+  }
+}
+
+dependencies {
+  implementation project(':expo-modules-core')
+}

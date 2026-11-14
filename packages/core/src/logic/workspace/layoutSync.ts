@@ -63,6 +63,7 @@ export function toWorkspaceLayoutRecord<TSurfaceId extends string = string>(
   return {
     workspaceId: record.workspace_id,
     userId: record.user_id,
+    revision: record.revision,
     order: record.order as TSurfaceId[],
     hidden: record.hidden as TSurfaceId[],
     pinned: record.pinned as TSurfaceId[],

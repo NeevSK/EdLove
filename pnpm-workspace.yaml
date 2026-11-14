@@ -5,16 +5,47 @@ packages:
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
+  # Owner-approved 2026-11-14: Software Mansion's native bottom sheet 1.0.0 (published
+  # 2026-11-13T14:30Z), taken ~12h inside the window for the kit Sheet. Remove once matured.
+  - '@swmansion/react-native-bottom-sheet'
+  # Owner-approved 2026-11-11: XState 6 beta.2 and its Effect bridge, taken ~13h inside the window
+  # (published 2026-11-11T04:07Z). Remove once matured.
+  - 'xstate'
+  - '@xstate/effect'
+  # Owner-approved 2026-11-06: taken inside the 24-hour window. Remove once matured.
+  - '@zenstackhq/*'
+  - '@sentry/*'
+  - 'vitest-native'
+  - 'next@16.4.5'
+  - '@next/env@16.4.5'
+  - '@next/swc-darwin-arm64@16.4.5'
+  - '@next/swc-darwin-x64@16.4.5'
+  - '@next/swc-linux-arm64-gnu@16.4.5'
+  - '@next/swc-linux-arm64-musl@16.4.5'
+  - '@next/swc-linux-x64-gnu@16.4.5'
+  - '@next/swc-linux-x64-musl@16.4.5'
+  - '@next/swc-win32-arm64-msvc@16.4.5'
+  - '@next/swc-win32-x64-msvc@16.4.5'
+  - 'eas-cli'
   - 'expo'
   - 'expo-*'
   - '@expo/*'
   - 'babel-preset-expo'
+  - 'react-native'
+  - 'react-native-*'
+  - '@react-native*'
+  - '@react-native/*'
   - 'react-native-reanimated'
   - 'react-native-worklets'
   - 'react-native-skia'
   - 'react-native-skia-graphite-*'
   - 'jest-expo'
   - '@shopify/flash-list'
+  - '@swmansion/*'
+  - 'react-native-screens'
+  - 'react-native-maps'
+  - 'react-native-pager-view'
+  - 'react-native-keyboard-controller'
   - 'ai'
   - '@ai-sdk/*'
   - 'posthog-react-native'
@@ -22,6 +53,45 @@ minimumReleaseAgeExclude:
   - '@tanstack/ai'
   - 'effect'
   - '@effect/*'
+  - '@intuitui-labs/*'
+  - 'noxcturnal'
+  - '@noxcturnal/*'
+  - 'zustand'
+
+addMissingPeerTypes: true
+
+skills:
+  dirs:
+    - .agents/skills/vendor
+
+cargo:
+  enabled: true
+
+permissions:
+  '@tanstack/react-table':
+    skills: false
+  '@tanstack/ai':
+    skills: true
+  'react-native-nitro-google-signin':
+    skills: true
+  'dotenv':
+    skills: false
+  'fallow':
+    skills: false
+  '@swmansion/argent':
+    skills: false
+  '@supabase/server':
+    skills: false
+  'expo-sqlite':
+    skills: false
+
+sideEffectsCache:
+  exclude:
+    - 'react-native-skia'
+    - 'react-native-nitro-modules'
+    - 'react-native-mmkv'
+    - 'react-native-worklets'
+    - 'better-sqlite3'
 
 publicHoistPattern:
   - '*@tanstack/query-core*'
@@ -44,31 +114,48 @@ publicHoistPattern:
 dedupePeerDependents: true
 
 overrides:
+  # Hono 5 everywhere (owner, 2026-11-11). Dev tools that declare ^4 (MCP SDK 1.26+, @modelcontextprotocol/node,
+  # ZenStack CLI, promptfoo) are forced onto it; each was smoke-tested. See docs/architecture/dependencies.md.
+  hono: '5.0.0-rc.1'
+  '@hono/node-server': '^2.1.6'
   "@typescript-eslint/typescript-estree>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@typescript-eslint/parser>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@typescript-eslint/eslint-plugin>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@typescript-eslint/type-utils>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@typescript-eslint/utils>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "eslint-plugin-sonarjs>typescript": "npm:@typescript/typescript6@^6.0.2"
   "typescript-eslint>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@eslint-react/core>typescript": "npm:@typescript/typescript6@^6.0.2"
   "@eslint-react/eslint-plugin>typescript": "npm:@typescript/typescript6@^6.0.2"
   "eslint-import-resolver-typescript>typescript": "npm:@typescript/typescript6@^6.0.2"
   "eslint-plugin-deprecation>typescript": "npm:@typescript/typescript6@^6.0.2"
-  '@zenstackhq/cli': '3.8.0'
-  '@zenstackhq/orm': '3.8.0'
-  '@zenstackhq/language': '3.8.0'
-  '@zenstackhq/sdk': '3.8.0'
-  '@zenstackhq/zod': '3.8.0'
-  '@zenstackhq/schema': '3.8.0'
+  "@zenstackhq/cli>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "@zenstackhq/sdk>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "@zenstackhq/orm>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "@repo/schema>typescript": "npm:@typescript/typescript6@^6.0.2"
+  "dependency-cruiser>typescript": "npm:@typescript/typescript6@^6.0.2"
+  typescript: '7.1.0-beta'
+  '@zenstackhq/cli': '3.10.1'
+  '@zenstackhq/orm': '3.10.1'
+  '@zenstackhq/language': '3.10.1'
+  '@zenstackhq/sdk': '3.10.1'
+  '@zenstackhq/zod': '3.10.1'
+  '@zenstackhq/schema': '3.10.1'
+  '@zenstackhq/plugin-policy': '3.10.1'
   '@ag-ui/core': '1.0.0'
-  zod: '4.6.5'
+  'shell-quote': '^1.12.0'
+  vite: '^8.3.5'
+  dompurify: '^3.4.17'
+  devalue: '^5.9.4'
+  katex: '^0.18.10'
+  zod: '4.6.7'
   zod-validation-error: '5.0.0'
-  kysely: '0.28.16'
-  react: '19.3.0'
-  react-dom: '19.3.0'
-  react-native: '0.88.0-rc.3'
-  react-native-worklets: '0.13.0'
-  react-test-renderer: '19.3.0'
+  kysely: '0.29.8'
+  react: '19.3.1'
+  react-dom: '19.3.1'
+  react-native: '0.88.1'
+  react-native-worklets: '0.13.1'
+  react-test-renderer: '19.3.1'
   '@types/react': '^19.3.0'
   '@types/react-dom': '19.3.0'
   '@types/react-native': 'link:./packages/types-shim'
@@ -79,84 +166,87 @@ overrides:
   abab: '*'
   domexception: '*'
   whatwg-encoding: '*'
-  nitro-modules: '0.33.9'
-  '@sentry/react-native': '~8.23.0'
-  'react-native-skia': '3.0.3'
-  '@shopify/react-native-skia': 'npm:react-native-skia@3.0.3'
+  '@sentry/react-native': '8.34.0'
+  'react-native-skia': '^3.9.1'
+  '@shopify/react-native-skia': 'npm:react-native-skia@^3.9.1'
   '@react-native-async-storage/async-storage': '2.2.0'
-  '@expo/vector-icons': '15.1.1'
-  react-native-maps: '^1.29.0'
-  expo: '~58.0.3'
-  '@expo/log-box': '58.0.9'
-  '@expo/ui': '~58.0.12'
-  expo-application: '~58.0.3'
-  expo-auth-session: '~58.0.8'
-  expo-blur: '~58.0.3'
+  '@expo/vector-icons': ~15.1.1
+  react-native-maps: '1.29.11'
+  expo: '~58.0.23'
+  '@expo/log-box': ~58.0.15
+  '@expo/ui': '~58.0.27'
+  expo-application: '~58.1.2'
+  expo-auth-session: '~58.0.17'
+  expo-blur: '~58.0.5'
   expo-brightness: '~58.0.2'
-  expo-camera: '~58.0.8'
-  expo-clipboard: '~58.0.3'
-  expo-crypto: '~58.0.4'
+  expo-camera: '~58.0.14'
+  expo-clipboard: '~58.0.4'
+  expo-crypto: '~58.0.7'
   expo-device: '~58.0.5'
-  expo-haptics: '~58.0.4'
-  expo-image: '~58.0.11'
-  expo-image-manipulator: '~58.0.12'
+  expo-haptics: '~58.0.7'
+  expo-image: '~58.0.18'
+  expo-image-manipulator: '~58.0.16'
   expo-linear-gradient: '~58.0.3'
   expo-secure-store: '~58.0.2'
-  expo-server: '~58.0.3'
-  expo-web-browser: '~58.0.5'
-  expo-asset: '~58.0.11'
-  expo-constants: '~58.0.9'
-  expo-file-system: '~58.0.5'
-  expo-font: '~58.0.6'
+  expo-server: '~58.0.6'
+  expo-web-browser: '~58.0.7'
+  expo-asset: '~58.0.20'
+  expo-constants: '~58.0.15'
+  expo-file-system: '~58.0.13'
+  expo-font: '~58.0.11'
   expo-keep-awake: '~58.0.3'
-  expo-modules-core: '~58.0.12'
+  expo-modules-core: '~58.0.30'
   '@expo/dom-webview': '~58.0.2'
   expo-image-picker: '~58.0.10'
-  expo-location: '~58.0.11'
-  expo-sharing: '~58.0.14'
-  expo-audio: '~58.0.5'
-  expo-linking: '~58.0.10'
-  expo-sqlite: '~58.0.9'
-  expo-video: '~58.0.6'
-  expo-notifications: '~58.1.0'
+  expo-location: '~58.0.20'
+  expo-sharing: '~58.0.22'
+  expo-audio: '~58.0.11'
+  expo-linking: '~58.0.16'
+  expo-sqlite: '~58.0.15'
+  expo-video: '~58.0.13'
+  expo-notifications: '~58.1.8'
   expo-symbols: '~58.0.4'
-  expo-glass-effect: '~58.0.3'
-  expo-media-library: '~58.0.6'
-  expo-dev-client: '~58.0.11'
-  expo-router: '~58.0.13'
+  expo-glass-effect: '~58.0.5'
+  expo-media-library: '~58.0.13'
+  expo-dev-client: '~58.0.18'
+  expo-router: '~58.0.30'
+  expo-splash-screen: '~58.0.13'
   react-native-reanimated: '4.7.1'
-  react-native-safe-area-context: '5.10.1'
-  react-native-screens: '4.28.0'
-  react-native-gesture-handler: '3.3.0'
+  react-native-safe-area-context: '5.11.1'
+  react-native-screens: '4.30.1'
+  react-native-gesture-handler: '3.5.0'
   react-native-webview: '14.0.1'
-  react-native-pager-view: '9.0.4'
-  react-native-web: '~0.21.3'
-  react-native-get-random-values: '2.0.0'
-  '@react-navigation/core': '^7.21.13'
-  '@types/react-test-renderer': '19.1.0'
-  '@supabase/supabase-js': '2.117.2'
-  '@supabase/postgrest-js': '2.117.2'
-  '@shopify/flash-list': '2.3.2'
-  jest-expo: '~58.0.7'
-  '@expo/metro-runtime': '~58.0.11'
-  expo-background-task: '~58.0.10'
-  expo-task-manager: '~58.0.11'
-  expo-updates: '~58.0.14'
-  expo-widgets: '~58.0.12'
-  expo-build-properties: '~58.0.10'
-  expo-observe: '~58.0.13'
-  '@expo/fingerprint': '~0.21.3'
+  react-native-web: '~0.21.4'
+  react-native-get-random-values: '2.1.0'
+  '@react-navigation/core': '^7.24.0'
+  '@types/react-test-renderer': '19.3.1'
+  '@supabase/supabase-js': '*'
+  '@supabase/postgrest-js': 2.119.0
+  '@shopify/flash-list': '2.3.3'
+  jest-expo: '~58.0.14'
+  '@expo/metro-runtime': '~58.0.17'
+  expo-background-task: '~58.0.12'
+  expo-task-manager: '~58.0.13'
+  expo-updates: '~58.0.21'
+  expo-widgets: '~58.0.27'
+  expo-build-properties: '~58.0.12'
+  expo-observe: '~58.0.18'
+  '@expo/fingerprint': '~0.21.9'
   lightningcss: '1.30.1'
 
 patchedDependencies:
   '@noble/hashes@1.8.0': 'patches/@noble__hashes@1.8.0.patch'
+  '@zenstackhq/server@3.10.1': patches/@zenstackhq__server@3.10.1.patch
   color@4.2.3: patches/color@4.2.3.patch
   eslint-plugin-react-native: patches/eslint-plugin-react-native.patch
-  react-native-shared-hero@1.0.3: patches/react-native-shared-hero@1.0.3.patch
+  react-native-shared-hero@1.0.6: patches/react-native-shared-hero@1.0.6.patch
 
 allowBuilds:
+  koffi: false
   '@biomejs/biome': true
   '@fails-components/webtransport-transport-http3-quiche': false
+  # Optional Bunyan/EAS logger probe; native DTrace is unavailable on Linux/Windows and the package falls back to a JS no-op stub.
+  'dtrace-provider': false
   '@google/genai': true
   '@img/sharp-win32-x64': true
   '@journeyapps/wa-sqlite': true
@@ -190,3 +280,10 @@ allowBuilds:
   vd-tool: true
   workerd: true
 
+# dependency-cruiser imports `typescript` without declaring it, and needs the classic compiler API
+# (TypeScript 7 has none until 7.1's API is stable). Give it the same TypeScript 6 copy the
+# ESLint and ZenStack toolchains use (see overrides above). Tools only: the repo still builds on 7.
+packageExtensions:
+  dependency-cruiser:
+    dependencies:
+      typescript: "npm:@typescript/typescript6@^6.0.2"

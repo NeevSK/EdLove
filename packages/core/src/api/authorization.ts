@@ -1,6 +1,4 @@
-import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-
-const client = createSovereignClient(SOVEREIGN_API_URL);
+import { orpcClient } from '@repo/core/api/orpcClient';
 
 /**
  * Requests a fresh server-owned snapshot. The response is intentionally not
@@ -9,8 +7,9 @@ const client = createSovereignClient(SOVEREIGN_API_URL);
  * are verified before use.
  */
 export async function refreshPermissionSnapshotOnServer(): Promise<void> {
-  const response = await client.api.authorization['permission-snapshot'].$get();
-  if (!response.ok) {
-    throw new Error(`Permission snapshot refresh failed (${response.status})`);
+  try {
+    await orpcClient.authorization.refresh();
+  } catch (error: any) {
+    throw new Error(`Permission snapshot refresh failed (${error.message || error.status || 'unknown'})`);
   }
 }

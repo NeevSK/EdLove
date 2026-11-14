@@ -1,15 +1,19 @@
-import { useNotifications, useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useScopedNotifications } from '@repo/core/hooks';
+
 import type { AppNotification } from '@repo/core/types';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Bell, Check, CircleAlert, Info, Sparkles } from '@repo/ui/icons';
 import { Button, ButtonText, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
-import { Platform, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 
 function NotificationIcon({ type, color }: { type: string; color: string }) {
   switch (type) {
@@ -104,8 +108,8 @@ export default function NotificationsScreen() {
   const { t } = useTranslation();
   const { accent, text } = useTheme();
   const { width } = useWindowDimensions();
-  const user = useStore((state) => state.user);
-  const isOnline = useStore((state) => state.isOnline);
+  const user = useAuthStore(state => state.user);
+  const { status: networkStatus } = useOfflineStatus();
   const {
     notifications,
     unreadCount,
@@ -115,15 +119,17 @@ export default function NotificationsScreen() {
     markAsRead,
     markAllRead,
     refresh,
-  } = useNotifications(user?.id);
+  } = useScopedNotifications(user?.id);
 
   const hasData = notifications.length > 0;
-  const isOffline = !isOnline;
+  const isOffline = networkStatus === 'offline';
   const isStale = hasData && (isOffline || Boolean(error) || !isRealtimeConnected);
 
   return (
     <ScreenWrapper scroll={false} fullWidth noTopInset>
-      <ScrollView
+      <SanctuaryFlashList
+        data={hasData ? notifications : []}
+        keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           width: '100%',
@@ -132,76 +138,79 @@ export default function NotificationsScreen() {
           padding: 16,
           paddingBottom: 120,
         }}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => void refresh()} />}
-      >
-        <VStack space="lg">
-          {Platform.OS !== 'web' ? (
-            <HStack className="items-start justify-between gap-4 mb-2">
-              <VStack className="flex-1 gap-1">
-                <Text className="text-xs uppercase tracking-[2px]" style={{ color: accent.action }}>
-                  {t('notifications.stream', 'Echoes of the Sanctuary')}
+        refreshing={isLoading}
+        onRefresh={() => void refresh()}
+        ListHeaderComponent={
+          <VStack space="lg" className="mb-4">
+            {Platform.OS !== 'web' ? (
+              <HStack className="items-start justify-between gap-4 mb-2">
+                <VStack className="flex-1 gap-1">
+                  <Text className="text-xs uppercase tracking-[2px]" style={{ color: accent.action }}>
+                    {t('notifications.stream', 'Echoes of the Sanctuary')}
+                  </Text>
+                  <Text className="text-2xl font-bold" style={{ color: text.primary }}>
+                    {t('notifications.title', 'Notifications')}
+                  </Text>
+                  <Text className="text-sm" style={{ color: text.secondary }}>
+                    {unreadCount > 0
+                      ? t('notifications.unread', { count: unreadCount })
+                      : t('notifications.empty', 'Your sanctuary is quiet.')}
+                  </Text>
+                </VStack>
+                <Bell size={26} color={accent.action} />
+              </HStack>
+            ) : (
+              unreadCount > 0 && (
+                <Text className="text-sm font-medium mb-1" style={{ color: text.secondary }}>
+                  {t('notifications.unread', { count: unreadCount })}
                 </Text>
-                <Text className="text-2xl font-bold" style={{ color: text.primary }}>
-                  {t('notifications.title', 'Notifications')}
+              )
+            )}
+
+            {isOffline ? (
+              <HStack className="items-center gap-2 rounded-xl bg-phase-surface px-3 py-2">
+                <CircleAlert size={15} color={accent.action} />
+                <Text className="flex-1 text-xs" style={{ color: text.secondary }}>
+                  {t(
+                    'notifications.offline_notice',
+                    'Showing the latest saved notifications while you are offline.',
+                  )}
                 </Text>
-                <Text className="text-sm" style={{ color: text.secondary }}>
-                  {unreadCount > 0
-                    ? t('notifications.unread', { count: unreadCount })
-                    : t('notifications.empty', 'Your sanctuary is quiet.')}
+              </HStack>
+            ) : isStale ? (
+              <HStack className="items-center gap-2 rounded-xl bg-phase-surface px-3 py-2">
+                <CircleAlert size={15} color={accent.action} />
+                <Text className="flex-1 text-xs" style={{ color: text.secondary }}>
+                  Live updates are paused. Pull to refresh when you are ready.
                 </Text>
-              </VStack>
-              <Bell size={26} color={accent.action} />
-            </HStack>
-          ) : (
-            unreadCount > 0 && (
-              <Text className="text-sm font-medium mb-1" style={{ color: text.secondary }}>
-                {t('notifications.unread', { count: unreadCount })}
+              </HStack>
+            ) : null}
+
+            {error && hasData ? (
+              <Text className="text-xs" style={{ color: accent.action }} accessibilityRole="alert">
+                {error}
               </Text>
-            )
-          )}
+            ) : null}
 
-          {isOffline ? (
-            <HStack className="items-center gap-2 rounded-xl bg-phase-surface px-3 py-2">
-              <CircleAlert size={15} color={accent.action} />
-              <Text className="flex-1 text-xs" style={{ color: text.secondary }}>
-                {t(
-                  'notifications.offline_notice',
-                  'Showing the latest saved notifications while you are offline.',
-                )}
-              </Text>
-            </HStack>
-          ) : isStale ? (
-            <HStack className="items-center gap-2 rounded-xl bg-phase-surface px-3 py-2">
-              <CircleAlert size={15} color={accent.action} />
-              <Text className="flex-1 text-xs" style={{ color: text.secondary }}>
-                Live updates are paused. Pull to refresh when you are ready.
-              </Text>
-            </HStack>
-          ) : null}
-
-          {error && hasData ? (
-            <Text className="text-xs" style={{ color: accent.action }} accessibilityRole="alert">
-              {error}
-            </Text>
-          ) : null}
-
-          {hasData && unreadCount > 0 ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={() => {
-                hapticLight();
-                void markAllRead();
-              }}
-              accessibilityLabel="Mark all notifications as read"
-              accessibilityHint="Marks every unread notification as read"
-              className="self-start rounded-xl"
-            >
-              <ButtonText>Mark all read</ButtonText>
-            </Button>
-          ) : null}
-
-          {isLoading && !hasData ? (
+            {hasData && unreadCount > 0 ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={() => {
+                  hapticLight();
+                  void markAllRead();
+                }}
+                accessibilityLabel="Mark all notifications as read"
+                accessibilityHint="Marks every unread notification as read"
+                className="self-start rounded-xl"
+              >
+                <ButtonText>Mark all read</ButtonText>
+              </Button>
+            ) : null}
+          </VStack>
+        }
+        ListEmptyComponent={
+          isLoading && !hasData ? (
             <VStack className="items-center py-16 gap-4">
               <BrandPulse
                 size={42}
@@ -230,19 +239,18 @@ export default function NotificationsScreen() {
               title={t('notifications.quietTitle', 'A quiet garden')}
               message={t('notifications.empty', 'There is nothing waiting for your attention.')}
             />
-          ) : (
-            <VStack space="sm">
-              {notifications.map((notification) => (
-                <NotificationRow
-                  key={notification.id}
-                  notification={notification}
-                  onMarkRead={(id) => void markAsRead(id)}
-                />
-              ))}
-            </VStack>
-          )}
-        </VStack>
-      </ScrollView>
+          ) : null
+        }
+        renderItem={({ item }) => (
+          <VStack space="sm" className="mb-2">
+            <NotificationRow
+              key={item.id}
+              notification={item}
+              onMarkRead={(id) => void markAsRead(id)}
+            />
+          </VStack>
+        )}
+      />
     </ScreenWrapper>
   );
 }

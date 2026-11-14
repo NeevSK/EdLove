@@ -1,4 +1,5 @@
 .floor {
+  container-type: inline-size;
   min-height: 100%;
   padding: clamp(1.25rem, 5vw, 5rem);
   background:
@@ -33,6 +34,13 @@
   line-height: 0.98;
 }
 
+.roleContext {
+  margin: 0 0 0.45rem;
+  color: var(--w-lamp, var(--accent));
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
 .arrival p:last-child {
   max-width: 39rem;
   margin: 0;
@@ -42,6 +50,7 @@
 }
 
 .directory {
+  container-type: inline-size;
   display: grid;
   gap: 1rem;
   max-width: 54rem;
@@ -167,7 +176,7 @@
   outline-offset: 3px;
 }
 
-@media (min-width: 48rem) {
+@container (min-width: 48rem) {
   .masterDetailLayout {
     display: grid;
     grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
@@ -180,7 +189,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@container (max-width: 47.99rem) {
   .masterDetailLayout {
     display: block;
   }
@@ -389,7 +398,7 @@
   line-height: 1.6;
 }
 
-@media (max-width: 40rem) {
+@container (max-width: 40rem) {
   .group {
     grid-template-columns: auto minmax(0, 1fr);
   }
@@ -399,3 +408,1002 @@
     margin-top: -0.55rem;
   }
 }
+
+/* Post Stream & Composer */
+.postStreamContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.circleStreamBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 60%, transparent);
+}
+
+.circleStreamMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.circleStreamTitle {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.circleStreamDescription {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.circleStreamStats {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.statPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--lotus) 12%, transparent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.circleStreamActions {
+  display: flex;
+  align-items: center;
+}
+
+.openChatButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 9999px;
+  background: var(--w-action, var(--lotus));
+  color: var(--w-on-action, var(--w-ground));
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.openChatButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Composer Card */
+.composerCard {
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--paper-light);
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.composerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.composerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.composerAuthorBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.composerAvatar {
+  font-size: 1rem;
+}
+
+.composerRoleLabel {
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.7rem;
+}
+
+.composerGroupTarget {
+  font-size: 0.8rem;
+}
+
+.composerTextarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--paper) 50%, var(--paper-light));
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.composerTextarea:focus {
+  border-color: var(--w-action, var(--lotus));
+}
+
+.composerFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+}
+
+.composerTypeSelector {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.typeChip {
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.typeChipActive {
+  background: var(--w-action, var(--lotus));
+  border-color: var(--w-action, var(--lotus));
+  color: var(--w-on-action, var(--w-ground));
+}
+
+.composerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.charCount {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.composerCancelButton {
+  padding: 0.4rem 0.85rem;
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.composerSubmitButton {
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  border: none;
+  background: var(--w-action, var(--lotus));
+  color: var(--w-on-action, var(--w-ground));
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.composerSubmitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Post List */
+.postList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.emptyPostState {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--paper-light) 40%, transparent);
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.emptyPostState h3 {
+  margin: 0 0 0.5rem;
+  font-family: Georgia, serif;
+  font-size: 1.4rem;
+  color: var(--ink);
+}
+
+.emptyPostState p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* Post Card */
+.postCard {
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--paper-light);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--ink) 3%, transparent);
+  transition: border-color 0.15s ease;
+}
+
+.postCard:hover {
+  border-color: color-mix(in srgb, var(--w-action, var(--lotus)) 30%, var(--line));
+}
+
+.postCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.postAuthorGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.authorAvatar {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--w-action, var(--lotus)) 15%, var(--paper));
+  color: var(--w-action, var(--lotus));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.authorNameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.authorName {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.authorRolePill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--lotus) 15%, transparent);
+  color: var(--ink);
+}
+
+.postTimestamp {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  margin-top: 0.15rem;
+}
+
+.postTypeBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.postContent {
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.postContent p {
+  margin: 0;
+}
+
+.postCardFooter {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+
+.reactionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reactionButton:hover {
+  background: color-mix(in srgb, var(--lotus) 15%, transparent);
+}
+
+.reactionButtonActive {
+  background: color-mix(in srgb, var(--w-danger, var(--lotus)) 10%, transparent);
+  border-color: color-mix(in srgb, var(--w-danger, var(--lotus)) 30%, transparent);
+}
+
+.reactionCount {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.commentMetaCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0.35rem 0.5rem;
+  border-radius: 9999px;
+  transition: background 0.15s ease;
+}
+
+.commentMetaCount:hover {
+  background: color-mix(in srgb, var(--lotus) 10%, transparent);
+  color: var(--ink);
+}
+
+/* Discussion Drawer */
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--w-ink, var(--ink)) 45%, transparent);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.drawerContainer {
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  background: var(--paper-light);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px color-mix(in srgb, var(--ink) 12%, transparent);
+  animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawerTitle {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.drawerSubtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.drawerCloseButton {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.drawerCloseButton:hover {
+  background: color-mix(in srgb, var(--lotus) 15%, transparent);
+  color: var(--ink);
+}
+
+.drawerContextPost {
+  padding: 1.25rem 1.5rem;
+  background: color-mix(in srgb, var(--paper) 60%, transparent);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+
+.drawerContextText {
+  margin: 0.4rem 0 0;
+  color: var(--ink);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.drawerCommentsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.commentItem {
+  padding: 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.commentItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.commentContent {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.drawerReplyForm {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--line);
+  background: var(--paper-light);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.drawerReplyInput {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 50%, var(--paper-light));
+  color: var(--ink);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.drawerReplyInput:focus {
+  border-color: var(--w-action, var(--lotus));
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3-PILLAR TRIAD SWITCHER & MESSAGES/GROUPS ENHANCEMENTS                      */
+/* Conforms to UI Kit Rules: Container Queries (Rule 6) & var(--w-*) (Rule 2)  */
+/* -------------------------------------------------------------------------- */
+
+.pillarNavHorizon {
+  display: flex;
+  align-items: center;
+  gap: var(--w-space-2, 0.5rem);
+  margin-bottom: var(--w-space-4, 1rem);
+}
+
+.pillarSegmentedPill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--w-space-1, 0.25rem);
+  padding: 0.3rem 0.35rem;
+  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 85%, transparent);
+  border: 1px solid var(--w-line, var(--line));
+  border-radius: var(--w-radius-full, 9999px);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-ink, var(--ink)) 4%, transparent);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--w-space-2, 0.45rem);
+  padding: 0.4rem 0.95rem;
+  border: none;
+  background: transparent;
+  color: var(--w-ink-soft, var(--ink-soft));
+  font-size: 0.82rem;
+  font-weight: 650;
+  border-radius: var(--w-radius-full, 9999px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pill:hover {
+  color: var(--w-ink, var(--ink));
+  background: color-mix(in srgb, var(--w-action, var(--color-action)) 10%, transparent);
+}
+
+.pillActive {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--w-space-2, 0.45rem);
+  padding: 0.4rem 1rem;
+  border: none;
+  background: var(--w-action, var(--color-action));
+  color: var(--w-ground, var(--paper-light));
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: var(--w-radius-full, 9999px);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-action, var(--color-action)) 30%, transparent);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pillBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: var(--w-radius-full, 9999px);
+  background: var(--w-surface, var(--paper-light));
+  color: var(--w-action, var(--color-action));
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+/* -------------------------------------------------------------------------- */
+/* DM MASTER-DETAIL WORKSPACE (Container Queries via Rule 6)                  */
+/* -------------------------------------------------------------------------- */
+
+.dmMasterDetail {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--w-space-4, 1.25rem);
+  min-height: 540px;
+  border-radius: var(--w-radius-lg, 1.25rem);
+  border: 1px solid var(--w-line, var(--line));
+  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 90%, transparent);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-ink, var(--ink)) 4%, transparent);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+@container (max-width: 680px) {
+  .dmMasterDetail {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dmConversationRail {
+  border-right: 1px solid var(--w-line, var(--line));
+  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 65%, transparent);
+  display: flex;
+  flex-direction: column;
+}
+
+.dmRailHeader {
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid var(--w-line, var(--line));
+}
+
+.dmRailHeader h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--w-ink, var(--ink));
+}
+
+.dmConversationList {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  overflow-y: auto;
+}
+
+.dmConversationItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--w-radius-md, 0.85rem);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+
+.dmConversationItem:hover {
+  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 92%, transparent);
+  border-color: var(--w-line, var(--line));
+}
+
+.dmConversationActive {
+  background: color-mix(in srgb, var(--w-action, var(--color-action)) 12%, var(--w-surface, var(--paper-light)));
+  border-color: color-mix(in srgb, var(--w-action, var(--color-action)) 30%, transparent);
+}
+
+.dmAvatar {
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: var(--w-radius-full, 9999px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--w-action, var(--color-action));
+  background: var(--w-ground, var(--paper));
+  flex-shrink: 0;
+  border: 1px solid var(--w-line, var(--line));
+}
+
+.dmAvatarSpecial {
+  background: color-mix(in srgb, var(--w-lamp, var(--accent)) 25%, var(--w-surface, var(--paper-light)));
+  color: var(--w-lamp, var(--accent));
+}
+
+.dmConversationInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.dmConversationNameRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.dmConversationName {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--w-ink, var(--ink));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dmConversationSnippet {
+  font-size: 0.75rem;
+  color: var(--w-ink-soft, var(--ink-soft));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0.15rem;
+}
+
+.dmStage {
+  display: flex;
+  flex-direction: column;
+  min-height: 540px;
+  background: var(--w-surface, var(--paper-light));
+}
+
+.dmHeaderBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--w-line, var(--line));
+  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 90%, transparent);
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dmHeaderTarget {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.dmHeaderTarget h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--w-ink, var(--ink));
+}
+
+.dmHeaderTarget p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--w-ink-soft, var(--ink-soft));
+}
+
+.dmIncognitoBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--w-radius-full, 9999px);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--w-line, var(--line));
+  background: var(--w-surface, var(--paper-light));
+  color: var(--w-ink-soft, var(--ink-soft));
+  transition: all 0.2s ease;
+}
+
+.dmIncognitoActive {
+  background: color-mix(in srgb, var(--w-lamp, var(--accent)) 18%, var(--w-surface, var(--paper-light)));
+  border-color: var(--w-lamp, var(--accent));
+  color: var(--w-lamp, var(--accent));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--w-lamp, var(--accent)) 30%, transparent);
+}
+
+.incognitoBanner {
+  background: color-mix(in srgb, var(--w-lamp, var(--accent)) 12%, var(--w-surface, var(--paper-light)));
+  border-bottom: 1px solid color-mix(in srgb, var(--w-lamp, var(--accent)) 25%, transparent);
+  padding: 0.45rem 1rem;
+  font-size: 0.76rem;
+  color: var(--w-lamp, var(--accent));
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.dmMessageStream {
+  flex: 1;
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dmBubbleSelf {
+  align-self: flex-end;
+  max-width: 78%;
+  background: var(--w-action, var(--color-action));
+  color: var(--w-on-action, var(--w-ground));
+  padding: 0.65rem 0.95rem;
+  border-radius: 1.15rem 1.15rem 0.25rem 1.15rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-ink, var(--ink)) 8%, transparent);
+}
+
+.dmBubblePeer {
+  align-self: flex-start;
+  max-width: 78%;
+  background: var(--w-ground, var(--paper));
+  border: 1px solid var(--w-line, var(--line));
+  color: var(--w-ink, var(--ink));
+  padding: 0.65rem 0.95rem;
+  border-radius: 1.15rem 1.15rem 1.15rem 0.25rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.dmTimeSelf {
+  font-size: 0.68rem;
+  color: color-mix(in srgb, var(--w-on-action, var(--w-ground)) 80%, transparent);
+  margin-top: 0.25rem;
+  text-align: right;
+  display: block;
+}
+
+.dmTimePeer {
+  font-size: 0.68rem;
+  color: var(--w-ink-soft, var(--ink-soft));
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.tutiiPromptBar {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 1.25rem;
+  background: color-mix(in srgb, var(--w-ground, var(--paper)) 70%, transparent);
+  border-top: 1px solid var(--w-line, var(--line));
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tutiiChip {
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--w-radius-full, 9999px);
+  background: var(--w-surface, var(--paper-light));
+  border: 1px solid color-mix(in srgb, var(--w-action, var(--color-action)) 25%, transparent);
+  color: var(--w-action, var(--color-action));
+  font-size: 0.75rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tutiiChip:hover {
+  background: var(--w-action, var(--color-action));
+  color: var(--w-ground, var(--paper-light));
+}
+
+.dmComposerForm {
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--w-line, var(--line));
+  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 95%, transparent);
+  align-items: center;
+}
+
+.dmInput {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: var(--w-radius-full, 9999px);
+  border: 1px solid var(--w-line, var(--line));
+  background: var(--w-surface, var(--paper-light));
+  font-size: 0.88rem;
+  color: var(--w-ink, var(--ink));
+  outline: none;
+}
+
+.dmInput:focus {
+  border-color: var(--w-action, var(--color-action));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-action, var(--color-action)) 20%, transparent);
+}
+
+.dmSendBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: var(--w-radius-full, 9999px);
+  border: none;
+  background: var(--w-action, var(--color-action));
+  color: var(--w-ground, var(--paper-light));
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dmSendBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-action, var(--color-action)) 30%, transparent);
+}
+
+.dmSendBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------------- */
+/* GROUP DETAIL INTEGRATED ANNOUNCEMENTS                                      */
+/* -------------------------------------------------------------------------- */
+
+.groupAnnouncementsSection {
+  margin: 1.25rem 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--w-radius-md, 1rem);
+  background: color-mix(in srgb, var(--w-lamp, var(--accent)) 10%, var(--w-surface, var(--paper-light)));
+  border: 1px solid color-mix(in srgb, var(--w-lamp, var(--accent)) 25%, transparent);
+}
+
+.groupAnnouncementsHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.groupAnnouncementsHeader h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 750;
+  color: var(--w-lamp, var(--accent));
+}
+
+.groupAnnouncementList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.groupAnnouncementCard {
+  padding: 0.75rem 0.95rem;
+  border-radius: var(--w-radius-sm, 0.75rem);
+  background: var(--w-surface, var(--paper-light));
+  border: 1px solid color-mix(in srgb, var(--w-lamp, var(--accent)) 18%, transparent);
+}
+
+.groupAnnouncementCard p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--w-ink, var(--ink));
+  line-height: 1.45;
+}
+
+.groupAnnouncementMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--w-ink-soft, var(--ink-soft));
+}
+
+
+
+

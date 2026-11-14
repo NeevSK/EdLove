@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 
 interface GlobalProviderProps {
   children: ReactNode;
+  readLocalGuestId?: () => Promise<string | null>;
 }
 
 /**
@@ -14,12 +15,10 @@ interface GlobalProviderProps {
  * 1. AssetsProvider: Standard assets and resources.
  * 2. AuthProvider: Auth session context.
  */
-export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
+export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children, readLocalGuestId }) => {
   return (
     <AssetsProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <AuthProvider readLocalGuestId={readLocalGuestId}>{children}</AuthProvider>
     </AssetsProvider>
   );
 };

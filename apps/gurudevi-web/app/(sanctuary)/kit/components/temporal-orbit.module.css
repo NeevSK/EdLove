@@ -1,0 +1,251 @@
+/* ==========================================================================
+   Temporal Orbit: Spatial Circadian Arc & Habitat Locus Architecture
+   ========================================================================== */
+
+.orbitContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at 50% 10%, color-mix(in srgb, var(--w-glow, #e2c37a) 12%, transparent), transparent 70%),
+              color-mix(in srgb, var(--paper, #11121f) 96%, var(--ink, #fff) 4%);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Header & Celestial Metadata */
+.orbitTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.phaseTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.phaseMainHeading {
+  font: 700 1.25rem Georgia, "Times New Roman", serif;
+  color: var(--ink, #fff);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.phaseSubtitle {
+  font: 400 0.8rem system-ui, -apple-system, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.65));
+}
+
+.circadianBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 35%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  font: 600 0.78rem system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* --------------------------------------------------------------------------
+   THE CELESTIAL ARC (THE SPATIAL CANVAS)
+   -------------------------------------------------------------------------- */
+.arcStage {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-block: 0.5rem 1rem;
+}
+
+.arcSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.arcTrajectory {
+  fill: none;
+  stroke: color-mix(in srgb, var(--w-line, rgba(255, 255, 255, 0.15)) 80%, transparent);
+  stroke-width: 2;
+  stroke-dasharray: 4 4;
+}
+
+.horizonLine {
+  stroke: color-mix(in srgb, var(--w-line, rgba(255, 255, 255, 0.18)) 90%, transparent);
+  stroke-width: 1;
+}
+
+/* Celestial Spot Anchor Nodes */
+.spotNode {
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.spotNode:hover,
+.spotNode:focus-visible {
+  transform: scale(1.22);
+}
+
+.spotOuterRing {
+  fill: color-mix(in srgb, var(--paper-light, #25201a) 85%, transparent);
+  stroke: var(--line, rgba(255, 255, 255, 0.2));
+  stroke-width: 1.5;
+  transition: all 0.25s ease;
+}
+
+.spotNode[data-active="true"] .spotOuterRing {
+  stroke: var(--w-lamp, #e2c37a);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--w-lamp, #e2c37a) 60%, transparent));
+}
+
+.spotCore {
+  transition: fill 0.2s ease;
+}
+
+.spotNode[data-active="true"] .spotCore {
+  fill: var(--w-lamp, #e2c37a);
+}
+
+/* Spot Label on Arc */
+.spotLabelText {
+  font: 600 11px system-ui, -apple-system, sans-serif;
+  fill: var(--ink-soft, rgba(255, 255, 255, 0.7));
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.spotNode[data-active="true"] + .spotLabelText {
+  fill: var(--w-lamp, #e2c37a);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   THE FOCUSED HABITAT CARD (THE PLACE WE STEPPED INTO)
+   -------------------------------------------------------------------------- */
+.habitatCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper-light, #1e1f2b) 95%, var(--ink, #fff) 5%);
+  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.1)));
+  animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.habitatDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.habitatPhaseBadge {
+  font: 600 0.72rem system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--w-lamp, #e2c37a);
+}
+
+.habitatName {
+  font: 700 1.05rem Georgia, "Times New Roman", serif;
+  color: var(--ink, #fff);
+  margin: 0;
+}
+
+.habitatMeta {
+  font: 400 0.8rem system-ui, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.65));
+}
+
+.enterSpotBtn {
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  border: 0;
+  background: var(--w-lamp, #e2c37a);
+  color: #111;
+  font: 600 0.82rem system-ui, sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.enterSpotBtn:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+
+/* Day Selector Swarm (Horizontal Constellation of Days) */
+.daysSwarm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  overflow-x: auto;
+}
+
+.dayLocusBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.65rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.6));
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dayLocusBtn:hover {
+  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+  color: var(--ink, #fff);
+}
+
+.dayLocusBtn[data-active="true"] {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  color: var(--w-lamp, #e2c37a);
+  font-weight: 600;
+}
+
+.dayLocusDay {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.dayLocusNum {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.dayLocusDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: currentColor;
+}

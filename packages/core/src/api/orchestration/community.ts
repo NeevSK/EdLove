@@ -5,6 +5,7 @@ import { communityContract } from '@repo/core/api/community.contract';
 import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/contractCoverage';
 import { messagingAPI } from '@repo/core/api/messaging';
 import { socialAPI } from '@repo/core/api/social';
+import { createResonantProxy } from '@repo/core/api/resonantProxy';
 import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
 const combinedRawAPI = {
@@ -62,4 +63,4 @@ const _communityCoverage = assertContractCoverage(
   }),
 );
 
-export const communityAPI = createTemporalProxy('community', combinedRawAPI);
+export const communityAPI = createTemporalProxy('community', createResonantProxy('community', combinedRawAPI));

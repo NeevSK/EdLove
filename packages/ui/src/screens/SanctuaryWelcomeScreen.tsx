@@ -1,11 +1,11 @@
 import { authAPI } from '@repo/core/auth';
 import { LanguageUtils } from '@repo/core/logic';
+import { LanguagePicker, LivingGround } from '@repo/ui/components/native';
+import { SanctuaryDoorwayActions } from '@repo/ui/components/SanctuaryDoorwayActions';
 import {
-  LanguageSwitcher,
-  SanctuaryDoorwayActions,
   type SanctuaryRealmItem,
   SanctuaryRealmSelector,
-} from '@repo/ui/components';
+} from '@repo/ui/components/SanctuaryRealmSelector';
 import { Mascot, type MascotArtworkSource } from '@repo/ui/components/Mascot';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { SkiaGlowAura } from '@repo/ui/components/SkiaGlowAura';
@@ -23,11 +23,14 @@ import { useTranslation } from 'react-i18next';
 export interface SanctuaryWelcomeScreenProps {
   onLogin?: () => void;
   onGuest?: () => void;
+  /** Mobile owns guest identity selection so offline entry can remain device-local. */
+  onStartGuest?: () => Promise<void>;
+  onScanQR?: () => void;
   exploreArtwork?: MascotArtworkSource;
 }
 
 export const SanctuaryWelcomeScreen = memo(
-  ({ onLogin, onGuest, exploreArtwork }: SanctuaryWelcomeScreenProps) => {
+  ({ onLogin, onGuest, onStartGuest, onScanQR, exploreArtwork }: SanctuaryWelcomeScreenProps) => {
     const { t, i18n } = useTranslation();
     const { accent, animationsEnabled, blurEnabled, scene } = useTheme();
     const { isReduceMotionEnabled } = useAccessibility();
@@ -49,8 +52,12 @@ export const SanctuaryWelcomeScreen = memo(
       setIsConnecting(true);
 
       try {
-        await authAPI.signInAnonymously();
-        if (onGuest) onGuest();
+        if (onStartGuest) {
+          await onStartGuest();
+        } else {
+          await authAPI.signInAnonymously();
+          if (onGuest) onGuest();
+        }
       } catch (error) {
         console.error('[SanctuaryWelcomeScreen] Guest login failed:', error);
         showToast({
@@ -67,7 +74,7 @@ export const SanctuaryWelcomeScreen = memo(
         guestEntryInFlightRef.current = false;
         setIsConnecting(false);
       }
-    }, [isConnecting, onGuest, showToast, t]);
+    }, [isConnecting, onGuest, onStartGuest, showToast, t]);
 
     const handleLoginPress = useCallback(() => {
       hapticLight();
@@ -104,20 +111,11 @@ export const SanctuaryWelcomeScreen = memo(
     const shouldAnimate = animationsEnabled && blurEnabled && !isReduceMotionEnabled;
 
     return (
-      <ScreenWrapper fullWidth scroll backgroundColor={scene.surface.bg}>
-        <Box className="flex-1 min-h-full w-full bg-phase-surface relative overflow-hidden justify-between items-center px-6 pt-6 pb-12">
-          {/* Full-bleed ambient organic background lighting */}
-          <Box
-            className="absolute -top-24 -left-20 w-[420px] h-[420px] rounded-full pointer-events-none opacity-20"
-            style={{ backgroundColor: accent.action }}
-          />
-          <Box
-            className="absolute top-80 -right-24 w-[360px] h-[360px] rounded-full pointer-events-none opacity-15"
-            style={{ backgroundColor: Theme.colors.gurudeviBlue }}
-          />
-
-          <VStack className="gap-8 w-full max-w-[480px] self-center z-10">
-            {/* Header: Brand pill + Modular accessible LanguageSwitcher */}
+      <ScreenWrapper fullWidth scroll backgroundColor="transparent">
+        <LivingGround atmosphere="canopy" dither style={{ flex: 1, minHeight: '100%', width: '100%' }}>
+          <Box className="flex-1 min-h-full w-full relative overflow-hidden justify-between items-center px-6 pt-6 pb-12">
+            <VStack className="gap-8 w-full max-w-[480px] self-center z-10">
+            {/* Header: Brand pill + Modular accessible LanguagePicker */}
             <HStack className="justify-between items-center w-full pt-2">
               <Box className="px-3.5 py-1.5 rounded-full bg-phase-accent/10 border border-phase-accent/25">
                 <Text className="text-xs font-bold text-phase-accent tracking-[2px] uppercase">
@@ -125,9 +123,10 @@ export const SanctuaryWelcomeScreen = memo(
                 </Text>
               </Box>
 
-              <LanguageSwitcher
-                currentLanguage={i18n.language || 'en'}
-                onSelectLanguage={changeLanguage}
+              <LanguagePicker
+                value={(i18n.language ?? 'en').slice(0, 2) as 'en' | 'si' | 'ta'}
+                onChange={changeLanguage}
+                variant="auto"
               />
             </HStack>
 
@@ -183,6 +182,7 @@ export const SanctuaryWelcomeScreen = memo(
               isConnecting={isConnecting}
               onExploreGuest={handleStartExploring}
               onSignIn={handleLoginPress}
+              onScanQR={onScanQR}
             />
 
             {/* Seamless Legal & Security Footnote (Zero-Friction In-App Links) */}
@@ -222,7 +222,8 @@ export const SanctuaryWelcomeScreen = memo(
             </VStack>
           </VStack>
         </Box>
-      </ScreenWrapper>
+      </LivingGround>
+    </ScreenWrapper>
     );
   },
 );

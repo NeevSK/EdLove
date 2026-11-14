@@ -49,6 +49,7 @@ export function ResponsiveWorkspaceCanvas<
   ...props
 }: ExtendedWorkspaceCanvasProps<TSurfaceId, TCapabilityKey>) {
   const { width, height } = useResponsive();
+  const dndContextId = React.useId();
   const colors = useThemedColors();
   const preset = DEPTH_PRESETS[depthPreset] ?? DEPTH_PRESETS['sanctuary-calm'];
 
@@ -190,6 +191,7 @@ export function ResponsiveWorkspaceCanvas<
         ) : (
           /* Web / Desktop Multi-Column Zone Deck with DnD-Kit */
           <DndContext
+            id={dndContextId}
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleWebDragEnd}

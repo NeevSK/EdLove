@@ -3,8 +3,6 @@ export type NavigationIconKey =
   | 'school'
   | 'file-text'
   | 'users'
-  | 'library'
-  | 'user'
   | 'sparkles'
   | 'bell'
   | 'settings';
@@ -27,15 +25,6 @@ function matchesPath(href: string) {
 
 export const appNavigation: readonly AppNavigationItem[] = [
   {
-    id: 'library',
-    href: '/library',
-    title: 'Library',
-    iconKey: 'library',
-    emoji: '📚',
-    surface: 'tab',
-    isActive: matchesPath('/library'),
-  },
-  {
     id: 'workspace',
     href: '/workspace',
     title: 'Workspace',
@@ -54,33 +43,6 @@ export const appNavigation: readonly AppNavigationItem[] = [
     isActive: matchesPath('/self'),
   },
   {
-    id: 'community',
-    href: '/community',
-    title: 'Community',
-    iconKey: 'users',
-    emoji: '🤝',
-    surface: 'tab',
-    isActive: matchesPath('/community'),
-  },
-  {
-    id: 'editorial',
-    href: '/workspace/editorial',
-    title: 'Editorial',
-    iconKey: 'file-text',
-    emoji: '📜',
-    surface: 'utility',
-    isActive: matchesPath('/workspace/editorial'),
-  },
-  {
-    id: 'agent-lab',
-    href: '/durable-agents',
-    title: 'Agent Lab',
-    iconKey: 'sparkles',
-    emoji: '🧪',
-    surface: 'utility',
-    isActive: matchesPath('/durable-agents'),
-  },
-  {
     id: 'notifications',
     href: '/notifications',
     title: 'Notifications',
@@ -97,15 +59,6 @@ export const appNavigation: readonly AppNavigationItem[] = [
     emoji: '⚙️',
     surface: 'utility',
     isActive: matchesPath('/settings'),
-  },
-  {
-    id: 'profile',
-    href: '/profile',
-    title: 'Profile',
-    iconKey: 'user',
-    emoji: '🪪',
-    surface: 'tab',
-    isActive: matchesPath('/profile'),
   },
 ] as const;
 

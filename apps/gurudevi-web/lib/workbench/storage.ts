@@ -11,7 +11,7 @@ export interface WorkbenchStorage {
   save(snapshot: WorkbenchRestorationSnapshot): void;
 }
 
-export function createBrowserWorkbenchStorage(): WorkbenchStorage {
+export function createBrowserWorkbenchStorage(scope: string = 'sanctuary'): WorkbenchStorage {
   const memory = createMemoryWorkbenchStorage();
   if (typeof window === 'undefined') return memory;
 
@@ -19,10 +19,13 @@ export function createBrowserWorkbenchStorage(): WorkbenchStorage {
     window.localStorage.setItem(probeKey, '1');
     window.localStorage.removeItem(probeKey);
     return {
-      load: (domain) =>
-        parseWorkbenchSnapshot(window.localStorage.getItem(storageKey(domain)), domain),
+      load: (domain) => {
+        const scopedSnapshot = parseWorkbenchSnapshot(window.localStorage.getItem(storageKey(domain, scope)), domain);
+        if (scopedSnapshot || scope !== 'sanctuary') return scopedSnapshot;
+        return parseWorkbenchSnapshot(window.localStorage.getItem(legacyStorageKey(domain)), domain);
+      },
       save: (snapshot) =>
-        window.localStorage.setItem(storageKey(snapshot.domain), JSON.stringify(snapshot)),
+        window.localStorage.setItem(storageKey(snapshot.domain, scope), JSON.stringify(snapshot)),
     };
   } catch {
     return memory;
@@ -50,10 +53,15 @@ export function parseWorkbenchSnapshot(
 }
 
 const probeKey = 'gurudevi:workbench:probe';
-const storageVersion = 2;
+const storageVersion = 3;
+const legacyStorageVersion = 2;
 
-function storageKey(domain: WorkbenchDomain): string {
-  return `gurudevi:workbench:v${storageVersion}:${domain}`;
+function storageKey(domain: WorkbenchDomain, scope: string): string {
+  return `gurudevi:workbench:v${storageVersion}:${encodeURIComponent(scope)}:${domain}`;
+}
+
+function legacyStorageKey(domain: WorkbenchDomain): string {
+  return `gurudevi:workbench:v${legacyStorageVersion}:${domain}`;
 }
 
 function parseSnapshotValue(

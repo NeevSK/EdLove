@@ -1,8 +1,7 @@
 import type { SelfFeatureDefinition } from '@repo/self/features/featureCatalog';
 import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
-import { Box, Pressable, Text } from '@repo/ui/primitives';
 import React, { useDeferredValue, useMemo, useState } from 'react';
-import { TextInput } from 'react-native';
+import { TextInput, View, Text, Pressable } from 'react-native';
 
 export interface FeaturePickerProps {
   catalog: Record<string, SelfFeatureDefinition>;
@@ -39,8 +38,8 @@ export function FeaturePicker({
       title="Pick your spaces"
       subtitle="Select, search, and prioritize. Selected stays first."
     >
-      <Box className="gap-3">
-        <Box className="rounded-xl border border-border bg-white px-3 py-2">
+      <View className="gap-3">
+        <View className="rounded-xl border border-border bg-white px-3 py-2">
           <TextInput
             value={query}
             onChangeText={setQuery}
@@ -48,27 +47,27 @@ export function FeaturePicker({
             accessibilityLabel="Search spaces"
             style={{ color: '#1f1b16', fontSize: 14, paddingVertical: 4 }}
           />
-        </Box>
+        </View>
         {filtered.map((feature) => {
           const isSelected = selectedIds.includes(feature.id);
           const isHidden = hiddenIds.includes(feature.id);
           return (
-            <Box
+            <View
               key={feature.id}
               className="rounded-xl border border-border p-3 bg-phase-surface gap-2"
             >
-              <Box className="flex-row justify-between items-center gap-2">
-                <Box className="flex-row items-center gap-2 flex-1">
+              <View className="flex-row justify-between items-center gap-2">
+                <View className="flex-row items-center gap-2 flex-1">
                   <Text className="text-base">{feature.emoji}</Text>
-                  <Box className="flex-1">
+                  <View className="flex-1">
                     <Text className="text-sm font-bold text-ink" numberOfLines={1}>
                       {feature.label}
                     </Text>
                     <Text className="text-xs text-ink/50" numberOfLines={1}>
                       {feature.category} · {feature.domain} · {feature.defaultZone}
                     </Text>
-                  </Box>
-                </Box>
+                  </View>
+                </View>
                 <Pressable
                   onPress={() => onToggleSelected(feature.id)}
                   accessibilityRole="button"
@@ -78,22 +77,22 @@ export function FeaturePicker({
                     {isSelected ? 'Selected' : 'Add'}
                   </Text>
                 </Pressable>
-              </Box>
-              <Box className="flex-row gap-1">
+              </View>
+              <View className="flex-row gap-1">
                 <Pressable
                   onPress={() => onToggleHidden(feature.id, !isHidden)}
                   className={`px-3 py-1 rounded-full border ${isHidden ? 'bg-amber-100 border-amber-300' : 'bg-white border-border'}`}
                 >
                   <Text className="text-xs font-bold text-ink">{isHidden ? 'Hidden' : 'Hide'}</Text>
                 </Pressable>
-                <Box className="px-2 py-1 rounded-full bg-ink/5">
+                <View className="px-2 py-1 rounded-full bg-ink/5">
                   <Text className="text-[10px] font-bold text-ink/50">{feature.defaultZone}</Text>
-                </Box>
-              </Box>
-            </Box>
+                </View>
+              </View>
+            </View>
           );
         })}
-      </Box>
+      </View>
     </SettingsGroup>
   );
 }

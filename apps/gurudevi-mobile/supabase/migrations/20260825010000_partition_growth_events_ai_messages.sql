@@ -60,10 +60,16 @@ END $$;
 -- Default partition for out-of-range
 CREATE TABLE IF NOT EXISTS growth_events_default PARTITION OF growth_events_partitioned DEFAULT;
 
--- Migrate data
-INSERT INTO growth_events_partitioned (id, user_id, dimension, event_type, event_metadata, created_at)
-SELECT id, user_id, dimension, event_type, event_metadata, created_at
-FROM growth_events;
+-- Migrate data when the legacy source exists. The active ledger begins with
+-- user_growth_state rather than a standalone growth_events source table.
+DO $$
+BEGIN
+  IF to_regclass('public.growth_events') IS NOT NULL THEN
+    INSERT INTO growth_events_partitioned (id, user_id, dimension, event_type, event_metadata, created_at)
+    SELECT id, user_id, dimension, event_type, event_metadata, created_at
+    FROM public.growth_events;
+  END IF;
+END $$;
 
 -- Drop old table and rename
 DROP TABLE IF EXISTS growth_events;
@@ -84,8 +90,12 @@ BEGIN
     WHERE inhparent = 'growth_events'::regclass
       AND inhrelid::regclass::text NOT LIKE '%_default'
   LOOP
-    EXECUTE format('ALTER INDEX growth_events_user_created_idx ATTACH PARTITION %I_user_created_idx', r.part_name);
-    EXECUTE format('ALTER INDEX growth_events_dimension_created_idx ATTACH PARTITION %I_dimension_created_idx', r.part_name);
+    IF to_regclass(r.part_name::text || '_user_created_idx') IS NOT NULL THEN
+      EXECUTE format('ALTER INDEX growth_events_user_created_idx ATTACH PARTITION %I_user_created_idx', r.part_name);
+    END IF;
+    IF to_regclass(r.part_name::text || '_dimension_created_idx') IS NOT NULL THEN
+      EXECUTE format('ALTER INDEX growth_events_dimension_created_idx ATTACH PARTITION %I_dimension_created_idx', r.part_name);
+    END IF;
   END LOOP;
 END $$;
 
@@ -158,8 +168,12 @@ BEGIN
     WHERE inhparent = 'ai_messages'::regclass
       AND inhrelid::regclass::text NOT LIKE '%_default'
   LOOP
-    EXECUTE format('ALTER INDEX ai_messages_user_created_idx ATTACH PARTITION %I_user_created_idx', r.part_name);
-    EXECUTE format('ALTER INDEX ai_messages_thread_created_idx ATTACH PARTITION %I_thread_created_idx', r.part_name);
+    IF to_regclass(r.part_name::text || '_user_created_idx') IS NOT NULL THEN
+      EXECUTE format('ALTER INDEX ai_messages_user_created_idx ATTACH PARTITION %I_user_created_idx', r.part_name);
+    END IF;
+    IF to_regclass(r.part_name::text || '_thread_created_idx') IS NOT NULL THEN
+      EXECUTE format('ALTER INDEX ai_messages_thread_created_idx ATTACH PARTITION %I_thread_created_idx', r.part_name);
+    END IF;
   END LOOP;
 END $$;
 

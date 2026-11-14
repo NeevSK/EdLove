@@ -1,4 +1,5 @@
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { Button } from '@repo/ui/components/native';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import {
   ArrowLeftRight,
@@ -17,7 +18,6 @@ import {
   registerExternalLinkRuntime,
 } from '@repo/ui/utils/linking';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useRealityOptional } from './EnvironmentContext';
 
 interface PendingRequest {
   url: string;
@@ -137,10 +137,10 @@ const MethodItem = React.memo(({ method, isSelected, onSelect }: MethodItemProps
 });
 
 export function ExternalLinkProvider({ children }: { children: React.ReactNode }) {
-  const { reality } = useRealityOptional();
+  const { isOnline } = useOfflineStatus();
   const { showToast } = useSanctuaryToast();
-  const realityRef = useRef(reality);
-  realityRef.current = reality;
+  const isOnlineRef = useRef(isOnline);
+  isOnlineRef.current = isOnline;
   const showToastRef = useRef(showToast);
   showToastRef.current = showToast;
 
@@ -157,7 +157,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
           setPendingRequest({ ...request, resolve });
         });
       },
-      isOnline: () => realityRef.current.networkQuality !== 'offline',
+      isOnline: () => isOnlineRef.current,
       notifyOffline: (message) => showToastRef.current({ message, type: 'error' }),
     });
 
@@ -239,29 +239,23 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
           pendingRequest ? (
             <VStack className="gap-2">
               <HStack className="gap-2 flex-wrap">
-                <SanctuaryButton onPress={handleOpenNow} fullWidth>
-                  Open Now
-                </SanctuaryButton>
+                <Button label="Open Now" variant="primary" onPress={handleOpenNow} fullWidth />
               </HStack>
               <HStack className="gap-2 flex-wrap">
-                <SanctuaryButton
-                  variant="outline"
-                  action="secondary"
+                <Button
+                  label="Set as Default"
+                  variant="secondary"
                   onPress={handleSetDefault}
                   fullWidth
-                >
-                  Set as Default
-                </SanctuaryButton>
+                />
               </HStack>
               {pendingRequest.currentPreference && (
-                <SanctuaryButton
-                  variant="ghost"
-                  action="secondary"
+                <Button
+                  label="Reset Saved Preference"
+                  variant="quiet"
                   onPress={handleResetPreference}
-                  leftIcon={ArrowLeftRight}
-                >
-                  Reset Saved Preference
-                </SanctuaryButton>
+                  icon={ArrowLeftRight}
+                />
               )}
             </VStack>
           ) : null

@@ -1,14 +1,8 @@
 import { usePermissions } from '@repo/core/logic';
-import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useAuthStore } from '@repo/core/store';
 import { annotationsAPI } from '@repo/library/api/annotations';
-import type {
-  AnnotationColor,
-  Bookmark as BookmarkType,
-  ReadingProgress,
-  TextHighlight,
-  TextNote,
-} from '@repo/library/types';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import type { AnnotationColor, Bookmark as BookmarkType, ReadingProgress, TextHighlight, TextNote } from '@repo/core/types/Library';
+import { WaitingSign } from '@repo/ui/components/native';
 import {
   ArrowLeft,
   ArrowRight,
@@ -29,11 +23,12 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { v7 as uuidv7 } from 'uuid';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const ANNOTATION_COLORS: {
   color: 'yellow' | 'green' | 'blue' | 'pink' | 'orange' | 'purple';
@@ -66,7 +61,7 @@ interface ReaderScreenParams {
 export default function ReaderScreen() {
   const { resourceId, title, url, type = 'pdf' } = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
   const user = useAuthStore((s) => s.user);
   const { context } = usePermissions();
   const userId = user?.id || context.userId;
@@ -282,7 +277,7 @@ export default function ReaderScreen() {
   if (isLoading) {
     return (
       <Box className="flex-1 items-center justify-center bg-black">
-        <BrandPulse size={48} tintColor="#D4843A" />
+        <WaitingSign size={48} />
         <Text className="text-mistGray mt-4">{t('reader.loading')}</Text>
       </Box>
     );
@@ -314,7 +309,7 @@ export default function ReaderScreen() {
   if (isLoading) {
     return (
       <Box className="flex-1 items-center justify-center bg-black">
-        <BrandPulse size={48} tintColor="#D4843A" />
+        <WaitingSign size={48} />
         <Text className="text-mistGray mt-4">{t('reader.loading')}</Text>
       </Box>
     );

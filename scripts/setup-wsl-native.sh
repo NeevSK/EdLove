@@ -4,9 +4,9 @@ set -e
 echo "=== 1. Updating System Packages ==="
 sudo apt-get update && sudo apt-get install -y build-essential curl git unzip openjdk-17-jdk
 
-echo "=== 2. Installing Node.js 22 & PNPM ==="
+echo "=== 2. Installing Node.js 24 & PNPM ==="
 if ! command -v node &> /dev/null; then
-  curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+  curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
   sudo apt-get install -y nodejs
 fi
 

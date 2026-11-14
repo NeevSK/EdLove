@@ -6,7 +6,4 @@ export type {
   LinkRelationship,
   PerspectiveId,
 } from '@repo/core/types';
-export type {
-  PerspectiveRenderer,
-  PerspectiveViewProps,
-} from '@repo/graphics/types/PerspectiveRenderer';
+export type { PerspectiveRenderer, PerspectiveViewProps } from '@repo/core/types/visualization';

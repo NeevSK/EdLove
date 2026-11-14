@@ -4,6 +4,9 @@ import type { PerspectiveKind } from '@repo/core/types/Perspective';
 export type WorkspaceRouteTarget =
   | { kind: 'founder' }
   | { kind: 'principal' }
+  | { kind: 'admin' }
+  | { kind: 'section-head' }
+  | { kind: 'grade-head' }
   | { kind: 'guardian' }
   | { kind: 'personal' }
   | { kind: 'commercial'; perspectiveId?: string }
@@ -36,6 +39,7 @@ export type WorkspaceRouteResolutionInput = {
   permissionSnapshotLoaded: boolean;
   isPermissionLoading: boolean;
   permissionError: string | null;
+  isLocalGuest?: boolean;
   perspectiveKind?: PerspectiveKind;
   perspectiveId?: string;
 };
@@ -52,6 +56,7 @@ export function resolveWorkspaceRoute({
   permissionSnapshotLoaded,
   isPermissionLoading,
   permissionError,
+  isLocalGuest = false,
   perspectiveKind,
   perspectiveId,
 }: WorkspaceRouteResolutionInput): WorkspaceRouteResolution {
@@ -59,6 +64,18 @@ export function resolveWorkspaceRoute({
     return {
       kind: 'permission-denied',
       message: 'Sign in with an account that has workspace access to continue.',
+    };
+  }
+
+  // A device-local guest has no remote permission snapshot. Personal
+  // Sanctuary is local data, so let that route open without treating the
+  // absent server snapshot as a failed cloud authorization.
+  if (isLocalGuest && perspectiveKind === 'personal') {
+    return {
+      kind: 'role-ready',
+      target: { kind: 'personal' },
+      isRefreshing: false,
+      refreshError: null,
     };
   }
 
@@ -104,12 +121,28 @@ export function resolveWorkspaceRoute({
     return { kind: 'role-ready', target: { kind: 'founder' }, ...backgroundStatus };
   }
 
-  if (resolvedCapacity.data === 'principal') {
+  if (resolvedCapacity.data === 'admin') {
+    return { kind: 'role-ready', target: { kind: 'admin' }, ...backgroundStatus };
+  }
+
+  if (resolvedCapacity.data === 'sectionHead') {
+    return { kind: 'role-ready', target: { kind: 'section-head' }, ...backgroundStatus };
+  }
+
+  if (resolvedCapacity.data === 'gradeHead') {
+    return { kind: 'role-ready', target: { kind: 'grade-head' }, ...backgroundStatus };
+  }
+
+  if (resolvedCapacity.data === 'principal' || resolvedCapacity.data === 'assistantPrincipal') {
     return { kind: 'role-ready', target: { kind: 'principal' }, ...backgroundStatus };
   }
 
-  if (resolvedCapacity.data === 'guardian') {
+  if (resolvedCapacity.data === 'guardian' || resolvedCapacity.data === 'parent') {
     return { kind: 'role-ready', target: { kind: 'guardian' }, ...backgroundStatus };
+  }
+
+  if (resolvedCapacity.data === 'developer') {
+    return { kind: 'role-ready', target: { kind: 'founder' }, ...backgroundStatus };
   }
 
   if (resolvedCapacity.data === 'student') {

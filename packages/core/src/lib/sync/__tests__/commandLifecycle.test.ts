@@ -1,7 +1,7 @@
 import {
   assertMutationCommandTransition,
   canTransitionMutationCommand,
-} from '@repo/core/lib/sync/commandLifecycle';
+} from '@repo/core/types/mutationCommand';
 
 describe('mutation command lifecycle', () => {
   it('allows only recovery paths from a queued command', () => {

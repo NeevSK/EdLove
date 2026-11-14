@@ -6,13 +6,14 @@
  * In dev, this floods LogBox and terminal logs.
  *
  * This pipeline:
- * 1. Debounces incoming errors over a 350ms window.
+ * 1. Debounces incoming errors over a 350ms window (TanStack Pacer Debouncer).
  * 2. Identifies the primary root-cause error vs cascading fallout.
  * 3. Formats an actionable, single consolidated diagnostic report.
  * 4. Dispatches the batch to the local dev API (port 3000) so it's instantly
  *    available in `apps/gurudevi-mobile/scratch/latest_mobile_errors.json`.
  */
 
+import { Debouncer } from '@tanstack/react-pacer';
 import { Platform } from 'react-native';
 
 export interface DevErrorInfo {
@@ -32,8 +33,6 @@ export interface DevErrorBatch {
 }
 
 let errorBuffer: DevErrorInfo[] = [];
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-const DEBOUNCE_MS = 350;
 
 async function sendDiagnosticReport(batch: DevErrorBatch): Promise<void> {
   // Print unified high-visibility banner in Metro console
@@ -86,6 +85,9 @@ function flushErrorBatch(): void {
   void sendDiagnosticReport(report);
 }
 
+/** Errors arrive in cascades; report them together once 350 ms pass with no new error. */
+const flushAfterQuiet = new Debouncer(flushErrorBatch, { wait: 350 });
+
 /**
  * Ingest an error into the dev batching pipeline.
  */
@@ -101,11 +103,5 @@ export function recordDevError(info: Omit<DevErrorInfo, 'timestamp'>): void {
 
   errorBuffer.push(enriched);
 
-  if (debounceTimer) {
-    clearTimeout(debounceTimer);
-  }
-
-  debounceTimer = setTimeout(() => {
-    flushErrorBatch();
-  }, DEBOUNCE_MS);
+  flushAfterQuiet.maybeExecute();
 }

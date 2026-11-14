@@ -1,5 +1,5 @@
+import { View, Text, Pressable } from 'react-native';
 import { ArrowLeft } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
@@ -69,7 +69,7 @@ export function PrincipalRoomShell({
   const cadenceMeta = cadenceCopy[cadence];
 
   return (
-    <VStack className="gap-8">
+    <View className="gap-8">
       <Pressable
         onPress={() => {
           hapticLight();
@@ -77,15 +77,15 @@ export function PrincipalRoomShell({
         }}
         className="flex-row items-center gap-2 self-start px-4 py-2.5 rounded-2xl border border-phase-border bg-phase-surface shadow-sm active:scale-95 transition-all"
       >
-        <Icon as={ArrowLeft} size={14} className="text-phaseText-primary" />
+        <ArrowLeft size={14} className="text-phaseText-primary" />
         <Text className="text-[13px] font-black text-phaseText-primary uppercase tracking-widest">
           Back to Hub
         </Text>
       </Pressable>
 
-      <Box className="p-8 rounded-[40px] bg-phase-surface border border-phase-border shadow-xl">
-        <HStack className="justify-between items-start gap-6 flex-wrap">
-          <VStack className="flex-1 min-w-0 max-w-[760px] gap-2">
+      <View className="p-8 rounded-[40px] bg-phase-surface border border-phase-border shadow-xl">
+        <View className="flex-row items-center justify-between items-start gap-6 flex-wrap">
+          <View className="flex-1 min-w-0 max-w-[760px] gap-2">
             <Text className={`text-[10px] font-black uppercase tracking-[0.25em] ${accent}`}>
               {eyebrow}
             </Text>
@@ -95,16 +95,16 @@ export function PrincipalRoomShell({
             <Text className="text-[15px] leading-relaxed text-phaseText-secondary font-medium mt-1">
               {description}
             </Text>
-          </VStack>
+          </View>
 
-          <VStack className="min-w-[260px] p-5 rounded-3xl bg-phase-canvas border border-phase-border gap-2.5 shadow-inner">
+          <View className="min-w-[260px] p-5 rounded-3xl bg-phase-canvas border border-phase-border gap-2.5 shadow-inner">
             <Text className={`text-[10px] font-black uppercase tracking-widest ${accent}`}>
               {cadenceMeta.label}
             </Text>
             <Text className="text-[11px] leading-relaxed text-phaseText-secondary font-bold">
               {cadenceMeta.description}
             </Text>
-            <Box
+            <View
               className={`self-start px-3.5 py-1.5 rounded-full mt-1 border border-phase-border/20 ${isPastView ? 'bg-phase-canvas' : 'bg-phase-interactive'}`}
             >
               <Text
@@ -112,14 +112,14 @@ export function PrincipalRoomShell({
               >
                 {isPastView ? 'Past Snapshot' : 'Live Vector'}
               </Text>
-            </Box>
-          </VStack>
-        </HStack>
+            </View>
+          </View>
+        </View>
 
         {stats.length > 0 && (
-          <Box className="flex-row flex-wrap gap-4 mt-8">
+          <View className="flex-row flex-wrap gap-4 mt-8">
             {stats.map((stat) => (
-              <Box
+              <View
                 key={stat.label}
                 className="flex-1 min-w-[140px] p-5 rounded-2xl bg-phase-canvas border border-phase-border shadow-inner gap-1"
               >
@@ -137,14 +137,14 @@ export function PrincipalRoomShell({
                 >
                   {stat.value}
                 </Text>
-              </Box>
+              </View>
             ))}
-          </Box>
+          </View>
         )}
-      </Box>
+      </View>
 
       {children}
-    </VStack>
+    </View>
   );
 }
 
@@ -161,8 +161,8 @@ export function PrincipalRoomPanel({
   };
 
   return (
-    <Box className={`p-7 rounded-[32px] border flex-col gap-5 ${toneClasses[tone]}`}>
-      <VStack className="gap-1 px-1">
+    <View className={`p-7 rounded-[32px] border flex-col gap-5 ${toneClasses[tone]}`}>
+      <View className="gap-1 px-1">
         <Text className="text-[19px] font-black text-phaseText-primary tracking-tight">
           {title}
         </Text>
@@ -171,21 +171,21 @@ export function PrincipalRoomPanel({
             {description}
           </Text>
         )}
-      </VStack>
+      </View>
       {children}
-    </Box>
+    </View>
   );
 }
 
 export function PrincipalRoomEmptyState({ title, description }: PrincipalRoomEmptyStateProps) {
   return (
-    <VStack className="p-8 rounded-[32px] border border-dashed border-phase-border bg-phase-canvas items-center justify-center gap-3">
+    <View className="p-8 rounded-[32px] border border-dashed border-phase-border bg-phase-canvas items-center justify-center gap-3">
       <Text className="text-[16px] font-black text-phaseText-primary tracking-tight text-center">
         {title}
       </Text>
       <Text className="text-[13px] leading-relaxed text-phaseText-muted font-bold text-center max-w-[280px]">
         {description}
       </Text>
-    </VStack>
+    </View>
   );
 }

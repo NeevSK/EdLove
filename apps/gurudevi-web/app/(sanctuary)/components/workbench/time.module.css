@@ -1,0 +1,67 @@
+/* ==========================================================================
+   Time: Minimalist, World-Personalized Time Component
+   ========================================================================== */
+
+.timeRoot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: var(--w-radius-md, 0.65rem);
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
+  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  user-select: none;
+}
+
+.analogWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--w-lamp, #e2c37a);
+}
+
+.liveClockSvg {
+  display: block;
+}
+
+.timeDigitalBtn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  background: transparent;
+  border: 0;
+  padding: 0.1rem 0.25rem;
+  border-radius: var(--w-radius-sm, 0.35rem);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.timeDigitalBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--w-ink, #fff) 8%, transparent);
+}
+
+.digitalNumbers {
+  font: 700 0.95rem var(--w-font-mono, monospace, ui-monospace);
+  letter-spacing: 0.05em;
+  color: var(--w-ink, #fff);
+  white-space: nowrap;
+}
+
+.periodBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--w-lamp, #e2c37a);
+  letter-spacing: 0.04em;
+}
+
+.formatIndicator {
+  display: inline-flex;
+  align-items: center;
+}
+
+.formatTag {
+  font: 600 0.62rem system-ui, sans-serif;
+  color: var(--w-ink-soft, rgba(255, 255, 255, 0.45));
+  text-transform: uppercase;
+}

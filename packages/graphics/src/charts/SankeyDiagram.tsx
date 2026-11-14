@@ -1,5 +1,5 @@
-import { Card } from '@repo/ui/components/SanctuaryCard';
-import { Theme } from '@repo/ui/theme';
+import { Surface } from '@repo/ui/components/native';
+import { Theme } from '@repo/ui/theme/Theme';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 interface SankeyNode {
@@ -116,7 +116,7 @@ export function SankeyDiagram({
   };
 
   return (
-    <Card style={[styles.container, { width: actualWidth, height }]}>
+    <Surface tone="raised" style={[styles.container, { width: actualWidth, height }]}>
       {title && <Text style={styles.title}>{title}</Text>}
 
       <View style={styles.diagramContainer}>
@@ -163,6 +163,6 @@ export function SankeyDiagram({
           </View>
         ))}
       </View>
-    </Card>
+    </Surface>
   );
 }

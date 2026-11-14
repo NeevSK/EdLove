@@ -1,0 +1,134 @@
+BEGIN;
+DO $$
+BEGIN
+  IF current_database() <> 'gurudevi_foundation_test' THEN
+    RAISE EXCEPTION 'Identity ownership rehearsal requires the isolated foundation database';
+  END IF;
+  IF to_regclass('public.auth_identities') IS NOT NULL THEN
+    RAISE EXCEPTION 'This prerequisite fixture is for the incomplete local baseline only';
+  END IF;
+END;
+$$;
+CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
+SET LOCAL search_path = public, extensions;
+SELECT plan(37);
+
+-- The canonical ledger is blocked before identity/profile migrations. Prepare
+-- only their declared table/column prerequisites, entirely inside this rollback.
+ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS phone text,
+ ADD COLUMN IF NOT EXISTS is_anonymous boolean NOT NULL DEFAULT false;
+INSERT INTO auth.users (id, email, raw_user_meta_data) VALUES
+ ('f0310000-0000-4000-8000-000000000001', 'identity-owner-a@example.invalid', '{"full_name":"Owner A"}'),
+ ('f0310000-0000-4000-8000-000000000002', 'identity-owner-b@example.invalid', '{"full_name":"Owner B"}');
+SELECT id AS account_a FROM public.users WHERE email = 'identity-owner-a@example.invalid' \gset
+SELECT id AS account_b FROM public.users WHERE email = 'identity-owner-b@example.invalid' \gset
+-- Prepare the later identity-decoupling prerequisite and a deliberately distinct
+-- application account. Only this transaction's synthetic A profile is replaced.
+ALTER TABLE public.users DROP CONSTRAINT IF EXISTS users_id_fkey;
+DELETE FROM public.users WHERE id = :'account_a'::uuid;
+INSERT INTO public.users (id, email, full_name, role) VALUES
+ ('f0320000-0000-4000-8000-000000000001', 'identity-owner-a@example.invalid', 'Owner A', 'teacher');
+SELECT id AS account_a FROM public.users WHERE email = 'identity-owner-a@example.invalid' \gset
+SELECT isnt(:'account_a'::uuid, 'f0310000-0000-4000-8000-000000000001'::uuid, 'fixture exercises a genuinely decoupled application account');
+ALTER TABLE public.users RENAME COLUMN role TO capacity;
+ALTER TABLE public.users ADD COLUMN display_name text, ADD COLUMN first_name text,
+ ADD COLUMN last_name text, ADD COLUMN username text, ADD COLUMN phone text,
+ ADD COLUMN identity_state text, ADD COLUMN deleted_at timestamptz;
+CREATE TABLE public.auth_identities (
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL REFERENCES public.users(id),
+ provider text NOT NULL, provider_user_id text NOT NULL, metadata jsonb DEFAULT '{}'::jsonb,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(provider, provider_user_id)
+);
+INSERT INTO public.auth_identities (user_id, provider, provider_user_id) VALUES
+ (:'account_a', 'supabase', 'f0310000-0000-4000-8000-000000000001'),
+ (:'account_b', 'supabase', 'f0310000-0000-4000-8000-000000000002');
+GRANT ALL ON public.auth_identities TO anon, authenticated;
+GRANT INSERT (user_id, provider, provider_user_id), UPDATE (user_id)
+ ON public.auth_identities TO PUBLIC, anon, authenticated;
+SELECT ok((SELECT attacl IS NOT NULL FROM pg_attribute
+ WHERE attrelid = 'public.auth_identities'::regclass AND attname = 'user_id'),
+ 'fixture carries explicit legacy column grants');
+ALTER TABLE public.auth_identities ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Fixture legacy permissive read" ON public.auth_identities
+FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Fixture legacy permissive write" ON public.auth_identities
+ FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
+
+-- Run the exact upgrade inside pgTAP's exception subtransaction so a historical
+-- noncanonical mapping must refuse atomically, before the successful rehearsal.
+UPDATE public.auth_identities SET provider = 'google'
+ WHERE provider_user_id = 'f0310000-0000-4000-8000-000000000001';
+SELECT throws_ok(pg_read_file('/mnt/c/x/apps/gurudevi-mobile/supabase/migrations/20261015150000_server_owned_auth_identity.sql'),
+ 'P0001', 'Identity mappings require explicit reconciliation before canonical backfill',
+ 'ambiguous historical account refuses the exact upgrade');
+SELECT is((SELECT user_id FROM public.auth_identities WHERE provider = 'google'
+ AND provider_user_id = 'f0310000-0000-4000-8000-000000000001'), :'account_a'::uuid,
+ 'refused upgrade preserves historical mapping for explicit reconciliation');
+SELECT ok(has_table_privilege('authenticated', 'public.auth_identities', 'INSERT'),
+ 'refused upgrade leaves prior grants unchanged');
+UPDATE public.auth_identities SET provider = 'supabase'
+ WHERE provider_user_id = 'f0310000-0000-4000-8000-000000000001';
+
+\ir ../../migrations/20261015150000_server_owned_auth_identity.sql
+
+SELECT ok((SELECT relrowsecurity FROM pg_class WHERE oid = 'public.auth_identities'::regclass), 'RLS enabled');
+SELECT ok(NOT has_table_privilege('anon', 'public.auth_identities', 'INSERT'), 'anon insert revoked');
+SELECT ok(NOT has_table_privilege('authenticated', 'public.auth_identities', 'INSERT'), 'authenticated insert revoked');
+SELECT ok(NOT has_table_privilege('authenticated', 'public.auth_identities', 'UPDATE'), 'authenticated update revoked');
+SELECT ok(NOT has_table_privilege('authenticated', 'public.auth_identities', 'DELETE'), 'authenticated delete revoked');
+SELECT ok(NOT has_table_privilege('authenticated', 'public.auth_identities', 'TRUNCATE'), 'authenticated truncate revoked');
+SELECT ok(NOT has_column_privilege('authenticated', 'public.auth_identities', 'user_id', 'INSERT'), 'authenticated legacy column insert revoked');
+SELECT ok(NOT has_column_privilege('anon', 'public.auth_identities', 'provider', 'INSERT'), 'anon inherited PUBLIC column insert revoked');
+SELECT ok(NOT has_column_privilege('authenticated', 'public.auth_identities', 'user_id', 'UPDATE'), 'authenticated legacy column rebind privilege revoked');
+SELECT ok(NOT has_function_privilege('authenticated', 'public.sync_canonical_auth_account()', 'EXECUTE'), 'client cannot call provisioning function');
+
+SET LOCAL ROLE authenticated;
+SET LOCAL request.jwt.claim.sub = 'f0310000-0000-4000-8000-000000000001';
+SELECT ok(NOT (SELECT rolsuper OR rolbypassrls FROM pg_roles WHERE rolname = current_user), 'assertion role has no superuser or bypass');
+SELECT isnt((SELECT pg_get_userbyid(relowner)::text FROM pg_class WHERE oid = 'public.auth_identities'::regclass), current_user::text, 'assertion role is not table owner');
+SELECT is((SELECT count(*) FROM public.auth_identities), 1::bigint, 'only own subject binding visible');
+SELECT is(public.get_my_id(), :'account_a'::uuid, 'provider subject resolves to canonical account');
+SELECT throws_ok($sql$INSERT INTO public.auth_identities (user_id, provider, provider_user_id)
+ VALUES (get_my_id(), 'supabase', 'forged-other-subject')$sql$, '42501', NULL, 'client cannot forge another subject');
+SELECT throws_ok($sql$UPDATE public.auth_identities SET provider_user_id = 'forged-other-subject'$sql$, '42501', NULL, 'client cannot rebind its identity');
+SELECT throws_ok($sql$DELETE FROM public.auth_identities$sql$, '42501', NULL, 'client cannot remove its binding');
+SET LOCAL ROLE anon;
+SELECT throws_ok($sql$INSERT INTO public.auth_identities (user_id, provider, provider_user_id)
+ VALUES (gen_random_uuid(), 'supabase', 'forged-subject')$sql$, '42501', NULL, 'anon cannot forge a binding');
+RESET ROLE;
+
+SET LOCAL ROLE supabase_auth_admin;
+SELECT current_user AS provisioning_role \gset
+INSERT INTO auth.users (id, phone, email, is_anonymous, raw_user_meta_data)
+VALUES ('f0310000-0000-4000-8000-000000000003', '94770000003', NULL, false,
+ '{"display_name":"Phone user","capacity":"admin","role":"admin","is_anonymous":true}');
+RESET ROLE;
+SELECT ok(:'provisioning_role' = 'supabase_auth_admin' AND NOT
+ (SELECT rolsuper FROM pg_roles WHERE rolname = :'provisioning_role'),
+ 'Auth provisioning assertion runs without superuser');
+SELECT is((SELECT user_id FROM public.auth_identities WHERE provider = 'supabase' AND provider_user_id = 'f0310000-0000-4000-8000-000000000003'),
+ 'f0310000-0000-4000-8000-000000000003'::uuid, 'phone-only signup receives canonical mapping');
+SELECT is((SELECT email FROM public.users WHERE id = 'f0310000-0000-4000-8000-000000000003'), NULL::text, 'no synthetic email required');
+SELECT is((SELECT is_anonymous FROM public.users WHERE id = 'f0310000-0000-4000-8000-000000000003'), false, 'phone-only user is not anonymous');
+SELECT is((SELECT capacity FROM public.users WHERE id = 'f0310000-0000-4000-8000-000000000003'), NULL::text, 'user metadata cannot assign authority');
+SELECT is((SELECT phone FROM public.users WHERE id = 'f0310000-0000-4000-8000-000000000003'), '94770000003', 'Auth role trigger synchronizes phone to canonical profile');
+
+UPDATE auth.users SET phone = '94770000004', raw_user_meta_data = '{"display_name":"Updated A","capacity":"admin"}'
+ WHERE id = 'f0310000-0000-4000-8000-000000000001';
+SELECT is((SELECT user_id FROM public.auth_identities WHERE provider = 'supabase' AND provider_user_id = 'f0310000-0000-4000-8000-000000000001'), :'account_a'::uuid, 'update preserves existing mapped account');
+SELECT is((SELECT count(*) FROM public.users WHERE id IN (:'account_a'::uuid, 'f0310000-0000-4000-8000-000000000001'::uuid)), 1::bigint, 'update creates no raw-subject duplicate profile');
+SELECT is((SELECT display_name FROM public.users WHERE id = :'account_a'::uuid), 'Updated A', 'display update targets mapped profile');
+SELECT is((SELECT capacity FROM public.users WHERE id = :'account_a'::uuid), 'teacher', 'auth metadata does not overwrite existing capacity');
+UPDATE public.users SET deleted_at = now() WHERE id = :'account_a'::uuid;
+SELECT throws_ok($sql$UPDATE auth.users SET phone = '94770000005'
+ WHERE id = 'f0310000-0000-4000-8000-000000000001'$sql$, '28000', 'Canonical account is unavailable', 'auth updates cannot resurrect a deleted mapped account');
+SET LOCAL ROLE authenticated;
+SELECT is(public.get_my_id(), NULL::uuid, 'deleted account no longer resolves through identity helper');
+RESET ROLE;
+SELECT is((SELECT count(*) FROM public.users WHERE id = 'f0310000-0000-4000-8000-000000000001'), 0::bigint, 'deleted mapping does not create a replacement raw-subject profile');
+
+\ir ../../migrations/20261015150000_server_owned_auth_identity.sql
+SELECT is((SELECT count(*) FROM public.auth_identities WHERE provider_user_id = 'f0310000-0000-4000-8000-000000000003'), 1::bigint, 'repeat migration preserves one binding');
+SELECT * FROM finish();
+ROLLBACK;

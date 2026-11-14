@@ -2,11 +2,11 @@ import { coreRuntime, deviceAccounts } from '@repo/core';
 import { bootstrapPlatform } from '@repo/core/native';
 import { BrandPulse, Mascot, MascotProvider } from '@repo/ui';
 import { useEffect, useState } from 'react';
-import { Text, View, Pressable } from '@repo/ui/primitives';
-
-import { fireflyMascotConfig } from '@/brand/mascotArtwork';
-
+import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { handoffNativeSplashAfterCommit, NATIVE_SPLASH_MAX_HOLD_MS } from '@/boot/nativeSplashService';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
+import { recordDevelopmentTrace, recordStartupStage } from '@/boot/startupTelemetry';
+import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { EntryShell } from '@/entry/EntryShell';
 import { installGlobalErrorHandlers } from '@/lib/globalErrorHandlers';
 
@@ -16,52 +16,50 @@ type StartupState =
   | { status: 'failed'; error: Error };
 
 function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => void }) {
+  const [startWaitExpired, setStartWaitExpired] = useState(false);
   useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      void import('expo-splash-screen').then(({ hideAsync }) => hideAsync());
+    if (error) return;
+    const timeout = setTimeout(() => setStartWaitExpired(true), NATIVE_SPLASH_MAX_HOLD_MS);
+    return () => clearTimeout(timeout);
+  }, [error]);
+
+  // Normal startup stays under the native splash until the admitted route commits;
+  // a failure or a stalled start must still be visible.
+  const revealFallback = Boolean(error) || startWaitExpired;
+  useEffect(() => {
+    if (!revealFallback) return;
+    return handoffNativeSplashAfterCommit({
+      onError: (cause: unknown) => {
+        console.warn('[startup] native splash handoff unavailable:', cause);
+      },
     });
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [revealFallback]);
 
   return (
     <MascotProvider config={fireflyMascotConfig}>
       <View
         accessibilityRole={error ? 'alert' : 'progressbar'}
-        accessibilityLabel={error ? 'Gurudevi could not start' : 'Preparing Gurudevi'}
-        style={{
-          alignItems: 'center',
-          backgroundColor: '#20140E',
-          flex: 1,
-          justifyContent: 'center',
-          padding: 32,
-        }}
+        accessibilityLabel={error ? 'Gurudevi could not start' : 'Opening Gurudevi'}
+        style={styles.container}
       >
         {error ? (
           <Mascot mode="offline" state="interrupted" size={120} podVariant="raw" />
         ) : (
           <BrandPulse size={32} tintColor="#D4843A" />
         )}
-        <Text style={{ color: '#F5EDD6', fontSize: 16, marginTop: 16, textAlign: 'center' }}>
-          {error ? 'Gurudevi could not finish starting.' : 'Preparing your sanctuary…'}
+        <Text style={styles.primaryText}>
+          {error ? 'Gurudevi could not finish starting.' : 'Opening Gurudevi…'}
         </Text>
         {error ? (
           <>
-            <Text style={{ color: '#D8C8B8', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
-              {error.message}
-            </Text>
+            <Text style={styles.errorMessage}>{error.message}</Text>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Retry starting Gurudevi"
               onPress={onRetry}
-              style={{
-                backgroundColor: '#D4843A',
-                borderRadius: 10,
-                marginTop: 20,
-                paddingHorizontal: 20,
-                paddingVertical: 12,
-              }}
+              style={styles.retryButton}
             >
-              <Text style={{ color: '#20140E', fontWeight: '700' }}>Try again</Text>
+              <Text style={styles.retryButtonText}>Try again</Text>
             </Pressable>
           </>
         ) : null}
@@ -70,27 +68,22 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
   );
 }
 
-function startDeferredServices(): void {
-  void import('@/lib/inngestEvents')
-    .then(({ installMobileWorkflowEventBridge }) => installMobileWorkflowEventBridge())
-    .catch((error: unknown) => console.warn('[startup] workflow bridge deferred:', error));
-  void import('@/lib/googleSignIn')
-    .then(({ configureGoogleOneTap }) => configureGoogleOneTap())
-    .catch((error: unknown) => console.warn('[startup] Google Sign-In deferred:', error));
-  void import('@/lib/backgroundSync')
-    .then(({ registerBackgroundSync }) => registerBackgroundSync())
-    .catch((error: unknown) => console.warn('[startup] background sync deferred:', error));
-  void import('@/lib/deepLinks/installReferrerBridge')
-    .then(({ resolveDeferredInstallIntent }) => resolveDeferredInstallIntent())
-    .catch((error: unknown) => console.warn('[startup] deferred install referrer bridge deferred:', error));
-}
-
 export function EntryStartupBoundary() {
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<StartupState>({ status: 'starting' });
 
   useEffect(() => {
     installGlobalErrorHandlers();
+    recordDevelopmentTrace({
+      category: 'startup-boundary',
+      task: 'first-effect',
+      state: 'started',
+    });
+    recordDevelopmentTrace({
+      category: 'startup-boundary',
+      task: 'essential-startup',
+      state: 'started',
+    });
     let cancelled = false;
 
     void completeEssentialStartup({
@@ -101,14 +94,24 @@ export function EntryStartupBoundary() {
         return { registerAppCatalog };
       },
       initializeDeviceAccounts: () => deviceAccounts.initialize(),
+      onStage: recordStartupStage,
     })
       .then(() => {
         if (cancelled) return;
+        recordDevelopmentTrace({
+          category: 'startup-boundary',
+          task: 'essential-startup',
+          state: 'completed',
+        });
         setState({ status: 'ready' });
-        startDeferredServices();
       })
       .catch((cause: unknown) => {
         if (cancelled) return;
+        recordDevelopmentTrace({
+          category: 'startup-boundary',
+          task: 'essential-startup',
+          state: 'failed',
+        });
         setState({
           status: 'failed',
           error: cause instanceof Error ? cause : new Error('Unknown startup failure.'),
@@ -131,3 +134,36 @@ export function EntryStartupBoundary() {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    backgroundColor: '#20140E',
+    flex: 1,
+    justifyContent: 'center',
+    padding: 32,
+  },
+  primaryText: {
+    color: '#F5EDD6',
+    fontSize: 16,
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    color: '#D8C8B8',
+    fontSize: 13,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#D4843A',
+    borderRadius: 10,
+    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  retryButtonText: {
+    color: '#20140E',
+    fontWeight: '700',
+  },
+});

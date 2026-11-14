@@ -19,20 +19,27 @@ CREATE OR REPLACE FUNCTION public.capture_user_profile_version()
 RETURNS TRIGGER AS $$
 DECLARE
     target_row JSONB;
+    source_row JSONB;
 BEGIN
-    -- Use to_jsonb to make snapshotting immune to missing/added columns
-    target_row := to_jsonb(NEW);
+    source_row := CASE WHEN TG_OP = 'DELETE' THEN to_jsonb(OLD) ELSE to_jsonb(NEW) END;
+    target_row := source_row;
     
     INSERT INTO public.user_profile_versions (
         user_id,
-        version_data,
-        captured_at
+        school_id,
+        operation,
+        snapshot,
+        recorded_at,
+        recorded_by
     ) VALUES (
-        NEW.id,
+        (source_row->>'id')::uuid,
+        NULLIF(source_row->>'school_id', '')::uuid,
+        lower(TG_OP),
         target_row,
-        now()
+        now(),
+        auth.uid()
     );
-    RETURN NEW;
+    RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

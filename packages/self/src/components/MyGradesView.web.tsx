@@ -1,5 +1,4 @@
 import { useStudentGrades } from '@repo/self/hooks/useStudentGrades';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Award, BookOpen, Clock } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { formatDistanceToNow } from 'date-fns';

@@ -1,13 +1,14 @@
 /**
  * TrustLevel
  *
- * Defines the cryptographic strength of the current device session.
+ * Defines the cryptographic strength of the current device session across the 5-tier gradient.
  */
 export enum TrustLevel {
-  NONE = 0, // No device identity
+  NONE = 0, // No device identity / anonymous
   SOFT = 1, // Local storage ID (Install ID)
-  HARDWARE = 2, // Hardware-bound key exists (Secure Enclave)
-  ATTESTED = 3, // Hardware-bound key + OS Integrity (DeviceCheck/Play Integrity)
+  VERIFIED = 2, // Active link in device_accounts & is_trusted = true
+  HARDWARE = 3, // Hardware-bound key exists (Secure Enclave / Android KeyStore)
+  ATTESTED = 4, // Hardware-bound key + OS Integrity (DeviceCheck / Play Integrity)
 }
 
 /**

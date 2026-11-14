@@ -1,0 +1,170 @@
+diff --git a/apps/gurudevi-mobile/src/lib/backgroundSync.ts b/apps/gurudevi-mobile/src/lib/backgroundSync.ts
+index 11d06cdb2..c543f4f6c 100644
+--- a/apps/gurudevi-mobile/src/lib/backgroundSync.ts
++++ b/apps/gurudevi-mobile/src/lib/backgroundSync.ts
+@@ -200,7 +200,9 @@ export async function runBackgroundSyncTask() {
+           continue;
+         }
+ 
+-        await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
++        await mutationFn(item.variables, {
++          idempotencyKey: item.idempotencyKey, commandId: item.id, userId: item.userId,
++        });
+         removeFromQueue(item.id);
+         drained++;
+       } catch (error) {
+@@ -344,7 +346,9 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
+           continue;
+         }
+ 
+-        await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
++        await mutationFn(item.variables, {
++          idempotencyKey: item.idempotencyKey, commandId: item.id, userId: item.userId,
++        });
+         removeFromQueue(item.id);
+         drained++;
+       } catch (error) {
+diff --git a/packages/core/src/api/clientRuntime.ts b/packages/core/src/api/clientRuntime.ts
+index 1e154d9bc..fee41b1e7 100644
+--- a/packages/core/src/api/clientRuntime.ts
++++ b/packages/core/src/api/clientRuntime.ts
+@@ -1,4 +1,5 @@
+ import { hc } from 'hono/client';
++import { getActiveAccountId } from '@repo/core/lib/accountScope';
+ 
+ let tokenResolver: (() => Promise<string | null>) | null = null;
+ let activeBondIdResolver: (() => Promise<string | null>) | null = null;
+@@ -11,6 +12,12 @@ export function registerActiveBondIdResolver(resolver: () => Promise<string | nu
+   activeBondIdResolver = resolver;
+ }
+ 
++export function assertActiveRequestAccount(expectedAccountId?: string) {
++  if (expectedAccountId && getActiveAccountId() !== expectedAccountId) {
++    throw Object.assign(new Error('The owning account must remain active for this request.'), { status: 401 });
++  }
++}
++
+ /**
+  * Applies session and selected-context headers to every first-party API
+  * transport. The server treats context as a hint and resolves authority from
+@@ -19,6 +26,7 @@ export function registerActiveBondIdResolver(resolver: () => Promise<string | nu
+ export async function authenticatedSovereignFetch(
+   input: RequestInfo | URL,
+   requestInit?: RequestInit,
++  expectedAccountId?: string,
+ ): Promise<Response> {
+   let token: string | null = null;
+   if (tokenResolver) {
+@@ -41,6 +49,8 @@ export async function authenticatedSovereignFetch(
+     }
+   }
+ 
++  assertActiveRequestAccount(expectedAccountId);
++
+   try {
+     return await fetch(input, { ...requestInit, headers });
+   } catch (error) {
+diff --git a/packages/core/src/api/orpcClient.ts b/packages/core/src/api/orpcClient.ts
+index ad7fa3bab..2376ea85d 100644
+--- a/packages/core/src/api/orpcClient.ts
++++ b/packages/core/src/api/orpcClient.ts
+@@ -7,6 +7,7 @@ import { SOVEREIGN_ORPC_URL } from './base';
+ import { authenticatedSovereignFetch } from './clientRuntime';
+ 
+ export interface ClientContext {
++  expectedAccountId?: string;
+   cache?: RequestCache;
+   retry?: number;
+   retryDelay?: (options: {
+@@ -65,6 +66,7 @@ const link = new RPCLink<ClientContext>({
+       filter: ({ request }) => request.method === 'GET',
+     }),
+     new BatchLinkPlugin({
++      exclude: ({ context }) => context.expectedAccountId !== undefined,
+       groups: [
+         {
+           condition: ({ context }) => context?.cache === 'force-cache',
+@@ -78,7 +80,7 @@ const link = new RPCLink<ClientContext>({
+     return authenticatedSovereignFetch(url, {
+       ...init,
+       cache: context?.cache,
+-    });
++    }, context?.expectedAccountId);
+   },
+ });
+ 
+diff --git a/packages/core/src/lib/sync/errorClassifier.ts b/packages/core/src/lib/sync/errorClassifier.ts
+index 0a3652151..bbda8c024 100644
+--- a/packages/core/src/lib/sync/errorClassifier.ts
++++ b/packages/core/src/lib/sync/errorClassifier.ts
+@@ -12,6 +12,8 @@ export function classifyError(error: any): ErrorCategory {
+ 
+   // Auth Expired: Token expired or needs refresh (should pause, not dump to DLQ)
+   if (
++    error.status === 401 ||
++    code === 'UNAUTHORIZED' ||
+     code === '401' ||
+     msg.includes('jwt expired') ||
+     msg.includes('token expired') ||
+@@ -23,6 +25,8 @@ export function classifyError(error: any): ErrorCategory {
+   // Permanent: Won't fix itself on retry (Schema, Logic, Constraints)
+   // Reference: https://www.postgresql.org/docs/current/errcodes-appendix.html
+   if (
++    error.status === 400 ||
++    error.status === 403 ||
+     code === '23505' || // Unique violation
+     code === '42501' || // Insufficient privilege
+     code === '42P01' || // Relation doesn't exist
+@@ -36,6 +40,8 @@ export function classifyError(error: any): ErrorCategory {
+ 
+   // Conflict: Data fork detected (Version mismatch, 409 Conflict)
+   if (
++    error.status === 409 ||
++    code === 'CONFLICT' ||
+     code === '409' ||
+     msg.includes('conflict') ||
+     msg.includes('version mismatch') ||
+diff --git a/packages/core/src/lib/sync/registry.ts b/packages/core/src/lib/sync/registry.ts
+index 93b151f6a..76f1d4ab6 100644
+--- a/packages/core/src/lib/sync/registry.ts
++++ b/packages/core/src/lib/sync/registry.ts
+@@ -2,6 +2,7 @@ import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+ import { api } from '@repo/core/api/client';
+ import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+ import { orpcClient } from '@repo/core/api/orpcClient';
++import { replayAssignmentSubmission } from '@repo/core/api/assignmentCommands';
+ 
+ const client = createSovereignClient(SOVEREIGN_API_URL);
+ 
+@@ -12,7 +13,7 @@ const client = createSovereignClient(SOVEREIGN_API_URL);
+  * Born in the apps/gurudevi-mobile, now healed and moved to @repo/core.
+  */
+ 
+-type MutationExecutionContext = Readonly<{ idempotencyKey: string }>;
++type MutationExecutionContext = Readonly<{ idempotencyKey: string; commandId?: string; userId?: string }>;
+ type MutationFunction = (variables: any, context?: MutationExecutionContext) => Promise<any>;
+ 
+ function requireIdempotencyKey(context: MutationExecutionContext | undefined): string {
+@@ -23,6 +24,7 @@ function requireIdempotencyKey(context: MutationExecutionContext | undefined): s
+ }
+ 
+ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
++  'assignment.submit': (variables, context) => replayAssignmentSubmission(variables, context ?? {}),
+   // Community
+   createPost: async (vars) => {
+     // Core API doesn't have community directly, it's injected
+diff --git a/packages/core/src/lib/sync/sync/SyncManager.tsx b/packages/core/src/lib/sync/sync/SyncManager.tsx
+index 92bf451f7..389bd2bf7 100644
+--- a/packages/core/src/lib/sync/sync/SyncManager.tsx
++++ b/packages/core/src/lib/sync/sync/SyncManager.tsx
+@@ -152,7 +152,9 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
+           }
+ 
+           updateEntry(item.id, 'syncing');
+-          await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
++          await mutationFn(item.variables, {
++            idempotencyKey: item.idempotencyKey, commandId: item.id, userId: item.userId,
++          });
+ 
+           // Success! (Resonance achieved)
+           removeFromQueue(item.id);

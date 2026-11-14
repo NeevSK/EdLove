@@ -1,0 +1,109 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  max-width: 64rem;
+  margin: 0 auto;
+  font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
+  gap: 1.5rem;
+}
+
+.headerBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+}
+
+.titleArea h1 {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.75rem;
+  color: var(--color-ink, #131e27);
+  margin: 0;
+}
+
+.titleArea p {
+  color: var(--color-ink-soft, #453c35);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+.filterBar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  min-height: 44px;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  background: var(--color-paper, #f7f2e8);
+  color: var(--color-ink, #131e27);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterBtn[data-active="true"] {
+  background: var(--color-action, #a85022);
+  color: #ffffff;
+  border-color: var(--color-action, #a85022);
+}
+
+.docsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.docItem {
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.docMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.docTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-ink, #131e27);
+}
+
+.docSub {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft, #453c35);
+}
+
+.statusPublished {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.statusReview {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #fef7e0;
+  color: #b06000;
+}

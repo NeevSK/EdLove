@@ -1,25 +1,31 @@
 import { isLocalOnlyIdentity } from '@repo/core/logic';
 import {
   dismissGuestLeaseReminder,
-  getOrCreateGuestLease,
   type GuestLeaseStatus,
+  getOrCreateGuestLease,
 } from '@repo/core/native';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
-import { Box, Pressable, Text } from '@repo/ui/primitives';
-import { usePathname, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Button, IconButton, Surface, Text } from '@repo/ui/components/native';
+import { X } from '@repo/ui/icons';
+import type { KitIconProps } from '@repo/ui/theme';
+import { usePathname } from 'expo-router';
+import { type ComponentType, useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 /**
- * Makes the guest retention boundary visible without blocking exploration.
- * Personal writes remain local; the account route is required for durable sync.
+ * Nudges a guest to sign in on the lease's reminder days, and on every launch after the
+ * last one. It never blocks and nothing is deleted: guest work stays on this device.
  */
 export function GuestPersistenceNotice() {
-  const router = useRouter();
+  const router = useNavigator();
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const [status, setStatus] = useState<GuestLeaseStatus | null>(null);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
+    setIsDismissed(false);
     if (!user || !isLocalOnlyIdentity(user)) {
       setStatus(null);
       return;
@@ -40,37 +46,51 @@ export function GuestPersistenceNotice() {
     pathname === '/auth' ||
     pathname === '/onboarding' ||
     pathname === '/account-recovery';
+  if (!user || !isLocalOnlyIdentity(user) || isEntryRoute || isDismissed || !status?.reminderDay)
+    return null;
 
-  if (!user || !isLocalOnlyIdentity(user) || isEntryRoute || !status?.reminderDay || status.isExpired) return null;
-
-  const remainingDays = Math.max(0, 15 - status.day);
+  const reminderDay = status.reminderDay;
   const dismiss = () => {
-    const reminderDay = status.reminderDay;
-    if (!reminderDay) return;
-    void dismissGuestLeaseReminder(user.id, reminderDay).then(() => setStatus(null));
+    setIsDismissed(true);
+    void dismissGuestLeaseReminder(user.id, reminderDay);
   };
 
   return (
-    <Box className="absolute bottom-4 left-4 right-4 z-40 flex-row items-center gap-3 rounded-2xl border border-phase-border bg-phase-surface px-4 py-3 shadow-lg">
-      <Box className="flex-1">
-        <Text className="text-sm font-semibold text-phase-text-primary">
-          Guest mode · {remainingDays} day{remainingDays === 1 ? '' : 's'} left
+    <Surface
+      tone="raised"
+      style={{
+        position: 'absolute',
+        bottom: 96,
+        left: 16,
+        right: 16,
+        zIndex: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+      }}
+    >
+      <View style={{ flex: 1, gap: 2 }}>
+        <Text kind="label">Guest mode · saved on this device</Text>
+        <Text kind="caption" tone="soft">
+          Create an account to keep your work safe and use it on your other devices.
         </Text>
-        <Text className="mt-0.5 text-xs leading-4 text-phase-text-secondary">
-          Your work is saved only on this device until you create an account.
-        </Text>
-      </Box>
-      <Pressable
-        accessibilityRole="button"
+      </View>
+      <Button
+        label="Create account"
+        variant="primary"
+        size="sm"
         accessibilityLabel="Create an account to save across devices"
-        className="rounded-full bg-phase-interactive px-3 py-2"
         onPress={() => router.push('/auth')}
-      >
-        <Text className="text-xs font-bold text-white">Keep work</Text>
-      </Pressable>
-      <Pressable accessibilityRole="button" accessibilityLabel="Dismiss guest storage reminder" onPress={dismiss}>
-        <Text className="text-base text-phase-text-secondary">×</Text>
-      </Pressable>
-    </Box>
+      />
+      <IconButton
+        icon={X as ComponentType<KitIconProps>}
+        label="Dismiss guest storage reminder"
+        variant="quiet"
+        size="sm"
+        onPress={dismiss}
+      />
+    </Surface>
   );
 }

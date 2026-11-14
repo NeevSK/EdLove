@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f4ec" />
+    <title>Meet Tutii</title>
+    <style>
+      :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #30372e; background: #f7f4ec; font-synthesis: none; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; min-height: 100svh; }
+      button, input { font: inherit; }
+      button { color: inherit; }
+      .page { min-height: 100svh; display: grid; grid-template-columns: minmax(280px, 1.1fr) minmax(320px, .9fr); align-items: center; max-width: 1120px; margin: auto; padding: clamp(22px, 5vw, 64px); gap: clamp(20px, 5vw, 70px); }
+      .art { width: min(100%, 540px); height: min(76svh, 560px); min-height: 330px; justify-self: center; }
+      canvas { display: block; width: 100%; height: 100%; }
+      .copy { max-width: 420px; padding: 12px 0 26px; }
+      .mark { margin: 0 0 30px; color: #76866b; text-transform: uppercase; letter-spacing: .18em; font-size: 11px; font-weight: 700; }
+      .step { display: none; }
+      .step.active { display: block; animation: appear 650ms cubic-bezier(.23,1,.32,1) both; }
+      h1 { margin: 0; max-width: 11ch; font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: clamp(40px, 5vw, 62px); line-height: 1.04; letter-spacing: -.045em; }
+      .lead { margin: 20px 0 0; color: #71756d; font-size: 17px; line-height: 1.65; }
+      .name { display: block; width: 100%; margin: 26px 0 0; border: 0; border-bottom: 1px solid #bcc0b4; border-radius: 0; padding: 11px 2px; outline: 0; background: transparent; color: #30372e; font-size: 19px; }
+      .name:focus { border-color: #778b69; }
+      .action { display: inline-flex; align-items: center; gap: 12px; margin-top: 30px; border: 0; padding: 10px 0; background: transparent; color: #41583b; font-size: 15px; font-weight: 650; cursor: pointer; }
+      .action span { font-size: 22px; transition: transform 180ms ease-out; }
+      @media (hover:hover) and (pointer:fine) { .action:hover span { transform: translateX(4px); } }
+      .foot { margin-top: 48px; color: #98998f; font-size: 12px; }
+      @keyframes appear { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+      @media (max-width: 720px) {
+        .page { grid-template-columns: 1fr; align-content: start; gap: 0; padding: 24px 28px 32px; }
+        .art { width: min(100%, 420px); height: min(46svh, 400px); min-height: 260px; }
+        .copy { width: min(100%, 420px); justify-self: center; padding: 0 2px 18px; }
+        .mark { margin-bottom: 18px; }
+        h1 { font-size: clamp(38px, 10vw, 54px); }
+        .lead { margin-top: 14px; font-size: 16px; }
+        .foot { margin-top: 26px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="art" aria-label="Tutii, your little firefly companion">
+        <canvas id="tutii" aria-hidden="true"></canvas>
+      </div>
+      <section class="copy" aria-live="polite">
+        <p class="mark">Gurudevi</p>
+        <div class="step active" id="intro">
+          <h1>Hi, I’m Tutii.</h1>
+          <p class="lead">I’m here for everyone who helps a community grow — students, teachers, families and the people who lead.</p>
+          <button class="action" id="begin" type="button">Let’s get to know you <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="step" id="name-step">
+          <h1>What’s your lovely name?</h1>
+          <p class="lead">I’d love to know what to call you.</p>
+          <label class="sr-only" for="name">Your name</label>
+          <input class="name" id="name" name="name" autocomplete="given-name" placeholder="Your name" />
+          <button class="action" id="continue" type="button">Continue <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="step" id="hello-step">
+          <h1 id="hello">So lovely to meet you.</h1>
+          <p class="lead">Next, we’ll find the right place for you in Gurudevi.</p>
+          <button class="action" id="again" type="button">Meet Tutii again <span aria-hidden="true">↺</span></button>
+        </div>
+        <p class="foot">A welcoming place for every role in a learning community.</p>
+      </section>
+    </main>
+    <script src="https://unpkg.com/@rive-app/canvas@2.44.0"></script>
+    <script>
+      const canvas = document.getElementById('tutii');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const project = new URL('./tutii-rive-lab/build/tutii-arrival.riv', window.location.href);
+      let player;
+      const showFallback = () => {
+        canvas.hidden = true;
+        const fallback = document.createElement('img');
+        fallback.src = './assets/mascot/firefly-guide-welcome-light-cutout-v2.webp';
+        fallback.alt = 'Tutii, a firefly companion';
+        fallback.style.cssText = 'display:block;width:100%;height:100%;object-fit:contain';
+        canvas.parentElement.append(fallback);
+      };
+      if (reduced || !window.rive?.Rive) {
+        showFallback();
+      } else {
+        player = new window.rive.Rive({
+          src: project.toString(),
+          canvas,
+          artboard: 'Tutii arrival',
+          animations: 'Arrive',
+          autoplay: true,
+          onLoad: () => player.resizeDrawingSurfaceToCanvas(),
+          onLoadError: showFallback,
+        });
+        window.addEventListener('resize', () => player?.resizeDrawingSurfaceToCanvas());
+      }
+      const show = (id) => {
+        document.querySelectorAll('.step').forEach((step) => step.classList.toggle('active', step.id === id));
+      };
+      document.getElementById('begin').addEventListener('click', () => show('name-step'));
+      document.getElementById('continue').addEventListener('click', () => {
+        const name = document.getElementById('name').value.trim();
+        document.getElementById('hello').textContent = name ? `So lovely to meet you, ${name}.` : 'So lovely to meet you.';
+        show('hello-step');
+      });
+      document.getElementById('again').addEventListener('click', () => {
+        if (player && !reduced) player.play('Arrive');
+        show('intro');
+      });
+    </script>
+  </body>
+</html>

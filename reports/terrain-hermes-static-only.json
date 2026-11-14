@@ -1,0 +1,8 @@
+{
+  "valid": true,
+  "engineUsed": "sovereign_fallback",
+  "simulationTier": "EMULATED_BABEL_AST",
+  "tasteNudge": "Static checks only: supply the target project root or its Hermes compiler path for bytecode compilation.",
+  "status": "unavailable",
+  "bytecodeVerified": false
+}

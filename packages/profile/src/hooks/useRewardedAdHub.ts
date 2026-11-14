@@ -1,4 +1,6 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { showToast } from '@repo/core/lib/feedback.adapter';
+import { usePermissions } from '@repo/core/logic';
+import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
@@ -11,7 +13,6 @@ import type { EnergyBalanceState, RewardedAdHubState } from '../types/negentropy
 export function useRewardedAdHub(): RewardedAdHubState {
   const { context } = usePermissions();
   const userId = context.userId || 'anonymous';
-  const showToast = useStore((state) => state.showToast);
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,23 +26,43 @@ export function useRewardedAdHub(): RewardedAdHubState {
   const refreshBalance = useCallback(async () => {
     if (!userId || userId === 'anonymous') return;
 
+    if (isLocalGuestSessionId(userId)) {
+      setEnergyBalance(
+        (prev) =>
+          prev || {
+            userId,
+            balance: 20,
+            totalEarned: 50,
+            totalSpent: 30,
+            dailyQuotaRemaining: 8,
+            dailyQuotaMax: 10,
+          },
+      );
+      return;
+    }
+
     try {
       // In web or native, fetch from sanctuary-api /api/rewards/energy-balance
       // Fallback gracefully if API is local/offline
-      const res = await fetch(`/api/rewards/energy-balance?user_id=${encodeURIComponent(userId)}`).catch(() => null);
+      const res = await fetch(
+        `/api/rewards/energy-balance?user_id=${encodeURIComponent(userId)}`,
+      ).catch(() => null);
       if (res && res.ok) {
         const data = await res.json();
         setEnergyBalance(data);
       } else {
         // Optimistic default for local sandbox
-        setEnergyBalance((prev) => prev || {
-          userId,
-          balance: 20,
-          totalEarned: 50,
-          totalSpent: 30,
-          dailyQuotaRemaining: 8,
-          dailyQuotaMax: 10,
-        });
+        setEnergyBalance(
+          (prev) =>
+            prev || {
+              userId,
+              balance: 20,
+              totalEarned: 50,
+              totalSpent: 30,
+              dailyQuotaRemaining: 8,
+              dailyQuotaMax: 10,
+            },
+        );
       }
     } catch {
       // Non-blocking catch
@@ -88,7 +109,7 @@ export function useRewardedAdHub(): RewardedAdHubState {
       if (Platform.OS === 'web') {
         // Web simulation / AdSense web capsule
         await new Promise((resolve) => setTimeout(resolve, 2500));
-        
+
         // Optimistically credit 10 energy
         setEnergyBalance((prev) => {
           if (!prev) return null;

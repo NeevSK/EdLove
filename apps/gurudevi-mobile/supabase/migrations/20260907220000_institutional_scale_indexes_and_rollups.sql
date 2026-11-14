@@ -14,12 +14,22 @@ CREATE INDEX IF NOT EXISTS classroom_students_classroom_status_roll_idx
   ON public.classroom_students (classroom_id, status, roll_number);
 
 -- Compound index for classroom daily attendance lookup
-CREATE INDEX IF NOT EXISTS attendance_classroom_date_status_idx 
-  ON public.attendance (classroom_id, date, status);
+DO $$
+BEGIN
+  IF to_regclass('public.attendance') IS NOT NULL THEN
+    CREATE INDEX IF NOT EXISTS attendance_classroom_date_status_idx
+      ON public.attendance (classroom_id, date, status);
+  END IF;
+END $$;
 
 -- Compound index for school-wide student enrollment registry
-CREATE INDEX IF NOT EXISTS student_grade_class_enrollments_school_status_idx 
-  ON public.student_grade_class_enrollments (school_id, status);
+DO $$
+BEGIN
+  IF to_regclass('public.student_grade_class_enrollments') IS NOT NULL THEN
+    CREATE INDEX IF NOT EXISTS student_grade_class_enrollments_school_status_idx
+      ON public.student_grade_class_enrollments (school_id, status);
+  END IF;
+END $$;
 
 -- ============================================================
 -- 2. SCHOOL DAILY ATTENDANCE SUMMARY (O(1) Rollup Projection)

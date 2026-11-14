@@ -1,5 +1,6 @@
-import { type CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { type CameraType, CameraView, scanFromURLAsync, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,24 +11,13 @@ import { ActivityIndicator, Modal, StyleSheet, Text, View, Pressable } from 'rea
  *
  * Live camera:  expo-camera → CameraView.onBarcodeScanned
  *               ↳ Android: Google ML Kit Barcode API (on-device, free, fast)
- *                  The "Scanned by Google" OS toast is expected — it is ML Kit's attribution.
  *               ↳ iOS:     Apple Vision / AVFoundation
  *
- * Gallery pick: @react-native-ml-kit/barcode-scanning
- *               ↳ Same ML Kit quality for static images (replaces jsQR + jpeg-js)
- *               ↳ On-device, free, handles curved/damaged QR codes well
+ * Gallery pick: expo-camera → scanFromURLAsync
+ *               ↳ On-device ML Kit / Apple Vision directly on static device images
  *
- * No API keys. No network calls. No billing. Works offline.
+ * No API keys. No network calls. Works 100% offline.
  */
-
-/** Shape returned by @react-native-ml-kit/barcode-scanning */
-interface MLKitBarcode {
-  format?: string;
-  type?: string;
-  value?: string;
-  rawValue?: string;
-}
-const BarcodeScanning: any = null;
 
 interface ScannerModalProps {
   visible: boolean;
@@ -74,25 +64,17 @@ export default function ScannerModal({
   }, [visible]);
 
   /**
-   * Gallery scan — uses ML Kit barcode scanning (same engine as live camera).
-   * Falls back to a clear error message if the native module is not linked.
+   * Gallery scan — uses expo-camera scanFromURLAsync (Google ML Kit / Apple Vision on-device).
    */
   const processImage = async (uri: string) => {
     setProcessing(true);
     setGalleryError(null);
     try {
-      if (!BarcodeScanning) {
-        setGalleryError(t('scanner.errors.customBuild'));
-        return;
-      }
+      const barcodes = await scanFromURLAsync(uri, ['qr']);
+      const qr = barcodes.find((b) => b.data);
 
-      const barcodes = (await BarcodeScanning.scan(uri)) as MLKitBarcode[];
-
-      // Find the first QR code in the result
-      const qr = barcodes.find((b) => b.format === 'QR_CODE' || b.type === 'QR_CODE');
-
-      if (qr?.value || qr?.rawValue) {
-        handleBarCodeScanned({ data: (qr.value ?? qr.rawValue)! });
+      if (qr?.data) {
+        handleBarCodeScanned({ data: qr.data });
       } else {
         setGalleryError(t('scanner.errors.noQrFound'));
       }
@@ -107,11 +89,8 @@ export default function ScannerModal({
   const pickImage = async () => {
     setGalleryError(null);
     try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true, // let user crop to QR area
-        quality: 1,
-      });
+      // Crop to the code; full quality, downsampled afterwards (file policy: scan).
+      const result = await ImagePicker.launchImageLibraryAsync(imagePickerOptionsFor('scan'));
 
       if (!result.canceled && result.assets?.[0]?.uri) {
         await processImage(result.assets[0].uri);

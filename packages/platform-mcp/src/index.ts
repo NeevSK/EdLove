@@ -23,6 +23,7 @@ import { DocumentService } from './services/DocumentService.js';
 import { HelpService } from './services/HelpService.js';
 import { MaintenanceService } from './services/MaintenanceService.js';
 import { ScoutService } from './services/ScoutService.js';
+import { generateDownstreamCedarSchema } from './services/cedarMcpSchema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -147,7 +148,7 @@ function proxyScriptPath() {
 }
 
 function buildDownstreamServerSpecs(): DownstreamServerSpec[] {
-  return [
+  const specs: DownstreamServerSpec[] = [
     {
       name: 'sequential-thinking',
       envKey: 'EXPO_TOKEN', // sequential thinking doesn't need specific tokens but we want it always active
@@ -265,7 +266,88 @@ function buildDownstreamServerSpecs(): DownstreamServerSpec[] {
         'https://mcp.cloudflare.com/mcp',
       ],
     },
+    {
+      name: 'render',
+      envKey: 'RENDER_API_KEY',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.render.com/mcp',
+      ],
+    },
+    {
+      name: 'betterstack',
+      envKey: 'BETTERSTACK_API_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.betterstack.com',
+      ],
+    },
+    {
+      name: 'meta',
+      envKey: 'META_ACCESS_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.facebook.com/devtools',
+      ],
+    },
+    {
+      name: 'whatsapp_biz',
+      envKey: 'WHATSAPP_ACCESS_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.facebook.com/whatsapp_business_tools',
+      ],
+    },
   ];
+
+  // Discover Stitch accounts (supports STITCH_API_KEY, STITCH_API_KEY_1, STITCH_API_KEY_ACCOUNT2, etc.)
+  const stitchEnvKeys = Object.keys(process.env).filter((k) => /^STITCH_API_KEY(_.*)?$/i.test(k));
+  if (stitchEnvKeys.length === 0) {
+    // Default placeholder so gateway logs skipping if missing
+    specs.push({
+      name: 'stitch',
+      envKey: 'STITCH_API_KEY',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://stitch.googleapis.com/mcp',
+      ],
+    });
+  } else {
+    for (const key of stitchEnvKeys) {
+      const isDefault = key.toUpperCase() === 'STITCH_API_KEY';
+      const suffix = isDefault ? '' : key.replace(/^STITCH_API_KEY_?/i, '').toLowerCase();
+      const serverName = suffix ? `stitch_${suffix}` : 'stitch';
+
+      specs.push({
+        name: serverName,
+        envKey: key,
+        command: 'node',
+        args: [
+          proxyScriptPath(),
+          'node',
+          path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+          'https://stitch.googleapis.com/mcp',
+        ],
+      });
+    }
+  }
+
+  return specs;
 }
 
 async function probeExpoToken(token: string | undefined) {
@@ -315,6 +397,21 @@ function resolveServerArgs(spec: DownstreamServerSpec, token: string | undefined
   // Context7 takes its API key via command line; Firecrawl reads it from the environment.
   if (spec.name === 'context7' && token) {
     return [...spec.args, '--api-key', token];
+  }
+  if (spec.name === 'render' && token) {
+    return [...spec.args, '--header', `Authorization:Bearer ${token}`];
+  }
+  if (spec.name === 'betterstack' && token) {
+    return [...spec.args, '--header', `Authorization:Bearer ${token}`];
+  }
+  if (spec.name === 'meta' && token) {
+    return [...spec.args, '--header', `Authorization:Bearer ${token}`];
+  }
+  if (spec.name === 'whatsapp_biz' && token) {
+    return [...spec.args, '--header', `Authorization:Bearer ${token}`];
+  }
+  if (spec.name.startsWith('stitch') && token) {
+    return [...spec.args, '--header', `X-Goog-Api-Key:${token}`];
   }
   return spec.args;
 }
@@ -410,13 +507,17 @@ class PolymathPlatformServer {
     console.error('[Gateway] Initializing Sovereign Downstream Multiplexer...');
 
     // Auto-sync local skills on boot
-    try {
-      await this.syncWorkspaceSkillsToAntigravity();
-    } catch (e: any) {
-      console.error('[Gateway] Skills Sync Warning:', e.message);
+    if (process.env.PLATFORM_MCP_SKIP_SKILL_SYNC !== '1') {
+      try {
+        await this.syncWorkspaceSkillsToAntigravity();
+      } catch (e: any) {
+        console.error('[Gateway] Skills Sync Warning:', e.message);
+      }
     }
 
+    const selectedDownstreams = process.env.PLATFORM_MCP_DOWNSTREAMS?.split(',').map((name) => name.trim());
     for (const serverConf of buildDownstreamServerSpecs()) {
+      if (selectedDownstreams && !selectedDownstreams.includes(serverConf.name)) continue;
       const token = process.env[serverConf.envKey];
       if (!token && !serverConf.alwaysRun) {
         console.error(
@@ -588,10 +689,15 @@ class PolymathPlatformServer {
 
     this.registerPlatformTool(
       'sovereign_device',
-      'Unified device interaction and control engine for mobile simulators and emulators.',
+      'Device inventory, interactions, diagnostics, and multi-device profile capture with local SQLite history.',
       z.object({
         action: z.enum([
           'doctor',
+          'capabilities',
+          'list_android_devices',
+          'profile_history',
+          'profile_comparison',
+          'profile_trace_events',
           'snapshot',
           'press',
           'type',
@@ -600,6 +706,21 @@ class PolymathPlatformServer {
           'open_app',
           'screenshot',
           'logs',
+          'network',
+          'find-text',
+          'find-role',
+          'reload',
+          'clear-cache',
+          'profile',
+          'visual-diff',
+          'record',
+          'component-tree',
+          'swipe',
+          'pinch',
+          'long-press',
+          'wait',
+          'assert',
+          'capture_profile',
         ]),
         params: z.record(z.string(), z.any()).optional(),
       }),
@@ -614,6 +735,8 @@ class PolymathPlatformServer {
       z.object({
         action: z.enum([
           'hygiene',
+          'cedar',
+          'cedar_scenarios',
           'legacy_ui',
           'architecture',
           'a11y',
@@ -636,15 +759,21 @@ class PolymathPlatformServer {
           'hooks',
           'deprecations',
           'version_drift',
+          'seams',
           'memory_sinks',
           'cognitive_load',
           'push_audit',
+          'hermes',
+          'yoga',
+          'doctor',
         ]),
         params: z.record(z.string(), z.any()).optional(),
       }),
       async ({ action, params = {} }) => {
         const auditHandlers: Record<string, (p: Record<string, any>) => unknown> = {
           hygiene: () => this.audit.handleAuditHygiene(),
+          cedar: () => this.audit.handleCedarAudit(false),
+          cedar_scenarios: () => this.audit.handleCedarAudit(true),
           legacy_ui: (p) => this.audit.handleAuditLegacyUI(p as any),
           architecture: (p) => this.audit.handleAuditPackageArchitecture(p as any),
           a11y: (p) => this.audit.handleAuditA11y(p as any),
@@ -667,9 +796,14 @@ class PolymathPlatformServer {
           hooks: (p) => this.audit.handleAuditHookViolations(p as any),
           deprecations: (p) => this.audit.handleAuditDeprecations(p as any),
           version_drift: (p) => this.audit.handleAuditVersionDrift(p as any),
+          seams: (p) => this.audit.handleAuditSeams(p as any),
+          tcdi: (p) => this.audit.handleCheckTcdi(p as any),
           memory_sinks: () => this.audit.handleCheckMemorySinks(),
           cognitive_load: (p) => this.audit.handleReportCognitiveLoad(p as any),
           push_audit: () => this.audit.handlePushAudit(),
+          hermes: (p) => this.audit.handleVerifyHermes(p as any),
+          yoga: (p) => this.audit.handleVerifyYoga(p as any),
+          doctor: (p) => this.audit.handleDoctorAll(p as any),
         };
 
         const handler = auditHandlers[action];
@@ -689,6 +823,7 @@ class PolymathPlatformServer {
           'scout',
           'docs',
           'inventory',
+          'cedar_mcp_schema',
           'view',
           'find',
           'lens',
@@ -705,11 +840,27 @@ class PolymathPlatformServer {
           'parse_pdf',
           'spellcheck',
           'disk_usage',
+          'affordance',
+          'context',
+          'gravity',
         ]),
         params: z.record(z.string(), z.any()).optional(),
       }),
       async ({ action, params = {} }) => {
         switch (action) {
+          case 'cedar_mcp_schema': {
+            const serverName = z.string().min(1).parse(params.server);
+            const downstream = this.downstreamClients.get(serverName);
+            if (!downstream) throw new Error(`Downstream server ${serverName} is not connected.`);
+            const result = generateDownstreamCedarSchema(serverName, downstream.tools);
+            return { content: [{ type: 'text' as const, text: JSON.stringify({ source: serverName, ...result }) }] };
+          }
+          case 'affordance':
+            return this.discovery.handleAffordance(params as any);
+          case 'context':
+            return this.discovery.handleContext(params as any);
+          case 'gravity':
+            return this.discovery.handleGravity(params as any);
           case 'grep':
             return this.discovery.handleGrepCode(params as any);
           case 'scout':
@@ -1450,7 +1601,9 @@ class PolymathPlatformServer {
         maxPages: z
           .number()
           .optional()
-          .describe('Maximum number of pages to parse (default: 300; dynamically bounded by document size)'),
+          .describe(
+            'Maximum number of pages to parse (default: 300; dynamically bounded by document size)',
+          ),
         extractTables: z
           .boolean()
           .optional()
@@ -1470,9 +1623,11 @@ class PolymathPlatformServer {
     console.error('Polymath Master MCP Server (Modular) running on stdio');
 
     // Initialize downstream in the background so it doesn't block startup
-    this.initializeDownstream().catch((err) => {
-      console.error('[Gateway] Background downstream initialization failed:', err);
-    });
+    if (process.env.PLATFORM_MCP_SKIP_DOWNSTREAM !== '1') {
+      this.initializeDownstream().catch((err) => {
+        console.error('[Gateway] Background downstream initialization failed:', err);
+      });
+    }
 
     const cleanup = async () => {
       console.error('[Gateway] Shutting down, cleaning up downstream servers...');

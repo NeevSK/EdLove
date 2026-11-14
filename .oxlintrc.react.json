@@ -1,0 +1,66 @@
+{
+  "$schema": "../node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react"
+  ],
+  "categories": {
+    "correctness": "off",
+    "suspicious": "off",
+    "perf": "off",
+    "restriction": "off",
+    "style": "off",
+    "pedantic": "off",
+    "nursery": "off"
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "react/set-state-in-effect": "error",
+    "react/no-deriving-state-in-effects": "error",
+    "react/set-state-in-render": "error",
+    "react/purity": "error",
+    "react/refs": "error",
+    "react/immutability": "error",
+    "react/globals": "error",
+    "react/static-components": "error",
+    "react/use-memo": "error",
+    "react/preserve-manual-memoization": "error",
+    "react/error-boundaries": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "19.3"
+    }
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/.expo/**",
+    "**/generated/**",
+    "**/docs/**",
+    "**/temp/**",
+    "**/archive/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/__tests__/**",
+    "**/*.d.ts",
+    "**/*.web.ts",
+    "**/*.web.tsx",
+    "!apps/gurudevi-web/**",
+    "!packages/admin/src/screens/SchoolProfileScreen.web.tsx",
+    "!packages/analytics/src/engine/PostHogAnalytics.web.ts",
+    "!packages/form-builder/src/screens/FormBuilderScreen.web.tsx",
+    "!packages/form-builder/src/screens/PublicFormScreen.web.tsx",
+    "!packages/library/src/screens/VideoPlayerScreen.web.tsx",
+    "!packages/self/src/screens/SelfScreen.web.tsx",
+    "!packages/ui/src/components/FeatureStateBoundary.web.tsx",
+    "!packages/ui/src/components/GatewayFooter.web.tsx",
+    "!packages/ui/src/components/GatewayHeader.web.tsx",
+    "!packages/ui/src/components/GatewayScreenShell.web.tsx",
+    "!packages/ui/src/components/WebScreenHeader.web.tsx",
+    "!packages/ui/src/icons.web.ts",
+    "!packages/ui/src/screens/AppSettingsScreen.web.tsx"
+  ]
+}

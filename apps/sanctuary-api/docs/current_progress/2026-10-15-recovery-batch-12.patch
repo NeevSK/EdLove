@@ -1,0 +1,84 @@
+diff --git a/packages/core/src/lib/sync/__tests__/useMutationQueue.test.ts b/packages/core/src/lib/sync/__tests__/useMutationQueue.test.ts
+index 48f5016b0..b315fdd6f 100644
+--- a/packages/core/src/lib/sync/__tests__/useMutationQueue.test.ts
++++ b/packages/core/src/lib/sync/__tests__/useMutationQueue.test.ts
+@@ -14,6 +14,17 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
+     setActiveAccountId(null);
+   });
+ 
++  it('preserves an explicitly prepared operation identity and payload metadata', async () => {
++    const operationId = '123e4567-e89b-12d3-a456-426614174001';
++    await useMutationQueue.getState().addToQueue({
++      name: 'prepared-command', scope: 'workspace', type: 'UPDATE', variables: { value: 'draft' },
++      operationId, inputHash: 'a'.repeat(64), clientRevision: 4,
++    });
++    const pending = useMutationQueue.getState().queue[0];
++    expect(pending).toMatchObject({ operationId, inputHash: 'a'.repeat(64), clientRevision: 4 });
++    expect(pending?.id).not.toBe(operationId);
++  });
++
+   it('isolates queued mutations by user account (Multi-tenant partition)', async () => {
+     const { addToQueue, getQueueForUser } = useMutationQueue.getState();
+ 
+diff --git a/packages/core/src/lib/sync/types.ts b/packages/core/src/lib/sync/types.ts
+index 36a856057..09c1a26f0 100644
+--- a/packages/core/src/lib/sync/types.ts
++++ b/packages/core/src/lib/sync/types.ts
+@@ -7,8 +7,21 @@ import type { MutationCommandState } from '@repo/core/lib/sync/commandLifecycle'
+ 
+ export type { MutationType };
+ 
++export type MutationReceipt = Readonly<{
++  operationId: string;
++  status: 'pending' | 'completed' | 'failed' | 'conflict';
++  receiptId: string;
++  serverRevision?: string;
++  error?: string;
++  conflictReason?: string;
++}>;
++
+ export interface QueuedMutation {
+   id: string;
++  /** Prepared operation identity; defaults to the queue id for new commands. */
++  operationId?: string;
++  inputHash?: string;
++  clientRevision?: number;
+   idempotencyKey: string; // Deterministic hash to prevent duplicate writes
+   type: MutationType;
+   scope: string; // e.g., 'community', 'classroom', 'self'
+diff --git a/packages/core/src/lib/sync/useMutationQueue.ts b/packages/core/src/lib/sync/useMutationQueue.ts
+index d6bae402f..6c7b80103 100644
+--- a/packages/core/src/lib/sync/useMutationQueue.ts
++++ b/packages/core/src/lib/sync/useMutationQueue.ts
+@@ -50,6 +50,7 @@ export const useMutationQueue = create<MutationQueueState>()(
+         let accepted = false;
+         set((state) => {
+           if (state.queue.length >= MAX_MUTATION_QUEUE_SIZE) return state;
++          const commandId = uuidv7();
+           const highestLogicalClock = state.queue.reduce(
+             (max, item) => Math.max(max, item.logicalClock ?? 0),
+             0,
+@@ -61,7 +62,8 @@ export const useMutationQueue = create<MutationQueueState>()(
+               {
+                 ...mutation,
+                 userId,
+-                id: uuidv7(),
++                id: commandId,
++                operationId: mutation.operationId ?? commandId,
+                 idempotencyKey,
+                 timestamp: Date.now(),
+                 retryCount: 0,
+diff --git a/packages/core/src/logic/ports/storage.ts b/packages/core/src/logic/ports/storage.ts
+index 2fb7925c3..ed8e93016 100644
+--- a/packages/core/src/logic/ports/storage.ts
++++ b/packages/core/src/logic/ports/storage.ts
+@@ -8,3 +8,9 @@ export interface IStorage {
+   setItem(key: string, value: string): void | Promise<void>;
+   removeItem(key: string): void | Promise<void>;
+ }
++
++export type KeyValueStorage = IStorage;
++
++export interface LocalOnlyKeyValueStorage extends IStorage {
++  readonly isolation: 'local-only';
++}

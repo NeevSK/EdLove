@@ -1,0 +1,86 @@
+.lotusContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  user-select: none;
+}
+
+.lotusSvg {
+  overflow: visible;
+  transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Phase dynamics */
+.phaseInhale {
+  transform: scale(1.22);
+}
+
+.phaseHoldIn {
+  transform: scale(1.22);
+  filter: drop-shadow(0 0 16px rgba(13, 148, 136, 0.45));
+}
+
+.phaseExhale {
+  transform: scale(0.88);
+}
+
+.phaseHoldOut {
+  transform: scale(0.88);
+  opacity: 0.75;
+}
+
+.outerPetal {
+  transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: center;
+}
+
+.phaseInhale .outerPetal {
+  opacity: 0.9;
+}
+
+.phaseExhale .outerPetal {
+  opacity: 0.4;
+}
+
+.resonanceRing {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 6;
+  opacity: 0.35;
+  transform-origin: center;
+  animation: rotateSlow 40s linear infinite;
+}
+
+.resonanceRingInner {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.5;
+  transform-origin: center;
+  animation: rotateReverse 30s linear infinite;
+}
+
+@keyframes rotateSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.centerBindu {
+  filter: drop-shadow(0 0 8px currentColor);
+}

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "modules": [
+    "pjc.catalog.json",
+    "school.founder_invitation.json",
+    "api.foundation.json",
+    "admin.school_connection.json",
+    "classroom.teacher_first_workspace.json",
+    "ai.assistant.json",
+    "platform.founder_cockpit.json",
+    "admin.school_operations.json",
+    "classroom.teaching_loop.json",
+    "self.learner_growth.json"
+  ]
+}

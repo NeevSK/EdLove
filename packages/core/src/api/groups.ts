@@ -1,7 +1,5 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const groupsAPI = {
   /**
@@ -17,38 +15,34 @@ export const groupsAPI = {
       type?: string;
     } = {},
   ) {
-    const res = await (client.api as any).community.groups.$get({
-      query: {
-        school_id: filters.school_id,
-        limit: filters.limit,
-        offset: filters.offset,
-        search: filters.search,
-        is_public: filters.is_public,
-        type: filters.type,
-      },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch groups', res.status.toString());
+    try {
+      return await orpcClient.community.getGroups({
+        query: {
+          schoolId: filters.school_id,
+          limit: filters.limit,
+          offset: filters.offset,
+          search: filters.search,
+          isPublic: filters.is_public,
+          type: filters.type,
+        },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch groups', error?.code || 'GROUPS_FETCH_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
    * Retrieves a specific group.
    */
   async get(groupId: string) {
-    const res = await (client.api as any).community.groups[':groupId'].$get({
-      param: { groupId },
-    });
-
-    if (!res.ok) {
-      if (res.status === 404) return null;
-      throw new APIError('Failed to fetch group', res.status.toString());
+    try {
+      return await orpcClient.community.getGroup({
+        params: { groupId },
+      });
+    } catch (error: any) {
+      if (error?.status === 404 || error?.code === 'NOT_FOUND') return null;
+      throw new APIError(error?.message || 'Failed to fetch group', error?.code || 'GROUP_FETCH_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
@@ -62,30 +56,31 @@ export const groupsAPI = {
     visibility?: string;
     is_public?: boolean;
   }) {
-    const res = await (client.api as any).community.groups.$post({
-      json: params,
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to create group', res.status.toString());
+    try {
+      return await orpcClient.community.createGroup({
+        body: {
+          name: params.name,
+          description: params.description,
+          schoolId: params.school_id,
+          type: params.type,
+          visibility: params.visibility,
+        },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to create group', error?.code || 'GROUP_CREATE_FAILED');
     }
-
-    return await res.json();
   },
 
   /**
    * Joins a group.
    */
-  async join(groupId: string, userId: string, capacity: string) {
-    const res = await (client.api as any).community.groups[':groupId'].join.$post({
-      param: { groupId },
-      json: { user_id: userId, capacity },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to join group', res.status.toString());
+  async join(groupId: string, _userId: string, _capacity: string) {
+    try {
+      return await orpcClient.community.joinGroup({
+        params: { groupId },
+      });
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to join group', error?.code || 'GROUP_JOIN_FAILED');
     }
-
-    return await res.json();
   },
 };

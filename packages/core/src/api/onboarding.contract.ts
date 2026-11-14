@@ -28,9 +28,16 @@ export const onboardingContract = {
   completeOnboarding: {
     method: 'post',
     path: '/identity/complete-onboarding',
+    request: {
+      body: z.strictObject({ idempotencyKey: z.uuid().optional() }),
+    },
     responses: {
       200: {
-        schema: z.object({ success: z.boolean() }),
+        schema: z.object({
+          success: z.literal(true),
+          receiptId: z.uuid().nullable(),
+          replayed: z.boolean(),
+        }),
         description: 'Onboarding completed',
       },
     },

@@ -7,7 +7,7 @@
  */
 
 import { usePermissions } from '@repo/core/logic';
-import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
+import { saveVoiceJournalRecord } from '@repo/self/data/selfFeature.data';
 import { Check, CircleAlert, Mic, Play, Square, Trash2 } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -28,6 +28,7 @@ import {
   cancelAnimation,
   Easing,
   FadeInUp,
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -68,13 +69,6 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     height: waveHeight.value,
     opacity: interpolate(waveHeight.value, [12, 40], [0.3, 1]),
   }));
-
-  function interpolate(value: number, input: [number, number], output: [number, number]) {
-    'worklet';
-    const [iMin, iMax] = input;
-    const [oMin, oMax] = output;
-    return oMin + ((value - iMin) * (oMax - oMin)) / (iMax - iMin);
-  }
 
   // Check browser support
   useEffect(() => {

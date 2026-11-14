@@ -1,0 +1,446 @@
+/* ==========================================================================
+   Temporal Combo: Unified Date & Time Decoupled Architecture
+   ========================================================================== */
+
+/* AUTO ADAPTIVE ROOT CONTAINER */
+.autoComboRoot {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  min-width: max-content;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+/* Screen Reader Polite Live Region */
+.srOnlyLive {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* NANO COMBO TILE: When size cannot meaningfully hold full or medium bars */
+.nanoComboTile {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.4rem;
+  min-height: 1.95rem;
+  border-radius: var(--w-radius-sm, 4px);
+  border: 1px solid var(--w-line, rgba(19, 30, 39, 0.14));
+  background: color-mix(in srgb, var(--w-surface, #ffffff) 90%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 2px rgba(19, 30, 39, 0.04);
+  user-select: none;
+  white-space: nowrap;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.nanoClockBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: var(--w-radius-sm, 3px);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--w-ink, #131e27);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+}
+
+.nanoClockBtn:hover {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
+  border-color: var(--w-lamp, #e2c37a);
+  transform: translateY(-1px);
+}
+
+.nanoClockBtn:focus-visible {
+  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline-offset: 2px;
+}
+
+.nanoClockTime {
+  font: 700 0.72rem var(--w-font-mono, monospace, ui-monospace);
+  letter-spacing: 0.04em;
+  color: var(--w-lamp, #e2c37a);
+}
+
+/* COMPACT TWO-ROW QUIET STACK */
+.compactComboStack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--w-radius-lg, 0.85rem);
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
+  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.compactTimeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.compactDateRow {
+  display: flex;
+  align-items: center;
+}
+
+
+.comboContainer {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.45rem, 1.2vw, 0.75rem);
+  padding: clamp(0.6rem, 1.8vw, 1.25rem);
+  border-radius: var(--w-radius-lg, clamp(0.75rem, 1.8vw, 1.25rem));
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
+  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  width: 100%;
+  max-width: 48rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.comboToggleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.comboTitleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.comboTitle {
+  font: 700 clamp(0.72rem, 1.5vw, 0.82rem) system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--w-lamp, #e2c37a);
+}
+
+.comboSubtitle {
+  font-size: 0.65rem;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.45));
+}
+
+.togglePillsGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.togglePill {
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  background: color-mix(in srgb, var(--paper-light, #25201a) 60%, transparent);
+  color: var(--ink-soft, rgba(255, 255, 255, 0.65));
+  font: 600 0.72rem system-ui, sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.togglePill:hover {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  color: var(--w-lamp, #e2c37a);
+}
+
+.togglePill[data-active="true"] {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
+  color: var(--w-lamp, #e2c37a);
+}
+
+.comboBody {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.dateSegment {
+  flex: 1;
+  min-width: 0;
+}
+
+.comboDivider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.clockSegment {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.clockCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 80%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.06));
+}
+
+.clockCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.2rem;
+}
+
+.timeTopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-light, #1d1e2e) 85%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.timeReadoutGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.clockIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+  background: color-mix(in srgb, var(--paper, #141522) 80%, transparent);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clockIconBtn:hover {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent);
+  border-color: var(--w-lamp, #e2c37a);
+  transform: scale(1.05);
+}
+
+.digitalNumbersBtn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  background: transparent;
+  border: 0;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.digitalNumbersBtn:hover {
+  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+}
+
+.digitalNumbers {
+  font: 700 clamp(0.88rem, 2.2vw, 1.05rem) var(--font-mono, monospace, ui-monospace);
+  letter-spacing: 0.05em;
+  color: var(--ink, #fff);
+  white-space: nowrap;
+}
+
+.periodBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--w-lamp, #e2c37a);
+  letter-spacing: 0.04em;
+}
+
+.liveClockSvg {
+  display: block;
+}
+
+.formatSwitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.4rem;
+  background: color-mix(in srgb, var(--paper, #141522) 80%, transparent);
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+}
+
+.formatBtn {
+  background: transparent;
+  border: 0;
+  padding: 0.1rem 0.25rem;
+  border-radius: 0.25rem;
+  font: 600 0.66rem system-ui, sans-serif;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.formatBtn:hover {
+  color: var(--ink, #fff);
+}
+
+.formatBtn[data-active="true"] {
+  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+}
+
+.formatDivider {
+  font-size: 0.6rem;
+  color: var(--line, rgba(255, 255, 255, 0.2));
+  user-select: none;
+}
+
+.visualDialDrawer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 70%, transparent);
+  border: 1px dashed var(--line, rgba(255, 255, 255, 0.12));
+  animation: fadeInDial 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInDial {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.clockBadge {
+  font: 600 0.68rem system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--w-lamp, #e2c37a);
+}
+
+.closeSegmentBtn {
+  background: transparent;
+  border: 0;
+  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
+  transition: all 0.15s ease;
+}
+
+.closeSegmentBtn:hover {
+  background: color-mix(in srgb, var(--ink, #fff) 10%, transparent);
+  color: var(--ink, #fff);
+}
+
+/* Responsive Stacking for Mobile and Tablet */
+@media (max-width: 640px) {
+  .comboContainer {
+    padding: 0.5rem 0.65rem;
+    gap: 0.45rem;
+  }
+
+  .comboToggleBar {
+    gap: 0.35rem;
+  }
+
+  .togglePill {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.65rem;
+  }
+
+  .timeTopBar {
+    padding: 0.35rem 0.55rem;
+  }
+
+  .digitalNumbers {
+    font-size: 0.92rem;
+  }
+
+  .formatBtn {
+    padding: 0.08rem 0.2rem;
+    font-size: 0.62rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .comboContainer {
+    padding: 0.35rem 0.45rem;
+  }
+
+  .comboTitle {
+    font-size: 0.68rem;
+  }
+
+  .togglePillsGroup {
+    gap: 0.2rem;
+  }
+
+  .togglePill {
+    padding: 0.1rem 0.3rem;
+    font-size: 0.6rem;
+  }
+
+  .clockIconBtn {
+    width: 22px;
+    height: 22px;
+  }
+
+  .digitalNumbers {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .comboBody {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .comboDivider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .clockSegment {
+    width: 100%;
+    justify-content: center;
+  }
+}

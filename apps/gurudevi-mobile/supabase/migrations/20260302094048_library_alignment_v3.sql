@@ -10,8 +10,8 @@ ALTER TABLE IF EXISTS public.library_collection_items RENAME TO collection_resou
 
 -- Update foreign key references and constraints if needed (Supabase usually handles this, but let's be explicit)
 ALTER TABLE public.library_resources RENAME COLUMN uploader_id TO creator_id;
-ALTER TABLE public.library_resources RENAME COLUMN resource_url TO url;
-ALTER TABLE public.library_resources RENAME COLUMN resource_type TO type;
+ALTER TABLE public.library_resources RENAME COLUMN file_url TO url;
+ALTER TABLE public.library_resources ADD COLUMN type TEXT;
 
 -- 2. Add missing columns for the "Map" and "Enrichment" vision
 ALTER TABLE public.library_resources ADD COLUMN IF NOT EXISTS creator_name TEXT;

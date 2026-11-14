@@ -15,7 +15,15 @@ import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { color, duration, nativeEasing, scale as scaleTokens } from './motion';
+import { useWorld } from '../theme/native/WorldContext';
+import { duration, scale as scaleTokens } from '../tokens/motion';
+import { nativeEasing } from './motion';
+
+/** Success in the world's light: the tick in its deep lamp, the heart lit, motes in its glow. */
+function useSuccessColors() {
+  const t = useWorld().tokens;
+  return { disc: t.sunken, tick: t.lampDeep, heart: t.lamp, mote: t.glow };
+}
 
 // Conditional imports for Reanimated
 let Animated: any = null;
@@ -36,6 +44,7 @@ export function SuccessCheck({
   className?: string;
   style?: any;
 }) {
+  const c = useSuccessColors();
   const { allowSubtleAnimation } = useVisualCapabilities();
   // Web implementation using CSS animations
   if (Platform.OS === 'web') {
@@ -52,10 +61,10 @@ export function SuccessCheck({
         `}</style>
         <div className="success-check-animated">
           <Svg width={size} height={size} viewBox="0 0 24 24">
-            <Circle cx={12} cy={12} r={11} fill={color.neutral.warmGray100} />
+            <Circle cx={12} cy={12} r={11} fill={c.disc} />
             <Path
               d="M7 12.5L10.2 15.7L17 8.5"
-              stroke={color.brand.orange}
+              stroke={c.tick}
               strokeWidth={2.2}
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -73,7 +82,7 @@ export function SuccessCheck({
       className={className}
       style={[
         { width: size, height: size },
-        ...(Animated && allowSubtleAnimation
+        Animated && allowSubtleAnimation
           ? ({
               animationName: {
                 '0%': { opacity: 0, transform: [{ scale: scaleTokens.enter }] },
@@ -83,15 +92,15 @@ export function SuccessCheck({
               animationTimingFunction: nativeEasing.decelerate,
               animationFillMode: 'forwards',
             } as any)
-          : {}),
+          : null,
         style,
       ]}
     >
       <Svg width={size} height={size} viewBox="0 0 24 24">
-        <Circle cx={12} cy={12} r={11} fill={color.neutral.warmGray100} />
+        <Circle cx={12} cy={12} r={11} fill={c.disc} />
         <Path
           d="M7 12.5L10.2 15.7L17 8.5"
-          stroke={color.brand.orange}
+          stroke={c.tick}
           strokeWidth={2.2}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -112,6 +121,7 @@ const MOTE_OFFSETS: Array<{ dx: number; dy: number; delayFrac: number }> = [
 ];
 
 function Mote({ dx, dy, delayMs }: { dx: number; dy: number; delayMs: number }) {
+  const c = useSuccessColors();
   // Web implementation
   if (Platform.OS === 'web') {
     return (
@@ -123,7 +133,7 @@ function Mote({ dx, dy, delayMs }: { dx: number; dy: number; delayMs: number }) 
           width: 6,
           height: 6,
           borderRadius: 3,
-          backgroundColor: color.brand.peach,
+          backgroundColor: c.mote,
           animation: `mote-drift ${duration.meaningful}ms cubic-bezier(0.33, 1, 0.42, 0) forwards`,
           animationDelay: `${delayMs}ms`,
         }}
@@ -152,7 +162,7 @@ function Mote({ dx, dy, delayMs }: { dx: number; dy: number; delayMs: number }) 
           width: 6,
           height: 6,
           borderRadius: 3,
-          backgroundColor: color.brand.peach,
+          backgroundColor: c.mote,
           animationName: {
             '0%': { opacity: 0, transform: [{ translateX: 0 }, { translateY: 0 }] },
             '35%': { opacity: 0.85 },
@@ -177,6 +187,7 @@ export function SuccessGlow({
   className?: string;
   style?: any;
 }) {
+  const c = useSuccessColors();
   const { allowAmbientEffects, allowSubtleAnimation } = useVisualCapabilities();
   // Re-mountable key lets a screen retrigger the moment (e.g. on repeated saves).
   const [playKey, setPlayKey] = useState(0);
@@ -202,7 +213,7 @@ export function SuccessGlow({
         `}</style>
         <div className="success-glow-animated" style={{ position: 'absolute', inset: 0 }}>
           <Svg width={size} height={size} viewBox="164 267 183 175">
-            <Path d={HEART_PATH} fill={color.brand.peach} />
+            <Path d={HEART_PATH} fill={c.heart} />
           </Svg>
         </div>
         {allowAmbientEffects &&
@@ -245,7 +256,7 @@ export function SuccessGlow({
         }}
       >
         <Svg width={size} height={size} viewBox="164 267 183 175">
-          <Path d={HEART_PATH} fill={color.brand.peach} />
+          <Path d={HEART_PATH} fill={c.heart} />
         </Svg>
       </AnimatedView>
       {allowAmbientEffects &&

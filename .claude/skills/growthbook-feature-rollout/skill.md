@@ -1,4 +1,6 @@
 ---
+name: growthbook-feature-rollout
+description: Implementation and extension of feature management, flags, and experiments using GrowthBook JS SDK.
 title: "GrowthBook Feature Rollout Developer Skill"
 status: "active"
 created: 2026-06-21

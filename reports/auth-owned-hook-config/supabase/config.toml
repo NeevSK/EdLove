@@ -1,0 +1,4 @@
+project_id = "gurudevi-auth-owned-development"
+[auth.hook.custom_access_token]
+enabled = true
+uri = "pg-functions://postgres/public/canonical_account_access_token_hook"

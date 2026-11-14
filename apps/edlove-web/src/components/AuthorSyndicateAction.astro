@@ -1,0 +1,117 @@
+---
+interface Props {
+  title: string;
+  url: string;
+  targetPublication?: 'edlove' | 'gurudevi';
+  summary?: string;
+  pedagogicalTakeaway?: string;
+}
+
+const {
+  title,
+  url,
+  targetPublication = 'gurudevi',
+  summary = '',
+  pedagogicalTakeaway = '',
+} = Astro.props;
+
+const targetLabel = targetPublication === 'gurudevi' ? 'Gurudevi Platform' : 'EdLove Research';
+const originLabel = targetPublication === 'gurudevi' ? 'EdLove' : 'Gurudevi';
+---
+
+<div class="my-6 rounded-2xl border border-dashed border-[var(--color-midnightInk)]/20 bg-[var(--color-midnightInk)]/[0.02] p-4 text-xs font-body">
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <span class="text-base">✨</span>
+      <div>
+        <span class="font-bold text-[var(--color-midnightInk)] font-heading">Author Cross-Syndication Action</span>
+        <p class="text-[11px] text-[var(--color-midnightInk)]/70">
+          Share or cross-publish this article to <strong class="text-[var(--color-midnightInk)]">{targetLabel}</strong> on demand.
+        </p>
+      </div>
+    </div>
+    <button
+      type="button"
+      id="author-syndicate-btn"
+      data-title={title}
+      data-url={url}
+      data-target={targetPublication}
+      data-takeaway={pedagogicalTakeaway}
+      data-summary={summary}
+      class="inline-flex items-center gap-1.5 rounded-xl bg-[var(--color-midnightInk)] px-3.5 py-2 font-medium text-white shadow-xs hover:bg-[var(--color-gold)] hover:text-[var(--color-midnightInk)] transition-all cursor-pointer active:scale-95"
+    >
+      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+        <polyline points="16 6 12 2 8 6" />
+        <line x1="12" y1="2" x2="12" y2="15" />
+      </svg>
+      <span>Syndicate to {originLabel === 'EdLove' ? 'Gurudevi' : 'EdLove'}</span>
+    </button>
+  </div>
+
+  <!-- Toast Feedback Drawer -->
+  <div id="syndicate-feedback-modal" class="hidden mt-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-emerald-900 transition-all">
+    <div class="flex items-start justify-between gap-2">
+      <div class="space-y-1">
+        <div class="font-bold text-[11px] flex items-center gap-1.5 text-emerald-800">
+          <span>✓</span>
+          <span>Syndication Package Copied to Clipboard</span>
+        </div>
+        <p class="text-[10px] text-emerald-900/80 leading-relaxed">
+          Canonical Frontmatter &amp; Bridge configuration ready for <strong id="feedback-target-name">{targetLabel}</strong>.
+        </p>
+      </div>
+      <button type="button" id="close-feedback-btn" class="text-emerald-800 hover:text-emerald-950 text-xs px-1">✕</button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('author-syndicate-btn');
+    const feedback = document.getElementById('syndicate-feedback-modal');
+    const closeBtn = document.getElementById('close-feedback-btn');
+
+    if (!btn || !feedback) return;
+
+    btn.addEventListener('click', async () => {
+      const title = btn.dataset.title || '';
+      const url = btn.dataset.url || '';
+      const target = btn.dataset.target || 'gurudevi';
+      const takeaway = btn.dataset.takeaway || '';
+
+      const formattedYaml = `---
+title: "${title}"
+contentKind: "curated"
+canonicalUrl: "${url}"
+source: "${url}"
+scribeNote: "${takeaway}"
+---`;
+
+      try {
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(formattedYaml);
+        }
+        feedback.classList.remove('hidden');
+        btn.innerHTML = `<span>✓ Syndicated Package Ready</span>`;
+        setTimeout(() => {
+          btn.innerHTML = `
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+              <polyline points="16 6 12 2 8 6" />
+              <line x1="12" y1="2" x2="12" y2="15" />
+            </svg>
+            <span>Syndicate to ${target === 'gurudevi' ? 'Gurudevi' : 'EdLove'}</span>`;
+        }, 4000);
+      } catch (err) {
+        console.warn('Clipboard write prevented', err);
+      }
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        feedback.classList.add('hidden');
+      });
+    }
+  });
+</script>

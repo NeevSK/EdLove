@@ -441,5 +441,66 @@ except Exception as e:
       ],
     };
   }
+
+  handleAffordance(args: { package?: string; project?: string }) {
+    const pkg = args.package;
+    if (!pkg) {
+      return toText('Missing required argument: "package" (name of package to inspect, e.g. "react-native-reanimated").', true);
+    }
+    let targetProject = args.project;
+    if (!targetProject) {
+      if (
+        pkg.startsWith('@orpc/') ||
+        pkg.startsWith('hono') ||
+        pkg.startsWith('@hono/') ||
+        pkg.startsWith('@modelcontextprotocol/') ||
+        pkg === 'inngest' ||
+        pkg === 'posthog-node'
+      ) {
+        targetProject = 'apps/sanctuary-api';
+      } else if (pkg.startsWith('next') || pkg.startsWith('@next/')) {
+        targetProject = 'apps/gurudevi-web';
+      } else {
+        targetProject = 'apps/gurudevi-mobile';
+      }
+    }
+    console.error(`[Platform MCP] Fetching physical affordance for: ${pkg} in ${targetProject}`);
+    const resolvedProject = path.resolve(ROOT_DIR, targetProject);
+    const output = runCommand(
+      'node',
+      [path.resolve(ROOT_DIR, 'scripts/run-rn-terrain.mjs'), 'affordance', pkg, targetProject],
+      { cwd: ROOT_DIR },
+    );
+    return toText(output.combined, !output.ok);
+  }
+
+  handleContext(args: { package?: string }) {
+    const pkg = args.package;
+    if (!pkg) {
+      return toText('Missing required argument: "package" (name of package to ground, e.g. "react-native-reanimated").', true);
+    }
+    console.error(`[Platform MCP] Generating Grounding Context Pack for: ${pkg}`);
+    const output = runCommand(
+      'node',
+      ['scripts/run-rn-terrain.mjs', 'context', pkg],
+      { cwd: ROOT_DIR },
+    );
+    return toText(output.combined, !output.ok);
+  }
+
+  handleGravity(args: { package?: string }) {
+    const pkg = args.package;
+    if (!pkg) {
+      return toText('Missing required argument: "package" (name of package to inspect, e.g. "react-native-reanimated").', true);
+    }
+    console.error(`[Platform MCP] Querying Training Gravity Radar for: ${pkg}`);
+    const output = runCommand(
+      'node',
+      ['scripts/run-rn-terrain.mjs', 'gravity', pkg],
+      { cwd: ROOT_DIR },
+    );
+    return toText(output.combined, !output.ok);
+  }
 }
+
 

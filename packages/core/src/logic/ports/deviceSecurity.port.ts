@@ -1,9 +1,15 @@
-import type {
-  AuthEvent,
-  DeviceSecurityEvent,
-  DeviceSecuritySession,
-  DeviceTrustSummary,
-} from '@repo/core/api/deviceTrust';
+import type { DeviceTrustSummary } from '@repo/core/types/deviceTrust';
+export type AuthEvent = Record<string, unknown>;
+export type DeviceSecurityEvent = Record<string, unknown>;
+export type DeviceSecuritySession = Record<string, unknown>;
+
+export interface DeviceSecuritySummary {
+  readonly devices: DeviceTrustSummary[];
+  readonly events: DeviceSecurityEvent[];
+  readonly authEvents: AuthEvent[];
+  readonly sessions: DeviceSecuritySession[];
+  readonly currentDevice: DeviceTrustSummary | null;
+}
 
 /**
  * IDeviceSecurityPort
@@ -15,13 +21,7 @@ export interface IDeviceSecurityPort {
   /**
    * Fetches all security-related data for the current user.
    */
-  getSecuritySummary(): Promise<{
-    devices: DeviceTrustSummary[];
-    events: DeviceSecurityEvent[];
-    authEvents: AuthEvent[];
-    sessions: DeviceSecuritySession[];
-    currentDevice: DeviceTrustSummary | null;
-  }>;
+  getSecuritySummary(): Promise<DeviceSecuritySummary>;
 
   /**
    * Revokes a specific session.

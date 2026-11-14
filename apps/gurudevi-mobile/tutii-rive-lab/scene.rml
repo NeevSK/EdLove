@@ -1,0 +1,108 @@
+<Rive version="1" kind="fragment">
+    <ImageAsset file="../assets/mascot/firefly-guide-welcome-light-cutout-v2.webp" name="Tutii" id="0:60"/>
+    <Artboard styleId="0:5" width="500" height="560" name="Tutii arrival" id="0:2">
+        <LayoutComponentStyle name="Artboard Style" id="0:5"/>
+        <Fill name="Background">
+            <SolidColor colorValue="FFF7F4EC" name="Vellum"/>
+        </Fill>
+        <Shape x="250" y="270" scaleX="0.32" scaleY="0.32" name="Tutii" id="0:20">
+            <Image assetId="0:60" name="Welcome artwork"/>
+        </Shape>
+        <Shape x="179" y="326" name="First mote" id="0:30">
+            <Ellipse width="7" height="7" name="Light"/>
+            <Fill name="Fill"><SolidColor colorValue="B8D18A5D" name="Soft amber"/></Fill>
+        </Shape>
+        <Shape x="326" y="291" name="Second mote" id="0:31">
+            <Ellipse width="4" height="4" name="Light"/>
+            <Fill name="Fill"><SolidColor colorValue="9AD18A5D" name="Soft amber"/></Fill>
+        </Shape>
+        <Shape x="267" y="369" name="Third mote" id="0:32">
+            <Ellipse width="5" height="5" name="Light"/>
+            <Fill name="Fill"><SolidColor colorValue="8FD18A5D" name="Soft amber"/></Fill>
+        </Shape>
+        <LinearAnimation fps="60" duration="102" loopValue="oneShot" name="Arrive" id="0:6">
+            <KeyedObject objectId="0:20">
+                <KeyedProperty propertyKey="13">
+                    <KeyFrameDouble value="320" interpolationType="cubic"/>
+                    <KeyFrameDouble value="250" interpolationType="cubic" frame="74"/>
+                    <KeyFrameDouble value="250" frame="102"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="14">
+                    <KeyFrameDouble value="328" interpolationType="cubic"/>
+                    <KeyFrameDouble value="270" interpolationType="cubic" frame="74"/>
+                    <KeyFrameDouble value="270" frame="102"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="15">
+                    <KeyFrameDouble value="0.12" interpolationType="cubic"/>
+                    <KeyFrameDouble value="0" interpolationType="cubic" frame="74"/>
+                    <KeyFrameDouble value="0" frame="102"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="16">
+                    <KeyFrameDouble value="0.29" interpolationType="cubic"/>
+                    <KeyFrameDouble value="0.32" interpolationType="cubic" frame="74"/>
+                    <KeyFrameDouble value="0.32" frame="102"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="17">
+                    <KeyFrameDouble value="0.29" interpolationType="cubic"/>
+                    <KeyFrameDouble value="0.32" interpolationType="cubic" frame="74"/>
+                    <KeyFrameDouble value="0.32" frame="102"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="18">
+                    <KeyFrameDouble value="0.82" interpolationType="cubic"/>
+                    <KeyFrameDouble value="1" frame="74"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:30">
+                <KeyedProperty propertyKey="13">
+                    <KeyFrameDouble value="173" interpolationType="cubic"/>
+                    <KeyFrameDouble value="189" interpolationType="cubic" frame="35"/>
+                    <KeyFrameDouble value="211" frame="85"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="14">
+                    <KeyFrameDouble value="342" interpolationType="cubic"/>
+                    <KeyFrameDouble value="305" interpolationType="cubic" frame="35"/>
+                    <KeyFrameDouble value="326" frame="85"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="18">
+                    <KeyFrameDouble value="0" interpolationType="cubic"/>
+                    <KeyFrameDouble value="1" interpolationType="cubic" frame="24"/>
+                    <KeyFrameDouble value="0" frame="85"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:31">
+                <KeyedProperty propertyKey="13">
+                    <KeyFrameDouble value="337" interpolationType="cubic"/>
+                    <KeyFrameDouble value="315" interpolationType="cubic" frame="38"/>
+                    <KeyFrameDouble value="289" frame="90"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="14">
+                    <KeyFrameDouble value="278" interpolationType="cubic"/>
+                    <KeyFrameDouble value="298" interpolationType="cubic" frame="38"/>
+                    <KeyFrameDouble value="311" frame="90"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="18">
+                    <KeyFrameDouble value="0" interpolationType="cubic"/>
+                    <KeyFrameDouble value="0.8" interpolationType="cubic" frame="21"/>
+                    <KeyFrameDouble value="0" frame="90"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:32">
+                <KeyedProperty propertyKey="13">
+                    <KeyFrameDouble value="277" interpolationType="cubic"/>
+                    <KeyFrameDouble value="291" interpolationType="cubic" frame="43"/>
+                    <KeyFrameDouble value="309" frame="91"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="14">
+                    <KeyFrameDouble value="378" interpolationType="cubic"/>
+                    <KeyFrameDouble value="352" interpolationType="cubic" frame="43"/>
+                    <KeyFrameDouble value="370" frame="91"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="18">
+                    <KeyFrameDouble value="0" interpolationType="cubic"/>
+                    <KeyFrameDouble value="0.72" interpolationType="cubic" frame="27"/>
+                    <KeyFrameDouble value="0" frame="91"/>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+    </Artboard>
+</Rive>

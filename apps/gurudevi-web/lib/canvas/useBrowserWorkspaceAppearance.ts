@@ -1,5 +1,3 @@
-'use client';
-
 import { createSupabaseWorkspaceLayoutRepository } from '@repo/core/adapters/supabase/workspaceLayoutRepository';
 import type { WorkspaceLayoutTarget } from '@repo/core/logic/schemas/workspace-layout.schema';
 import {
@@ -14,8 +12,7 @@ import {
 import type { WorkspaceAppearance } from '@repo/core/types';
 import { useCallback, useEffect, useState } from 'react';
 import { createBrowserSupabaseClient } from '../supabase/browser';
-
-const DEFAULT_APPEARANCE: WorkspaceAppearance = { preset: 'default', motion: 'off' };
+import { DEFAULT_APPEARANCE, EXPLORE_DEFAULT_APPEARANCE } from './appearanceConstants';
 
 type AppearanceStatus = 'loading' | 'ready' | 'saving' | 'saved' | 'offline' | 'error';
 
@@ -80,15 +77,25 @@ function readLocal(key: string): WorkspaceAppearance | null {
     if (!parsed || typeof parsed !== 'object') return null;
     const candidate = parsed as Partial<WorkspaceAppearance>;
     if (
-      !['default', 'dawn', 'garden', 'night'].includes(candidate.preset ?? '') ||
+      !['default', 'dawn', 'garden', 'night', 'none'].includes(candidate.preset ?? '') ||
       !['off', 'subtle'].includes(candidate.motion ?? '')
     ) {
       return null;
     }
-    return {
+    const result: WorkspaceAppearance = {
       preset: candidate.preset as WorkspaceAppearance['preset'],
       motion: candidate.motion as WorkspaceAppearance['motion'],
     };
+    if (candidate.wallpaper !== undefined) {
+      result.wallpaper = candidate.wallpaper;
+    }
+    if (candidate.wallpaperConfig !== undefined) {
+      result.wallpaperConfig = candidate.wallpaperConfig;
+    }
+    if (candidate.groundMode !== undefined) {
+      result.groundMode = candidate.groundMode;
+    }
+    return result;
   } catch {
     return null;
   }
@@ -109,17 +116,27 @@ export function useBrowserWorkspaceAppearance({
   enableRemoteSync = true,
   defaultGroupOrder = [],
   defaultPinnedIds = [],
+  defaultAppearance,
 }: Readonly<{
   accountId: string;
   workspaceId: string;
   enableRemoteSync?: boolean;
   defaultGroupOrder?: readonly string[];
   defaultPinnedIds?: readonly string[];
+  defaultAppearance?: WorkspaceAppearance;
 }>) {
+  const isExplore =
+    accountId === 'guest-explorer' ||
+    accountId === 'explore-guest' ||
+    accountId === 'explore' ||
+    workspaceId === 'explore';
+  const shouldSyncRemotely = enableRemoteSync && !isExplore;
+  const initialFallback =
+    defaultAppearance ?? (isExplore ? EXPLORE_DEFAULT_APPEARANCE : DEFAULT_APPEARANCE);
   const defaultGroupOrderKey = defaultGroupOrder.join('|');
   const defaultPinnedIdsKey = defaultPinnedIds.join('|');
   const [layoutTarget, setLayoutTarget] = useState<WorkspaceLayoutTarget>('web');
-  const [appearance, setAppearanceState] = useState<WorkspaceAppearance>(DEFAULT_APPEARANCE);
+  const [appearance, setAppearanceState] = useState<WorkspaceAppearance>(initialFallback);
   const [groupOrder, setGroupOrderState] = useState<string[]>([...defaultGroupOrder]);
   const [pinnedIds, setPinnedIdsState] = useState<string[]>([...defaultPinnedIds]);
   const [status, setStatus] = useState<AppearanceStatus>('loading');
@@ -134,6 +151,7 @@ export function useBrowserWorkspaceAppearance({
     return () => window.removeEventListener('resize', updateLayoutTarget);
   }, []);
 
+
   useEffect(() => {
     let cancelled = false;
     const key = storageKey(accountId, workspaceId, layoutTarget);
@@ -143,9 +161,22 @@ export function useBrowserWorkspaceAppearance({
     const local = readLocal(key);
     setGroupOrderState(readGroups(groupsKey, defaultGroupOrder));
     setPinnedIdsState(readPinned(pinnedKey, defaultPinnedIds));
-    if (local) setAppearanceState(local);
+    if (local) {
+      if (isExplore && (!local.wallpaperConfig || local.wallpaperConfig.mode === 'off')) {
+        setAppearanceState({
+          ...local,
+          preset: local.preset === 'default' ? 'dawn' : local.preset,
+          wallpaper: local.wallpaper ?? EXPLORE_DEFAULT_APPEARANCE.wallpaper,
+          wallpaperConfig: EXPLORE_DEFAULT_APPEARANCE.wallpaperConfig,
+        });
+      } else {
+        setAppearanceState(local);
+      }
+    } else {
+      setAppearanceState(initialFallback);
+    }
 
-    if (!enableRemoteSync) {
+    if (!shouldSyncRemotely) {
       setStatus('ready');
       return () => {
         cancelled = true;
@@ -198,7 +229,14 @@ export function useBrowserWorkspaceAppearance({
     return () => {
       cancelled = true;
     };
-  }, [accountId, defaultGroupOrderKey, defaultPinnedIdsKey, enableRemoteSync, layoutTarget, workspaceId]);
+  }, [
+    accountId,
+    defaultGroupOrderKey,
+    defaultPinnedIdsKey,
+    layoutTarget,
+    shouldSyncRemotely,
+    workspaceId,
+  ]);
 
   const setAppearance = useCallback(
     async (next: WorkspaceAppearance) => {
@@ -207,7 +245,7 @@ export function useBrowserWorkspaceAppearance({
       const canPersistLocally = writeLocal(key, next);
       setStatus(canPersistLocally ? 'saving' : 'error');
 
-      if (!enableRemoteSync) {
+      if (!shouldSyncRemotely) {
         setStatus(canPersistLocally ? 'saved' : 'error');
         return;
       }
@@ -241,7 +279,7 @@ export function useBrowserWorkspaceAppearance({
         setStatus('offline');
       }
     },
-    [accountId, enableRemoteSync, layoutTarget, workspaceId],
+    [accountId, layoutTarget, shouldSyncRemotely, workspaceId],
   );
 
   const setGroupOrder = useCallback(
@@ -253,7 +291,7 @@ export function useBrowserWorkspaceAppearance({
         normalized,
       );
       setStatus(canPersistLocally ? 'saving' : 'error');
-      if (!enableRemoteSync) {
+      if (!shouldSyncRemotely) {
         setStatus(canPersistLocally ? 'saved' : 'error');
         return;
       }
@@ -284,7 +322,7 @@ export function useBrowserWorkspaceAppearance({
         setStatus('offline');
       }
     },
-    [accountId, defaultGroupOrderKey, enableRemoteSync, layoutTarget, workspaceId],
+    [accountId, defaultGroupOrderKey, layoutTarget, shouldSyncRemotely, workspaceId],
   );
 
   const setPinnedIds = useCallback(
@@ -295,7 +333,7 @@ export function useBrowserWorkspaceAppearance({
         next,
       );
       setStatus(canPersistLocally ? 'saving' : 'error');
-      if (!enableRemoteSync) {
+      if (!shouldSyncRemotely) {
         setStatus(canPersistLocally ? 'saved' : 'error');
         return;
       }
@@ -326,7 +364,7 @@ export function useBrowserWorkspaceAppearance({
         setStatus('offline');
       }
     },
-    [accountId, enableRemoteSync, layoutTarget, workspaceId],
+    [accountId, layoutTarget, shouldSyncRemotely, workspaceId],
   );
 
   const resetAppearance = useCallback(() => setAppearance(DEFAULT_APPEARANCE), [setAppearance]);

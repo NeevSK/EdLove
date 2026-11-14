@@ -1,9 +1,9 @@
-import { AuthManager } from '@repo/core/logic/managers/AuthManager';
+import { AuthClient } from '@repo/core/logic/auth/AuthClient.adapter';
 import { describe, expect, it, vi } from 'vitest';
 
 const mockAudit = vi.fn();
 
-vi.mock('@repo/core/api/deviceTrust', () => ({
+vi.mock('@repo/core/native/deviceTrust', () => ({
   deviceTrustAPI: {
     logAuditEvent: (...args: unknown[]) => mockAudit(...args),
   },
@@ -41,7 +41,7 @@ describe('AuthManager anonymous identity boundary', () => {
       updateProfile: vi.fn(),
       linkIdentity: vi.fn(),
     };
-    const authManager = new AuthManager(authPort, identityPort);
+    const authManager = new AuthClient(authPort, identityPort);
 
     await expect(authManager.signInAnonymously()).resolves.toMatchObject({
       user: { is_anonymous: true },
@@ -82,7 +82,7 @@ describe('AuthManager anonymous identity boundary', () => {
       updateProfile: vi.fn(),
       linkIdentity: vi.fn(),
     };
-    const authManager = new AuthManager(authPort, identityPort);
+    const authManager = new AuthClient(authPort, identityPort);
 
     const result = await authManager.signInAnonymously();
     expect(result).toMatchObject({ user: { id: 'anon-existing' } });

@@ -1,5 +1,5 @@
+import { View, Text, Pressable } from 'react-native';
 import { ChevronRight, type LucideIcon } from '@repo/ui/icons';
-import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,25 +42,25 @@ const ProfileListItem: React.FC<ProfileListItemProps> = ({
       accessibilityLabel={accessibilityLabel || label}
       className="bg-phase-canvas border border-phase-surface rounded-3xl p-5 mb-2 active:scale-[0.98] transition-all shadow-sm"
     >
-      <HStack className="justify-between items-center">
-        <HStack space="md" className="items-center">
-          <Box className="w-10 h-10 bg-phase-interactive/10 rounded-2xl items-center justify-center border border-phase-interactive/10">
+      <View className="flex-row items-center justify-between items-center">
+        <View className="flex-row items-center gap-3">
+          <View className="w-10 h-10 bg-phase-interactive/10 rounded-2xl items-center justify-center border border-phase-interactive/10">
             <Icon size={18} color={iconColor || '#4A90E2'} strokeWidth={2.5} />
-          </Box>
+          </View>
           <Text className="text-phase-text-primary text-base font-bold tracking-tight">
             {label}
           </Text>
-        </HStack>
+        </View>
 
-        <HStack space="sm" className="items-center">
+        <View className="flex-row items-center gap-2">
           {rightElement}
           {showChevron && (
-            <Box className="p-1 rounded-full bg-phase-surface/30">
+            <View className="p-1 rounded-full bg-phase-surface/30">
               <ChevronRight size={16} color="#9DA1A3" strokeWidth={3} />
-            </Box>
+            </View>
           )}
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   );
 };

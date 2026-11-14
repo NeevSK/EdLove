@@ -1,5 +1,11 @@
-import { storage } from '@repo/core/lib/storage';
-import { useStore } from '@repo/core/logic';
+import { useStorageString } from '@repo/core/hooks/useStorageString';
+import {
+  DEVICE_THEME_MODE_KEY,
+  ensureDeviceThemePreference,
+  isDeviceThemeMode,
+} from '@repo/core/lib/devicePreferences.adapter';
+import { storage } from '@repo/core/lib/storage.adapter';
+
 import {
   createContext,
   type ReactNode,
@@ -10,18 +16,24 @@ import {
   useState,
 } from 'react';
 import { useColorScheme } from 'react-native';
-import type { TemporalPhase, ThemeMode } from './types';
-import { getTemporalPhase, shouldUseDarkTheme } from './utils';
+import { DEFAULT_WORLD, isWorldId } from '../theme/worlds';
+import type { WorldId } from '../theme/types';
+import { isDarkPhase, phaseAt } from '../theme/scene';
+import type { Phase } from '../theme/types';
+import type { ThemeMode } from './types';
 
 interface ThemeContextValue {
   themeMode: ThemeMode;
-  temporalPhase: TemporalPhase;
+  temporalPhase: Phase;
   isDark: boolean;
   isVeilActive: boolean;
   enableLivingTheme: boolean;
+  /** The world that dresses every component (see packages/ui/src/theme). */
+  worldId: WorldId;
   setThemeMode: (mode: ThemeMode) => Promise<void>;
   toggleVeil: () => Promise<void>;
   setEnableLivingTheme: (enabled: boolean) => Promise<void>;
+  setWorld: (world: WorldId) => Promise<void>;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -29,15 +41,19 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 const STORAGE_KEYS = {
   IS_VEIL_ACTIVE: '@gurudevi/is_veil_active',
   ENABLE_LIVING_THEME: '@gurudevi/enable_living_theme',
+  WORLD: '@gurudevi/world',
 };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const themeMode = useStore((state: any) => state.themeMode ?? state.theme ?? 'system');
-  const setStoredThemeMode = useStore((state: any) => state.setTheme ?? state.setThemeMode);
-
-  const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
-  const [isVeilActive, setIsVeilActive] = useState(false);
-  const [enableLivingTheme, setEnableLivingThemeState] = useState<boolean>(true);
+  const savedThemeMode = useStorageString(DEVICE_THEME_MODE_KEY);
+  const savedVeil = useStorageString(STORAGE_KEYS.IS_VEIL_ACTIVE);
+  const savedLivingTheme = useStorageString(STORAGE_KEYS.ENABLE_LIVING_THEME);
+  const savedWorld = useStorageString(STORAGE_KEYS.WORLD);
+  const themeMode = isDeviceThemeMode(savedThemeMode) ? savedThemeMode : 'system';
+  const isVeilActive = savedVeil === 'true';
+  const enableLivingTheme = savedLivingTheme !== 'false';
+  const worldId = isWorldId(savedWorld) ? savedWorld : DEFAULT_WORLD;
+  const [temporalPhase, setTemporalPhase] = useState<Phase>(() => phaseAt());
   const systemColorScheme = useColorScheme();
 
   // Derived
@@ -45,31 +61,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () =>
       themeMode === 'dark' ||
       (themeMode === 'system' && systemColorScheme === 'dark') ||
-      (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase)),
+      (themeMode === 'auto' && isDarkPhase(temporalPhase)),
     [themeMode, systemColorScheme, temporalPhase],
   );
 
-  // Load Persisted
   useEffect(() => {
-    async function loadThemeSettings() {
-      try {
-        const [veil, living] = await Promise.all([
-          storage.getStringAsync(STORAGE_KEYS.IS_VEIL_ACTIVE),
-          storage.getStringAsync(STORAGE_KEYS.ENABLE_LIVING_THEME),
-        ]);
-        if (veil !== undefined) setIsVeilActive(veil === 'true');
-        if (living !== undefined) setEnableLivingThemeState(living === 'true');
-      } catch (e) {
-        console.warn('[ThemeProvider] Load error:', e);
-      }
-    }
-    loadThemeSettings();
+    void ensureDeviceThemePreference().catch((error: unknown) => {
+      console.error('[ThemeProvider] Preference migration failed', error);
+    });
   }, []);
 
   // Temporal Sync
   useEffect(() => {
     const update = () => {
-      const next = getTemporalPhase();
+      const next = phaseAt();
       setTemporalPhase((prev) => (prev !== next ? next : prev));
     };
     const interval = setInterval(update, 60000);
@@ -81,38 +86,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       mode: ThemeMode,
       transitionType?: import('../theme/nitroThemeTransition.types').ThemeTransitionType,
     ) => {
-      const applyChange = () => {
-        if (typeof setStoredThemeMode === 'function') {
-          setStoredThemeMode(mode);
-        } else {
-          console.warn('[ThemeProvider] setThemeMode store action is unavailable');
-        }
-        if (mode === 'auto') setTemporalPhase(getTemporalPhase());
+      const applyChange = async () => {
+        await storage.setAsync(DEVICE_THEME_MODE_KEY, mode);
+        if (mode === 'auto') setTemporalPhase(phaseAt());
       };
 
       const { startThemeTransition } = await import('../theme/nitroThemeTransition');
       await startThemeTransition(applyChange, { type: transitionType || 'circularReveal' });
     },
-    [setStoredThemeMode],
+    [],
   );
 
   const toggleVeil = useCallback(async () => {
-    const newValue = !isVeilActive;
-    setIsVeilActive(newValue);
-    try {
-      storage.set(STORAGE_KEYS.IS_VEIL_ACTIVE, String(newValue));
-    } catch (e) {
-      console.warn('[ThemeProvider] Veil error:', e);
-    }
+    await storage.setAsync(STORAGE_KEYS.IS_VEIL_ACTIVE, String(!isVeilActive));
   }, [isVeilActive]);
 
   const setEnableLivingTheme = useCallback(async (enabled: boolean) => {
-    setEnableLivingThemeState(enabled);
-    try {
-      storage.set(STORAGE_KEYS.ENABLE_LIVING_THEME, String(enabled));
-    } catch (e) {
-      console.warn('[ThemeProvider] Living error:', e);
-    }
+    await storage.setAsync(STORAGE_KEYS.ENABLE_LIVING_THEME, String(enabled));
+  }, []);
+
+  const setWorld = useCallback(async (world: WorldId) => {
+    if (!isWorldId(world)) throw new Error('Unknown theme world.');
+    await storage.setAsync(STORAGE_KEYS.WORLD, world);
   }, []);
 
   const value = useMemo(
@@ -122,9 +117,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       isDark,
       isVeilActive,
       enableLivingTheme,
+      worldId,
       setThemeMode,
       toggleVeil,
       setEnableLivingTheme,
+      setWorld,
     }),
     [
       themeMode,
@@ -132,9 +129,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       isDark,
       isVeilActive,
       enableLivingTheme,
+      worldId,
       setThemeMode,
       toggleVeil,
       setEnableLivingTheme,
+      setWorld,
     ],
   );
 
@@ -147,9 +146,11 @@ const DEFAULT_THEME_VALUE: ThemeContextValue = {
   isDark: false,
   isVeilActive: false,
   enableLivingTheme: true,
+  worldId: DEFAULT_WORLD,
   setThemeMode: async () => {},
   toggleVeil: async () => {},
   setEnableLivingTheme: async () => {},
+  setWorld: async () => {},
 };
 
 export function useThemeContext() {

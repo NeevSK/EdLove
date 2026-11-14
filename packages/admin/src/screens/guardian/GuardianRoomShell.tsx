@@ -1,6 +1,6 @@
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { View, Text, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 
@@ -25,9 +25,9 @@ export function GuardianRoomShell({
   children,
 }: GuardianRoomShellProps) {
   return (
-    <ScreenWrapper scroll={false} noTopInset>
-      <Box className="flex-1 bg-silk px-4 py-4">
-        <VStack className="flex-1 gap-4">
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-silk">
+      <View className="flex-1 bg-silk px-4 py-4">
+        <View className="flex-1 gap-4">
           <Pressable
             onPress={onBack}
             accessibilityRole="button"
@@ -35,16 +35,16 @@ export function GuardianRoomShell({
             accessibilityHint="Returns to the previous guardian view"
             className="active:opacity-80 self-start"
           >
-            <HStack className="items-center gap-2 rounded-full border border-starlightGray/20 bg-sacredWhite px-4 py-2">
-              <Icon as={ArrowLeft} size={14} color="#2A2318" />
+            <View className="flex-row items-center items-center gap-2 rounded-full border border-starlightGray/20 bg-sacredWhite px-4 py-2">
+              <ArrowLeft size={14} color="#2A2318" />
               <Text className="text-[12px] font-bold text-phaseText-primary">
                 Back to guardian workspace
               </Text>
-            </HStack>
+            </View>
           </Pressable>
 
-          <Box className="rounded-[28px] border border-starlightGray/20 bg-sacredWhite px-5 py-5">
-            <VStack className="gap-3">
+          <View className="rounded-[28px] border border-starlightGray/20 bg-sacredWhite px-5 py-5">
+            <View className="gap-3">
               <Text className="text-[11px] font-bold uppercase tracking-[1px] text-phaseText-secondary">
                 {eyebrow}
               </Text>
@@ -52,9 +52,9 @@ export function GuardianRoomShell({
               <Text className="text-[13px] leading-6 text-phaseText-secondary">{description}</Text>
 
               {stats.length > 0 ? (
-                <HStack className="gap-3 flex-wrap">
+                <View className="flex-row items-center gap-3 flex-wrap">
                   {stats.map((stat) => (
-                    <Box
+                    <View
                       key={stat.label}
                       className="min-w-[31%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk px-4 py-3"
                     >
@@ -64,16 +64,16 @@ export function GuardianRoomShell({
                       <Text className="mt-1 text-[22px] font-bold text-phaseText-primary">
                         {stat.value}
                       </Text>
-                    </Box>
+                    </View>
                   ))}
-                </HStack>
+                </View>
               ) : null}
-            </VStack>
-          </Box>
+            </View>
+          </View>
 
-          <Box className="flex-1">{children}</Box>
-        </VStack>
-      </Box>
-    </ScreenWrapper>
+          <View className="flex-1">{children}</View>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }

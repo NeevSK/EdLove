@@ -68,10 +68,10 @@ function sortObject(obj: unknown): unknown {
   }
 
   const typedObj = obj as Record<string, unknown>;
-  return Object.keys(typedObj)
-    .sort()
-    .reduce((result: Record<string, unknown>, key) => {
-      result[key] = sortObject(typedObj[key]);
-      return result;
-    }, {});
+  // Own JSON keys such as __proto__ must remain data, not invoke a setter.
+  return Object.fromEntries(
+    Object.keys(typedObj)
+      .sort()
+      .map((key) => [key, sortObject(typedObj[key])]),
+  );
 }

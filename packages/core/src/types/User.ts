@@ -1,4 +1,4 @@
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import type { SocialLink } from '@repo/core/types/Social';
 import type { TenantKind } from '@repo/core/types/Tenancy';
 
@@ -26,7 +26,7 @@ export interface User extends ProfileStats {
   bonds?: Bond[]; // Sovereign Identity (ReBAC) Relationships
   school_id?: string | null; // UUID of the school they belong to
   username?: string | null; // Unique handle for the user
-  created_at: string | Date; // ISO timestamp or Date object
+  created_at?: string | Date; // Identity bootstrap may omit the full profile's creation timestamp.
   updated_at?: string | Date; // ISO timestamp or Date object (optional)
   avatar_url?: string | null; // Profile picture URL (optional)
   is_anonymous?: boolean | null; // Flag for anonymous/guest users
@@ -79,18 +79,6 @@ export interface User extends ProfileStats {
     seeded_at?: string;
     last_updated?: string;
   } | null;
-}
-
-/**
- * Auth Session (from Supabase)
- */
-export interface AuthSession {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  expires_at?: number;
-  token_type: string;
-  user: User;
 }
 
 /**

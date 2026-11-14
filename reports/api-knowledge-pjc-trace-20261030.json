@@ -1,0 +1,1751 @@
+{
+  "record": {
+    "id": "binding:api.knowledge_what",
+    "category": "documentation",
+    "reference": "apps/sanctuary-api/docs/architecture/api-landscape.md",
+    "status": "implemented",
+    "note": "Stable educational entry point; document presence is not API feature coverage."
+  },
+  "parent": "journey:api.ground_architecture",
+  "outgoing": [],
+  "incoming": [
+    "evidence:api.knowledge_docs_g0_20261030",
+    "impact:api.knowledge_context",
+    "observation:api.knowledge_scope",
+    "requirement:api.knowledge_modularity",
+    "scenario:api.knowledge_read",
+    "step:api.learn_what"
+  ],
+  "related": [
+    "binding:api.ai_cancel",
+    "binding:api.authority_failure",
+    "binding:api.canonical_model",
+    "binding:api.composition_gate",
+    "binding:api.composition_gate_test",
+    "binding:api.contract_conversion",
+    "binding:api.contract_inspector",
+    "binding:api.contract_inspector_test",
+    "binding:api.contract_inventory",
+    "binding:api.contract_inventory_test",
+    "binding:api.contract_test",
+    "binding:api.daily_content_contract",
+    "binding:api.daily_content_contract_test",
+    "binding:api.daily_content_handler",
+    "binding:api.daily_content_test",
+    "binding:api.database_proof",
+    "binding:api.entitlement",
+    "binding:api.guide",
+    "binding:api.http",
+    "binding:api.knowledge_channels",
+    "binding:api.knowledge_evidence",
+    "binding:api.knowledge_glossary",
+    "binding:api.knowledge_how",
+    "binding:api.knowledge_rules",
+    "binding:api.mcp",
+    "binding:api.mcp_door",
+    "binding:api.native_admission",
+    "binding:api.native_client",
+    "binding:api.onboarding_client",
+    "binding:api.onboarding_client_test",
+    "binding:api.onboarding_contract",
+    "binding:api.onboarding_handler",
+    "binding:api.onboarding_test",
+    "binding:api.privacy_api_test",
+    "binding:api.privacy_contract",
+    "binding:api.privacy_contract_test",
+    "binding:api.privacy_handler",
+    "binding:api.privacy_policy",
+    "binding:api.privacy_policy_test",
+    "binding:api.readiness",
+    "binding:api.regular_rewards_test",
+    "binding:api.retry",
+    "binding:api.rewards",
+    "binding:api.rewards_pg",
+    "binding:api.rewards_storage",
+    "binding:api.rewards_test",
+    "evidence:api.architecture_reject_g1_20261030",
+    "evidence:api.compose_invalid_g1_20261030",
+    "evidence:api.compose_valid_g1_20261030",
+    "evidence:api.daily_content_read_g1_20261030",
+    "evidence:api.daily_content_reject_g1_20261030",
+    "evidence:api.inventory_inspect_g1_20261030",
+    "evidence:api.knowledge_docs_g0_20261030",
+    "evidence:api.mcp_g1_20261030",
+    "evidence:api.native_failure_g1_20261030",
+    "evidence:api.onboarding_reject_g1_20261030",
+    "evidence:api.privacy_api_g1_20261030",
+    "evidence:api.privacy_policy_g1_20261030",
+    "evidence:api.reward_unavailable_g1",
+    "evidence:api.reward_unavailable_g2",
+    "feature:api.foundation",
+    "impact:api.daily_content_validation",
+    "impact:api.eager_composition",
+    "impact:api.knowledge_context",
+    "impact:api.reward_acknowledgement",
+    "intent:api.compose",
+    "intent:api.execute",
+    "intent:api.understand",
+    "journey:api.compose",
+    "journey:api.execute",
+    "journey:api.ground_architecture",
+    "observation:api.canonical_horizontal",
+    "observation:api.contract_erasure",
+    "observation:api.daily_content_native",
+    "observation:api.eager_composition",
+    "observation:api.knowledge_scope",
+    "observation:api.native_error_testing",
+    "observation:api.onboarding_native",
+    "observation:api.privacy_native",
+    "platform:api.eager_composition",
+    "platform:api.knowledge_channels",
+    "platform:api.reward_server",
+    "requirement:api.canonical_horizontal",
+    "requirement:api.contract_composition",
+    "requirement:api.daily_content_contract",
+    "requirement:api.explicit_failure",
+    "requirement:api.inventory_truthfulness",
+    "requirement:api.knowledge_modularity",
+    "requirement:api.knowledge_truthfulness",
+    "requirement:api.mcp_schema_cache",
+    "requirement:api.privacy_owner",
+    "scenario:api.ai_cancel",
+    "scenario:api.architecture_reject",
+    "scenario:api.compose_invalid",
+    "scenario:api.compose_valid",
+    "scenario:api.daily_content_read",
+    "scenario:api.daily_content_reject",
+    "scenario:api.entitlement",
+    "scenario:api.http",
+    "scenario:api.inventory_inspect",
+    "scenario:api.knowledge_read",
+    "scenario:api.mcp",
+    "scenario:api.native_failure",
+    "scenario:api.onboarding_bootstrap",
+    "scenario:api.onboarding_reject",
+    "scenario:api.privacy_owner",
+    "scenario:api.privacy_reject",
+    "scenario:api.retry",
+    "scenario:api.reward_commit",
+    "scenario:api.reward_unavailable",
+    "step:api.compose_ready",
+    "step:api.compose_rejected",
+    "step:api.compose_source",
+    "step:api.inventory_review",
+    "step:api.learn_decisions",
+    "step:api.learn_how",
+    "step:api.learn_what",
+    "step:api.recovery",
+    "step:api.request",
+    "step:api.result",
+    "transition:api.ai_cancel",
+    "transition:api.architecture_reject",
+    "transition:api.compose_invalid",
+    "transition:api.compose_valid",
+    "transition:api.daily_content_read",
+    "transition:api.daily_content_reject",
+    "transition:api.entitlement",
+    "transition:api.http",
+    "transition:api.inventory_inspect",
+    "transition:api.learn_apply",
+    "transition:api.learn_record",
+    "transition:api.mcp",
+    "transition:api.native_failure",
+    "transition:api.onboarding_bootstrap",
+    "transition:api.onboarding_reject",
+    "transition:api.privacy_owner",
+    "transition:api.privacy_reject",
+    "transition:api.retry",
+    "transition:api.reward_commit",
+    "transition:api.reward_unavailable"
+  ],
+  "connectionPaths": [
+    {
+      "id": "binding:api.ai_cancel",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.ai_cancel"
+      ]
+    },
+    {
+      "id": "binding:api.authority_failure",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.authority_failure"
+      ]
+    },
+    {
+      "id": "binding:api.canonical_model",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.canonical_model"
+      ]
+    },
+    {
+      "id": "binding:api.composition_gate",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.composition_gate"
+      ]
+    },
+    {
+      "id": "binding:api.composition_gate_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.composition_gate_test"
+      ]
+    },
+    {
+      "id": "binding:api.contract_conversion",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.contract_conversion"
+      ]
+    },
+    {
+      "id": "binding:api.contract_inspector",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.contract_inspector"
+      ]
+    },
+    {
+      "id": "binding:api.contract_inspector_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.contract_inspector_test"
+      ]
+    },
+    {
+      "id": "binding:api.contract_inventory",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.contract_inventory"
+      ]
+    },
+    {
+      "id": "binding:api.contract_inventory_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.contract_inventory_test"
+      ]
+    },
+    {
+      "id": "binding:api.contract_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.contract_test"
+      ]
+    },
+    {
+      "id": "binding:api.daily_content_contract",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.daily_content_contract"
+      ]
+    },
+    {
+      "id": "binding:api.daily_content_contract_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.daily_content_contract_test"
+      ]
+    },
+    {
+      "id": "binding:api.daily_content_handler",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.daily_content_handler"
+      ]
+    },
+    {
+      "id": "binding:api.daily_content_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.daily_content_test"
+      ]
+    },
+    {
+      "id": "binding:api.database_proof",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.database_proof"
+      ]
+    },
+    {
+      "id": "binding:api.entitlement",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.entitlement"
+      ]
+    },
+    {
+      "id": "binding:api.guide",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "binding:api.guide"
+      ]
+    },
+    {
+      "id": "binding:api.http",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.http"
+      ]
+    },
+    {
+      "id": "binding:api.knowledge_channels",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "binding:api.knowledge_channels"
+      ]
+    },
+    {
+      "id": "binding:api.knowledge_evidence",
+      "path": [
+        "binding:api.knowledge_what",
+        "evidence:api.knowledge_docs_g0_20261030",
+        "binding:api.knowledge_evidence"
+      ]
+    },
+    {
+      "id": "binding:api.knowledge_glossary",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "binding:api.knowledge_glossary"
+      ]
+    },
+    {
+      "id": "binding:api.knowledge_how",
+      "path": [
+        "binding:api.knowledge_what",
+        "evidence:api.knowledge_docs_g0_20261030",
+        "binding:api.knowledge_how"
+      ]
+    },
+    {
+      "id": "binding:api.knowledge_rules",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "binding:api.knowledge_rules"
+      ]
+    },
+    {
+      "id": "binding:api.mcp",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.mcp"
+      ]
+    },
+    {
+      "id": "binding:api.mcp_door",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.mcp_door"
+      ]
+    },
+    {
+      "id": "binding:api.native_admission",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.native_admission"
+      ]
+    },
+    {
+      "id": "binding:api.native_client",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.native_client"
+      ]
+    },
+    {
+      "id": "binding:api.onboarding_client",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.onboarding_client"
+      ]
+    },
+    {
+      "id": "binding:api.onboarding_client_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.onboarding_client_test"
+      ]
+    },
+    {
+      "id": "binding:api.onboarding_contract",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.onboarding_contract"
+      ]
+    },
+    {
+      "id": "binding:api.onboarding_handler",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.onboarding_handler"
+      ]
+    },
+    {
+      "id": "binding:api.onboarding_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.onboarding_test"
+      ]
+    },
+    {
+      "id": "binding:api.privacy_api_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.privacy_api_test"
+      ]
+    },
+    {
+      "id": "binding:api.privacy_contract",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.privacy_contract"
+      ]
+    },
+    {
+      "id": "binding:api.privacy_contract_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.privacy_contract_test"
+      ]
+    },
+    {
+      "id": "binding:api.privacy_handler",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.privacy_handler"
+      ]
+    },
+    {
+      "id": "binding:api.privacy_policy",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.privacy_policy"
+      ]
+    },
+    {
+      "id": "binding:api.privacy_policy_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.privacy_policy_test"
+      ]
+    },
+    {
+      "id": "binding:api.readiness",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.readiness"
+      ]
+    },
+    {
+      "id": "binding:api.regular_rewards_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.regular_rewards_test"
+      ]
+    },
+    {
+      "id": "binding:api.retry",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.retry"
+      ]
+    },
+    {
+      "id": "binding:api.rewards",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.rewards"
+      ]
+    },
+    {
+      "id": "binding:api.rewards_pg",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.rewards_pg"
+      ]
+    },
+    {
+      "id": "binding:api.rewards_storage",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.rewards_storage"
+      ]
+    },
+    {
+      "id": "binding:api.rewards_test",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "binding:api.rewards_test"
+      ]
+    },
+    {
+      "id": "evidence:api.architecture_reject_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "evidence:api.architecture_reject_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.compose_invalid_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "evidence:api.compose_invalid_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.compose_valid_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "evidence:api.compose_valid_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.daily_content_read_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.daily_content_read_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.daily_content_reject_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.daily_content_reject_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.inventory_inspect_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "evidence:api.inventory_inspect_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.knowledge_docs_g0_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "evidence:api.knowledge_docs_g0_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.mcp_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.mcp_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.native_failure_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.native_failure_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.onboarding_reject_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.onboarding_reject_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.privacy_api_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.privacy_api_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.privacy_policy_g1_20261030",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.privacy_policy_g1_20261030"
+      ]
+    },
+    {
+      "id": "evidence:api.reward_unavailable_g1",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.reward_unavailable_g1"
+      ]
+    },
+    {
+      "id": "evidence:api.reward_unavailable_g2",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "evidence:api.reward_unavailable_g2"
+      ]
+    },
+    {
+      "id": "feature:api.foundation",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation"
+      ]
+    },
+    {
+      "id": "impact:api.daily_content_validation",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "impact:api.daily_content_validation"
+      ]
+    },
+    {
+      "id": "impact:api.eager_composition",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "impact:api.eager_composition"
+      ]
+    },
+    {
+      "id": "impact:api.knowledge_context",
+      "path": [
+        "binding:api.knowledge_what",
+        "impact:api.knowledge_context"
+      ]
+    },
+    {
+      "id": "impact:api.reward_acknowledgement",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "impact:api.reward_acknowledgement"
+      ]
+    },
+    {
+      "id": "intent:api.compose",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose"
+      ]
+    },
+    {
+      "id": "intent:api.execute",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute"
+      ]
+    },
+    {
+      "id": "intent:api.understand",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand"
+      ]
+    },
+    {
+      "id": "journey:api.compose",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose"
+      ]
+    },
+    {
+      "id": "journey:api.execute",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute"
+      ]
+    },
+    {
+      "id": "journey:api.ground_architecture",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture"
+      ]
+    },
+    {
+      "id": "observation:api.canonical_horizontal",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "observation:api.canonical_horizontal"
+      ]
+    },
+    {
+      "id": "observation:api.contract_erasure",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "observation:api.contract_erasure"
+      ]
+    },
+    {
+      "id": "observation:api.daily_content_native",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "observation:api.daily_content_native"
+      ]
+    },
+    {
+      "id": "observation:api.eager_composition",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "observation:api.eager_composition"
+      ]
+    },
+    {
+      "id": "observation:api.knowledge_scope",
+      "path": [
+        "binding:api.knowledge_what",
+        "observation:api.knowledge_scope"
+      ]
+    },
+    {
+      "id": "observation:api.native_error_testing",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "observation:api.native_error_testing"
+      ]
+    },
+    {
+      "id": "observation:api.onboarding_native",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "observation:api.onboarding_native"
+      ]
+    },
+    {
+      "id": "observation:api.privacy_native",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "observation:api.privacy_native"
+      ]
+    },
+    {
+      "id": "platform:api.eager_composition",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "platform:api.eager_composition"
+      ]
+    },
+    {
+      "id": "platform:api.knowledge_channels",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "platform:api.knowledge_channels"
+      ]
+    },
+    {
+      "id": "platform:api.reward_server",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "platform:api.reward_server"
+      ]
+    },
+    {
+      "id": "requirement:api.canonical_horizontal",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "requirement:api.canonical_horizontal"
+      ]
+    },
+    {
+      "id": "requirement:api.contract_composition",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "requirement:api.contract_composition"
+      ]
+    },
+    {
+      "id": "requirement:api.daily_content_contract",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "requirement:api.daily_content_contract"
+      ]
+    },
+    {
+      "id": "requirement:api.explicit_failure",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "requirement:api.explicit_failure"
+      ]
+    },
+    {
+      "id": "requirement:api.inventory_truthfulness",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "requirement:api.inventory_truthfulness"
+      ]
+    },
+    {
+      "id": "requirement:api.knowledge_modularity",
+      "path": [
+        "binding:api.knowledge_what",
+        "requirement:api.knowledge_modularity"
+      ]
+    },
+    {
+      "id": "requirement:api.knowledge_truthfulness",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "requirement:api.knowledge_truthfulness"
+      ]
+    },
+    {
+      "id": "requirement:api.mcp_schema_cache",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "requirement:api.mcp_schema_cache"
+      ]
+    },
+    {
+      "id": "requirement:api.privacy_owner",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "requirement:api.privacy_owner"
+      ]
+    },
+    {
+      "id": "scenario:api.ai_cancel",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.ai_cancel"
+      ]
+    },
+    {
+      "id": "scenario:api.architecture_reject",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "scenario:api.architecture_reject"
+      ]
+    },
+    {
+      "id": "scenario:api.compose_invalid",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "scenario:api.compose_invalid"
+      ]
+    },
+    {
+      "id": "scenario:api.compose_valid",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "scenario:api.compose_valid"
+      ]
+    },
+    {
+      "id": "scenario:api.daily_content_read",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.daily_content_read"
+      ]
+    },
+    {
+      "id": "scenario:api.daily_content_reject",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.daily_content_reject"
+      ]
+    },
+    {
+      "id": "scenario:api.entitlement",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.entitlement"
+      ]
+    },
+    {
+      "id": "scenario:api.http",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.http"
+      ]
+    },
+    {
+      "id": "scenario:api.inventory_inspect",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "scenario:api.inventory_inspect"
+      ]
+    },
+    {
+      "id": "scenario:api.knowledge_read",
+      "path": [
+        "binding:api.knowledge_what",
+        "scenario:api.knowledge_read"
+      ]
+    },
+    {
+      "id": "scenario:api.mcp",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.mcp"
+      ]
+    },
+    {
+      "id": "scenario:api.native_failure",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.native_failure"
+      ]
+    },
+    {
+      "id": "scenario:api.onboarding_bootstrap",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.onboarding_bootstrap"
+      ]
+    },
+    {
+      "id": "scenario:api.onboarding_reject",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.onboarding_reject"
+      ]
+    },
+    {
+      "id": "scenario:api.privacy_owner",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.privacy_owner"
+      ]
+    },
+    {
+      "id": "scenario:api.privacy_reject",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.privacy_reject"
+      ]
+    },
+    {
+      "id": "scenario:api.retry",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.retry"
+      ]
+    },
+    {
+      "id": "scenario:api.reward_commit",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.reward_commit"
+      ]
+    },
+    {
+      "id": "scenario:api.reward_unavailable",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "scenario:api.reward_unavailable"
+      ]
+    },
+    {
+      "id": "step:api.compose_ready",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "step:api.compose_ready"
+      ]
+    },
+    {
+      "id": "step:api.compose_rejected",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "step:api.compose_rejected"
+      ]
+    },
+    {
+      "id": "step:api.compose_source",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "step:api.compose_source"
+      ]
+    },
+    {
+      "id": "step:api.inventory_review",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "step:api.inventory_review"
+      ]
+    },
+    {
+      "id": "step:api.learn_decisions",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "step:api.learn_decisions"
+      ]
+    },
+    {
+      "id": "step:api.learn_how",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "step:api.learn_how"
+      ]
+    },
+    {
+      "id": "step:api.learn_what",
+      "path": [
+        "binding:api.knowledge_what",
+        "step:api.learn_what"
+      ]
+    },
+    {
+      "id": "step:api.recovery",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "step:api.recovery"
+      ]
+    },
+    {
+      "id": "step:api.request",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "step:api.request"
+      ]
+    },
+    {
+      "id": "step:api.result",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "step:api.result"
+      ]
+    },
+    {
+      "id": "transition:api.ai_cancel",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.ai_cancel"
+      ]
+    },
+    {
+      "id": "transition:api.architecture_reject",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "transition:api.architecture_reject"
+      ]
+    },
+    {
+      "id": "transition:api.compose_invalid",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "transition:api.compose_invalid"
+      ]
+    },
+    {
+      "id": "transition:api.compose_valid",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "transition:api.compose_valid"
+      ]
+    },
+    {
+      "id": "transition:api.daily_content_read",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.daily_content_read"
+      ]
+    },
+    {
+      "id": "transition:api.daily_content_reject",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.daily_content_reject"
+      ]
+    },
+    {
+      "id": "transition:api.entitlement",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.entitlement"
+      ]
+    },
+    {
+      "id": "transition:api.http",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.http"
+      ]
+    },
+    {
+      "id": "transition:api.inventory_inspect",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.compose",
+        "journey:api.compose",
+        "transition:api.inventory_inspect"
+      ]
+    },
+    {
+      "id": "transition:api.learn_apply",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "transition:api.learn_apply"
+      ]
+    },
+    {
+      "id": "transition:api.learn_record",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "transition:api.learn_record"
+      ]
+    },
+    {
+      "id": "transition:api.mcp",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.mcp"
+      ]
+    },
+    {
+      "id": "transition:api.native_failure",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.native_failure"
+      ]
+    },
+    {
+      "id": "transition:api.onboarding_bootstrap",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.onboarding_bootstrap"
+      ]
+    },
+    {
+      "id": "transition:api.onboarding_reject",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.onboarding_reject"
+      ]
+    },
+    {
+      "id": "transition:api.privacy_owner",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.privacy_owner"
+      ]
+    },
+    {
+      "id": "transition:api.privacy_reject",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.privacy_reject"
+      ]
+    },
+    {
+      "id": "transition:api.retry",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.retry"
+      ]
+    },
+    {
+      "id": "transition:api.reward_commit",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.reward_commit"
+      ]
+    },
+    {
+      "id": "transition:api.reward_unavailable",
+      "path": [
+        "binding:api.knowledge_what",
+        "journey:api.ground_architecture",
+        "intent:api.understand",
+        "feature:api.foundation",
+        "intent:api.execute",
+        "journey:api.execute",
+        "transition:api.reward_unavailable"
+      ]
+    }
+  ]
+}

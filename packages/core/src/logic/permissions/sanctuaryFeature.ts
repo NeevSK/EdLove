@@ -4,20 +4,22 @@ import {
 } from '@repo/core/logic/permissions/accessContext';
 import {
   isBaselineReadCapability,
-  isLocalOnlyMutation,
+  isOnDeviceSelfCapability,
 } from '@repo/core/logic/permissions/baselineCapabilities';
 import {
-  type EntitlementScope,
-  type EntitlementSnapshot,
   meetsSubscriptionTier,
   resolveScopedEntitlement,
+} from '@repo/core/logic/permissions/entitlement';
+import type {
+  EntitlementScope,
+  EntitlementSnapshot,
 } from '@repo/core/logic/ports/entitlement.port';
 import {
   CITIZENSHIP,
   type CitizenshipLevel,
   type CitizenshipName,
   meetsCitizenship,
-} from '@repo/core/logic/registry/citizenship';
+} from '@repo/core/types/citizenship';
 
 export { CITIZENSHIP, type CitizenshipLevel, type CitizenshipName, meetsCitizenship };
 
@@ -78,13 +80,12 @@ export function sanctuaryFeature(
   ctx: SanctuaryEvaluationContext,
   requirement: FeatureRequirement,
 ): SanctuaryFeatureResult {
+  const onDeviceSelf = isOnDeviceSelfCapability(
+    requirement.action ?? '',
+    requirement.subject ?? '',
+  );
   if (!isFeatureAccessContextReady(ctx)) {
-    if (
-      ctx.isLocalOnly &&
-      Boolean(ctx.userId) &&
-      isLocalOnlyMutation(requirement.action ?? '', requirement.subject ?? '') &&
-      ctx.flagActive
-    ) {
+    if (onDeviceSelf && Boolean(ctx.userId) && ctx.flagActive) {
       return { permitted: true };
     }
     if (
@@ -117,7 +118,7 @@ export function sanctuaryFeature(
 
   // Gate 2 — Cedar. Cedar is the authoritative security boundary and must
   // take precedence over commercial failure reasons for protected UI actions.
-  if (ctx.cedarDecision === 'deny' || ctx.cedarDecision === 'no_decision') {
+  if (!onDeviceSelf && (ctx.cedarDecision === 'deny' || ctx.cedarDecision === 'no_decision')) {
     return { permitted: false, reason: 'authz', policy: ctx.cedarPolicy };
   }
 

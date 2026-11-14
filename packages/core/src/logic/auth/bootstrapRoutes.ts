@@ -24,8 +24,12 @@ export type AuthRouteInput = {
   hasActiveCapacity?: boolean;
   hasActiveAccessToken?: boolean;
   hasSession?: boolean;
+  hasLocalGuestSession?: boolean;
   guestOnboardingIntent?: boolean;
+  appEntryPath?: AppEntryPath;
 };
+
+export type AppEntryPath = '/self' | '/workspace';
 
 export function getAuthRouteDecision(params: AuthRouteInput): RouteDecision {
   return getAuthRouteTarget(params).decision;
@@ -40,12 +44,10 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     pathname === '/auth/callback' ||
     pathname === '/onboarding' ||
     pathname.startsWith('/public-form');
-  const isAppEntryPath =
-    pathname === '/' ||
-    pathname === '/auth' ||
-    pathname === '/auth/callback';
+  const isAppEntryPath = pathname === '/' || pathname === '/auth' || pathname === '/auth/callback';
   const isOnboardingPath = pathname === '/onboarding';
   const isAccountRecoveryPath = pathname === '/account-recovery';
+  const appEntryPath = params.appEntryPath ?? '/self';
 
   if (state === 'booting') {
     return {
@@ -62,7 +64,7 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
   }
 
   if (params.guestOnboardingIntent && isOnboardingPath) {
-    if (params.sessionMode !== 'anonymous') {
+    if (params.sessionMode !== 'anonymous' && !params.hasLocalGuestSession) {
       return {
         decision: 'public',
         redirectTo: '/welcome',
@@ -79,12 +81,12 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     if (state === 'ready') {
       return {
         decision: 'app',
-        redirectTo: '/self',
+        redirectTo: appEntryPath,
         policy: {
           state: 'ready',
           entryPoint: 'app',
           reason: 'ready-for-app',
-          redirectTo: '/self',
+          redirectTo: appEntryPath,
           canRenderCurrentPath: false,
         },
       };
@@ -170,12 +172,12 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     // Welcome is an explicit public landing surface. Restoring a remembered
     // session must never move someone into the app before they choose a
     // sign-in or onboarding action.
-    redirectTo: isAppEntryPath || isOnboardingPath ? '/self' : null,
+    redirectTo: isAppEntryPath || isOnboardingPath ? appEntryPath : null,
     policy: {
       state: 'ready' satisfies BootstrapSessionState,
       entryPoint: isOnboardingPath ? 'onboarding' : isPublicPath ? 'auth' : 'app',
       reason: 'ready-for-app',
-      redirectTo: isAppEntryPath || isOnboardingPath ? '/self' : null,
+      redirectTo: isAppEntryPath || isOnboardingPath ? appEntryPath : null,
       canRenderCurrentPath: !isAppEntryPath && !isOnboardingPath,
     },
   };
@@ -189,4 +191,16 @@ export function isPublicBootstrapRoute(pathname: string): boolean {
     pathname === '/onboarding' ||
     pathname.startsWith('/public-form')
   );
+}
+
+/**
+ * Whether the app's own routes (the tabs and their modals) may render. The router enforces this
+ * through `Stack.Protected`, so a protected screen never mounts for a person who isn't admitted:
+ * on sign-out, or for an inactive account or unfinished onboarding, the guard swaps the route for a
+ * redirect before the screen renders, rather than after an effect sees it. While booting nothing is
+ * decided yet and the entry gate covers the screen, so the guard stays open and a deep link that
+ * arrived at launch isn't bounced away before its session resolves.
+ */
+export function admitsAppRoutes(decision: RouteDecision): boolean {
+  return decision === 'app' || decision === 'booting';
 }

@@ -9,23 +9,28 @@
  * - Foreground sync coordination
  */
 
-import { evaluateEfficiency, normalizeNetworkConditions } from '@repo/core/efficiency';
-import { getActiveAccountId } from '@repo/core/lib/accountScope';
+import { getActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import { decideReplayFailure } from '@repo/core/lib/sync/replayDecision';
+import { tryBeginReplay } from '@repo/core/lib/sync/replayAdmission';
+import { isReplayPrincipalCurrent } from '@repo/core/lib/sync/replayIdentity.adapter';
+import {
+  isMutationReplayDeferred,
+  planMutationReplay,
+} from '@repo/core/lib/sync/replayPolicy.coordinator';
 import { coreRuntime, useMutationQueue } from '@repo/core/logic';
-import { MUTATION_REGISTRY, sovereignBus, type QueuedMutation } from '@repo/core/sync';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import { MUTATION_REGISTRY, type QueuedMutation, sovereignBus } from '@repo/core/sync';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
+import type { MutationQueueState } from '@repo/core/types/mutationQueue';
 import { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
-import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
+import { admitBackgroundWork } from '@/runtime/backgroundAdmission';
 
 export { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 
 // Configuration
+// Retry limits and backoff come from core's REPLAY_POLICY (lib/sync/replayDecision.ts).
 const SYNC_CONFIG = {
   maxBatchSize: 10,
-  maxRetries: 3,
-  baseBackoffMs: 1000,
-  maxBackoffMs: 30000,
-  jitterFactor: 0.3,
 } as const;
 
 // ─── Dead Letter Queue Storage ────────────────────────────────────────────────
@@ -33,29 +38,14 @@ const SYNC_CONFIG = {
 const LEGACY_DEAD_LETTER_KEY = 'gurudevi:dead-letter-queue';
 let legacyDeadLetterMigration: Promise<void> | undefined;
 
-async function getBackgroundSyncDecision() {
+/** Background sync is the registry's deferrable `sync`; verger's admission decides. */
+async function getBackgroundSyncDecision(): Promise<{ action: 'allow' | 'defer'; reason: string }> {
   try {
-    const [{ getBatteryLevelAsync, getBatteryStateAsync }, NetInfo] = await Promise.all([
-      import('expo-battery'),
-      import('@react-native-community/netinfo'),
-    ]);
-    const [batteryLevel, batteryState, networkState] = await Promise.all([
-      getBatteryLevelAsync(),
-      getBatteryStateAsync(),
-      NetInfo.default.fetch(),
-    ]);
-
-    const normalizedNetwork = normalizeNetworkConditions(networkState as any);
-    return evaluateEfficiency('background-sync', {
-      appState: 'background',
-      network: normalizedNetwork.type,
-      isMetered: normalizedNetwork.isMetered,
-      batteryLevel,
-      isCharging: batteryState === 2,
-      freeDiskBytes: null,
-    });
-  } catch {
-    return { action: 'defer' as const, reason: 'device_state_unavailable' };
+    const { admit, reason } = await admitBackgroundWork('sync');
+    return { action: admit ? 'allow' : 'defer', reason };
+  } catch (error) {
+    console.warn('[BackgroundSync] device state unavailable', error);
+    return { action: 'defer', reason: 'device_state_unavailable' };
   }
 }
 
@@ -124,10 +114,52 @@ export async function clearDeadLetterQueue(): Promise<void> {
 
 // ─── Exponential Backoff with Jitter ──────────────────────────────────────────
 
-function calculateBackoff(retryCount: number): number {
-  const base = SYNC_CONFIG.baseBackoffMs * Math.pow(2, retryCount);
-  const jitter = base * SYNC_CONFIG.jitterFactor * Math.random();
-  return Math.min(base + jitter, SYNC_CONFIG.maxBackoffMs);
+/**
+ * Applies the shared replay decision (core lib/sync/replayDecision.ts) to one failed item, the
+ * same rules the foreground SyncOrchestrator uses: an expired session pauses instead of spending
+ * retries, a conflict waits for resolution, and only permanent failures or exhausted retries go
+ * to the dead-letter queue.
+ */
+function settleFailedReplay(
+  item: QueuedMutation,
+  error: unknown,
+  queue: Pick<MutationQueueState, 'updateMutation' | 'moveToDeadLetter'>,
+): void {
+  const decision = decideReplayFailure(error, item.retryCount);
+  const lastError = error instanceof Error ? error.message : String(error);
+  switch (decision._tag) {
+    case 'Failed':
+      queue.updateMutation(item.id, { retryCount: decision.retryCount });
+      queue.moveToDeadLetter(item.id, lastError);
+      return;
+    case 'Conflict':
+      queue.updateMutation(item.id, {
+        retryCount: decision.retryCount,
+        commandState: 'conflict',
+        lastError,
+        lastErrorCode: 'CONFLICT',
+        lockLeaseExpiresAt: undefined,
+      });
+      return;
+    case 'AuthPaused':
+      queue.updateMutation(item.id, {
+        retryCount: decision.retryCount,
+        backoffUntil: decision.backoffUntil,
+        commandState: 'auth_paused',
+        lastError: 'AUTH_EXPIRED',
+        lastErrorCode: 'AUTH_EXPIRED',
+        lockLeaseExpiresAt: undefined,
+      });
+      return;
+    case 'Retrying':
+      queue.updateMutation(item.id, {
+        retryCount: decision.retryCount,
+        backoffUntil: decision.backoffUntil,
+        commandState: 'retry_scheduled',
+        lastError,
+        lockLeaseExpiresAt: undefined,
+      });
+  }
 }
 
 // ─── Task Definition ──────────────────────────────────────────────────────────
@@ -135,7 +167,7 @@ function calculateBackoff(retryCount: number): number {
 export async function runBackgroundSyncTask() {
   const decision = await getBackgroundSyncDecision();
   if (decision.action === 'defer') {
-    console.log(`[BackgroundSync] Deferred by efficiency policy: ${decision.reason}`);
+    console.log(`[BackgroundSync] Deferred by verger: ${decision.reason}`);
     return BackgroundTaskResult.NoData;
   }
 
@@ -146,8 +178,7 @@ export async function runBackgroundSyncTask() {
     setSyncing,
     updateMutation,
     tryAcquireMutationLease,
-  } =
-    useMutationQueue.getState();
+  } = useMutationQueue.getState();
   const activeUserId = getActiveAccountId();
 
   if (!activeUserId || queue.length === 0) {
@@ -162,69 +193,57 @@ export async function runBackgroundSyncTask() {
   try {
     // Filter items ready for retry (backoff expired)
     const now = Date.now();
-    const readyItems = queue
-      .filter(
-        (item) =>
-          item.userId === activeUserId &&
-          item.commandState !== 'auth_paused' &&
-          item.commandState !== 'conflict' &&
-          item.commandState !== 'rejected' &&
-          (!item.lockLeaseExpiresAt || now >= item.lockLeaseExpiresAt) &&
-          (!item.backoffUntil || now >= item.backoffUntil),
-      )
-      .slice(0, SYNC_CONFIG.maxBatchSize);
+    const readyItems = planMutationReplay(
+      queue,
+      activeUserId,
+      useTemporalStore.getState().readPolicy,
+      now,
+    ).ready.slice(0, SYNC_CONFIG.maxBatchSize);
 
     for (const item of readyItems) {
+      const principalId = item.userId;
+      const admission = principalId ? tryBeginReplay(principalId) : null;
+      if (!principalId || !admission) continue;
       try {
-        if (!tryAcquireMutationLease(item.id, 15000)) continue;
-        const workflowResult = await dispatchQueuedMutationToSovereignBus(item);
-        if (workflowResult === 'pending') {
-          updateMutation(item.id, {
-            commandState: 'retry_scheduled',
-            backoffUntil: Date.now() + 5000,
-            lastError: 'Workflow receipt pending',
-            lastErrorCode: 'WORKFLOW_RECEIPT_PENDING',
-            lockLeaseExpiresAt: undefined,
-          });
+        if (!tryAcquireMutationLease(item.id, 15000)) {
+          admission.release();
           continue;
         }
-        if (workflowResult === 'dispatched') {
-          removeFromQueue(item.id);
-          drained++;
+        if (!(await isReplayPrincipalCurrent(principalId))) {
+          updateMutation(item.id, {
+            commandState: 'auth_paused',
+            lockLeaseExpiresAt: undefined,
+          });
           continue;
         }
         const mutationFn = MUTATION_REGISTRY[item.name];
         if (!mutationFn) {
-          moveToDeadLetter(item.id, 'UNKNOWN_MUTATION');
+          updateMutation(item.id, {
+            commandState: 'queued',
+            lastError: 'No domain command is admitted for this queued operation.',
+            lastErrorCode: 'API_CAPABILITY_NOT_ADMITTED',
+            lockLeaseExpiresAt: undefined,
+          });
           failed++;
           continue;
         }
 
-        await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
+        if (isMutationReplayDeferred(item)) {
+          updateMutation(item.id, { commandState: 'queued', lockLeaseExpiresAt: undefined });
+          continue;
+        }
+        await mutationFn(item.variables, {
+          idempotencyKey: item.idempotencyKey,
+          commandId: item.id,
+          userId: item.userId,
+        });
         removeFromQueue(item.id);
         drained++;
       } catch (error) {
         failed++;
-        const retryCount = (item.retryCount || 0) + 1;
-
-        if (retryCount >= SYNC_CONFIG.maxRetries) {
-          // Move to dead letter queue
-          console.warn(
-            `[BackgroundSync] Item ${item.id} exceeded max retries, moving to dead letter queue`,
-          );
-          updateMutation(item.id, { retryCount });
-          moveToDeadLetter(item.id, String(error));
-        } else {
-          // Schedule retry with exponential backoff
-          const backoffMs = calculateBackoff(retryCount);
-          updateMutation(item.id, {
-            retryCount,
-            backoffUntil: Date.now() + backoffMs,
-            commandState: 'retry_scheduled',
-            lastError: String(error),
-            lockLeaseExpiresAt: undefined,
-          });
-        }
+        settleFailedReplay(item, error, { updateMutation, moveToDeadLetter });
+      } finally {
+        admission.release();
       }
     }
   } finally {
@@ -294,8 +313,7 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
     setSyncing,
     updateMutation,
     tryAcquireMutationLease,
-  } =
-    useMutationQueue.getState();
+  } = useMutationQueue.getState();
   const activeUserId = getActiveAccountId();
 
   if (!activeUserId || queue.length === 0) return { drained: 0, failed: 0 };
@@ -306,64 +324,57 @@ export async function triggerForegroundSync(): Promise<{ drained: number; failed
 
   try {
     const now = Date.now();
-    const readyItems = queue
-      .filter(
-        (item) =>
-          item.userId === activeUserId &&
-          item.commandState !== 'auth_paused' &&
-          item.commandState !== 'conflict' &&
-          item.commandState !== 'rejected' &&
-          (!item.lockLeaseExpiresAt || now >= item.lockLeaseExpiresAt) &&
-          (!item.backoffUntil || now >= item.backoffUntil),
-      )
-      .slice(0, SYNC_CONFIG.maxBatchSize);
+    const readyItems = planMutationReplay(
+      queue,
+      activeUserId,
+      useTemporalStore.getState().readPolicy,
+      now,
+    ).ready.slice(0, SYNC_CONFIG.maxBatchSize);
 
     for (const item of readyItems) {
+      const principalId = item.userId;
+      const admission = principalId ? tryBeginReplay(principalId) : null;
+      if (!principalId || !admission) continue;
       try {
-        if (!tryAcquireMutationLease(item.id, 15000)) continue;
-        const workflowResult = await dispatchQueuedMutationToSovereignBus(item);
-        if (workflowResult === 'pending') {
-          updateMutation(item.id, {
-            commandState: 'retry_scheduled',
-            backoffUntil: Date.now() + 5000,
-            lastError: 'Workflow receipt pending',
-            lastErrorCode: 'WORKFLOW_RECEIPT_PENDING',
-            lockLeaseExpiresAt: undefined,
-          });
+        if (!tryAcquireMutationLease(item.id, 15000)) {
+          admission.release();
           continue;
         }
-        if (workflowResult === 'dispatched') {
-          removeFromQueue(item.id);
-          drained++;
+        if (!(await isReplayPrincipalCurrent(principalId))) {
+          updateMutation(item.id, {
+            commandState: 'auth_paused',
+            lockLeaseExpiresAt: undefined,
+          });
           continue;
         }
         const mutationFn = MUTATION_REGISTRY[item.name];
         if (!mutationFn) {
-          moveToDeadLetter(item.id, 'UNKNOWN_MUTATION');
+          updateMutation(item.id, {
+            commandState: 'queued',
+            lastError: 'No domain command is admitted for this queued operation.',
+            lastErrorCode: 'API_CAPABILITY_NOT_ADMITTED',
+            lockLeaseExpiresAt: undefined,
+          });
           failed++;
           continue;
         }
 
-        await mutationFn(item.variables, { idempotencyKey: item.idempotencyKey });
+        if (isMutationReplayDeferred(item)) {
+          updateMutation(item.id, { commandState: 'queued', lockLeaseExpiresAt: undefined });
+          continue;
+        }
+        await mutationFn(item.variables, {
+          idempotencyKey: item.idempotencyKey,
+          commandId: item.id,
+          userId: item.userId,
+        });
         removeFromQueue(item.id);
         drained++;
       } catch (error) {
         failed++;
-        const retryCount = (item.retryCount || 0) + 1;
-
-        if (retryCount >= SYNC_CONFIG.maxRetries) {
-          updateMutation(item.id, { retryCount });
-          moveToDeadLetter(item.id, String(error));
-        } else {
-          const backoffMs = calculateBackoff(retryCount);
-          updateMutation(item.id, {
-            retryCount,
-            backoffUntil: Date.now() + backoffMs,
-            commandState: 'retry_scheduled',
-            lastError: String(error),
-            lockLeaseExpiresAt: undefined,
-          });
-        }
+        settleFailedReplay(item, error, { updateMutation, moveToDeadLetter });
+      } finally {
+        admission.release();
       }
     }
   } finally {

@@ -577,21 +577,87 @@ CREATE POLICY "Current teachers can view historical observations"
     );
 
 DROP POLICY IF EXISTS "Principals can view all observations in their school" ON public.student_observations;
-CREATE POLICY "Principals can view all observations in their school"
-    ON public.student_observations FOR SELECT TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = get_my_id()
-              AND school_id = student_observations.school_id
-              AND role IN ('principal', 'admin', 'founder')
-        )
-    );
+DO $$
+BEGIN
+    -- Older rows carried their school directly; the current schema derives it
+    -- through the classroom. Do not broaden or narrow either policy shape.
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'student_observations'
+          AND column_name = 'school_id'
+    ) THEN
+        EXECUTE $policy$
+            CREATE POLICY "Principals can view all observations in their school"
+                ON public.student_observations FOR SELECT TO authenticated
+                USING (
+                    EXISTS (
+                        SELECT 1 FROM public.users
+                        WHERE id = get_my_id()
+                          AND school_id = student_observations.school_id
+                          AND role IN ('principal', 'admin', 'founder')
+                    )
+                )
+        $policy$;
+    ELSIF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'student_observations'
+          AND column_name = 'classroom_id'
+    ) THEN
+        EXECUTE $policy$
+            CREATE POLICY "Principals can view all observations in their school"
+                ON public.student_observations FOR SELECT TO authenticated
+                USING (
+                    EXISTS (
+                        SELECT 1 FROM public.users principal_user
+                        JOIN public.classrooms observation_classroom
+                          ON observation_classroom.id = student_observations.classroom_id
+                        WHERE principal_user.id = get_my_id()
+                          AND principal_user.school_id = observation_classroom.school_id
+                          AND principal_user.role IN ('principal', 'admin', 'founder')
+                    )
+                )
+        $policy$;
+    ELSE
+        RAISE EXCEPTION 'student_observations has no supported school relation';
+    END IF;
+END;
+$$;
 
 DROP POLICY IF EXISTS "Students can view their own visible observations" ON public.student_observations;
-CREATE POLICY "Students can view their own visible observations"
-    ON public.student_observations FOR SELECT TO authenticated
-    USING (get_my_id() = student_id AND is_visible_to_student = true);
+DO $$
+BEGIN
+    -- The historical schema used a boolean; the current schema uses an
+    -- explicit visibility state. Preserve the policy that belongs to the
+    -- physical schema being migrated instead of changing access semantics.
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'student_observations'
+          AND column_name = 'is_visible_to_student'
+    ) THEN
+        EXECUTE $policy$
+            CREATE POLICY "Students can view their own visible observations"
+                ON public.student_observations FOR SELECT TO authenticated
+                USING (get_my_id() = student_id AND is_visible_to_student = true)
+        $policy$;
+    ELSIF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'student_observations'
+          AND column_name = 'visibility'
+    ) THEN
+        EXECUTE $policy$
+            CREATE POLICY "Students can view their own visible observations"
+                ON public.student_observations FOR SELECT TO authenticated
+                USING (get_my_id() = student_id AND visibility = 'student_visible')
+        $policy$;
+    ELSE
+        RAISE EXCEPTION 'student_observations has no supported student-visibility column';
+    END IF;
+END;
+$$;
 
 -- ── community_group_members ────────────────────────────────────────
 DROP POLICY IF EXISTS "group_members_management_v2" ON public.community_group_members;

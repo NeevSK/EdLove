@@ -24,6 +24,8 @@ declare module 'expo-task-manager' {
 
 declare module 'expo-font' {
   export function loadAsync(assets: Record<string, unknown> | unknown[]): Promise<void>;
+  /** Embedded (config plugin) and runtime-loaded font names. */
+  export function getLoadedFonts(): string[];
 }
 
 declare module 'react-native-keychain' {

@@ -1,28 +1,9 @@
 export * from '@repo/profile/components';
 
 export * from '@repo/profile/config/profileSections';
-export * from '@repo/profile/hooks/useCommunityProfile';
-export * from '@repo/profile/hooks/useCommunityProfileHistory';
-export * from '@repo/profile/hooks/useInstitutionalHistory';
 export * from '@repo/profile/hooks/useNotificationPreferences';
-export * from '@repo/profile/hooks/usePrincipalGovernanceHistory';
-export * from '@repo/profile/hooks/useProfile';
-export * from '@repo/profile/hooks/useProfileCompletion';
-export * from '@repo/profile/hooks/useProfileHistory';
 export * from '@repo/profile/hooks/useRewardedAdHub';
-export * from '@repo/profile/hooks/useSchoolProfile';
-export * from '@repo/profile/hooks/useSchoolPulse';
-export * from '@repo/profile/hooks/useSocialLinks';
-export * from '@repo/profile/hooks/useStudentAcademicHistory';
-export * from '@repo/profile/hooks/useTeacherProfessionalHistory';
 export { isFieldFilled } from '@repo/profile/lib/isFieldFilled';
 export * from '@repo/profile/lib/validator';
 export * from '@repo/profile/navigation';
-export { FullProfileScreen } from '@repo/profile/screens/FullProfileScreen';
-export { default as FullProfileScreenWeb } from '@repo/profile/screens/FullProfileScreen.web';
-export { default as MuteHubScreen } from '@repo/profile/screens/MuteHubScreen';
-export { ProfileScreen } from '@repo/profile/screens/ProfileScreen';
-export { default as ProfileScreenWeb } from '@repo/profile/screens/ProfileScreen.web';
-export { default as PublicProfileScreenWeb } from '@repo/profile/screens/PublicProfileScreen.web';
-export { default as ThuthimalClaimScreen } from '@repo/profile/screens/ThuthimalClaimScreen';
 export * from '@repo/profile/types';

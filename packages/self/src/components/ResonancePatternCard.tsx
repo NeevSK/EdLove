@@ -1,18 +1,19 @@
 /**
  * RESONANCE PATTERN CARD
  * Displays the user's somatic/behavioral fingerprint using Skia Radar Chart.
- * Standardized to Zero-Legacy: purged sx props and fixed severe syntax corruption in style objects.
+ * Reconstructed: Purged legacy UI primitives; replaced with React Native primitives + @repo/ui/theme/native.
  */
 
 import { usePermissions } from '@repo/core/logic';
 import type { OrientationSeeds } from '@repo/profile';
 import { useOrientationInference } from '@repo/self/hooks/useOrientationInference';
-import type { EnergyForecast, MoodLog } from '@repo/self/types/Wellbeing';
+import type { EnergyForecast, MoodLog } from '@repo/core/types/Wellbeing';
 import { Activity, ArrowRight, Sparkles } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Canvas, Circle, Group, Line, Path, Skia, vec } from 'react-native-skia';
-import { useMemo } from 'react';
+import { useWorld } from '@repo/ui/theme/native';
+import React, { useMemo } from 'react';
+import { Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn, SlideInRight } from 'react-native-reanimated';
+import { Canvas, Circle, Group, Line, Path, Skia, vec } from 'react-native-skia';
 
 // —————————————————————————————————————————————————————————————————————————————
 // CONSTANTS
@@ -72,7 +73,7 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
   const centerVec = vec(CENTER, CENTER);
 
   return (
-    <Box className="w-[140px] h-[140px] items-center justify-center">
+    <View className="w-[140px] h-[140px] items-center justify-center">
       <Canvas style={{ flex: 1, width: '100%', height: '100%' }}>
         {gridRadii.map((r, i) => (
           <Circle
@@ -111,7 +112,7 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
 
         <Circle cx={CENTER} cy={CENTER} r={2} color={color} opacity={0.5} />
       </Canvas>
-    </Box>
+    </View>
   );
 }
 
@@ -134,6 +135,7 @@ export default function ResonancePatternCard({
   gradeNumber,
   onExplore,
 }: ResonancePatternCardProps) {
+  const { tokens } = useWorld();
   const { context } = usePermissions();
   const capacity = context.capacity;
   const authority =
@@ -177,21 +179,21 @@ export default function ResonancePatternCard({
 
   const isForming = isDefault && confidence < 0.25;
   const points = useMemo(() => buildPoints(seeds), [seeds]);
-  const accentColor = '#FCD34D'; // sanctuarySaffron
+  const accentColor = tokens.lampDeep;
 
   return (
     <Animated.View entering={FadeIn.duration(800)}>
-      <Box className="bg-white/5 rounded-3xl border border-white/10 p-lg shadow-2xl">
-        <VStack className="gap-lg">
+      <View className="bg-white/5 rounded-3xl border border-white/10 p-5 shadow-2xl">
+        <View className="gap-5">
           {/* Header */}
-          <HStack className="items-center justify-between">
-            <HStack className="items-center gap-2">
-              <Icon as={Sparkles} className="text-sanctuarySaffron" size={16} />
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-2">
+              <Sparkles className="text-sanctuarySaffron" size={16} color={tokens.lampDeep} />
               <Text className="text-sanctuarySaffron text-[10px] uppercase font-black tracking-widest">
                 Behavioral Fingerprint
               </Text>
-            </HStack>
-            <Box
+            </View>
+            <View
               className={`px-2 py-1 rounded-full ${dataQuality === 'strong' ? 'bg-emeraldGreen/10' : 'bg-skyBlue/10'}`}
             >
               <Text
@@ -199,59 +201,59 @@ export default function ResonancePatternCard({
               >
                 {dataQuality} resonance
               </Text>
-            </Box>
-          </HStack>
+            </View>
+          </View>
 
           {isForming ? (
-            <VStack className="items-center py-lg gap-3">
-              <Icon as={Activity} className="text-mistGray/20" size={48} />
-              <VStack className="gap-1 items-center">
+            <View className="items-center py-5 gap-3">
+              <Activity className="text-mistGray/20" size={48} color={tokens.inkFaint} />
+              <View className="gap-1 items-center">
                 <Text className="text-sacredWhite/60 font-bold text-sm">Pattern is forming...</Text>
                 <Text className="text-mistGray text-[10px] text-center max-w-[200px] leading-relaxed">
                   Your somatic shape will emerge as your interactions generate enough light.
                 </Text>
-              </VStack>
-            </VStack>
+              </View>
+            </View>
           ) : (
-            <HStack className="items-center gap-lg">
+            <View className="flex-row items-center gap-5">
               <RadarChart points={points} color={accentColor} />
 
-              <VStack className="flex-1 gap-4">
+              <View className="flex-1 gap-4">
                 {AXES.map((axis, index) => {
                   const value = seeds[axis.key] ?? 50;
                   return (
                     <Animated.View key={axis.key} entering={SlideInRight.delay(index * 100)}>
-                      <VStack className="gap-1.5">
-                        <HStack className="justify-between items-center px-0.5">
+                      <View className="gap-1.5">
+                        <View className="flex-row justify-between items-center px-0.5">
                           <Text className="text-mistGray/40 text-[9px] uppercase font-black">
                             {axis.lo}
                           </Text>
                           <Text className="text-mistGray text-[9px] uppercase font-black">
                             {axis.hi}
                           </Text>
-                        </HStack>
+                        </View>
 
                         {/* Gauge Track */}
-                        <Box className="h-1 bg-white/5 rounded-full relative overflow-hidden">
-                          <Box
+                        <View className="h-1 bg-white/5 rounded-full relative overflow-hidden">
+                          <View
                             className="absolute top-0 bottom-0 bg-sanctuarySaffron/20"
                             style={{ left: 0, width: `${value}%` }}
                           />
                           {/* Active Indicator Pin */}
-                          <Box
+                          <View
                             className="absolute top-0 bottom-0 w-0.5 bg-sanctuarySaffron shadow-sm"
                             style={{ left: `${value}%` }}
                           />
-                        </Box>
-                      </VStack>
+                        </View>
+                      </View>
                     </Animated.View>
                   );
                 })}
-              </VStack>
-            </HStack>
+              </View>
+            </View>
           )}
 
-          <Box className="border-t border-white/5 pt-4">
+          <View className="border-t border-white/5 pt-4">
             <Text className="text-mistGray/40 text-[9px] text-center italic leading-relaxed">
               {dataQuality === 'strong' && orientationSeeds
                 ? 'Refined by your core orientation and dynamic somatic logs.'
@@ -259,21 +261,21 @@ export default function ResonancePatternCard({
                   ? 'A hardened pattern emerging from consistent behavioral signals.'
                   : 'A starting perspective that refines with every interaction.'}
             </Text>
-          </Box>
+          </View>
 
           {!isForming && onExplore && (
             <Pressable
               onPress={onExplore}
-              className="flex-row items-center justify-center gap-2 bg-white/5 py-3 rounded-xl border border-white/10 active:bg-white/10 active:scale-98 transition-all"
+              className="flex-row items-center justify-center gap-2 bg-white/5 py-3 rounded-xl border border-white/10 active:bg-white/10 active:scale-98"
             >
               <Text className="text-sacredWhite text-xs font-black uppercase tracking-widest">
                 Explore Fingerprint
               </Text>
-              <Icon as={ArrowRight} size={14} className="text-sanctuarySaffron" />
+              <ArrowRight size={14} color={tokens.lampDeep} />
             </Pressable>
           )}
-        </VStack>
-      </Box>
+        </View>
+      </View>
     </Animated.View>
   );
 }

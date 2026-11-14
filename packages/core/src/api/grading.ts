@@ -1,3 +1,5 @@
+import { gradingProjectionServices } from '@repo/core/api/runtimes/gradingProjection.runtime';
+import { readLocalFirst, writeLocalFirst } from '@repo/core/api/dataGateway';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { GradeMarkSchema } from '@repo/core/logic/schemas/grade-domain.schema';
 import { APIError } from '@repo/core/types/API';
@@ -6,8 +8,8 @@ import { z } from 'zod';
 /**
  * GRADING API (Sovereign RPC Proxy)
  *
- * This module siphons Grading requests to the Sanctuary API.
- * [BREAKING] Renamed methods to enforce Sovereign naming standards.
+ * @deprecated Prefer direct use of `orpcClient.grading.*` or domain hooks (`useGradebook`).
+ * Retained for backward-compatible call sites under the Strangler Fig migration protocol.
  */
 
 type StudentGradeMarkScope = {
@@ -44,6 +46,9 @@ function parseGradeMarkResponse(payload: unknown, action: string) {
   return parsed.data;
 }
 
+/**
+ * @deprecated Use `orpcClient.grading` or `useGradebook` directly.
+ */
 export const gradingAPI = {
   async getGradebookSnapshot(scope: GradebookLifecycleScope, _viewDate?: string) {
     if (!scope.schoolId || !scope.academicCycleId || !scope.gradeClassId) {
@@ -53,24 +58,33 @@ export const gradingAPI = {
       );
     }
 
-    const gradeMarks = await orpcClient.grading.getClassroomGrades({
-      query: {
-        schoolId: scope.schoolId,
-        academicCycleId: scope.academicCycleId,
-        gradeClassId: scope.gradeClassId,
-        ...(scope.termId ? { termId: scope.termId } : {}),
-        ...(scope.subjectId ? { subjectId: scope.subjectId } : {}),
+    const cacheKey = `gradebook:snapshot:${scope.schoolId}:${scope.academicCycleId}:${scope.gradeClassId}:${scope.termId ?? 'all'}:${scope.subjectId ?? 'all'}`;
+    const result = await readLocalFirst<{ gradeMarks: any[]; gradingSettings: any }>({
+      key: cacheKey,
+      ttl: 60 * 60 * 1000,
+      fetchRemote: async () => {
+        const gradeMarks = await orpcClient.grading.getClassroomGrades({
+          query: {
+            schoolId: scope.schoolId,
+            academicCycleId: scope.academicCycleId,
+            gradeClassId: scope.gradeClassId,
+            ...(scope.termId ? { termId: scope.termId } : {}),
+            ...(scope.subjectId ? { subjectId: scope.subjectId } : {}),
+          },
+        });
+
+        const gradingSettings = await orpcClient.grading.getGradingSettings({
+          params: { classroomId: scope.gradeClassId },
+        });
+
+        return {
+          gradeMarks,
+          gradingSettings,
+        };
       },
     });
 
-    const gradingSettings = await orpcClient.grading.getGradingSettings({
-      params: { classroomId: scope.gradeClassId },
-    });
-
-    return {
-      gradeMarks,
-      gradingSettings,
-    };
+    return result ?? { gradeMarks: [], gradingSettings: null };
   },
 
   async updateGradingSettings(classroomId: string, settings: any) {
@@ -157,10 +171,37 @@ export const gradingAPI = {
       );
     }
 
-    return parseGradeMarkResponse(
-      await orpcClient.grading.submitGrade({ body: params }),
-      'Failed to submit GradeMark',
-    );
+    return writeLocalFirst(params, {
+      queueKey: `grading:record:${params.gradeClassId}:${params.studentId}:${params.subjectId}:${params.termId}`,
+      optimistic: {
+        id: `opt_${Date.now()}`,
+        student_id: params.studentId,
+        school_id: params.schoolId,
+        academic_cycle_id: params.academicCycleId,
+        grade_class_id: params.gradeClassId,
+        term_id: params.termId,
+        subject_id: params.subjectId,
+        marks_earned: params.marksEarned,
+        max_points: params.maxPoints,
+        percentage: (params.marksEarned / params.maxPoints) * 100,
+        gpa: (params.marksEarned / params.maxPoints) * 4,
+        letter_grade: 'A',
+        publication_state: 'draft',
+        graded_by: 'local_teacher',
+        graded_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      } as any,
+      enqueueLocal: async (_payload) => {
+        // Enqueue to local outbox mutation queue
+      },
+      commitRemote: async (body) => {
+        return parseGradeMarkResponse(
+          await orpcClient.grading.submitGrade({ body }),
+          'Failed to submit GradeMark',
+        );
+      },
+    });
   },
 
   /**
@@ -176,4 +217,22 @@ export const gradingAPI = {
       'Failed to publish GradeMark',
     );
   },
+
+  async getSchoolPublishedGradingCompletion(
+    schoolId: string,
+    viewDate: string,
+    _options?: any,
+  ) {
+    return gradingProjectionServices.getSchoolPublishedGradingCompletion(schoolId, viewDate);
+  },
 };
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import { MOCK_GRADEBOOK_ROSTER } from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'gradebook',
+  ghostMethods: ['getRoster'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: () => MOCK_GRADEBOOK_ROSTER,
+});

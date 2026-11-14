@@ -81,6 +81,17 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
       }
     });
 
+    it('refuses a QR or invitation link that failed validation, never routing it', () => {
+      for (const url of [
+        'gurudevi://qr?v=1&action=steal_credentials&token=bad',
+        'https://gurudevi.app/qr?v=1&action=steal_credentials',
+        'gurudevi://invite/unknown',
+        'https://gurudevi.app/invite/unknown',
+      ]) {
+        expect(classifyRouteIntent(url)).toEqual({ kind: 'unsupported' });
+      }
+    });
+
     it('fails with DeepLinkTraversalError on encoded or literal path traversals', async () => {
       const traversalCases = [
         'gurudevi://auth/callback/../../internal',
@@ -124,9 +135,7 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
     });
 
     it('identifies canonical QR links correctly', () => {
-      expect(
-        isQRDeepLink('gurudevi://qr?v=1&action=join_class&classroom_id=class-1'),
-      ).toBe(true);
+      expect(isQRDeepLink('gurudevi://qr?v=1&action=join_class&classroom_id=class-1')).toBe(true);
       expect(
         isQRDeepLink(
           'https://gurudevi.app/qr?v=1&action=join_school&school_id=school-1&group_id=group-1',
@@ -188,6 +197,34 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
       expect(classifyRouteIntent('https://evil.example/qr?v=1')).toEqual({
         kind: 'rejected',
         reason: 'DeepLinkHostOrSchemeError',
+      });
+    });
+
+    it('classifies valid canonical sanctuary routes as internalRoute for HTTPS and custom schemes', () => {
+      expect(
+        classifyRouteIntent('https://sanctuary.gurudevi.app/self?feature=fire_journal'),
+      ).toEqual({
+        kind: 'internalRoute',
+        path: '/self?feature=fire_journal',
+        url: 'https://sanctuary.gurudevi.app/self?feature=fire_journal',
+      });
+
+      expect(classifyRouteIntent('https://gurudevi.app/library/resource/bio-101')).toEqual({
+        kind: 'internalRoute',
+        path: '/library/resource/bio-101',
+        url: 'https://gurudevi.app/library/resource/bio-101',
+      });
+
+      expect(classifyRouteIntent('gurudevi://self')).toEqual({
+        kind: 'internalRoute',
+        path: '/self',
+        url: 'gurudevi://self',
+      });
+
+      expect(classifyRouteIntent('gurudevi://workspace/classroom/grade-10')).toEqual({
+        kind: 'internalRoute',
+        path: '/workspace/classroom/grade-10',
+        url: 'gurudevi://workspace/classroom/grade-10',
       });
     });
   });

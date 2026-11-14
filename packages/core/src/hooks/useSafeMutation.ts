@@ -1,9 +1,10 @@
 import { OfflineMutationError, runToPromise } from '@repo/core/effect';
 import { DeltaResonance } from '@repo/core/lib/sync/delta';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { useMutationAuditLog } from '@repo/core/lib/sync/mutationAuditLog.store';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
+import { feedback } from '@repo/core/effect/bindings/feedback';
+import { network } from '@repo/core/effect/bindings/network';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { executeMutation$ } from '@repo/core/utils/mutation';
 import { useCallback, useRef, useState } from 'react';
@@ -21,11 +22,24 @@ export interface SafeMutationOptions<TData, TVariables, TContext = unknown> {
   /** Called before mutation runs. Returns optional rollback context passed to onError and onSettled */
   onMutate?: (variables: TVariables) => Promise<TContext | void> | TContext | void;
   /** Called on successful online execution or offline queueing */
-  onSuccess?: (data: TData | null, variables: TVariables, context?: TContext) => Promise<unknown> | unknown;
+  onSuccess?: (
+    data: TData | null,
+    variables: TVariables,
+    context?: TContext,
+  ) => Promise<unknown> | unknown;
   /** Called on network / server execution failure */
-  onError?: (error: unknown, variables: TVariables, context?: TContext) => Promise<unknown> | unknown;
+  onError?: (
+    error: unknown,
+    variables: TVariables,
+    context?: TContext,
+  ) => Promise<unknown> | unknown;
   /** Called when mutation settles (either success or error) */
-  onSettled?: (data: TData | null | undefined, error: unknown | null, variables: TVariables, context?: TContext) => Promise<unknown> | unknown;
+  onSettled?: (
+    data: TData | null | undefined,
+    error: unknown | null,
+    variables: TVariables,
+    context?: TContext,
+  ) => Promise<unknown> | unknown;
   retryCount?: number;
   originalVariables?: TVariables; // For Delta-Resonance diffing
 }
@@ -91,7 +105,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
   });
 
   const inFlightKeysRef = useRef<Set<string>>(new Set());
-  const showToast = useAuthStore((s) => s.showToast);
+
   const addToQueue = useMutationQueue((s) => s.addToQueue);
   const logAudit = useMutationAuditLog((s) => s.logEntry);
 
@@ -140,7 +154,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
       try {
         const result = await runToPromise(
           executeMutation$({
-            isConnected: () => networkManager.isConnected(),
+            isConnected: () => network.isConnected(),
             mutation: () => mutationFn(variables),
             retryCount: options?.retryCount,
           }),
@@ -164,12 +178,30 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
       } catch (err: unknown) {
         const isOffline =
           err instanceof OfflineMutationError ||
-          (err && typeof err === 'object' && '_tag' in err && (err as { _tag: string })._tag === 'OfflineMutationError') ||
-          (err && typeof err === 'object' && 'cause' in err && (err as any).cause?._tag === 'OfflineMutationError') ||
-          (err && typeof err === 'object' && 'cause' in err && (err as any).cause?.name === 'OfflineMutationError') ||
-          (err && typeof err === 'object' && 'details' in err && (err as any).details?.devDetails?._tag === 'OfflineMutationError') ||
-          (err && typeof err === 'object' && 'details' in err && (err as any).details?.devDetails?.name === 'OfflineMutationError') ||
-          (err instanceof Error && (err.message === 'Network request failed' || err.message === 'Offline mutation failed' || err.name === 'OfflineMutationError'));
+          (err &&
+            typeof err === 'object' &&
+            '_tag' in err &&
+            (err as { _tag: string })._tag === 'OfflineMutationError') ||
+          (err &&
+            typeof err === 'object' &&
+            'cause' in err &&
+            (err as any).cause?._tag === 'OfflineMutationError') ||
+          (err &&
+            typeof err === 'object' &&
+            'cause' in err &&
+            (err as any).cause?.name === 'OfflineMutationError') ||
+          (err &&
+            typeof err === 'object' &&
+            'details' in err &&
+            (err as any).details?.devDetails?._tag === 'OfflineMutationError') ||
+          (err &&
+            typeof err === 'object' &&
+            'details' in err &&
+            (err as any).details?.devDetails?.name === 'OfflineMutationError') ||
+          (err instanceof Error &&
+            (err.message === 'Network request failed' ||
+              err.message === 'Offline mutation failed' ||
+              err.name === 'OfflineMutationError'));
 
         if (isOffline) {
           const mutationId = uuidv7();
@@ -204,7 +236,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
             userId: studentId,
           });
 
-          showToast('Saved to Outbox (Offline)', 'info');
+          feedback.toast('Saved to Outbox (Offline)', 'info');
 
           setState({
             status: 'success',
@@ -233,7 +265,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
         if (options?.onError) {
           await options.onError(err, variables, context);
         } else {
-          showToast(errorMessage || 'Action failed', 'error');
+          feedback.presentFailure(err, name);
         }
 
         if (options?.onSettled) {
@@ -245,7 +277,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
         inFlightKeysRef.current.delete(inFlightKey);
       }
     },
-    [mutationFn, options, showToast, addToQueue, logAudit],
+    [mutationFn, options, addToQueue, logAudit],
   );
 
   const mutate = useCallback(
@@ -279,4 +311,3 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
     reset,
   };
 }
-

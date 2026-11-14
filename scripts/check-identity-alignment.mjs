@@ -33,7 +33,7 @@ const PATTERNS = [
     id: 'AUTH_UID_IN_CLIENT',
     regex: /['"]auth\.uid\(\)['"]/g,
     message:
-      'Possible usage of auth.uid() in client-side query. Use the internal user.id instead, as the JWT hook now injects this.',
+      'Possible usage of auth.uid() in client-side query. It remains the credential subject; resolve the canonical account separately.',
     priority: 'HIGH',
   },
   {
@@ -61,13 +61,16 @@ const EXCLUDES = [
   'packages/core/src/adapters/powersync/SupabasePowerSyncConnector.ts',
 ];
 
-function scanDirectory(dir, results = []) {
+export function scanDirectory(dir, results = [], root = rootDir, visited = new Set()) {
+  const realDirectory = fs.realpathSync(dir);
+  if (visited.has(realDirectory)) return results;
+  visited.add(realDirectory);
   const files = fs.readdirSync(dir);
 
   for (const file of files) {
     const fullPath = path.join(dir, file);
     // Normalize paths for Windows compatibility
-    const relativePath = path.relative(rootDir, fullPath).replace(/\\/g, '/');
+    const relativePath = path.relative(root, fullPath).replace(/\\/g, '/');
 
     if (
       EXCLUDES.some((exclude) => {
@@ -80,12 +83,20 @@ function scanDirectory(dir, results = []) {
       continue;
     }
 
-    const stat = fs.statSync(fullPath);
+    let stat;
+    try {
+      stat = fs.statSync(fullPath);
+    } catch (error) {
+      if (error.code !== 'ENOENT' || !fs.lstatSync(fullPath).isSymbolicLink()) throw error;
+      console.warn(`Unresolvable symbolic link (no source scanned): ${relativePath}`);
+      continue;
+    }
 
     if (stat.isDirectory()) {
-      scanDirectory(fullPath, results);
+      scanDirectory(fullPath, results, root, visited);
     } else if (file.endsWith('.ts') || file.endsWith('.tsx') || file.endsWith('.js')) {
       const content = fs.readFileSync(fullPath, 'utf8');
+      const sourceLines = content.split('\n');
 
       PATTERNS.forEach((pattern) => {
         let match;
@@ -97,7 +108,7 @@ function scanDirectory(dir, results = []) {
             patternId: pattern.id,
             message: pattern.message,
             priority: pattern.priority,
-            snippet: content.split('\n')[lines.length - 1].trim(),
+            snippet: sourceLines[lines.length - 1].trim().slice(0, 240),
           });
         }
       });
@@ -106,43 +117,47 @@ function scanDirectory(dir, results = []) {
   return results;
 }
 
-console.log('🚀 Starting Identity Alignment Audit...');
-const startTime = Date.now();
-const results = scanDirectory(rootDir);
-const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  console.log('🚀 Starting Identity Alignment Audit...');
+  const startTime = Date.now();
+  const results = scanDirectory(rootDir);
+  const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
-console.log(
-  `\nScan complete in ${duration}s. Found ${results.length} potential alignment issues.\n`,
-);
+  console.log(
+    `\nScan complete in ${duration}s. Found ${results.length} potential alignment issues.\n`,
+  );
 
-const grouped = results.reduce((acc, res) => {
-  if (!acc[res.file]) acc[res.file] = [];
-  acc[res.file].push(res);
-  return acc;
-}, {});
+  const grouped = results.reduce((acc, res) => {
+    if (!acc[res.file]) acc[res.file] = [];
+    acc[res.file].push(res);
+    return acc;
+  }, {});
 
-Object.entries(grouped).forEach(([file, issues]) => {
-  console.log(`\nFile: ${file}`);
-  issues.forEach((issue) => {
-    const color = issue.priority === 'HIGH' ? '\x1b[31m' : '\x1b[33m';
-    console.log(`  [${color}${issue.priority}\x1b[0m] Line ${issue.line}: ${issue.message}`);
-    console.log(`    \x1b[90m> ${issue.snippet}\x1b[0m`);
+  Object.entries(grouped).forEach(([file, issues]) => {
+    console.log(`\nFile: ${file}`);
+    issues.forEach((issue) => {
+      const color = issue.priority === 'HIGH' ? '\x1b[31m' : '\x1b[33m';
+      console.log(`  [${color}${issue.priority}\x1b[0m] Line ${issue.line}: ${issue.message}`);
+      console.log(`    \x1b[90m> ${issue.snippet}\x1b[0m`);
+    });
   });
-});
 
-const hasHighPriority = results.some((r) => r.priority === 'HIGH');
+  const hasHighPriority = results.some((r) => r.priority === 'HIGH');
 
-if (hasHighPriority) {
-  console.log(
-    '\n\x1b[31m⚠️  HIGH priority identity anomalies detected. Please review the findings above and migrate to identityAPI.\x1b[0m',
-  );
-  process.exit(1);
-} else if (results.length > 0) {
-  console.log(
-    '\n\x1b[33m⚠️  Only MEDIUM priority issues found. Architecture is sovereign, but review recommended.\x1b[0m',
-  );
-  process.exit(0);
-} else {
-  console.log('\n\x1b[32m✨ No identity alignment issues found. Architecture is sovereign.\x1b[0m');
-  process.exit(0);
+  if (hasHighPriority) {
+    console.log(
+      '\n\x1b[31m⚠️  HIGH priority identity anomalies detected. Please review the findings above and migrate to identityAPI.\x1b[0m',
+    );
+    process.exit(1);
+  } else if (results.length > 0) {
+    console.log(
+      '\n\x1b[33m⚠️  Only MEDIUM priority patterns found. Review each credential/account boundary.\x1b[0m',
+    );
+    process.exit(0);
+  } else {
+    console.log(
+      '\n\x1b[32mNo configured identity-alignment patterns found; this is not an authorization proof.\x1b[0m',
+    );
+    process.exit(0);
+  }
 }

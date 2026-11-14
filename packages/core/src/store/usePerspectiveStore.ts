@@ -1,11 +1,9 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { eventBus, persistStorage } from '@repo/core/effect/bindings/state';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-
 
 export interface PerspectiveStoreState {
   activePerspective: SanctuaryPerspective;
@@ -19,11 +17,14 @@ export interface PerspectiveStoreState {
   addPerspective: (perspective: SanctuaryPerspective) => void;
   removePerspective: (perspectiveId: string) => void;
   updatePerspective: (perspectiveId: string, updates: Partial<SanctuaryPerspective>) => void;
-  hydratePerspectivesFromDatabase: (userId: string, dependencies: {
-    getInstitutionalBonds?: () => Promise<SanctuaryPerspective[]>;
-    getCommercialBatches?: () => Promise<SanctuaryPerspective[]>;
-    getGuardianBonds?: () => Promise<SanctuaryPerspective[]>;
-  }) => Promise<void>;
+  hydratePerspectivesFromDatabase: (
+    userId: string,
+    dependencies: {
+      getInstitutionalBonds?: () => Promise<SanctuaryPerspective[]>;
+      getCommercialBatches?: () => Promise<SanctuaryPerspective[]>;
+      getGuardianBonds?: () => Promise<SanctuaryPerspective[]>;
+    },
+  ) => Promise<void>;
 }
 
 export const DEFAULT_PERSONAL_PERSPECTIVE: SanctuaryPerspective = {
@@ -53,7 +54,8 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
           DEFAULT_PERSONAL_PERSPECTIVE;
 
         set({
-          availablePerspectives: perspectives.length > 0 ? perspectives : [DEFAULT_PERSONAL_PERSPECTIVE],
+          availablePerspectives:
+            perspectives.length > 0 ? perspectives : [DEFAULT_PERSONAL_PERSPECTIVE],
           activePerspective: matchingActive,
         });
       },
@@ -109,8 +111,12 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
         try {
           const personal = DEFAULT_PERSONAL_PERSPECTIVE;
           const [institutional = [], commercial = [], guardian = []] = await Promise.all([
-            dependencies.getInstitutionalBonds ? dependencies.getInstitutionalBonds() : Promise.resolve([]),
-            dependencies.getCommercialBatches ? dependencies.getCommercialBatches() : Promise.resolve([]),
+            dependencies.getInstitutionalBonds
+              ? dependencies.getInstitutionalBonds()
+              : Promise.resolve([]),
+            dependencies.getCommercialBatches
+              ? dependencies.getCommercialBatches()
+              : Promise.resolve([]),
             dependencies.getGuardianBonds ? dependencies.getGuardianBonds() : Promise.resolve([]),
           ]);
 
@@ -133,7 +139,9 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
 
         const targetPerspective = availablePerspectives.find((p) => p.id === perspectiveId);
         if (!targetPerspective) {
-          console.warn(`[usePerspectiveStore] Target perspective '${perspectiveId}' not found in available perspectives.`);
+          console.warn(
+            `[usePerspectiveStore] Target perspective '${perspectiveId}' not found in available perspectives.`,
+          );
           return;
         }
 
@@ -146,7 +154,7 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
           useCedarDecisionStore.getState().clearDecisions();
 
           // 2. Emit perspective transition event over Sovereign Event Bus for cache flushing
-          sovereignBus.emit('perspective:transition_started' as any, {
+          eventBus.emit('perspective:transition_started' as any, {
             from: previousPerspective,
             to: targetPerspective,
           });
@@ -167,7 +175,7 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
             await useCedarDecisionStore.getState().loadDecisions(userId, targetScopeId);
           }
 
-          sovereignBus.emit('perspective:transition_completed' as any, {
+          eventBus.emit('perspective:transition_completed' as any, {
             activePerspective: targetPerspective,
           });
         } catch (error) {
@@ -184,11 +192,12 @@ export const usePerspectiveStore = create<PerspectiveStoreState>()(
           isTransitioning: false,
         });
       },
-
     }),
     {
       name: 'gurudevi-perspective-storage',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      // The shape on the device today. Bump it, with a `migrate`, when the persisted shape changes.
+      version: 0,
+      storage: createJSONStorage(() => persistStorage),
       partialize: (state) => ({
         activePerspective: state.activePerspective,
         availablePerspectives: state.availablePerspectives,

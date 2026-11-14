@@ -1,7 +1,9 @@
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import { createDecisionLog, fetchDecisionLogs } from '@repo/self/api/selfFeatureRepository';
-import type { DecisionLog } from '@repo/self/types';
+import { createDecisionLog, fetchDecisionLogs } from '@repo/self/data/selfFeature.data';
+import type { DecisionLog } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const DECISION_journal_CACHE_KEY = 'gurudevi-decision-journal-cache';
@@ -13,8 +15,9 @@ const DECISION_journal_CACHE_KEY = 'gurudevi-decision-journal-cache';
  * - Syncs with Supabase in background.
  */
 export function useDecisionJournal(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
-  const { viewDate, isPastView } = useTemporalStore();
+  const { isOnline } = useOfflineStatus();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   const [decisions, setDecisions] = useState<DecisionLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

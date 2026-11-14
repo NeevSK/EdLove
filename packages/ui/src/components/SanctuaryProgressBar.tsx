@@ -1,5 +1,6 @@
 import { EaseView } from '@repo/ui/components/EaseView';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import { cn } from '@repo/ui/utils/classNames';
 import { StyleSheet, type ViewStyle } from 'react-native';
 
@@ -51,7 +52,7 @@ export function SanctuaryProgressBar({
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: isComplete ? '#10B981' : '#F6BF8C',
+              backgroundColor: isComplete ? tokens.colors.success : tokens.colors.primary,
               borderRadius: barHeight / 2,
             },
           ]}

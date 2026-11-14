@@ -1,4 +1,6 @@
 import {
+  createSelfAccessContext,
+  type CreateSelfAccessContextOptions,
   getFeatureAccessStatus,
   resolveAccessibleFeatures,
   type UserAccessContext,
@@ -146,3 +148,7 @@ export function resolveSelfFeatureManifest(
     runnable: all.filter((feature) => feature.availability === 'available'),
   };
 }
+
+export { createSelfAccessContext, type CreateSelfAccessContextOptions };
+
+export { SELF_VIEW_ROLES, type SelfViewRole } from '@repo/self/screens/self/roleResolution';

@@ -5,7 +5,9 @@ permit(
   action,
   resource
 ) when {
+  principal has capacity &&
   principal.capacity == "member" &&
+  resource has type &&
   resource.type == "User" &&
   resource.id == principal.id
 };
@@ -19,6 +21,7 @@ permit(
 ) when {
   resource is User &&
   resource.id == principal.id &&
+  principal has capacity &&
   principal.capacity != "wanderer"
 };
 

@@ -1,25 +1,25 @@
 /* biome-ignore-all lint/suspicious/noExplicitAny: test mock */
-export const createSupabaseMock = () => {
+export const createSupabaseMock = (): Record<string, unknown> => {
   const mockResponse = { data: null, error: null };
   const mockPromise = Promise.resolve(mockResponse);
 
   const chain: any = {
-    select: jest.fn(() => chain),
-    eq: jest.fn(() => chain),
-    single: jest.fn(() => mockPromise),
-    insert: jest.fn(() => mockPromise),
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    single: vi.fn(() => mockPromise),
+    insert: vi.fn(() => mockPromise),
   };
 
   return {
     auth: {
-      getSession: jest.fn(() => Promise.resolve({ data: { session: null }, error: null })),
-      onAuthStateChange: jest.fn(() => ({
-        data: { subscription: { unsubscribe: jest.fn() } },
+      getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
+      onAuthStateChange: vi.fn(() => ({
+        data: { subscription: { unsubscribe: vi.fn() } },
       })),
-      signInWithOtp: jest.fn(),
-      verifyOtp: jest.fn(),
-      signOut: jest.fn(),
+      signInWithOtp: vi.fn(),
+      verifyOtp: vi.fn(),
+      signOut: vi.fn(),
     },
-    from: jest.fn(() => chain),
+    from: vi.fn(() => chain),
   };
 };

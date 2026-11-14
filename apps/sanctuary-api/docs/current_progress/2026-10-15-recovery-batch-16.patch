@@ -1,0 +1,417 @@
+diff --git a/apps/sanctuary-api/src/__tests__/setup.ts b/apps/sanctuary-api/src/__tests__/setup.ts
+index 29f7cb39d..66aa02df1 100644
+--- a/apps/sanctuary-api/src/__tests__/setup.ts
++++ b/apps/sanctuary-api/src/__tests__/setup.ts
+@@ -4,11 +4,39 @@ import { vi } from 'vitest';
+ import { coreRuntime } from '../../../../packages/core/src/logic/runtimeRegistry';
+ 
+ let mockZenStackDbAvailable = true;
++const mockAuthIdentities = new Map<string, string | null>();
++const legacyAuthFixtureAccounts: Readonly<Record<string, string>> = {
++  'admin-user-1': '123e4567-e89b-12d3-a456-426614174000',
++  'teacher-user-1': '123e4567-e89b-12d3-a456-426614174000',
++  'student-user-1': '123e4567-e89b-12d3-a456-426614174002',
++};
++let mockAuthIdentityError: Error | null = null;
++let mockAuthIdentityLookup: { query: string; parameters: readonly unknown[] } | null = null;
++
++export function setMockAuthIdentity(subject: string, accountId: string | null) {
++  mockAuthIdentities.set(subject, accountId);
++}
++
++export function setMockAuthIdentityError(error: Error | null) {
++  mockAuthIdentityError = error;
++}
++
++export function resetMockAuthIdentities() {
++  mockAuthIdentities.clear();
++  mockAuthIdentityError = null;
++  mockAuthIdentityLookup = null;
++}
++
++export function getMockAuthIdentityLookup() {
++  return mockAuthIdentityLookup;
++}
+ let mockActiveBond: any = null;
+ let mockUserData: any = null;
+ let mockUsers: any[] = [];
+ let mockDailyContentRows: any[] = [];
+ let mockLastQueryRawArgs: unknown[] | null = null;
++let mockLastExecuteRawArgs: unknown[] | null = null;
++let mockRawQueryRowsQueue: unknown[][] = [];
+ let mockQueryRowsQueue: any[][] = [];
+ let mockLibraryCollectionRead: any = null;
+ let mockLibraryCollections: any[] = [];
+@@ -31,8 +59,18 @@ let mockWhisperedMoments: any[] = [];
+ 
+ // Classroom note mock
+ let mockClassroomNotes: any[] = [];
++let mockClassroomNoteRead: Record<string, unknown> | null | undefined;
++export function setMockClassroomNoteRead(row: Record<string, unknown> | null | undefined) {
++  mockClassroomNoteRead = row;
++}
+ let mockClassrooms: any[] = [];
+ let mockClassroomStudents: any[] = [];
++const mockEducationalRows = new Map<string, Record<string, unknown>>();
++let mockAssignmentSubmissionRead: Record<string, unknown> | null = null;
++
++export function setMockAssignmentSubmissionRead(row: Record<string, unknown> | null) {
++  mockAssignmentSubmissionRead = row;
++}
+ 
+ export function setMockZenStackDbAvailable(available: boolean) {
+   mockZenStackDbAvailable = available;
+@@ -69,6 +107,26 @@ export function getMockLastQueryRawArgs(): unknown[] | null {
+   return mockLastQueryRawArgs;
+ }
+ 
++export function setMockRawQueryRowsQueue(rows: unknown[][]) {
++  mockRawQueryRowsQueue = [...rows];
++  mockLastQueryRawArgs = null;
++  mockLastExecuteRawArgs = null;
++}
++
++export function getMockLastExecuteRawArgs(): unknown[] | null {
++  return mockLastExecuteRawArgs;
++}
++
++async function queryMockRawRows(...args: unknown[]): Promise<unknown[]> {
++  mockLastQueryRawArgs = args;
++  return mockRawQueryRowsQueue.shift() ?? mockDailyContentRows;
++}
++
++async function executeMockRaw(...args: unknown[]): Promise<number> {
++  mockLastExecuteRawArgs = args;
++  return 1;
++}
++
+ export function setMockQueryRowsQueue(rows: any[][]) {
+   mockQueryRowsQueue = [...rows];
+ }
+@@ -137,6 +195,7 @@ export function setMockClassroomRelationships({
+ }) {
+   mockClassrooms = classrooms;
+   mockClassroomStudents = students ?? [];
++  mockEducationalRows.clear();
+ }
+ 
+ export function getMockLibraryCollectionFindManyArgs() {
+@@ -149,6 +208,19 @@ function createMockDelegate(name: string): any {
+     {
+       get(_target, prop) {
+         if (prop === 'findUnique') {
++          if (name === 'classroomStudent')
++            return async (args: { where: { classroom_id_student_id: { classroom_id: string; student_id: string } } }) => {
++              const key = args.where.classroom_id_student_id;
++              return mockClassroomStudents.find((row) =>
++                row.classroom_id === key.classroom_id && row.student_id === key.student_id,
++              ) ?? null;
++            };
++          if (name === 'classroom')
++            return async (args: { where: { id: string } }) =>
++              mockClassrooms.find((row) => row.id === args.where.id) ?? null;
++          if (name === 'material')
++            return async (args: { where: { id: string } }) =>
++              mockEducationalRows.get(`material:${args.where.id}`) ?? null;
+           if (name === 'sanctuaryManifesto') {
+             return async () => ({
+               id: 'd23e4567-e89b-12d3-a456-426614174000',
+@@ -156,20 +228,23 @@ function createMockDelegate(name: string): any {
+             });
+           }
+           if (name === 'communityCommentUpvote') return async () => null;
+-          if (name === 'assignmentSubmission') return async () => null;
++          if (name === 'assignmentSubmission') return async () => mockAssignmentSubmissionRead;
+           if (name === 'classroomNote')
+-            return async (args: any = {}) => ({
++            return async (args: any = {}) => mockClassroomNoteRead !== undefined ? mockClassroomNoteRead : ({
+               id: args?.where?.id ?? 'mock-note-id',
+               classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+               school_id: 'school-123',
+               author_id: '123e4567-e89b-12d3-a456-426614174000',
++                classroom: { school_id: 'school-123' },
+             });
+           if (name === 'assignment')
+-            return async () => ({
+-              id: '923e4567-e89b-12d3-a456-426614174000',
+-              classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+-              school_id: 'school-123',
+-            });
++            return async (args: { where: { id: string } }) => {
++              const row = mockEducationalRows.get(`assignment:${args.where.id}`) ?? {
++                id: '923e4567-e89b-12d3-a456-426614174000',
++                classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++              };
++              return { ...row, classroom: mockClassrooms.find((item) => item.id === row.classroom_id) };
++            };
+           if (name === 'principalNote')
+             return async (args: any = {}) => ({
+               id: args?.where?.id ?? 'principal-note-mock-id',
+@@ -686,6 +761,39 @@ function createMockDelegate(name: string): any {
+               author: { full_name: 'Test Author' },
+             });
+           }
++          if (
++            [
++              'classroom',
++              'classroomStudent',
++              'material',
++              'assignment',
++              'assignmentSubmission',
++            ].includes(name)
++          ) {
++            return async (args: any = {}) => {
++              const id = args.where?.id ?? args.data?.id ?? crypto.randomUUID();
++              const data = Object.fromEntries(
++                Object.entries(args.data ?? {}).filter(([, value]) => value !== undefined),
++              );
++              const row = {
++                id,
++                created_at: new Date(),
++                updated_at: new Date(),
++                ...(name === 'classroom' ? { academic_year: '2026' } : {}),
++                ...(name === 'classroomStudent' ? { enrolled_at: new Date() } : {}),
++                ...(name === 'assignmentSubmission'
++                  ? {
++                      submitted_at: new Date(),
++                      classroom_id: '123e4567-e89b-12d3-a456-426614174001',
++                    }
++                  : {}),
++                ...mockEducationalRows.get(`${name}:${id}`),
++                ...data,
++              };
++              mockEducationalRows.set(`${name}:${id}`, row);
++              return row;
++            };
++          }
+           return async (args: any = {}) => ({
+             id: `${name}-mock-id`,
+             ...(args?.data ?? {}),
+@@ -930,7 +1038,10 @@ function createMockDelegate(name: string): any {
+         if (prop === 'findFirst') {
+           if (name === 'bond') {
+             return async (args: any = {}) => {
+-              if (args?.where?.entity_type === 'PERSONAL_CLASSROOM' && mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM')
++              if (
++                args?.where?.entity_type === 'PERSONAL_CLASSROOM' &&
++                mockActiveBond?.entity_type !== 'PERSONAL_CLASSROOM'
++              )
+                 return null;
+               if (args?.where?.entity_type === 'SCHOOL' && mockActiveBond?.entity_type !== 'SCHOOL')
+                 return null;
+@@ -990,11 +1101,9 @@ function createMockDelegate(name: string): any {
+           return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+         }
+         if (prop === '$queryRaw') {
+-          return async (...args: unknown[]) => {
+-            mockLastQueryRawArgs = args;
+-            return mockDailyContentRows;
+-          };
++          return queryMockRawRows;
+         }
++        if (prop === '$executeRaw') return executeMockRaw;
+ 
+         return createMockDelegate(`${name}.${String(prop)}`);
+       },
+@@ -1010,11 +1119,9 @@ const mockDb = new Proxy(
+         return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+       }
+       if (prop === '$queryRaw') {
+-        return async (...args: unknown[]) => {
+-          mockLastQueryRawArgs = args;
+-          return mockDailyContentRows;
+-        };
++        return queryMockRawRows;
+       }
++      if (prop === '$executeRaw') return executeMockRaw;
+       if (prop === '$queryRawUnsafe') {
+         return async () => [];
+       }
+@@ -1024,7 +1131,19 @@ const mockDb = new Proxy(
+ );
+ 
+ vi.mock('@repo/database/client', () => ({
+-  queryDatabaseRows: async <T>() => (mockQueryRowsQueue.shift() ?? []) as T[],
++  queryDatabaseRows: async <T>(query: string, parameters: readonly unknown[] = []) => {
++    if (query.includes('public.auth_identities')) {
++      mockAuthIdentityLookup = { query, parameters };
++      if (mockAuthIdentityError) throw mockAuthIdentityError;
++      const subject = String(parameters[0]);
++      // Existing UUID fixtures model migrated mappings with identical IDs.
++      const accountId = mockAuthIdentities.has(subject)
++        ? mockAuthIdentities.get(subject)
++        : legacyAuthFixtureAccounts[subject] ?? subject;
++      return (accountId ? [{ user_id: accountId }] : []) as T[];
++    }
++    return (mockQueryRowsQueue.shift() ?? []) as T[];
++  },
+   canUseZenStackDb: (dbUrl?: string) => {
+     if (dbUrl && dbUrl.includes('offline')) return true;
+     return mockZenStackDbAvailable;
+diff --git a/apps/sanctuary-api/src/core/app.ts b/apps/sanctuary-api/src/core/app.ts
+index ae4a5b669..2d382687a 100644
+--- a/apps/sanctuary-api/src/core/app.ts
++++ b/apps/sanctuary-api/src/core/app.ts
+@@ -33,6 +33,7 @@ import { evaluateWithRust, RustEvaluatorUnavailableError } from '../authorizatio
+ import { verifySupabaseJwt } from '../jwt';
+ import { getCurrentTraceId, otelMiddleware } from '../telemetry/otel';
+ import { activeScopeReader, resolvePersistedActiveBond } from './activeScope';
++import { resolveAuthenticatedAccount } from './authenticatedAccount';
+ import { correlationIdMiddleware, extractCorrelationIdMiddleware } from './middleware/correlation';
+ import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
+ import { type ORPCContext } from './orpc';
+@@ -279,6 +280,7 @@ async function sha256Hex(value: string): Promise<string> {
+ }
+ 
+ // Mount core security and transport optimization middlewares
++app.use('*', requestId());
+ app.use('*', secureHeaders());
+ app.use('*', compress());
+ app.use('*', bodyLimit({ maxSize: 5 * 1024 * 1024 })); // 5MB limit
+@@ -292,9 +294,7 @@ app.use(
+       if (origin.startsWith('http://localhost') || origin.startsWith('https://localhost')) {
+         return origin;
+       }
+-      const allowedOrigins = [
+-        'https://sanctuary.gurudevi.app',
+-      ];
++      const allowedOrigins = ['https://sanctuary.gurudevi.app'];
+       return allowedOrigins.includes(origin) ? origin : null;
+     },
+     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+@@ -381,9 +381,6 @@ app.use('/api/*', rateLimitHandler);
+ // Logger (structured request/response logging)
+ app.use('*', logger());
+ 
+-// Request ID (built-in — available via c.get('requestId'))
+-app.use('*', requestId());
+-
+ // Correlation ID propagation (W3C traceparent/tracestate)
+ app.use('/api/*', extractCorrelationIdMiddleware());
+ 
+@@ -419,27 +416,30 @@ if (process.env.SENTRY_DSN) {
+ app.route('/', healthRoutes);
+ 
+ // Dev Diagnostics Pipeline: Ingests aggregated mobile error reports in development
+-app.post('/dev/diagnostics', async (c) => {
+-  const body = await c.req.json().catch(() => null);
+-  if (body) {
+-    loggerInstance.warn({ devCrashReport: body }, '🚨 [MOBILE DEV CRASH REPORT INGESTED]');
+-    try {
+-      const fs = await import('node:fs/promises');
+-      await fs.writeFile(
+-        'c:/x/apps/gurudevi-mobile/scratch/latest_mobile_errors.json',
+-        JSON.stringify(body, null, 2),
+-        'utf-8',
+-      );
+-    } catch (fsErr) {
+-      console.warn('Could not write dev diagnostics scratch file:', fsErr);
++if (process.env.NODE_ENV === 'development') {
++  app.post('/dev/diagnostics', async (c) => {
++    const body = await c.req.json().catch(() => null);
++    if (body) {
++      loggerInstance.warn({ devCrashReport: body }, '🚨 [MOBILE DEV CRASH REPORT INGESTED]');
++      try {
++        const fs = await import('node:fs/promises');
++        await fs.writeFile(
++          'c:/x/apps/gurudevi-mobile/scratch/latest_mobile_errors.json',
++          JSON.stringify(body, null, 2),
++          'utf-8',
++        );
++      } catch (fsErr) {
++        console.warn('Could not write dev diagnostics scratch file:', fsErr);
++      }
+     }
+-  }
+-  return c.json({ ok: true, received: Boolean(body) });
+-});
++    return c.json({ ok: true, received: Boolean(body) });
++  });
++}
+ 
+ app.use('/api/*', async (c, next) => {
+   // 1. Resolve User from Header using Authoritative Asymmetric Cryptographic JWT Verification
+   const authHeader = c.req.header('Authorization');
++  const dbUrl = (c.env as any)?.DATABASE_URL || getEnv('DATABASE_URL');
+   let user = { id: 'anonymous' };
+ 
+   if (authHeader) {
+@@ -462,11 +462,10 @@ app.use('/api/*', async (c, next) => {
+       });
+     }
+ 
+-    user = { id: verifiedPayload.sub };
++    user = await resolveAuthenticatedAccount(verifiedPayload.sub, dbUrl);
+   }
+ 
+   // 2. Inject ZenStack Enhanced DB
+-  const dbUrl = (c.env as any)?.DATABASE_URL || getEnv('DATABASE_URL');
+   let db: ReturnType<typeof createZenStackDb> | null = null;
+   if (canUseZenStackDb(dbUrl)) {
+     db = createZenStackDb(user, dbUrl);
+diff --git a/apps/sanctuary-api/src/core/router.ts b/apps/sanctuary-api/src/core/router.ts
+index 64a6d7287..a1c524eb8 100644
+--- a/apps/sanctuary-api/src/core/router.ts
++++ b/apps/sanctuary-api/src/core/router.ts
+@@ -5,6 +5,7 @@ import { endTime, startTime } from 'hono/timing';
+ import { verifySupabaseJwt } from '../jwt';
+ import { getCurrentTraceId } from '../telemetry/otel';
+ import { activeScopeReader, resolvePersistedActiveBond } from './activeScope';
++import { resolveAuthenticatedAccount } from './authenticatedAccount';
+ import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
+ import { type ORPCContext, o } from './orpc';
+ 
+@@ -42,17 +43,17 @@ async function resolveClassroomIds(
+ // Context Builder for oRPC from incoming HTTP headers/request
+ export async function parseORPCContext(req: Request, env: any, requestId: string) {
+   const authHeader = req.headers.get('Authorization');
++  const dbUrl = env?.DATABASE_URL || process.env.DATABASE_URL;
+   let user = { id: 'anonymous' };
+ 
+   if (authHeader?.startsWith('Bearer ')) {
+     const token = authHeader.replace('Bearer ', '');
+     const verifiedPayload = await verifySupabaseJwt(token, env);
+     if (verifiedPayload) {
+-      user = { id: verifiedPayload.sub };
++      user = await resolveAuthenticatedAccount(verifiedPayload.sub, dbUrl);
+     }
+   }
+ 
+-  const dbUrl = env?.DATABASE_URL || process.env.DATABASE_URL;
+   const db = canUseZenStackDb(dbUrl) ? createZenStackDb(user, dbUrl) : undefined;
+ 
+   if (user.id !== 'anonymous' && !db) {
+diff --git a/packages/core/src/__tests__/scenarios/swr-cache-poisoning-defense.test.ts b/packages/core/src/__tests__/scenarios/swr-cache-poisoning-defense.test.ts
+index 0be54478a..6e5fc253f 100644
+--- a/packages/core/src/__tests__/scenarios/swr-cache-poisoning-defense.test.ts
++++ b/packages/core/src/__tests__/scenarios/swr-cache-poisoning-defense.test.ts
+@@ -1,10 +1,15 @@
+ import { describe, expect, it, vi, beforeEach } from 'vitest';
+-import { withResilience, invalidateResilience } from '@repo/core/offline/resilience';
++import { withResilience, invalidateResilience, useOfflineStatus } from '@repo/core/offline/resilience';
++import { useOfflineStatus as canonicalOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+ import { storage } from '@repo/core/lib/storage';
+ 
+ describe('Disaster Suite 3: SWR Resilience Cache Defense Against 500 / 503 Poisoning', () => {
+   const cacheKey = 'swr_defense_test_key';
+ 
++  it('exports the existing offline hook without a second implementation', () => {
++    expect(useOfflineStatus).toBe(canonicalOfflineStatus);
++  });
++
+   beforeEach(() => {
+     invalidateResilience(cacheKey);
+     vi.restoreAllMocks();
+diff --git a/packages/core/src/offline/resilience.ts b/packages/core/src/offline/resilience.ts
+index 18cca4c7e..b4550a798 100644
+--- a/packages/core/src/offline/resilience.ts
++++ b/packages/core/src/offline/resilience.ts
+@@ -1,6 +1,8 @@
+ import { storage } from '@repo/core/lib/storage';
+ import { handleAPIError } from '@repo/core/logic/apiInterceptor';
+ 
++export { useOfflineStatus, type OfflineStatus } from './useOfflineStatus';
++
+ /**
+  * Resilience Configuration
+  */

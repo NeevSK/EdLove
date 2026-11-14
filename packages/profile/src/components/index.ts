@@ -1,18 +1,11 @@
 export { default as AchievementGallery } from '@repo/profile/components/AchievementGallery';
-export { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
 export { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
-export { ContactLinktree } from '@repo/profile/components/ContactLinktree';
 export { default as ControlScroll } from '@repo/profile/components/ControlScroll';
 export * from '@repo/profile/components/EditableItem';
-export { default as EditProfileModal } from '@repo/profile/components/EditProfileModal';
-export { GiveThuthimalModal } from '@repo/profile/components/GiveThuthimalModal';
-export { InlineSocialLinkEditor } from '@repo/profile/components/InlineSocialLinkEditor';
-export { default as LivingJourneyPanel } from '@repo/profile/components/LivingJourneyPanel';
 export { default as NegentropyHubModal } from '@repo/profile/components/NegentropyHubModal';
 export { NotificationSettingsPanel } from '@repo/profile/components/NotificationSettingsPanel';
 export { default as ProfileListItem } from '@repo/profile/components/ProfileListItem';
 export { default as ProfileSkeleton } from '@repo/profile/components/ProfileSkeleton';
-export { SocialSanctuary } from '@repo/profile/components/SocialSanctuary';
 export { default as SupportSection } from '@repo/profile/components/SupportSection';
 export { default as ThuthimalBadge } from '@repo/profile/components/ThuthimalBadge';
 export { default as UserStatsCard } from '@repo/profile/components/UserStatsCard';

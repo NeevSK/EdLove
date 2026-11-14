@@ -286,7 +286,8 @@ describe('Integration Contract: Self Handler', () => {
             outcome: 'better',
             reflection: 'It went well',
           },
-        });
+        },
+      });
 
       expect(updated.post_outcome).toBe('better');
       expect(updated.follow_up).toMatchObject({
@@ -329,10 +330,9 @@ describe('Integration Contract: Self Handler', () => {
 describe('Integration Contract: Presence Handler', () => {
   const TEST_USER_ID = '123e4567-e89b-12d3-a456-426614174000';
   const HEADERS = { Authorization: `Bearer ${TEST_USER_ID}` };
-  let client: ReturnType<typeof require('../apps/sanctuary-api/src/__tests__/test-doubles').createTestORPCClient>;
+  let client: ReturnType<typeof createTestORPCClient>;
 
   beforeAll(() => {
-    const { resetTestDatabase, createTestORPCClient } = require('../apps/sanctuary-api/src/__tests__/test-doubles');
     resetTestDatabase(b => b
       .withZenStackDb(true)
       .withActiveBond({ capacity: 'teacher' })

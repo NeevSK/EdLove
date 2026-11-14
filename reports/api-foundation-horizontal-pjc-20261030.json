@@ -1,0 +1,286 @@
+{
+  "errors": [],
+  "gaps": [
+    "binding:api.canonical_model: binding implemented",
+    "binding:api.composition_gate: binding implemented",
+    "binding:api.composition_gate_test: binding implemented",
+    "binding:api.contract_conversion: binding implemented",
+    "binding:api.contract_inspector: binding implemented",
+    "binding:api.contract_inspector_test: binding implemented",
+    "binding:api.contract_inventory: binding implemented",
+    "binding:api.contract_inventory_test: binding implemented",
+    "binding:api.contract_test: binding implemented",
+    "binding:api.guide: binding implemented",
+    "journey:api.compose: open question: Legacy handler-facing type erasure remains until domain migration.",
+    "journey:api.compose: open question: Multiple-success variants do not dynamically select distinct HTTP statuses.",
+    "journey:api.compose: open question: This compiler does not establish deployed behavior or database authorization.",
+    "scenario:api.architecture_reject: G1 evidence unverifiable",
+    "scenario:api.compose_invalid: G1 evidence unverifiable",
+    "scenario:api.compose_invalid: no linked requirement",
+    "scenario:api.compose_valid: G1 evidence unverifiable",
+    "scenario:api.compose_valid: no linked requirement",
+    "scenario:api.inventory_inspect: G1 evidence unverifiable",
+    "scenario:api.inventory_inspect: no linked requirement"
+  ],
+  "bindings": [
+    {
+      "id": "binding:api.contract_inventory",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_inspector",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_inventory_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_inspector_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_conversion",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.contract_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.guide",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.canonical_model",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.composition_gate",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.composition_gate_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    }
+  ],
+  "evidence": [
+    {
+      "scenario": "scenario:api.architecture_reject",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.architecture_reject_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:horizontal-foundation-20261030",
+              "environment": "Windows Node 24.22.2, node:test, installed TypeScript 7.1.0-beta public sync and AST APIs",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic source maps instead of a running application, database or provider"
+              ],
+              "limitations": "Eight fixture cases exercise malformed source, wrong bases, alternate transports, legacy declaration/converter shapes, boundary type escapes, aliases, disconnected RPC handlers, required mounts and CLI errors. Actual-tree G0 composition exits 1 with 142 findings; full API source quality also fails error taxonomy and authorization parity. Does not prove runtime transport, domain ownership, authorization, native-only cutover, real channel operation or deployed behavior. Mutable working-tree evidence; no tier promotion claimed.",
+              "reference": "reports/run-api_composition_foundation_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.compose_valid",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.compose_valid_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic route declarations and procedure handlers",
+                "In-process SDK HTTP transport"
+              ],
+              "limitations": "46 converter assertions within the 1162-assertion full API run; six existing skips. Covers schema identity/refinements, errors, native contracts, stable instances, source replacement, router own properties and real SDK 201/202/204 responses. Does not prove deployed feature behavior, database authorization or exact legacy handler inference. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-eager_contracts_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.inventory_inspect",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.inventory_inspect_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:contract-inventory-20261030",
+              "environment": "Windows Node, node:test, installed oRPC 2.0.0-beta.46 and Zod 4.6.7",
+              "result": "passed",
+              "substitutions": [
+                "Isolated output fixtures; application procedures are not executed"
+              ],
+              "limitations": "Three CLI scenarios inspect the actual local manually registered sources and test deterministic JSON, modified/ignored report preservation and invalid flags. Inspector fixtures separately record five assertions within a 14-assertion core report. Does not prove exhaustive runtime inventory, live authorization/persistence, or sandboxed output confinement. Uncommitted working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-api_contract_inventory_cli_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.compose_invalid",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "missing"
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.compose_invalid_g1_20261030",
+              "revision": "a550af520ee6d3bad004959acfbc9c3850a1c5bb+working-tree:eager-contracts-20261030",
+              "environment": "Windows Node, Vitest 5.0.5, Zod 4.6.7, oRPC 2.0.0-beta.46",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic malformed route declarations"
+              ],
+              "limitations": "Included in 46 converter assertions: malformed roots/members, missing/invalid schemas, invalid response keys/method/path/channel, obsolete error status fields and unsupported add_on scope reject during composition. Does not prove rejection of every possible malformed graph, native authority metadata or production deployment. Mutable working-tree evidence; no scenario tier promotion claimed.",
+              "reference": "reports/run-apps_sanctuary-api-eager_contracts_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    }
+  ],
+  "disclaimer": "Presence does not establish correct behavior or verified evidence.",
+  "scope": {
+    "journey": "journey:api.compose"
+  }
+}

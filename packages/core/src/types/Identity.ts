@@ -1,47 +1,21 @@
-export type Capacity =
-  | 'admin'
-  | 'founder'
-  | 'developer'
-  | 'teacher'
-  | 'student'
-  | 'principal'
-  | 'assistantPrincipal'
-  | 'gradeHead'
-  | 'sectionHead'
-  | 'parent'
-  | 'guardian'
-  | 'librarian'
-  | 'nurse'
-  | 'member';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 
-/**
- * Bond: A relationship between a User and an Entity.
- * The core of ReBAC.
- */
-export interface Bond {
-  id: string;
-  user_id: string;
-  entity_id: string; // Could be a School ID, Classroom ID, or 'GLOBAL'
-  entity_type:
-    | 'PLATFORM'
-    | 'SCHOOL'
-    | 'CLASSROOM'
-    | 'COMMUNITY'
-    | 'GROUP'
-    | 'PERSONAL'
-    | 'PERSONAL_CLASSROOM';
-  capacity: Capacity;
-  status: 'active' | 'archived' | 'pending';
-  valid_from?: string;
-  valid_until?: string;
-  metadata?: Record<string, unknown>;
+export type CitizenshipTier = 'FIRST_CLASS' | 'SECOND_CLASS' | 'THIRD_CLASS';
+
+/** Citizenship is stored on each bond. No bond, or an unset value, is the lowest class. */
+export function resolveBondCitizenship(
+  bond: Pick<Bond, 'citizenship'> | null | undefined,
+): CitizenshipTier {
+  return bond?.citizenship ?? 'THIRD_CLASS';
 }
 
-/**
- * Perspective: The lens through which a User is currently interacting with the platform.
- * Represents the "Authority in Reality".
- */
-export interface Perspective {
-  activeBond?: Bond;
-  availableBonds?: Bond[];
+/** Canonical identity projection used by the auth and relationship adapters. */
+export interface Identity {
+  id: string;
+  email?: string | null;
+  display_name?: string | null;
+  onboarding_completed?: boolean;
+  schoolId?: string | null;
+  activeBond?: Bond | null;
+  availableBonds: Bond[];
 }

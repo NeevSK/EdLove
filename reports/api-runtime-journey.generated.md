@@ -1,0 +1,569 @@
+# Product and Journey Catalog
+
+- **feature**
+  - **id:** feature:api.foundation
+  - **title:** Authorized API and agent execution
+- **intent**
+  - **id:** intent:api.operate\_foundation
+  - **title:** Operate a bounded API runtime before admitting business capabilities
+  - **actor:** platform engineer or implementing agent
+  - **outcome:** Start, observe, cancel and drain one canonical runtime without leaking data or confusing host health with product readiness.
+- **sharedWith**
+  - (none)
+- **journey**
+  - **id:** journey:api.operate\_runtime
+  - **title:** Configure, start and drain the canonical Node host
+  - **situation:** The reset API has an empty native contract. Horizontal engineering is authorized; business admission remains deferred.
+  - **outcome:** Valid configuration starts the bounded Node HTTP/1 host; failures stay safe, cancellation propagates and shutdown completes or force-closes by its deadline.
+  - **planning**
+    - **maturity:** development
+    - **implementation:** implemented
+    - **verification:** partial
+    - **priority:** P0
+  - **context:** other
+  - **preconditions**
+    - Use the repository toolchain and installed SDK cohort. No business procedures or external credentials are required.
+  - **entry:** step:api.runtime\_configure
+  - **development**
+    - **mode:** brownfield
+    - **existingBehavior**
+      - Empty native contract and Hono host existed after the authorized hard reset; Node and container lifecycle paths differed.
+    - **invariants**
+      - One native /api/v1 first-party transport; no business admission.
+      - Use the SDK procedure signal, never a stale duplicate context signal.
+      - Health and file presence do not prove identity, policy, persistence or production readiness.
+      - No secret-bearing exceptions in client failures or application transport diagnostics.
+    - **openQuestions**
+      - Actual edge/proxy timeout, shutdown and deployment behavior still require deployment evidence.
+      - Identity, scoped persistence, Cedar and distributed operation/effect controls are subsequent horizontal checkpoints.
+    - **integrationPoints**
+      - apps/sanctuary-api/src/core/app.ts
+      - apps/sanctuary-api/src/node-server.ts
+      - apps/sanctuary-api/Dockerfile
+      - render.yaml
+      - scripts/audit-api-composition.mjs
+  - **steps**
+    -
+      - **id:** step:api.runtime\_configure
+      - **title:** Validate startup configuration
+      - **interaction:** Provide bounded environment values; invalid configuration fails before listening.
+      - **terminal:** false
+      - **links**
+        - binding:api.runtime\_config
+    -
+      - **id:** step:api.runtime\_serve
+      - **title:** Observe and exercise the foundation
+      - **interaction:** Inspect foundation-only health and correlation; use synthetic test procedures to exercise safe failure and cancellation.
+      - **terminal:** false
+      - **links**
+        - binding:api.runtime\_host
+    -
+      - **id:** step:api.runtime\_drained
+      - **title:** Finish or terminate in-flight work
+      - **interaction:** Begin drain; readiness and new RPC fail closed, then existing work finishes or sockets are closed at the deadline.
+      - **terminal:** true
+      - **links**
+        - binding:api.runtime\_node
+  - **transitions**
+    -
+      - **id:** transition:api.runtime\_start
+      - **from:** step:api.runtime\_configure
+      - **to:** step:api.runtime\_serve
+      - **action:** Start with valid config; reject invalid budgets or occupied ports.
+      - **feedback:** A listening host exposes foundation-only readiness; startup failure never becomes a ready result.
+      - **links**
+        - binding:api.runtime\_config
+        - binding:api.runtime\_node
+    -
+      - **id:** transition:api.runtime\_stop
+      - **from:** step:api.runtime\_serve
+      - **to:** step:api.runtime\_drained
+      - **action:** Invoke the runtime shutdown path while requests are active.
+      - **feedback:** New RPC receives native 503; existing requests finish or are terminated and forced shutdown is reported.
+      - **links**
+        - binding:api.runtime\_host
+        - binding:api.runtime\_node
+  - **requirements**
+    -
+      - **id:** requirement:api.runtime\_safety
+      - **title:** Bounded and safe horizontal host
+      - **statement:** Validate budgets, preserve native errors, generate correlation, contain transport stream errors, propagate cancellation and expose truthful drain readiness.
+      - **classification:** quality
+      - **origin:** user
+      - **links**
+        - binding:api.runtime\_host
+        - binding:api.runtime\_node
+        - binding:api.runtime\_config
+    -
+      - **id:** requirement:api.runtime\_admission
+      - **title:** Keep business admission closed
+      - **statement:** Retired transports, unadmitted source modules and business procedure declarations fail the source gate until the next explicit engineering review. No identity or policy implementation is claimed by this runtime checkpoint.
+      - **classification:** constraint
+      - **origin:** user
+      - **links**
+        - binding:api.runtime\_gate
+  - **bindings**
+    -
+      - **id:** binding:api.runtime\_host
+      - **category:** api
+      - **reference:** apps/sanctuary-api/src/core/app.ts
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_node
+      - **category:** api
+      - **reference:** apps/sanctuary-api/src/node-server.ts
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_config
+      - **category:** architecture
+      - **reference:** apps/sanctuary-api/src/config.ts
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_container
+      - **category:** architecture
+      - **reference:** apps/sanctuary-api/Dockerfile
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_render
+      - **category:** architecture
+      - **reference:** render.yaml
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_gate
+      - **category:** tool
+      - **reference:** scripts/audit-api-composition.mjs
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_host\_test
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/foundation.test.ts
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_config\_test
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/config.test.ts
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_socket\_test
+      - **category:** test
+      - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/node-server.test.ts
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    -
+      - **id:** binding:api.runtime\_guide
+      - **category:** documentation
+      - **reference:** apps/sanctuary-api/docs/architecture/api-foundations/runtime-foundation.md
+      - **status:** implemented
+      - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+  - **impacts**
+    -
+      - **id:** impact:api.runtime\_container
+      - **title:** Production runtime is Node
+      - **statement:** Docker now runs the built Node entry used by lifecycle tests; Render probes foundation readiness. External services were not deployed or changed.
+      - **origin:** source
+      - **links**
+        - binding:api.runtime\_container
+        - binding:api.runtime\_render
+  - **observations**
+    -
+      - **id:** observation:api.runtime\_adapter
+      - **title:** Adapter response errors escape the Hono handler
+      - **statement:** Installed Node adapter response conversion/stream error paths can expose an exception; the Node boundary validates headers, sanitizes source errors and terminates failed HTTP/1 streams.
+      - **origin:** source
+      - **links**
+        - binding:api.runtime\_node
+  - **platformDifferences**
+    -
+      - **id:** platform:api.runtime\_node
+      - **title:** Node evidence does not certify Bun
+      - **statement:** Node HTTP/1 loopback is exercised. Bun remains local-only and HTTP/2, real POSIX signals and deployment proxies are not verified.
+      - **origin:** source
+      - **links**
+        - binding:api.runtime\_guide
+      - **platform:** other
+  - **scenarios**
+    -
+      - **id:** scenario:api.runtime\_host
+      - **title:** Host/config boundary assertions
+      - **completion:** checkpoint
+      - **checkpointReason:** Host fixtures verify startup and safe response contracts; lifecycle is a separate stateful scenario.
+      - **transitions**
+        - transition:api.runtime\_start
+      - **expected:** Native fixture errors, invalid budgets, correlation, origin guard, drain denial and SDK signals behave as asserted.
+      - **links**
+        - requirement:api.runtime\_safety
+        - binding:api.runtime\_host\_test
+        - binding:api.runtime\_config\_test
+    -
+      - **id:** scenario:api.runtime\_lifecycle
+      - **title:** Real HTTP/1 lifecycle and failure recovery
+      - **transitions**
+        - transition:api.runtime\_start
+        - transition:api.runtime\_stop
+      - **expected:** Loopback sockets prove startup, port collision failure, in-flight graceful/forced drain, disconnect/stream cancellation and private stream-error containment under stated test conditions.
+      - **links**
+        - requirement:api.runtime\_safety
+        - requirement:api.runtime\_admission
+        - binding:api.runtime\_socket\_test
+  - **evidence**
+    -
+      - **id:** evidence:api.runtime\_host\_g0\_20261030
+      - **title:** Static runtime contracts and build
+      - **scenario:** scenario:api.runtime\_host
+      - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+      - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+      - **tier:** G0
+      - **result:** passed
+      - **substitutions**
+        - Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment.
+      - **limitations:** Strict API and inventory CLI typechecks, source gate, Biome and artifact build succeed. G0 has no runtime proof. Source fingerprints qualify this mutable worktree, not clean HEAD. Full API quality remains blocked by six existing resource/model mismatches; broad anti-slop remains red.
+      - **reference:** reports/api-runtime-foundation-20261030.json
+      - **links**
+        - binding:api.runtime\_host
+        - binding:api.runtime\_node
+        - binding:api.runtime\_guide
+    -
+      - **id:** evidence:api.runtime\_host\_g1\_20261030
+      - **title:** Host and configuration boundary assertions
+      - **scenario:** scenario:api.runtime\_host
+      - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+      - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment.
+      - **limitations:** 28/28 Vitest host/config assertions, including in-memory drain denial and SDK cancellation. HTTP socket behavior and multi-step transport lifecycle are separate G2 evidence; no application identity, data policy, business capability or deployment claim.
+      - **reference:** reports/run-api\_runtime\_host\_20261030.log
+      - **links**
+        - binding:api.runtime\_host
+        - binding:api.runtime\_node
+        - binding:api.runtime\_guide
+    -
+      - **id:** evidence:api.runtime\_lifecycle\_g0\_20261030
+      - **title:** Static runtime contracts and build
+      - **scenario:** scenario:api.runtime\_lifecycle
+      - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+      - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+      - **tier:** G0
+      - **result:** passed
+      - **substitutions**
+        - Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment.
+      - **limitations:** Strict API and inventory CLI typechecks, source gate, Biome and artifact build succeed. G0 has no runtime proof. Source fingerprints qualify this mutable worktree, not clean HEAD. Full API quality remains blocked by six existing resource/model mismatches; broad anti-slop remains red.
+      - **reference:** reports/api-runtime-foundation-20261030.json
+      - **links**
+        - binding:api.runtime\_host
+        - binding:api.runtime\_node
+        - binding:api.runtime\_guide
+    -
+      - **id:** evidence:api.runtime\_lifecycle\_g1\_20261030
+      - **title:** Host and configuration boundary assertions
+      - **scenario:** scenario:api.runtime\_lifecycle
+      - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+      - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+      - **tier:** G1
+      - **result:** passed
+      - **substitutions**
+        - Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment.
+      - **limitations:** 28/28 Vitest host/config assertions, including in-memory drain denial and SDK cancellation. HTTP socket behavior and multi-step transport lifecycle are separate G2 evidence; no application identity, data policy, business capability or deployment claim.
+      - **reference:** reports/run-api\_runtime\_host\_20261030.log
+      - **links**
+        - binding:api.runtime\_host
+        - binding:api.runtime\_node
+        - binding:api.runtime\_guide
+    -
+      - **id:** evidence:api.runtime\_lifecycle\_g2\_20261030
+      - **title:** Real Node HTTP/1 socket lifecycle scenarios
+      - **scenario:** scenario:api.runtime\_lifecycle
+      - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+      - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+      - **tier:** G2
+      - **result:** passed
+      - **substitutions**
+        - Synthetic SDK procedures; real local TCP sockets and Node adapter; no external storage, identity, policy service or provider.
+      - **limitations:** 12/12 Vitest loopback assertions: startup/collision, header size, slow-header and partial-body HTTP 408, graceful/forced close, disconnect cancellation, initial/late/malformed stream failure containment, producer cancellation and local backpressure. Same lifecycle function as entry; OS SIGTERM delivery, container image, proxy/TLS, sustained capacity, database commit/effects and G3-G5/R1 are unverified. No assurance promotion asserted.
+      - **reference:** reports/run-api\_runtime\_socket\_20261030.log
+      - **links**
+        - binding:api.runtime\_host
+        - binding:api.runtime\_node
+        - binding:api.runtime\_guide
+- **scenarioPaths**
+  -
+    - **id:** scenario:api.runtime\_host
+    - **title:** Host/config boundary assertions
+    - **expected:** Native fixture errors, invalid budgets, correlation, origin guard, drain denial and SDK signals behave as asserted.
+    - **start:** step:api.runtime\_configure
+    - **preconditions**
+      - (none)
+    - **completion:** checkpoint
+    - **checkpointReason:** Host fixtures verify startup and safe response contracts; lifecycle is a separate stateful scenario.
+    - **requirements**
+      -
+        - **id:** requirement:api.runtime\_safety
+        - **title:** Bounded and safe horizontal host
+        - **statement:** Validate budgets, preserve native errors, generate correlation, contain transport stream errors, propagate cancellation and expose truthful drain readiness.
+        - **classification:** quality
+        - **origin:** user
+        - **links**
+          - binding:api.runtime\_host
+          - binding:api.runtime\_node
+          - binding:api.runtime\_config
+    - **bindings**
+      -
+        - **id:** binding:api.runtime\_host
+        - **category:** api
+        - **reference:** apps/sanctuary-api/src/core/app.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+      -
+        - **id:** binding:api.runtime\_node
+        - **category:** api
+        - **reference:** apps/sanctuary-api/src/node-server.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+      -
+        - **id:** binding:api.runtime\_config
+        - **category:** architecture
+        - **reference:** apps/sanctuary-api/src/config.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+      -
+        - **id:** binding:api.runtime\_host\_test
+        - **category:** test
+        - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/foundation.test.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+      -
+        - **id:** binding:api.runtime\_config\_test
+        - **category:** test
+        - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/config.test.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    - **evidence**
+      -
+        - **id:** evidence:api.runtime\_host\_g0\_20261030
+        - **title:** Static runtime contracts and build
+        - **scenario:** scenario:api.runtime\_host
+        - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+        - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+        - **tier:** G0
+        - **result:** passed
+        - **substitutions**
+          - Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment.
+        - **limitations:** Strict API and inventory CLI typechecks, source gate, Biome and artifact build succeed. G0 has no runtime proof. Source fingerprints qualify this mutable worktree, not clean HEAD. Full API quality remains blocked by six existing resource/model mismatches; broad anti-slop remains red.
+        - **reference:** reports/api-runtime-foundation-20261030.json
+        - **links**
+          - binding:api.runtime\_host
+          - binding:api.runtime\_node
+          - binding:api.runtime\_guide
+      -
+        - **id:** evidence:api.runtime\_host\_g1\_20261030
+        - **title:** Host and configuration boundary assertions
+        - **scenario:** scenario:api.runtime\_host
+        - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+        - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+        - **tier:** G1
+        - **result:** passed
+        - **substitutions**
+          - Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment.
+        - **limitations:** 28/28 Vitest host/config assertions, including in-memory drain denial and SDK cancellation. HTTP socket behavior and multi-step transport lifecycle are separate G2 evidence; no application identity, data policy, business capability or deployment claim.
+        - **reference:** reports/run-api\_runtime\_host\_20261030.log
+        - **links**
+          - binding:api.runtime\_host
+          - binding:api.runtime\_node
+          - binding:api.runtime\_guide
+    - **steps**
+      -
+        - **transition**
+          - **id:** transition:api.runtime\_start
+          - **from:** step:api.runtime\_configure
+          - **to:** step:api.runtime\_serve
+          - **action:** Start with valid config; reject invalid budgets or occupied ports.
+          - **feedback:** A listening host exposes foundation-only readiness; startup failure never becomes a ready result.
+          - **links**
+            - binding:api.runtime\_config
+            - binding:api.runtime\_node
+        - **from**
+          - **id:** step:api.runtime\_configure
+          - **title:** Validate startup configuration
+          - **interaction:** Provide bounded environment values; invalid configuration fails before listening.
+          - **terminal:** false
+          - **links**
+            - binding:api.runtime\_config
+        - **to**
+          - **id:** step:api.runtime\_serve
+          - **title:** Observe and exercise the foundation
+          - **interaction:** Inspect foundation-only health and correlation; use synthetic test procedures to exercise safe failure and cancellation.
+          - **terminal:** false
+          - **links**
+            - binding:api.runtime\_host
+    - **disclaimer:** Declared scenario path; not evidence of execution.
+  -
+    - **id:** scenario:api.runtime\_lifecycle
+    - **title:** Real HTTP/1 lifecycle and failure recovery
+    - **expected:** Loopback sockets prove startup, port collision failure, in-flight graceful/forced drain, disconnect/stream cancellation and private stream-error containment under stated test conditions.
+    - **start:** step:api.runtime\_configure
+    - **preconditions**
+      - (none)
+    - **completion:** outcome
+    - **checkpointReason:** undefined
+    - **requirements**
+      -
+        - **id:** requirement:api.runtime\_safety
+        - **title:** Bounded and safe horizontal host
+        - **statement:** Validate budgets, preserve native errors, generate correlation, contain transport stream errors, propagate cancellation and expose truthful drain readiness.
+        - **classification:** quality
+        - **origin:** user
+        - **links**
+          - binding:api.runtime\_host
+          - binding:api.runtime\_node
+          - binding:api.runtime\_config
+      -
+        - **id:** requirement:api.runtime\_admission
+        - **title:** Keep business admission closed
+        - **statement:** Retired transports, unadmitted source modules and business procedure declarations fail the source gate until the next explicit engineering review. No identity or policy implementation is claimed by this runtime checkpoint.
+        - **classification:** constraint
+        - **origin:** user
+        - **links**
+          - binding:api.runtime\_gate
+    - **bindings**
+      -
+        - **id:** binding:api.runtime\_host
+        - **category:** api
+        - **reference:** apps/sanctuary-api/src/core/app.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+      -
+        - **id:** binding:api.runtime\_node
+        - **category:** api
+        - **reference:** apps/sanctuary-api/src/node-server.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+      -
+        - **id:** binding:api.runtime\_config
+        - **category:** architecture
+        - **reference:** apps/sanctuary-api/src/config.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+      -
+        - **id:** binding:api.runtime\_gate
+        - **category:** tool
+        - **reference:** scripts/audit-api-composition.mjs
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+      -
+        - **id:** binding:api.runtime\_socket\_test
+        - **category:** test
+        - **reference:** apps/sanctuary-api/src/\_\_tests\_\_/node-server.test.ts
+        - **status:** implemented
+        - **note:** Horizontal foundation source; presence alone is not runtime or production proof.
+    - **evidence**
+      -
+        - **id:** evidence:api.runtime\_lifecycle\_g0\_20261030
+        - **title:** Static runtime contracts and build
+        - **scenario:** scenario:api.runtime\_lifecycle
+        - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+        - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+        - **tier:** G0
+        - **result:** passed
+        - **substitutions**
+          - Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment.
+        - **limitations:** Strict API and inventory CLI typechecks, source gate, Biome and artifact build succeed. G0 has no runtime proof. Source fingerprints qualify this mutable worktree, not clean HEAD. Full API quality remains blocked by six existing resource/model mismatches; broad anti-slop remains red.
+        - **reference:** reports/api-runtime-foundation-20261030.json
+        - **links**
+          - binding:api.runtime\_host
+          - binding:api.runtime\_node
+          - binding:api.runtime\_guide
+      -
+        - **id:** evidence:api.runtime\_lifecycle\_g1\_20261030
+        - **title:** Host and configuration boundary assertions
+        - **scenario:** scenario:api.runtime\_lifecycle
+        - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+        - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+        - **tier:** G1
+        - **result:** passed
+        - **substitutions**
+          - Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment.
+        - **limitations:** 28/28 Vitest host/config assertions, including in-memory drain denial and SDK cancellation. HTTP socket behavior and multi-step transport lifecycle are separate G2 evidence; no application identity, data policy, business capability or deployment claim.
+        - **reference:** reports/run-api\_runtime\_host\_20261030.log
+        - **links**
+          - binding:api.runtime\_host
+          - binding:api.runtime\_node
+          - binding:api.runtime\_guide
+      -
+        - **id:** evidence:api.runtime\_lifecycle\_g2\_20261030
+        - **title:** Real Node HTTP/1 socket lifecycle scenarios
+        - **scenario:** scenario:api.runtime\_lifecycle
+        - **revision:** f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030
+        - **environment:** Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5
+        - **tier:** G2
+        - **result:** passed
+        - **substitutions**
+          - Synthetic SDK procedures; real local TCP sockets and Node adapter; no external storage, identity, policy service or provider.
+        - **limitations:** 12/12 Vitest loopback assertions: startup/collision, header size, slow-header and partial-body HTTP 408, graceful/forced close, disconnect cancellation, initial/late/malformed stream failure containment, producer cancellation and local backpressure. Same lifecycle function as entry; OS SIGTERM delivery, container image, proxy/TLS, sustained capacity, database commit/effects and G3-G5/R1 are unverified. No assurance promotion asserted.
+        - **reference:** reports/run-api\_runtime\_socket\_20261030.log
+        - **links**
+          - binding:api.runtime\_host
+          - binding:api.runtime\_node
+          - binding:api.runtime\_guide
+    - **steps**
+      -
+        - **transition**
+          - **id:** transition:api.runtime\_start
+          - **from:** step:api.runtime\_configure
+          - **to:** step:api.runtime\_serve
+          - **action:** Start with valid config; reject invalid budgets or occupied ports.
+          - **feedback:** A listening host exposes foundation-only readiness; startup failure never becomes a ready result.
+          - **links**
+            - binding:api.runtime\_config
+            - binding:api.runtime\_node
+        - **from**
+          - **id:** step:api.runtime\_configure
+          - **title:** Validate startup configuration
+          - **interaction:** Provide bounded environment values; invalid configuration fails before listening.
+          - **terminal:** false
+          - **links**
+            - binding:api.runtime\_config
+        - **to**
+          - **id:** step:api.runtime\_serve
+          - **title:** Observe and exercise the foundation
+          - **interaction:** Inspect foundation-only health and correlation; use synthetic test procedures to exercise safe failure and cancellation.
+          - **terminal:** false
+          - **links**
+            - binding:api.runtime\_host
+      -
+        - **transition**
+          - **id:** transition:api.runtime\_stop
+          - **from:** step:api.runtime\_serve
+          - **to:** step:api.runtime\_drained
+          - **action:** Invoke the runtime shutdown path while requests are active.
+          - **feedback:** New RPC receives native 503; existing requests finish or are terminated and forced shutdown is reported.
+          - **links**
+            - binding:api.runtime\_host
+            - binding:api.runtime\_node
+        - **from**
+          - **id:** step:api.runtime\_serve
+          - **title:** Observe and exercise the foundation
+          - **interaction:** Inspect foundation-only health and correlation; use synthetic test procedures to exercise safe failure and cancellation.
+          - **terminal:** false
+          - **links**
+            - binding:api.runtime\_host
+        - **to**
+          - **id:** step:api.runtime\_drained
+          - **title:** Finish or terminate in-flight work
+          - **interaction:** Begin drain; readiness and new RPC fail closed, then existing work finishes or sockets are closed at the deadline.
+          - **terminal:** true
+          - **links**
+            - binding:api.runtime\_node
+    - **disclaimer:** Declared scenario path; not evidence of execution.
+- **sharedRequirements**
+  - (none)
+- **sharedBindings**
+  - (none)

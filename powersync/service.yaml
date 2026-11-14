@@ -28,18 +28,11 @@ sync_config:
 replication:
   connections:
     - type: postgresql
-#      # [optional] Connection string (recommended). Omit and use hostname/port/database/username/password instead.
-      uri: !env POWERSYNC_DATABASE_URI
-#      # [optional] Alternative to uri: individual connection parameters.
-#      hostname: example.com
-#      port: 5432
-#      database: one
-#      username: postgres
-#      # [optional] Connection identifiers.
-#      name: string
-#      id: string
-#      tag: string
-#      # [optional] TLS mode. Options: verify-full | verify-ca. Default: verify-full. Use verify-full for production.
+      name: Default
+      username: postgres
+      password:
+        secret_ref: default_password
+      uri: postgresql://postgres@db.qzoawolfkuwiuyaoiybz.supabase.co:5432/postgres
       sslmode: verify-full
 #      # [optional] TLS certificates (PEM). Required for verify-ca; optional for verify-full.
 #      cacert: string
@@ -127,7 +120,7 @@ replication:
 ## -----------------------------------------------------------------------------
 client_auth:
 #  # [optional] Use the same JWT secret as Supabase. Default: false.
-  supabase: true
+  supabase: false
 #  # [optional] Legacy: Supabase project's legacy JWT secret from API settings in the Supabase Dashboard.
 #  supabase_jwt_secret:
 #    secret: !env POWERSYNC_SUPABASE_JWT_SECRET
@@ -165,3 +158,12 @@ client_auth:
 #  additional_audiences: []
 #  # [optional] Allow development/temporary tokens. Default: false.
   allow_temporary_tokens: false
+  jwks:
+    keys:
+      - kty: EC
+        crv: P-256
+        kid: gurudevi-sync-dev-773c1f88-a048-4339-bd21-ee26cb5baf22
+        x: 7QHTHCMkUa5CpM5PkCFwZmi7DC_U8TL8brv5H9eydjA
+        y: kAJRu7PUEz_yuDBbe1mt48QkTog4kvfiB22qUhdz0o4
+        alg: ES256
+        use: sig

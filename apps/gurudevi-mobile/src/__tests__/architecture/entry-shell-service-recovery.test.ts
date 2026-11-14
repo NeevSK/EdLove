@@ -6,10 +6,10 @@ const entryShellPath = resolve(import.meta.dirname, '../../entry/EntryShell.tsx'
 const entryShell = readFileSync(entryShellPath, 'utf8');
 
 describe('entry shell service recovery', () => {
-  it('mounts exactly one deep-link listener and authenticated runtime host beneath GlobalProvider', () => {
-    expect(entryShell.match(/<GlobalProvider>/g)).toHaveLength(1);
+  it('mounts one deep-link listener without mounting retired API mutation replay', () => {
+    expect(entryShell.match(/<GlobalProvider\b/g)).toHaveLength(1);
     expect(entryShell.match(/<DeepLinkProvider>/g)).toHaveLength(1);
-    expect(entryShell.match(/<AuthenticatedSyncService\s*\/>/g)).toHaveLength(1);
+    expect(entryShell).not.toContain('AuthenticatedSyncService');
     expect(entryShell.indexOf('<GlobalProvider>')).toBeLessThan(
       entryShell.indexOf('<DeepLinkProvider>'),
     );
@@ -22,8 +22,18 @@ describe('entry shell service recovery', () => {
     );
   });
 
-  it('provides and renders the shared FAB contract for registered workspace actions', () => {
+  it('provides the shared FAB contract, drawn by the rooms shell for every room', () => {
     expect(entryShell).toContain('<FABProvider>');
-    expect(entryShell).toContain('<LotusPetalFAB />');
+    const tabsLayout = readFileSync(
+      resolve(import.meta.dirname, '../../../app/(tabs)/_layout.tsx'),
+      'utf8',
+    );
+    expect(tabsLayout).toContain('<RoomFab');
+  });
+
+  it('registers development diagnostics routes and persists the first shell frame marker', () => {
+    expect(entryShell).toContain('<Stack.Screen name="verger-lab" />');
+    expect(entryShell).toContain('<Stack.Screen name="verger-diagnostics" />');
+    expect(entryShell).toContain("task: 'first-shell-frame'");
   });
 });

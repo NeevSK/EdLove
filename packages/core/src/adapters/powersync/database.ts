@@ -14,12 +14,25 @@
  *   const db = getDrizzleDB();
  *   const rows = await db.select().from(students);
  */
+
+import type { CommonPowerSyncDatabase } from '@powersync/common';
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
-import { PowerSyncDatabase } from '@repo/core/adapters/powersync/powersync-shim';
+import { PowerSyncDatabaseRegistry } from '@repo/core/adapters/powersync/databaseRegistry';
+import { PowerSyncDatabase as MockPowerSyncDatabase } from '@repo/core/adapters/powersync/powersync-shim';
 import { AppSchema } from '@repo/core/adapters/powersync/schema';
 import { createSecureDrizzleProxy } from '@repo/core/adapters/powersync/secureDrizzleProxy';
-import { assertPowerSyncBootstrapReady } from '@repo/core/api/highways';
+import type { PowerSyncRuntimeOwnership } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
+
+export function assertPowerSyncBootstrapReady() {
+  // Hermes exposes `window` on React Native, but only browser runtimes provide
+  // `document`. Keep this guard scoped to actual web bootstrap.
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  throw new Error(
+    'PowerSync bootstrap guard: browser code touched PowerSync before the app was ready. Use the direct API highway for bootstrap and identity, and only enter PowerSync after the runtime is intentionally registered.',
+  );
+}
 
 export {
   registerOperationContext,
@@ -29,8 +42,9 @@ export {
   setActiveCapabilityToken,
 } from '@repo/core/adapters/powersync/secureDrizzleProxy';
 
-let _instance: PowerSyncDatabase | null = null;
-let _drizzleInstance: ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> | null = null;
+const registry = new PowerSyncDatabaseRegistry<
+  ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>>
+>(createSecureDrizzleProxy);
 
 function assertBrowserPowerSyncReady() {
   assertPowerSyncBootstrapReady();
@@ -44,21 +58,28 @@ function assertBrowserPowerSyncReady() {
 
 /**
  * Returns the active PowerSync database instance.
- * Automatically initializes the mock database under server-side Node.js
- * unless a native JSI instance has been injected via setPowerSyncDB().
+ * Automatically initializes the mock database under server-side Node.js or test environments
+ * unless a native JSI instance has been injected via injectNativePowerSyncDB().
  */
-export function getPowerSyncDB(): PowerSyncDatabase {
+export function getPowerSyncDB(): CommonPowerSyncDatabase {
   assertBrowserPowerSyncReady();
-  if (!_instance) {
-    _instance = new PowerSyncDatabase({
-      schema: AppSchema as any,
-      database: {
-        // The SQLite file — separate from expo-sqlite to avoid conflicts
-        dbFilename: 'gurudevi-powersync.db',
-      },
-    });
+  let database = registry.database;
+  if (!database) {
+    if (typeof window === 'undefined' || process.env.NODE_ENV === 'test') {
+      database = new MockPowerSyncDatabase({
+        schema: AppSchema as any,
+        database: {
+          dbFilename: 'gurudevi-powersync.db',
+        },
+      }) as unknown as CommonPowerSyncDatabase;
+      registry.inject(database, null);
+    } else {
+      throw new Error(
+        'PowerSync runtime is not initialized. Inject the native or web database instance via injectNativePowerSyncDB() before calling getPowerSyncDB().',
+      );
+    }
   }
-  return _instance;
+  return database;
 }
 
 /**
@@ -67,41 +88,31 @@ export function getPowerSyncDB(): PowerSyncDatabase {
  */
 export function getDrizzleDB(): ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> {
   assertBrowserPowerSyncReady();
-  if (!_drizzleInstance) {
-    const powerSyncDb = getPowerSyncDB();
-    const rawDrizzle = wrapPowerSyncWithDrizzle(powerSyncDb as any, { schema: AppSchema });
-    _drizzleInstance = createSecureDrizzleProxy(rawDrizzle) as any;
-  }
-  return _drizzleInstance as any;
+  return registry.getDrizzle(() =>
+    wrapPowerSyncWithDrizzle(getPowerSyncDB(), { schema: AppSchema }),
+  );
 }
 
 /**
  * Injects the real native React Native JSI C++ database and Drizzle instances
- * at runtime when booting the mobile client. This bypasses the mock server shims.
+ * at runtime when booting the mobile client.
  */
-export function injectNativePowerSyncDB(nativeDb: any, nativeDrizzleDb: any): void {
-  _instance = nativeDb;
-  _drizzleInstance = createSecureDrizzleProxy(nativeDrizzleDb) as any;
+export function injectNativePowerSyncDB(
+  nativeDb: any,
+  nativeDrizzleDb: any,
+  ownership?: PowerSyncRuntimeOwnership,
+): void {
+  registry.inject(nativeDb, nativeDrizzleDb, ownership);
 }
 
 /** Returns the injected active runtime without creating a fallback database. */
-export function getActivePowerSyncDB(): PowerSyncDatabase | null {
-  return _instance;
+export function getActivePowerSyncDB(): CommonPowerSyncDatabase | null {
+  return registry.activeDatabase;
 }
 
 /** Close the active runtime; clear is reserved for explicit account removal. */
-export async function disconnectPowerSync(options?: { clear?: boolean }): Promise<void> {
-  if (_instance) {
-    if (options?.clear && 'disconnectAndClear' in _instance) {
-      await (_instance as any).disconnectAndClear();
-    } else if ('close' in _instance) {
-      await (_instance as any).close({ disconnect: true });
-    } else {
-      await (_instance as any).disconnect();
-    }
-    _instance = null;
-    _drizzleInstance = null;
-  }
+export function disconnectPowerSync(options?: { clear?: boolean }): Promise<void> {
+  return registry.disconnect(options);
 }
 
 /** Explicit destructive cleanup for account removal or sign-out-all. */

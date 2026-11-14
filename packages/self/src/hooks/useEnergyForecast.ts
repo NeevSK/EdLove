@@ -1,10 +1,12 @@
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
+import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import {
   fetchEnergyForecastsForView,
   saveEnergyForecastForDate,
-} from '@repo/self/api/selfInsightsRepository';
-import type { EnergyForecast } from '@repo/self/types';
+} from '@repo/self/data/selfInsights.data';
+import type { EnergyForecast } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const ENERGY_CACHE_KEY = 'gurudevi-energy-cache';
@@ -16,8 +18,9 @@ const ENERGY_CACHE_KEY = 'gurudevi-energy-cache';
  * - Syncs with Supabase in background.
  */
 export function useEnergyForecast(userId?: string) {
-  const isOnline = useStore((state) => state.isOnline);
-  const { viewDate, isPastView } = useTemporalStore();
+  const { isOnline } = useOfflineStatus();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   const [forecasts, setForecasts] = useState<EnergyForecast[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

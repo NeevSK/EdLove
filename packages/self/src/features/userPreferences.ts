@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

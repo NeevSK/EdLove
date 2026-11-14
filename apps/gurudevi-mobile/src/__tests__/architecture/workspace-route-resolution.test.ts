@@ -58,6 +58,32 @@ describe('workspace route resolution', () => {
     );
   });
 
+  it('opens only the local guest personal workspace without a cloud permission snapshot', () => {
+    expect(
+      resolveWorkspaceRoute({
+        ...resolvedStudentInput,
+        permissionSnapshotLoaded: false,
+        permissionError: null,
+        isLocalGuest: true,
+        perspectiveKind: 'personal',
+      }),
+    ).toEqual({
+      kind: 'role-ready',
+      target: { kind: 'personal' },
+      isRefreshing: false,
+      refreshError: null,
+    });
+
+    expect(
+      resolveWorkspaceRoute({
+        ...resolvedStudentInput,
+        permissionSnapshotLoaded: false,
+        isLocalGuest: true,
+        perspectiveKind: 'institutional',
+      }).kind,
+    ).toBe('retryable-error');
+  });
+
   it('retains an explicit classroom selection and its role-specific destination', () => {
     expect(
       resolveWorkspaceRoute({
@@ -73,6 +99,20 @@ describe('workspace route resolution', () => {
         classroomName: 'Maths',
         audience: 'student',
       },
+    });
+  });
+
+  it.each([
+    ['parent', 'guardian'],
+    ['assistantPrincipal', 'principal'],
+    ['admin', 'principal'],
+    ['gradeHead', 'principal'],
+    ['sectionHead', 'principal'],
+    ['developer', 'founder'],
+  ] as const)('normalizes %s to the existing %s workspace target', (capacity, target) => {
+    expect(resolveWorkspaceRoute({ ...resolvedStudentInput, capacity })).toMatchObject({
+      kind: 'role-ready',
+      target: { kind: target },
     });
   });
 });

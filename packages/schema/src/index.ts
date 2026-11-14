@@ -6,16 +6,16 @@
  */
 
 // Input Types
-export * from '@repo/schema/generated/orm/input';
+export * from './generated/orm/input';
 
 // Model Types
-export * from '@repo/schema/generated/orm/models';
+export * from './generated/orm/models';
 // ORM Metadata
-export { schema } from '@repo/schema/generated/orm/schema';
+export { schema } from './generated/orm/schema';
 
 // Zod Factory - Derivative of the Schema
 import { createSchemaFactory } from '@zenstackhq/zod';
-import { schema } from '@repo/schema/generated/orm/schema';
+import { schema } from './generated/orm/schema';
 
 const factory = createSchemaFactory(schema);
 export const makeModelSchema = factory.makeModelSchema.bind(factory);

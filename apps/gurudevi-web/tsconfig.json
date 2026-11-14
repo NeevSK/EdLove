@@ -2,12 +2,30 @@
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "allowJs": false,
-    "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "incremental": false,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "#surface": ["./spa/surface/explore.tsx"],
+      "@repo/verger-core": ["../../packages/verger-core/src/index.ts"],
+      "@playwright/test": [
+        "../../node_modules/.pnpm/@playwright+test@1.62.1/node_modules/playwright/test.d.ts"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "app/**/*.ts", "app/**/*.tsx", "lib/**/*.ts", "lib/**/*.tsx", "components/**/*.ts", "components/**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "tests"]
+  "include": [
+    "playwright.config.ts",
+    "vitest.config.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "spa/**/*.ts",
+    "spa/**/*.tsx",
+    "vite.config.ts"
+  ],
+  "exclude": ["node_modules", "dist-explore", "dist-sanctuary", "spa/generated/routeTree.explore.gen.ts"]
 }

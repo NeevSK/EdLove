@@ -1,5 +1,5 @@
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Box, ScrollView, Text } from '@repo/ui/primitives';
+import { View, Text, ScrollView } from 'react-native';
+import { Dialog } from '@repo/ui/components/native';
 
 import TeacherAdminWidget from '@repo/people/components/TeacherAdminWidget';
 
@@ -22,27 +22,22 @@ export default function TeacherAdminPortalModal({
   title = 'Administrative Portal',
 }: TeacherAdminPortalModalProps) {
   return (
-    <SanctuaryModal
-      isOpen={visible}
-      onClose={onClose}
-      title={title}
-      subtitle="SOVEREIGN MANAGEMENT"
-    >
-      <Box className="flex-1">
+    <Dialog open={visible} onClose={onClose} title={title} description="SOVEREIGN MANAGEMENT">
+      <View className="flex-1">
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 0, paddingBottom: 60 }}
         >
           <TeacherAdminWidget onAction={onAction} />
 
-          <Box className="mt-12 p-6 bg-phase-surface/30 rounded-[32px] border border-phase-surface/50">
+          <View className="mt-12 p-6 bg-phase-surface/30 rounded-[32px] border border-phase-surface/50">
             <Text className="text-xs text-phase-text-tertiary leading-5 font-medium italic text-center">
               This portal is secured by the Gurudevi Sanctuary Governance protocols. All
               administrative actions are logged in the sovereign record.
             </Text>
-          </Box>
+          </View>
         </ScrollView>
-      </Box>
-    </SanctuaryModal>
+      </View>
+    </Dialog>
   );
 }

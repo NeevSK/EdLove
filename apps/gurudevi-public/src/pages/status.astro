@@ -1,0 +1,13 @@
+---
+import { Status } from '../components/status/Status';
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout
+  locale="en"
+  locales={['en']}
+  path="/status"
+  title="System Status · Gurudevi Sanctuary"
+  description="Live operational status, telemetry, and service health for Gurudevi Sanctuary API and infrastructure."
+>
+  <Status client:load locale="en" />
+</PublicLayout>

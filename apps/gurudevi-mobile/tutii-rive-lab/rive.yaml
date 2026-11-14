@@ -1,0 +1,8 @@
+name: tutii-arrival
+main: "Tutii arrival"
+artboard:
+  width: 500
+  height: 560
+  background: "#F7F4EC"
+output:
+  dir: build

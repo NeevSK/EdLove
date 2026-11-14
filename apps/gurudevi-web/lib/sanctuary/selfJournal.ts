@@ -5,6 +5,11 @@ export type BurnedJournalEntry = Readonly<{
   content_preview: string;
   created_at: string;
   is_burned: boolean;
+  target_date?: string;
+  occurred_at?: string;
+  recorded_at?: string;
+  is_retroactive?: boolean;
+  amendment_of?: string;
 }>;
 
 function isBurnedJournalEntry(value: unknown): value is BurnedJournalEntry {

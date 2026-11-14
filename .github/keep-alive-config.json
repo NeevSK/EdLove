@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "enabled": true,
+  "service": "sanctuary-api",
+  "targetUrl": "https://sanctuary-api-tpj7.onrender.com/health/live",
+  "intervalMinutes": 10,
+  "notes": "Set 'enabled' to false to pause automated GitHub Actions keep-alive pings and allow Render free tier to spin down after 15m idle to conserve the 750 free instance hours per month pool."
+}

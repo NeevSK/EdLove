@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';
-import { duration } from './motion';
+import { duration } from '../tokens/motion';
 
 export interface CollapseProps {
   expanded: boolean;

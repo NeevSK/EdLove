@@ -1,0 +1,498 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  max-width: 86rem;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ─── Top Control Bar ─── */
+.controlBar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--w-ground) 85%, transparent);
+  border: 1px solid var(--w-line);
+  box-shadow: 0 4px 20px -2px color-mix(in srgb, var(--w-ink) 5%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.controlBarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.controlTitleGroup h1 {
+  margin: 0 0 0.25rem;
+  font-family: var(--w-font-display, Georgia, serif);
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  letter-spacing: -0.02em;
+  color: var(--w-ink);
+}
+
+.controlTitleGroup p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--w-ink-soft);
+}
+
+.archetypeSelectorRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border-top: 1px dashed var(--w-line);
+  padding-top: 0.85rem;
+}
+
+.archetypePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid var(--w-line);
+  background: var(--w-surface-raised-bg);
+  color: var(--w-ink);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.archetypePill:hover {
+  border-color: var(--w-lamp);
+  transform: translateY(-1px);
+}
+
+.archetypePillActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid var(--w-lamp);
+  background: var(--w-lamp);
+  color: var(--w-ground);
+  cursor: default;
+  box-shadow: 0 2px 10px -2px color-mix(in srgb, var(--w-lamp) 40%, transparent);
+}
+
+.subControlRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.78rem;
+}
+
+.toggleButtonGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.miniPill {
+  padding: 0.22rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid var(--w-line);
+  background: transparent;
+  color: var(--w-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.miniPillActive {
+  padding: 0.22rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 60%, transparent);
+  background: color-mix(in srgb, var(--w-lamp) 18%, transparent);
+  color: var(--w-lamp);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+/* ─── Arena Stage ─── */
+.arenaStage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: clamp(1rem, 2.5vw, 2rem);
+  border-radius: 1.5rem;
+  background: var(--w-ground);
+  border: 1px solid var(--w-line);
+  box-shadow: inset 0 2px 8px color-mix(in srgb, var(--w-ink) 2%, transparent);
+  min-height: 40rem;
+}
+
+/* ─── ARCHETYPE 1: Hearth & Living Mosaic ─── */
+.hearthCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--w-surface-raised-bg) 85%, transparent);
+  border: 1px solid var(--w-line);
+}
+
+.hearthGreetingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hearthEyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--w-lamp);
+}
+
+.hearthTitle {
+  margin: 0.2rem 0;
+  font-family: var(--w-font-display, Georgia, serif);
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  color: var(--w-ink);
+}
+
+.hearthSomaticPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--w-lamp);
+}
+
+.filterStrip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+}
+
+.filterBtn {
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  border: 1px solid var(--w-line);
+  background: var(--w-surface-raised-bg);
+  color: var(--w-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterBtnActive {
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  border: 1px solid var(--w-lamp);
+  background: var(--w-lamp);
+  color: var(--w-ground);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: default;
+}
+
+.pebbleMosaicGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+  gap: 1rem;
+}
+
+/* ─── ARCHETYPE 2: Spatial Dual-Rail ─── */
+.railSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.railHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.railHeader h3 {
+  margin: 0;
+  font-family: var(--w-font-display, Georgia, serif);
+  font-size: 1.15rem;
+  color: var(--w-ink);
+}
+
+.railTrack {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+
+.railItem {
+  flex: 0 0 136px;
+  width: 136px;
+  scroll-snap-align: start;
+}
+
+.drawerAccordion {
+  border: 1px solid var(--w-line);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  background: color-mix(in srgb, var(--w-surface-raised-bg) 60%, transparent);
+}
+
+/* ─── ARCHETYPE 3: Daily Sadhana Table ─── */
+.sadhanaStage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
+}
+
+.sadhanaTableRound {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  max-width: 44rem;
+  padding: 2rem;
+  border-radius: 2rem;
+  background: radial-gradient(circle at center, color-mix(in srgb, var(--w-lamp) 10%, transparent) 0%, transparent 70%);
+  border: 1px dashed var(--w-line);
+}
+
+.exploreFloatingBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--w-lamp);
+  background: var(--w-surface-raised-bg);
+  color: var(--w-lamp);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-lamp) 20%, transparent);
+}
+
+/* ─── ARCHETYPE 4: Somatic Bento Studio ─── */
+.bentoContainer {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+}
+
+.bentoCellHero {
+  grid-column: span 8;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: var(--w-surface-raised-bg);
+  border: 1px solid var(--w-line);
+}
+
+.bentoCellSomatic {
+  grid-column: span 4;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--w-lamp) 8%, var(--w-surface-raised-bg));
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bentoCellMosaic {
+  grid-column: span 12;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: var(--w-surface-raised-bg);
+  border: 1px solid var(--w-line);
+}
+
+@media (max-width: 768px) {
+  .bentoCellHero,
+  .bentoCellSomatic {
+    grid-column: span 12;
+  }
+}
+
+/* ─── DUAL COLUMNAR RAILS (No Heavy Enclosures) ─── */
+.dualRailLayout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .dualRailLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.railColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ─── Dynamic Contour Cohorts (Pure Ground, Zero Trays) ─── */
+.contourCohort {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cohortHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 0.25rem;
+}
+
+.cohortTitle {
+  margin: 0;
+  font-family: var(--w-font-display, Georgia, serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--w-ink);
+  letter-spacing: -0.01em;
+}
+
+.cohortMeta {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--w-ink-soft);
+}
+
+/* The Pebble Row with zero background tray, tight 6px gap */
+.cohortPebbleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ─── Morphing Pebble Corners based on Cohort Position ─── */
+/* Leading edge item in row */
+.cohortPebbleRow > div:first-child :global(.gd-pebble) {
+  border-top-left-radius: 26px !important;
+  border-bottom-left-radius: 26px !important;
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+/* Middle items in row */
+.cohortPebbleRow > div:not(:first-child):not(:last-child) :global(.gd-pebble) {
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+/* Trailing edge item in row */
+.cohortPebbleRow > div:last-child :global(.gd-pebble) {
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  border-top-right-radius: 26px !important;
+  border-bottom-right-radius: 26px !important;
+}
+
+/* If single standalone item in cohort, keep symmetrical natural squircle */
+.cohortPebbleRow > div:only-child :global(.gd-pebble) {
+  border-radius: 20px !important;
+}
+
+.cohortPebbleCell {
+  width: 132px;
+  flex: 0 0 132px;
+}
+
+/* ─── Top Anchors Bar (Pure ground, clean divider) ─── */
+.topAnchorRow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.25rem 1.5rem;
+  border-bottom: 1px solid var(--w-line);
+}
+
+.topPebbleItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.topPebbleLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--w-lamp);
+}
+
+.topHearthBanner {
+  flex: 1;
+  min-width: 240px;
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--w-line);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+@media (max-width: 680px) {
+  .topHearthBanner {
+    border-left: none;
+    border-top: 1px solid var(--w-line);
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+}
+
+/* ─── Progressive Disclosure Sheet / Notification ─── */
+.disclosureBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--w-focus) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-focus) 30%, transparent);
+  font-size: 0.8rem;
+  color: var(--w-ink);
+}

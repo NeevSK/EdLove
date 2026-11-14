@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-10-04
+updated: 2026-10-23
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -25,6 +25,34 @@ This index lists all design specifications, plans, guides, decisions, and workfl
 - **`infra/`** — Git workflows, CI/CD, build tools, local runlog histories
 - **`files/fundamental/`** — General/fundamental architecture, design philosophy, UX, and transport patterns
 - **`files/specialized/`** — Specialized domain-specific audits and app/tab implementations
+- **`docs/research/edu-audit/`** — Canonical Systemantics treatises, educational ground truth, and empirical audit ledgers
+
+---
+
+## 🏛️ Educational Research & Systemantics Canon (Tier 0 SSoT)
+
+These master reference documents govern the civic intelligence, diagnostic weights, and philosophical architecture of the EdLove Foundation and the Urumaya Education Atlas.
+
+| Document | Authority Tier | Description |
+|---|---|---|
+| [docs/research/edu-audit/CANONICAL-SYSTEMANTICS-AND-EDUCATIONAL-GROUND-TRUTH.md](research/edu-audit/CANONICAL-SYSTEMANTICS-AND-EDUCATIONAL-GROUND-TRUTH.md) | **Master SSoT (Tier 0)** | **Authoritative Master Canon:** Stafford Beer's POSIWID (1979), John Gall's Systemantics (1975), Relational Scarcity, Multi-Agent Standpoint Epistemology, 7 Teacher Survival Magnets, Moral Injury/Affective Trauma, C-ARI Multi-Factor Weighted Index, and live empirical proof from 9,962 schools. |
+| [architecture/2026-10-30-argent-deep-forensic-analysis.md](architecture/2026-10-30-argent-deep-forensic-analysis.md) | **Tooling & Profiling** | **Argent v0.31 Forensic Audit:** Deep substrate analysis, binary engine breakdown, live 65-tool ledger, Hermes Fiber inspection, and typed client architecture. |
+| [architecture/2026-10-30-agent-device-forensic-analysis.md](architecture/2026-10-30-agent-device-forensic-analysis.md) | **Automation & Navigation** | **Agent-Device v0.21.33 Forensic Audit:** Substrate analysis of Callstack 75-command suite, settle raster stability loop, @ref identifiers, and native IME bypass. |
+| [architecture/2026-10-30-production-hardening-verger-vs-device-tooling-maturity.md](architecture/2026-10-30-production-hardening-verger-vs-device-tooling-maturity.md) | **Production Hardening** | **Verger Maturity vs. Hardened Tooling:** Deep analysis comparing Verger theoretical abstractions to production-hardened mechanics in Agent-Device and Argent (Settle dynamics, observer suppression, Perfetto ground truth). |
+| [architecture/2026-10-30-verger-runtime-evolution-inspirations.md](architecture/2026-10-30-verger-runtime-evolution-inspirations.md) | **Runtime & Cybernetics** | **Verger Runtime Evolution:** Architectural specification for internalizing Argent & Agent-Device engineering patterns into @repo/verger-core (Transient Hysteresis, Observer Silence, Workload Attribution, and Mathematical Relief Verification). |
+| [architecture/2026-10-29-ui-primitives-multimodal-and-external-ai-bridges.md](architecture/2026-10-29-ui-primitives-multimodal-and-external-ai-bridges.md) | **UI Primitives, Multimodal & External AI Bridges Blueprint:** `@legendapp/list`, Software Mansion `react-native-enriched-markdown` & `streamdown`, Multimodal Composer (`+` Vision/Files/Voice/Slash), Expo 58 OS App Intents (Siri/Android 16 `AppFunctions`), and External AI / Omnichannel Bot connectors. |
+| [architecture/2026-10-29-production-2026-chat-and-agent-parity-blueprint.md](architecture/2026-10-29-production-2026-chat-and-agent-parity-blueprint.md) | **Production 2026 Chat & Agent Parity Blueprint:** Bridges multi-step tool loops, collapsible reasoning traces, live tool pills, interactive Artifacts/Canvas, citations, and Stop/Regenerate controls across `@tanstack/ai` and `AIScreen`. |
+| [architecture/2026-10-29-companion-4-spheres-intelligence-blueprint.md](architecture/2026-10-29-companion-4-spheres-intelligence-blueprint.md) | **Companion 4-Spheres Intelligence Blueprint:** Hexagonal design for User Persona & Age Pedagogy Lens, Platform Self-Awareness Manifest, Dual-Path Local + oRPC v2 MCP Data Retrieval, and Safe World-Facing Search. |
+| [architecture/2026-10-29-universal-fab-and-context-ingestion-engine.md](architecture/2026-10-29-universal-fab-and-context-ingestion-engine.md) | **Universal FAB & Context Ingestion Engine:** 4-tier policy-driven context registry across Self, Workspace, Library, and Community + Dual-Intent `LotusPetalFAB` multiplexer. |
+| [architecture/2026-10-29-aiscreen-fab-dm-ingestion-blueprint.md](architecture/2026-10-29-aiscreen-fab-dm-ingestion-blueprint.md) | **AIScreen Ingress & Ingestion Blueprint:** Architecture for the global FAB (Rewind History, Incognito mode), Community DM persistent threads, user data ingestion pipeline, and strict naming isolation. |
+| [architecture/2026-10-29-ai-stack-and-agui-architectural-blueprint.md](architecture/2026-10-29-ai-stack-and-agui-architectural-blueprint.md) | **AI Stack & AG-UI Blueprint:** The 6-layer architecture (Data ➔ Gateway ➔ Inngest ➔ Model ➔ AG-UI ➔ UI), what AG-UI is, and rules to choose and wire tools end-to-end without framework bloat. |
+| [architecture/2026-10-29-temporal-grounded-agent-ecosystem-audit.md](architecture/2026-10-29-temporal-grounded-agent-ecosystem-audit.md) | **Temporal Agent Audit:** Comprehensive benchmark of Inngest AgentKit, Mastra 1.0, Rivet Actors, CopilotKit AG-UI, Claude Duet, and Cursor Agent SDK against the Polymath platform. |
+| [docs/research/edu-audit/posiwid-and-systemantics-canonical-treatise.md](research/edu-audit/posiwid-and-systemantics-canonical-treatise.md) | Core Foundations | Definitive theoretical treatise linking cybernetic realism to general education and polycentric compensatory systems. |
+| [docs/research/edu-audit/canonical-systemic-humility-and-polycentric-standpoints.md](research/edu-audit/canonical-systemic-humility-and-polycentric-standpoints.md) | Epistemic Stance | Standpoint epistemology across Child, Parent, Teacher, Tutor, and State Bureaucrat. |
+| [docs/research/edu-audit/THE-LOGISTICS-OF-EDUCATION-TRUNK-LINES-HUBS-AND-THE-LAST-MILE.md](research/edu-audit/THE-LOGISTICS-OF-EDUCATION-TRUNK-LINES-HUBS-AND-THE-LAST-MILE.md) | Logistics & Last Mile | Structural analysis of supply-chain invariants, bulk trunk haulage vs last-mile classroom delivery, and reframing private tuition as an emergent compensatory courier. |
+| [docs/research/edu-audit/EDUCATION-IN-THE-ERA-OF-AI-THE-ZERO-MARGINAL-COST-MYTH-AND-CONVIVIAL-LIMITS.md](research/edu-audit/EDUCATION-IN-THE-ERA-OF-AI-THE-ZERO-MARGINAL-COST-MYTH-AND-CONVIVIAL-LIMITS.md) | AI & Convivial Limits | Deconstructing zero-marginal-cost in AI tutoring, GPU inference economics, physical hardware decay, OLPC Peru historical lessons, the Board of Survey surcharge paradox, and AI as teacher exoskeleton. |
+| [docs/research/edu-audit/THE-DIALECTIC-OF-THE-FLOOR-AND-THE-RED-QUEEN-MOBILITY-BURNOUT-AND-ALIENTATION.md](research/edu-audit/THE-DIALECTIC-OF-THE-FLOOR-AND-THE-RED-QUEEN-MOBILITY-BURNOUT-AND-ALIENTATION.md) | The Floor & Red Queen | Socio-metabolic analysis of the educational floor (nutrition, literacy, bodily discipline) vs the Red Queen credential race, micro-validity of upward striving, burnout, and transclasse alienation. |
+| [docs/research/edu-audit/edlove-posture-and-stance.md](research/edu-audit/edlove-posture-and-stance.md) | Philosophical Heartbeat | The EdLove Posture — Craft, care, non-attachment, and reverence for human dignity. |
 
 ---
 
@@ -34,6 +62,13 @@ These files document core logic, user journeys, developer playbooks, and executi
 
 | Document | Description |
 |---|---|
+| [Core/what-is-gurudevi.md](Core/what-is-gurudevi.md) | **Entry point:** short human introduction to Gurudevi, the Sanctuary, and its many doors |
+| [Core/unified-fine-grained-ai-architecture-atlas.md](Core/unified-fine-grained-ai-architecture-atlas.md) | **Master Visual AI & Agent Atlas:** Reconciles the 4 Computational Generations, 8-Sphere Cartography, Hexagonal Ports, Dual-MCP, 4-Tier Storage/Sandbox, BYOK/BYOS Quotas, and `AIScreen` into 7 canonical blueprints |
+| [Core/computational-generations-and-agent-taxonomy.md](Core/computational-generations-and-agent-taxonomy.md) | **Canonical AI & Agent Taxonomy:** The 4 computational generations (workflows ➔ chat ➔ multimodal ➔ enduring agents), Inngest vs agent execution boundaries, compounding cost curves, and the Inverted U-Curve of Convivial ROI |
+| [Core/hexagonal-agent-mcp-rag-and-safety-vectors.md](Core/hexagonal-agent-mcp-rag-and-safety-vectors.md) | **Hexagonal Agent Frameworks & Safety Vectors:** Deconstructing Mastra vs Rivet vs Alchemy into Hexagonal layers, Dual-MCP (Server-side @repo/platform-mcp + Client-side WebMCP), DB-native Hybrid RAG (pgvector + FTS), and the 4 Non-Negotiable Safety Vectors |
+| [Core/standalone-vs-integrated-agent-matrix.md](Core/standalone-vs-integrated-agent-matrix.md) | **Standalone vs. Integrated Matrix:** Detailed architectural placement for Rivet, CopilotKit, AG-UI, Inngest AgentKit, Mastra 1.0, Botpress/Dify/Coze, and Cursor Agent SDK across Hexagonal layers |
+| [Core/grand-agentic-cartography-and-landscape-map.md](Core/grand-agentic-cartography-and-landscape-map.md) | **The Grand Agentic Cartography:** The 8-Sphere Ecosystem Map (Substrate ➔ Memory ➔ Model ➔ Runtime ➔ Tools ➔ Glass ➔ Wire Protocol ➔ Convivial Governance) placing every framework, MCP, and AG-UI protocol in exact coordinates |
+| [Core/gurudevi-soul-and-core-covenant.md](Core/gurudevi-soul-and-core-covenant.md) | **Expanded governing definition:** product soul, five core pillars, Sanctuary places, role-shaped Workspace, many-door access, progressive affordance, and capability authority covenant |
 | [architecture/2026-09-15-workspace-classroom-domain-authority.md](architecture/2026-09-15-workspace-classroom-domain-authority.md) | Canonical Workspace/Classroom perspective inventory, scope/task semantics, shared plumbing, canvas persistence, Explore rules, and migration sequence |
 | [current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md](current_progress/2026-09-15-gurudevi-self-migration-control-matrix.md) | Canonical Self feature ledger with source/evidence denominators, platform status, and migration actions |
 | [current_progress/2026-09-15-gurudevi-library-domain-authority.md](current_progress/2026-09-15-gurudevi-library-domain-authority.md) | Canonical Library capability ledger with source/evidence denominators and browser/native delivery status |
@@ -56,6 +91,13 @@ These files outline security models, data lifecycle policies, platform topologie
 | Document | Description |
 |---|---|
 | [architecture/safe-exploration-and-reversible-work-model.md](architecture/safe-exploration-and-reversible-work-model.md) | Canonical platform and safety plan: web Explore, mobile Guest, account Safe Try, independent rollout and presentation controls, and selected-record Keep |
+| [architecture/2026-11-04-community-core-architecture-and-triad-expansion.md](architecture/2026-11-04-community-core-architecture-and-triad-expansion.md) | **Community Domain Triad Architecture:** Holistic alignment for Feed, Groups, DMs with Tutii companion, Saved Messages, Incognito privacy mode, and national scale constraints (~10k schools) |
+| [architecture/authentication-and-sovereign-identity.md](architecture/authentication-and-sovereign-identity.md) | **Canonical authentication and identity authority:** credential/account separation, lifecycle, provider linking, web/mobile/API/AI/channel/device contracts, and additive migration gates. |
+| [architecture/edlove-sovereign-uuidv8-specification.md](architecture/edlove-sovereign-uuidv8-specification.md) | **Canonical EdLove identifier profile:** UUIDv8 layout, domain/subtype registry, mint-origin limits, generator rules, and adoption controls for Gurudevi and future EdLove domains. |
+| [architecture/edlove-identity-convergence-program.md](architecture/edlove-identity-convergence-program.md) | **Identity convergence program:** phased movement from provider-coupled authentication to EdLove-owned identity, credential stewardship, shared lifecycle, delegated principals, and release evidence. |
+| [current_progress/2026-10-23-edlove-uuidv8-foundation-implementation-plan.md](current_progress/2026-10-23-edlove-uuidv8-foundation-implementation-plan.md) | Step 1 plan for UUIDv8 registry, conformance vectors, authoritative minting boundary, and non-destructive adoption discovery. |
+| [current_progress/2026-10-23-edlove-account-id-persistence-phase-plan.md](current_progress/2026-10-23-edlove-account-id-persistence-phase-plan.md) | Next-phase plan for additive account UUIDv8 persistence, server-owned assignment, collision handling, resumable backfill, rollback, and production evidence. |
+| [dossiers/2026-10-11-sanctuary-many-doors/README.md](dossiers/2026-10-11-sanctuary-many-doors/README.md) | Draft dream-first resilience exploration: nine professional perspectives, technical frontier/edge and material-access seams, integration rounds, evidence ledger, scale scenarios, and conditional milestones |
 | [architecture/dependency-intelligence-graph.md](architecture/dependency-intelligence-graph.md) | Living specification for the Supabase-backed mobile dependency release-history, compatibility, evidence, query, and operational system. |
 | [architecture/2026-09-20-mutation-pipeline-optimizations-and-low-end-efficiency.md](architecture/2026-09-20-mutation-pipeline-optimizations-and-low-end-efficiency.md) | Mutation pipeline optimizations, TanStack DX architecture, zero-thrash state transitions, and low-end device efficiency strategies |
 | [architecture/architecture-guidelines.md](architecture/architecture-guidelines.md) | Layered topology, golden rules of dependencies, workspace boundaries |
@@ -85,7 +127,10 @@ These files outline security models, data lifecycle policies, platform topologie
 | [architecture/2026-08-29-sanctuary-api-future-readiness-audit.md](architecture/2026-08-29-sanctuary-api-future-readiness-audit.md) | Comparative implementation, contract, documentation, and future-readiness audit for Sanctuary API |
 | [architecture/2026-08-29-sanctuary-api-adversarial-security-audit.md](architecture/2026-08-29-sanctuary-api-adversarial-security-audit.md) | Stop-ship authorization, payment, contract, AI, and verification audit of Sanctuary API |
 | [architecture/negentropy-reward-economy-and-ad-center-vision.md](architecture/negentropy-reward-economy-and-ad-center-vision.md) | Vision, philosophy, tokenomics, and strategy nuances for the Negentropy Reward Economy & Ad Center |
+| [architecture/hostile-review-gate.md](architecture/hostile-review-gate.md) | Adversarial release, funding, and rewarded-attention review gate |
 | [architecture/editorial-platform-architecture.md](architecture/editorial-platform-architecture.md) | Technical model, metadata, events, and migration path for editorial publishing |
+| [architecture/2026-10-10-sovereign-mesh-and-sanctuary-shield-architecture.md](architecture/2026-10-10-sovereign-mesh-and-sanctuary-shield-architecture.md) | Multi-Bearer Sovereign Mesh (mDNS, BLE Gossip, Optical QR, Nostr DTN) and zero-cost Sanctuary Shield (Cloudflare DoH) architecture |
+| [architecture/2026-10-11-whatsapp-business-platform-and-omnichannel-architecture.md](architecture/2026-10-11-whatsapp-business-platform-and-omnichannel-architecture.md) | Convivial WhatsApp Business Platform integration: Meta Cloud API rate cards, zero-rated telco add-on packs, 9,962-school C-ARI bot, and Teacher Voice Exoskeleton |
 
 ---
 
@@ -117,6 +162,9 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-09-15-gurudevi-migration-execution-discipline.md](decisions/2026-09-15-gurudevi-migration-execution-discipline.md) | Evidence coverage, change control, authority, and delegation rules for the migration |
 | [decisions/2026-09-15-community-domain-functional-authority.md](decisions/2026-09-15-community-domain-functional-authority.md) | Canonical Community capability ledger with source/evidence denominators and migration status |
 | [decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md](decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md) | Canonical Profile, Notifications, Settings, and account-lifecycle capability ledger |
+| [decisions/2026-10-06-quiet-cultivation-and-private-sanctuary-decision.md](decisions/2026-10-06-quiet-cultivation-and-private-sanctuary-decision.md) | Founder decision embracing quiet cultivation, private sanctuary, and de-scoping public open-source/sponsorship overhead |
+| [decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md](decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md) | Core definition covenant: Convivial sanctuary, Firefly companion, integrated educational ecosystem, agentic leverage, and local-first physics |
+| [decisions/2026-10-10-sovereign-inter-institutional-mesh-and-uplink-strategy.md](decisions/2026-10-10-sovereign-inter-institutional-mesh-and-uplink-strategy.md) | Sovereign Inter-Institutional Mesh & Remote Uplink Strategy: Physical Layer-Local P2P vs. Obfuscated Remote Overlays (Outline & Headscale) |
 
 ---
 
@@ -165,6 +213,8 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [infra/2026-07-24-physical-device-deployment-log.md](infra/2026-07-24-physical-device-deployment-log.md) | Live runlog for physical hardware builds and USB debugging |
 | [infra/doppler-secrets-management-guide.md](infra/doppler-secrets-management-guide.md) | Comprehensive guide for Doppler secrets management integration across dev/staging/prod/next environments, including CLI setup, CI/CD integration, and app-specific configuration patterns. |
 | [infra/production-readiness-program.md](infra/production-readiness-program.md) | Cross-platform production-readiness checklist for mobile, API, web, data, sync, security, and operations |
+| [infra/public-opening-checklist.md](infra/public-opening-checklist.md) | Stop-ship checklist for public repository opening and external contributions |
+| [infra/funding-and-support-disclosure.md](infra/funding-and-support-disclosure.md) | Public scaffold for aligned support terms and material funding disclosures |
 | [infra/oss-public-release-security-checklist.md](infra/oss-public-release-security-checklist.md) | P0 release gate and security/privacy/legal checklist for flipping the repo public and accepting external contributions, mapped to OpenSSF OSPS Baseline |
 | [infra/oss-public-release-devops-checklist.md](infra/oss-public-release-devops-checklist.md) | CI/CD, installability, cross-platform portability, release engineering, and contributor-onboarding checklist for public/OSS release |
 | [infra/developer-environment-and-distribution-plan.md](infra/developer-environment-and-distribution-plan.md) | Plan for making the monorepo installable and contributable on Windows, macOS, and Linux: tiered toolchain paths, WSL2 mechanics, single-source toolchain versioning, and the Phase 0–5 fix sequence |
@@ -174,6 +224,7 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [current_progress/2026-08-31-editorial-publishing-implementation-plan.md](current_progress/2026-08-31-editorial-publishing-implementation-plan.md) | Phased implementation plan for EdLove and GuruDevi journal foundations, distribution, translations, rights, and contributors |
 | [current_progress/2026-09-20-future-hardening-roadmap.md](current_progress/2026-09-20-future-hardening-roadmap.md) | Future hardening roadmap, completed milestones (OWASP, deep links, outbox, hexagonal decoupling), and remaining verification goals |
 | [current_progress/2026-09-20-offline-mutation-hardening-and-hexagonal-decoupling.md](current_progress/2026-09-20-offline-mutation-hardening-and-hexagonal-decoupling.md) | Architectural report on the completed zero-legacy Hexagonal Supabase migration, multi-tenant outbox hardening, and Effect-TS v4 facade alignment |
+| [current_progress/2026-11-06-maplibre-react-native-v11-migration.md](current_progress/2026-11-06-maplibre-react-native-v11-migration.md) | MapLibre React Native v11 audit and RN Maps wrapper repair; documents why a MapLibre marker-only branch was incoherent and what a full renderer port would require |
 
 ---
 
@@ -205,6 +256,17 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 ---
 
 ## Changelog
+
+### 2026-10-11
+
+- **Added**: `Core/gurudevi-soul-and-core-covenant.md` — Expanded governing definition for the product soul, five core pillars, integrated-ecosystem / many-doors model, progressive-affordance principle, and capability-authority covenant.
+- **Clarified**: `Core/what-is-gurudevi.md` is the active entry point; the Covenant is the expanded governing document. The earlier manifesto remains historical decision context.
+
+### 2026-10-10
+
+- **Added**: `architecture/2026-10-10-sovereign-mesh-and-sanctuary-shield-architecture.md` — Authoritative specification for the Multi-Bearer Sovereign Mesh (mDNS Hotspot, BitChat BLE Gossip, Optical QR Sneakernet, Nostr DTN) and zero-cost Sanctuary Shield (Cloudflare DoH).
+- **Added**: `decisions/2026-10-10-sovereign-inter-institutional-mesh-and-uplink-strategy.md` — Authoritative ADR for the Sovereign Inter-Institutional Mesh & Remote Uplink Strategy: Physical Layer-Local P2P (mDNS, BitChat BLE Gossip, Optical QR Sneakernet) vs. Obfuscated Remote Overlays (Outline Foundation Shadowsocks & Headscale WireGuard).
+- **Added**: `decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md` — Core definition covenant: Convivial sanctuary, Firefly companion, integrated educational ecosystem, agentic leverage, and local-first physics.
 
 ### 2026-10-04
 

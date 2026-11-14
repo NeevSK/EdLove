@@ -1,3 +1,7 @@
+import {
+  ChatSendCommandSchema,
+  ChatSendReceiptSchema,
+} from '@repo/core/logic/schemas/chat-command.schema';
 import { z } from 'zod';
 
 const communityPolicy = (action: 'create' | 'read' | 'update' | 'delete', subject: 'Post') =>
@@ -6,9 +10,9 @@ const communityPolicy = (action: 'create' | 'read' | 'update' | 'delete', subjec
   }) as const;
 
 const comment = z.object({
-  id: z.string().uuid(),
-  post_id: z.string().uuid(),
-  author_id: z.string().uuid().nullable(),
+  id: z.uuid(),
+  post_id: z.uuid(),
+  author_id: z.uuid().nullable(),
   content: z.string(),
   is_anonymous: z.boolean(),
   is_official_answer: z.boolean(),
@@ -20,9 +24,9 @@ const comment = z.object({
 
 const success = z.object({ success: z.literal(true) });
 const groupMember = z.object({
-  id: z.string().uuid(),
-  group_id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  id: z.uuid(),
+  group_id: z.uuid(),
+  user_id: z.uuid(),
   role: z.string(),
   status: z.string(),
   joined_at: z.string().optional(),
@@ -39,7 +43,7 @@ export const communityORPCContract = {
       query: z.object({
         limit: z.coerce.number().int().positive().max(200).optional(),
         offset: z.coerce.number().int().nonnegative().optional(),
-        schoolId: z.string().uuid().optional(),
+        schoolId: z.uuid().optional(),
         search: z.string().trim().min(1).max(120).optional(),
         isPublic: z.boolean().optional(),
         type: z.string().trim().min(1).max(64).optional(),
@@ -51,7 +55,7 @@ export const communityORPCContract = {
   getGroup: {
     method: 'get',
     path: '/community/groups/:groupId',
-    request: { params: z.object({ groupId: z.string().uuid() }) },
+    request: { params: z.object({ groupId: z.uuid() }) },
     metadata: { policy: { action: 'read', subject: 'Group' } },
     responses: { 200: { schema: z.any(), description: 'Community group' } },
   },
@@ -62,7 +66,7 @@ export const communityORPCContract = {
       body: z.object({
         name: z.string().trim().min(1).max(120),
         description: z.string().trim().max(4000).optional(),
-        schoolId: z.string().uuid().optional(),
+        schoolId: z.uuid().optional(),
         type: z.string().trim().min(1).max(64).optional(),
         visibility: z.string().trim().min(1).max(64).optional(),
       }),
@@ -73,7 +77,7 @@ export const communityORPCContract = {
   joinGroup: {
     method: 'post',
     path: '/community/groups/:groupId/join',
-    request: { params: z.object({ groupId: z.string().uuid() }) },
+    request: { params: z.object({ groupId: z.uuid() }) },
     metadata: { policy: { action: 'create', subject: 'Group' } },
     responses: { 201: { schema: groupMember, description: 'Joined group' } },
   },
@@ -82,10 +86,10 @@ export const communityORPCContract = {
     path: '/community/posts',
     request: {
       query: z.object({
-        groupId: z.string().uuid().optional(),
+        groupId: z.uuid().optional(),
         limit: z.coerce.number().int().positive().max(200).optional(),
         offset: z.coerce.number().int().nonnegative().optional(),
-        viewDate: z.string().datetime().optional(),
+        viewDate: z.iso.datetime().optional(),
       }),
     },
     metadata: communityPolicy('read', 'Post'),
@@ -95,8 +99,8 @@ export const communityORPCContract = {
     method: 'get',
     path: '/community/resonance/:userId',
     request: {
-      params: z.object({ userId: z.string().uuid() }),
-      query: z.object({ viewDate: z.string().datetime().optional() }),
+      params: z.object({ userId: z.uuid() }),
+      query: z.object({ viewDate: z.iso.datetime().optional() }),
     },
     metadata: communityPolicy('read', 'Post'),
     responses: {
@@ -110,10 +114,10 @@ export const communityORPCContract = {
     method: 'get',
     path: '/community/groups/:groupId/messages',
     request: {
-      params: z.object({ groupId: z.string().uuid() }),
+      params: z.object({ groupId: z.uuid() }),
       query: z.object({
         limit: z.coerce.number().int().positive().max(200).optional(),
-        viewDate: z.string().datetime().optional(),
+        viewDate: z.iso.datetime().optional(),
       }),
     },
     metadata: { policy: { action: 'read', subject: 'Group' } },
@@ -123,18 +127,27 @@ export const communityORPCContract = {
     method: 'post',
     path: '/community/groups/:groupId/messages',
     request: {
-      params: z.object({ groupId: z.string().uuid() }),
+      params: z.object({ groupId: z.uuid() }),
       body: z.object({ content: z.string().trim().min(1).max(4000) }),
     },
     metadata: { policy: { action: 'create', subject: 'Group' } },
     responses: { 201: { schema: z.any(), description: 'Sent group message' } },
+  },
+  sendMessageCommand: {
+    method: 'post',
+    path: '/community/message-commands',
+    request: { body: ChatSendCommandSchema },
+    metadata: { policy: { action: 'create', subject: 'Group' } },
+    responses: {
+      201: { schema: ChatSendReceiptSchema, description: 'Committed circle message receipt' },
+    },
   },
   createPost: {
     method: 'post',
     path: '/community/posts',
     request: {
       body: z.object({
-        groupId: z.string().uuid(),
+        groupId: z.uuid(),
         content: z.string().trim().min(1).max(4000),
         postType: z.string().trim().min(1).max(64).default('discussion'),
         authorTier: z.string().trim().min(1).max(64),
@@ -147,7 +160,7 @@ export const communityORPCContract = {
     method: 'post',
     path: '/community/posts/:postId/reactions',
     request: {
-      params: z.object({ postId: z.string().uuid() }),
+      params: z.object({ postId: z.uuid() }),
       body: z.object({ emoji: z.string().trim().min(1).max(32).optional() }),
     },
     metadata: communityPolicy('create', 'Post'),
@@ -159,9 +172,9 @@ export const communityORPCContract = {
     method: 'patch',
     path: '/community/groups/:groupId/members/status',
     request: {
-      params: z.object({ groupId: z.string().uuid() }),
+      params: z.object({ groupId: z.uuid() }),
       body: z.object({
-        userId: z.string().uuid(),
+        userId: z.uuid(),
         status: z.enum(['active', 'rejected', 'pending']),
       }),
     },
@@ -172,7 +185,7 @@ export const communityORPCContract = {
     method: 'patch',
     path: '/community/groups/:groupId/policy',
     request: {
-      params: z.object({ groupId: z.string().uuid() }),
+      params: z.object({ groupId: z.uuid() }),
       body: z.object({ joinPolicy: z.string().trim().min(1).max(64) }),
     },
     metadata: { policy: { action: 'update', subject: 'Group' } },
@@ -182,7 +195,7 @@ export const communityORPCContract = {
     method: 'get',
     path: '/community/groups/:groupId/members',
     request: {
-      params: z.object({ groupId: z.string().uuid() }),
+      params: z.object({ groupId: z.uuid() }),
       query: z.object({ status: z.string().optional() }),
     },
     metadata: { policy: { action: 'read', subject: 'Group' } },
@@ -192,8 +205,8 @@ export const communityORPCContract = {
     method: 'patch',
     path: '/community/groups/:groupId/members/role',
     request: {
-      params: z.object({ groupId: z.string().uuid() }),
-      body: z.object({ userId: z.string().uuid(), role: z.string().trim().min(1).max(64) }),
+      params: z.object({ groupId: z.uuid() }),
+      body: z.object({ userId: z.uuid(), role: z.string().trim().min(1).max(64) }),
     },
     metadata: { policy: { action: 'update', subject: 'Group' } },
     responses: { 200: { schema: groupMember, description: 'Updated group member role' } },
@@ -202,7 +215,7 @@ export const communityORPCContract = {
     method: 'post',
     path: '/community/groups/:groupId/members/approve-all',
     request: {
-      params: z.object({ groupId: z.string().uuid() }),
+      params: z.object({ groupId: z.uuid() }),
     },
     metadata: { policy: { action: 'update', subject: 'Group' } },
     responses: { 200: { schema: success, description: 'Approved pending group members' } },
@@ -211,7 +224,7 @@ export const communityORPCContract = {
     method: 'get',
     path: '/community/posts/:postId/comments',
     request: {
-      params: z.object({ postId: z.string().uuid() }),
+      params: z.object({ postId: z.uuid() }),
       query: z.object({
         limit: z.number().int().positive().max(200).optional(),
       }),
@@ -223,7 +236,7 @@ export const communityORPCContract = {
     method: 'post',
     path: '/community/posts/:postId/comments',
     request: {
-      params: z.object({ postId: z.string().uuid() }),
+      params: z.object({ postId: z.uuid() }),
       body: z.object({
         content: z.string().trim().min(1).max(4000),
         isAnonymous: z.boolean().optional(),
@@ -236,7 +249,7 @@ export const communityORPCContract = {
     method: 'delete',
     path: '/community/comments/:commentId',
     request: {
-      params: z.object({ commentId: z.string().uuid() }),
+      params: z.object({ commentId: z.uuid() }),
     },
     metadata: communityPolicy('delete', 'Post'),
     responses: { 200: { schema: success, description: 'Comment deleted' } },
@@ -245,7 +258,7 @@ export const communityORPCContract = {
     method: 'post',
     path: '/community/comments/:commentId/upvote',
     request: {
-      params: z.object({ commentId: z.string().uuid() }),
+      params: z.object({ commentId: z.uuid() }),
     },
     metadata: communityPolicy('create', 'Post'),
     responses: {
@@ -256,7 +269,7 @@ export const communityORPCContract = {
     method: 'post',
     path: '/community/comments/:commentId/official',
     request: {
-      params: z.object({ commentId: z.string().uuid() }),
+      params: z.object({ commentId: z.uuid() }),
     },
     metadata: communityPolicy('update', 'Post'),
     responses: { 200: { schema: success, description: 'Official answer state updated' } },
@@ -265,7 +278,7 @@ export const communityORPCContract = {
     method: 'get',
     path: '/community/polls/:postId',
     request: {
-      params: z.object({ postId: z.string().uuid() }),
+      params: z.object({ postId: z.uuid() }),
     },
     metadata: communityPolicy('read', 'Post'),
     responses: {
@@ -273,7 +286,7 @@ export const communityORPCContract = {
         schema: z.object({
           counts: z.record(z.string(), z.number().int().nonnegative()),
           totalVotes: z.number().int().nonnegative(),
-          userVotes: z.array(z.string().uuid()),
+          userVotes: z.array(z.uuid()),
         }),
         description: 'Poll status',
       },
@@ -283,16 +296,16 @@ export const communityORPCContract = {
     method: 'post',
     path: '/community/polls/:postId/vote',
     request: {
-      params: z.object({ postId: z.string().uuid() }),
+      params: z.object({ postId: z.uuid() }),
       body: z.object({
-        optionId: z.string().uuid(),
+        optionId: z.uuid(),
         allowMultiple: z.boolean().optional(),
       }),
     },
     metadata: communityPolicy('create', 'Post'),
     responses: {
       200: {
-        schema: z.object({ selectedOptionIds: z.array(z.string().uuid()) }),
+        schema: z.object({ selectedOptionIds: z.array(z.uuid()) }),
         description: 'Selected poll options',
       },
     },
@@ -301,7 +314,7 @@ export const communityORPCContract = {
     method: 'patch',
     path: '/community/posts/:postId',
     request: {
-      params: z.object({ postId: z.string().uuid() }),
+      params: z.object({ postId: z.uuid() }),
       body: z.object({ content: z.string().trim().min(1).max(4000) }),
     },
     metadata: communityPolicy('update', 'Post'),
@@ -311,7 +324,7 @@ export const communityORPCContract = {
     method: 'delete',
     path: '/community/posts/:postId',
     request: {
-      params: z.object({ postId: z.string().uuid() }),
+      params: z.object({ postId: z.uuid() }),
     },
     metadata: communityPolicy('delete', 'Post'),
     responses: { 200: { schema: success, description: 'Deleted community post' } },
@@ -319,7 +332,7 @@ export const communityORPCContract = {
   getReactionStatus: {
     method: 'get',
     path: '/community/posts/:postId/reaction',
-    request: { params: z.object({ postId: z.string().uuid() }) },
+    request: { params: z.object({ postId: z.uuid() }) },
     metadata: communityPolicy('read', 'Post'),
     responses: {
       200: { schema: z.object({ active: z.boolean() }), description: 'Current reaction state' },
@@ -330,9 +343,9 @@ export const communityORPCContract = {
     path: '/community/report',
     request: {
       body: z.object({
-        postId: z.string().uuid().optional(),
-        groupId: z.string().uuid().optional(),
-        targetUserId: z.string().uuid().nullable().optional(),
+        postId: z.uuid().optional(),
+        groupId: z.uuid().optional(),
+        targetUserId: z.uuid().nullable().optional(),
         reason: z.string(),
         details: z.string().nullable().optional(),
         reportTarget: z.string().optional(),

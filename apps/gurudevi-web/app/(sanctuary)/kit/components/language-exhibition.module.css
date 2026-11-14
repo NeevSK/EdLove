@@ -1,0 +1,329 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
+  background: var(--w-surface, rgba(20, 24, 33, 0.6));
+  backdrop-filter: blur(12px);
+  margin-top: 16px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.08));
+  background: var(--w-ground, rgba(13, 17, 23, 0.7));
+  padding: 18px;
+  gap: 14px;
+}
+
+.cardFullWidth {
+  grid-column: 1 / -1;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.patternNum {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--w-lamp, #f59e0b);
+  letter-spacing: 0.05em;
+}
+
+.patternTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--w-ink, #ffffff);
+  margin: 2px 0 4px;
+}
+
+.patternPath {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--w-ink-soft, rgba(255, 255, 255, 0.5));
+  word-break: break-all;
+}
+
+.seamTag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--w-ink-soft, #a1a1aa);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+
+.critiqueBox {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--w-ink-soft, #a1a1aa);
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--w-lamp, #f59e0b);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.stage {
+  padding: 20px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed var(--w-line, rgba(255, 255, 255, 0.15));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90px;
+  position: relative;
+}
+
+/* Pattern 1: Dropdown */
+.toggleWrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.toggleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--w-ink, #ffffff);
+  background: var(--w-surface, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.15));
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.langCode {
+  letter-spacing: 0.05em;
+}
+
+.rotate180 {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 170px;
+  background: #181c24;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 6px;
+  list-style: none;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #e4e4e7;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+
+.dropdownItem:hover, .dropdownItemActive {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.langNameRow {
+  display: flex;
+  flex-direction: column;
+}
+
+.nativeText {
+  font-weight: 600;
+}
+
+.secondaryLabel {
+  font-size: 11px;
+  color: #a1a1aa;
+}
+
+/* Pattern 2: Capsule Group */
+.capsuleGroup {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
+  border-radius: 999px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.capsuleBtn {
+  min-width: 38px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--w-ink-soft, #a1a1aa);
+  transition: all 0.15s ease;
+}
+
+.capsuleBtnActive {
+  background: var(--w-lamp, #f59e0b);
+  color: var(--w-on-lamp, #1a150b);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Pattern 3: Marketing Header */
+.marketingHeaderGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.marketingBtn {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--w-ink-soft, #a1a1aa);
+  transition: background 0.15s;
+}
+
+.marketingBtnActive {
+  background: var(--w-ink, #ffffff);
+  color: var(--w-ground, #090d16);
+}
+
+/* Pattern 4: Footer Links */
+.footerLinksGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.footerLinkItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footerDivider {
+  color: var(--w-ink-soft, rgba(255, 255, 255, 0.3));
+}
+
+.footerBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--w-ink-soft, #a1a1aa);
+  font-size: 13px;
+  padding: 0;
+}
+
+.footerBtn:hover {
+  text-decoration: underline;
+}
+
+.footerBtnActive {
+  font-weight: 700;
+  text-decoration: underline;
+  color: var(--w-lamp, #f59e0b);
+}
+
+/* Pattern 5: Option Cards (Settings Floor) */
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.optionCard {
+  min-height: 52px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.15));
+  background: var(--w-surface, rgba(255, 255, 255, 0.05));
+  color: var(--w-ink, #ffffff);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.optionCard:hover {
+  border-color: var(--w-lamp, #f59e0b);
+}
+
+.optionCard[data-selected="true"] {
+  border-color: var(--w-lamp, #f59e0b);
+  background: rgba(245, 158, 11, 0.12);
+  box-shadow: 0 0 0 1px var(--w-lamp, #f59e0b);
+}
+
+.optionLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--w-ink, #ffffff);
+}
+
+.optionSub {
+  font-size: 11px;
+  color: var(--w-ink-soft, #a1a1aa);
+}

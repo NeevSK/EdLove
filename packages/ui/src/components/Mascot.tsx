@@ -33,7 +33,7 @@ export type MascotConfig = {
   >;
 };
 
-const DEFAULT_MASCOT: MascotConfig = { id: 'firefly', name: 'Firefly' };
+const DEFAULT_MASCOT: MascotConfig = { id: 'firefly', name: 'Tutii' };
 const MascotContext = createContext<MascotConfig>(DEFAULT_MASCOT);
 
 export function MascotProvider({

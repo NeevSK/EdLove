@@ -1,4 +1,6 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { useUIStore } from '@repo/core/store/useUIStore';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { EnergyBarChart } from '@repo/self/components/EnergyBarChart';
@@ -14,7 +16,7 @@ import WelcomeModal from '@repo/self/components/WelcomeModal';
 import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Box, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useState } from 'react';
@@ -27,7 +29,7 @@ export default function AdminSelfView() {
   // State & Kernel Hooks
   const { context } = usePermissions();
   const userId = context.userId;
-  const user = useStore((state) => state.user);
+  const user = useAuthStore((state) => state.user);
   const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
   const {
     logs: moodHistory,
@@ -42,8 +44,8 @@ export default function AdminSelfView() {
   // UI State
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
 
   const handleMoodSelect = async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
     setIsSavingMood(true);
@@ -58,7 +60,7 @@ export default function AdminSelfView() {
   };
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="admin"
         description={t('self.adminDescription')}
@@ -147,7 +149,7 @@ export default function AdminSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }
 

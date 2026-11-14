@@ -2,30 +2,8 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import type { GraphNode } from '@repo/core/types';
 
 import { type ForceLayoutOptions, forceLayout } from '@repo/graphics/layouts';
-import type {
-  Anomaly,
-  BenchmarkInsights,
-  BenchmarkReport,
-  CustomReportConfig,
-  DateRange,
-  EducationSector,
-  Insight,
-  LiveMetrics,
-  MetricDefinition,
-  Prediction,
-  ReportResult,
-  TenantComparison,
-  TenantMetrics,
-  Trend,
-} from '@repo/admin/analytics/types';
+import type { Anomaly, BenchmarkInsights, BenchmarkReport, CustomReportConfig, DateRange, EducationSector, Insight, LiveMetrics, MetricDefinition, Prediction, ReportResult, TenantComparison, TenantMetrics, Trend } from '@repo/core/types/Analytics';
 export class MultiTenantAnalyticsEngine {
-  private static instance: MultiTenantAnalyticsEngine;
-  static getInstance(): MultiTenantAnalyticsEngine {
-    if (!MultiTenantAnalyticsEngine.instance) {
-      MultiTenantAnalyticsEngine.instance = new MultiTenantAnalyticsEngine();
-    }
-    return MultiTenantAnalyticsEngine.instance;
-  }
   // Data aggregation methods
   async aggregateTenantMetrics(
     tenantIds: string[],
@@ -613,5 +591,5 @@ export class MultiTenantAnalyticsEngine {
     return {} as Record<MetricDefinition, number>; // Placeholder
   }
 }
-// Export singleton instance
-export const multiTenantAnalyticsEngine = MultiTenantAnalyticsEngine.getInstance();
+// Export module singleton instance
+export const multiTenantAnalyticsEngine = new MultiTenantAnalyticsEngine();

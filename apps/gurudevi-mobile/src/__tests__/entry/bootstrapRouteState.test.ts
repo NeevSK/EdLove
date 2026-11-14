@@ -24,6 +24,7 @@ function routeState(overrides: Partial<BootstrapRouteState> = {}): BootstrapRout
     hasLiveCapacity: true,
     hasActiveAccessToken: true,
     hasProfileName: true,
+    principalId: 'account-a',
     isProfileForSession: true,
     identityAvailability: 'active',
     isProfileResolving: false,
@@ -142,6 +143,14 @@ describe('bootstrap route-state adapter', () => {
     expect(target).toMatchObject({ decision: 'app', redirectTo: '/self' });
   });
 
+  it('routes an admitted institutional capacity to the existing workspace dispatcher', () => {
+    const target = getBootstrapRouteTarget(
+      routeState({ activeCapacity: 'teacher', pathname: '/' }),
+    );
+
+    expect(target).toMatchObject({ decision: 'app', redirectTo: '/workspace' });
+  });
+
   it('returns an unauthenticated root launch to public step zero', () => {
     const target = getBootstrapRouteTarget(
       routeState({
@@ -176,6 +185,24 @@ describe('bootstrap route-state adapter', () => {
         onboardingCompleted: true,
         pathname: '/self',
         session: anonymousSession,
+      }),
+    );
+
+    expect(target).toMatchObject({ decision: 'app', redirectTo: null });
+  });
+
+  it('admits a completed device-local guest without an auth session', () => {
+    const target = getBootstrapRouteTarget(
+      routeState({
+        hasActiveAccessToken: false,
+        hasLiveCapacity: false,
+        hasLocalGuestSession: true,
+        hasProfileName: false,
+        identityAvailability: 'unknown',
+        isLocalGuestReady: true,
+        onboardingCompleted: true,
+        pathname: '/self',
+        session: null,
       }),
     );
 

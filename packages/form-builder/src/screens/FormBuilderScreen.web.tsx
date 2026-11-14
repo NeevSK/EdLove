@@ -1,5 +1,4 @@
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box } from '@repo/ui/primitives';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { FormBuilder } from '@repo/form-builder/FormBuilder';
 
@@ -7,8 +6,8 @@ export default function FormBuilderScreenWeb() {
   const { t } = useTranslation();
 
   return (
-    <ScreenWrapper>
-      <Box sx={{ flex: 1 }}>
+    <div className="flex-1 min-h-screen">
+      <View style={{ flex: 1 }}>
         <FormBuilder
           title={t('forms.institutionalBuilder') || 'Institutional Form Builder'}
           description={
@@ -16,7 +15,7 @@ export default function FormBuilderScreenWeb() {
             'Design dignified, premium data collection experiences for your sanctuary.'
           }
         />
-      </Box>
-    </ScreenWrapper>
+      </View>
+    </div>
   );
 }

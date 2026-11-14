@@ -3,20 +3,20 @@
  *
  * Re-exports core execution primitives and canonical retry policies.
  * Specialized layer compositions and domain tags should be imported from `@repo/core/effect/layers`
- * or `@repo/core/logic/ports/growth.tags`.
+ * or `@repo/core/logic/ports/growth.port`.
  */
 
 export {
-  defaultRetryPolicy,
-  strictRetryPolicy,
-  retryPolicy,
-} from '../effect/Schedules';
-
-export {
-  tryPromise,
   fireAndForget,
   fireAndForgetEffect,
+  fromSupabase,
   reportBestEffort,
   runEffect,
-  fromSupabase,
+  tryPromise,
 } from '../effect/index';
+export {
+  defaultRetryPolicy,
+  retryPolicy,
+  retryTransient,
+  strictRetryPolicy,
+} from '../effect/Schedules';

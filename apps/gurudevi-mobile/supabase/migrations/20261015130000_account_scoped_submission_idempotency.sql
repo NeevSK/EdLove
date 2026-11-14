@@ -1,0 +1,35 @@
+-- Caller keys are account-scoped; the assignment/student invariant remains.
+-- Build the replacement before removing the legacy global constraint.
+DO $$
+DECLARE
+  target_table regclass := 'public.submissions'::regclass;
+  student_column smallint;
+  key_column smallint;
+BEGIN
+  PERFORM set_config('lock_timeout', '5s', true);
+  SELECT attnum INTO STRICT student_column FROM pg_attribute
+    WHERE attrelid = target_table AND attname = 'student_id' AND NOT attisdropped;
+  SELECT attnum INTO STRICT key_column FROM pg_attribute
+    WHERE attrelid = target_table AND attname = 'idempotency_key' AND NOT attisdropped;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = target_table
+    AND conname = 'submissions_student_id_idempotency_key_key') THEN
+    ALTER TABLE public.submissions ADD CONSTRAINT submissions_student_id_idempotency_key_key
+      UNIQUE (student_id, idempotency_key);
+  ELSIF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = target_table
+    AND conname = 'submissions_student_id_idempotency_key_key'
+    AND contype = 'u' AND conkey = ARRAY[student_column, key_column]) THEN
+    RAISE EXCEPTION 'Unexpected account-scoped submission constraint definition';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = target_table
+    AND conname = 'submissions_idempotency_key_key') THEN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = target_table
+      AND conname = 'submissions_idempotency_key_key'
+      AND contype = 'u' AND conkey = ARRAY[key_column]) THEN
+      RAISE EXCEPTION 'Unexpected legacy submission constraint definition';
+    END IF;
+    ALTER TABLE public.submissions DROP CONSTRAINT submissions_idempotency_key_key;
+  END IF;
+END;
+$$;

@@ -2,7 +2,7 @@
 title: "Gurudevi Release Environments Runbook"
 status: "active"
 created: 2026-08-12
-updated: 2026-08-12
+updated: 2026-10-11
 tags: [release, environments, staging, preview, android, ios, web, doppler]
 ---
 
@@ -22,6 +22,20 @@ real users        -> prd config -> production APK/web/API
 Preview is not a second production database. It is a safe production-like
 environment with separate users, data, credentials, sync instance, analytics,
 payments, and notifications.
+
+## Temporary no-staging restriction — 2026-10-11
+
+Until the account owner provisions the `stg` environment described above, the
+repository is development-only. A local run must not be described as staging,
+and production must not become the test environment merely because it has no
+users yet.
+
+Allowed production activity is limited to read-only health/operational checks
+with approved credentials. Prohibited activity includes synthetic QA accounts,
+schema/migration experiments, destructive checks, provider test calls, and
+load testing. Public release, R1 assurance, and a production rollout remain
+blocked until independent staging credentials, synthetic data, PowerSync, and
+rollback evidence exist.
 
 ## Branch policy
 

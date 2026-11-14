@@ -1,9 +1,11 @@
-import { GuestDataSync } from '@repo/core/native';
+import { GuestDataSync } from '@repo/core/native/guestDataSync';
+import { useMachineActor } from '@repo/core/hooks/useMachineActor';
+import { createGuestDataSyncActor } from '@repo/ui/machines/guestDataSyncMachine';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Check, CircleAlert, TriangleAlert } from '@repo/ui/icons';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BrandPulse } from './BrandPulse';
 
@@ -12,179 +14,118 @@ interface GuestDataSyncModalProps {
   onClose: () => void;
   userId: string;
   onSyncComplete: () => void;
+  onSkipEmpty?: () => void | Promise<void>;
+  onDiscard?: () => void | Promise<void>;
 }
 
 type SyncStatus = 'idle' | 'loading' | 'ready' | 'confirm_skip' | 'syncing' | 'completed' | 'error';
 
-interface SyncSummary {
-  timetablePeriods: number;
-  moodLogs: number;
-  journalEntries: number;
-  students: number;
-  total: number;
-}
-
-interface State {
-  status: SyncStatus;
-  summary: SyncSummary;
-  progress: { current: number; total: number; step: string };
-  error: string | null;
-}
-
-type Action =
-  | { type: 'START_LOADING' }
-  | { type: 'SET_SUMMARY'; summary: SyncSummary }
-  | { type: 'START_SYNC' }
-  | { type: 'UPDATE_PROGRESS'; current: number; total: number; step: string }
-  | { type: 'SET_COMPLETED' }
-  | { type: 'SET_ERROR'; message: string }
-  | { type: 'TRIGGER_CONFIRM_SKIP' }
-  | { type: 'CANCEL_CONFIRM_SKIP' }
-  | { type: 'RESET' };
-
-const initialState: State = {
-  status: 'idle',
-  summary: {
-    timetablePeriods: 0,
-    moodLogs: 0,
-    journalEntries: 0,
-    students: 0,
-    total: 0,
-  },
-  progress: { current: 0, total: 0, step: '' },
-  error: null,
-};
-
-function syncReducer(state: State, action: Action): State {
-  switch (action.type) {
-    case 'START_LOADING':
-      return { ...state, status: 'loading', error: null };
-    case 'SET_SUMMARY':
-      return { ...state, status: 'ready', summary: action.summary };
-    case 'START_SYNC':
-      return { ...state, status: 'syncing', error: null };
-    case 'UPDATE_PROGRESS':
-      return {
-        ...state,
-        progress: {
-          current: action.current,
-          total: action.total,
-          step: action.step,
-        },
-      };
-    case 'SET_COMPLETED':
-      return { ...state, status: 'completed' };
-    case 'SET_ERROR':
-      return { ...state, status: 'error', error: action.message };
-    case 'TRIGGER_CONFIRM_SKIP':
-      return { ...state, status: 'confirm_skip' };
-    case 'CANCEL_CONFIRM_SKIP':
-      return { ...state, status: 'ready' };
-    case 'RESET':
-      return initialState;
-    default:
-      return state;
-  }
-}
-
 /**
- * AnonymousDataSyncModal - Hardened v3 implementation with State Machine.
+ * AnonymousDataSyncModal - Hardened v3 implementation with XState v6 + Effect v4.
  */
 export default function GuestDataSyncModal({
   isOpen,
   onClose,
   userId,
   onSyncComplete,
+  onSkipEmpty,
+  onDiscard,
 }: GuestDataSyncModalProps) {
   const { t } = useTranslation();
-  const [state, dispatch] = useReducer(syncReducer, initialState);
+  const { actor, snapshot } = useMachineActor(() => createGuestDataSyncActor({ userId }), [userId]);
+  const state = useMemo(
+    () => ({
+      status: snapshot.value as SyncStatus,
+      summary: snapshot.context.summary,
+      progress: snapshot.context.progress,
+      error: snapshot.context.error,
+    }),
+    [snapshot.value, snapshot.context],
+  );
+  const transferAvailability = GuestDataSync.getTransferAvailability();
 
-  const fetchSyncSummary = useCallback(async () => {
-    dispatch({ type: 'START_LOADING' });
-    try {
-      const dataSummary = await GuestDataSync.getGuestDataSummary();
-      dispatch({ type: 'SET_SUMMARY', summary: dataSummary });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      dispatch({ type: 'SET_ERROR', message });
-    }
-  }, []);
-
+  // Opening counts what is on the device; closing resets (and aborts a count in flight).
   useEffect(() => {
-    if (isOpen) {
-      void fetchSyncSummary();
-    } else {
-      dispatch({ type: 'RESET' });
-    }
-  }, [isOpen, fetchSyncSummary]);
+    actor.send({ type: isOpen ? 'START_LOADING' : 'RESET' });
+  }, [isOpen, actor]);
 
-  const handleSync = useCallback(async () => {
-    dispatch({ type: 'START_SYNC' });
+  // Once the transfer completes, give the person a moment to read the result.
+  useEffect(() => {
+    if (snapshot.status !== 'done') return undefined;
+    const timer = setTimeout(onSyncComplete, 2000);
+    return () => clearTimeout(timer);
+  }, [snapshot.status, onSyncComplete]);
 
-    try {
-      const result = await GuestDataSync.syncAllData(userId, (prog) => {
-        dispatch({
-          type: 'UPDATE_PROGRESS',
-          current: prog.completed,
-          total: prog.total,
-          step: prog.currentStep,
-        });
-      });
-
-      if (result.success) {
-        dispatch({ type: 'SET_COMPLETED' });
-        setTimeout(onSyncComplete, 2000);
-      } else {
-        dispatch({ type: 'SET_ERROR', message: result.errors.join(', ') });
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      dispatch({ type: 'SET_ERROR', message });
-    }
-  }, [userId, onSyncComplete]);
+  const handleSync = useCallback(() => {
+    actor.send({ type: 'START_SYNC' });
+  }, [actor]);
 
   const handleSkip = useCallback(() => {
-    if (state.summary.total > 0 && state.status === 'ready') {
-      dispatch({ type: 'TRIGGER_CONFIRM_SKIP' });
+    if (state.summary.total > 0 && (state.status === 'ready' || state.status === 'error')) {
+      actor.send({ type: 'TRIGGER_CONFIRM_SKIP' });
       return;
     }
+    Promise.resolve(onSkipEmpty?.())
+      .then(onClose)
+      .catch((error: unknown) => {
+        actor.send({
+          type: 'SET_ERROR',
+          message: error instanceof Error ? error.message : 'Could not close the migration safely.',
+        });
+      });
+  }, [actor, state.summary.total, state.status, onClose, onSkipEmpty]);
+
+  const handleKeepOnDevice = useCallback(() => {
     onClose();
-  }, [state.summary.total, state.status, onClose]);
+  }, [onClose]);
+
+  const handleDiscard = useCallback(() => {
+    Promise.resolve(onDiscard?.())
+      .then(onClose)
+      .catch((error: unknown) => {
+        actor.send({
+          type: 'SET_ERROR',
+          message:
+            error instanceof Error ? error.message : 'Could not discard the saved guest data.',
+        });
+      });
+  }, [actor, onClose, onDiscard]);
 
   const footer =
-    state.status !== 'completed' ? (
+    state.status === 'ready' || state.status === 'error' ? (
       <HStack className="gap-4 w-full">
-        <SanctuaryButton
-          variant="ghost"
-          action="secondary"
-          onPress={handleSkip}
-          isDisabled={state.status === 'syncing'}
-        >
-          {t('common.skip') || 'Skip'}
-        </SanctuaryButton>
-        <SanctuaryButton
-          action="primary"
-          onPress={() => {
-            void handleSync();
-          }}
-          isLoading={state.status === 'syncing'}
-          className="flex-1"
-        >
-          {state.status === 'syncing'
-            ? t('sync.syncing') || 'Syncing...'
-            : t('sync.syncButton') || 'Sync Data'}
-        </SanctuaryButton>
+        {state.summary.total > 0 ? (
+          <>
+            <SanctuaryButton variant="ghost" action="secondary" onPress={handleKeepOnDevice}>
+              Keep on device
+            </SanctuaryButton>
+            <SanctuaryButton variant="outline" action="negative" onPress={handleSkip}>
+              Discard
+            </SanctuaryButton>
+            {transferAvailability.isAvailable ? (
+              <SanctuaryButton action="primary" onPress={handleSync} className="flex-1">
+                {t('sync.syncButton') || 'Transfer data'}
+              </SanctuaryButton>
+            ) : null}
+          </>
+        ) : (
+          <SanctuaryButton variant="ghost" action="secondary" onPress={handleSkip}>
+            {t('common.continue') || 'Continue'}
+          </SanctuaryButton>
+        )}
       </HStack>
     ) : undefined;
 
   return (
     <SanctuaryModal
       isOpen={isOpen}
-      onClose={handleSkip}
+      onClose={handleKeepOnDevice}
       title={
         state.status === 'completed'
           ? t('sync.completeTitle') || 'Sync Complete!'
-          : t('sync.title') || 'Sync Your Data'
+          : transferAvailability.isAvailable
+            ? t('sync.title') || 'Sync Your Data'
+            : 'Guest data options'
       }
       footer={footer}
     >
@@ -211,7 +152,7 @@ export default function GuestDataSyncModal({
               <SanctuaryButton
                 variant="ghost"
                 action="secondary"
-                onPress={() => dispatch({ type: 'CANCEL_CONFIRM_SKIP' })}
+                onPress={() => actor.send({ type: 'CANCEL_CONFIRM_SKIP' })}
                 className="flex-1"
               >
                 {t('common.back') || 'Back'}
@@ -219,7 +160,7 @@ export default function GuestDataSyncModal({
               <SanctuaryButton
                 variant="solid"
                 action="negative"
-                onPress={onClose}
+                onPress={handleDiscard}
                 className="flex-1"
               >
                 {t('sync.discardButton') || 'Discard data'}
@@ -231,9 +172,20 @@ export default function GuestDataSyncModal({
         {state.status === 'ready' && (
           <>
             <Text className="text-phase-text-secondary text-sm">
-              {t('sync.description') ||
-                'We found data from your anonymous session. Would you like to sync it to your new account?'}
+              {transferAvailability.isAvailable
+                ? t('sync.description') ||
+                  'We found data from your anonymous session. Would you like to sync it to your new account?'
+                : 'We found data from your guest session. You can keep it on this device or discard it permanently.'}
             </Text>
+
+            {!transferAvailability.isAvailable ? (
+              <Box className="rounded-xl border border-phase-accent/30 bg-phase-accent/10 p-4">
+                <Text className="text-sm text-phase-text-secondary">
+                  {transferAvailability.reason} Your work will remain safely on this device until
+                  transfer is available.
+                </Text>
+              </Box>
+            ) : null}
 
             <Box className="bg-phase-surface rounded-xl border border-white/5 p-4">
               <VStack className="gap-2">

@@ -1,0 +1,225 @@
+{
+  "errors": [],
+  "gaps": [
+    "binding:api.runtime_config: binding implemented",
+    "binding:api.runtime_config_test: binding implemented",
+    "binding:api.runtime_container: binding implemented",
+    "binding:api.runtime_gate: binding implemented",
+    "binding:api.runtime_guide: binding implemented",
+    "binding:api.runtime_host: binding implemented",
+    "binding:api.runtime_host_test: binding implemented",
+    "binding:api.runtime_node: binding implemented",
+    "binding:api.runtime_render: binding implemented",
+    "binding:api.runtime_socket_test: binding implemented",
+    "journey:api.operate_runtime: open question: Actual edge/proxy timeout, shutdown and deployment behavior still require deployment evidence.",
+    "journey:api.operate_runtime: open question: Identity, scoped persistence, Cedar and distributed operation/effect controls are subsequent horizontal checkpoints.",
+    "scenario:api.runtime_host: G0 evidence unverifiable",
+    "scenario:api.runtime_host: G1 evidence unverifiable",
+    "scenario:api.runtime_lifecycle: G0 evidence unverifiable",
+    "scenario:api.runtime_lifecycle: G1 evidence unverifiable",
+    "scenario:api.runtime_lifecycle: G2 evidence unverifiable"
+  ],
+  "bindings": [
+    {
+      "id": "binding:api.runtime_host",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_node",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_config",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_container",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_render",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_gate",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_host_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_config_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_socket_test",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    },
+    {
+      "id": "binding:api.runtime_guide",
+      "result": "present_unverified",
+      "route": "not_declared",
+      "freshness": "not_declared"
+    }
+  ],
+  "evidence": [
+    {
+      "scenario": "scenario:api.runtime_host",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.runtime_host_g0_20261030",
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment."
+              ],
+              "limitations": "Strict API and inventory CLI typechecks, source gate, Biome and artifact build succeed. G0 has no runtime proof. Source fingerprints qualify this mutable worktree, not clean HEAD. Full API quality remains blocked by six existing resource/model mismatches; broad anti-slop remains red.",
+              "reference": "reports/api-runtime-foundation-20261030.json"
+            }
+          ]
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.runtime_host_g1_20261030",
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment."
+              ],
+              "limitations": "28/28 Vitest host/config assertions, including in-memory drain denial and SDK cancellation. HTTP socket behavior and multi-step transport lifecycle are separate G2 evidence; no application identity, data policy, business capability or deployment claim.",
+              "reference": "reports/run-api_runtime_host_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "missing"
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    },
+    {
+      "scenario": "scenario:api.runtime_lifecycle",
+      "levels": [
+        {
+          "tier": "G0",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.runtime_lifecycle_g0_20261030",
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment."
+              ],
+              "limitations": "Strict API and inventory CLI typechecks, source gate, Biome and artifact build succeed. G0 has no runtime proof. Source fingerprints qualify this mutable worktree, not clean HEAD. Full API quality remains blocked by six existing resource/model mismatches; broad anti-slop remains red.",
+              "reference": "reports/api-runtime-foundation-20261030.json"
+            }
+          ]
+        },
+        {
+          "tier": "G1",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.runtime_lifecycle_g1_20261030",
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic procedures; no database, identity provider, Cedar, external channel or production deployment."
+              ],
+              "limitations": "28/28 Vitest host/config assertions, including in-memory drain denial and SDK cancellation. HTTP socket behavior and multi-step transport lifecycle are separate G2 evidence; no application identity, data policy, business capability or deployment claim.",
+              "reference": "reports/run-api_runtime_host_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G2",
+          "status": "unverifiable",
+          "records": [
+            {
+              "id": "evidence:api.runtime_lifecycle_g2_20261030",
+              "revision": "f4d2fa0f240120592465a052eb9d29486aa66a54+working-tree:api-runtime-foundation-20261030",
+              "environment": "Windows Node 24.22.2; oRPC beta.46, Hono 5.0.0-rc.1 and Node adapter 2.1.5",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic SDK procedures; real local TCP sockets and Node adapter; no external storage, identity, policy service or provider."
+              ],
+              "limitations": "12/12 Vitest loopback assertions: startup/collision, header size, slow-header and partial-body HTTP 408, graceful/forced close, disconnect cancellation, initial/late/malformed stream failure containment, producer cancellation and local backpressure. Same lifecycle function as entry; OS SIGTERM delivery, container image, proxy/TLS, sustained capacity, database commit/effects and G3-G5/R1 are unverified. No assurance promotion asserted.",
+              "reference": "reports/run-api_runtime_socket_20261030.log"
+            }
+          ]
+        },
+        {
+          "tier": "G3",
+          "status": "missing"
+        },
+        {
+          "tier": "G4",
+          "status": "missing"
+        },
+        {
+          "tier": "G5",
+          "status": "missing"
+        },
+        {
+          "tier": "R1",
+          "status": "missing"
+        }
+      ],
+      "contiguousDeclaredThrough": null,
+      "disclaimer": "Declared results require independent review of each record, environment, substitutions and applicability."
+    }
+  ],
+  "disclaimer": "Presence does not establish correct behavior or verified evidence.",
+  "scope": {
+    "journey": "journey:api.operate_runtime"
+  }
+}

@@ -5,7 +5,7 @@
  */
 
 import { useCommunityPresence } from '@repo/self/hooks/useCommunityPresence';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { WaitingSign } from '@repo/ui/components/native';
 import { Globe, Users, WifiOff } from '@repo/ui/icons';
 import { AnimatedView, Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useMemo } from 'react';
@@ -93,7 +93,7 @@ export default function CommunityPresence({
   if (isLoading) {
     return (
       <HStack className={`items-center gap-3 ${hidePadding || compact ? '' : 'p-4'} opacity-50`}>
-        <BrandPulse size={20} accessibilityLabel="Loading community presence" />
+        <WaitingSign size="sm" />
         <Text className="text-mistGray text-xs font-bold uppercase tracking-widest">
           Synchronizing Presence...
         </Text>

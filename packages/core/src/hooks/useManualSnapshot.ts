@@ -1,6 +1,5 @@
-import { useTracking } from '@repo/core/hooks/useTracking';
-import { uiExperience } from '@repo/core/logic/managers/factory';
-import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
+import { saveSnapshotMoment } from '@repo/core/store/queries/experienceQueries';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -20,10 +19,9 @@ export interface SnapshotMoment {
  * into a persistent moment.
  */
 export function useManualSnapshot() {
-  const { context } = usePermissions();
+  const { context } = useSanctuaryFeature();
   const userId = context.userId;
-  const { viewDate } = useTemporalStore();
-  const { trackSnapshot } = useTracking();
+  const viewDate = useTemporalStore((s) => s.viewDate);
   const [isSaving, setIsSaving] = useState(false);
 
   /**
@@ -35,16 +33,11 @@ export function useManualSnapshot() {
 
       setIsSaving(true);
       try {
-        const data = await uiExperience.createSnapshotMoment({
+        const data = await saveSnapshotMoment({
           userId,
           resonanceDate: viewDate,
           label,
           metadata: additionalMetadata,
-        });
-
-        // Analytics
-        trackSnapshot(label, viewDate).catch((e) => {
-          console.error('Snapshot: Failed to track analytics', e);
         });
 
         if (!data) return null;
@@ -60,7 +53,7 @@ export function useManualSnapshot() {
         setIsSaving(false);
       }
     },
-    [userId, viewDate, trackSnapshot],
+    [userId, viewDate],
   );
 
   return useMemo(

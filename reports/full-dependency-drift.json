@@ -1,0 +1,980 @@
+[
+  {
+    "name": "pnpm-workspace:overrides",
+    "type": "pnpm-workspace.yaml",
+    "filepath": "C:/x/pnpm-workspace.yaml",
+    "relative": "pnpm-workspace.yaml",
+    "resolved": []
+  },
+  {
+    "name": "apps-edlove-web",
+    "type": "package.json",
+    "filepath": "C:/x/apps/edlove-web/package.json",
+    "relative": "apps/edlove-web/package.json",
+    "resolved": [
+      {
+        "name": "@types/three",
+        "source": "dependencies",
+        "currentVersion": "^0.185.4",
+        "targetVersion": "^0.186.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-04T20:04:52.689Z",
+        "targetVersionTime": "2026-09-11T18:07:29.669Z"
+      },
+      {
+        "name": "three",
+        "source": "dependencies",
+        "currentVersion": "^0.185.1",
+        "targetVersion": "^0.186.1",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-07-01T14:04:30.373Z",
+        "targetVersionTime": "2026-09-24T14:42:21.301Z"
+      }
+    ]
+  },
+  {
+    "name": "apps-gurudevi-marketing-web",
+    "type": "package.json",
+    "filepath": "C:/x/apps/gurudevi-marketingWeb/package.json",
+    "relative": "apps/gurudevi-marketingWeb/package.json",
+    "resolved": []
+  },
+  {
+    "name": "gurudevi-mobile",
+    "type": "package.json",
+    "filepath": "C:/x/apps/gurudevi-mobile/package.json",
+    "relative": "apps/gurudevi-mobile/package.json",
+    "resolved": [
+      {
+        "name": "@journeyapps/wa-sqlite",
+        "source": "dependencies",
+        "currentVersion": "^1.7.2",
+        "targetVersion": "^2.0.7",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-07-09T10:20:40.414Z",
+        "targetVersionTime": "2026-10-05T09:16:49.132Z"
+      },
+      {
+        "name": "@lottiefiles/dotlottie-react",
+        "source": "dependencies",
+        "currentVersion": "^0.13.5",
+        "targetVersion": "^0.20.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2025-04-30T06:30:04.137Z",
+        "targetVersionTime": "2026-10-06T07:39:48.757Z"
+      },
+      {
+        "name": "@op-engineering/op-sqlite",
+        "source": "dependencies",
+        "currentVersion": "^17.2.0",
+        "targetVersion": "^18.2.5",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-11T21:28:32.928Z",
+        "targetVersionTime": "2026-09-20T14:40:02.773Z"
+      },
+      {
+        "name": "@swmansion/react-native-bottom-sheet",
+        "source": "dependencies",
+        "currentVersion": "^0.14.1",
+        "targetVersion": "^0.16.2",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-06-02T15:02:43.823Z",
+        "targetVersionTime": "2026-07-14T19:54:02.224Z"
+      },
+      {
+        "name": "@tanstack/react-pacer",
+        "source": "dependencies",
+        "currentVersion": "^0.22.1",
+        "targetVersion": "^0.24.1",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-05-14T02:15:29.823Z",
+        "targetVersionTime": "2026-10-05T13:51:43.719Z"
+      },
+      {
+        "name": "effect",
+        "source": "dependencies",
+        "currentVersion": "^3.22.2",
+        "targetVersion": "^4.0.2",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-09-09T06:35:32.571Z",
+        "targetVersionTime": "2026-10-07T18:21:31.965Z"
+      },
+      {
+        "name": "react-native-nitro-google-signin",
+        "source": "dependencies",
+        "currentVersion": "^1.3.0",
+        "targetVersion": "^2.3.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-07-30T16:55:28.523Z",
+        "targetVersionTime": "2026-09-19T05:22:03.437Z"
+      },
+      {
+        "name": "react-native-streamdown",
+        "source": "dependencies",
+        "currentVersion": "^0.2.0",
+        "targetVersion": "^0.3.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-05-26T10:33:44.089Z",
+        "targetVersionTime": "2026-09-04T11:24:02.680Z"
+      },
+      {
+        "name": "react-native-url-polyfill",
+        "source": "dependencies",
+        "currentVersion": "^3.0.0",
+        "targetVersion": "^4.0.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2025-09-24T15:49:33.442Z",
+        "targetVersionTime": "2026-07-14T12:09:44.224Z"
+      },
+      {
+        "name": "scheduler",
+        "source": "dependencies",
+        "currentVersion": "^0.27.0",
+        "targetVersion": "^0.28.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2025-10-01T21:39:15.208Z",
+        "targetVersionTime": "2026-09-09T17:17:30.281Z"
+      },
+      {
+        "name": "@babel/runtime",
+        "source": "devDependencies",
+        "currentVersion": "^7.29.10",
+        "targetVersion": "^8.0.7",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-10-07T09:50:53.866Z",
+        "targetVersionTime": "2026-10-07T09:59:42.107Z"
+      },
+      {
+        "name": "@rozenite/performance-monitor-plugin",
+        "source": "devDependencies",
+        "currentVersion": "^1.13.0",
+        "targetVersion": "^2.4.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-06-24T08:50:18.608Z",
+        "targetVersionTime": "2026-09-03T12:47:25.630Z"
+      },
+      {
+        "name": "@testing-library/jest-dom",
+        "source": "devDependencies",
+        "currentVersion": "^6.9.1",
+        "targetVersion": "^7.0.1",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2025-10-01T20:04:22.720Z",
+        "targetVersionTime": "2026-08-09T23:44:33.598Z"
+      },
+      {
+        "name": "@types/jest",
+        "source": "devDependencies",
+        "currentVersion": "^29.5.14",
+        "targetVersion": "^30.0.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2024-10-23T03:43:49.927Z",
+        "targetVersionTime": "2025-06-16T07:35:50.850Z"
+      },
+      {
+        "name": "drizzle-orm",
+        "source": "dependencies",
+        "currentVersion": "^0.45.3",
+        "targetVersion": "^0.45.4",
+        "diff": "patch",
+        "update": true,
+        "currentVersionTime": "2026-09-21T10:06:39.969Z",
+        "targetVersionTime": "2026-10-08T10:50:41.953Z"
+      }
+    ]
+  },
+  {
+    "name": "gurudevi-style-engine-runtime-fixture",
+    "type": "package.json",
+    "filepath": "C:/x/apps/gurudevi-mobile/runtime-fixtures/style-engine/package.json",
+    "relative": "apps/gurudevi-mobile/runtime-fixtures/style-engine/package.json",
+    "resolved": []
+  },
+  {
+    "name": "gurudevi-web",
+    "type": "package.json",
+    "filepath": "C:/x/apps/gurudevi-web/package.json",
+    "relative": "apps/gurudevi-web/package.json",
+    "resolved": [
+      {
+        "name": "dotenv",
+        "source": "devDependencies",
+        "currentVersion": "^17.4.2",
+        "targetVersion": "^18.0.6",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-04-12T16:41:11.574Z",
+        "targetVersionTime": "2026-10-06T20:42:15.915Z"
+      },
+      {
+        "name": "msw",
+        "source": "devDependencies",
+        "currentVersion": "^2.15.0",
+        "targetVersion": "^3.0.2",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-07-08T01:43:07.502Z",
+        "targetVersionTime": "2026-10-03T01:31:45.411Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/sanctuary-api",
+    "type": "package.json",
+    "filepath": "C:/x/apps/sanctuary-api/package.json",
+    "relative": "apps/sanctuary-api/package.json",
+    "resolved": [
+      {
+        "name": "@scalar/hono-api-reference",
+        "source": "dependencies",
+        "currentVersion": "^0.11.16",
+        "targetVersion": "^0.12.11",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-20T21:13:03.921Z",
+        "targetVersionTime": "2026-10-07T23:26:48.644Z"
+      },
+      {
+        "name": "@sentry/node",
+        "source": "dependencies",
+        "currentVersion": "^8.55.2",
+        "targetVersion": "^11.5.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-04-28T07:35:48.814Z",
+        "targetVersionTime": "2026-10-07T10:10:41.743Z"
+      },
+      {
+        "name": "dotenv",
+        "source": "dependencies",
+        "currentVersion": "^17.4.2",
+        "targetVersion": "^18.0.6",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-04-12T16:41:11.574Z",
+        "targetVersionTime": "2026-10-06T20:42:15.915Z"
+      },
+      {
+        "name": "foglamp",
+        "source": "dependencies",
+        "currentVersion": "^0.7.1",
+        "targetVersion": "^0.10.1",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-07-03T17:26:54.965Z",
+        "targetVersionTime": "2026-09-03T00:52:25.736Z"
+      },
+      {
+        "name": "pino",
+        "source": "dependencies",
+        "currentVersion": "^9.14.0",
+        "targetVersion": "^10.4.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2025-10-18T11:37:26.726Z",
+        "targetVersionTime": "2026-10-02T18:18:54.863Z"
+      },
+      {
+        "name": "pino-pretty",
+        "source": "dependencies",
+        "currentVersion": "^11.3.0",
+        "targetVersion": "^13.2.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2024-10-15T15:25:17.409Z",
+        "targetVersionTime": "2026-10-04T16:34:54.535Z"
+      },
+      {
+        "name": "tsdown",
+        "source": "devDependencies",
+        "currentVersion": "^0.22.14",
+        "targetVersion": "^0.23.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-07-23T18:24:29.579Z",
+        "targetVersionTime": "2026-09-03T17:46:20.147Z"
+      }
+    ]
+  },
+  {
+    "name": "polymath-platform",
+    "type": "package.json",
+    "filepath": "C:/x/package.json",
+    "relative": "package.json",
+    "resolved": [
+      {
+        "name": "@supabase/mcp-server-supabase",
+        "source": "dependencies",
+        "currentVersion": "^0.11.0",
+        "targetVersion": "^0.13.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-20T13:05:14.569Z",
+        "targetVersionTime": "2026-09-17T13:41:49.194Z"
+      },
+      {
+        "name": "react-native",
+        "source": "dependencies",
+        "currentVersion": "~0.86.3",
+        "targetVersion": "~0.87.1",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-24T16:16:06.034Z",
+        "targetVersionTime": "2026-08-26T15:36:54.923Z"
+      },
+      {
+        "name": "@size-limit/preset-small-lib",
+        "source": "devDependencies",
+        "currentVersion": "^13.1.1",
+        "targetVersion": "^14.2.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-09-12T15:08:36.369Z",
+        "targetVersionTime": "2026-10-07T21:54:10.631Z"
+      },
+      {
+        "name": "jest",
+        "source": "devDependencies",
+        "currentVersion": "^29.7.0",
+        "targetVersion": "^30.5.2",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2023-09-12T06:44:08.561Z",
+        "targetVersionTime": "2026-09-18T13:58:07.141Z"
+      },
+      {
+        "name": "oxfmt",
+        "source": "devDependencies",
+        "currentVersion": "^0.66.0",
+        "targetVersion": "^0.72.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-09-01T15:21:23.576Z",
+        "targetVersionTime": "2026-10-05T11:03:48.808Z"
+      },
+      {
+        "name": "promptfoo",
+        "source": "devDependencies",
+        "currentVersion": "^0.122.2",
+        "targetVersion": "^0.124.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-28T07:14:22.908Z",
+        "targetVersionTime": "2026-10-06T01:35:42.305Z"
+      },
+      {
+        "name": "size-limit",
+        "source": "devDependencies",
+        "currentVersion": "^13.1.1",
+        "targetVersion": "^14.2.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-09-12T15:08:58.825Z",
+        "targetVersionTime": "2026-10-07T21:53:57.399Z"
+      },
+      {
+        "name": "vercel",
+        "source": "devDependencies",
+        "currentVersion": "^59.26.0",
+        "targetVersion": "^63.1.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-09-23T18:50:25.756Z",
+        "targetVersionTime": "2026-10-08T07:20:33.216Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/accounting",
+    "type": "package.json",
+    "filepath": "C:/x/packages/accounting/package.json",
+    "relative": "packages/accounting/package.json",
+    "resolved": [
+      {
+        "name": "@types/node",
+        "source": "devDependencies",
+        "currentVersion": "^25.9.9",
+        "targetVersion": "^26.6.4",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-10-01T22:39:33.611Z",
+        "targetVersionTime": "2026-10-01T22:39:22.769Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/admin",
+    "type": "package.json",
+    "filepath": "C:/x/packages/admin/package.json",
+    "relative": "packages/admin/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/ai",
+    "type": "package.json",
+    "filepath": "C:/x/packages/ai/package.json",
+    "relative": "packages/ai/package.json",
+    "resolved": [
+      {
+        "name": "@tanstack/ai",
+        "source": "dependencies",
+        "currentVersion": "^0.64.1",
+        "targetVersion": "^0.66.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-10-05T13:04:46.975Z",
+        "targetVersionTime": "2026-10-08T16:11:43.361Z"
+      },
+      {
+        "name": "@tanstack/ai-client",
+        "source": "dependencies",
+        "currentVersion": "^0.23.3",
+        "targetVersion": "^0.38.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-18T17:44:11.966Z",
+        "targetVersionTime": "2026-10-07T12:56:04.627Z"
+      },
+      {
+        "name": "@tanstack/ai-react",
+        "source": "dependencies",
+        "currentVersion": "^0.19.3",
+        "targetVersion": "^0.30.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-18T17:44:37.674Z",
+        "targetVersionTime": "2026-10-07T12:54:04.366Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/analytics",
+    "type": "package.json",
+    "filepath": "C:/x/packages/analytics/package.json",
+    "relative": "packages/analytics/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/classroom",
+    "type": "package.json",
+    "filepath": "C:/x/packages/classroom/package.json",
+    "relative": "packages/classroom/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/community",
+    "type": "package.json",
+    "filepath": "C:/x/packages/community/package.json",
+    "relative": "packages/community/package.json",
+    "resolved": [
+      {
+        "name": "react-native-reanimated",
+        "source": "dependencies",
+        "currentVersion": "^4.6.0",
+        "targetVersion": "^4.7.1",
+        "diff": "minor",
+        "update": true,
+        "currentVersionTime": "2026-08-21T14:10:04.709Z",
+        "targetVersionTime": "2026-10-02T13:58:35.242Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/core",
+    "type": "package.json",
+    "filepath": "C:/x/packages/core/package.json",
+    "relative": "packages/core/package.json",
+    "resolved": [
+      {
+        "name": "@paralleldrive/cuid2",
+        "source": "dependencies",
+        "currentVersion": "^2.3.1",
+        "targetVersion": "^3.3.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2025-10-24T23:50:11.664Z",
+        "targetVersionTime": "2026-01-25T21:11:49.489Z"
+      },
+      {
+        "name": "@types/jest",
+        "source": "devDependencies",
+        "currentVersion": "^29.5.14",
+        "targetVersion": "^30.0.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2024-10-23T03:43:49.927Z",
+        "targetVersionTime": "2025-06-16T07:35:50.850Z"
+      },
+      {
+        "name": "@types/node",
+        "source": "devDependencies",
+        "currentVersion": "^25.9.9",
+        "targetVersion": "^26.6.4",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-10-01T22:39:33.611Z",
+        "targetVersionTime": "2026-10-01T22:39:22.769Z"
+      },
+      {
+        "name": "jest",
+        "source": "devDependencies",
+        "currentVersion": "^29.7.0",
+        "targetVersion": "^30.5.2",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2023-09-12T06:44:08.561Z",
+        "targetVersionTime": "2026-09-18T13:58:07.141Z"
+      },
+      {
+        "name": "drizzle-orm",
+        "source": "dependencies",
+        "currentVersion": "^0.45.3",
+        "targetVersion": "^0.45.4",
+        "diff": "patch",
+        "update": true,
+        "currentVersionTime": "2026-09-21T10:06:39.969Z",
+        "targetVersionTime": "2026-10-08T10:50:41.953Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/database",
+    "type": "package.json",
+    "filepath": "C:/x/packages/database/package.json",
+    "relative": "packages/database/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/editorial",
+    "type": "package.json",
+    "filepath": "C:/x/packages/editorial/package.json",
+    "relative": "packages/editorial/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/eslint-config",
+    "type": "package.json",
+    "filepath": "C:/x/packages/eslint-config/package.json",
+    "relative": "packages/eslint-config/package.json",
+    "resolved": [
+      {
+        "name": "@rnx-kit/eslint-plugin",
+        "source": "devDependencies",
+        "currentVersion": "^0.5.3",
+        "targetVersion": "^0.9.9",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2023-11-16T10:13:13.384Z",
+        "targetVersionTime": "2026-03-31T11:50:44.806Z"
+      },
+      {
+        "name": "eslint-config-universe",
+        "source": "devDependencies",
+        "currentVersion": "^15.2.0",
+        "targetVersion": "^16.0.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-05-20T21:57:09.504Z",
+        "targetVersionTime": "2026-06-25T19:35:35.314Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/form-builder",
+    "type": "package.json",
+    "filepath": "C:/x/packages/form-builder/package.json",
+    "relative": "packages/form-builder/package.json",
+    "resolved": [
+      {
+        "name": "@tanstack/react-form",
+        "source": "dependencies",
+        "currentVersion": "^0.20.3",
+        "targetVersion": "^1.33.5",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2024-06-02T20:10:53.908Z",
+        "targetVersionTime": "2026-08-11T12:45:38.642Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/graphics",
+    "type": "package.json",
+    "filepath": "C:/x/packages/graphics/package.json",
+    "relative": "packages/graphics/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/library",
+    "type": "package.json",
+    "filepath": "C:/x/packages/library/package.json",
+    "relative": "packages/library/package.json",
+    "resolved": [
+      {
+        "name": "tesseract.js",
+        "source": "dependencies",
+        "currentVersion": "^5.1.1",
+        "targetVersion": "^7.0.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2024-08-24T06:56:29.492Z",
+        "targetVersionTime": "2025-12-15T03:37:59.222Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/payments",
+    "type": "package.json",
+    "filepath": "C:/x/packages/payments/package.json",
+    "relative": "packages/payments/package.json",
+    "resolved": [
+      {
+        "name": "@types/node",
+        "source": "devDependencies",
+        "currentVersion": "^25.9.9",
+        "targetVersion": "^26.6.4",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-10-01T22:39:33.611Z",
+        "targetVersionTime": "2026-10-01T22:39:22.769Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/people",
+    "type": "package.json",
+    "filepath": "C:/x/packages/people/package.json",
+    "relative": "packages/people/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/platform-mcp",
+    "type": "package.json",
+    "filepath": "C:/x/packages/platform-mcp/package.json",
+    "relative": "packages/platform-mcp/package.json",
+    "resolved": [
+      {
+        "name": "@swmansion/argent",
+        "source": "dependencies",
+        "currentVersion": "^0.23.0",
+        "targetVersion": "^0.27.0",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-31T19:08:26.913Z",
+        "targetVersionTime": "2026-10-02T18:55:09.393Z"
+      },
+      {
+        "name": "agent-device",
+        "source": "dependencies",
+        "currentVersion": "^0.20.10",
+        "targetVersion": "^0.21.23",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-18T19:33:12.472Z",
+        "targetVersionTime": "2026-10-07T04:58:16.204Z"
+      },
+      {
+        "name": "dotenv",
+        "source": "dependencies",
+        "currentVersion": "^17.4.2",
+        "targetVersion": "^18.0.6",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-04-12T16:41:11.574Z",
+        "targetVersionTime": "2026-10-06T20:42:15.915Z"
+      },
+      {
+        "name": "@types/node",
+        "source": "devDependencies",
+        "currentVersion": "^25.9.9",
+        "targetVersion": "^26.6.4",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-10-01T22:39:33.611Z",
+        "targetVersionTime": "2026-10-01T22:39:22.769Z"
+      },
+      {
+        "name": "mcp-remote",
+        "source": "devDependencies",
+        "currentVersion": "^0.1.49",
+        "targetVersion": "^0.14.3",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-08-23T20:05:11.505Z",
+        "targetVersionTime": "2026-09-21T00:28:03.293Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/policies",
+    "type": "package.json",
+    "filepath": "C:/x/packages/policies/package.json",
+    "relative": "packages/policies/package.json",
+    "resolved": [
+      {
+        "name": "@types/node",
+        "source": "devDependencies",
+        "currentVersion": "^25.9.9",
+        "targetVersion": "^26.6.4",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-10-01T22:39:33.611Z",
+        "targetVersionTime": "2026-10-01T22:39:22.769Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/profile",
+    "type": "package.json",
+    "filepath": "C:/x/packages/profile/package.json",
+    "relative": "packages/profile/package.json",
+    "resolved": [
+      {
+        "name": "react-native-reanimated",
+        "source": "dependencies",
+        "currentVersion": "^4.6.0",
+        "targetVersion": "^4.7.1",
+        "diff": "minor",
+        "update": true,
+        "currentVersionTime": "2026-08-21T14:10:04.709Z",
+        "targetVersionTime": "2026-10-02T13:58:35.242Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/scanner-kit",
+    "type": "package.json",
+    "filepath": "C:/x/packages/scanner-kit/package.json",
+    "relative": "packages/scanner-kit/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/schema",
+    "type": "package.json",
+    "filepath": "C:/x/packages/schema/package.json",
+    "relative": "packages/schema/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/self",
+    "type": "package.json",
+    "filepath": "C:/x/packages/self/package.json",
+    "relative": "packages/self/package.json",
+    "resolved": [
+      {
+        "name": "react-native-reanimated",
+        "source": "dependencies",
+        "currentVersion": "^4.6.0",
+        "targetVersion": "^4.7.1",
+        "diff": "minor",
+        "update": true,
+        "currentVersionTime": "2026-08-21T14:10:04.709Z",
+        "targetVersionTime": "2026-10-02T13:58:35.242Z"
+      },
+      {
+        "name": "drizzle-orm",
+        "source": "dependencies",
+        "currentVersion": "^0.45.3",
+        "targetVersion": "^0.45.4",
+        "diff": "patch",
+        "update": true,
+        "currentVersionTime": "2026-09-21T10:06:39.969Z",
+        "targetVersionTime": "2026-10-08T10:50:41.953Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/types-shim",
+    "type": "package.json",
+    "filepath": "C:/x/packages/types-shim/package.json",
+    "relative": "packages/types-shim/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/typescript-config",
+    "type": "package.json",
+    "filepath": "C:/x/packages/typescript-config/package.json",
+    "relative": "packages/typescript-config/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/ui",
+    "type": "package.json",
+    "filepath": "C:/x/packages/ui/package.json",
+    "relative": "packages/ui/package.json",
+    "resolved": [
+      {
+        "name": "@tanstack/react-table",
+        "source": "dependencies",
+        "currentVersion": "^8.21.3",
+        "targetVersion": "^9.2.6",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2025-04-14T20:20:18.966Z",
+        "targetVersionTime": "2026-10-04T18:00:10.791Z"
+      },
+      {
+        "name": "react-native-external-keyboard",
+        "source": "dependencies",
+        "currentVersion": "^1.2.1",
+        "targetVersion": "^2.0.1",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-10-04T13:06:57.796Z",
+        "targetVersionTime": "2026-10-04T13:12:05.606Z"
+      }
+    ]
+  },
+  {
+    "name": "@repo/workforce",
+    "type": "package.json",
+    "filepath": "C:/x/packages/workforce/package.json",
+    "relative": "packages/workforce/package.json",
+    "resolved": []
+  },
+  {
+    "name": "@repo/refactor-scripts",
+    "type": "package.json",
+    "filepath": "C:/x/scripts/refactor/package.json",
+    "relative": "scripts/refactor/package.json",
+    "resolved": [
+      {
+        "name": "typescript",
+        "source": "dependencies",
+        "currentVersion": "^6.0.3",
+        "targetVersion": "^7.0.2",
+        "diff": "major",
+        "update": true,
+        "currentVersionTime": "2026-04-16T23:38:27.905Z",
+        "targetVersionTime": "2026-07-08T15:55:18.431Z"
+      }
+    ]
+  },
+  {
+    "name": "oxlint-plugin-polymath",
+    "type": "package.json",
+    "filepath": "C:/x/tooling/oxlint-custom-rules/package.json",
+    "relative": "tooling/oxlint-custom-rules/package.json",
+    "resolved": []
+  },
+  {
+    "name": ".github/actions/load-doppler-env/action.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/actions/load-doppler-env/action.yml",
+    "relative": ".github/actions/load-doppler-env/action.yml",
+    "resolved": [
+      {
+        "name": "dopplerhq/cli-action",
+        "source": "github-actions",
+        "currentVersion": "v3",
+        "targetVersion": "v4",
+        "diff": "major",
+        "update": true,
+        "targetVersionTime": "2026-04-15T15:34:48Z"
+      }
+    ]
+  },
+  {
+    "name": ".github/workflows/android-build.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/android-build.yml",
+    "relative": ".github/workflows/android-build.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/browser-e2e.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/browser-e2e.yml",
+    "relative": ".github/workflows/browser-e2e.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/cloudflare-gurudevi-platform.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/cloudflare-gurudevi-platform.yml",
+    "relative": ".github/workflows/cloudflare-gurudevi-platform.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/deploy-canary.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/deploy-canary.yml",
+    "relative": ".github/workflows/deploy-canary.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/eas-release.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/eas-release.yml",
+    "relative": ".github/workflows/eas-release.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/pr-guard.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/pr-guard.yml",
+    "relative": ".github/workflows/pr-guard.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/quality-gate.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/quality-gate.yml",
+    "relative": ".github/workflows/quality-gate.yml",
+    "resolved": [
+      {
+        "name": "codecov/codecov-action",
+        "source": "github-actions",
+        "currentVersion": "v5.5.5",
+        "targetVersion": "v7.1.1",
+        "diff": "major",
+        "update": true,
+        "targetVersionTime": "2026-09-17T00:46:28Z"
+      }
+    ]
+  },
+  {
+    "name": ".github/workflows/release-sbom-provenance.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/release-sbom-provenance.yml",
+    "relative": ".github/workflows/release-sbom-provenance.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/sentry-sourcemap-upload.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/sentry-sourcemap-upload.yml",
+    "relative": ".github/workflows/sentry-sourcemap-upload.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/storage-contract.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/storage-contract.yml",
+    "relative": ".github/workflows/storage-contract.yml",
+    "resolved": []
+  },
+  {
+    "name": ".github/workflows/web-deploy.yml",
+    "type": "github-action",
+    "filepath": "C:/x/.github/workflows/web-deploy.yml",
+    "relative": ".github/workflows/web-deploy.yml",
+    "resolved": []
+  }
+]

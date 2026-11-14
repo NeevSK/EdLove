@@ -1,4 +1,4 @@
-import type { ResourceType } from '@repo/library/types/Library';
+import type { ResourceType } from '@repo/core/types/Resource';
 
 export interface ShelfDefinition {
   id: string;

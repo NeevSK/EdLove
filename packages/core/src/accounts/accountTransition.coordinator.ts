@@ -1,0 +1,93 @@
+import { localDatabase } from '@repo/core/effect/bindings/localDatabase';
+import { closeReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
+import type {
+  AccountTransitionOutcome,
+  AccountTransitionPort,
+  AccountTransitionRequest,
+} from '@repo/core/logic/ports/accountTransition.port';
+
+function ownedByPrincipal(userId: string | undefined, principalId: string | null): boolean {
+  return principalId !== null && userId === principalId;
+}
+
+/**
+ * Coordinator (one-shot, ordered): closes replay for both principals, then disconnects or clears
+ * the local database, then pauses or drops the outgoing account's queued commands.
+ */
+export const accountTransition: AccountTransitionPort = {
+  async transition(request: AccountTransitionRequest): Promise<AccountTransitionOutcome> {
+    if (request.disposition === 'preserve-and-quarantine' && request.clearReplicatedData)
+      throw new Error('Preserving account work cannot clear its PowerSync database.');
+
+    if (request.outgoingPrincipalId === request.incomingPrincipalId) {
+      return {
+        disposition: request.disposition,
+        outgoingPrincipalId: request.outgoingPrincipalId,
+        incomingPrincipalId: request.incomingPrincipalId,
+        quarantinedCommandCount: 0,
+        discardedCommandCount: 0,
+        untouchedUnboundCommandCount: 0,
+        replicatedDataCleared: false,
+      };
+    }
+
+    const principalsToClose = [request.outgoingPrincipalId, request.incomingPrincipalId].filter(
+      (principalId): principalId is string => principalId !== null,
+    );
+    await Promise.all(principalsToClose.map((principalId) => closeReplayAdmission(principalId)));
+
+    if (request.disposition === 'preserve-and-quarantine') {
+      await localDatabase.disconnect();
+    } else if (request.clearReplicatedData) {
+      await localDatabase.clearAccount();
+    }
+
+    const state = useMutationQueue.getState();
+    const unboundCommandCount = state.queue.filter((command) => !command.userId).length;
+    const ownedQueue = state.queue.filter((command) =>
+      ownedByPrincipal(command.userId, request.outgoingPrincipalId),
+    );
+    const ownedDeadLetters = state.deadLetterQueue.filter((command) =>
+      ownedByPrincipal(command.userId, request.outgoingPrincipalId),
+    );
+
+    if (request.disposition === 'preserve-and-quarantine') {
+      useMutationQueue.setState({
+        isSyncing: false,
+        queue: state.queue.map((command) =>
+          ownedByPrincipal(command.userId, request.outgoingPrincipalId)
+            ? {
+                ...command,
+                commandState: 'auth_paused',
+                backoffUntil: undefined,
+                lockLeaseExpiresAt: undefined,
+              }
+            : command,
+        ),
+      });
+    } else {
+      useMutationQueue.setState({
+        isSyncing: false,
+        queue: state.queue.filter(
+          (command) => !ownedByPrincipal(command.userId, request.outgoingPrincipalId),
+        ),
+        deadLetterQueue: state.deadLetterQueue.filter(
+          (command) => !ownedByPrincipal(command.userId, request.outgoingPrincipalId),
+        ),
+      });
+    }
+
+    return {
+      disposition: request.disposition,
+      outgoingPrincipalId: request.outgoingPrincipalId,
+      incomingPrincipalId: request.incomingPrincipalId,
+      quarantinedCommandCount:
+        request.disposition === 'preserve-and-quarantine' ? ownedQueue.length : 0,
+      discardedCommandCount:
+        request.disposition === 'discard' ? ownedQueue.length + ownedDeadLetters.length : 0,
+      untouchedUnboundCommandCount: unboundCommandCount,
+      replicatedDataCleared: request.clearReplicatedData,
+    };
+  },
+};

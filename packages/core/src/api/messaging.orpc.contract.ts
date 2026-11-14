@@ -1,20 +1,24 @@
+import {
+  ChatSendCommandSchema,
+  ChatSendReceiptSchema,
+} from '@repo/core/logic/schemas/chat-command.schema';
 import { z } from 'zod';
 
 const conversation = z.object({
-  id: z.string().uuid(),
-  user1_id: z.string().uuid(),
-  user2_id: z.string().uuid(),
+  id: z.uuid(),
+  user1_id: z.uuid(),
+  user2_id: z.uuid(),
   created_at: z.string(),
   updated_at: z.string(),
-  other_user_id: z.string().uuid(),
+  other_user_id: z.uuid(),
   other_user_name: z.string(),
   other_user_avatar: z.string().nullable(),
 });
 
 const message = z.object({
-  id: z.string().uuid(),
-  conversation_id: z.string().uuid(),
-  author_id: z.string().uuid(),
+  id: z.uuid(),
+  conversation_id: z.uuid(),
+  author_id: z.uuid(),
   content: z.string(),
   created_at: z.string(),
   author_name: z.string().nullable(),
@@ -22,6 +26,15 @@ const message = z.object({
 });
 
 export const messagingORPCContract = {
+  sendMessageCommand: {
+    method: 'post',
+    path: '/messaging/message-commands',
+    request: { body: ChatSendCommandSchema },
+    metadata: { policy: { action: 'create', subject: 'DirectMessage' } },
+    responses: {
+      201: { schema: ChatSendReceiptSchema, description: 'Committed direct message receipt' },
+    },
+  },
   getConversations: {
     method: 'get',
     path: '/messaging/conversations',
@@ -34,10 +47,10 @@ export const messagingORPCContract = {
     metadata: { policy: { action: 'create', subject: 'DirectConversation' } },
     request: {
       body: z.object({
-        targetUserId: z.string().uuid(),
+        targetUserId: z.uuid(),
       }),
     },
-    responses: { 201: { schema: z.string().uuid(), description: 'Conversation ID' } },
+    responses: { 201: { schema: z.uuid(), description: 'Conversation ID' } },
   },
   getMessages: {
     method: 'get',
@@ -45,8 +58,8 @@ export const messagingORPCContract = {
     metadata: { policy: { action: 'read', subject: 'DirectMessage' } },
     request: {
       query: z.object({
-        conversationId: z.string().uuid(),
-        viewDate: z.string().datetime().optional(),
+        conversationId: z.uuid(),
+        viewDate: z.iso.datetime().optional(),
         limit: z.number().int().positive().max(200).optional(),
       }),
     },
@@ -58,7 +71,7 @@ export const messagingORPCContract = {
     metadata: { policy: { action: 'create', subject: 'DirectMessage' } },
     request: {
       body: z.object({
-        conversationId: z.string().uuid(),
+        conversationId: z.uuid(),
         content: z.string(),
       }),
     },

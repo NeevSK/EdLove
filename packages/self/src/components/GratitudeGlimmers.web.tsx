@@ -8,7 +8,7 @@
  */
 
 import { useGratitude } from '@repo/self/hooks/useGratitude';
-import type { GratitudeEntry } from '@repo/self/types';
+import type { GratitudeEntry } from '@repo/core/types/Wellbeing';
 import { Heart, Plus } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';

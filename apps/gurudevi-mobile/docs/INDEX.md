@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-09-20
+updated: 2026-10-15
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -21,6 +21,8 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 1. [Mobile Navigation and Adaptive Chrome Architecture](./architecture/mobile-navigation-and-adaptive-chrome.md) — canonical authority for active sub-tabs, domain registries, adaptive header hierarchy, collapsible chrome on scroll, and mindful community cadence.
 
 ## Schema and database authority
+
+- [Fresh-install migration order repair and compatibility](./decisions/2026-10-15-relief-inventory-migration-order-repair.md) — approved rename, identical-policy replacement fixes and local bootstrap evidence; remote history remains unchanged.
 
 1. [Idealist Builder's Engineering Handbook](./architecture/idealist-builders-engineering-handbook.md) — personal and team mental model for translating human vision into dependable software.
 2. [Schema and Database Trust and Performance Guide](./architecture/schema-db-trust-and-performance.md) — reusable rules for ZModel, Zod, PostgreSQL, RLS/RPC, migrations, idempotency, indexes, and verification.
@@ -167,6 +169,7 @@ These documents are the current authority for capability inventory, rollout, sta
 *   [Gurudevi Tools & Tricks](./Core/gurudevi_tools_tricks_v2.md) - Tips for development efficiency.
 
 ### 📐 System Architecture Specs
+*   [Gurudevi Mobile Entry System Standard](./architecture/entry-system-standard.md) - Canonical icon-tap through first-value contract: startup, identity, admission, recovery, intent, and evidence gates.
 *   [Responsive Shell & Layout Spec](./architecture/gurudevi-responsive-shell-layout-spec.md) - Shell behavior standard.
 *   [Inngest V4 Core Shell](./architecture/INNGEST_V4_CORE_SHELL.md) - Background events engine.
 *   [Durable Agents R&D Guide](./architecture/DURABLE_AGENTS_RND_GUIDE.md) - Agent systems framework.
@@ -225,6 +228,7 @@ These documents are the current authority for capability inventory, rollout, sta
 *   [Agent Resonance](./agent/AGENT_RESONANCE.md) - Three-dimensional checks for code resonance (vertical, horizontal, diagonal).
 
 ### 📅 Current Progress & Plans
+*   [Pristine Entry System Execution Plan](./current_progress/2026-10-17-entry-system-pristine-execution-plan.md) - Active no-deletion execution plan for typed entry presentation, durable onboarding, capacity-specific first value, and release-device evidence.
 *   [React Native Gesture Handler v3 Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-rngh-v3-comprehensive-migration-plan.md) - Evolution analysis of RNGH v2.x and v3.0 releases with a step-by-step hooks API migration plan for the mobile project.
 *   [Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-gluestack-comprehensive-migration-plan.md) - Superseded historical comparison and cleanup plan; use the 2026-08-11 stack audit for current guidance.
 *   [Gurudevi Quality Constellation Brainstorm & Plan](./current_progress/2026-07-17-gurudevi-quality-constellation-plan.md) - The active roadmap for integrating duplication checks, boundary enforcement, and layout decomposition.

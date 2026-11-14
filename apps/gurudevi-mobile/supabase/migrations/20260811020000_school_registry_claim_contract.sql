@@ -39,7 +39,7 @@ CREATE POLICY "Users can read their school registry claims"
         AND b.entity_id = school_id::text
         AND b.capacity IN ('principal', 'section_head')
     )
-    OR ((auth.jwt() ->> 'role') = 'service_role')
+    OR ((current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role')
   );
 
 DROP POLICY IF EXISTS "Users can create their school registry claims" ON public.school_registry_claims;
@@ -58,7 +58,7 @@ CREATE POLICY "Owners can update school registry claims"
         AND b.entity_id = school_id::text
         AND b.capacity IN ('principal', 'section_head')
     )
-    OR ((auth.jwt() ->> 'role') = 'service_role')
+    OR ((current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role')
   )
   WITH CHECK (
     auth.uid() = requested_by
@@ -68,5 +68,5 @@ CREATE POLICY "Owners can update school registry claims"
         AND b.entity_id = school_id::text
         AND b.capacity IN ('principal', 'section_head')
     )
-    OR ((auth.jwt() ->> 'role') = 'service_role')
+    OR ((current_setting('request.jwt.claims', true)::jsonb ->> 'role') = 'service_role')
   );

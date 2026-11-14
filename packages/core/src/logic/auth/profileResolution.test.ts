@@ -1,4 +1,4 @@
-import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { describe, expect, it, vi } from 'vitest';
 
 import { resolveAuthProfile } from './profileResolution';
@@ -85,7 +85,10 @@ describe('resolveAuthProfile', () => {
 
     await expect(
       resolveAuthProfile(session(), {
-        getAccountLifecycleStatus: async () => ({ ...deactivatedStatus, status: 'active' as const }),
+        getAccountLifecycleStatus: async () => ({
+          ...deactivatedStatus,
+          status: 'active' as const,
+        }),
         getSchoolType: vi.fn(),
         identifyActiveCitizen: async () => null,
       }),

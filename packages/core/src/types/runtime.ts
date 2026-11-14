@@ -10,11 +10,20 @@ export interface DeviceMetadata {
   platform: string | null;
 }
 
+export type DevicePressureLevel = 'unknown' | 'normal' | 'constrained' | 'severe';
+
+export interface DevicePressureSnapshot {
+  memory: DevicePressureLevel;
+  thermal: DevicePressureLevel;
+}
+
 export interface DeviceProvider {
   getMetadata(): DeviceMetadata;
   getTotalMemory?(): number | null;
   getPowerState?(): Promise<{ lowPowerMode: boolean }>;
   addPowerStateListener?(listener: (lowPowerMode: boolean) => void): { remove: () => void };
+  getPressureState?(): Promise<DevicePressureSnapshot>;
+  addPressureListener?(listener: (snapshot: DevicePressureSnapshot) => void): { remove: () => void };
 }
 
 export interface HapticsProvider {

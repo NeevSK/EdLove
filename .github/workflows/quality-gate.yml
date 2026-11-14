@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        node-version: ['22']
+        node-version: ['24']
       fail-fast: false
     timeout-minutes: 45
     environment: development
@@ -33,7 +33,7 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
-          version: 12.4.2
+          version: 12.16.1
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -55,6 +55,9 @@ jobs:
 
       - name: 🌐 Gurudevi marketing web build
         run: pnpm --filter apps-gurudevi-marketing-web build
+
+      - name: 🌐 Gurudevi public site build (Astro)
+        run: pnpm --filter apps-gurudevi-public build
 
       - name: 🔐 Load optional audit environment from Doppler
         if: ${{ env.DOPPLER_TOKEN != '' }}
@@ -90,6 +93,9 @@ jobs:
 
       - name: 🔭 Observability ownership boundaries
         run: pnpm run check:observability-boundaries
+
+      - name: 🧭 Web stack ratchet (next/* imports, Explore backend clients)
+        run: node scripts/check-web-stack.mjs
 
       - name: 🧭 Sanctuary experience contract
         run: pnpm run check:sanctuary-experience

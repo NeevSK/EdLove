@@ -1,11 +1,11 @@
+import { View, Text } from 'react-native';
 import {
   ProgressRing,
   SimpleBarChart,
   SimpleLineChart,
   SimplePieChart,
 } from '@repo/graphics/charts';
-import { Box, HStack, Text } from '@repo/ui/primitives';
-import { colors } from '@repo/ui/theme';
+import { colors } from '@repo/ui/theme/Theme';
 
 interface AnalyticsChartProps {
   title: string;
@@ -45,7 +45,7 @@ export function AnalyticsChart({
       const progressValue = data[0]?.value ?? 0;
       const progressMax = maxValue ?? 100;
       return (
-        <Box
+        <View
           className="items-center rounded-3xl border border-black/5 bg-white/70 px-4 py-4"
           style={{ height }}
         >
@@ -64,7 +64,7 @@ export function AnalyticsChart({
           <Text className="mt-3 text-center text-sm" style={{ color: colors.text }}>
             {data[0]?.label}: {progressValue}/{progressMax}
           </Text>
-        </Box>
+        </View>
       );
     }
     default:
@@ -91,15 +91,15 @@ export function MultiSeriesChart({
   height = 250,
 }: MultiSeriesChartProps) {
   return (
-    <Box className="rounded-3xl border border-black/5 bg-white/70 px-4 py-4" style={{ height }}>
+    <View className="rounded-3xl border border-black/5 bg-white/70 px-4 py-4" style={{ height }}>
       {title ? (
         <Text className="mb-4 text-center text-base font-bold" style={{ color: colors.text }}>
           {title}
         </Text>
       ) : null}
-      <HStack className="justify-around gap-3">
+      <View className="flex-row items-center justify-around gap-3">
         {series.map((entry) => (
-          <Box key={entry.name} className="flex-1 items-center">
+          <View key={entry.name} className="flex-1 items-center">
             <Text
               className="mb-2 text-center text-xs font-semibold"
               style={{ color: entry.color || colors.gurudeviBlue }}
@@ -119,9 +119,9 @@ export function MultiSeriesChart({
                 showValues={false}
               />
             )}
-          </Box>
+          </View>
         ))}
-      </HStack>
-    </Box>
+      </View>
+    </View>
   );
 }

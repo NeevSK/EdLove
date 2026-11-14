@@ -1,8 +1,8 @@
-'use client';
-
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import {
+  createSelfAccessContext,
   resolveSelfFeatureManifest,
+  SELF_VIEW_ROLES,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -28,7 +28,7 @@ const TABLET_BREAKPOINT = 768;
 const DESKTOP_BREAKPOINT = 1024;
 
 export const SELF_FEATURE_MANIFEST = resolveSelfFeatureManifest(
-  null,
+  createSelfAccessContext({ isExplore: true }),
   {
     customOrder: [],
     hiddenIds: [],
@@ -62,19 +62,140 @@ function writePinnedIds(key: string, ids: string[]): void {
   }
 }
 
+export function getCircadianPhase(): 'morning' | 'afternoon' | 'night' {
+  if (typeof window === 'undefined') return 'morning';
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 18) return 'afternoon';
+  return 'night';
+}
+
+/** Whether a Self feature is for this role (the catalog's yes or no). No role means any. */
+export function isFeatureApplicableToRole(
+  feature: SelfFeatureManifestItem,
+  role?: string,
+): boolean {
+  if (!role || role === 'all') return true;
+  const normalized = role.toLowerCase();
+  return feature.roles.some((candidate) => candidate === normalized);
+}
+
+/** A feature for every role. */
+export function isUniversalFeature(feature: SelfFeatureManifestItem): boolean {
+  return SELF_VIEW_ROLES.every((role) => feature.roles.includes(role));
+}
+
+export function isFeatureForCapacity(
+  feature: SelfFeatureManifestItem,
+  primaryCapacity?: string,
+  otherCapacities?: readonly string[],
+): boolean {
+  // Universal practices are always available to all human beings
+  if (isUniversalFeature(feature)) return true;
+
+  const normalizedPrimary = primaryCapacity?.toLowerCase();
+  if (normalizedPrimary && normalizedPrimary !== 'all') {
+    if (isFeatureApplicableToRole(feature, normalizedPrimary)) return true;
+  }
+
+  if (otherCapacities && otherCapacities.length > 0) {
+    for (const sec of otherCapacities) {
+      if (sec && isFeatureApplicableToRole(feature, sec.toLowerCase())) return true;
+    }
+  }
+
+  // If no capacity specified at all, default to showing
+  if (!normalizedPrimary) return true;
+
+  return false;
+}
+
+/** How strongly to suggest a feature now: the time of day it suits, and the person's own use. */
+export function scoreFeature(
+  feature: SelfFeatureManifestItem,
+  phase: 'morning' | 'afternoon' | 'night',
+  usageInfo?: { lastUsedAt?: number | string; count?: number; isPinned?: boolean },
+): number {
+  // 1. Time-of-day alignment: +50 priority if it matches current circadian phase
+  const isTimeMatch = feature.timing?.preferredPhase === phase;
+  const timeBonus = isTimeMatch ? 50 : 0;
+
+  // 2. Role decides whether a feature is offered, never where it sits
+  // (docs/architecture/places-roles-and-features.md, rule 8).
+
+  // 3. Pinned & recent usage priority
+  let usageBonus = 0;
+  if (usageInfo?.isPinned) usageBonus += 15;
+  if (usageInfo?.lastUsedAt) {
+    const time =
+      typeof usageInfo.lastUsedAt === 'number'
+        ? usageInfo.lastUsedAt
+        : Date.parse(usageInfo.lastUsedAt) || 0;
+    const hoursAgo = (Date.now() - time) / (1000 * 60 * 60);
+    if (hoursAgo < 24) usageBonus += 10;
+  }
+  if (usageInfo?.count && usageInfo.count > 0) {
+    usageBonus += Math.min(usageInfo.count, 5);
+  }
+
+  return timeBonus + usageBonus;
+}
+
 export interface UseSelfCanvasOptions {
   readonly accountId?: string;
   readonly enableRemoteSync?: boolean;
   readonly activeFeatureId?: string | null;
+  readonly role?: string;
+  readonly roles?: readonly string[];
 }
 
 export function useSelfCanvas({
   accountId = 'anonymous',
   enableRemoteSync = true,
   activeFeatureId = null,
+  role,
+  roles,
 }: UseSelfCanvasOptions = {}) {
   const pinCap = getMaxPinnedForWorkspace('self');
   const [viewport, setViewport] = useState<ViewportKind>('desktop');
+  const [phase, setPhase] = useState<'morning' | 'afternoon' | 'night'>('morning');
+  useEffect(() => setPhase(getCircadianPhase()), []);
+  const activeRoles = useMemo(() => {
+    if (roles && roles.length > 0) return roles;
+    if (role) return [role];
+    return ['teacher'];
+  }, [role, roles]);
+
+  const accessContext = useMemo(
+    () =>
+      createSelfAccessContext({
+        userId: accountId,
+        role: role ?? activeRoles[0],
+        roles: activeRoles,
+        capacities: activeRoles as string[],
+        isExplore:
+          !accountId ||
+          accountId === 'explore-guest' ||
+          accountId === 'explore' ||
+          accountId === 'anonymous',
+      }),
+    [accountId, role, activeRoles],
+  );
+
+  const manifest = useMemo(
+    () =>
+      resolveSelfFeatureManifest(
+        accessContext,
+        {
+          customOrder: [],
+          hiddenIds: [],
+          selectedIds: [],
+        },
+        'browser',
+        { deliveredFeatureIds: Object.keys(BROWSER_SELF_FEATURES) },
+      ),
+    [accessContext],
+  );
 
   const appearanceHook = useBrowserWorkspaceAppearance({
     accountId,
@@ -84,7 +205,8 @@ export function useSelfCanvas({
     workspaceId: 'self',
   });
 
-  const pinnedIds = appearanceHook.pinnedIds.length > 0 ? appearanceHook.pinnedIds : [...DEFAULT_PINNED_IDS];
+  const pinnedIds =
+    appearanceHook.pinnedIds.length > 0 ? appearanceHook.pinnedIds : [...DEFAULT_PINNED_IDS];
 
   // Track responsive viewport
   useEffect(() => {
@@ -126,30 +248,45 @@ export function useSelfCanvas({
     [appearanceHook, pinCap, pinnedIds],
   );
 
-  // Group features by category
+  // Group features by category and sort them dynamically by role & circadian phase
   const featuresByCategory = useMemo(() => {
     const map = new Map<SelfCategory, SelfFeatureManifestItem[]>();
     for (const cat of DEFAULT_SELF_CATEGORIES) {
       map.set(cat, []);
     }
-    for (const feature of SELF_FEATURE_MANIFEST.all) {
+    for (const feature of manifest.all) {
       const list = map.get(feature.category);
       if (list) {
         list.push(feature);
       }
     }
+    for (const [, list] of map) {
+      list.sort((a, b) => {
+        const diff = scoreFeature(b, phase) - scoreFeature(a, phase);
+        if (diff !== 0) return diff;
+        return a.defaultOrder - b.defaultOrder;
+      });
+    }
     return map;
-  }, []);
+  }, [activeRoles, manifest.all, phase, role]);
+
+  const sortedManifestAll = useMemo(() => {
+    return [...manifest.all].sort((a, b) => {
+      const diff = scoreFeature(b, phase) - scoreFeature(a, phase);
+      if (diff !== 0) return diff;
+      return a.defaultOrder - b.defaultOrder;
+    });
+  }, [activeRoles, manifest.all, phase, role]);
 
   // Resolve pinned features
   const pinnedFeatures = useMemo(() => {
     const resolved: SelfFeatureManifestItem[] = [];
     for (const id of pinnedIds) {
-      const feature = SELF_FEATURE_MANIFEST.all.find((f) => f.id === id);
+      const feature = manifest.all.find((f) => f.id === id);
       if (feature) resolved.push(feature);
     }
     return resolved;
-  }, [pinnedIds]);
+  }, [manifest.all, pinnedIds]);
 
   // Resolve layout mode based on viewport and active feature
   const layoutMode: SelfLayoutMode = useMemo(() => {
@@ -177,6 +314,8 @@ export function useSelfCanvas({
     layoutMode,
     groupOrder,
     featuresByCategory,
+    sortedManifestAll,
+    manifest,
     pinnedIds,
     pinnedFeatures,
     togglePin,
@@ -185,5 +324,6 @@ export function useSelfCanvas({
     resetAppearance: appearanceHook.resetAppearance,
     status: appearanceHook.status,
     setGroupOrder: appearanceHook.setGroupOrder,
+    phase,
   };
 }

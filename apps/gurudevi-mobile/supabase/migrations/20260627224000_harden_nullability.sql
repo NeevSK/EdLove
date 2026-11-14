@@ -1,4 +1,20 @@
 -- 1. Hardening users table
+ALTER TABLE public.users
+  ADD COLUMN IF NOT EXISTS citizenship TEXT,
+  ADD COLUMN IF NOT EXISTS pricing_tier TEXT;
+
+CREATE TABLE IF NOT EXISTS public.user_social_links (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  platform TEXT NOT NULL,
+  url TEXT NOT NULL,
+  is_public BOOLEAN DEFAULT true,
+  privacy_level TEXT DEFAULT 'public',
+  order_index INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 UPDATE public.users SET citizenship = 'WANDERER' WHERE citizenship IS NULL;
 UPDATE public.users SET pricing_tier = 'FREE' WHERE pricing_tier IS NULL;
 

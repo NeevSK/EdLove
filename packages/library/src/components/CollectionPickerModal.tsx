@@ -1,5 +1,5 @@
 import { ChevronRight, Folder, Lock, X } from '@repo/ui/icons';
-import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { FlashList } from '@shopify/flash-list';
 import {
   Box,
   Center,
@@ -14,7 +14,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import type React from 'react';
-import type { LibraryCollection } from '@repo/library/types';
+import type { LibraryCollection } from '@repo/core/types/Library';
 
 interface CollectionPickerModalProps {
   visible: boolean;
@@ -43,7 +43,7 @@ export const CollectionPickerModal: React.FC<CollectionPickerModalProps> = ({
       </ModalHeader>
 
       <ModalBody className="p-0">
-        <SanctuaryFlashList
+        <FlashList
           data={collections}
           keyExtractor={(item: any) => item.id}
           renderItem={({ item }: { item: any }) => (

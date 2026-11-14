@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { getDrizzleDB, registerPermissionValidator } from '../powersync/database';
+import { getDrizzleDB, injectNativePowerSyncDB, registerPermissionValidator } from '../powersync/database';
 
-// We will use a mock DB object and wrap it ourselves, or mock useStore to verify behavior
-vi.mock('../../store/useStore', () => ({
-  useStore: {
+// We will use a mock DB object and wrap it ourselves, or mock useAuthStore to verify behavior
+vi.mock('../../store/useAuthStore', () => ({
+  useAuthStore: {
     getState: vi.fn(() => ({
       user: {
         id: 'user-123',
@@ -54,17 +54,12 @@ vi.mock('../../logic/runtimeRegistry', () => ({
   },
 }));
 
-vi.mock('../powersync/powersync-shim', () => ({
-  PowerSyncDatabase: vi.fn(),
-}));
-
 describe('createSecureDrizzleProxy', () => {
   let secureDb: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Re-initialize drizzle instance wrapper
-    // Access database database singleton which wraps rawMockDb
+    injectNativePowerSyncDB({} as any, rawMockDb);
     secureDb = getDrizzleDB();
   });
 

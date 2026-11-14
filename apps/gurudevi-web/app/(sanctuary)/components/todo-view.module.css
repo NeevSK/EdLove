@@ -1,0 +1,238 @@
+/* TodoView Web CSS Module — Governed by world CSS variables (--w-*) */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background-color: var(--w-raised);
+  border: 1px solid var(--w-line);
+  border-radius: var(--w-corner-surface, 16px);
+  padding: 1.5rem;
+  box-shadow: var(--w-surface-raised-shadow);
+  font-family: inherit;
+  color: var(--w-ink);
+  transition: all 0.2s ease-in-out;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.headerTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--w-ink);
+  margin: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  background-color: var(--w-sunken);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--w-ink-soft);
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.progressTrack {
+  height: 6px;
+  background-color: var(--w-sunken);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--w-lamp);
+  border-radius: 9999px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.inputForm {
+  display: flex;
+  gap: 0.5rem;
+  background-color: var(--w-sunken);
+  border: 1px solid var(--w-line);
+  border-radius: var(--w-corner-control, 10px);
+  padding: 0.35rem 0.5rem;
+  align-items: center;
+}
+
+.inputField {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  color: var(--w-ink);
+  padding: 0.5rem;
+}
+
+.inputField::placeholder {
+  color: var(--w-ink-faint);
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--w-lamp);
+  color: var(--w-on-lamp);
+  border: none;
+  border-radius: var(--w-corner-control, 8px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.addButton:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.addButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.addButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.filtersBar {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--w-line);
+  padding-bottom: 0.75rem;
+}
+
+.filterBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--w-ink-soft);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterBtn:hover {
+  background-color: var(--w-sunken);
+  color: var(--w-ink);
+}
+
+.filterBtn[data-active='true'] {
+  background-color: var(--w-sunken);
+  color: var(--w-ink);
+  font-weight: 700;
+}
+
+.todoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.todoItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: var(--w-sunken);
+  border: 1px solid var(--w-line);
+  border-radius: var(--w-corner-control, 10px);
+  gap: 0.75rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.todoItem:hover {
+  border-color: var(--w-lamp);
+  background-color: var(--w-raised);
+}
+
+.todoLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.checkboxInput {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: var(--w-lamp);
+}
+
+.todoTitle {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--w-ink);
+  word-break: break-word;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.todoTitleCompleted {
+  text-decoration: line-through;
+  color: var(--w-ink-faint);
+}
+
+.deleteButton {
+  background: transparent;
+  border: none;
+  color: var(--w-ink-faint);
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.deleteButton:hover {
+  color: var(--w-danger);
+  background-color: color-mix(in srgb, var(--w-danger) 10%, transparent);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--w-ink-soft);
+  gap: 0.5rem;
+}
+
+.emptyStateIcon {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}

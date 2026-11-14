@@ -21,6 +21,7 @@ const isProductSource = (file) => {
     norm.includes('/supabase/') ||
     norm.includes('/reports/') ||
     norm.includes('/diagnostics/') ||
+    norm.includes('/generated/') ||
     norm.endsWith('.d.ts') ||
     norm.endsWith('.config.js') ||
     norm.endsWith('.config.ts') ||
@@ -42,7 +43,13 @@ const isProductSource = (file) => {
 module.exports = {
   '*.{js,ts,tsx}': (files) => {
     const productFiles = files.filter(isProductSource);
-    const otherFiles = files.filter((f) => !isProductSource(f) && !f.endsWith('.d.ts') && !f.includes('/archive/'));
+    const otherFiles = files.filter(
+      (f) =>
+        !isProductSource(f) &&
+        !f.endsWith('.d.ts') &&
+        !f.includes('/archive/') &&
+        !f.includes('/generated/'),
+    );
 
     const commands = [];
 

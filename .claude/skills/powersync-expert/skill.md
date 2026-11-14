@@ -1,4 +1,5 @@
 ---
+name: powersync-expert
 title: PowerSync Sync and Offline Data Expert
 description: Directives and best practices for offline-first architecture, platform-detected database factories, useLiveQuery reactivity, multi-account swaps, and Drizzle query compilation in the Polymath Platform.
 triggers:

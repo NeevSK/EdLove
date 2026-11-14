@@ -1,10 +1,11 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { Box, Text } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 
 /**
  * TemporalScrubber
@@ -13,7 +14,10 @@ import { runOnJS } from 'react-native-worklets';
  * Adheres to the "Breath-like Motion" and "Sanctuary Glass" principles.
  */
 export const TemporalScrubber: React.FC = () => {
-  const { viewDate, setViewDate, intensity, phase } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const setViewDate = useTemporalStore((s) => s.setViewDate);
+  const intensity = useTemporalStore((s) => s.intensity);
+  const phase = useTemporalStore((s) => s.phase);
   const { width } = useWindowDimensions();
   const scrubberWidth = width * 0.8;
 
@@ -25,9 +29,9 @@ export const TemporalScrubber: React.FC = () => {
       if (translationX < -50) {
         const currentDate = viewDate ? new Date(viewDate) : today;
         currentDate.setDate(currentDate.getDate() - 1);
-        setViewDate(currentDate.toISOString().split('T')[0]!);
+        scheduleOnRN(setViewDate, currentDate.toISOString().split('T')[0]!);
       } else if (translationX > 50) {
-        setViewDate(today.toISOString().split('T')[0]!);
+        scheduleOnRN(setViewDate, today.toISOString().split('T')[0]!);
       }
     },
     [setViewDate, viewDate],
@@ -38,14 +42,17 @@ export const TemporalScrubber: React.FC = () => {
     maxPointers: 1,
     onUpdate: (event) => {
       'worklet';
-      pan.value = event.translationX;
+      pan.set(event.translationX);
     },
     onDeactivate: (event) => {
       'worklet';
       if (!event.canceled && Math.abs(pan.value) > 50) {
-        runOnJS(commitSwipe)(pan.value);
+        scheduleOnRN(commitSwipe, pan.value);
       }
-      pan.value = withSpring(0);
+    },
+    onFinalize: () => {
+      'worklet';
+      pan.set(withSpring(0));
     },
   });
 
@@ -53,7 +60,7 @@ export const TemporalScrubber: React.FC = () => {
     transform: [{ translateX: pan.value }],
   }));
 
-  const color = phase === 'past' ? '#968E80' : '#F6BF8C';
+  const color = phase === 'past' ? tokens.colors.inkSubtle : tokens.colors.primary;
   const todayKey = new Date().toISOString().split('T')[0];
 
   return (

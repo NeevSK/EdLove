@@ -37,13 +37,15 @@ export type { FireflyFeedbackSceneProps } from './components/FireflyFeedbackScen
 export { FireflyFeedbackScene } from './components/FireflyFeedbackScene';
 export type { FocusRingProps } from './components/FocusRing';
 export { FocusRing } from './components/FocusRing';
+export { InteractiveRadarChart, type RadarDimension } from './components/InteractiveRadarChart';
 export type { PageFrame } from './components/layout';
 export { useBreakpoint, usePageFrame, useResponsiveGrid } from './components/layout';
 export type { MascotArtworkSource, MascotConfig, MascotId } from './components/Mascot';
 export { Mascot, MascotProvider, useMascot } from './components/Mascot';
 export type { MascotPodProps, MascotPodVariant } from './components/MascotPod';
 export { MascotPod } from './components/MascotPod';
-export { color, duration, easing, scale } from './components/motion';
+export { color, easing } from './components/motion';
+export { duration, scale } from './tokens/motion';
 export type { PressableScaleProps } from './components/PressableScale';
 // Delight Primitives
 export { PressableScale } from './components/PressableScale';

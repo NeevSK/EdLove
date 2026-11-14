@@ -1,0 +1,694 @@
+{
+ "status_totals": {
+  "UI-UNWIRED": 321,
+  "LIVE": 297,
+  "BACKEND-ONLY": 74,
+  "PARTIAL": 102,
+  "UNVERIFIED": 30,
+  "LOST": 38,
+  "PLANNED": 808
+ },
+ "total": 1670,
+ "planned_reclass": {
+  "MERGED:LIVE": 189,
+  "PARTIAL": 35,
+  "NON-CAPABILITY": 429,
+  "PLANNED": 807,
+  "MERGED:UI-UNWIRED": 44,
+  "BACKEND-ONLY": 22,
+  "MERGED:PARTIAL": 13,
+  "LOST": 3,
+  "UI-UNWIRED": 35,
+  "MERGED:BACKEND-ONLY": 1
+ },
+ "live_transitions": {
+  "LIVE->UI-UNWIRED": 32,
+  "LIVE->LIVE": 236,
+  "LIVE->PARTIAL": 4,
+  "LIVE->REMOVED": 1
+ },
+ "status_changes_non_doc": 109,
+ "contradicted_refs": {
+  "CONFIRMED": 94,
+  "RESOLVED": 5
+ },
+ "low_confidence": 745,
+ "low_confidence_planned": 745,
+ "non_capabilities": 429,
+ "changes": [
+  [
+   "principal-workspace:admin.getStaffPresence",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "calendar-events:admin.getUpcomingCalendarEvents",
+   "LIVE",
+   "UI-UNWIRED",
+   "manual v4 override: hostile check confirmed: the only caller InstitutionalCalendarSection.tsx:126 is not imported by any TS file (barrel-only; mentions are in t"
+  ],
+  [
+   "attendance:attendance.record",
+   "LIVE",
+   "UI-UNWIRED",
+   "client/hook exists but no route closure reaches it"
+  ],
+  [
+   "attendance:attendance.batchRecord",
+   "LIVE",
+   "PARTIAL",
+   "v5 manual: only typed caller apps/gurudevi-web/lib/workspace/attendance.ts:468 sends a legacy classrooms.id as gradeClassId, so the server returns CONFLICT (han"
+  ],
+  [
+   "auth-identity:authorization.refresh",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "client/hook exists but no route closure reaches it"
+  ],
+  [
+   "community-feed:community.getGroups",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "community-feed:community.getGroup",
+   "UI-UNWIRED",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > groups.t"
+  ],
+  [
+   "community-feed:community.createGroup",
+   "UI-UNWIRED",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > groups.t"
+  ],
+  [
+   "community-feed:community.updateMemberStatus",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.updateGroupPolicy",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.getGroupMembers",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.updateMemberRole",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.approveAllMembers",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.getPosts",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "community-feed:community.createPost",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.updatePost",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "community-feed:community.deletePost",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.getGroupMessages",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.sendGroupMessage",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.toggleReaction",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.getComments",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "community-feed:community.createComment",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.deleteComment",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.toggleCommentUpvote",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.markOfficialAnswer",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.getPollStatus",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "community-feed:community.voteInPoll",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > circles."
+  ],
+  [
+   "decision-journal:decisionJournal.markReviewed",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "classroom-echoes:echoes.sendEcho",
+   "UI-UNWIRED",
+   "BACKEND-ONLY",
+   "no client call site"
+  ],
+  [
+   "classroom-echoes:echoes.getMyEchoes",
+   "UI-UNWIRED",
+   "BACKEND-ONLY",
+   "no client call site"
+  ],
+  [
+   "classroom-echoes:echoes.getEchoesByClassroom",
+   "UI-UNWIRED",
+   "BACKEND-ONLY",
+   "no client call site"
+  ],
+  [
+   "classroom-echoes:echoes.getTeacherEchoes",
+   "UI-UNWIRED",
+   "BACKEND-ONLY",
+   "no client call site"
+  ],
+  [
+   "classroom-echoes:echoes.respondToEcho",
+   "UI-UNWIRED",
+   "BACKEND-ONLY",
+   "no client call site"
+  ],
+  [
+   "classroom-echoes:echoes.markAsRead",
+   "UI-UNWIRED",
+   "BACKEND-ONLY",
+   "no client call site"
+  ],
+  [
+   "classroom-core:educational.getByTeacher",
+   "UI-UNWIRED",
+   "LIVE",
+   "served oRPC site; nav packages/classroom/src/screens/StudentDashboard.tsx:60; chain reflect.tsx > StudentProfileScreen.tsx > index.ts > educational.ts > classro"
+  ],
+  [
+   "classroom-core:educational.getByStudent",
+   "UI-UNWIRED",
+   "LIVE",
+   "served oRPC site; nav packages/classroom/src/screens/StudentDashboard.tsx:60; chain reflect.tsx > StudentProfileScreen.tsx > index.ts > educational.ts > classro"
+  ],
+  [
+   "classroom-core:educational.getTeacherStats",
+   "UI-UNWIRED",
+   "LIVE",
+   "served oRPC site; nav packages/classroom/src/screens/StudentDashboard.tsx:60; chain reflect.tsx > StudentProfileScreen.tsx > index.ts > educational.ts > classro"
+  ],
+  [
+   "classroom-core:educational.getById",
+   "UI-UNWIRED",
+   "PARTIAL",
+   "ungated mock: packages/admin/src/screens/PrincipalDashboard.tsx:108 'demo-school'"
+  ],
+  [
+   "classroom-core:educational.createClassroom",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav packages/classroom/src/screens/StudentDashboard.tsx:60; chain reflect.tsx > StudentProfileScreen.tsx > index.ts > educational.ts > classro"
+  ],
+  [
+   "classroom-core:educational.updateClassroom",
+   "UI-UNWIRED",
+   "PARTIAL",
+   "ungated mock: packages/admin/src/screens/PrincipalDashboard.tsx:108 'demo-school'"
+  ],
+  [
+   "classroom-core:educational.deleteClassroom",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "assignments:educational.submitAssignment",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "school-onboarding:identity.identifyActiveCitizen",
+   "LIVE",
+   "PARTIAL",
+   "ungated mock: packages/admin/src/screens/PrincipalDashboard.tsx:108 'demo-school', packages/classroom/src/screens/GradebookScreen.tsx:35 'demo-class'"
+  ],
+  [
+   "school-onboarding:identity.fetchUserProfile",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "school-onboarding:identity.selectActiveScope",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "client/hook exists but no route closure reaches it"
+  ],
+  [
+   "inventory:inventory.getAll",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "inventory:inventory.update",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "inventory:inventory.getSchoolResourceNeeds",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "inventory:inventory.createRequest",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "decision-journal:journalEntries.list",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "decision-journal:journalEntries.create",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.updateResource",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.deleteResource",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-curation-review:library.verifyResource",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.reportBrokenLink",
+   "PARTIAL",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/src/lib/navigation/appNavigation.ts:31; chain index.tsx > LibraryScreen.web.tsx > library.ts > library.ts; caller pac"
+  ],
+  [
+   "library-browse:library.engage",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "library-browse:library.forkCollection",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "longitudinal-profile:longitudinal.getStudentTimeline",
+   "LIVE",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "longitudinal-profile:longitudinal.getStudentSnapshotAsOf",
+   "LIVE",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "cosmic-map:mapping.getById",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "cosmic-map:mapping.getSchoolPulse",
+   "UI-UNWIRED",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx:95; chain founder.tsx > FounderDashboard.tsx > InviteManager.tsx > index.ts > mapping."
+  ],
+  [
+   "cosmic-map:mapping.upsert",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "cosmic-map:mapping.createShareLink",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "school-onboarding:onboarding.revokeSchoolBond",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "client/hook exists but no route closure reaches it"
+  ],
+  [
+   "principal-workspace:principalNotes.getAll",
+   "LIVE",
+   "UI-UNWIRED",
+   "client/hook exists but no route closure reaches it"
+  ],
+  [
+   "principal-workspace:principalNotes.create",
+   "LIVE",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "principal-workspace:principalNotes.update",
+   "LIVE",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "principal-workspace:principalNotes.delete",
+   "LIVE",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "profile:profile.getUserProfile",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "profile:profile.updateProfile",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "client/hook exists but no route closure reaches it"
+  ],
+  [
+   "profile:profile.getJourneySnapshot",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "reached only from routes without inbound nav or via unserved transport"
+  ],
+  [
+   "profile:profile.getSchoolPulse",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "client/hook exists but no route closure reaches it"
+  ],
+  [
+   "sacred-missions:sacredMissions.create",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "self-wellbeing:self.logMood",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "self-wellbeing:self.getMoodHistory",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "self-wellbeing:self.burnJournal",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "self-wellbeing:self.getJournalHistory",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "self-wellbeing:self.getTodayMood",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "self-wellbeing:self.saveThoughtRecord",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "self-wellbeing:self.getThoughtRecords",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "self-wellbeing:self.completeThoughtRecordFollowUp",
+   "BACKEND-ONLY",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "direct-messages:social.getNotifications",
+   "LIVE",
+   "PARTIAL",
+   "manual v4 override: packages/core/src/api/hooks/notification.hooks.ts:24 socialAPI.getNotifications; only consumer is CommunityScreen.web.tsx (Expo web build), "
+  ],
+  [
+   "direct-messages:social.getUnreadNotificationCount",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "direct-messages:social.markAllNotificationsRead",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "student-potential:studentPotential.listForStudent",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "offline-sync:sync.getMutationReceipt",
+   "UI-UNWIRED",
+   "BACKEND-ONLY",
+   "no client call site"
+  ],
+  [
+   "offline-sync:sync.uploadBatch",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "thuthimal:thuthimal.getMyGifts",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "thuthimal:thuthimal.previewGift",
+   "LIVE",
+   "UI-UNWIRED",
+   "hostile: no nav-reachable route both imports the served client module and invokes this method (module imported, method never called from UI)"
+  ],
+  [
+   "tracking-history:tracking.listExploredFeatures",
+   "UI-UNWIRED",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/src/lib/navigation/appNavigation.ts:31; chain index.tsx > LibraryScreen.tsx > index.ts > tracking.ts; caller packages"
+  ],
+  [
+   "tracking-history:tracking.logFeatureUsage",
+   "UI-UNWIRED",
+   "LIVE",
+   "served oRPC site; nav apps/gurudevi-mobile/src/lib/navigation/appNavigation.ts:31; chain index.tsx > LibraryScreen.tsx > index.ts > tracking.ts; caller packages"
+  ],
+  [
+   "notifications:route/notifications",
+   "PARTIAL",
+   "LIVE",
+   "manual v4 override: (tabs)/notifications.tsx -> NotificationsScreen.tsx uses useNotifications (real Supabase notifications table + realtime); nav: _layout.tsx:3"
+  ],
+  [
+   "school-onboarding:route/c/[code]",
+   "UI-UNWIRED",
+   "LIVE",
+   "no API/table; nav Y"
+  ],
+  [
+   "pkg:core:supabase.read:guardian_identities",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "direct Supabase site not in any route closure"
+  ],
+  [
+   "pkg:core:supabase.write:guardian_identities",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "direct Supabase site not in any route closure"
+  ],
+  [
+   "pkg:core:supabase.write:guardian_notification_settings",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "direct Supabase site not in any route closure"
+  ],
+  [
+   "pkg:core:supabase.read:guardian_notifications",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "direct Supabase site not in any route closure"
+  ],
+  [
+   "notifications:supabase.read:notifications",
+   "UI-UNWIRED",
+   "LIVE",
+   "manual v4 override: useNotifications.ts:38 setUserId -> useNotificationStore.ts:42 loadNotifications :54 notification.getNotifications -> NotificationManager.ts"
+  ],
+  [
+   "notifications:supabase.write:notifications",
+   "UI-UNWIRED",
+   "LIVE",
+   "manual v4 override: markAsRead/markAllRead exposed by useNotifications.ts -> adapter :29/:37 (same chain as the read)"
+  ],
+  [
+   "pkg:core:supabase.read:school_events",
+   "PARTIAL",
+   "UI-UNWIRED",
+   "direct Supabase site not in any route closure"
+  ],
+  [
+   "task:self:teacher:3",
+   "LIVE",
+   "UI-UNWIRED",
+   "named code exists but no route closure includes it"
+  ],
+  [
+   "task:self:teacher:8",
+   "LIVE",
+   "UI-UNWIRED",
+   "named code exists but no route closure includes it"
+  ],
+  [
+   "task:self:teacher:10",
+   "LIVE",
+   "UI-UNWIRED",
+   "named code exists but no route closure includes it"
+  ],
+  [
+   "task:self:teacher:14",
+   "UI-UNWIRED",
+   "LIVE",
+   "named code in nav-reachable route; calls served or direct"
+  ],
+  [
+   "task:self:teacher:17",
+   "LIVE",
+   "UI-UNWIRED",
+   "named code exists but no route closure includes it"
+  ],
+  [
+   "task:self:student:2",
+   "LIVE",
+   "UI-UNWIRED",
+   "named code exists but no route closure includes it"
+  ],
+  [
+   "task:self:principal:1",
+   "LIVE",
+   "UI-UNWIRED",
+   "named code exists but no route closure includes it"
+  ],
+  [
+   "task:classroom:student:6",
+   "LIVE",
+   "UI-UNWIRED",
+   "named code exists but no route closure includes it"
+  ],
+  [
+   "task:profile:teacher:12",
+   "LIVE",
+   "PARTIAL",
+   "reachable but calls not served/unreached"
+  ]
+ ]
+}

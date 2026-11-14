@@ -2,7 +2,7 @@
 title: "Sanctuary API Documentation Vault Index"
 status: "active"
 created: 2026-06-20
-updated: 2026-07-30
+updated: 2026-10-30
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -12,17 +12,70 @@ tags: [index, portal]
 
 Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). This file serves as the entry point and index for all backend system documentation.
 
+Start API integration work with the [canonical domain and channel model](architecture/api-domain-and-channel-model.md).
+It governs the hard cutover, horizontal foundation, channel distinctions and
+deferred decisions; historical compatibility plans do not override it.
+
+For learning and grounded design, use the two entry documents:
+[What: API landscape](architecture/api-landscape.md) and
+[How: API engineering playbook](architecture/api-engineering-playbook.md).
+Their focused modules cover vocabulary/history, channels and agents,
+dependency/evidence research, and business rules/decisions. They are a linked
+reference bundle, not an announcement of implemented features or new dependencies.
+
+For the resumed horizontal build, use the [runtime foundation checkpoint](architecture/api-foundations/runtime-foundation.md)
+for actual guarantees, deployment runtime, configuration and remaining admission requirements.
+
 ---
 
 ## 📅 Recent Documentation Updates (Chronological Feed)
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-10-28** | [Phase 2 & Phase 3 Cutover: Resilient AI Streaming & Omnichannel Ingress](architecture/2026-10-28-ai-streaming-resilience-and-omnichannel-ingress-cutover.md) | Architecture | `active` | Edge anti-buffering headers (X-Accel-Buffering: no), AbortSignal cancellation propagation, Gemini-first baseline resolution, and WhatsApp/Telegram webhook ingress aliasing. |
+| **2026-10-28** | [Production Hosted API: Render Deployment & Operational Standard](infra/2026-10-28-production-hosted-api-render-deployment.md) | Infra | `active` | Live Singapore Render Free deployment standard: monorepo Docker context, Doppler injection, 87.4 req/s baseline, and CLI runbook. |
+| **2026-10-28** | [Hexagonal Telemetry and OpenTelemetry Observability Architecture](architecture/2026-10-28-hexagonal-telemetry-and-observability.md) | Architecture | `active` | Hexagonal telemetry architecture: TelemetryPort, Otel/Noop adapters, W3C trace propagation, and Better Stack/HyperDX/Sentry free matrix. |
+| **2026-10-28** | [Status Page and Automated Keep-Alive Engine](operations/2026-10-28-status-page-and-keep-alive-engine.md) | Operations | `active` | In-app /status dashboard in gurudevi-web, status.gurudevi.app domain binding, and 10-minute GitHub Actions keep-alive heartbeat. |
+| **2026-10-28** | [Platform MCP Gateway & Sovereign Agentic Toolchain](infra/2026-10-28-platform-mcp-and-agentic-tools.md) | Infra | `active` | Downstream Render MCP and Better Stack MCP integration in @repo/platform-mcp, mcp-remote proxying, and stress test harness. |
+| **2026-10-28** | [Integrative Scaling Roadmap & Hostile Critical Review](architecture/2026-10-28-integrative-scaling-roadmap-and-hostile-critique.md) | Architecture | `active` | 5-pillar scaling architecture: TanStack Query/Pacer, AI streaming SSE, cryptographic webhooks, omnichannel identity, and MCP tiers. |
+| **2026-10-28** | [Environment Strategy, Capacity Economics & Disaster Recovery](architecture/2026-10-28-environment-strategy-and-capacity-economics.md) | Architecture | `active` | Prod vs Staging vs Dev 750-hour compute pool economics, Supabase dual-project database strategy, and disaster recovery rollback runbook. |
+| **2026-10-28** | [Full-Stack Threat Model & Cybersecurity Architecture](security/2026-10-28-full-stack-threat-model-and-cybersecurity-architecture.md) | Security | `active` | Repository-grounded AppSec threat model covering Expo 58 mobile, Next.js 16 web, Cedar WASM, PowerSync sync, and 6 trust boundaries. |
+| **2026-10-25** | [Sanctuary API v2: Full Architectural & Engineering Assessment](architecture/2026-10-25-sanctuary-api-v2-architecture-assessment.md) | Architecture | `draft` | Master verdict & architectural assessment: Hono v5 RC, oRPC v2 beta, Bun 1.4.4, Render, Cedar, WhatsApp, Telegram, and Agentic AI/MCP. |
+| **2026-10-25** | [Hono v5 RC: Temporal-Grounded Research Report](architecture/2026-10-25-hono-v5-rc-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on Hono v5.0.0-rc.1, ESM-only transition, decoupled adapters, onError signature changes, and Standard Schema. |
+| **2026-10-25** | [oRPC v2 Beta: Temporal-Grounded Research Report](architecture/2026-10-25-orpc-v2-beta-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on oRPC 2.0.0-beta.46, contract-first decoupling (oc vs os), wire protocol changes, middleware deduplication removal, and MCP. |
+| **2026-10-25** | [Bun Runtime & Render.com: Temporal-Grounded Research Report](architecture/2026-10-25-bun-runtime-and-render-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on Bun 1.4.4 Rust rewrite, CVE-2026-111497 patch, Render compute tiers, zero-downtime blue-green deploys, and keepalives. |
+| **2026-10-25** | [Cedar Policy Authorization: Temporal-Grounded Research Report](architecture/2026-10-25-cedar-policy-authorization-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on Cedar v4.14.0, @cedar-policy/cedar-wasm 4.13.0, Wasm linear memory, singleton init, and direct Rust sidecar. |
+| **2026-10-25** | [Omnichannel Messaging & Agentic AI: Temporal-Grounded Research Report](architecture/2026-10-25-omnichannel-messaging-and-agentic-ai-temporal-grounded-research.md) | Architecture | `active` | Deep-dive research on WhatsApp Cloud API v21/v22, raw HMAC parsing, grammY FSM, Vercel AI SDK v4+ streaming, and Inngest. |
+| **2026-10-25** | [Modern API Architecture, Efficiency & Agentic Era Playbook](architecture/2026-10-25-modern-api-architecture-and-agentic-era-playbook.md) | Architecture | `active` | 2026 API patterns, post-serverless persistent runtime, deprecation radar, DB/client interaction triangle, and MCP agentic ingress. |
+| **2026-10-25** | [Sanctuary API Host Resource & Capacity Sizing Guide](operations/host-resource-and-capacity-sizing.md) | Operations | `active` | Specification for CPU/RAM sizing, Cedar WASM footprint, 512MB OOM prevention, DB pool budgeting, and ulimit tuning. |
+| **2026-10-25** | [Sanctuary API Bun 1.4.4 Runtime Verification & Stress Benchmarks](current_progress/2026-10-25-bun-runtime-verification-and-stress-benchmarks.md) | Benchmarks | `active` | Bun 1.4.4 runtime verification, 40+ oRPC sub-router map, 765 passing unit tests, and >62k request stress test matrix. |
+| **2026-10-25** | [Sanctuary API Render Deployment Playbook](infra/render-deployment-playbook.md) | Infra | `active` | Grounded monorepo deployment standard, pnpm workspace isolation, anti-buffering SSE stream headers, database pooling and 512MB RAM OOM prevention. |
+| **2026-10-16** | [HTTPS Transport Boundary](architecture/transport-security.md) | Architecture | `active` | Shared fail-closed URL and redirect policy, production TLS ingress, authentication coverage and live deployment acceptance gates. |
+| **2026-10-15** | [Phone Entry and Canonical Account Integration Proposal](architecture/2026-10-15-phone-entry-and-canonical-account-integration-proposal.md) | Architecture | `draft` | Current auth substrate, decoupled-account web entry defect, bounded phone OTP proposal and coordinated channel/client acceptance gates. |
+| **2026-10-15** | [Local Foundation Integration Environment](operations/local-integration-environment.md) | Operations | `active` | Dedicated loopback PostgreSQL runtime, retained resources, verified fresh-install migration failure and remaining real-data acceptance gates. |
+| **2026-10-15** | [Integrated Foundation Programme](current_progress/2026-10-15-integrated-foundation-programme.md) | Current progress | `active` | Renewed API-first goal with milestone/task/subtask checklists, integrated acceptance gates and explicit evidence limits. |
+| **2026-10-14** | [Explore / Live Security Gate](security/2026-10-14-explore-live-boundary-security-gate.md) | Security | `active` | Coordinated API/UI ownership, authenticated bootstrap hardening, local-mode isolation requirements, retention risks and explicit evidence limits. |
+| **2026-10-14** | [Multi-Channel Identity, Consent, and Delegation Contract](architecture/2026-10-14-multi-channel-identity-and-delegation-contract.md) | Architecture | `active` | Canonical account/subject model for web, mobile, SMS, WhatsApp, Telegram and delegated agents, with onboarding, consent, replay, linking and Explore/Sanctuary boundaries. |
+| **2026-10-14** | [LMS Task and Workflow Seam](architecture/2026-10-14-lms-task-workflow-seam.md) | Architecture | `active` | Separates authoritative LMS tasks, client-local workbench tasks, and future workflows; defines additive receipt/transition invariants and phased implementation without a generic engine. |
+| **2026-10-14** | [Capability-Ready Gurudevi Delivery Goal](current_progress/2026-10-14-capability-ready-delivery-goal.md) | Current progress | `active` | Resumed phased goal from API/client foundation through one durable LMS workflow, then channel adapters and agentic projections with explicit gates. |
 | **2026-08-25** | [Production Hardening Master Plan](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/implementation/PRODUCTION_HARDENING_MASTER_PLAN.md) | Implementation | `active` | Complete phased implementation plan for production hardening: 5 phases covering resilience, operations, observability, constraint-driven patterns, and chaos testing. |
 | **2026-08-25** | [Production Operations Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/operations/production-operations-guide.md) | Operations | `active` | Complete production runbook: architecture overview, debugging scenarios, health checks, incident response, capacity planning, security checklist. |
 | **2026-08-25** | [API Design Decisions](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/api-design-decisions.md) | Architecture | `active` | Design principles, auth/error/streaming/offline patterns, anti-patterns, testing conventions. |
 | **2026-08-25** | [Migration Decisions Log](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/migration-decisions-log.md) | Architecture | `active` | 8 ADRs documenting oRPC adoption, dual-gate auth, request-scoped DB, PowerSync, GrowthBook, TanStack Query, OTel, slice migration, WinterCG. |
 | **2026-08-25** | [Comprehensive Audit & Modernization Plan](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-08-25-comprehensive-audit-and-plan.md) | Architecture | `active` | Complete audit of current state, Frankenstein problem, observability gaps, frontend integration failure, and phased modernization plan with new dependencies. |
+| **2026-10-13** | [API Capability Platform and Tooling Audit](architecture/2026-10-13-api-capability-platform-and-tooling-audit.md) | Audit | `draft` | Hostile review of Hono/oRPC capability, GraphQL tradeoffs, AI/MCP/channel exposure, database lifecycle gaps, and evidence-gated tooling selection. |
+| **2026-10-13** | [Layered API Platform Roadmap and Real Deployment Options](architecture/2026-10-13-layered-api-platform-roadmap-and-real-options.md) | Roadmap | `draft` | Layered abstraction-to-implementation plan for a pristine modular monolith, API/database decoupling, financially explicit deployment options, and phase gates. |
+| **2026-10-13** | [Phase 1 Capability Constitution and Security-Gated Vertical Slice Charter](current_progress/2026-10-13-phase-1-capability-constitution-charter.md) | Current progress | `active` | Milestoned Phase 1 goal and granular tasks for capability semantics, cyber-security, data/recovery, cost, evidence, and go/no-go decision. |
+| **2026-10-13** | [Phase 1 Capability Slice Gate: Conditional Proceed](decisions/2026-10-13-phase-1-capability-slice-gate.md) | Decision | `active` | Selects the teacher/principal lesson-draft to classroom-note slice and records conditional Phase 2 entry with security and recovery blockers. |
+| **2026-10-13** | [Horizontal Foundation Coherence Plan](architecture/2026-10-13-horizontal-foundation-coherence-plan.md) | Architecture | `draft` | Phased F0–F6 plan for coherent authn/authz, errors, validation, data integrity, resilience, observability, recovery, and operational gates. |
+| **2026-10-13** | [Horizontal Foundation Audit: First Evidence Pass](current_progress/2026-10-13-horizontal-foundation-audit.md) | Current progress | `active` | Static/source-grounded audit inventory, area findings, first-pass foundation gate, and prioritized remediation backlog. |
+| **2026-10-13** | [F1 Authn, Authz, Tenant Isolation, and Entrypoint Inventory](current_progress/2026-10-13-f1-authn-authz-entrypoint-inventory.md) | Current progress | `active` | F1 route-family inventory with authentication/authorization paths, tenant-isolation risks, and the unguarded development-diagnostics concern. |
+| **2026-10-13** | [F2 Error, Contract, Timeout, and Observability Boundary Audit](current_progress/2026-10-13-f2-error-contract-audit.md) | Current progress | `active` | F2 inventory of typed errors, oRPC/Hono/direct response paths, streaming and timeout boundaries, retry semantics, and remediation gates. |
+| **2026-10-13** | [F3 Operation Integrity and Sync Seam Audit](current_progress/2026-10-13-f3-operation-and-sync-seam-audit.md) | Current progress | `active` | Bounded transaction, ledger, actual PowerSync wire/acknowledgement, retry ownership, account isolation and agent-dispatch audit. |
+| **2026-10-13** | [F4 Operations and Telemetry Boundary Audit](current_progress/2026-10-13-f4-operations-boundary-audit.md) | Current progress | `active` | Runtime drain, early-failure IDs, ingress trust, sensitive telemetry, bounded providers and capability readiness findings. |
+| **2026-10-13** | [F5 Offline Ownership and Recovery Audit](current_progress/2026-10-13-f5-offline-and-recovery-audit.md) | Current progress | `active` | Existing account controls, focused G1 results, ownership races, revocation and restore evidence owed. |
+| **2026-10-13** | [Horizontal Foundation Gate](decisions/2026-10-13-horizontal-foundation-gate.md) | Decision | `draft` | Consolidated target responsibilities, F0–F6 evidence, dependency-ordered remediation and protected rollout stop conditions. |
+| **2026-10-13** | [Foundation Contract and Sync Repair Packet](implementation/2026-10-13-foundation-contract-and-sync-repair-packet.md) | Implementation | `draft` | Bounded converter and account-bound sync repair steps, compatibility decisions, acknowledgement/retry invariants and evidence gates. |
 | **2026-07-30** | [Sanctuary API oRPC Architecture](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/orpc-api-architecture.md) | Architecture | `active` | Canonical oRPC boundary, Hono/Cedar/ZenStack/PowerSync responsibilities, tradeoffs, and honest migration status. |
 | **2026-07-30** | [oRPC Migration Test Reality Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-07-30-orpc-test-audit.md) | Audit | `active` | Distinguishes real in-memory oRPC coverage from mocked dependencies and remaining legacy Hono tests. |
 | **2026-07-30** | [Classroom Lifecycle oRPC Cutover](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/decisions/2026-07-30-classroom-lifecycle-orpc-cutover.md) | Decision | `implemented` | Moves classroom create/update/delete writes behind the native contract and shared Cedar/context boundary. |
@@ -56,6 +109,7 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 ## 📁 Document Categories
 
 ### 📐 Technical Architecture & Specifications Vault
+*   [Modern API Architecture, Efficiency & Agentic Era Playbook](architecture/2026-10-25-modern-api-architecture-and-agentic-era-playbook.md) - 2026 API patterns, post-serverless persistent runtime, deprecation radar, DB/client interaction triangle, and MCP agentic ingress.
 *   [Developer Onboarding Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/developer-onboarding-guide.md) - Service introduction, tech stack overview, workspace mapping, and DX workflows.
 *   [Developer Sandbox Console](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/developer-sandbox-console.md) - Architecture, trigger flows, inline configurations, and tree-shaking security.
 *   [Docs SOP](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/docs-sop.md) - Format, frontmatter, and naming conventions.
@@ -79,6 +133,8 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 *   [Migration Decisions Log](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/migration-decisions-log.md) - 8 ADRs documenting oRPC adoption, dual-gate auth, request-scoped DB, PowerSync, GrowthBook, TanStack Query, OTel, slice migration, WinterCG.
 
 ### ⚙️ Infrastructure & Operations
+*   [Host Resource & Capacity Sizing Guide](operations/host-resource-and-capacity-sizing.md) - Specification for CPU/RAM sizing, Cedar WASM footprint, 512MB OOM prevention, DB pool budgeting, and ulimit tuning.
+*   [Sanctuary API Render Deployment Playbook](infra/render-deployment-playbook.md) - Grounded deployment standard, pnpm workspace isolation, anti-buffering SSE stream headers, database pooling, and OOM prevention.
 *   [Astro v6 to v7 Breaking Changes](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/infra/2026-06-25-astro-v6-to-v7-breaking-changes.md) - Deep dive guide for breaking API changes, compiler updates, and configurations during migration.
 *   [Astro v7 Upgrade Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/infra/astro-v7-upgrade-guide.md) - Migration checklist and breaking changes reference for upgrading to Astro v7.0.
 *   [Production Operations Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/operations/production-operations-guide.md) - Complete production runbook: architecture overview, debugging scenarios, health checks, incident response, capacity planning, security checklist.

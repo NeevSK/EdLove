@@ -5353,4 +5353,4 @@ INSERT INTO public.edges (
 -- Tech guides connect to platform links
 ('00000000-0009-0001-0000-000000000000'::UUID,  '00000000-0015-0001-0000-000000000000'::UUID, 'related', 0.8, false, true),  -- Google Classroom guide → Khan Academy link
 ('00000000-0009-0005-0000-000000000000'::UUID,  '00000000-0015-0007-0000-000000000000'::UUID, 'related', 0.9, false, true)   -- Scratch guide → PhET link (EdTech tools)
-ON CONFLICT (from_node_id, to_node_id) DO NOTHING;
+ON CONFLICT (from_node_id, to_node_id, relationship) DO NOTHING;

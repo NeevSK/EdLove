@@ -1,10 +1,27 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { authAPI } from '@repo/core/api/auth';
-import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { GuestDataManager } from '@repo/core/native/guestDataManager';
+// retired authAPI
+// retired identityAPI
+import { isEdloveAccountId } from '@repo/core/logic/schemas/edloveUuidV8';
+// retired orpcClient
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { readGuestConversionRecord } from '@repo/core/native/guestConversionLedger';
+import { GuestStorage } from '@repo/core/native/guestStorage';
+import {
+  defaultGuestDataTransferPolicy,
+  type GuestDataTransferPolicy,
+  getGuestDataTransferAvailability,
+} from '@repo/core/native/guestDataTransferPolicy';
 import { setGuestScope } from '@repo/core/native/guestScope';
 
 let pendingConversionGuestUserId: string | null = null;
+const PENDING_GUEST_CONVERSION_KEY = 'auth:pending-guest-conversion';
+const isValidGuestId = (value: string): boolean => {
+  if (value.length === 0 || value.length > 256 || value.trim() !== value) return false;
+  for (let i = 0; i < value.length; i++) {
+    if (value.charCodeAt(i) < 32) return false;
+  }
+  return true;
+};
 
 export interface SyncProgress {
   total: number;
@@ -15,10 +32,54 @@ export interface SyncProgress {
 
 export type SyncProgressCallback = (progress: SyncProgress) => void;
 
-export class GuestDataSync {
-  static rememberGuestSession(userId: string): void {
+export { type GuestDataTransferAvailability } from '@repo/core/native/guestDataTransferPolicy';
+
+class GuestDataSyncCoordinator {
+  getTransferAvailability(policy: GuestDataTransferPolicy = defaultGuestDataTransferPolicy) {
+    return getGuestDataTransferAvailability(policy);
+  }
+
+  async rememberGuestSession(userId: string): Promise<void> {
+    if (!isValidGuestId(userId)) {
+      throw new Error('Cannot preserve an invalid guest identity.');
+    }
     pendingConversionGuestUserId = userId;
     setGuestScope(userId);
+    await SafeZustandStorage.setItem(PENDING_GUEST_CONVERSION_KEY, userId);
+  }
+
+  /**
+   * Restores the source guest scope after an external authentication callback.
+   * Only an opaque Supabase user id is retained; credentials never leave Auth.
+   */
+  async restorePendingGuestSession(): Promise<string | null> {
+    if (pendingConversionGuestUserId) {
+      setGuestScope(pendingConversionGuestUserId);
+      return pendingConversionGuestUserId;
+    }
+
+    const raw = await SafeZustandStorage.getItem(PENDING_GUEST_CONVERSION_KEY);
+    if (!raw || !isValidGuestId(raw)) {
+      if (raw) await SafeZustandStorage.removeItem(PENDING_GUEST_CONVERSION_KEY);
+      return null;
+    }
+
+    pendingConversionGuestUserId = raw;
+    setGuestScope(raw);
+    return raw;
+  }
+
+  async clearPendingGuestSession(): Promise<void> {
+    pendingConversionGuestUserId = null;
+    setGuestScope(null);
+    await SafeZustandStorage.removeItem(PENDING_GUEST_CONVERSION_KEY);
+  }
+
+  async discardPendingGuestData(): Promise<void> {
+    const guestUserId = await this.restorePendingGuestSession();
+    if (!guestUserId) return;
+    await GuestStorage.clearAllGuestData();
+    await this.clearPendingGuestSession();
   }
   /**
    * Syncs all guest data to Supabase for the authenticated user
@@ -26,8 +87,8 @@ export class GuestDataSync {
    * @param onProgress Optional callback for progress updates
    * @returns Summary of sync results
    */
-  static async syncAllData(
-    userId: string,
+  async syncAllData(
+    _requestedUserId: string,
     onProgress?: SyncProgressCallback,
   ): Promise<{
     success: boolean;
@@ -48,15 +109,43 @@ export class GuestDataSync {
     };
 
     try {
-      if (pendingConversionGuestUserId) setGuestScope(pendingConversionGuestUserId);
+      const conversion = await readGuestConversionRecord();
+      if (!conversion?.targetUserId) {
+        throw new Error('Guest data transfer requires a confirmed durable account conversion.');
+      }
+      const availability = this.getTransferAvailability();
+      if (!availability.isAvailable) {
+        throw new Error(availability.reason);
+      }
+      setGuestScope(conversion.sourceGuestId);
       // Check if user is still anonymous
-      const isAnon = await authAPI.isAnonymous();
+      const isAnon = false;
       if (isAnon) {
         throw new Error('Cannot sync data for anonymous user');
       }
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabaseClient.auth.getSession();
+      if (sessionError || !session) {
+        throw new Error('No active authenticated session. Cannot migrate guest data.');
+      }
+      if (session.user.id !== conversion.targetUserId) {
+        throw new Error('Guest data transfer target no longer matches the confirmed account.');
+      }
+      const targetUserId = session.user.id;
+      const current = await supabaseClient.auth.getSession();
+      if (
+        !targetUserId ||
+        !isEdloveAccountId(targetUserId) ||
+        current.error ||
+        current.data.session?.user.id !== session.user.id
+      ) {
+        throw new Error('Guest data transfer requires the verified canonical account.');
+      }
 
       // Export all guest data
-      const guestData = await GuestDataManager.exportAllData();
+      const guestData = await GuestStorage.exportAllData();
       const totalItems =
         guestData.timetable.length +
         guestData.moodLogs.length +
@@ -95,7 +184,7 @@ export class GuestDataSync {
             op: 'PUT',
             table: 'timetable',
             opData: {
-              user_id: userId,
+              user_id: targetUserId,
               day_of_week: period.day_of_week,
               period_number: period.period_number,
               subject: period.subject,
@@ -120,7 +209,7 @@ export class GuestDataSync {
             op: 'PUT',
             table: 'mood_logs',
             opData: {
-              user_id: userId,
+              user_id: targetUserId,
               mood: moodMap[log.mood],
               note: log.note,
               created_at: log.timestamp,
@@ -140,7 +229,7 @@ export class GuestDataSync {
             op: 'PUT',
             table: 'fire_journal',
             opData: {
-              user_id: userId,
+              user_id: targetUserId,
               content: entry.content,
               created_at: entry.timestamp,
             },
@@ -170,48 +259,17 @@ export class GuestDataSync {
       if (crudBatch.length > 0) {
         updateProgress('Migrating user data payload through Sanctuary Gateway...');
 
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabaseClient.auth.getSession();
-
-        if (sessionError || !session) {
-          throw new Error('No active authenticated session. Cannot migrate guest data.');
-        }
-
-        const client = createSovereignClient(SOVEREIGN_API_URL);
-        const res = await (client.api as any).powersync.upload.$post(
-          {
-            json: {
-              crud: crudBatch,
-            },
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          },
-        );
-
-        if (!res.ok) {
-          const err = (await res.json()) as any;
-          throw new Error(err.message || `Sanctuary migration aborted with status ${res.status}`);
-        }
-
-        synced.timetable = guestData.timetable.length;
-        synced.moodLogs = guestData.moodLogs.length;
-        synced.journalEntries = guestData.journalEntries.length;
-        synced.students = guestData.students.length;
-        completed = totalItems;
+        throw new Error('Guest data conversion not admitted');
       }
+
+
 
       updateProgress('Sync complete!');
 
       // Clear guest data after successful sync
       if (errors.length === 0) {
-        await GuestDataManager.clearAllGuestData();
-        pendingConversionGuestUserId = null;
-        setGuestScope(null);
+        await GuestStorage.clearAllGuestData();
+        await SafeZustandStorage.removeItem(PENDING_GUEST_CONVERSION_KEY);
       }
 
       return {
@@ -232,11 +290,15 @@ export class GuestDataSync {
   /**
    * Checks if there's guest data available to sync
    */
-  static async hasGuestData(sourceGuestUserId?: string): Promise<boolean> {
+  async hasGuestData(sourceGuestUserId?: string): Promise<boolean> {
     if (sourceGuestUserId) {
-      GuestDataSync.rememberGuestSession(sourceGuestUserId);
+      const record = await readGuestConversionRecord();
+      if (!record || record.sourceGuestId !== sourceGuestUserId) {
+        throw new Error('Guest data cannot be selected outside its pending conversion record.');
+      }
+      setGuestScope(sourceGuestUserId);
     }
-    const summary = await GuestDataManager.getDataSummary();
+    const summary = await GuestStorage.getDataSummary();
     return (
       summary.timetablePeriods > 0 ||
       summary.moodLogs > 0 ||
@@ -248,14 +310,14 @@ export class GuestDataSync {
   /**
    * Gets a summary of guest data available for sync
    */
-  static async getGuestDataSummary(): Promise<{
+  async getGuestDataSummary(): Promise<{
     timetablePeriods: number;
     moodLogs: number;
     journalEntries: number;
     students: number;
     total: number;
   }> {
-    const summary = await GuestDataManager.getDataSummary();
+    const summary = await GuestStorage.getDataSummary();
     return {
       ...summary,
       total:
@@ -263,3 +325,5 @@ export class GuestDataSync {
     };
   }
 }
+
+export const GuestDataSync = new GuestDataSyncCoordinator();

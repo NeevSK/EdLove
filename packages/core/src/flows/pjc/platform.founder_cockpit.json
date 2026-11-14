@@ -1,0 +1,571 @@
+{
+  "id": "feature:platform.founder_cockpit",
+  "title": "Founder Command Deck & Platform Fleet Directives",
+  "description": "Executive command center for the platform founder to triage strategic priorities offline and monitor fleet-wide institution health, classroom vitality, and active souls.",
+  "lifecycle": {
+    "maturity": "available",
+    "owner": "Naveen"
+  },
+  "links": [
+    "intent:founder.manage_priorities",
+    "intent:founder.fleet_pulse",
+    "intent:founder.ai_collaboration",
+    "intent:founder.charter_sanctuary",
+    "intent:founder.triage_communications"
+  ],
+  "intents": [
+    {
+      "id": "intent:founder.manage_priorities",
+      "title": "Triage Strategic Founder Priorities",
+      "actor": "founder",
+      "outcome": "Capture, reorder, and complete platform directives with instant offline-first reactivity.",
+      "links": ["journey:founder.manage_priorities"],
+      "journeys": [
+        {
+          "id": "journey:founder.manage_priorities",
+          "title": "Manage Founder Command Deck Directives",
+          "situation": "The platform founder opens the executive workspace on mobile or web and needs to capture, prioritize, and complete operational tasks with zero network delay.",
+          "outcome": "Directives are instantly committed to local SQLite and replicated to Supabase.",
+          "context": "daily",
+          "preconditions": [
+            "Authenticated account has founder or developer capacity."
+          ],
+          "entry": "step:founder.cockpit_entry",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "Founder dashboard mounts at /workspace/founder with access restricted to founder/developer/admin bonds.",
+              "Embedded TodoView powers instant optimistic mutations against local SQLite."
+            ],
+            "invariants": [
+              "Tasks written on device must never be lost during network drops or background sync pauses.",
+              "UI must never drop frames during gesture interaction; all swipe animations execute on the native UI thread.",
+              "Personal priorities remain strictly isolated to the authenticated canonical account identity."
+            ],
+            "openQuestions": [
+              "Should directives support cross-organization assignment to specific school principals?"
+            ],
+            "integrationPoints": [
+              "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx",
+              "packages/admin/src/screens/FounderDashboard.tsx",
+              "packages/core/src/adapters/powersync/todos.react.ts",
+              "packages/ui/src/components/native/Todo/SwipeableTodoRow.tsx",
+              "packages/ui/src/components/native/Todo/TodoView.tsx"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:founder.cockpit_entry",
+              "title": "Open Founder Cockpit",
+              "interaction": "Navigate to the workspace tab and select Founder Command Deck.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:founder.add_directive",
+              "title": "Add Strategic Directive",
+              "interaction": "Type priority in the quick-add input and press submit.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:founder.swipe_action",
+              "title": "Execute Swipe Action",
+              "interaction": "Swipe right to mark complete with haptic tick, or left to delete.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:founder.directives_settled",
+              "title": "Directives Settled",
+              "interaction": "List updates smoothly via spring physics and syncs in background.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:founder.enter_to_add",
+              "title": "Focus add input",
+              "from": "step:founder.cockpit_entry",
+              "to": "step:founder.add_directive",
+              "action": "Focus the quick capture field.",
+              "feedback": "Display keyboard and input border highlight.",
+              "links": []
+            },
+            {
+              "id": "transition:founder.add_to_swipe",
+              "title": "Swipe task row",
+              "from": "step:founder.add_directive",
+              "to": "step:founder.swipe_action",
+              "action": "Pan horizontally across a directive row.",
+              "feedback": "Render under-layer action badge with spring physics.",
+              "links": []
+            },
+            {
+              "id": "transition:founder.swipe_to_settled",
+              "title": "Settle mutation",
+              "from": "step:founder.swipe_action",
+              "to": "step:founder.directives_settled",
+              "action": "Release drag threshold.",
+              "feedback": "Haptic click confirms SQLite commit.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:founder.offline_local_first",
+              "title": "Instant Offline Mutations",
+              "statement": "Founder tasks must write directly to local SQLite without waiting for server response.",
+              "classification": "functional",
+              "origin": "user",
+              "links": []
+            },
+            {
+              "id": "requirement:founder.fluid_gesture_motion",
+              "title": "60fps Swipe Ergonomics",
+              "statement": "Row swiping must run on the native worklet thread via Gesture.Pan.",
+              "classification": "quality",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:founder.route_mobile",
+              "title": "Mobile Founder Route",
+              "category": "mobile",
+              "reference": "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx",
+              "status": "implemented",
+              "note": "Mounts executive dashboard behind capacity gate.",
+              "links": []
+            },
+            {
+              "id": "binding:founder.dashboard_screen",
+              "title": "Founder Dashboard Screen",
+              "category": "mobile",
+              "reference": "packages/admin/src/screens/FounderDashboard.tsx",
+              "status": "implemented",
+              "note": "Integrates TodoView and pulse metrics.",
+              "links": []
+            },
+            {
+              "id": "binding:founder.todos_hook",
+              "title": "PowerSync Todos Hook",
+              "category": "data",
+              "reference": "packages/core/src/adapters/powersync/todos.react.ts",
+              "status": "implemented",
+              "note": "Local SQLite reactive query via useLiveQuery.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:founder.quick_capture_and_complete",
+              "title": "Quick Capture and Complete Directive",
+              "transitions": [
+                "transition:founder.enter_to_add",
+                "transition:founder.add_to_swipe",
+                "transition:founder.swipe_to_settled"
+              ],
+              "expected": "Task is added and marked complete in <16ms with zero dropped frames.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:founder.fleet_pulse",
+      "title": "Monitor Platform Fleet Pulse & Institution Health",
+      "actor": "founder",
+      "outcome": "Observe holistic ecosystem telemetry and navigate to school governance.",
+      "links": ["journey:founder.fleet_pulse"],
+      "journeys": [
+        {
+          "id": "journey:founder.fleet_pulse",
+          "title": "Audit Fleet Telemetry & Institutions",
+          "situation": "The founder needs an immediate high-level summary of total schools, active souls, classrooms, and health percentage across the entire ecosystem.",
+          "outcome": "Live pulse metrics are displayed with deep links to school management.",
+          "context": "daily",
+          "preconditions": [
+            "Authenticated account has platform administrative authority."
+          ],
+          "entry": "step:founder.view_pulse",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "useFounderEcosystemStats fetches schools and global platform metrics.",
+              "Clicking an institution navigates to /workspace/founder/[schoolId]."
+            ],
+            "invariants": [
+              "Metrics gracefully fall back to cache when offline without blank screens.",
+              "Navigation to specific schools preserves active breadcrumbs."
+            ],
+            "openQuestions": [
+              "Should telemetry support time-series delta comparisons (e.g. 7d vs 30d)?"
+            ],
+            "integrationPoints": [
+              "packages/admin/src/screens/FounderDashboard.tsx",
+              "packages/admin/src/bridge/founderWorkspace.ts",
+              "packages/admin/src/screens/FounderSchoolDashboard.tsx"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:founder.view_pulse",
+              "title": "Review Ecosystem Pulse",
+              "interaction": "Inspect top-level stat cards (schools, souls, classrooms, teachers).",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:founder.select_institution",
+              "title": "Select Institution",
+              "interaction": "Tap a school card in the Institutions roster.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:founder.pulse_to_school",
+              "title": "Navigate to school",
+              "from": "step:founder.view_pulse",
+              "to": "step:founder.select_institution",
+              "action": "Tap on a school item in the institutions gallery.",
+              "feedback": "Open FounderSchoolDashboard with school-specific telemetry.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:founder.real_time_pulse",
+              "title": "Accurate Fleet Telemetry",
+              "statement": "Ecosystem health and entity counts must be computed from verified database aggregates.",
+              "classification": "functional",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:founder.stats_bridge",
+              "title": "Founder Workspace Bridge",
+              "category": "api",
+              "reference": "packages/admin/src/bridge/founderWorkspace.ts",
+              "status": "implemented",
+              "note": "Aggregates school entities and fleet counts.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:founder.inspect_school_fleet",
+              "title": "Inspect School Fleet Metrics",
+              "transitions": ["transition:founder.pulse_to_school"],
+              "expected": "Health badge and school cards render with real database counts.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:founder.ai_collaboration",
+      "title": "Collaborate with Sovereign AI Mentor",
+      "actor": "founder",
+      "outcome": "Converse with persistent AI mentor agent for strategic planning, queries, and background tasks.",
+      "links": ["journey:founder.consult_mentor_agent"],
+      "journeys": [
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "situation": "The founder needs strategic consultation, policy drafting, or telemetry summaries via conversational AI.",
+          "outcome": "Opens a persistent thread with Tutii/AI mentor with shared founder context.",
+          "context": "daily",
+          "preconditions": ["Authenticated as sovereign steward."],
+          "entry": "step:founder.launch_ai_mentor",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "AIAssistantRouteContent mounts persistent AI Assistant interface at /a-i-assistant.",
+              "Web AIAssistantFloor mounts at /agent-lab/assistant."
+            ],
+            "invariants": [
+              "Mentor conversations must preserve user context and thread identity across launches.",
+              "Sensitive multi-tenant identifiers are scrubbed before inference."
+            ],
+            "openQuestions": [
+              "Can AI mentor directly execute founder transactional actions on approval?"
+            ],
+            "integrationPoints": [
+              "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+              "apps/gurudevi-web/app/(sanctuary)/agent-lab/assistant/page.tsx",
+              "packages/ai/src/assistant"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:founder.launch_ai_mentor",
+              "title": "Launch AI Mentor",
+              "interaction": "Click AI Assistant card from the Founder overview.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:founder.mentor_dialogue",
+              "title": "Engage in Dialogue",
+              "interaction": "Prompt the assistant for strategic actions or summaries.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:founder.launch_to_dialogue",
+              "title": "Open mentor thread",
+              "from": "step:founder.launch_ai_mentor",
+              "to": "step:founder.mentor_dialogue",
+              "action": "Tap AI Assistant card.",
+              "feedback": "Navigate to conversational workspace thread.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:founder.persistent_thread",
+              "title": "Thread Persistence",
+              "statement": "Conversations must maintain local context and thread continuity.",
+              "classification": "functional",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:founder.ai_mobile",
+              "title": "Mobile AI Assistant Route",
+              "category": "mobile",
+              "reference": "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+              "status": "implemented",
+              "note": "Mounts persistent mentor thread.",
+              "links": []
+            },
+            {
+              "id": "binding:founder.ai_web",
+              "title": "Web AI Assistant Floor",
+              "category": "web",
+              "reference": "apps/gurudevi-web/app/(sanctuary)/agent-lab/assistant/page.tsx",
+              "status": "implemented",
+              "note": "Mounts agent-lab assistant floor.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:founder.open_ai_assistant",
+              "title": "Open AI Mentor Dialogue",
+              "transitions": ["transition:founder.launch_to_dialogue"],
+              "expected": "AI assistant opens with persistent threadId ready for conversation.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:founder.charter_sanctuary",
+      "title": "Charter School & Provision Community",
+      "actor": "founder",
+      "outcome": "Provision a new educational sanctuary and automatically generate principal onboarding tokens.",
+      "links": ["journey:founder.charter_school_hub"],
+      "journeys": [
+        {
+          "id": "journey:founder.charter_school_hub",
+          "title": "Charter New Sanctuary School",
+          "situation": "A new educational institution is onboarded into the Gurudevi network.",
+          "outcome": "School row is inserted, initial community group created, and claim token issued.",
+          "context": "setup",
+          "preconditions": ["Authenticated as sovereign steward."],
+          "entry": "step:founder.open_charter_wizard",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "CreateSchoolModal provides full multistep form for school demographics.",
+              "GlobalCreateModal enables quick-provisioning of schools and classrooms."
+            ],
+            "invariants": [
+              "Chartering a school must generate unique claim code for the founding principal.",
+              "School handle and census ID must be unique across the federation."
+            ],
+            "openQuestions": [
+              "Should schools default to Sri Lankan national curriculum or custom?"
+            ],
+            "integrationPoints": [
+              "packages/admin/src/components/school/CreateSchoolModal.tsx",
+              "packages/admin/src/components/founder/GlobalCreateModal.tsx",
+              "packages/core/src/adapters/supabase/educational/schoolRepository.ts"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:founder.open_charter_wizard",
+              "title": "Open School Chartering",
+              "interaction": "Click 'Charter Institution' in the Founder Cockpit.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:founder.complete_charter",
+              "title": "Complete Provisioning",
+              "interaction": "Fill institution name, type, and province to create.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:founder.wizard_to_complete",
+              "title": "Submit charter form",
+              "from": "step:founder.open_charter_wizard",
+              "to": "step:founder.complete_charter",
+              "action": "Submit valid school provisioning form.",
+              "feedback": "School record created and modal dismissed.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:founder.atomic_tenant_init",
+              "title": "Atomic Provisioning",
+              "statement": "School entity creation must initialize associated metadata and invite codes.",
+              "classification": "functional",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:founder.create_modal",
+              "title": "Create School Modal",
+              "category": "mobile",
+              "reference": "packages/admin/src/components/school/CreateSchoolModal.tsx",
+              "status": "implemented",
+              "note": "Wizard for provisioning institutions.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:founder.provision_new_school",
+              "title": "Provision New School Entity",
+              "transitions": ["transition:founder.wizard_to_complete"],
+              "expected": "School created and displayed in Institutions gallery.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:founder.triage_communications",
+      "title": "Triage Inbound Support & Broadcast Announcements",
+      "actor": "founder",
+      "outcome": "Review school echo feedback, support requests, and dispatch transactional broadcasts.",
+      "links": ["journey:founder.triage_support_and_broadcast"],
+      "journeys": [
+        {
+          "id": "journey:founder.triage_support_and_broadcast",
+          "title": "Triage Feedback & Ecosystem Broadcast",
+          "situation": "Founder checks inbound institutional feedback and needs to notify schools of platform updates.",
+          "outcome": "Inbound tickets reviewed and high-priority notices dispatched via Postgres RLS.",
+          "context": "daily",
+          "preconditions": ["Authenticated as sovereign steward."],
+          "entry": "step:founder.view_inbox",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": [
+              "DashboardEcho fetches unread feedback from school_echo_feedback.",
+              "Platform broadcast table created with sovereign RLS."
+            ],
+            "invariants": [
+              "Only sovereign stewards may create global platform broadcasts.",
+              "Support items marked as read sync across admin sessions."
+            ],
+            "openQuestions": [
+              "Should broadcasts support time-to-live expiration?"
+            ],
+            "integrationPoints": [
+              "packages/admin/src/components/principal/DashboardEcho.tsx",
+              "packages/admin/src/admin/useAdminWorkspaceCanvas.tsx",
+              "supabase/migrations/20261031000000_platform_broadcasts.sql"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:founder.view_inbox",
+              "title": "View Support & Feedback",
+              "interaction": "Inspect aggregated school echo feedback and incoming inquiries.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:founder.send_broadcast",
+              "title": "Dispatch Broadcast",
+              "interaction": "Submit announcement to platform_broadcasts.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:founder.inbox_to_broadcast",
+              "title": "Open broadcast composer",
+              "from": "step:founder.view_inbox",
+              "to": "step:founder.send_broadcast",
+              "action": "Switch to Sentinel Broadcast tab.",
+              "feedback": "Render circular composer form.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:founder.rls_broadcast_security",
+              "title": "Broadcast RLS Security",
+              "statement": "Broadcast insertion restricted strictly to sovereign platform stewards.",
+              "classification": "functional",
+              "origin": "user",
+              "links": []
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:founder.broadcast_migration",
+              "title": "Platform Broadcast Migration",
+              "category": "data",
+              "reference": "supabase/migrations/20261031000000_platform_broadcasts.sql",
+              "status": "implemented",
+              "note": "Transactional table with RLS.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:founder.dispatch_broadcast",
+              "title": "Dispatch National Circular",
+              "transitions": ["transition:founder.inbox_to_broadcast"],
+              "expected": "Broadcast record inserted and active toast displayed.",
+              "links": []
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}

@@ -3,6 +3,9 @@ name: branded-ui
 description: "Use when rendering or creating UI components with @repo/ui brand tokens, motion, or states."
 ---
 
+> **Legacy.** This describes the old `@repo/ui` root exports. New UI uses the kit: load `.agents/skills/ui-kit/SKILL.md` and `docs/architecture/ui-kit-guide.md`. Motion durations now live in `@repo/ui/tokens` (`duration`, `easingPoints`, `scale`).
+
+
 # Branded Components & Motion System Guide
 
 Authoritative usage guide for branded UI components and motion tokens exported from `@repo/ui`.

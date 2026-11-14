@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "target": "ES2026",
+    "lib": ["ES2026", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler"
+  }
+}

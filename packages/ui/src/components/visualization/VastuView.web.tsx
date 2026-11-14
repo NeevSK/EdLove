@@ -2,6 +2,7 @@ import type { PerspectiveViewProps } from '@repo/core/types';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { Box } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import type React from 'react';
 
 /**
@@ -43,7 +44,7 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({ data, layout, onNode
               cx={pos.x}
               cy={pos.y}
               r={node.type === 'topic' ? 12 : 8}
-              fill={node.type === 'topic' ? '#F6BF8C' : colors.action}
+              fill={node.type === 'topic' ? tokens.colors.primary : colors.action}
               style={{ cursor: 'pointer' }}
               onClick={() => onNodePress?.(node)}
             />

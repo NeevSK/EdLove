@@ -45,7 +45,7 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({ data, onNodePress })
 
   return (
     <Box className="absolute inset-0 bg-[#1A1610]">
-      <UnifiedMapView style={{ flex: 1 }} region={initialRegion} rotateEnabled={false}>
+      <UnifiedMapView style={{ flex: 1 }} initialRegion={initialRegion} rotateEnabled={false}>
         {geoNodes.map((node: any) => (
           <UnifiedMarker
             key={node.id}

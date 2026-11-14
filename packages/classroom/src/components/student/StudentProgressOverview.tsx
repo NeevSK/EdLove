@@ -1,6 +1,6 @@
+import { View, Text } from 'react-native';
 import type { Assignment } from '@repo/core/logic';
 import { CircleCheck, Sparkles, Target } from '@repo/ui/icons';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useMemo } from 'react';
 
 type GoalCard = {
@@ -18,12 +18,12 @@ interface StudentProgressOverviewProps {
 
 function ProgressBar({ value, className }: { value: number; className?: string }) {
   return (
-    <Box className="h-2 rounded-full bg-sanctuary-border/20 overflow-hidden">
-      <Box
+    <View className="h-2 rounded-full bg-sanctuary-border/20 overflow-hidden">
+      <View
         className={`h-full rounded-full ${className}`}
         style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
       />
-    </Box>
+    </View>
   );
 }
 
@@ -54,61 +54,61 @@ export function StudentProgressOverview({
   }, [assignments, goals, isDemo]);
 
   return (
-    <VStack className="gap-4">
-      <HStack className="gap-4">
-        <Box className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
-          <HStack className="items-center gap-2">
-            <Icon as={CircleCheck} size="xs" className="text-sanctuary-success" />
+    <View className="gap-4">
+      <View className="flex-row items-center gap-4">
+        <View className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
+          <View className="flex-row items-center items-center gap-2">
+            <CircleCheck size={12} className="text-sanctuary-success" />
             <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">
               Assignments
             </Text>
-          </HStack>
-          <HStack className="items-baseline gap-1 mt-3">
+          </View>
+          <View className="flex-row items-center items-baseline gap-1 mt-3">
             <Text className="text-2xl font-black text-sanctuary-text tracking-tighter">
               {metrics.submittedAssignments}
             </Text>
             <Text className="text-base font-bold text-sanctuary-text-tertiary">
               /{metrics.totalAssignments || 0}
             </Text>
-          </HStack>
+          </View>
           <Text className="mt-1 text-sanctuary-text-secondary text-xs font-medium leading-tight">
             Submitted work this cycle
           </Text>
-          <Box className="mt-4">
+          <View className="mt-4">
             <ProgressBar value={metrics.assignmentRate} className="bg-sanctuary-success" />
-          </Box>
-        </Box>
+          </View>
+        </View>
 
-        <Box className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
-          <HStack className="items-center gap-2">
-            <Icon as={Target} size="xs" className="text-sanctuary-info" />
+        <View className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
+          <View className="flex-row items-center items-center gap-2">
+            <Target size={12} className="text-sanctuary-info" />
             <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">
               Goals
             </Text>
-          </HStack>
-          <HStack className="items-baseline gap-1 mt-3">
+          </View>
+          <View className="flex-row items-center items-baseline gap-1 mt-3">
             <Text className="text-2xl font-black text-sanctuary-text tracking-tighter">
               {metrics.completedGoals}
             </Text>
             <Text className="text-base font-bold text-sanctuary-text-tertiary">
               /{metrics.totalGoals || 0}
             </Text>
-          </HStack>
+          </View>
           <Text className="mt-1 text-sanctuary-text-secondary text-xs font-medium leading-tight">
             Completed learning goals
           </Text>
-          <Box className="mt-4">
+          <View className="mt-4">
             <ProgressBar value={metrics.goalRate} className="bg-sanctuary-info" />
-          </Box>
-        </Box>
-      </HStack>
+          </View>
+        </View>
+      </View>
 
-      <Box className="rounded-[24px] border border-sanctuary-border bg-sanctuary-surface-secondary p-5">
-        <HStack className="items-start gap-4">
-          <Box className="bg-sanctuarySaffron/10 p-2.5 rounded-2xl border border-sanctuarySaffron/20">
-            <Icon as={Sparkles} size="sm" className="text-sanctuarySaffron" />
-          </Box>
-          <VStack className="flex-1 gap-1.5">
+      <View className="rounded-[24px] border border-sanctuary-border bg-sanctuary-surface-secondary p-5">
+        <View className="flex-row items-center items-start gap-4">
+          <View className="bg-sanctuarySaffron/10 p-2.5 rounded-2xl border border-sanctuarySaffron/20">
+            <Sparkles size={16} className="text-sanctuarySaffron" />
+          </View>
+          <View className="flex-1 gap-1.5">
             <Text className="text-sanctuary-text text-sm font-black tracking-tight">
               Growth momentum
             </Text>
@@ -120,9 +120,9 @@ export function StudentProgressOverview({
             <Text className="text-sanctuary-text-tertiary text-[11px] leading-relaxed italic">
               Progress here is academic and school-facing, even when it feels personal.
             </Text>
-          </VStack>
-        </HStack>
-      </Box>
-    </VStack>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }

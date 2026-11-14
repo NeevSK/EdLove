@@ -1,16 +1,14 @@
 import { Trophy } from '@repo/ui/icons';
 import { Box, Center, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useEffect } from 'react';
-import { Dimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
-
-const { width } = Dimensions.get('window');
+import { scheduleOnRN } from 'react-native-worklets';
 
 // Constants to avoid negative literals in worklets
 const HIDDEN_Y_OFFSET = 200;
@@ -32,6 +30,7 @@ export default function AchievementUnlockOverlay({
   visible,
   onHide,
 }: AchievementUnlockOverlayProps) {
+  const { width } = useWindowDimensions();
   const translateY = useSharedValue(-HIDDEN_Y_OFFSET);
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
@@ -41,7 +40,7 @@ export default function AchievementUnlockOverlay({
     scale.value = withTiming(0.8, { duration: 300 });
     translateY.value = withTiming(-HIDDEN_Y_OFFSET, { duration: 400 }, (finished) => {
       if (finished) {
-        runOnJS(onHide)();
+        scheduleOnRN(onHide);
       }
     });
   }, [opacity, scale, translateY, onHide]);

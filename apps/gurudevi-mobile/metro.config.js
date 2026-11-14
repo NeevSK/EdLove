@@ -5,6 +5,9 @@ const fs = require('node:fs');
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
+const orpcClientRoot = fs.realpathSync(
+  path.resolve(workspaceRoot, 'packages/core/node_modules/@orpc/client'),
+);
 
 function resolvePnpmPackageRuntime(packageName, runtimeFile) {
   const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
@@ -95,13 +98,15 @@ config.resolver.assetExts.push('wasm');
 //    can hang on this workspace, leaving Metro's dependency graph incomplete
 //    and causing every device bundle request to fail with HTTP 500.
 config.useWatchman = false;
-// Expo SDK 57 resolves external workspace files on demand. Pre-crawling the
+// Expo SDK 58 resolves external workspace files on demand. Pre-crawling the
 // entire packages directory exceeds Metro's watcher startup window on Windows.
 // Shared-package edits require a Metro restart until a reliable narrow-watch
 // policy is established, but bundle resolution remains available.
 config.watchFolders = [];
 config.resetCache = false;
-config.maxWorkers = 2;
+// A live Windows Metro session exhausted file handles while transforming its
+// cache. Serial transforms trade bundle throughput for bounded file pressure.
+config.maxWorkers = 1;
 
 
 
@@ -135,6 +140,10 @@ config.resolver.blockList = [
   /packages[/\\].*[/\\]node_modules[/\\]@react-native-async-storage[/\\].*/,
   /apps[/\\].*[/\\]node_modules[/\\]\.vite[/\\].*/,
   /apps[/\\].*[/\\]\.expo[/\\].*/,
+  // Generated native projects and Gradle/Xcode outputs are not JavaScript
+  // inputs. Excluding them keeps Metro's Windows fallback watcher bounded
+  // while Android/iOS builds write thousands of transient files.
+  /apps[/\\]gurudevi-mobile[/\\](?:android|ios)(?:[/\\]|$)/,
 ];
 
 const SINGLETON_OVERRIDES = {
@@ -144,6 +153,15 @@ const SINGLETON_OVERRIDES = {
   'react-native-css': path.resolve(projectRoot, 'node_modules/react-native-css'),
   '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
+  // @repo/core uses oRPC 2 beta. The pnpm store also contains oRPC 1.x for
+  // server-only tooling; Metro's generic store fallback can select that copy,
+  // whose rest-parameter syntax is rejected by Hermes.
+  '@orpc/client': path.resolve(workspaceRoot, 'packages/core/node_modules/@orpc/client'),
+  '@orpc/shared': path.resolve(
+    orpcClientRoot,
+    '..',
+    'shared',
+  ),
   // These packages are a coordinated runtime. Pin their Metro resolution to
   // the app dependency graph so the pnpm fallback scan cannot select a stale
   // transitive Worklets/Reanimated copy during a web bundle.
@@ -342,6 +360,13 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // Workspace packages are mapped to their source roots below. That mapping
   // intentionally bypasses package `exports`, so resolve conditional native
   // adapters explicitly before delegating to Metro.
+  if (moduleName === '@repo/core/accounts/localGuestActivation.coordinator') {
+    return {
+      filePath: path.resolve(workspaceRoot, 'packages/core/src/accounts/localGuestActivation.coordinator.ts'),
+      type: 'sourceFile',
+    };
+  }
+
   if (moduleName === '@repo/core/native/webPush') {
     return {
       filePath: path.resolve(
@@ -466,5 +491,21 @@ config.resolver.sourceExts = [...config.resolver.sourceExts, 'mjs', 'cjs'];
 
 // 10. Main Field Priority
 config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
+
+// 11. Production Performance & Hermes Heap Preservation (2GB RAM Budget)
+// On low-end Android hardware, hundreds of unmanaged console.* calls cause Hermes GC stutter.
+// Strip non-error logs in production builds while leaving console.warn & console.error for Sentry.
+if (process.env.NODE_ENV === 'production') {
+  config.transformer = {
+    ...config.transformer,
+    minifierConfig: {
+      ...config.transformer?.minifierConfig,
+      compress: {
+        ...config.transformer?.minifierConfig?.compress,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+      },
+    },
+  };
+}
 
 module.exports = withNativewind(config);

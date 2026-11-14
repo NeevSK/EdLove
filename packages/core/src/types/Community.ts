@@ -6,25 +6,7 @@ export interface AnnouncementWithAuthor extends Announcement {
   author_name?: string;
   author_avatar?: string;
 }
-
-export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
 export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
-
-export interface SanctuaryManifesto {
-  id: string;
-  school_id: string;
-  creator_id: string;
-  title: string;
-  content: string;
-  vibe: ManifestoVibe;
-  status: ManifestoStatus;
-  target_date?: Date;
-  metadata: Record<string, any>;
-  created_at: Date;
-  updated_at: Date;
-  endorsement_count?: number;
-  has_endorsed?: boolean;
-}
 
 export interface PollOption {
   id: string;
@@ -323,6 +305,171 @@ export interface DirectConversation {
 export interface DirectMessage {
   id: string;
   conversation_id: string;
+  author_id: string;
+  content: string;
+  created_at: Date;
+  author?: { full_name: string; avatar_url?: string };
+}
+
+// Moved from @repo/community (2026-11-11): core owns every contract; the package kept a copy.
+
+export type ContributionType =
+  | 'question_answered'
+  | 'resource_shared'
+  | 'resource_endorsed'
+  | 'helpful_comment'
+  | 'feedback_given'
+  | 'collection_created'
+  | 'post_created'
+  | 'peer_helped';
+
+export interface Contribution {
+  id: string;
+  user_id: string;
+  contribution_type: ContributionType;
+  reference_id?: string;
+  reference_type?: string;
+  points?: number;
+  created_at: Date;
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  criteria: string;
+  level?: number;
+  created_at: string;
+}
+
+export interface UserBadge {
+  user_id: string;
+  badge_id: string;
+  badge: Badge;
+  awarded_at: string;
+}
+
+export interface ContributionSummary {
+  questions_answered: number;
+  resources_shared: number;
+  resources_endorsed: number;
+  helpful_comments: number;
+  feedback_given: number;
+  collections_created: number;
+  total_points: number;
+  badges: Badge[];
+}
+
+export interface EcosystemMetrics {
+  // Time period
+  period: 'day' | 'week' | 'month';
+  start_date: string;
+  end_date: string;
+
+  // Engagement metrics
+  active_users: {
+    total: number;
+    students: number;
+    teachers: number;
+    principals: number;
+  };
+
+  posts: {
+    total: number;
+    by_type: Record<PostType, number>;
+    daily_average: number;
+  };
+
+  questions: {
+    asked: number;
+    answered: number;
+    answer_rate: number;
+    avg_response_time_hours: number;
+    unanswered_48h: number;
+  };
+
+  resources: {
+    added: number;
+    used: number;
+    endorsed: number;
+    verified: number;
+  };
+
+  // Feedback loop health
+  feedback: {
+    student_to_teacher: number;
+    teacher_to_principal: number;
+    response_rate: number;
+    avg_response_time_hours: number;
+  };
+
+  // Community health
+  community: {
+    collaboration_index: number; // 0-100
+    voice_distribution: {
+      student_posts: number;
+      teacher_posts: number;
+      principal_posts: number;
+      balance_score: number; // Healthy if diverse
+    };
+    positive_sentiment_ratio: number; // 0-1
+  };
+
+  // Warning signals
+  warnings: {
+    unanswered_questions: number;
+    low_participation_grades: number[];
+    resource_gaps: string[]; // Subjects with few resources
+    teacher_burnout_signals: number;
+  };
+}
+
+export interface FeedbackPulseResponse {
+  id: string;
+  user_id: string;
+  week_rating: number; // 1-5
+  blockers: string;
+  suggestions: string;
+  is_anonymous: boolean;
+  created_at: string;
+}
+
+export interface GroupFilters {
+  type?: GroupType;
+  is_public?: boolean;
+  visibility?: PostVisibility;
+  join_policy?: GroupJoinPolicy;
+  school_id?: string;
+  tags?: string[];
+  search?: string;
+  user_is_member?: boolean;
+  user_can_join?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+export interface CreateGroupInput {
+  name: string;
+  description: string;
+  type: GroupType;
+  join_policy: GroupJoinPolicy;
+  visibility: PostVisibility;
+  allowed_capacities?: Capacity[];
+  allow_posts?: boolean;
+  allow_announcements?: boolean;
+  require_post_approval?: boolean;
+  max_members?: number;
+  image_url?: string;
+  tags?: string[];
+  school_id?: string;
+  handle?: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  group_id?: string;
+  conversation_id?: string;
   author_id: string;
   content: string;
   created_at: Date;

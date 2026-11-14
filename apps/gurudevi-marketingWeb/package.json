@@ -23,24 +23,24 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "@astrojs/svelte": "^9.0.1",
-    "@astrojs/vercel": "^11.0.10",
+    "@astrojs/svelte": "^9.1.2",
+    "@astrojs/vercel": "^11.0.18",
     "@intuitui-labs/a11y-gate": "^0.2.0",
     "@repo/editorial": "workspace:*",
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.5",
-    "svelte": "^5.57.0",
-    "tailwindcss": "^4.3.3",
-    "typescript": "7.0.2"
+    "@tailwindcss/vite": "^4.3.4",
+    "astro": "^7.4.5",
+    "svelte": "^5.57.3",
+    "tailwindcss": "4.3.4",
+    "typescript": "7.1.0-beta"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
+    "@astrojs/check": "^0.9.12",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.3.0",
-    "eslint": "^10.10.0",
+    "eslint": "^10.14.0",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^5.0.0"
+    "vitest": "5.1.0"
   },
   "_originalScripts": {
     "dev": "pnpm exec astro dev",
@@ -59,4 +59,3 @@
     "clean": "rm -rf .turbo node_modules dist"
   }
 }
-

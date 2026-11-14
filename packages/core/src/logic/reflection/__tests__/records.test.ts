@@ -4,12 +4,17 @@ import {
   type ReflectionDb,
   type ThoughtRecordRpcPort,
   thoughtRecordCodec,
-} from '../records';
-import type { ThoughtRecord } from '../types';
+} from '../records.adapter';
+import type { ThoughtRecord } from '../../../types/reflection';
 
+vi.mock('../../../lib/sync', () => ({
+  useMutationQueue: {
+    getState: () => ({ addToQueue: vi.fn(async () => undefined) }),
+  },
+}));
 vi.mock('@repo/core/lib/sync', () => ({
   useMutationQueue: {
-    getState: () => ({ addToQueue: async () => undefined }),
+    getState: () => ({ addToQueue: vi.fn(async () => undefined) }),
   },
 }));
 

@@ -1,0 +1,13 @@
+{
+  "tier": "G1",
+  "engine": "Node 24.22.2 compiled entry subprocess + loopback HTTP",
+  "result": "passed",
+  "assertions": [
+    "built entry listens and reports foundation-only readiness",
+    "invalid environment exits 1 without leaking the invalid value"
+  ],
+  "limitations": [
+    "Windows child termination is cleanup, not POSIX signal or graceful-shutdown proof.",
+    "No Docker engine is available; image and production proxy are unverified."
+  ]
+}

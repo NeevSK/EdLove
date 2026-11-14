@@ -1,8 +1,9 @@
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { View, Text, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native';
 import { Cloud, FileSpreadsheet, FileText, Layers, Plus, ScanLine } from '@repo/ui/icons';
-import { Box, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export type ToolKind = 'spreadsheet' | 'pdf' | 'ocr' | 'imageToPdf' | 'cloudExport';
 
@@ -25,7 +26,7 @@ interface ToolsHubItem {
 
 function ToolsHubScreen({ importByKind }: ToolsHubScreenProps) {
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
 
   const tools: ToolsHubItem[] = [
     {
@@ -42,30 +43,30 @@ function ToolsHubScreen({ importByKind }: ToolsHubScreenProps) {
   ];
 
   return (
-    <ScreenWrapper>
-      <VStack className="gap-4 p-4">
-        <VStack space="xs">
+    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+      <View className="gap-4 p-4">
+        <View className="gap-1">
           <Text className="text-2xl font-bold text-phase-text-primary">{t('tools.title')}</Text>
           <Text className="text-sm text-phase-text-secondary">{t('tools.subtitle')}</Text>
-        </VStack>
-        <VStack className="gap-3">
+        </View>
+        <View className="gap-3">
           {tools.map((tool) => (
-            <Pressable key={tool.key} onPress={() => router.push(tool.href)} className="w-full">
-              <Box className="flex-row items-center gap-3 rounded-generous border border-phase-border bg-phase-surface p-4 active:opacity-80">
-                <Box
+            <Pressable key={tool.key} onPress={() => router.follow(tool.href, 'library-tools')} className="w-full">
+              <View className="flex-row items-center gap-3 rounded-generous border border-phase-border bg-phase-surface p-4 active:opacity-80">
+                <View
                   style={{ backgroundColor: `${tool.accent}22` }}
                   className="h-11 w-11 items-center justify-center rounded-lg"
                 >
-                  <Icon as={tool.icon} size={22} color={tool.accent} />
-                </Box>
-                <Box className="flex-1">
+                  <tool.icon size={22} color={tool.accent} />
+                </View>
+                <View className="flex-1">
                   <Text className="text-base font-bold text-phase-text-primary">
                     {t(`tools.${tool.key}.name`)}
                   </Text>
                   <Text className="text-sm text-phase-text-secondary">
                     {t(`tools.${tool.key}.description`)}
                   </Text>
-                </Box>
+                </View>
                 {importByKind && (
                   <Pressable
                     onPress={() => importByKind(tool.kind)}
@@ -73,15 +74,15 @@ function ToolsHubScreen({ importByKind }: ToolsHubScreenProps) {
                     accessibilityLabel={t('tools.importAction')}
                     className="h-9 w-9 items-center justify-center rounded-lg border border-phase-border bg-phase-surface-light active:opacity-80"
                   >
-                    <Icon as={Plus} size={18} color={tool.accent} />
+                    <Plus size={18} color={tool.accent} />
                   </Pressable>
                 )}
-              </Box>
+              </View>
             </Pressable>
           ))}
-        </VStack>
-      </VStack>
-    </ScreenWrapper>
+        </View>
+      </View>
+    </ScrollView></SafeAreaView>
   );
 }
 

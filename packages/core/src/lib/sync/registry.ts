@@ -1,183 +1,24 @@
-import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { api } from '@repo/core/api/client';
-import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
-import { orpcClient } from '@repo/core/api/orpcClient';
-
-const client = createSovereignClient(SOVEREIGN_API_URL);
+import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/types/mutationQueue';
 
 /**
- * Mutation Registry
- *
- * Maps serializable string keys (e.g. 'createPost') to actual async functions.
- * Born in the apps/gurudevi-mobile, now healed and moved to @repo/core.
+ * The pre-cutover domain replay table was retired with the legacy API.
+ * Domain modules must register their own admitted replay handlers when they
+ * are migrated onto the v1 command boundary.
  */
+export const MUTATION_REGISTRY: Record<
+  string,
+  (
+    variables: unknown,
+    context?: { idempotencyKey: string; commandId?: string; userId?: string },
+  ) => Promise<QueuedMutationDispatchResult>
+> = Object.create(null) as Record<
+  string,
+  (
+    variables: unknown,
+    context?: { idempotencyKey: string; commandId?: string; userId?: string },
+  ) => Promise<QueuedMutationDispatchResult>
+>;
 
-type MutationExecutionContext = Readonly<{ idempotencyKey: string }>;
-type MutationFunction = (variables: any, context?: MutationExecutionContext) => Promise<any>;
-
-function requireIdempotencyKey(context: MutationExecutionContext | undefined): string {
-  if (!context?.idempotencyKey) {
-    throw new Error('Queued mutation execution requires an idempotency key.');
-  }
-  return context.idempotencyKey;
+export function hasAdmittedMutation(name: QueuedMutation['name']): boolean {
+  return Object.prototype.hasOwnProperty.call(MUTATION_REGISTRY, name);
 }
-
-export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
-  // Community
-  createPost: async (vars) => {
-    // Core API doesn't have community directly, it's injected
-    // In this resonant version, we assume 'api' has been unified.
-    // If community is a separate package, this handler serves as the bridge.
-    return (api as any).community.createPost(vars, vars.author_id, vars.capacity, vars.school_id);
-  },
-
-  // Inventory
-  createInventoryRequest: async (vars) => {
-    return api.inventory.createRequest(vars);
-  },
-
-  // Resources
-  createResource: async (vars) => {
-    return api.resources.create(vars);
-  },
-  toggleResourcePin: async (vars) => {
-    return api.resources.togglePin(vars.id, vars.isPinned);
-  },
-  deleteResource: async (vars) => {
-    return api.resources.delete(vars);
-  },
-
-  // Self/Wellbeing (Outbox mutations routed securely via Hono Gateway)
-  saveJournalEntry: async (vars, context) => {
-    // Encapsulate and route legacy outbox write securely through our PowerSync endpoint
-    try {
-      await orpcClient.sync.uploadBatch({
-        body: {
-          idempotencyKey: requireIdempotencyKey(context),
-        crud: [
-          {
-            id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
-            op: 'PUT',
-            table: 'fire_journal',
-            opData: vars,
-          },
-        ],
-        },
-      });
-    } catch (error) {
-      throw new Error('Failed to sync outbox journal entry', { cause: error });
-    }
-    return true;
-  },
-  saveDecision: async (vars, context) => {
-    // Encapsulate and route legacy outbox write securely through our PowerSync endpoint
-    try {
-      await orpcClient.sync.uploadBatch({
-        body: {
-        idempotencyKey: requireIdempotencyKey(context),
-        crud: [
-          {
-            id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
-            op: 'PUT',
-            table: 'mood_logs',
-            opData: vars,
-          },
-        ],
-        },
-      });
-    } catch (error) {
-      throw new Error('Failed to sync outbox decision journal', { cause: error });
-    }
-    return true;
-  },
-
-  logMood: async (vars) => {
-    const res = await (client.api as any).self.mood.$post({
-      json: {
-        user_id: vars.user_id,
-        mood_score: vars.mood_score,
-        mood: vars.mood,
-        note: vars.note,
-      },
-    });
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new Error(error.message || 'Failed to sync mood log');
-    }
-    return true;
-  },
-  burnJournal: async (vars) => {
-    const res = await (client.api as any).self.journal.burn.$post({
-      json: { content: vars.content },
-    });
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new Error(error.message || 'Failed to sync burned journal entry');
-    }
-    return true;
-  },
-  saveThoughtRecord: async (vars) => {
-    const res = await (client.api as any).self.thoughtRecord.$post({
-      json: {
-        thought: vars.thought,
-        situation: vars.situation,
-        emotion: vars.emotion,
-        trap_ids: vars.trap_ids,
-        evidence_for: vars.evidence_for,
-        evidence_against: vars.evidence_against,
-        reframe: vars.reframe,
-        mood_before: vars.mood_before,
-        mood_after: vars.mood_after,
-        post_outcome: vars.post_outcome,
-        follow_up: vars.follow_up,
-      },
-    });
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new Error(error.message || 'Failed to sync thought record');
-    }
-    return true;
-  },
-  completeThoughtRecordFollowUp: async (vars) => {
-    const res = await (client.api as any).self.thoughtRecord[':id'].$patch({
-      param: { id: vars.id },
-      json: {
-        post_outcome: vars.post_outcome,
-        follow_up: vars.follow_up,
-      },
-    });
-    if (!res.ok) {
-      const error = (await res.json()) as any;
-      throw new Error(error.message || 'Failed to sync thought record follow-up');
-    }
-    return true;
-  },
-
-  // Classroom (Upstreamed from mobile)
-  createStudent: async (vars) => {
-    return api.students.create(vars);
-  },
-  updateAttendance: async (vars) => {
-    return api.attendance.record(vars.classroomId, vars.studentId, vars.status, vars.date);
-  },
-  updateStudent: async (vars) => {
-    return api.students.update(vars.id, vars.updates);
-  },
-
-  // Device security
-  logDeviceAuditEvent: async (vars) => {
-    return deviceTrustAPI.performLogAuditEventIntent(vars);
-  },
-  unlinkDevice: async (vars) => {
-    return deviceTrustAPI.performUnlinkMyDeviceIntent(vars);
-  },
-  revokeSecuritySession: async (vars) => {
-    return deviceTrustAPI.performRevokeMySecuritySessionIntent(vars);
-  },
-  revokeOtherSecuritySessions: async (vars) => {
-    return deviceTrustAPI.performRevokeMyOtherSecuritySessionsIntent(vars);
-  },
-  revokeCurrentInstallSecuritySessions: async (vars) => {
-    return deviceTrustAPI.performRevokeMyInstallSecuritySessionsIntent(vars);
-  },
-};

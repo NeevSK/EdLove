@@ -1,11 +1,41 @@
+import type { Place } from '@repo/core/types/Place';
+
 export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'private';
 
-export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night';
+export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night' | 'none';
 export type WorkspaceAppearanceMotion = 'off' | 'subtle';
+
+/** A registered image or custom uploaded asset that may be used as a workspace wallpaper. */
+export interface WorkspaceWallpaper {
+  provider: 'cloudinary' | 'custom' | 'preset';
+  url: string;
+  publicId: string;
+  width: number;
+  height: number;
+  name?: string;
+}
+
+export type WallpaperPlaybackMode = 'single' | 'slideshow' | 'off';
+
+export interface FloorWallpaperConfig {
+  mode: WallpaperPlaybackMode;
+  activeId?: string | null;
+  items: WorkspaceWallpaper[];
+  slideshowIntervalSeconds: number; // 180, 300, 600, 0 = on arrival
+  customWashColor?: string | null;
+  washOpacity?: number; // 0 to 1
+  wallpaperOpacity?: number; // 0.1 to 0.5
+}
+
+export type SceneGroundMode = 'live' | 'still' | 'image' | 'quiet';
 
 export interface WorkspaceAppearance {
   preset: WorkspaceAppearancePreset;
   motion: WorkspaceAppearanceMotion;
+  groundMode?: SceneGroundMode;
+  worldId?: string;
+  wallpaper?: WorkspaceWallpaper | null;
+  wallpaperConfig?: FloorWallpaperConfig | null;
 }
 
 export type WorkspaceSwitcherTargetId =
@@ -18,15 +48,15 @@ export type WorkspaceSwitcherTargetId =
   | 'personal'
   | 'commercial';
 
-export type WorkspaceSwitcherDestination =
-  | {
-      kind: 'route';
-      name: string;
-    }
-  | {
-      kind: 'tab';
-      name: string;
-    };
+/**
+ * Where a switcher target takes the person: always a place, never a screen name. Switching a
+ * perspective chooses which floor Workspace shows (one floor per capacity,
+ * `logic/places/workspaceCatalog`); `PLACE_ROUTES` says where the place is on each platform.
+ */
+export type WorkspaceSwitcherDestination = {
+  readonly kind: 'place';
+  readonly place: Place;
+};
 
 export interface WorkspaceSwitcherTarget {
   id: WorkspaceSwitcherTargetId;
@@ -79,6 +109,7 @@ export interface WorkspaceSurfaceDefinition<
 export interface WorkspaceLayout<TSurfaceId extends string = string> {
   workspaceId: string;
   userId: string;
+  revision?: number;
   order: TSurfaceId[];
   hidden: TSurfaceId[];
   pinned: TSurfaceId[];
@@ -97,7 +128,7 @@ export interface WorkspaceRendererConfig {
   maxColumns?: number;
 }
 
-import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+import type { DomainEntry } from '@repo/core/types/domainEntry';
 
 export interface DomainFeature extends DomainEntry {
   icon?: string;

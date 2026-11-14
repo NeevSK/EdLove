@@ -1,9 +1,8 @@
-import { authAPI, identityAPI } from '@repo/core/api/client';
-import { handleAPIError } from '@repo/core/api/interceptor';
+import { authAPI } from '@repo/core/auth';
+import { handleAPIError } from '@repo/core';
 import { useIdentity } from '@repo/core/hooks';
 import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
 import { GuestDataSync } from '@repo/core/native';
-import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
 import { GatewayScreenShell } from '@repo/ui/components/GatewayScreenShell.web';
@@ -90,6 +89,7 @@ interface HeroPanelProps {
 
 const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
   const { isDark, accent, accentRgb, textOnAccent } = useTheme();
+  const eyebrowStyle = useMemo(() => ({ color: accent.action }), [accent.action]);
   return (
     <div
       className={`flex flex-col justify-between p-5 sm:p-7 md:p-8 rounded-[32px] md:rounded-[40px] border backdrop-blur-2xl shadow-2xl relative overflow-hidden w-full transition-all duration-300 ${
@@ -130,7 +130,7 @@ const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => {
           <div className="flex flex-col gap-1.5 min-w-0">
             <span
               className="text-[11px] font-extrabold tracking-[0.14em] uppercase"
-              style={{ color: accent.action }}
+              style={eyebrowStyle}
             >
               {modeCopy.eyebrow}
             </span>
@@ -244,30 +244,7 @@ export const AuthScreenWeb = memo(
 
     useEffect(() => {
       dispatch({ type: 'SET_USER', user: (myProfile as unknown as User) || null });
-    }, [myProfile?.id]);
-
-    const applyPendingInvite = useCallback(
-      async (successMessage: string) => {
-        const internalId = await identityAPI.getMyInternalId();
-        if (!internalId) return;
-
-        const pendingInvite = await storage.getStringAsync('pending_invite');
-        if (!pendingInvite) return;
-
-        try {
-          const invite = JSON.parse(pendingInvite) as { school_id?: string };
-          if (!invite.school_id) return;
-
-          showToast({
-            message: `${successMessage} Claim the official invitation to activate school access.`,
-            type: 'info',
-          });
-        } catch (error) {
-          console.error('Failed to apply pending invite on web auth:', error);
-        }
-      },
-      [showToast],
-    );
+    }, [myProfile]);
 
     const modeCopy = useMemo(
       () =>
@@ -369,7 +346,7 @@ export const AuthScreenWeb = memo(
           const isAnonymousUser = isAnonymousIdentity(currentUser);
 
           if (isAnonymousUser) {
-            if (currentUser) GuestDataSync.rememberGuestSession(currentUser.id);
+            if (currentUser) await GuestDataSync.rememberGuestSession(currentUser.id);
             const existingName =
               (currentUser?.display_name && String(currentUser.display_name).trim()) ||
               'Sanctuary User';
@@ -380,15 +357,11 @@ export const AuthScreenWeb = memo(
               'teacher' as Capacity,
             );
             if (currentUser) {
-              const migration = await GuestDataSync.syncAllData(currentUser.id);
-              if (!migration.success) {
-                showToast({
-                  message: 'Your work remains on this device and will be retried after sign-in.',
-                  type: 'info',
-                });
-              }
+              showToast({
+                message: 'Your local guest work remains on this device.',
+                type: 'info',
+              });
             }
-            await applyPendingInvite('Welcome to your new school sanctuary!');
             showToast({ message: 'Welcome! Your identity is now secured.', type: 'success' });
             onSuccess?.();
           } else {
@@ -402,7 +375,6 @@ export const AuthScreenWeb = memo(
         } else {
           showToast({ message: 'Welcome back! Reconnecting...', type: 'info', duration: 2000 });
           await authAPI.signIn(email, password);
-          await applyPendingInvite('Reconnected to your school sanctuary!');
           showToast({
             message: 'Access granted to your sanctuary.',
             type: 'success',
@@ -438,7 +410,7 @@ export const AuthScreenWeb = memo(
       } finally {
         dispatch({ type: 'SET_LOADING', loading: false });
       }
-    }, [email, password, mode, t, showToast, onSuccess, currentUser, applyPendingInvite]);
+    }, [email, password, mode, showToast, onSuccess, currentUser]);
 
     const handleGuest = useCallback(async () => {
       dispatch({ type: 'SET_LOADING', loading: true });
@@ -455,19 +427,19 @@ export const AuthScreenWeb = memo(
     }, [onContinueAsGuest, showToast]);
 
     const handleGooglePress = useCallback(() => {
-      void handleGoogleAuth();
+      handleGoogleAuth().catch(() => {});
     }, [handleGoogleAuth]);
 
     const handlePasskeyPress = useCallback(() => {
-      void handlePasskeyAuth();
+      handlePasskeyAuth().catch(() => {});
     }, [handlePasskeyAuth]);
 
     const handleEmailPress = useCallback(() => {
-      void handleEmailAuth();
+      handleEmailAuth().catch(() => {});
     }, [handleEmailAuth]);
 
     const handleGuestPress = useCallback(() => {
-      void handleGuest();
+      handleGuest().catch(() => {});
     }, [handleGuest]);
 
     const switchToSignup = useCallback(() => {

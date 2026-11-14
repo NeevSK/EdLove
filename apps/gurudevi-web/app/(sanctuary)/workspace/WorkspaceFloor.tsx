@@ -1,18 +1,24 @@
-'use client';
-
-import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
 import { resolvePracticeAvailability } from '@repo/core/logic/registry/capabilityManifest';
+import { resolveTemporalCoordinates, resolveTemporalIntent } from '@repo/core/logic/workbench';
+import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
+import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/types';
+import { Link, useRouter } from '@tanstack/react-router';
+import { useNavigator } from '../../../lib/navigation/useNavigator';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
+import {
+  useWorkspaceDomain,
+  type WorkspaceAttendanceReadScope,
+} from '../../../lib/domain/hooks/useWorkspaceDomain';
+import { useExploreCapacity } from '../../../lib/explore/exploreCapacity';
 import { useDomainWorkbench } from '../../../lib/workbench';
+import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import {
   type AccountAttendanceDraftScope,
   type AttendanceStatus,
   discardAccountPracticeAttendance,
   discardUnmatchedAttendanceDraftMarks,
-  loadAccountAttendance,
   loadAccountAttendanceDraft,
-  loadAccountClassrooms,
   loadAccountPracticeAttendance,
   loadExploreAttendance,
   removeSyncedAttendanceDraftMarks,
@@ -25,22 +31,52 @@ import {
   type WorkspaceClassroom,
   type WorkspaceStudent,
 } from '../../../lib/workspace/attendance';
-import { TaskStrip, TemporalHorizon } from '../components/workbench';
+import { identifyHallwayDrift } from '../../../lib/workspace/attendanceInsights';
+import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
+import { LivingCard } from '../components/LivingCard';
+import { MorningSituationalBrief } from '../components/MorningSituationalBrief';
+import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import { DateTimeCombo } from '@repo/ui/components/web';
+import { timeGreeting } from '../../../lib/timeGreeting';
+import { TaskStrip } from '../components/TaskStrip';
+import { TeacherWorkspaceFloor } from './TeacherWorkspaceFloor';
 import styles from './workspace.module.css';
+import {
+  getWorkspaceOverviewPosture,
+  WEB_WORKSPACE_FEATURES,
+  type WorkspaceFeatureItem,
+  workspaceFeaturesFor,
+  workspaceVoice,
+} from './workspaceFeatureRegistry';
+
+type AuthorizedEntryScope = Readonly<{ bondId: string; entityId: string }>;
 
 type WorkspaceFloorProps = Readonly<{
   mode: 'account' | 'explore';
   subjectId?: string;
   capacity?: string;
-  scope?: Readonly<{ bondId: string; entityId: string }>;
+  displayName?: string;
+  scope?: AuthorizedEntryScope;
+  isDevPreview?: boolean;
+  /** A task a link asked to open (`/workspace?task=attendance`). */
+  task?: 'attendance';
 }>;
+
+const WORKSPACE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
+  { id: 'role-lens', label: 'Role Perspective Lens & Nav', icon: '🏷️' },
+  { id: 'workbench', label: 'Daily Operations & Timeline', icon: '🧭' },
+  { id: 'heading', label: 'Workspace Posture & Header', icon: '🏛️' },
+  { id: 'attendance', label: 'Attendance Roster & Actions', icon: '📋' },
+  { id: 'insights', label: 'Presence Pulse & Drift Insights', icon: '📊' },
+];
+
 type LoadState = 'loading' | 'ready' | 'error';
 const attendanceTask = {
   featureId: 'attendance',
   route: '/workspace',
   title: 'Daily attendance',
   icon: '◷',
-  temporalBinding: { kind: 'none' },
+  temporalBinding: { kind: 'follow-domain' },
   localStatePolicy: 'restore-permitted',
 } as const;
 
@@ -67,27 +103,132 @@ function statusCounts(students: readonly WorkspaceStudent[]) {
   );
 }
 
-export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFloorProps) {
-  const [overview, setOverview] = useState(true);
+function buildAccountDraftScope(
+  subjectId: string,
+  scope: AuthorizedEntryScope,
+  classroomId: string,
+  selectedDate: string,
+): AccountAttendanceDraftScope {
+  return {
+    accountId: subjectId,
+    bondId: scope.bondId,
+    entityId: scope.entityId,
+    classroomId,
+    date: selectedDate,
+  };
+}
+
+export function WorkspaceFloor({
+  mode,
+  subjectId,
+  capacity,
+  displayName = 'Guest Explorer',
+  scope,
+  isDevPreview = false,
+  task: requestedTask,
+}: WorkspaceFloorProps) {
+  const router = useRouter();
+  const navigator = useNavigator();
+  const exploreCapacity = useExploreCapacity();
+  const normalizedCapacity = (mode === 'explore' && !isDevPreview ? exploreCapacity : capacity)?.toLowerCase();
+  const voice = workspaceVoice(normalizedCapacity);
+  const features = workspaceFeaturesFor(normalizedCapacity);
+
+  const [overview, setOverview] = useState(requestedTask !== 'attendance');
+  // A link asking for a task opens it, also when the Workspace is already showing.
+  useEffect(() => {
+    if (requestedTask === 'attendance') setOverview(false);
+  }, [requestedTask]);
+  const workspaceFeatureIds = features.map((feature) => feature.id);
+  const quickAccessScope = mode === 'explore' ? 'explore' : 'sanctuary';
+  const quickAccess = useQuickAccessPreferences(
+    'workspace',
+    quickAccessScope,
+    workspaceFeatureIds,
+    ['attendance'],
+    getMaxPinnedForWorkspace('workspace'),
+  );
   const canvas = useWorkspaceCanvas({
     accountId: subjectId ?? 'explore',
     enableRemoteSync: mode === 'account' && Boolean(subjectId),
     activeTaskId: !overview ? attendanceTask.featureId : null,
   });
-  const workbench = useDomainWorkbench('workspace');
+  const workbench = useDomainWorkbench('workspace', { usageScope: quickAccessScope });
   const [classrooms, setClassrooms] = useState<readonly WorkspaceClassroom[]>([]);
   const [classroom, setClassroom] = useState<WorkspaceClassroom | null>(null);
   const selectedClassroomRef = useRef<WorkspaceClassroom | null>(null);
   const [students, setStudents] = useState<readonly WorkspaceStudent[]>([]);
-  const [date, setDate] = useState(today());
+  const [studentProjectionIdentity, setStudentProjectionIdentity] = useState<string | null>(null);
+  const [localDate, setLocalDate] = useState(today());
+  const [practiceMode, setPracticeMode] = useState(false);
+  const date =
+    workbench.state.temporalHorizon?.anchor.kind === 'date'
+      ? workbench.state.temporalHorizon.anchor.date
+      : localDate;
+  const attendanceScope = useMemo<WorkspaceAttendanceReadScope | null>(
+    () =>
+      mode === 'account' && subjectId && scope
+        ? { principalId: subjectId, bondId: scope.bondId, entityId: scope.entityId }
+        : null,
+    [mode, scope?.bondId, scope?.entityId, subjectId],
+  );
+  const accountAttendance = useWorkspaceDomain({
+    scope: attendanceScope,
+    classroom,
+    date,
+    enabled: mode === 'account' && !practiceMode,
+  });
+  const refetchAccountClassrooms = accountAttendance.classroomsQuery.refetch;
+  const refetchAccountRoster = accountAttendance.rosterQuery.refetch;
+  const visibleClassrooms =
+    mode === 'account' && !practiceMode ? accountAttendance.classrooms : classrooms;
+  const attendanceProjectionIdentity =
+    mode === 'account' && !practiceMode && attendanceScope && classroom
+      ? [
+          attendanceScope.principalId,
+          attendanceScope.bondId,
+          attendanceScope.entityId,
+          classroom.id,
+          date,
+        ].join(':')
+      : null;
+  const hasCurrentStudentProjection =
+    mode !== 'account' ||
+    practiceMode ||
+    studentProjectionIdentity === attendanceProjectionIdentity;
+  const activeStudents = hasCurrentStudentProjection
+    ? students
+    : ([] as readonly WorkspaceStudent[]);
+  const coordinates = useMemo(
+    () => resolveTemporalCoordinates(date, { domain: 'workspace' }),
+    [date],
+  );
+
+  const posture = useMemo(
+    () => getWorkspaceOverviewPosture(voice, coordinates.intent, coordinates.dateLabel),
+    [voice, coordinates.intent, coordinates.dateLabel],
+  );
   const [loadState, setLoadState] = useState<LoadState>(mode === 'explore' ? 'ready' : 'loading');
+  const accountReadState: LoadState =
+    mode !== 'account' || practiceMode
+      ? loadState
+      : accountAttendance.classroomsQuery.isPending ||
+          (classroom !== null && accountAttendance.rosterQuery.isPending)
+        ? 'loading'
+        : accountAttendance.classroomsQuery.error || accountAttendance.rosterQuery.error
+          ? 'error'
+          : 'ready';
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [unsynced, setUnsynced] = useState(false);
-  const [practiceMode, setPracticeMode] = useState(false);
   const [unmatchedDraftCount, setUnmatchedDraftCount] = useState(0);
+  const [absenteeInput, setAbsenteeInput] = useState('');
+  const [activeSession, setActiveSession] = useState<
+    'morning' | 'period-1' | 'period-2' | 'period-3'
+  >('morning');
+  const [morningRoster, setMorningRoster] = useState<readonly WorkspaceStudent[]>([]);
   const latestLoadRef = useRef(0);
   const focused = useMemo(
     () =>
@@ -95,8 +236,118 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
     [workbench.state.focusedTaskKey, workbench.state.tasks],
   );
 
+  const hallwayDrifts = useMemo(() => {
+    if (activeSession === 'morning' || morningRoster.length === 0) return [];
+    return identifyHallwayDrift(morningRoster, activeStudents);
+  }, [activeSession, activeStudents, morningRoster]);
+
+  useEffect(() => {
+    if (mode !== 'account' || practiceMode) return;
+    if (!scope || !subjectId || !accountAttendance.scope) {
+      setLoadState('error');
+      setError('Your selected classroom scope is unavailable. Reload Workspace.');
+      return;
+    }
+    if (accountAttendance.classroomsQuery.isPending) {
+      setLoadState('loading');
+      return;
+    }
+    if (accountAttendance.classroomsQuery.error) {
+      setLoadState('error');
+      setError(
+        accountAttendance.classroomsQuery.error instanceof Error
+          ? accountAttendance.classroomsQuery.error.message
+          : 'Workspace could not load. Please retry.',
+      );
+      return;
+    }
+    const available = accountAttendance.classrooms;
+    const selected =
+      available.find((item) => item.id === selectedClassroomRef.current?.id) ??
+      available.find((item) => item.id === classroom?.id) ??
+      available[0] ??
+      null;
+    if (selected?.id !== classroom?.id) setClassroom(selected);
+    selectedClassroomRef.current = selected;
+    if (!selected) {
+      setStudents([]);
+      setUnsynced(false);
+      setUnmatchedDraftCount(0);
+      setLoadState('ready');
+    }
+  }, [
+    accountAttendance.classrooms,
+    accountAttendance.classroomsQuery.error,
+    accountAttendance.classroomsQuery.isPending,
+    accountAttendance.scope,
+    classroom?.id,
+    mode,
+    practiceMode,
+    scope,
+    subjectId,
+  ]);
+
+  useEffect(() => {
+    if (mode !== 'account' || practiceMode) return;
+    // Never project a prior scoped roster while a new principal, bond, entity,
+    // grade class, or date query is being admitted.
+    setStudents([]);
+    setStudentProjectionIdentity(null);
+    setMorningRoster([]);
+    setUnsynced(false);
+    setUnmatchedDraftCount(0);
+    setSaved(false);
+  }, [classroom?.id, date, mode, practiceMode, scope?.bondId, scope?.entityId, subjectId]);
+
+  useEffect(() => {
+    if (mode !== 'account' || practiceMode || !classroom || !scope || !subjectId) return;
+    if (accountAttendance.rosterQuery.isPending) {
+      setLoadState('loading');
+      return;
+    }
+    if (accountAttendance.rosterQuery.error) {
+      setLoadState('error');
+      setError(
+        accountAttendance.rosterQuery.error instanceof Error
+          ? accountAttendance.rosterQuery.error.message
+          : 'Workspace could not load. Please retry.',
+      );
+      return;
+    }
+    if (!accountAttendance.rosterQuery.isSuccess) return;
+    try {
+      const draft = loadAccountAttendanceDraft(
+        buildAccountDraftScope(subjectId, scope, classroom.id, date),
+      );
+      const restored = restoreAccountAttendanceDraft(accountAttendance.students, draft);
+      setStudents(restored.students);
+      setStudentProjectionIdentity(attendanceProjectionIdentity);
+      setMorningRoster(restored.students);
+      setUnsynced(draft !== null);
+      setUnmatchedDraftCount(restored.unmatchedCount);
+      setLoadState('ready');
+      setError(null);
+    } catch (cause) {
+      setLoadState('error');
+      setError(cause instanceof Error ? cause.message : 'Workspace could not load. Please retry.');
+    }
+  }, [
+    accountAttendance.rosterQuery.error,
+    accountAttendance.rosterQuery.isPending,
+    accountAttendance.rosterQuery.isSuccess,
+    accountAttendance.students,
+    attendanceProjectionIdentity,
+    classroom,
+    date,
+    mode,
+    practiceMode,
+    scope,
+    subjectId,
+  ]);
+
   const load = useCallback(
-    async (selectedDate: string, selectedClassroom?: WorkspaceClassroom) => {
+    async (selectedDate: string, selectedClassroom?: WorkspaceClassroom | null) => {
+      await Promise.resolve();
       const loadId = ++latestLoadRef.current;
       setLoadState('loading');
       setError(null);
@@ -116,32 +367,18 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
           setClassroom(local.classroom);
           selectedClassroomRef.current = local.classroom;
           setStudents(local.students);
+          setMorningRoster(local.students);
         } else if (subjectId) {
-          if (!scope)
+          if (!scope || !accountAttendance.scope)
             throw new Error('Your selected classroom scope is unavailable. Reload Workspace.');
-          const available = await loadAccountClassrooms(subjectId);
-          if (loadId !== latestLoadRef.current) return;
-          setClassrooms(available);
-          const selected =
-            selectedClassroom ??
-            available.find((item) => item.id === selectedClassroomRef.current?.id) ??
-            available[0] ??
-            null;
-          setClassroom(selected);
-          selectedClassroomRef.current = selected;
-          if (selected) {
-            const roster = await loadAccountAttendance(selected, selectedDate, subjectId);
-            if (loadId !== latestLoadRef.current) return;
-            const draft = loadAccountAttendanceDraft(accountDraftScope(selected.id, selectedDate));
-            const restored = restoreAccountAttendanceDraft(roster, draft);
-            setStudents(restored.students);
-            setUnsynced(draft !== null);
-            setUnmatchedDraftCount(restored.unmatchedCount);
-          } else {
-            setStudents([]);
-            setUnsynced(false);
-            setUnmatchedDraftCount(0);
+          if (selectedClassroom) {
+            selectedClassroomRef.current = selectedClassroom;
+            setClassroom(selectedClassroom);
           }
+          await refetchAccountClassrooms();
+          if (selectedClassroom ?? classroom) await refetchAccountRoster();
+          if (loadId !== latestLoadRef.current) return;
+          return;
         } else {
           throw new Error('Your account identity is unavailable. Sign in again to continue.');
         }
@@ -154,21 +391,23 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
         );
       }
     },
-    [mode, practiceMode, scope, subjectId],
+    [
+      accountAttendance.scope,
+      classroom,
+      mode,
+      practiceMode,
+      refetchAccountClassrooms,
+      refetchAccountRoster,
+      scope,
+      subjectId,
+    ],
   );
 
-  function accountDraftScope(
-    classroomId: string,
-    selectedDate: string,
-  ): AccountAttendanceDraftScope {
-    if (!subjectId || !scope) throw new Error('The selected account scope is unavailable.');
-    return {
-      accountId: subjectId,
-      bondId: scope.bondId,
-      entityId: scope.entityId,
-      classroomId,
-      date: selectedDate,
-    };
+  function accountDraftScope(classroomId: string, selectedDate: string) {
+    if (!subjectId || !scope) {
+      throw new Error('The selected account scope is unavailable.');
+    }
+    return buildAccountDraftScope(subjectId, scope, classroomId, selectedDate);
   }
 
   function persistAccountDraft(nextStudents: readonly WorkspaceStudent[]) {
@@ -188,8 +427,18 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
   }
 
   useEffect(() => {
-    void load(date);
-  }, [date, load]);
+    let active = true;
+    const fetchAttendance = async () => {
+      await Promise.resolve();
+      if (active && (mode !== 'account' || practiceMode)) {
+        await load(date);
+      }
+    };
+    fetchAttendance().catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [date, load, mode, practiceMode]);
 
   function openAttendance() {
     const result = workbench.open(attendanceTask);
@@ -200,19 +449,51 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
     setOverview(false);
   }
 
+  function openWorkspaceFeature(feature: WorkspaceFeatureItem) {
+    if (feature.id === 'attendance') {
+      openAttendance();
+      return;
+    }
+    const result = workbench.open({
+      featureId: feature.id,
+      route: feature.href,
+      title: feature.label,
+      icon: feature.symbol,
+      temporalBinding: { kind: 'follow-domain' },
+      localStatePolicy: 'restore-permitted',
+    });
+    if (result.kind === 'at-capacity') {
+      setError('Close another Workspace task before opening this tool.');
+      return;
+    }
+    navigator.follow(feature.href, 'workspace-feature');
+  }
+
   function focusTask(task: WorkbenchTaskDescriptor) {
     workbench.focus(task.taskKey);
-    setOverview(false);
+    if (task.featureId === attendanceTask.featureId) {
+      setOverview(false);
+      return;
+    }
+    if (task.route !== '/workspace') navigator.follow(task.route, 'workspace-task');
   }
 
   function closeTask(task: WorkbenchTaskDescriptor) {
+    const returnToHome = overview;
     const result = workbench.close(task.taskKey);
-    setOverview(result.kind === 'overview');
+    setOverview(returnToHome || result.kind === 'overview');
+    if (
+      task.featureId === attendanceTask.featureId &&
+      requestedTask !== undefined
+    ) {
+      void router.navigate({ to: '/workspace', replace: true });
+    }
   }
 
   function changeStatus(studentId: string) {
+    if (!hasCurrentStudentProjection) return;
     setSaved(false);
-    const next = students.map((student) =>
+    const next = activeStudents.map((student) =>
       student.id === studentId
         ? { ...student, status: stepAttendanceStatus(student.status) }
         : student,
@@ -222,26 +503,114 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
   }
 
   function markAll(status: AttendanceStatus) {
+    if (!hasCurrentStudentProjection) return;
     setSaved(false);
-    const next = students.map((student) => (student.studentId ? { ...student, status } : student));
+    const next = activeStudents.map((student) =>
+      student.studentId ? { ...student, status } : student,
+    );
     if (!persistAccountDraft(next)) return;
     setStudents(next);
   }
 
+  function applyRapidAbsentees() {
+    if (!hasCurrentStudentProjection || !activeStudents.length) return;
+    const tokens = absenteeInput
+      .split(/[,\s]+/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    if (!tokens.length) return;
+    const absenteeRolls = new Set(
+      tokens.map((t) => parseInt(t, 10)).filter((n) => !isNaN(n) && n > 0),
+    );
+    if (!absenteeRolls.size) return;
+    setSaved(false);
+    let absentCount = 0;
+    const next = activeStudents.map((student, index) => {
+      const roll = student.rollNumber ?? index + 1;
+      const isAbsent = absenteeRolls.has(roll);
+      if (isAbsent) absentCount++;
+      return {
+        ...student,
+        status: (isAbsent ? 'absent' : 'present') as AttendanceStatus,
+      };
+    });
+    if (!persistAccountDraft(next)) return;
+    setStudents(next);
+    setNotice(
+      `Fast roll call applied: ${absentCount} marked absent (roll ${Array.from(absenteeRolls).join(', ')}), ${next.length - absentCount} present.`,
+    );
+    setAbsenteeInput('');
+  }
+
+  function handleRosterKeyDown(
+    e: React.KeyboardEvent<HTMLButtonElement>,
+    studentId: string,
+    index: number,
+  ) {
+    if (!hasCurrentStudentProjection) return;
+    const key = e.key.toLowerCase();
+    let targetStatus: AttendanceStatus | null = null;
+    if (key === 'p') targetStatus = 'present';
+    else if (key === 'a') targetStatus = 'absent';
+    else if (key === 'l') targetStatus = 'late';
+    else if (key === 'e') targetStatus = 'excused';
+
+    if (targetStatus) {
+      e.preventDefault();
+      setSaved(false);
+      const next = activeStudents.map((s) =>
+        s.id === studentId ? { ...s, status: targetStatus! } : s,
+      );
+      if (!persistAccountDraft(next)) return;
+      setStudents(next);
+
+      // Rapidly jump focus down to next student row for keyboard roll-call
+      const nextIndex = index + 1;
+      if (nextIndex < activeStudents.length) {
+        const nextStudent = activeStudents[nextIndex];
+        if (nextStudent) {
+          const nextBtn = document.getElementById(`status-btn-${nextStudent.id}`);
+          nextBtn?.focus();
+        }
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = index + 1;
+      if (nextIndex < activeStudents.length) {
+        const nextStudent = activeStudents[nextIndex];
+        if (nextStudent) {
+          const nextBtn = document.getElementById(`status-btn-${nextStudent.id}`);
+          nextBtn?.focus();
+        }
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = index - 1;
+      if (prevIndex >= 0) {
+        const prevStudent = activeStudents[prevIndex];
+        if (prevStudent) {
+          const prevBtn = document.getElementById(`status-btn-${prevStudent.id}`);
+          prevBtn?.focus();
+        }
+      }
+    }
+  }
+
   async function save() {
-    if (!classroom || students.length === 0 || saving) return;
+    if (!classroom || !hasCurrentStudentProjection || activeStudents.length === 0 || saving) return;
     setSaving(true);
     setError(null);
     setNotice(null);
     try {
       if (mode === 'account' && practiceMode && subjectId) {
-        saveAccountPracticeAttendance(subjectId, date, students);
-      } else if (mode === 'explore') saveExploreAttendance(date, students);
+        saveAccountPracticeAttendance(subjectId, date, activeStudents);
+      } else if (mode === 'explore') saveExploreAttendance(date, activeStudents);
       else if (subjectId) {
-        await saveAccountAttendance(classroom, date, students, subjectId);
+        await saveAccountAttendance(classroom, date, activeStudents, subjectId);
+        await accountAttendance.invalidateRoster();
         const remaining = removeSyncedAttendanceDraftMarks(
           accountDraftScope(classroom.id, date),
-          students,
+          activeStudents,
         );
         setUnmatchedDraftCount(remaining);
         setUnsynced(remaining > 0);
@@ -266,7 +635,7 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
     try {
       const remaining = discardUnmatchedAttendanceDraftMarks(
         accountDraftScope(classroom.id, date),
-        students,
+        activeStudents,
       );
       setUnmatchedDraftCount(0);
       setUnsynced(remaining > 0);
@@ -295,14 +664,10 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
     }
   }
 
-  const counts = statusCounts(students);
-  const markableCount = students.filter((student) => student.studentId !== null).length;
-  const unlinkedCount = students.length - markableCount;
+  const counts = statusCounts(activeStudents);
+  const markableCount = activeStudents.filter((student) => student.studentId !== null).length;
+  const unlinkedCount = activeStudents.length - markableCount;
   const activeAttendance = focused?.featureId === attendanceTask.featureId;
-  const pinnedClassrooms = useMemo(
-    () => classrooms.filter((item) => canvas.pinnedIds.includes(item.id)),
-    [classrooms, canvas.pinnedIds],
-  );
   const practiceAvailability = resolvePracticeAvailability({
     featureId: attendanceTask.featureId,
     platform: 'browser',
@@ -312,77 +677,112 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
   const horizon = workbench.state.temporalHorizon ?? todayHorizon();
 
   useEffect(() => {
-    if (workbench.state.temporalHorizon?.anchor.kind === 'date') {
-      setDate(workbench.state.temporalHorizon.anchor.date);
-    } else if (!workbench.state.temporalHorizon) {
+    if (!workbench.state.temporalHorizon) {
       workbench.setTemporalHorizon(horizon);
     }
-  }, [workbench.state.temporalHorizon]);
+  }, [horizon, workbench]);
 
   function selectDate(nextDate: string) {
-    setDate(nextDate);
+    setLocalDate(nextDate);
     workbench.setTemporalHorizon({
       anchor: { kind: 'date', date: nextDate },
       scale: 'day',
-      intent: 'current',
+      intent: resolveTemporalIntent(nextDate, today()),
     });
   }
 
   return (
-    <article
-      className={styles.floor}
-      data-domain="workspace"
-      data-appearance={canvas.appearance.preset}
-      data-motion={canvas.appearance.motion}
-      aria-labelledby="workspace-title"
-    >
-      <div className={styles.workbench}>
-        <TaskStrip
-          focusedTaskKey={workbench.state.focusedTaskKey}
-          onCloseTask={closeTask}
-          onFocusTask={focusTask}
-          onOpenCatalog={() => setOverview(true)}
-          onOpenOverview={() => setOverview(true)}
-          overviewActive={overview}
-          tasks={workbench.state.tasks}
-        />
-        <TemporalHorizon
-          dateLabel={new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(
-            new Date(`${date}T12:00:00`),
-          )}
-          onNext={() => selectDate(moveDate(date, 1))}
-          onPrevious={() => selectDate(moveDate(date, -1))}
+    <SanctuaryFloorCanvas
+      appearance={canvas.appearance}
+      domain="workspace"
+      furnitureItems={WORKSPACE_FURNITURE_ITEMS}
+      groupOrder={[...canvas.groupOrder]}
+      onReorderFurniture={(order) => canvas.setGroupOrder(order as unknown as any)}
+      onResetFloorDefaults={canvas.resetAppearance}
+      showPageActions={overview}
+      onTogglePinFurniture={(id) => canvas.togglePin(id as any)}
+      pinnedIds={canvas.pinnedIds}
+      setAppearance={canvas.setAppearance}
+      titleId={
+        overview
+          ? 'workspace-title'
+          : activeAttendance
+            ? 'attendance-title'
+            : 'workspace-task-title'
+      }
+      greeting={timeGreeting(displayName)}
+      breadcrumb={
+        overview
+          ? 'Workspace · Overview'
+          : activeAttendance
+            ? 'Workspace · Attendance'
+            : `Workspace · ${focused?.title ?? 'Task'}`
+      }
+      timeControl={
+        <DateTimeCombo
+          formFactor="nano"
+          date={coordinates.date}
+          dateLabel={coordinates.dateLabel}
+          intent={coordinates.intent}
+          onSelectDate={selectDate}
           onToday={() => selectDate(today())}
-          orientation="Choose the day you are taking attendance for."
+          allowDismiss={false}
         />
-      </div>
-
-      <header className={styles.heading}>
-        <p className={styles.eyebrow}>
-          {practiceMode
-            ? 'Safe Try · fictional attendance'
-            : mode === 'explore'
-              ? 'Explore · local workspace'
-              : 'Workspace'}
-        </p>
-        <h1 id="workspace-title">A steady view of the work in your care</h1>
-        <p>
-          {mode === 'explore'
-            ? 'Try attendance with a local sample roster. Changes stay in this browser.'
-            : 'Open a classroom practice from your selected school scope. Keep the roster, day’s marks, and next action together.'}
-        </p>
-      </header>
+      }
+    >
+      <TaskStrip
+        shellSlot
+        className={styles.workspaceTaskStrip}
+        focusedTaskKey={workbench.state.focusedTaskKey}
+        onCloseTask={closeTask}
+        onFocusTask={focusTask}
+        onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
+        onOpenOverview={() => {
+          setOverview(true);
+          if (requestedTask !== undefined) {
+            void router.navigate({ to: '/workspace', replace: true });
+          }
+          requestAnimationFrame(() =>
+            document.getElementById('workspace-catalog-title')?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            }),
+          );
+        }}
+        quickAccessItems={features.map((item) => ({
+          id: item.id,
+          label: item.label,
+          emoji: item.symbol,
+        }))}
+        quickAccessPinnedIds={quickAccess.pinnedIds}
+        quickAccessUsage={quickAccess.usage}
+        quickAccessPinLimit={quickAccess.pinLimit}
+        onOpenQuickAccessItem={(item) => {
+          const feature = features.find((candidate) => item.id === candidate.id);
+          if (feature) {
+            openWorkspaceFeature(feature);
+            return;
+          }
+        }}
+        onToggleQuickAccessPin={quickAccess.togglePin}
+        overviewActive={overview}
+        tasks={workbench.state.tasks.filter((task) => workspaceFeatureIds.some((id) => id === task.featureId))}
+      />
 
       {error ? (
         <div className={styles.error} role="alert">
           <p>{error}</p>
           <button
-            onClick={() =>
-              void (loadState === 'error' ? load(date, classroom ?? undefined) : save())
-            }
+            onClick={() => {
+              if (accountReadState === 'error') {
+                load(date, classroom).catch(() => {});
+              } else {
+                save().catch(() => {});
+              }
+            }}
             type="button"
           >
-            {loadState === 'error' ? 'Retry loading' : 'Retry save'}
+            {accountReadState === 'error' ? 'Retry loading' : 'Retry save'}
           </button>
         </div>
       ) : null}
@@ -412,277 +812,563 @@ export function WorkspaceFloor({ mode, subjectId, capacity, scope }: WorkspaceFl
         </p>
       ) : null}
 
-      {overview || !activeAttendance ? (
-        <section aria-labelledby="workspace-overview-title" className={styles.overview}>
-          <div>
-            <p className={styles.eyebrow}>Overview · Classroom practice</p>
-            <h2 id="workspace-overview-title">Daily attendance</h2>
-            <p>Take a classroom roll call and keep each student’s mark for the selected day.</p>
-          </div>
-          {loadState === 'loading' && mode === 'account' ? (
-            <p className={styles.loading} role="status">
-              Checking the selected classroom scope…
-            </p>
-          ) : null}
-          {loadState === 'ready' ? (
-            <div className={styles.summary} aria-label="Attendance summary">
-              <span>
-                <strong>{classrooms.length}</strong> classrooms
-              </span>
-              <span>
-                <strong>{students.length}</strong> students in today’s roster
-              </span>
-              {mode === 'explore' ? <span className={styles.localTag}>Local demo data</span> : null}
-            </div>
-          ) : null}
-          <button
-            className={styles.primary}
-            disabled={mode === 'account' && loadState !== 'ready'}
-            onClick={openAttendance}
-            type="button"
-          >
-            {loadState === 'loading' && mode === 'account'
-              ? 'Loading workspace…'
-              : 'Open attendance'}
-          </button>
-          {mode === 'account' &&
-          !practiceMode &&
-          subjectId &&
-          practiceAvailability.available ? (
-            <button
-              className={styles.secondary}
-              onClick={() => {
-                latestLoadRef.current += 1;
-                setPracticeMode(true);
-                setOverview(false);
-                const result = workbench.open(attendanceTask);
-                if (result.kind === 'at-capacity') {
-                  setPracticeMode(false);
-                  setOverview(true);
-                  setError(
-                    'Close another Workspace task before opening daily attendance practice.',
-                  );
+      {overview ? (
+        <div className={styles.featureContentIn} key="workspace-home">
+          {voice === 'teacher' ? (
+            <TeacherWorkspaceFloor
+              displayName={displayName}
+              isExplore={mode === 'explore'}
+              classrooms={
+                visibleClassrooms.length > 0
+                  ? visibleClassrooms.map((c, i) => ({
+                      id: c.id,
+                      name: c.name,
+                      subject: c.subject ?? 'Mathematics & Science',
+                      room: 'Hall ' + (i + 1),
+                      studentCount: activeStudents.length > 0 && classroom?.id === c.id ? activeStudents.length : 30,
+                    }))
+                  : undefined
+              }
+              onOpenAttendance={(targetClass) => {
+                if (targetClass) {
+                  const match = visibleClassrooms.find((c) => c.id === targetClass.id);
+                  if (match) {
+                    selectedClassroomRef.current = match;
+                    setClassroom(match);
+                  }
                 }
+                openAttendance();
               }}
-              type="button"
-            >
-              Try attendance safely
-            </button>
-          ) : null}
-          {mode === 'account' && loadState === 'ready' && classrooms.length === 0 ? (
-            <p className={styles.muted}>
-              No classrooms are connected to this account yet. A school or classroom bond is
-              required before shared classroom work appears.
-            </p>
-          ) : null}
-        </section>
-      ) : (
-        <div className={styles.masterDetailLayout}>
-          <aside className={styles.catalogRail} aria-label="Classroom navigation rail">
-            <div className={styles.catalogRailHeader}>
-              <h3 className={styles.catalogRailTitle}>Classrooms</h3>
-              <button
-                type="button"
-                className={styles.returnOverviewButton}
-                onClick={() => setOverview(true)}
-              >
-                Overview
-              </button>
+            />
+          ) : (
+            <>
+
+          <LivingCard
+            className={styles.overview}
+            variant={
+              voice === 'student'
+                ? 'lotus'
+                : voice === 'principal'
+                  ? 'glass'
+                  : 'vellum'
+            }
+            elevation="floating"
+            style={{ padding: 'clamp(1.5rem, 4vw, 3rem)' }}
+          >
+            {voice === 'principal' ? (
+              <MorningSituationalBrief schoolId={scope?.entityId ?? 'default-school'} />
+            ) : null}
+
+            <div>
+              <p className={styles.eyebrow}>{posture.eyebrow}</p>
+              <h2 id="workspace-overview-title">{posture.title}</h2>
+              <p>{posture.description}</p>
             </div>
 
-            {pinnedClassrooms.length > 0 && (
-              <div className={styles.catalogRailSection}>
-                <span className={styles.catalogRailSectionTitle}>Pinned</span>
-                <ul className={styles.catalogRailList}>
-                  {pinnedClassrooms.map((item) => (
-                    <li key={item.id} className={styles.catalogRailRow}>
-                      <button
-                        type="button"
-                        className={`${styles.catalogRailItem} ${classroom?.id === item.id ? styles.catalogRailItemActive : ''}`}
-                        onClick={() => {
-                          selectedClassroomRef.current = item;
-                          void load(date, item);
-                        }}
-                      >
-                        <span className={styles.catalogRailItemLabel}>{item.name}</span>
-                      </button>
-                      <button
-                        type="button"
-                        className={`${styles.catalogRailPinButton} ${styles.catalogRailPinButtonPinned}`}
-                        onClick={() => canvas.togglePin(item.id)}
-                        aria-label={`Unpin ${item.name}`}
-                        aria-pressed="true"
-                      >
-                        📌
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {voice === 'principal' &&
+            coordinates.intent !== 'plan' ? (
+              <>
+                {accountReadState === 'loading' && mode === 'account' ? (
+                  <p className={styles.loading} role="status">
+                    Checking the selected classroom scope…
+                  </p>
+                ) : null}
+                {accountReadState === 'ready' ? (
+                  <div className={styles.summary} aria-label="Attendance summary">
+                    <span>
+                      <strong>{visibleClassrooms.length}</strong> classrooms
+                    </span>
+                    <span>
+                      <strong>{activeStudents.length}</strong> students in this roster
+                    </span>
+                    {mode === 'explore' ? (
+                      <span className={styles.localTag}>Local demo data</span>
+                    ) : null}
+                  </div>
+                ) : null}
+              </>
+            ) : null}
 
-            <div className={styles.catalogRailSection}>
-              <span className={styles.catalogRailSectionTitle}>
-                All Classrooms ({classrooms.length})
-              </span>
-              <ul className={styles.catalogRailList}>
-                {classrooms.map((item) => {
+            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              {voice === 'student' ? (
+                <>
+                  <Link to="/workspace/attendance" className={styles.primary}>
+                    {posture.actionText}
+                  </Link>
+                  <Link to="/workspace/timetable" className={styles.secondary}>
+                    View timetable
+                  </Link>
+                  <Link to="/self" className={styles.secondary}>
+                    Quiet journal
+                  </Link>
+                </>
+              ) : voice === 'guardian' ? (
+                <>
+                  <Link to="/workspace" className={styles.primary}>
+                    {posture.actionText}
+                  </Link>
+                  <Link to="/community" className={styles.secondary}>
+                    Community dialogues
+                  </Link>
+                  <Link to="/library" className={styles.secondary}>
+                    Family guides
+                  </Link>
+                </>
+              ) : voice === 'principal' && coordinates.intent === 'plan' ? (
+                <>
+                  <Link to="/workspace/events" className={styles.primary}>
+                    {posture.actionText}
+                  </Link>
+                  <Link to="/workspace/school" className={styles.secondary}>
+                    School profile
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <button
+                    className={styles.primary}
+                    disabled={
+                      mode === 'account' &&
+                      (accountReadState !== 'ready' || (!practiceMode && visibleClassrooms.length === 0))
+                    }
+                    onClick={openAttendance}
+                    type="button"
+                  >
+                    {accountReadState === 'loading' && mode === 'account'
+                      ? 'Loading workspace…'
+                      : posture.actionText}
+                  </button>
+                  {mode === 'account' &&
+                  !practiceMode &&
+                  subjectId &&
+                  practiceAvailability.available ? (
+                    <button
+                      className={styles.secondary}
+                      onClick={() => {
+                        latestLoadRef.current += 1;
+                        setPracticeMode(true);
+                        setOverview(false);
+                        const result = workbench.open(attendanceTask);
+                        if (result.kind === 'at-capacity') {
+                          setPracticeMode(false);
+                          setOverview(true);
+                          setError(
+                            'Close another Workspace task before opening daily attendance practice.',
+                          );
+                        }
+                      }}
+                      type="button"
+                    >
+                      Try attendance safely
+                    </button>
+                  ) : null}
+                </>
+              )}
+            </div>
+
+            {mode === 'account' &&
+            accountReadState === 'ready' &&
+            visibleClassrooms.length === 0 &&
+            voice === 'principal' ? (
+              <div className={styles.muted} role="status">
+                <p><strong>Your classroom workspace is ready to begin.</strong></p>
+                <p>
+                  Ask your school administrator to connect your account to a school and assign your
+                  classrooms. Once connected, your classrooms and attendance will appear here.
+                </p>
+                {practiceAvailability.available ? (
+                  <p>You can use the safely labelled attendance practice while you wait.</p>
+                ) : null}
+              </div>
+            ) : null}
+          </LivingCard>
+
+          <section aria-labelledby="workspace-catalog-title" className={styles.workspaceCatalog}>
+            <p className={styles.eyebrow}>Workspace tools</p>
+            <h2 id="workspace-catalog-title">
+              Your tools
+            </h2>
+            <div className={styles.workspaceGrid}>
+              {features.map((feature) => (
+                <LivingCard
+                  as="article"
+                  className={styles.workspaceCard}
+                  key={feature.id}
+                  variant="vellum"
+                  elevation="floating"
+                >
+                  <div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      <span style={{ fontSize: '1.75rem' }} aria-hidden="true">
+                        {feature.symbol}
+                      </span>
+                      <span className={styles.roleTag}>
+                        {feature.category}
+                      </span>
+                    </div>
+                    <h3
+                      style={{
+                        margin: '0.35rem 0',
+                        fontFamily: 'Georgia, serif',
+                        fontSize: '1.2rem',
+                      }}
+                    >
+                      {feature.label}
+                    </h3>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: 'var(--ink-soft)',
+                        fontSize: '0.88rem',
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {feature.description}
+                    </p>
+                  </div>
+                  <div style={{ marginTop: '1rem' }}>
+                    <button
+                      type="button"
+                      className={styles.catalogOpenButton}
+                      onClick={() => openWorkspaceFeature(feature)}
+                    >
+                      {feature.id === 'attendance' ? 'Open attendance →' : 'Open tool →'}
+                    </button>
+                  </div>
+                </LivingCard>
+              ))}
+            </div>
+          </section>
+          {visibleClassrooms.length > 0 ? (
+            <section
+              aria-labelledby="workspace-classrooms-title"
+              className={styles.classroomHomeSection}
+            >
+              <p className={styles.eyebrow}>Coordination</p>
+              <h2 id="workspace-classrooms-title">Classrooms</h2>
+              <ul className={styles.classroomHomeList}>
+                {visibleClassrooms.map((item) => {
                   const isPinned = canvas.pinnedIds.includes(item.id);
                   return (
-                    <li key={item.id} className={styles.catalogRailRow}>
+                    <li key={item.id}>
                       <button
+                        className={styles.classroomOpenButton}
                         type="button"
-                        className={`${styles.catalogRailItem} ${classroom?.id === item.id ? styles.catalogRailItemActive : ''}`}
                         onClick={() => {
                           selectedClassroomRef.current = item;
-                          void load(date, item);
+                          setClassroom(item);
+                          openAttendance();
                         }}
                       >
-                        <span className={styles.catalogRailItemLabel}>{item.name}</span>
+                        {item.name}
                       </button>
                       <button
                         type="button"
-                        className={`${styles.catalogRailPinButton} ${isPinned ? styles.catalogRailPinButtonPinned : ''}`}
-                        onClick={() => canvas.togglePin(item.id)}
                         aria-label={isPinned ? `Unpin ${item.name}` : `Pin ${item.name}`}
                         aria-pressed={isPinned}
+                        onClick={() => canvas.togglePin(item.id)}
                       >
-                        {isPinned ? '📌' : '📍'}
+                        {isPinned ? '📌' : '＋'}
                       </button>
                     </li>
                   );
                 })}
               </ul>
-            </div>
-          </aside>
-
-          <main className={styles.activeWorkspaceStage}>
-            <div className={styles.backOverviewBar}>
-              <button
-                type="button"
-                className={styles.streamBackButton}
-                onClick={() => setOverview(true)}
-              >
-                ← Back to Overview
-              </button>
-            </div>
-            <section className={styles.attendance} aria-labelledby="attendance-title">
-              <div className={styles.attendanceHeading}>
-                <div>
-                  <p className={styles.eyebrow}>
-                    {classroom?.subject ?? 'Classroom'} · {date}
-                  </p>
-                  <h2 id="attendance-title">{classroom?.name ?? 'Daily attendance'}</h2>
-                </div>
-                {classrooms.length > 1 ? (
-                  <label className={styles.classPicker}>
-                    Classroom
-                    <select
-                      value={classroom?.id ?? ''}
-                      onChange={(event) => {
-                        const next = classrooms.find((item) => item.id === event.target.value);
-                        if (next) {
-                          selectedClassroomRef.current = next;
-                          void load(date, next);
-                        }
-                      }}
-                    >
-                      {classrooms.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                ) : null}
-              </div>
-              {loadState === 'loading' ? (
-                <p className={styles.loading} role="status">
-                  Loading the classroom roster…
-                </p>
-              ) : null}
-              {loadState === 'ready' ? (
-                <>
-                  <div className={styles.counts}>
-                    <span>
-                      <strong>{counts.present}</strong> present
-                    </span>
-                    <span>
-                      <strong>{counts.late}</strong> late
-                    </span>
-                    <span>
-                      <strong>{counts.absent}</strong> absent
-                    </span>
-                    <span>
-                      <strong>{counts.excused}</strong> excused
-                    </span>
-                    <span className={styles.muted}>{students.length} students</span>
-                  </div>
-                  <div className={styles.bulkActions} aria-label="Mark all students">
-                    <span>Mark all</span>
-                    {(['present', 'late', 'absent', 'excused'] as const).map((status) => (
-                      <button key={status} type="button" onClick={() => markAll(status)}>
-                        {status}
-                      </button>
-                    ))}
-                  </div>
-                  {students.length ? (
-                    <ul className={styles.roster}>
-                      {students.map((student, index) => (
-                        <li key={student.id}>
-                          <span className={styles.roll}>{student.rollNumber ?? index + 1}</span>
-                          <span className={styles.studentName}>{student.name}</span>
-                          <button
-                            aria-label={
-                              student.studentId
-                                ? `${student.name}, ${student.status}. Change attendance status.`
-                                : `${student.name}, not linked to a student account.`
-                            }
-                            className={`${styles.status} ${styles[student.status]}`}
-                            disabled={!student.studentId}
-                            onClick={() => changeStatus(student.id)}
-                            type="button"
-                          >
-                            {student.studentId ? student.status : 'not linked'}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className={styles.empty}>No students are enrolled in this classroom yet.</p>
-                  )}
-                  {unlinkedCount > 0 ? (
-                    <p className={styles.muted}>
-                      {unlinkedCount} roster {unlinkedCount === 1 ? 'entry is' : 'entries are'} not
-                      linked to a student account, so attendance cannot be recorded for{' '}
-                      {unlinkedCount === 1 ? 'it' : 'them'} yet.
-                    </p>
-                  ) : null}
-                  <button
-                    className={styles.primary}
-                    disabled={!markableCount || saving}
-                    onClick={() => void save()}
-                    type="button"
-                  >
-                    {saving
-                      ? 'Saving attendance…'
-                      : saved
-                        ? 'Saved'
-                        : practiceMode
-                          ? 'Save practice changes'
-                          : 'Save attendance'}
-                  </button>
-                  {practiceMode ? (
-                    <button className={styles.secondary} onClick={endPractice} type="button">
-                      End practice and discard
-                    </button>
-                  ) : null}
-                </>
-              ) : null}
             </section>
+          ) : null}
+            </>
+          )}
+        </div>
+      ) : (
+        <div className={styles.featureContentIn} key={focused?.taskKey ?? 'workspace-feature'}>
+          <main className={styles.activeWorkspaceStage}>
+            {activeAttendance ? (
+              <section className={styles.attendance} aria-labelledby="attendance-title">
+                <div className={styles.attendanceHeading}>
+                  <div>
+                    <p className={styles.eyebrow}>
+                      {classroom?.subject ?? 'Classroom'} · {date}
+                    </p>
+                    <h2 id="attendance-title">{classroom?.name ?? 'Daily attendance'}</h2>
+                    {classroom?.id ? (
+                      <Link
+                        to="/workspace/classroom/$id" params={{ id: classroom.id }}
+                        style={{
+                          fontSize: '0.85rem',
+                          fontWeight: 600,
+                          color: '#9a5b2d',
+                          textDecoration: 'none',
+                          display: 'inline-block',
+                          marginTop: '0.25rem',
+                        }}
+                      >
+                        Open Classroom Hub & Roster →
+                      </Link>
+                    ) : null}
+                  </div>
+                  {visibleClassrooms.length > 1 ? (
+                    <label className={styles.classPicker}>
+                      Classroom
+                      <select
+                        value={classroom?.id ?? ''}
+                        onChange={(event) => {
+                          const next = visibleClassrooms.find(
+                            (item) => item.id === event.target.value,
+                          );
+                          if (next) {
+                            selectedClassroomRef.current = next;
+                            setClassroom(next);
+                          }
+                        }}
+                      >
+                        {visibleClassrooms.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : null}
+                </div>
+                {accountReadState === 'loading' ? (
+                  <p className={styles.loading} role="status">
+                    Loading the classroom roster…
+                  </p>
+                ) : null}
+                {accountReadState === 'ready' ? (
+                  <>
+                    <div
+                      className={styles.sessionSelector}
+                      role="tablist"
+                      aria-label="Attendance session"
+                    >
+                      {[
+                        { id: 'morning', label: '☀️ Morning Homeroom (Census)' },
+                        { id: 'period-1', label: '📚 Period 1 Math' },
+                        { id: 'period-2', label: '🔬 Period 2 Science' },
+                        { id: 'period-3', label: '🎨 Period 3 Art' },
+                      ].map((sess) => (
+                        <button
+                          key={sess.id}
+                          type="button"
+                          className={`${styles.sessionPill} ${activeSession === sess.id ? styles.sessionPillActive : ''}`}
+                          onClick={() => {
+                            if (activeSession === 'morning') {
+                              setMorningRoster(activeStudents);
+                            }
+                            setActiveSession(sess.id as any);
+                          }}
+                        >
+                          {sess.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {hallwayDrifts.length > 0 && (
+                      <div className={styles.hallwayDriftBanner} role="alert">
+                        <span>⚠️</span>
+                        <div>
+                          <strong>Hallway Drift Sentinel ({hallwayDrifts.length}):</strong>{' '}
+                          <span>
+                            {hallwayDrifts
+                              .map(
+                                (d) =>
+                                  `${d.studentName} (present at morning gate, absent in ${activeSession})`,
+                              )
+                              .join(', ')}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className={styles.counts}>
+                      <span>
+                        <strong>{counts.present}</strong> present
+                      </span>
+                      <span>
+                        <strong>{counts.late}</strong> late
+                      </span>
+                      <span>
+                        <strong>{counts.absent}</strong> absent
+                      </span>
+                      <span>
+                        <strong>{counts.excused}</strong> excused
+                      </span>
+                      <span className={styles.muted}>{activeStudents.length} students</span>
+                    </div>
+                    <div className={styles.bulkActions} aria-label="Mark all students">
+                      <span>Mark all</span>
+                      {(['present', 'late', 'absent', 'excused'] as const).map((status) => (
+                        <button key={status} type="button" onClick={() => markAll(status)}>
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div
+                      className={styles.rapidRollCall}
+                      aria-label="Rapid roll-call absentee input"
+                    >
+                      <label htmlFor="rapid-absentees">All Present Except:</label>
+                      <input
+                        id="rapid-absentees"
+                        className={styles.rapidInput}
+                        type="text"
+                        placeholder="Enter absentee roll numbers e.g. 4, 18, 33"
+                        value={absenteeInput}
+                        onChange={(e) => setAbsenteeInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            applyRapidAbsentees();
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className={styles.rapidApplyBtn}
+                        disabled={!absenteeInput.trim()}
+                        onClick={applyRapidAbsentees}
+                      >
+                        Apply Absentees
+                      </button>
+                    </div>
+
+                    <div className={styles.kioskBanner}>
+                      <div>
+                        <strong>Automated Edge Ingress:</strong> Have students tap cards or badges
+                        at the classroom door?
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '1rem',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                        }}
+                      >
+                        <Link to="/workspace/badges" className={styles.kioskLink}>
+                          📇 Print Class Badges
+                        </Link>
+                        <Link to="/workspace/kiosk" className={styles.kioskLink}>
+                          Open Doorway Kiosk Scanner →
+                        </Link>
+                      </div>
+                    </div>
+
+                    {activeStudents.length ? (
+                      <ul className={styles.roster}>
+                        {activeStudents.map((student, index) => (
+                          <li key={student.id}>
+                            <span className={styles.roll}>{student.rollNumber ?? index + 1}</span>
+                            <span className={styles.studentName}>
+                              {student.name}
+                              {student.studentId === student.id ? (
+                                <span
+                                  className={styles.shadowPill}
+                                  title="Grade 1+ persistent record"
+                                >
+                                  Shadow
+                                </span>
+                              ) : null}
+                            </span>
+                            <button
+                              id={`status-btn-${student.id}`}
+                              aria-label={
+                                student.studentId
+                                  ? `${student.name}, ${student.status}. Change attendance status. Hotkeys: P for Present, A for Absent, L for Late, E for Excused.`
+                                  : `${student.name}, not linked to a student account.`
+                              }
+                              className={`${styles.status} ${styles[student.status]}`}
+                              disabled={!student.studentId}
+                              onClick={() => changeStatus(student.id)}
+                              onKeyDown={(e) => handleRosterKeyDown(e, student.id, index)}
+                              type="button"
+                            >
+                              <span>{student.studentId ? student.status : 'not linked'}</span>
+                              {student.studentId ? (
+                                <span className={styles.hotkeyBadge} aria-hidden="true">
+                                  {student.status.charAt(0).toUpperCase()}
+                                </span>
+                              ) : null}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={styles.empty}>
+                        No students are enrolled in this classroom yet.
+                      </p>
+                    )}
+                    <p
+                      className={styles.muted}
+                      style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}
+                    >
+                      All enrolled students and shadow learners accumulate continuous multi-year
+                      attendance history from Grade 1.
+                    </p>
+                    <button
+                      className={styles.primary}
+                      disabled={!hasCurrentStudentProjection || !markableCount || saving}
+                      onClick={() => {
+                        save().catch(() => {});
+                      }}
+                      type="button"
+                    >
+                      {saving
+                        ? 'Saving attendance…'
+                        : saved
+                          ? 'Saved'
+                          : practiceMode
+                            ? 'Save practice changes'
+                            : 'Save attendance'}
+                    </button>
+                    {practiceMode ? (
+                      <button className={styles.secondary} onClick={endPractice} type="button">
+                        End practice and discard
+                      </button>
+                    ) : null}
+                  </>
+                ) : null}
+              </section>
+            ) : (
+              <section
+                className={styles.workspaceTaskPreview}
+                aria-labelledby="workspace-task-title"
+              >
+                <span aria-hidden="true" className={styles.workspaceTaskEmoji}>
+                  {WEB_WORKSPACE_FEATURES.find((feature) => feature.id === focused?.featureId)
+                    ?.symbol ?? '✨'}
+                </span>
+                <p className={styles.eyebrow}>Workspace task</p>
+                <h2 id="workspace-task-title">{focused?.title ?? 'Workspace feature'}</h2>
+                <p>
+                  {WEB_WORKSPACE_FEATURES.find((feature) => feature.id === focused?.featureId)
+                    ?.description ?? 'Open a workspace tool to continue.'}
+                </p>
+                {mode === 'explore' ? (
+                  <p className={styles.muted}>
+                    Explore preview · This task stays in your workspace tabs and uses no school
+                    records.
+                  </p>
+                ) : null}
+                {focused?.route ? (
+                  <Link className={styles.catalogOpenButton} to={focused.route}>
+                    Open full tool →
+                  </Link>
+                ) : null}
+              </section>
+            )}
           </main>
         </div>
       )}
-    </article>
+    </SanctuaryFloorCanvas>
   );
 }

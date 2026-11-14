@@ -17,7 +17,10 @@ export interface TuitionBatchRepository {
   getMyBatches(tutorUserId: string): Promise<CommercialPerspective[]>;
   getBatchById(batchId: string): Promise<CommercialPerspective | null>;
   createBatch(tutorUserId: string, input: CreateTuitionBatchInput): Promise<CommercialPerspective>;
-  updateBatch(batchId: string, updates: Partial<CreateTuitionBatchInput>): Promise<CommercialPerspective>;
+  updateBatch(
+    batchId: string,
+    updates: Partial<CreateTuitionBatchInput>,
+  ): Promise<CommercialPerspective>;
   deleteBatch(batchId: string): Promise<void>;
 }
 

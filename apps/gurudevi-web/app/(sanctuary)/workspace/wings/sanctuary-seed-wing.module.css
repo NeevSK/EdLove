@@ -1,0 +1,105 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--color-surface, #fffdfa);
+  border: 1px solid var(--color-border, #e8ddd3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(50, 35, 20, 0.04);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--color-border, #e8ddd3);
+  padding-bottom: 0.75rem;
+}
+
+.titleArea h2 {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.35rem;
+  color: var(--color-ink, #1f1915);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft, #74675d);
+  margin: 0.25rem 0 0;
+}
+
+.sphereTag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem;
+}
+
+.seedCard {
+  background: var(--color-paper-light, #fffdf8);
+  border: 1px solid var(--color-border, #e8ddd3);
+  border-radius: 0.75rem;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.seedCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(50, 35, 20, 0.06);
+}
+
+.seedTitle {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 1.05rem;
+  color: var(--color-ink, #1f1915);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.seedSummary {
+  font-size: 0.82rem;
+  color: var(--color-ink-soft, #74675d);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.seedFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft, #74675d);
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--color-border, #e8ddd3);
+}
+
+.privacyBadge {
+  color: var(--color-gold-deep, #9a5b2d);
+  font-weight: 600;
+}
+

@@ -1,0 +1,533 @@
+{
+  "id": "feature:pjc.catalog",
+  "title": "Product and Journey Catalog",
+  "description": "Record, query and assess product intent, implementation and evidence.",
+  "lifecycle": {
+    "maturity": "development",
+    "owner": "platform"
+  },
+  "links": ["intent:pjc.author", "intent:pjc.query", "intent:pjc.trace", "intent:pjc.validate"],
+  "intents": [
+    {
+      "id": "intent:pjc.author",
+      "title": "author catalog records",
+      "actor": "product contributor or agent",
+      "outcome": "Use PJC to author product contracts and their evidence.",
+      "links": ["journey:pjc.catalog"],
+      "journeys": [
+        {
+          "id": "journey:pjc.catalog",
+          "title": "Author catalog records",
+          "situation": "A contributor needs to describe or revise product behavior in the catalog.",
+          "outcome": "Use PJC to author product contracts and their evidence.",
+          "planning": {
+            "maturity": "development",
+            "implementation": "partial",
+            "verification": "unknown"
+          },
+          "context": "daily",
+          "preconditions": [],
+          "entry": "step:pjc.start",
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": ["Existing FlowDAG and journey pilot remain available."],
+            "invariants": ["Declarations are not proof of implementation or authority."],
+            "integrationPoints": ["packages/core/src/flows/index.ts"],
+            "openQuestions": []
+          },
+          "links": ["requirement:pjc.truthful"],
+          "observations": [
+            {
+              "id": "observation:pjc.flow_registry",
+              "title": "Existing flow registry",
+              "statement": "The existing FlowDAG registry remains separate from PJC records.",
+              "origin": "source",
+              "links": ["binding:pjc.flow_registry"]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:pjc.authoring",
+              "title": "Catalog authoring impact",
+              "statement": "Changes to record definitions affect the loader, validation, CLI and catalog modules.",
+              "origin": "source",
+              "links": ["binding:pjc.schema", "binding:pjc.cli", "binding:pjc.public_api"]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:pjc.tooling",
+              "title": "Repository tooling",
+              "platform": "tooling",
+              "statement": "Contributors edit repository files and use a Node CLI; the catalog has no browser or native authoring interface.",
+              "origin": "source",
+              "links": ["binding:pjc.cli", "binding:pjc.guide"]
+            }
+          ],
+          "steps": [
+            {
+              "id": "step:pjc.start",
+              "title": "Edit catalog records",
+              "interaction": "Inspect existing records and edit the appropriate feature module.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:pjc.result",
+              "title": "Inspect result",
+              "interaction": "Review the authored records and validate them with the catalog checker.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:pjc.author",
+              "title": "author operation",
+              "from": "step:pjc.start",
+              "to": "step:pjc.result",
+              "action": "Edit the versioned feature module.",
+              "feedback": "Validation reports errors and remaining gaps.",
+              "links": ["intent:pjc.author", "binding:pjc.schema"]
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:pjc.author",
+              "title": "author catalog",
+              "transitions": ["transition:pjc.author"],
+              "expected": "The contributor edits the appropriate module and reviews validation errors and gaps.",
+              "links": ["requirement:pjc.author_records", "binding:pjc.tests"]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:pjc.author_records",
+              "classification": "functional",
+              "title": "Validate authored records",
+              "statement": "Authored feature modules must be checked for the supported hierarchy, unique IDs and valid references.",
+              "origin": "user",
+              "links": ["binding:pjc.schema", "binding:pjc.checker", "binding:pjc.tests"]
+            },
+            {
+              "id": "requirement:pjc.truthful",
+              "classification": "constraint",
+              "title": "Truthful coverage",
+              "statement": "An implementation reference or evidence declaration is not proof of runtime behavior.",
+              "origin": "user",
+              "links": ["binding:pjc.checker"]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:pjc.schema",
+              "title": "Catalog schema",
+              "category": "tool",
+              "status": "implemented",
+              "reference": "packages/core/src/flows/pjc/hierarchy.ts",
+              "note": "Versioned record definitions.",
+              "links": ["feature:pjc.catalog"]
+            },
+            {
+              "id": "binding:pjc.checker",
+              "title": "Catalog checks",
+              "category": "tool",
+              "status": "implemented",
+              "reference": "packages/core/src/flows/pjc/hierarchy.ts",
+              "note": "Checks declarations; it does not execute product journeys.",
+              "links": ["feature:pjc.catalog"]
+            },
+            {
+              "id": "binding:pjc.cli",
+              "title": "PJC CLI",
+              "category": "tool",
+              "status": "implemented",
+              "reference": "scripts/pjc.ts",
+              "note": "Queries and reports declared metadata.",
+              "links": ["feature:pjc.catalog"]
+            },
+            {
+              "id": "binding:pjc.public_api",
+              "title": "Platform-neutral PJC entry point",
+              "category": "tool",
+              "status": "implemented",
+              "reference": "packages/core/src/flows/pjc/hierarchy.ts",
+              "note": "Exposes schema validation and journey projection; filesystem loading remains separate.",
+              "links": ["feature:pjc.catalog"]
+            },
+            {
+              "id": "binding:pjc.flow_registry",
+              "title": "Existing flow registry",
+              "category": "architecture",
+              "status": "implemented",
+              "reference": "packages/core/src/flows/index.ts",
+              "note": "Existing FlowDAG registry; presence is not application journey evidence.",
+              "links": ["feature:pjc.catalog"]
+            },
+            {
+              "id": "binding:pjc.guide",
+              "title": "PJC guide",
+              "category": "documentation",
+              "status": "implemented",
+              "reference": "docs/architecture/product-journey-catalog.md",
+              "note": "Operating and architecture reference.",
+              "links": ["feature:pjc.catalog"]
+            },
+            {
+              "id": "binding:pjc.skill",
+              "title": "PJC skill",
+              "category": "documentation",
+              "status": "implemented",
+              "reference": ".agents/skills/product-journey-catalog/SKILL.md",
+              "note": "Agent workflow.",
+              "links": ["feature:pjc.catalog"]
+            },
+            {
+              "id": "binding:pjc.tests",
+              "title": "Catalog tests",
+              "category": "test",
+              "status": "implemented",
+              "reference": "packages/core/src/flows/pjc/hierarchy.test.ts",
+              "note": "Tests are references, not execution evidence.",
+              "links": ["feature:pjc.catalog"]
+            },
+            {
+              "id": "binding:pjc.cli_tests",
+              "title": "PJC CLI tests",
+              "category": "test",
+              "status": "implemented",
+              "reference": "packages/core/src/flows/pjc/cli.test.ts",
+              "note": "Exercises CLI contracts using fixture catalogs; a test file is not execution evidence.",
+              "links": ["feature:pjc.catalog"]
+            }
+          ],
+          "evidence": [],
+          "sharedRequirements": [],
+          "sharedBindings": []
+        }
+      ],
+      "sharedJourneys": []
+    },
+    {
+      "id": "intent:pjc.query",
+      "title": "query catalog records",
+      "actor": "product contributor or agent",
+      "outcome": "Use PJC to query product contracts and their evidence.",
+      "links": ["journey:pjc.query"],
+      "journeys": [
+        {
+          "id": "journey:pjc.query",
+          "title": "Find catalog records",
+          "situation": "A contributor needs to locate relevant product records.",
+          "outcome": "Use PJC to query product contracts and their evidence.",
+          "planning": {
+            "maturity": "development",
+            "implementation": "partial",
+            "verification": "unknown"
+          },
+          "context": "daily",
+          "preconditions": ["A valid catalog is available."],
+          "entry": "step:pjc.query_start",
+          "observations": [
+            {
+              "id": "observation:pjc.query_cli",
+              "title": "Existing query commands",
+              "statement": "The CLI provides list and inspect commands for catalog records.",
+              "origin": "source",
+              "links": ["binding:pjc.cli"]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:pjc.query",
+              "title": "Query consumers",
+              "statement": "Changes to query filters or projections affect contributors and agents consuming CLI output.",
+              "origin": "source",
+              "links": ["binding:pjc.cli", "binding:pjc.guide"]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:pjc.query_tooling",
+              "title": "CLI query surface",
+              "platform": "tooling",
+              "statement": "Query output is generated by the repository CLI as JSON, text or Markdown.",
+              "origin": "source",
+              "links": ["binding:pjc.cli"]
+            }
+          ],
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": ["The PJC CLI reads the versioned catalog."],
+            "invariants": ["Declarations are not proof of implementation or authority."],
+            "integrationPoints": ["scripts/pjc.ts"],
+            "openQuestions": []
+          },
+          "steps": [
+            {
+              "id": "step:pjc.query_start",
+              "title": "Prepare query",
+              "interaction": "List or inspect matching records.",
+              "terminal": false
+            },
+            {
+              "id": "step:pjc.query_result",
+              "title": "Review query result",
+              "interaction": "Read the returned records and their declared context.",
+              "terminal": true
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:pjc.query",
+              "title": "query operation",
+              "from": "step:pjc.query_start",
+              "to": "step:pjc.query_result",
+              "action": "Run list or inspect with the desired filters.",
+              "feedback": "The CLI returns matching records or a specific error.",
+              "links": ["intent:pjc.query", "binding:pjc.cli"]
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:pjc.query",
+              "title": "query catalog",
+              "transitions": ["transition:pjc.query"],
+              "expected": "The CLI returns matching records or a specific error.",
+              "links": ["requirement:pjc.query_records", "binding:pjc.cli_tests"]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:pjc.query_records",
+              "classification": "functional",
+              "title": "Find and inspect catalog records",
+              "statement": "A contributor can list and filter records, inspect an ID in minimal or expanded form, and receive an error for an unknown ID.",
+              "origin": "user",
+              "links": ["binding:pjc.cli", "binding:pjc.cli_tests"]
+            }
+          ],
+          "bindings": [],
+          "evidence": [],
+          "sharedRequirements": ["requirement:pjc.truthful"],
+          "sharedBindings": ["binding:pjc.cli"]
+        }
+      ],
+      "sharedJourneys": []
+    },
+    {
+      "id": "intent:pjc.trace",
+      "title": "trace catalog records",
+      "actor": "product contributor or agent",
+      "outcome": "Use PJC to trace product contracts and their evidence.",
+      "links": ["journey:pjc.trace"],
+      "journeys": [
+        {
+          "id": "journey:pjc.trace",
+          "title": "Trace catalog records",
+          "situation": "A contributor needs to follow an implementation or requirement back to product intent.",
+          "outcome": "Use PJC to trace product contracts and their evidence.",
+          "planning": {
+            "maturity": "development",
+            "implementation": "partial",
+            "verification": "unknown"
+          },
+          "context": "daily",
+          "preconditions": ["A valid catalog is available."],
+          "entry": "step:pjc.trace_start",
+          "observations": [
+            {
+              "id": "observation:pjc.trace_cli",
+              "title": "Existing trace command",
+              "statement": "The CLI traces catalog IDs and implementation references.",
+              "origin": "source",
+              "links": ["binding:pjc.cli"]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:pjc.trace",
+              "title": "Trace consumers",
+              "statement": "Changes to relationship indexing or traversal affect traces from catalog IDs and implementation references.",
+              "origin": "source",
+              "links": ["binding:pjc.cli"]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:pjc.trace_tooling",
+              "title": "CLI trace surface",
+              "platform": "tooling",
+              "statement": "Trace reads the repository catalog through the CLI; it does not inspect a running application.",
+              "origin": "source",
+              "links": ["binding:pjc.cli"]
+            }
+          ],
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": ["The PJC CLI reads the versioned catalog."],
+            "invariants": ["Declarations are not proof of implementation or authority."],
+            "integrationPoints": ["scripts/pjc.ts"],
+            "openQuestions": []
+          },
+          "steps": [
+            {
+              "id": "step:pjc.trace_start",
+              "title": "Prepare trace",
+              "interaction": "Choose a record ID or implementation reference.",
+              "terminal": false
+            },
+            {
+              "id": "step:pjc.trace_result",
+              "title": "Review trace result",
+              "interaction": "Inspect incoming, outgoing and related catalog records.",
+              "terminal": true
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:pjc.trace",
+              "title": "trace operation",
+              "from": "step:pjc.trace_start",
+              "to": "step:pjc.trace_result",
+              "action": "Run trace with the record ID or reference.",
+              "feedback": "The CLI returns linked records or a specific error.",
+              "links": ["intent:pjc.trace", "binding:pjc.cli"]
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:pjc.trace",
+              "title": "trace catalog",
+              "transitions": ["transition:pjc.trace"],
+              "expected": "The CLI returns linked records or a specific error.",
+              "links": ["requirement:pjc.trace_links", "binding:pjc.cli_tests"]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:pjc.trace_links",
+              "classification": "functional",
+              "title": "Trace catalog relationships",
+              "statement": "A contributor can trace a catalog ID or implementation reference to its incoming, outgoing and related records.",
+              "origin": "user",
+              "links": ["binding:pjc.cli", "binding:pjc.cli_tests"]
+            }
+          ],
+          "bindings": [],
+          "evidence": [],
+          "sharedRequirements": ["requirement:pjc.truthful"],
+          "sharedBindings": ["binding:pjc.cli"]
+        }
+      ],
+      "sharedJourneys": []
+    },
+    {
+      "id": "intent:pjc.validate",
+      "title": "validate catalog records",
+      "actor": "product contributor or agent",
+      "outcome": "Use PJC to validate product contracts and their evidence.",
+      "links": ["journey:pjc.validate"],
+      "journeys": [
+        {
+          "id": "journey:pjc.validate",
+          "title": "Validate catalog records",
+          "situation": "A contributor needs to identify invalid records and outstanding evidence gaps.",
+          "outcome": "Use PJC to validate product contracts and their evidence.",
+          "planning": {
+            "maturity": "development",
+            "implementation": "partial",
+            "verification": "unknown"
+          },
+          "context": "daily",
+          "preconditions": ["A valid catalog is available."],
+          "entry": "step:pjc.validate_start",
+          "observations": [
+            {
+              "id": "observation:pjc.validate_cli",
+              "title": "Existing catalog checker",
+              "statement": "The CLI check reports schema errors and declared gaps without executing application journeys.",
+              "origin": "source",
+              "links": ["binding:pjc.cli", "binding:pjc.checker"]
+            }
+          ],
+          "impacts": [
+            {
+              "id": "impact:pjc.validate",
+              "title": "Validation consumers",
+              "statement": "Changes to schema or reference validation affect catalog authors and automated check consumers.",
+              "origin": "source",
+              "links": ["binding:pjc.schema", "binding:pjc.checker", "binding:pjc.cli"]
+            }
+          ],
+          "platformDifferences": [
+            {
+              "id": "platform:pjc.validate_tooling",
+              "title": "CLI validation surface",
+              "platform": "tooling",
+              "statement": "The CLI checks repository-local references; other route and remote-source behavior remains unverifiable.",
+              "origin": "source",
+              "links": ["binding:pjc.cli", "binding:pjc.guide"]
+            }
+          ],
+          "development": {
+            "mode": "brownfield",
+            "existingBehavior": ["The PJC CLI reads the versioned catalog."],
+            "invariants": ["Declarations are not proof of implementation or authority."],
+            "integrationPoints": ["scripts/pjc.ts"],
+            "openQuestions": []
+          },
+          "steps": [
+            {
+              "id": "step:pjc.validate_start",
+              "title": "Prepare validate",
+              "interaction": "Choose the catalog and an optional revision.",
+              "terminal": false
+            },
+            {
+              "id": "step:pjc.validate_result",
+              "title": "Review validate result",
+              "interaction": "Review validation errors, binding checks and evidence gaps.",
+              "terminal": true
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:pjc.validate",
+              "title": "validate operation",
+              "from": "step:pjc.validate_start",
+              "to": "step:pjc.validate_result",
+              "action": "Run check against the catalog.",
+              "feedback": "The CLI returns validation errors or a report of declared gaps.",
+              "links": ["intent:pjc.validate", "binding:pjc.cli"]
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:pjc.validate",
+              "title": "validate catalog",
+              "transitions": ["transition:pjc.validate"],
+              "expected": "The CLI returns validation errors or a report of declared gaps.",
+              "links": ["requirement:pjc.validate_catalog", "binding:pjc.cli_tests"]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:pjc.validate_catalog",
+              "classification": "functional",
+              "title": "Report catalog errors and gaps",
+              "statement": "Catalog checks reject invalid structure and references and report implementation and evidence gaps without claiming runtime proof.",
+              "origin": "user",
+              "links": ["binding:pjc.checker", "binding:pjc.cli", "binding:pjc.cli_tests"]
+            }
+          ],
+          "bindings": [],
+          "evidence": [],
+          "sharedRequirements": ["requirement:pjc.truthful"],
+          "sharedBindings": ["binding:pjc.cli"]
+        }
+      ],
+      "sharedJourneys": []
+    }
+  ]
+}

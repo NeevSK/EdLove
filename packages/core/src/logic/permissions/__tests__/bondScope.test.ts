@@ -2,18 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { resolveBondScope } from '../bondScope';
 
 describe('resolveBondScope', () => {
-  it('treats the legacy personal classroom bond as personal sanctuary scope', () => {
+  it('treats a personal bond as personal sanctuary scope', () => {
     expect(
       resolveBondScope({
         id: 'bond-personal',
         entity_id: 'workspace-1',
-        entity_type: 'PERSONAL_CLASSROOM',
+        entity_type: 'PERSONAL',
         capacity: 'teacher',
       }),
     ).toMatchObject({
       activeBondId: 'bond-personal',
       activeEntityId: 'workspace-1',
-      activeEntityType: 'PERSONAL_CLASSROOM',
+      activeEntityType: 'PERSONAL',
       schoolId: null,
       isPersonal: true,
     });

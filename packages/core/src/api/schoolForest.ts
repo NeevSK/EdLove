@@ -1,45 +1,32 @@
 /**
  * School Forest API — Vana (वन) — the principal's ecosystem view.
  *
- * This module is intentionally a transport client. Aggregation, authorization,
- * fallback computation, and persistence belong to Sanctuary API so there is
- * one policy and data boundary for school-wide reads.
+ * Routed through the Sovereign oRPC client to Sanctuary API.
  */
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import {
   type GiftType,
   gratitudeGift,
+  type GratitudeGift,
   type SchoolForestState,
   type SchoolPulse,
-  schoolForestContract,
   type TeacherTree,
 } from '@repo/core/api/schoolForest.contract';
+import { APIError } from '@repo/core/types/API';
 
 export type TreeHealth = TeacherTree['tree_health'];
-export type { GiftType, SchoolForestState, SchoolPulse, TeacherTree };
-export type GratitudeGift = ReturnType<typeof gratitudeGift.parse>;
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
-async function readJson<T>(
-  response: Response,
-  message: string,
-  parse: (value: unknown) => T,
-): Promise<T> {
-  if (!response.ok) throw new Error(message);
-  return parse(await response.json());
-}
+export type { GiftType, GratitudeGift, SchoolForestState, SchoolPulse, TeacherTree };
 
 export const schoolForestAPI = {
   async getForestOverview(schoolId: string): Promise<SchoolForestState> {
-    const response = await (client.api as any)['school-forest'].overview[':schoolId'].$get({
-      param: { schoolId },
-    });
-    return readJson(
-      response,
-      'Failed to fetch school forest overview',
-      (value) => value as SchoolForestState,
-    );
+    try {
+      const response = await orpcClient.schoolForest.getForestOverview({
+        params: { schoolId },
+      });
+      return response as SchoolForestState;
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch school forest overview', error?.code || 'FOREST_OVERVIEW_FAILED');
+    }
   },
 
   /** Compatibility name retained while callers move to the server-owned read. */
@@ -48,10 +35,14 @@ export const schoolForestAPI = {
   },
 
   async getSchoolPulse(schoolId: string): Promise<SchoolPulse> {
-    const response = await (client.api as any)['school-forest'].pulse[':schoolId'].$get({
-      param: { schoolId },
-    });
-    return readJson(response, 'Failed to fetch school pulse', (value) => value as SchoolPulse);
+    try {
+      const response = await orpcClient.schoolForest.getSchoolPulse({
+        params: { schoolId },
+      });
+      return response as SchoolPulse;
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch school pulse', error?.code || 'SCHOOL_PULSE_FAILED');
+    }
   },
 
   async sendGratitudeGift(
@@ -61,33 +52,40 @@ export const schoolForestAPI = {
     personalMessage?: string,
     schoolId?: string,
   ): Promise<void> {
-    const response = await (client.api as any)['school-forest'].gifts.$post({
-      json: { recipientUserId, giftType, message: personalMessage, schoolId },
-    });
-    await readJson(response, 'Failed to create gratitude gift', (value) =>
-      gratitudeGift.parse(value),
-    );
+    try {
+      const response = await orpcClient.schoolForest.sendGratitudeGift({
+        body: {
+          recipientUserId,
+          giftType,
+          message: personalMessage,
+          schoolId,
+        },
+      });
+      gratitudeGift.parse(response);
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to create gratitude gift', error?.code || 'GIFT_SEND_FAILED');
+    }
   },
 
   async getPendingGifts(recipientUserId: string): Promise<GratitudeGift[]> {
-    const response = await (client.api as any)['school-forest'].gifts.pending[
-      ':recipientUserId'
-    ].$get({
-      param: { recipientUserId },
-    });
-    return readJson(response, 'Failed to fetch pending gifts', (value) =>
-      Array.isArray(value) ? value.map((row) => gratitudeGift.parse(row)) : [],
-    );
+    try {
+      const response = await orpcClient.schoolForest.getPendingGifts({
+        params: { recipientUserId },
+      });
+      return Array.isArray(response) ? (response as GratitudeGift[]) : [];
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to fetch pending gifts', error?.code || 'PENDING_GIFTS_FAILED');
+    }
   },
 
   async markGiftDelivered(giftId: string): Promise<void> {
-    const response = await (client.api as any)['school-forest'].gifts[':giftId'].deliver.$patch({
-      param: { giftId },
-    });
-    await readJson(response, 'Failed to mark gift delivered', (value) =>
-      gratitudeGift.parse(value),
-    );
+    try {
+      const response = await orpcClient.schoolForest.markGiftDelivered({
+        params: { giftId },
+      });
+      gratitudeGift.parse(response);
+    } catch (error: any) {
+      throw new APIError(error?.message || 'Failed to mark gift delivered', error?.code || 'GIFT_DELIVERY_FAILED');
+    }
   },
 };
-
-void schoolForestContract;

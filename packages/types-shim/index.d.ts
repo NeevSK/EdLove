@@ -6,6 +6,11 @@
 // styling (e.g. via `react-native-web`, `react-native-css-interop`, etc.). The runtime
 // integration varies by app, but the prop is intentionally tolerated at the type level.
 
+/** Expo/RN compilers replace this development flag; it is absent in browser builds. */
+declare global {
+  const __DEV__: boolean | undefined;
+}
+
 declare module 'react-native' {
   interface ViewProps {
     className?: string | undefined;
@@ -54,8 +59,6 @@ declare module 'react-native-gesture-handler' {
   export const Gesture: any;
   export const GestureDetector: any;
   export const GestureHandlerRootView: any;
-  export const PanGestureHandler: any;
-  export const PinchGestureHandler: any;
   export const State: any;
 }
 

@@ -1,6 +1,6 @@
+import { cleanup } from '@testing-library/react';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
 dotenv.config({ path: path.resolve(__dirname, '.env.local') });

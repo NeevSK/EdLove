@@ -6,12 +6,14 @@ declare module 'expo-observe' {
       sampleRate?: number;
       dispatchInDebug?: boolean;
       dispatchingEnabled?: boolean;
-      integrations?: { expoRouter?: boolean };
+      integrations?: { 'expo-router'?: boolean };
     }) => void;
     logEvent: (name: string, attributes?: Record<string, unknown>) => void;
     reportError: (error: Error, context?: Record<string, unknown>) => void;
     dispatchEvents: () => void;
     markInteractive: (attributes?: Record<string, unknown>) => void;
+    /** The EAS client id, recorded on every Observe metric as `expo.eas_client.id`. */
+    readonly clientId: string | null;
   };
   export const ObserveRoot: React.ComponentType<{ children: React.ReactNode }>;
   export const ObserveErrorBoundary: React.ComponentType<{ children: React.ReactNode }>;

@@ -1,0 +1,167 @@
+#!/usr/bin/env node
+
+/**
+ * World guardrail (scripts/check-world.mjs)
+ *
+ * Colour belongs to the world, not to screens. A raw colour in a screen is a
+ * place a world can never reach, which is how the app ended up unthemable.
+ *
+ * Two rules:
+ *  1. Dressed files: no raw colours at all (hex, rgb/rgba, hsl) and no legacy
+ *     static colour tokens (`tokens.semantic.*`, `tokens.colors.*`). Read colours
+ *     from `useWorld().tokens` or use the world components.
+ *  2. Everywhere else: the count of raw hex colours may only go down. The
+ *     baseline lives in tooling/world-ratchet.json; lower it with `--update`.
+ *
+ * Usage:
+ *   node scripts/check-world.mjs           # verify
+ *   node scripts/check-world.mjs --update  # record a lower count after a migration
+ *
+ * To dress a new file, migrate it and add it to DRESSED below.
+ */
+
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+import { dirname, join, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const RATCHET = join(ROOT, 'tooling/world-ratchet.json');
+
+/** Files and folders that must take every colour from the world. */
+const DRESSED = [
+  'packages/ui/src/components/native',
+  'packages/ui/src/theme/native',
+  'packages/ui/src/components/web',
+  'packages/ui/src/theme/web',
+  'packages/ui/src/screens/AppSettingsScreen.shared.tsx',
+  'packages/ui/src/components/GlobalHeader.tsx',
+  'packages/ui/src/components/DomainSubHeader.tsx',
+  'packages/ui/src/components/ActiveSubTabStrip.tsx',
+  'apps/gurudevi-mobile/app/(tabs)/_layout.tsx',
+  'apps/gurudevi-mobile/src/boot/WorldFonts.tsx',
+  'packages/form-builder/src/studio/MobileFormStudio.tsx',
+  'packages/form-builder/src/studio/sheets/QuizRubricSheet.tsx',
+  'packages/form-builder/src/runner',
+];
+
+/** Where palettes are defined; raw colours are the point here. */
+const PALETTE_FILES = new Set([
+  'packages/ui/src/theme/worlds',
+  'packages/ui/src/theme/scene/sky.ts',
+  'packages/ui/src/theme/scene/landscape.ts',
+  'packages/ui/src/theme/scene/art',
+  'packages/ui/src/theme/build.ts',
+  'packages/ui/src/theme/color.ts',
+  'packages/ui/src/theme/resolve.ts',
+  'packages/ui/src/theme/css.ts',
+  'packages/ui/src/tokens',
+  'packages/ui/src/theme/Theme.ts',
+]);
+
+const SCAN_ROOTS = ['apps', 'packages'];
+const SKIP_DIRS = new Set([
+  '.agents',
+  'node_modules',
+  'dist',
+  'build',
+  '.next',
+  '.expo',
+  'generated',
+  '__tests__',
+  'android',
+  'ios',
+  'archive',
+]);
+
+const HEX = /#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{2})?)?\b(?![-\w])/g;
+const FUNC = /\b(?:rgba?|hsla?)\(/g;
+const LEGACY = /\btokens\.(?:semantic|colors)\.[\w.]+/g;
+
+/** Ignore comments so documentation can mention colours. */
+function stripComments(src) {
+  return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1');
+}
+
+function isDressed(rel) {
+  return DRESSED.some((d) => rel === d || rel.startsWith(`${d}/`));
+}
+
+// Include tracked and new source; ignored build exports and tool caches are not app code.
+const files = execFileSync(
+  'git',
+  ['ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', ...SCAN_ROOTS],
+  { cwd: ROOT, encoding: 'utf8' },
+)
+  .split('\0')
+  .filter(
+    (file) =>
+      file &&
+      !file.split('/').some((part) => SKIP_DIRS.has(part)) &&
+      /\.(tsx?|jsx?)$/.test(file) &&
+      !/\.(test|spec|stories)\./.test(file) &&
+      !file.endsWith('.d.ts'),
+  )
+  .map((file) => join(ROOT, file))
+  .filter(existsSync);
+const violations = [];
+let hexCount = 0;
+
+for (const file of files) {
+  const rel = relative(ROOT, file).split('\\').join('/');
+  if ([...PALETTE_FILES].some((p) => rel === p || rel.startsWith(`${p}/`))) continue;
+  const src = stripComments(readFileSync(file, 'utf8'));
+  if (isDressed(rel)) {
+    const lines = src.split('\n');
+    lines.forEach((line, i) => {
+      for (const re of [HEX, FUNC, LEGACY]) {
+        re.lastIndex = 0;
+        const m = line.match(re);
+        if (m) violations.push(`${rel}:${i + 1}  ${m.join(', ')}`);
+      }
+    });
+  } else {
+    hexCount += (src.match(HEX) ?? []).length;
+  }
+}
+
+const update = process.argv.includes('--update');
+const baseline = existsSync(RATCHET) ? JSON.parse(readFileSync(RATCHET, 'utf8')) : null;
+let failed = false;
+
+if (violations.length) {
+  failed = true;
+  console.error(
+    `Raw colours in dressed files (${violations.length}). Use useWorld().tokens or a world component:`,
+  );
+  for (const v of violations) console.error(`  ${v}`);
+}
+
+if (!baseline || update) {
+  if (baseline && hexCount > baseline.rawHex) {
+    console.error(`Refusing to raise the baseline: ${hexCount} > ${baseline.rawHex}.`);
+    process.exit(1);
+  }
+  const outJson = `${JSON.stringify({ rawHex: hexCount, note: 'Raw hex colours outside dressed files. May only go down. node scripts/check-world.mjs --update' }, null, 2)}\n`;
+  try {
+    writeFileSync(RATCHET, outJson);
+  } catch {
+    const tmp = `${RATCHET}.tmp`;
+    writeFileSync(tmp, outJson);
+    execSync(`cmd.exe /c move /y "${tmp}" "${RATCHET}"`);
+  }
+  console.log(`Recorded raw hex baseline: ${hexCount}.`);
+} else if (hexCount > baseline.rawHex) {
+  failed = true;
+  console.error(
+    `Raw hex colours went up: ${hexCount} (baseline ${baseline.rawHex}). Take the colour from the world instead.`,
+  );
+} else {
+  const down = baseline.rawHex - hexCount;
+  console.log(
+    `World guardrail: dressed files clean; raw hex ${hexCount} (baseline ${baseline.rawHex}${down ? `, ${down} fewer, run --update to lock it in` : ''}).`,
+  );
+}
+
+process.exit(failed ? 1 : 0);

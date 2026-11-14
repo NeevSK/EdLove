@@ -2,7 +2,7 @@
 title: "Gurudevi Production Readiness Program"
 status: "active"
 created: 2026-08-12
-updated: 2026-08-12
+updated: 2026-10-11
 tags: [production, infrastructure, mobile, web, api, doppler, release]
 ---
 
@@ -31,6 +31,23 @@ not share Supabase, PowerSync, payment, push, or analytics credentials with
 The current mobile release posture intentionally supports Android first. iOS is
 deprioritized, but its configuration must remain non-destructive and documented;
 an iOS build is not a release gate until the product decision changes.
+
+### Temporary development posture — 2026-10-11
+
+The platform is currently in local-development mode with protected production
+services, not in a release-candidate posture. There is no independent staging
+stack yet. This is an explicit **public-release block**, not permission to use
+production as a QA database.
+
+- Production may receive read-only health and narrowly approved operational
+  checks only.
+- Do not run synthetic-user QA, migrations-as-tests, destructive checks,
+  provider test traffic, or load tests against production.
+- G0–G3 local/mock evidence may continue; G4/G5/R1 claims requiring a
+  production-like environment remain blocked.
+- Before public release, provision a staging Supabase project, PowerSync
+  instance, synthetic data set, separately scoped provider credentials,
+  rollback owner, and independent Doppler `stg` values.
 
 ## Readiness gates
 

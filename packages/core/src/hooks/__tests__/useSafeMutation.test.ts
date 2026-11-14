@@ -17,10 +17,10 @@ vi.mock('react', () => ({
   useState: <Value>(initial: Value) => [initial, vi.fn()] as const,
 }));
 
-
 vi.mock('@repo/core/store/useAuthStore', () => {
   const mockUseAuthStore = Object.assign(
-    <Value>(selector: (state: any) => Value) => selector({ user: mocks.user, showToast: mocks.showToast }),
+    <Value>(selector: (state: any) => Value) =>
+      selector({ user: mocks.user, showToast: mocks.showToast }),
     {
       getState: () => ({ user: mocks.user, showToast: mocks.showToast }),
       setState: (state: any) => {
@@ -31,7 +31,7 @@ vi.mock('@repo/core/store/useAuthStore', () => {
   return { useAuthStore: mockUseAuthStore };
 });
 
-vi.mock('@repo/core/lib/sync/useMutationQueue', () => {
+vi.mock('@repo/core/lib/sync/mutationQueue.store', () => {
   const mockUseMutationQueue = Object.assign(
     <Value>(selector: (state: any) => Value) => selector({ addToQueue: mocks.addToQueue }),
     {
@@ -42,7 +42,7 @@ vi.mock('@repo/core/lib/sync/useMutationQueue', () => {
   return { useMutationQueue: mockUseMutationQueue };
 });
 
-vi.mock('@repo/core/lib/sync/MutationAuditLog', () => {
+vi.mock('@repo/core/lib/sync/mutationAuditLog.store', () => {
   const mockUseMutationAuditLog = Object.assign(
     <Value>(selector: (state: any) => Value) => selector({ logEntry: mocks.logAudit }),
     {
@@ -53,8 +53,8 @@ vi.mock('@repo/core/lib/sync/MutationAuditLog', () => {
   return { useMutationAuditLog: mockUseMutationAuditLog };
 });
 
+import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import { useSafeMutation } from '../useSafeMutation';
-import { networkManager } from '../../logic/managers/NetworkManager';
 
 describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
   beforeEach(() => {
@@ -63,7 +63,7 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
   });
 
   it('executes online mutation successfully with mutateAsync and executes callbacks with context', async () => {
-    vi.spyOn(networkManager, 'isConnected').mockResolvedValue(true);
+    vi.spyOn(networkMonitor, 'isConnected').mockResolvedValue(true);
 
     const mutationFn = vi.fn().mockResolvedValue({ success: true, id: 'post-1' });
     const onMutate = vi.fn().mockReturnValue({ previousSnapshot: 'snap-1' });
@@ -99,7 +99,7 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
   });
 
   it('queues mutation to outbox when offline with user attribution and logs audit', async () => {
-    vi.spyOn(networkManager, 'isConnected').mockResolvedValue(false);
+    vi.spyOn(networkMonitor, 'isConnected').mockResolvedValue(false);
 
     const mutationFn = vi.fn().mockResolvedValue({ success: true });
     const onSuccess = vi.fn();
@@ -141,7 +141,7 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
   });
 
   it('passes rollback context to onError and onSettled on execution failure', async () => {
-    vi.spyOn(networkManager, 'isConnected').mockResolvedValue(true);
+    vi.spyOn(networkMonitor, 'isConnected').mockResolvedValue(true);
 
     const networkError = new Error('Server 500');
     const mutationFn = vi.fn().mockRejectedValue(networkError);
@@ -183,7 +183,7 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
   });
 
   it('debounces identical in-flight rapid taps and prevents duplicate simultaneous calls', async () => {
-    vi.spyOn(networkManager, 'isConnected').mockResolvedValue(true);
+    vi.spyOn(networkMonitor, 'isConnected').mockResolvedValue(true);
 
     let resolveMutation: (val: any) => void;
     const pendingPromise = new Promise((resolve) => {
@@ -211,4 +211,3 @@ describe('useSafeMutation (G1 Hook / Boundary Contract)', () => {
     expect(res2).toBeNull();
   });
 });
-

@@ -1,0 +1,27 @@
+# Gurudevi Platform
+
+> Gurudevi is a sanctuary and education ecology support system for Sri Lanka. Teachers are the first-class design beneficiary, but the platform connects teachers, students, principals, administrators, schools, and communities through a polycentric, holonic education ecology.
+
+## Product Model
+
+- Self: personal wellbeing, reflection, energy, and identity.
+- Workspace: teacher Classroom workspace, principal/administrator School workspace, and student Learning Studio.
+- Library: shared knowledge, resources, and learning materials.
+- Community: relationships, collaboration, support, and collective practice.
+- Profile: identity, roles, boundaries, permissions, and context switching.
+
+Gurudevi is not intended to be a surveillance dashboard or merely a conventional LMS. Its purpose is to support the relationships, dignity, and practical conditions that make education possible. “Teaning” is a later philosophical term for the connected teaching-learning relationship; practical meaning comes first.
+
+## Canonical Destinations
+
+- Public home: https://gurudevi.edlove.org/
+- Active platform: https://platform.gurudevi.edlove.org/
+- Privacy Policy: https://gurudevi.edlove.org/privacy
+- Terms of Use: https://gurudevi.edlove.org/terms
+- Support: https://gurudevi.edlove.org/support
+- Delete account: https://gurudevi.edlove.org/delete-account
+
+## Machine-readable resources
+
+- Sitemap: https://platform.gurudevi.edlove.org/sitemap-index.xml
+- Knowledge index: https://platform.gurudevi.edlove.org/knowledge.json

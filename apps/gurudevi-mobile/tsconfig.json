@@ -120,7 +120,6 @@
       "react",
       "react-native",
       "nativewind/types",
-      "jest",
       "vitest/globals",
       "@tanstack/react-query",
       "@repo/types-shim"
@@ -133,6 +132,8 @@
     "nativewind-env.d.ts"
   ],
   "exclude": [
+    "**/*.web.ts",
+    "**/*.web.tsx",
     "node_modules",
     ".expo",
     "dist",

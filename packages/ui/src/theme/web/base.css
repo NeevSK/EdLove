@@ -1,0 +1,422 @@
+/* The web foundation shared by every Gurudevi site: worlds, typography, scripts, motion. Each
+   site's entry stylesheet imports Tailwind first, then this. */
+/* Universal Living Scrollbar Harmonization (Zero Raw OS Box Scrollbars) */
+*,
+*::before,
+*::after {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 60%, var(--w-line, rgba(255, 255, 255, 0.25))) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--w-line, rgba(255, 255, 255, 0.05)) 40%, transparent);
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 55%, var(--w-line, rgba(160, 150, 130, 0.45)));
+  border-radius: 9999px;
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.15s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--w-lamp, #e2c37a);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ==========================================================================
+   Sovereign World & Diurnal Theme System
+   Every color, surface, font, corner radius, and living texture is derived
+   strictly from the active World (`data-world`) and Mode (`data-mode`).
+   Zero legacy shims or hardcoded theme overrides.
+   ========================================================================== */
+
+:root {
+  --paper: var(--w-ground);
+  --paper-light: var(--w-raised);
+  --paper-sunken: var(--w-sunken);
+  --line: var(--w-line);
+  --ink: var(--w-ink);
+  --ink-soft: var(--w-ink-soft);
+  --ink-faint: var(--w-ink-faint);
+  --color-cream-silence: var(--w-ground);
+  --color-sacred-white: var(--w-raised);
+  --color-background: var(--w-ground);
+  --color-charcoal-truth: var(--w-ink);
+  --color-mud-brown: var(--w-ink-soft);
+  --color-sanctuary-saffron: var(--w-lamp);
+  --color-primary: var(--w-lamp-deep, var(--w-lamp));
+  --color-action: var(--w-lamp);
+  --color-focus: var(--w-focus);
+
+  /* Shared semantic aliases keep older floor styles inside the active world */
+  --surface-canvas: var(--paper);
+  --surface-raised: var(--paper-light);
+  --surface-glass: color-mix(in srgb, var(--paper-light) 92%, transparent);
+  --glass-surface: var(--surface-glass);
+  --surface-translucent: var(--surface-glass);
+  --border: var(--line);
+  --ink-ghost: var(--ink-soft);
+}
+
+html {
+  color-scheme: light dark;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--w-font-sans, system-ui, -apple-system, sans-serif);
+}
+
+html[data-mode="light"] {
+  color-scheme: light;
+}
+
+html[data-mode="dark"] {
+  color-scheme: dark;
+}
+
+/* Form selects in dark mode */
+html[data-mode="dark"] select {
+  background: var(--paper-light);
+  color: var(--ink);
+}
+
+/* Teacher Simplified / Glanceable Density Mode */
+html[data-density="simplified"] {
+  font-size: 112%;
+}
+
+html[data-density="simplified"] button,
+html[data-density="simplified"] input,
+html[data-density="simplified"] select,
+html[data-density="simplified"] a[role="button"] {
+  min-height: 52px;
+}
+
+[data-motion="subtle"],
+html[data-motion="subtle"],
+[data-domain][data-motion="subtle"] {
+  background-size: 140% 140%;
+  animation: sanctuary-floor-breathe 24s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-motion="subtle"],
+  html[data-motion="subtle"],
+  [data-domain][data-motion="subtle"] {
+    animation: none;
+  }
+}
+
+@keyframes sanctuary-floor-breathe {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+@theme {
+  /* Sanctuary Core Tokens (Web) - A11y & APCA Calibrated */
+  --color-void-indigo: #0f0f1e;
+  --color-cream-silence: #f7f2e8;
+  --color-temple-stone: #ebe3d4;
+  --color-sanctuary-saffron: #a85022;
+  --color-temple-gold: #824112;
+  --color-ember-red: #c93018;
+  --color-sage-green: #2d5a37;
+  --color-teal-water: #285e5d;
+  --color-peacock-blue: #1c4a5a;
+  --color-mud-brown: #453c35;
+  --color-sacred-white: #fffdf8;
+  --color-charcoal-truth: #131e27;
+
+  /* Premium Vellum / Saffron Architecture */
+  --color-background: var(--color-cream-silence);
+  --color-ink: var(--color-charcoal-truth);
+  --color-ink-soft: var(--color-mud-brown);
+  --color-action: var(--color-sanctuary-saffron);
+  --color-water: var(--color-peacock-blue);
+  --color-lotus: var(--color-sanctuary-saffron);
+  --color-paper: var(--color-cream-silence);
+  --color-paper-light: var(--color-sacred-white);
+  --color-line: rgb(104 94 85 / 0.16);
+
+  --shadow-sanctuary: rgb(69 60 53 / 0.14);
+  --shadow-sanctuary-soft: rgb(69 60 53 / 0.08);
+
+  --font-sinhala: "Noto Sans Sinhala", ui-sans-serif, system-ui, sans-serif;
+  --font-tamil: "Noto Sans Tamil", ui-sans-serif, system-ui, sans-serif;
+  --font-content: "Newsreader", "Lora", Georgia, "Times New Roman", serif;
+  --font-display: "Fraunces", "Newsreader", Georgia, serif;
+  --font-ui-grotesque: "Outfit", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono-sanctuary: "Space Grotesk", monospace;
+  --font-serif: var(--font-content);
+  --font-sans: var(--font-ui-grotesque);
+}
+
+:root {
+  --ink: var(--color-charcoal-truth);
+  --ink-soft: var(--color-mud-brown);
+  --paper: var(--color-cream-silence);
+  --paper-light: var(--color-sacred-white);
+  --water: var(--color-peacock-blue);
+  --lotus: var(--color-sanctuary-saffron);
+  --line: rgb(104 94 85 / 0.16);
+}
+
+html {
+  background-color: var(--color-cream-silence);
+  scroll-behavior: smooth;
+}
+
+/* ==========================================================================
+   Script-Adaptive Typography & Localization Layer
+   ========================================================================== */
+
+/* 1. Global Indic / Non-Latin Optical Normalization */
+html[lang="si"],
+html[data-locale="si"],
+[data-locale="si"],
+html[lang="ta"],
+html[data-locale="ta"],
+[data-locale="ta"] {
+  /* Prevent horizontal text explosion by normalizing root scale (1rem = ~14.7px) */
+  font-size: 92%;
+
+  /* Disable Latin-centric tracking that shatters Indic ligatures */
+  letter-spacing: 0;
+
+  /* Modern browser text balancing */
+  text-rendering: optimizeLegibility;
+}
+
+html[lang="si"] *,
+html[data-locale="si"] *,
+[data-locale="si"] *,
+html[lang="ta"] *,
+html[data-locale="ta"] *,
+[data-locale="ta"] * {
+  /* Strict ligature protection: zero letter-spacing on all child nodes */
+  letter-spacing: normal !important;
+  text-transform: none !important; /* Sinhala and Tamil have no casing; prevent uppercase distortions */
+}
+
+/* 2. Sinhala Script (si) Typography Adaptation */
+html[lang="si"],
+html[data-locale="si"],
+[data-locale="si"] {
+  --font-sans: var(--font-sinhala);
+  --font-serif: var(--font-sinhala);
+  --font-content: var(--font-sinhala);
+  --font-display: var(--font-sinhala);
+  --font-ui-grotesque: var(--font-sinhala);
+}
+
+html[lang="si"] body,
+html[data-locale="si"] body,
+[data-locale="si"] body {
+  font-family: var(--font-sinhala);
+  font-size: 1.05rem; /* Down from 1.18rem to match Latin optical weight */
+  line-height: 1.68; /* Balanced breathing room for top ispilla & bottom papilla */
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* 3. Tamil Script (ta) Typography Adaptation */
+html[lang="ta"],
+html[data-locale="ta"],
+[data-locale="ta"] {
+  --font-sans: var(--font-tamil);
+  --font-serif: var(--font-tamil);
+  --font-content: var(--font-tamil);
+  --font-display: var(--font-tamil);
+  --font-ui-grotesque: var(--font-tamil);
+}
+
+html[lang="ta"] body,
+html[data-locale="ta"] body,
+[data-locale="ta"] body {
+  font-family: var(--font-tamil);
+  font-size: 1.05rem;
+  line-height: 1.62;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* 4. Fluid Heading & Container Normalization for Indic Scripts */
+html[lang="si"] h1,
+html[data-locale="si"] h1,
+html[lang="ta"] h1,
+html[data-locale="ta"] h1 {
+  line-height: 1.35;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+html[lang="si"] h2,
+html[data-locale="si"] h2,
+html[lang="ta"] h2,
+html[data-locale="ta"] h2 {
+  line-height: 1.38;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+html[lang="si"] h3,
+html[data-locale="si"] h3,
+html[lang="ta"] h3,
+html[data-locale="ta"] h3 {
+  line-height: 1.4;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+html[lang="si"] p,
+html[data-locale="si"] p,
+html[lang="ta"] p,
+html[data-locale="ta"] p {
+  text-wrap: pretty;
+  line-height: 1.7;
+}
+
+/* Optical scale-down on large fluid hero titles */
+
+/* Buttons: Fluid, wrapping, and no rigid horizontal overflow */
+
+/* Workspace rows: Fluid responsive grid alignment */
+
+/* Header & Navigation Optical Tuning */
+
+body {
+  margin: 0;
+  background-color: var(--color-cream-silence);
+  color: var(--color-charcoal-truth);
+  font-family: var(--font-content);
+  font-size: 1.18rem;
+  font-weight: 450;
+  line-height: 1.85;
+  letter-spacing: 0.035em;
+  word-spacing: 0.05em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.015em;
+  line-height: 1.25;
+  color: var(--color-charcoal-truth);
+  margin-top: 0;
+}
+
+p,
+li,
+span,
+a {
+  letter-spacing: 0.03em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: #e7c7a3;
+  color: #131e27;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-peacock-blue);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Eyebrow & typography utilities */
+
+/* Hero Editorial */
+
+/* Sections */
+
+/* Workspaces */
+
+/* Trust Section */
+
+/* Roadmap Grid */
+
+/* Launch Panel */
+
+/* Site Header */
+
+/* Site Footer */
+
+/* Keyframes */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-breathe {
+  from {
+    transform: scale(1.03);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Sub-page prose & FAQ layouts */
+
+/* Protected Sanctuary UI Shell (for /self, /explore, etc.) */
+
+.sanctuary-card {
+  width: min(100%, 42rem);
+  padding: clamp(2rem, 8vw, 5rem);
+  border: 1px solid rgb(245 237 214 / 25%);
+  background: rgb(31 45 61 / 72%);
+  color: var(--color-sacred-white);
+}
+
+.sanctuary-card .kicker,
+.sanctuary-card p {
+  color: #c9ddd8;
+}
+
+/* Legal & Reading Shell */
+
+/* Provenance Folio (Editorial Colophon) */
+
+/* Callout Box */
+
+/* Responsive Media Queries */

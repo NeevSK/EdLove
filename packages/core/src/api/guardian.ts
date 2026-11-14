@@ -140,3 +140,21 @@ export const guardianAPI = {
 };
 
 void guardianContract;
+
+import { isEmptyArray, registerSandboxDomain } from '@repo/core/api/sandboxDataset';
+import {
+  MOCK_GUARDIAN_ATTENDANCE_TIMELINE,
+  MOCK_GUARDIAN_CHILDREN,
+  MOCK_GUARDIAN_NOTICES,
+} from '@repo/core/api/mockData';
+
+registerSandboxDomain({
+  domain: 'guardian',
+  ghostMethods: ['getChildren', 'getAttendanceTimeline', 'getNotices'],
+  isEmpty: (_, d) => isEmptyArray(d),
+  getSamples: (method) => {
+    if (method === 'getChildren') return MOCK_GUARDIAN_CHILDREN;
+    if (method === 'getAttendanceTimeline') return MOCK_GUARDIAN_ATTENDANCE_TIMELINE;
+    return MOCK_GUARDIAN_NOTICES;
+  },
+});

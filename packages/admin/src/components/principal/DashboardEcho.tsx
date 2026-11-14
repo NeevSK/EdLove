@@ -1,3 +1,4 @@
+import { useAuthStore } from '@repo/core/store';
 /**
  * DASHBOARD ECHO
  * Surfaces feedback "vistas" and support requests from teachers and students.
@@ -5,7 +6,7 @@
  */
 
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import { useStore } from '@repo/core/logic';
+
 
 import {
   ChevronRight,
@@ -56,7 +57,7 @@ const CATEGORY_ICONS = {
 
 export default function DashboardEcho({ schoolId }: { schoolId: string }) {
   const { t } = useTranslation();
-  const user = useStore((s) => s.user);
+  const user = useAuthStore(s => s.user);
   const { showToast } = useSanctuaryToast();
   const [feedback, setFeedback] = useState<FeedbackEcho[]>([]);
   const [isLoading, setIsLoading] = useState(true);

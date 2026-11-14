@@ -1,2 +1,8 @@
 # Husky prepare-commit-msg hook
-powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 "$1"
+# Adds the commit ledger to the message. It is decoration, not a quality gate, so on machines
+# without PowerShell (Linux CI, cloud agent sessions) it is skipped instead of blocking the commit.
+if command -v powershell >/dev/null 2>&1; then
+  powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 "$1"
+elif command -v pwsh >/dev/null 2>&1; then
+  pwsh -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 "$1"
+fi

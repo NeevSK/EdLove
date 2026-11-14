@@ -1,1 +1,1 @@
-export * from '@repo/ai/hooks/useAIAgent';
+export * from './useAIAgent';

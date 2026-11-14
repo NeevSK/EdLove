@@ -15,9 +15,7 @@ export interface PaymentsRepository {
   finalizeTransaction(id: string, ledgerTransactionId: string): Promise<void>;
 }
 
-export const createSupabasePaymentsRepository = (
-  supabase: SupabaseClient,
-): PaymentsRepository => ({
+export const createSupabasePaymentsRepository = (supabase: SupabaseClient): PaymentsRepository => ({
   async getTransactionById(id: string): Promise<PaymentTransactionRecord | null> {
     const { data, error } = await supabase
       .schema('payments')

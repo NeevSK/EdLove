@@ -1,7 +1,9 @@
-﻿import { Pressable } from '@repo/ui/components/ui/pressable';
+import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
 import { View } from '@repo/ui/components/ui/view';
+import { sensoryFeedback } from '@repo/ui/sensory';
 import { Check } from '@repo/ui/icons';
+import { tokens } from '@repo/ui/tokens';
 import ExpoCheckbox from 'expo-checkbox';
 import type React from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
@@ -53,7 +55,7 @@ export const CheckboxIndicator = ({
       <ExpoCheckbox
         value={isChecked}
         disabled={isDisabled}
-        color={isChecked ? '#F6BF8C' : undefined}
+        color={isChecked ? tokens.colors.primary : undefined}
         style={{
           width: 22,
           height: 22,
@@ -143,6 +145,8 @@ export const Checkbox = ({
 
   const handlePress = () => {
     if (isDisabled) return;
+
+    sensoryFeedback.emit('selection');
 
     if (groupContext) {
       groupContext.onValueChange(value);

@@ -21,23 +21,26 @@ export const GURUDEVI_SANCTUARY_URL = configuredUrl(
 
 export const GURUDEVI_SUPPORT_EMAIL =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_SUPPORT_EMAIL) ||
-  'support@gurudevi.app';
+  'support@gurudevi.lk';
 
 export const GURUDEVI_GRATITUDE_EMAIL =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_GRATITUDE_EMAIL) ||
-  'gratitude@gurudevi.app';
+  'gratitude@gurudevi.lk';
 
 export const GURUDEVI_INSTITUTIONAL_EMAIL =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_INSTITUTIONAL_EMAIL) ||
-  'institutional@gurudevi.app';
+  'institutional@gurudevi.lk';
+
+export const EDLOVE_URL = configuredUrl('EXPO_PUBLIC_EDLOVE_URL', 'https://edlove.org');
 
 export const EXTERNAL_URLS = {
   marketing: GURUDEVI_MARKETING_URL,
   app: GURUDEVI_APP,
   sanctuary: GURUDEVI_SANCTUARY_URL,
+  edlove: EDLOVE_URL,
   privacy: `${GURUDEVI_MARKETING_URL}/privacy`,
   terms: `${GURUDEVI_MARKETING_URL}/terms`,
-  guidelines: `${GURUDEVI_MARKETING_URL}/faq#community-boundaries`,
+  guidelines: `${GURUDEVI_MARKETING_URL}/guidelines`,
   support: `${GURUDEVI_MARKETING_URL}/support`,
   deleteAccount: `${GURUDEVI_MARKETING_URL}/delete-account`,
   about: `${GURUDEVI_MARKETING_URL}/about`,

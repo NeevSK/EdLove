@@ -1,30 +1,40 @@
 # Public Hosting and Domain Topology
 
 **Date:** 2026-08-28  
-**Status:** Proposed; implementation is intentionally staged  
-**Scope:** EdLove ecosystem web applications and Sanctuary API
+**Updated:** 2026-10-11  
+**Status:** Superseded by [Sanctuary Domain and Mobile Identity Cutover Plan](../current_progress/2026-09-22-sanctuary-domain-and-mobile-identity-cutover-plan.md)  
+**Scope:** EdLove ecosystem web applications, Gurudevi standalone identity, and Intuitui Labs studio
+
+> [!NOTE]
+> **Evolution Note (September 2026 / October 2026)**:  
+> The initial temporary subdomain allocations in this document have evolved to full standalone domain identities:
+> - **Gurudevi** has cut over to its canonical home at **`https://gurudevi.app`** (marketing) and **`https://sanctuary.gurudevi.app`** (authenticated app), with **`https://explore.gurudevi.app`** for sandbox exploration and **`https://gurudevi.lk`** as national alias. Legacy `gurudevi.edlove.org` permanently 301-redirects to `gurudevi.app`.
+> - **Intuitui Labs** has graduated to **`https://intuituilabs.studio`** (studio apex), **`https://docs.intuituilabs.studio`** (developer/OSS docs), and **`https://intuituilabs.lk`** (national gateway).
+> - Refer to [`docs/current_progress/2026-09-22-sanctuary-domain-and-mobile-identity-cutover-plan.md`](../current_progress/2026-09-22-sanctuary-domain-and-mobile-identity-cutover-plan.md) for the active production contract.
+
+---
+
+## Canonical Target Map
+
+| Product or service | Repository | Canonical hostname | National Alias | Initial hosting |
+| --- | --- | --- | --- | --- |
+| **EdLove public web** | `NeevSK/EdLove` | `https://edlove.org` | - | Vercel |
+| **Gurudevi marketing home** | `NeevSK/EdLove` | `https://gurudevi.app` | `https://gurudevi.lk` | Cloudflare Pages |
+| **Gurudevi sanctuary app** | `NeevSK/EdLove` | `https://sanctuary.gurudevi.app` | - | Cloudflare Pages / Next.js |
+| **Gurudevi exploration** | `NeevSK/EdLove` | `https://explore.gurudevi.app` | - | Cloudflare |
+| **Sanctuary API** | `NeevSK/EdLove` | `https://sanctuary.gurudevi.app/api` | - | Managed Node container |
+| **Intuitui Labs Studio** | `NeevSK/intuitui-web` | `https://intuituilabs.studio` | `https://intuituilabs.lk` | Vercel |
+| **Intuitui Labs Docs** | `NeevSK/intuitui-web` | `https://docs.intuituilabs.studio` | - | Vercel |
+| **Neevsk archive & studio profile** | `NeevSK/neevsk-web` | `https://neevsk.intuituilabs.studio` | `https://neevsk.lk` | Vercel |
+| **Mobile applications** | `NeevSK/EdLove` | `app.gurudevi.sanctuary` | - | Expo EAS |
+
+---
 
 ## Decision
 
 EdLove remains the canonical monorepo for EdLove-owned products. Independent
 products remain in their own GitHub repositories. Hosting providers may differ
-by product; the `edlove.org` DNS zone is the shared naming and routing layer.
-
-## Target map
-
-| Product or service | Repository | Canonical hostname | Initial hosting |
-| --- | --- | --- | --- |
-| EdLove public web | `NeevSK/EdLove` | `edlove.org` | Vercel |
-| Gurudevi marketing site | `NeevSK/EdLove` | `gurudevi.edlove.org` | Cloudflare Pages |
-| Gurudevi application web | `NeevSK/EdLove` | `platform.gurudevi.edlove.org` | Cloudflare Pages |
-| Sanctuary API | `NeevSK/EdLove` | `api.gurudevi.edlove.org` | Managed Node container |
-| Intuituilabs web | `NeevSK/intuitui-web` | `intuituilabs.edlove.org` | Vercel |
-| Neevsk web | `NeevSK/neevsk-web` | `neevsk.edlove.org` | Vercel |
-| Mobile applications | `NeevSK/EdLove` | App-store identities | Expo EAS |
-
-`intuitui.edlove.org` is not a target hostname. Any existing reference to it
-must be reviewed and either corrected or redirected to
-`intuituilabs.edlove.org`.
+by product; the `edlove.org` DNS zone is the shared naming and routing layer for EdLove initiatives, while `gurudevi.app` and `intuituilabs.studio` operate under their own sovereign DNS zones.
 
 ## Rationale
 
@@ -38,26 +48,9 @@ public hostname. Cloudflare Pages is appropriate for the static or mostly
 static Gurudevi web surfaces and keeps the existing platform deployment
 direction.
 
-Sanctuary API is initially assigned to a managed Node container rather than a
-Cloudflare Worker. The current API has Node-oriented entrypoints, database
-access, external AI calls, and background or longer-running work. Workers may
-be introduced later for edge-specific routes, webhooks, caching, or routing
-after an explicit runtime-compatibility assessment.
-
-A managed container is preferred over an unmanaged VPS at first because it
-provides process restarts, TLS, logs, deployment integration, and health checks
-without requiring manual server administration. A VPS remains a valid later
-option if control or cost justifies the operational burden.
-
 ## DNS and provider model
 
-Cloudflare may remain the DNS provider for `edlove.org` while individual
-subdomains point to Vercel, Cloudflare Pages, or the API host. Hosting provider
-and DNS provider are separate decisions.
-
-The production API hostname is `api.gurudevi.edlove.org`. Preview and staging
-hostnames must be documented separately and must not replace the production
-hostname accidentally.
+Cloudflare is the DNS provider for `edlove.org`, `gurudevi.app`, and `intuituilabs.studio`.
 
 ## Safety and migration rules
 
@@ -71,31 +64,3 @@ hostname accidentally.
 7. Keep the previous provider available as a rollback target for a defined
    observation period.
 8. Never commit provider secrets, API tokens, or production environment files.
-
-## Implementation sequence
-
-1. Inventory current Vercel projects, Cloudflare Pages projects, DNS records,
-   domains, and environment-variable sources.
-2. Reconcile repository-to-provider connections for `neevsk-web` and
-   `intuitui-web`.
-3. Confirm the canonical hostname and redirect policy for
-   `intuituilabs.edlove.org`.
-4. Confirm the Gurudevi marketing/application split between
-   `gurudevi.edlove.org` and `platform.gurudevi.edlove.org`.
-5. Deploy and verify EdLove public web on Vercel without changing its public
-   domain unexpectedly.
-6. Establish a managed Node container deployment for Sanctuary API and verify
-   `api.gurudevi.edlove.org`.
-7. Migrate or attach domains one at a time, retaining rollback paths.
-8. Update application URLs, CI workflows, and operational documentation only
-   after each target is verified.
-
-## Open verification items
-
-- Current DNS records and their provider targets.
-- Existing Vercel project names, repositories, root directories, and domains.
-- Existing Cloudflare Pages/Worker projects and deployment status.
-- Sanctuary API runtime requirements and managed-container provider choice.
-- Production, preview, staging, and local environment-variable ownership.
-- Whether any existing links still use legacy names such as
-  `intuitui.edlove.org` or `intuituilabs.edlove.org`.

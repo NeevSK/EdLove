@@ -1,0 +1,22 @@
+---
+import { AuthorProfile } from '../../components/journal/AuthorProfile';
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import { authors, journalEntries } from '../../content/journal';
+
+export function getStaticPaths() {
+  return authors.map((author) => ({
+    params: { id: author.id },
+    props: { author, entries: journalEntries.filter((entry) => entry.authorId === author.id) },
+  }));
+}
+const { author, entries } = Astro.props;
+---
+<PublicLayout
+  locale="en"
+  locales={['en']}
+  path={`/authors/${author.id}`}
+  title={`${author.displayName} | Gurudevi Journal`}
+  description={author.biography}
+>
+  <AuthorProfile author={author} entries={entries} />
+</PublicLayout>

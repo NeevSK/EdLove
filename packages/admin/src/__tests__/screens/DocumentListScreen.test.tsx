@@ -1,8 +1,37 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, render as rtlRender, screen, waitFor } from '@testing-library/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 import { documentWorkflowAPI } from '../../document-workflow/api';
 import type { DocumentWorkflow } from '../../document-workflow/types';
 import DocumentListScreen from '../../screens/DocumentListScreen';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      gcTime: 0,
+    },
+  },
+});
+
+function render(ui: React.ReactElement) {
+  return rtlRender(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+}
+
+const stableCan = vi.fn(() => true);
+const stableUser = { userId: 'test-user-1', role: 'teacher' };
+
+vi.mock('@repo/core/logic', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    usePermissions: () => ({
+      can: stableCan,
+      context: stableUser,
+    }),
+  };
+});
 
 // Mock the API
 vi.mock('../../document-workflow/api');

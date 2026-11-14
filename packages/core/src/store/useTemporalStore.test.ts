@@ -13,7 +13,7 @@ describe('useTemporalStore', { tags: ['pure', 'fast'] }, () => {
     useTemporalStore.getState().resetToToday();
     useTemporalStore.setState({
       intensity: 1,
-      isOffline: false,
+      readPolicy: 'live',
       viewMode: 'spotlight',
       timelineFocus: 'all',
     });
@@ -54,18 +54,18 @@ describe('useTemporalStore', { tags: ['pure', 'fast'] }, () => {
     expect(state.isPastView).toBe(false);
   });
 
-  test('scale, mode, focus, and offline setters update shared state', () => {
+  test('scale, mode, focus, and cached-read policy setters update shared state', () => {
     const store = useTemporalStore.getState();
 
     store.setScale('year');
     store.setViewMode('timeline');
     store.setTimelineFocus('journal');
-    store.setOffline(true);
+    store.setReadPolicy('cached-only');
 
     const state = useTemporalStore.getState();
     expect(state.viewScale).toBe('year');
     expect(state.viewMode).toBe('timeline');
     expect(state.timelineFocus).toBe('journal');
-    expect(state.isOffline).toBe(true);
+    expect(state.readPolicy).toBe('cached-only');
   });
 });

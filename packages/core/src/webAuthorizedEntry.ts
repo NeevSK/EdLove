@@ -1,3 +1,5 @@
+import { isEdloveAccountId } from './logic/schemas/edloveUuidV8';
+
 /**
  * Browser-authorized entry contract.
  *
@@ -8,10 +10,13 @@
 export type AuthorizedEntryResult =
   | Readonly<{
       kind: 'ready';
+      accountId: string;
       authSubjectId: string;
       displayName: string;
-      /** Compatibility label derived from the server-selected scope, never a profile fallback. */
+      /** Capacity of the currently selected bond, used for workspace-specific authorization. */
       activeCapacity: string;
+      /** Capacity selected during onboarding, anchored to the personal sanctuary bond. */
+      primaryCapacity: string;
       primaryScopeRole: string;
       activeScope: Readonly<{
         bondId: string;
@@ -35,11 +40,14 @@ export type AuthorizedEntryResult =
 export type AuthoritativeAuthorizedEntryFacts =
   | Readonly<{
       kind: 'active';
+      accountId: string;
       authSubjectId: string;
       displayName: string | null;
       onboardingCompleted: boolean;
-      /** Compatibility label derived from the selected scope by the server adapter. */
+      /** Capacity of the currently selected bond. */
       activeCapacity: string | null;
+      /** Capacity selected during onboarding, anchored to the personal sanctuary bond. */
+      primaryCapacity: string | null;
       primaryScopeRole: string | null;
       activeScope: Readonly<{
         bondId: string;
@@ -77,7 +85,7 @@ export function mapAuthorizedEntry(
     return { kind: 'unavailable', reason: 'profile-unavailable', message: facts.message };
   }
 
-  if (!present(facts.authSubjectId)) {
+  if (!present(facts.authSubjectId) || !isEdloveAccountId(facts.accountId)) {
     return {
       kind: 'unavailable',
       reason: 'invalid-authoritative-entry',
@@ -92,6 +100,7 @@ export function mapAuthorizedEntry(
   }
   if (
     !present(facts.activeCapacity) ||
+    !present(facts.primaryCapacity) ||
     !present(facts.primaryScopeRole) ||
     !facts.activeScope ||
     facts.activeScope.roles.length === 0
@@ -101,9 +110,11 @@ export function mapAuthorizedEntry(
 
   return {
     kind: 'ready',
+    accountId: facts.accountId,
     authSubjectId: facts.authSubjectId,
     displayName: facts.displayName,
     activeCapacity: facts.activeCapacity,
+    primaryCapacity: facts.primaryCapacity,
     primaryScopeRole: facts.primaryScopeRole,
     activeScope: facts.activeScope,
   };

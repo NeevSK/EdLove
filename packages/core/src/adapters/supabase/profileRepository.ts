@@ -1,5 +1,4 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { mediaAPI } from '@repo/core/api/media';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -11,7 +10,8 @@ import type {
   PulseMetrics,
   UserRewardsSnapshot,
   WhisperedMomentSnapshot,
-} from '@repo/core/logic/domains/profile/ports';
+} from '@repo/core/logic/ports/profile.port';
+import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { APIError, type SocialLink, type User } from '@repo/core/types';
 import type { UserGrowthState } from '@repo/schema/contracts';
@@ -333,14 +333,9 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       .slice(0, limit);
   },
   async updateUserProfile(userId, updates) {
-    const { data, error } = await supabaseClient
-      .from('users')
-      .update(updates)
-      .eq('id', userId)
-      .select()
-      .single();
-    if (error) throw new APIError('Failed to update profile', error.code, error);
-    return normalizeUser(data);
+    void userId;
+    void updates;
+    throw new APIError('Profile updates are not admitted by the v1 foundation.', 'UNSUPPORTED');
   },
   async getAnonymousFlag(userId) {
     const { data, error } = await supabaseClient
@@ -352,12 +347,8 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return data?.is_anonymous ?? false;
   },
   async uploadAvatarAsset(localUri) {
-    try {
-      return await mediaAPI.upload(localUri, { resourceType: 'image' });
-    } catch (error: unknown) {
-      const err = error as { code?: string; message?: string };
-      throw new APIError('Failed to upload avatar', err?.code || 'UPLOAD_ERROR', error);
-    }
+    void localUri;
+    throw new APIError('Avatar uploads are not admitted by the v1 foundation.', 'UNSUPPORTED');
   },
 
   async getSocialLinks(userId) {
@@ -530,3 +521,5 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     } as PulseMetrics;
   },
 });
+
+export const supabaseProfileRepository = createSupabaseProfileRepository();

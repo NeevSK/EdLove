@@ -53,51 +53,44 @@ $$ LANGUAGE plpgsql VOLATILE;
 -- ==========================================
 -- 2. Apply UUID v7 Default to Primary Keys
 -- ==========================================
-ALTER TABLE audit.logs ALTER COLUMN id SET DEFAULT public.uuid_generate_v7();
-ALTER TABLE public.security_audit_logs ALTER COLUMN id SET DEFAULT public.uuid_generate_v7();
-ALTER TABLE public.notifications ALTER COLUMN id SET DEFAULT public.uuid_generate_v7();
-ALTER TABLE public.student_observations ALTER COLUMN id SET DEFAULT public.uuid_generate_v7();
-ALTER TABLE public.principal_observations ALTER COLUMN id SET DEFAULT public.uuid_generate_v7();
-ALTER TABLE public.student_grades ALTER COLUMN id SET DEFAULT public.uuid_generate_v7();
-ALTER TABLE public.mood_logs ALTER COLUMN id SET DEFAULT public.uuid_generate_v7();
-ALTER TABLE public.submissions ALTER COLUMN id SET DEFAULT public.uuid_generate_v7();
+DO $$
+DECLARE
+  table_name text;
+BEGIN
+  FOREACH table_name IN ARRAY ARRAY[
+    'audit.logs', 'public.security_audit_logs', 'public.notifications',
+    'public.student_observations', 'public.principal_observations',
+    'public.student_grades', 'public.mood_logs', 'public.submissions'
+  ] LOOP
+    IF to_regclass(table_name) IS NOT NULL THEN
+      EXECUTE format('ALTER TABLE %s ALTER COLUMN id SET DEFAULT public.uuid_generate_v7()', table_name);
+    END IF;
+  END LOOP;
+END $$;
 
 -- ==========================================
 -- 3. Idempotency Key Guard & Constraints
 -- ==========================================
 
--- Ensure the column exists on all heavy-mutation tables
-ALTER TABLE public.student_grades ADD COLUMN IF NOT EXISTS idempotency_key UUID DEFAULT gen_random_uuid();
-ALTER TABLE public.attendance ADD COLUMN IF NOT EXISTS idempotency_key UUID DEFAULT gen_random_uuid();
-ALTER TABLE public.mood_logs ADD COLUMN IF NOT EXISTS idempotency_key UUID DEFAULT gen_random_uuid();
-ALTER TABLE public.submissions ADD COLUMN IF NOT EXISTS idempotency_key UUID DEFAULT gen_random_uuid();
-ALTER TABLE public.student_observations ADD COLUMN IF NOT EXISTS idempotency_key UUID DEFAULT gen_random_uuid();
-ALTER TABLE public.principal_observations ADD COLUMN IF NOT EXISTS idempotency_key UUID DEFAULT gen_random_uuid();
-
--- Apply UNIQUE constraints (act as indexing as well for idempotency guards)
 DO $$
+DECLARE
+  table_name text;
+  constraint_name text;
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'student_grades_idempotency_key_key') THEN
-        ALTER TABLE public.student_grades ADD CONSTRAINT student_grades_idempotency_key_key UNIQUE(idempotency_key);
+  FOREACH table_name IN ARRAY ARRAY[
+    'student_grades', 'attendance', 'mood_logs', 'submissions',
+    'student_observations', 'principal_observations'
+  ] LOOP
+    IF to_regclass('public.' || table_name) IS NOT NULL THEN
+      EXECUTE format('ALTER TABLE public.%I ADD COLUMN IF NOT EXISTS idempotency_key UUID DEFAULT gen_random_uuid()', table_name);
+      constraint_name := table_name || '_idempotency_key_key';
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint c
+        WHERE c.conrelid = ('public.' || table_name)::regclass
+          AND c.conname = constraint_name
+      ) THEN
+        EXECUTE format('ALTER TABLE public.%I ADD CONSTRAINT %I UNIQUE(idempotency_key)', table_name, constraint_name);
+      END IF;
     END IF;
-    
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'attendance_idempotency_key_key') THEN
-        ALTER TABLE public.attendance ADD CONSTRAINT attendance_idempotency_key_key UNIQUE(idempotency_key);
-    END IF;
-
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'mood_logs_idempotency_key_key') THEN
-        ALTER TABLE public.mood_logs ADD CONSTRAINT mood_logs_idempotency_key_key UNIQUE(idempotency_key);
-    END IF;
-
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'submissions_idempotency_key_key') THEN
-        ALTER TABLE public.submissions ADD CONSTRAINT submissions_idempotency_key_key UNIQUE(idempotency_key);
-    END IF;
-
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'student_observations_idempotency_key_key') THEN
-        ALTER TABLE public.student_observations ADD CONSTRAINT student_observations_idempotency_key_key UNIQUE(idempotency_key);
-    END IF;
-
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'principal_observations_idempotency_key_key') THEN
-        ALTER TABLE public.principal_observations ADD CONSTRAINT principal_observations_idempotency_key_key UNIQUE(idempotency_key);
-    END IF;
+  END LOOP;
 END $$;

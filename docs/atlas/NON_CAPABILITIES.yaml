@@ -1,0 +1,5190 @@
+- id: planned:intent-00015
+  task: planned:intent-00015 — **Shared Element Transition** on New Architecture (feature flag) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - architectureflag
+  - architectureflagdoc
+  - docintent
+  - elementtransition
+  - elementtransitionarchitecture
+  - flagdoc
+  - flagdocintent
+  - intentshared
+- id: planned:intent-00046
+  task: 'Combined roles: `teacher+guardian` user sees union of features, `isGeneral` true for cross-role, `roleAffinity` max weight'
+  reason: non-product (ops/marketing/process)
+  engineering_status: null
+  terms:
+  - isGeneral
+  - roleAffinity
+  - combinedroles
+  - combinedrolessees
+  - crossrole
+  - crossrolemax
+  - maxweight
+  - rolemax
+- id: planned:intent-00108
+  task: planned:intent-00108 — **Add temporal phase depth** — ensure Dawn/Day/Dusk/Night feel meaningfully different | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - dawnday
+  - dawndaydusk
+  - daydusk
+  - daydusknight
+  - depthdawn
+  - depthdawnday
+  - differentdoc
+  - differentdocintent
+- id: planned:intent-00109
+  task: planned:intent-00109 — **Build Memory Garden visualization** for Profile self-view (replaces Achievement Gallery) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - achievementgallery
+  - achievementgallerydoc
+  - docintent
+  - gallerydoc
+  - gallerydocintent
+  - gardenvisualization
+  - gardenvisualizationprofile
+  - intentmemory
+- id: planned:intent-00111
+  task: planned:intent-00111 — **Implement Community Garden** abstract visualization | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - abstractvisualization
+  - abstractvisualizationdoc
+  - communitygarden
+  - communitygardenabstract
+  - docintent
+  - gardenabstract
+  - gardenabstractvisualization
+  - intentcommunity
+- id: planned:intent-00180
+  task: planned:intent-00180 — **Create test database** with sample users from different schools | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - databasesample
+  - databasesampledifferent
+  - differentschools
+  - differentschoolsdoc
+  - docintent
+  - intenttest
+  - intenttestdatabase
+  - plannedintent
+- id: planned:intent-00199
+  task: Create indexes for performance
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - indexesperformance
+- id: planned:intent-00205
+  task: Create permission helper functions
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - helperfunctions
+  - permissionhelper
+  - permissionhelperfunctions
+- id: planned:intent-00218
+  task: Create LotusPetalFAB component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms: []
+- id: planned:intent-00220
+  task: Create LotusButton component
+  reason: engineering component item, not a user capability
+  engineering_status: LOST (branch/history only)
+  terms:
+  - LotusButton
+- id: planned:intent-00221
+  task: Create SanctuaryCard component
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - SanctuaryCard
+- id: planned:intent-00222
+  task: Create TextInput component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms: []
+- id: planned:intent-00223
+  task: Create Dropdown component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms: []
+- id: planned:intent-00224
+  task: Create Checkbox component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms: []
+- id: planned:intent-00225
+  task: Create Switch component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms: []
+- id: planned:intent-00226
+  task: Create Modal component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms: []
+- id: planned:intent-00227
+  task: planned:intent-00227 — Create Dialog variant (with title, content, actions) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - actionsdoc
+  - actionsdocintent
+  - contentactions
+  - contentactionsdoc
+  - dialogvariant
+  - dialogvarianttitle
+  - docintent
+  - intentdialog
+- id: planned:intent-00228
+  task: Create BreathingLoader component (pulsing lotus)
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - BreathingLoader
+  - breathingloaderpulsing
+  - breathingloaderpulsinglotus
+  - pulsinglotus
+- id: planned:intent-00229
+  task: Create SkeletonCard component (shimmer loading)
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - SkeletonCard
+  - shimmerloading
+  - skeletoncardshimmer
+  - skeletoncardshimmerloading
+- id: planned:intent-00230
+  task: Create ErrorMessage component (gentle/warning/severe)
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - ErrorMessage
+  - errormessagegentle
+  - errormessagegentlewarning
+  - gentlewarning
+  - gentlewarningsevere
+  - warningsevere
+- id: planned:intent-00240
+  task: planned:intent-00240 — Grade APIs use `requireStudentAccess()` and `requireClassroomAccess()` | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - requireClassroomAccess
+  - requireStudentAccess
+  - apisdoc
+  - apisdocintent
+  - docintent
+  - gradeapis
+  - gradeapisdoc
+  - intentgrade
+- id: planned:intent-00333
+  task: planned:intent-00333 — Implement a lightweight `WebMCP` bridge in the Expo Web build to share UI state. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - WebMCP
+  - bridgeexpo
+  - bridgeexpoweb
+  - docintent
+  - expoweb
+  - expowebshare
+  - intentlightweight
+  - intentlightweightbridge
+- id: planned:intent-00334
+  task: planned:intent-00334 — create a lighter native header path for mobile tabs and detail screens | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - detailscreens
+  - detailscreensdoc
+  - docintent
+  - headerpath
+  - headerpathmobile
+  - intentlighter
+  - intentlighternative
+  - lighternative
+- id: planned:intent-00377
+  task: planned:intent-00377 — Build Self section (mood check-in, reflection journal) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checkreflection
+  - checkreflectionjournal
+  - docintent
+  - intentself
+  - intentselfsection
+  - journaldoc
+  - journaldocintent
+  - moodcheck
+- id: planned:intent-00385
+  task: "`posthog-react-native` — â\x9DŒ No web | Shim (Pattern B)"
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - shimpattern
+  - webshim
+  - webshimpattern
+- id: planned:intent-00452
+  task: planned:intent-00452 — Shared code should talk to ports, managers, or API facades rather than raw transport clien | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apifacades
+  - apifacadesrather
+  - cliendoc
+  - cliendocintent
+  - codetalk
+  - codetalkports
+  - docintent
+  - facadesrather
+- id: planned:intent-00479
+  task: Mark the old Supabase rollout guides and static-engine docs as superseded, linking here.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docssuperseded
+  - docssupersededlinking
+  - enginedocs
+  - enginedocssuperseded
+  - guidesstatic
+  - guidesstaticengine
+  - linkinghere
+  - markold
+- id: planned:intent-00480
+  task: planned:intent-00480 — Add only approved context dimensions and no raw identifiers/content. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - approvedcontext
+  - approvedcontextdimensions
+  - contentdoc
+  - contentdocintent
+  - contextdimensions
+  - contextdimensionsraw
+  - dimensionsraw
+  - dimensionsrawidentifiers
+- id: planned:intent-00484
+  task: planned:intent-00484 — configure Supabase JWT/client authentication and verify claims used by streams; | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authenticationverify
+  - authenticationverifyclaims
+  - claimsused
+  - claimsusedstreams
+  - clientauthentication
+  - clientauthenticationverify
+  - configuresupabase
+  - configuresupabasejwt
+- id: planned:intent-00507
+  task: add focused behavior tests for snapshot, pulse, and report
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - behaviortests
+  - behaviortestssnapshot
+  - focusedbehavior
+  - focusedbehaviortests
+  - pulsereport
+  - snapshotpulse
+  - snapshotpulsereport
+  - testssnapshot
+- id: planned:intent-00526
+  task: add correlation and logging fields
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - correlationlogging
+  - correlationloggingfields
+  - loggingfields
+- id: planned:intent-00556
+  task: planned:intent-00556 — add published-only grade and official-attendance projections on top of the same bedrock | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - attendanceprojections
+  - attendanceprojectionstop
+  - bedrockdoc
+  - bedrockdocintent
+  - docintent
+  - gradeofficial
+  - gradeofficialattendance
+  - intentpublished
+- id: planned:intent-00560
+  task: planned:intent-00560 — shared utilities can be imported before runtime registration | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - beforeruntime
+  - beforeruntimeregistration
+  - docintent
+  - importedbefore
+  - importedbeforeruntime
+  - intentshared
+  - intentsharedutilities
+  - plannedintent
+- id: planned:intent-00614
+  task: Mark older docs as potentially outdated when they reflect legacy behavior.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docspotentially
+  - docspotentiallyoutdated
+  - legacybehavior
+  - markolder
+  - markolderdocs
+  - olderdocs
+  - olderdocspotentially
+  - outdatedwhen
+- id: planned:intent-00616
+  task: planned:intent-00614 — Mark old archive-era guidance as historical where it conflicts with the current contract. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - archiveera
+  - archiveeraguidance
+  - conflictscurrent
+  - conflictscurrentcontract
+  - contractdoc
+  - contractdocintent
+  - currentcontract
+  - currentcontractdoc
+- id: planned:intent-00617
+  task: Add explicit unsubscribe/resubscribe controls and cleanup on account logout.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - accountlogout
+  - cleanupaccount
+  - cleanupaccountlogout
+  - controlscleanup
+  - controlscleanupaccount
+  - explicitunsubscribe
+  - explicitunsubscriberesubscribe
+  - resubscribecontrols
+- id: planned:intent-00635
+  task: Add monitoring, error reporting, uptime checks, deployment metadata, and rollback instructions.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checksdeployment
+  - checksdeploymentmetadata
+  - deploymentmetadata
+  - deploymentmetadatarollback
+  - errorreporting
+  - errorreportinguptime
+  - metadatarollback
+  - metadatarollbackinstructions
+- id: planned:intent-00641
+  task: planned:intent-00639 — Review community/social tables for active versus archival columns. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - activeversus
+  - activeversusarchival
+  - archivalcolumns
+  - archivalcolumnsdoc
+  - columnsdoc
+  - columnsdocintent
+  - communitysocial
+  - communitysocialtables
+- id: planned:intent-00651
+  task: planned:intent-00649 — Create a content inventory for repeated titles, labels, helper text, and status messages. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - contentinventory
+  - contentinventoryrepeated
+  - docintent
+  - helpertext
+  - helpertextstatus
+  - intentcontent
+  - intentcontentinventory
+  - inventoryrepeated
+- id: planned:intent-00669
+  task: 'planned:intent-00667 — Create one lifecycle controller for UI command state: | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - commandstate
+  - commandstatedoc
+  - controllercommand
+  - controllercommandstate
+  - docintent
+  - intentone
+  - intentonelifecycle
+  - lifecyclecontroller
+- id: planned:intent-00689
+  task: 'planned:intent-00687 — Add explicit result states: `handled`, `pending-auth`, `rejected`, and `failed`. | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - explicitresult
+  - explicitresultstates
+  - intentexplicit
+  - intentexplicitresult
+  - plannedintent
+  - plannedintentexplicit
+  - resultstates
+- id: planned:intent-00691
+  task: planned:intent-00689 — Add native mappings from public URLs to internal route paths. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentnative
+  - intentnativemappings
+  - internalroute
+  - internalroutepaths
+  - mappingspublic
+  - mappingspublicurls
+  - nativemappings
+- id: planned:intent-00692
+  task: planned:intent-00690 — Implement post-link resolution and privacy checks. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checksdoc
+  - checksdocintent
+  - docintent
+  - intentpost
+  - intentpostlink
+  - linkresolution
+  - linkresolutionprivacy
+  - plannedintent
+- id: planned:intent-00694
+  task: planned:intent-00692 — Publish Android asset links containing the correct package and signing fingerprints. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - androidasset
+  - androidassetlinks
+  - assetlinks
+  - assetlinkscontaining
+  - containingcorrect
+  - containingcorrectpackage
+  - correctpackage
+  - correctpackagesigning
+- id: planned:intent-00696
+  task: planned:intent-00694 — Record the route path, visible state, console/logcat errors, and the values | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: UI-UNWIRED
+  terms:
+  - consolelogcat
+  - consolelogcaterrors
+  - docintent
+  - errorsvalues
+  - errorsvaluesdoc
+  - intentrecord
+  - intentrecordroute
+  - logcaterrors
+- id: planned:intent-00782
+  task: Create PostTypeSelector component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - PostTypeSelector
+- id: planned:intent-00784
+  task: Create QuestionCard component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - QuestionCard
+- id: planned:intent-00785
+  task: Create FeedbackCard component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - FeedbackCard
+- id: planned:intent-00786
+  task: Create CommentsSection component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - CommentsSection
+- id: planned:intent-00794
+  task: Create QuickPoll component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - QuickPoll
+- id: planned:intent-00795
+  task: Create ConceptRatings component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - ConceptRatings
+- id: planned:intent-00796
+  task: Create QuestionQueue component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - QuestionQueue
+- id: planned:intent-00798
+  task: Create FeedbackPulse component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - FeedbackPulse
+- id: planned:intent-00806
+  task: Create visualization components
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms: []
+- id: planned:intent-00815
+  task: planned:intent-00813 — Create database functions (increment counters, etc.) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - countersetc
+  - countersetcdoc
+  - databasefunctions
+  - databasefunctionsincrement
+  - docintent
+  - etcdoc
+  - etcdocintent
+  - functionsincrement
+- id: planned:intent-00816
+  task: '**Create one component at a time** - Start with PostTypeSelector, then CreatePostModal'
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - CreatePostModal
+  - PostTypeSelector
+  - onetime
+  - onetimestart
+  - posttypeselectorthen
+  - posttypeselectorthencreatepostmodal
+  - startposttypeselector
+  - startposttypeselectorthen
+- id: planned:intent-01039
+  task: '**Phase 7**: Principal Dashboard overhaul (6 new components + 4 DB tables); notification triggers; native PDF + video viewers; Thuthimal give flow'
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - dashboardoverhaul
+  - dashboardoverhaultables
+  - nativepdf
+  - nativepdfvideo
+  - notificationtriggers
+  - notificationtriggersnative
+  - overhaultables
+  - overhaultablesnotification
+- id: planned:intent-01055
+  task: planned:intent-01053 — Create `useRoleFeatures` hook mapping features to roles | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: LOST
+  terms:
+  - useRoleFeatures
+  - docintent
+  - hookmapping
+  - hookmappingroles
+  - intenthook
+  - intenthookmapping
+  - mappingroles
+  - mappingrolesdoc
+- id: planned:intent-01069
+  task: Create `QRScanner` component with camera permissions
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - QRScanner
+  - camerapermissions
+- id: planned:intent-01115
+  task: planned:intent-01113 — Create the document with a table mapping each role to its Self section views and Community | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - communitydoc
+  - communitydocintent
+  - docintent
+  - documenttable
+  - documenttablemapping
+  - eachrole
+  - eachroleself
+  - intentdocument
+- id: planned:intent-01250
+  task: Create "The Veil" privacy toggle UI component
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - privacytoggle
+  - veilprivacy
+  - veilprivacytoggle
+- id: planned:intent-01252
+  task: Create migration guide for existing code
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - existingcode
+  - guideexisting
+  - guideexistingcode
+  - migrationguide
+  - migrationguideexisting
+- id: planned:intent-01275
+  task: planned:intent-01274 — Create `EnvironmentContext.tsx` (The Universal Parameters Engine) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - EnvironmentContext
+  - docintent
+  - enginedoc
+  - enginedocintent
+  - intentuniversal
+  - intentuniversalparameters
+  - parametersengine
+  - parametersenginedoc
+- id: planned:intent-01282
+  task: Refine Auth Pipeline (Teacher Sandbox + Founder Backdoor)
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authpipeline
+  - authpipelineteacher
+  - founderbackdoor
+  - pipelineteacher
+  - pipelineteachersandbox
+  - refineauth
+  - refineauthpipeline
+  - sandboxfounder
+- id: planned:intent-01283
+  task: planned:intent-01282 — Implement Thuthimal Indicator (Gratitude Acknowledgment) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - acknowledgmentdoc
+  - acknowledgmentdocintent
+  - docintent
+  - gratitudeacknowledgment
+  - gratitudeacknowledgmentdoc
+  - indicatorgratitude
+  - indicatorgratitudeacknowledgment
+  - intentthuthimal
+- id: planned:intent-01325
+  task: '**Join New Sanctuary**: Enter class codes or scan Teacher QR.'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classcodes
+  - classcodesscan
+  - codesscan
+  - codesscanteacher
+  - enterclass
+  - enterclasscodes
+  - joinsanctuary
+  - joinsanctuaryenter
+- id: planned:intent-01370
+  task: '`PRN-SLF-008` — Thought Seeds | **UI**: `SeedList` component'
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - SeedList
+  - thoughtseeds
+- id: planned:intent-01391
+  task: '`PRN-CLS-029` — Performance Med. | **UI**: School-wide grade distribution'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - gradedistribution
+  - medschool
+  - medschoolwide
+  - performancemed
+  - performancemedschool
+  - schoolwide
+  - schoolwidegrade
+  - widegrade
+- id: planned:intent-01454
+  task: '`TCH-CLS-039` — Struggler Alerts | **Logic**: Performance monitoring'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - alertslogic
+  - alertslogicperformance
+  - logicperformance
+  - logicperformancemonitoring
+  - performancemonitoring
+  - struggleralerts
+  - struggleralertslogic
+- id: planned:intent-01535
+  task: '`ENG-INF-001` — Observability Layer | **Lib**: `@sentry/react-native`, `PostHog`'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: UI-UNWIRED
+  terms:
+  - PostHog
+  - layerlib
+  - observabilitylayer
+  - observabilitylayerlib
+- id: planned:intent-01537
+  task: '`ENG-INF-003` — Adaptive Connect. | **Logic**: Exponential Backoff in `SyncManager`'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - SyncManager
+  - adaptiveconnect
+  - adaptiveconnectlogic
+  - connectlogic
+  - connectlogicexponential
+  - exponentialbackoff
+  - logicexponential
+  - logicexponentialbackoff
+- id: planned:intent-01574
+  task: planned:intent-01573 — `View`, `Text`, `Pressable`, `TextInput`, `FlatList` and `react-native-svg`; | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentdoc
+  - intentdocintent
+  - plannedintent
+  - plannedintentdoc
+- id: planned:intent-01577
+  task: planned:intent-01576 — Record the choice as an ADR before changing the shared primitives. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - adrbefore
+  - adrbeforechanging
+  - beforechanging
+  - beforechangingshared
+  - changingshared
+  - changingsharedprimitives
+  - choiceadr
+  - choiceadrbefore
+- id: planned:intent-01587
+  task: Add offline support with local caching
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - localcaching
+  - offlinesupport
+  - offlinesupportlocal
+  - supportlocal
+  - supportlocalcaching
+- id: planned:intent-01589
+  task: 'planned:intent-01588 — **Search & Filter**: Add search bar and filter by subject | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - barfilter
+  - barfiltersubject
+  - docintent
+  - filtersearch
+  - filtersearchbar
+  - filtersubject
+  - filtersubjectdoc
+  - intentsearch
+- id: planned:intent-01631
+  task: Add proper logging utility
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - loggingutility
+  - properlogging
+  - properloggingutility
+- id: planned:intent-01658
+  task: Student experience components complete
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - experiencecomplete
+  - studentexperience
+  - studentexperiencecomplete
+- id: planned:intent-01697
+  task: Create RoleScreen (with founder/developer options)
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - RoleScreen
+  - developeroptions
+  - founderdeveloper
+  - founderdeveloperoptions
+  - rolescreenfounder
+  - rolescreenfounderdeveloper
+- id: planned:intent-01735
+  task: 'planned:intent-01734 — **Export Data**: Allow users to export their mood data | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - allowexport
+  - allowexporttheir
+  - docintent
+  - exportallow
+  - exportallowexport
+  - exporttheir
+  - exporttheirmood
+  - intentexport
+- id: planned:intent-01759
+  task: Create TypeScript interfaces for new data types
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - interfacestypes
+  - typescriptinterfaces
+  - typescriptinterfacestypes
+- id: planned:intent-01771
+  task: Create GitHub Issue with detailed prompt (see below)
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - detailedprompt
+  - detailedpromptbelow
+  - githubissue
+  - githubissuedetailed
+  - issuedetailed
+  - issuedetailedprompt
+  - promptbelow
+- id: planned:intent-01780
+  task: planned:intent-01779 — Create RoleScreen (with dropdown, disabled options) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - RoleScreen
+  - disabledoptions
+  - disabledoptionsdoc
+  - docintent
+  - dropdowndisabled
+  - dropdowndisabledoptions
+  - intentrolescreen
+  - intentrolescreendropdown
+- id: planned:intent-01909
+  task: '**Search** — Server-only (SQLite is native-locked) | **Web-Native Local Cache**: Use **IndexedDB** to store the Resource Library for O(Trajectory) offline search on desktop.'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - cacheindexeddb
+  - cacheindexeddbstore
+  - indexeddbstore
+  - indexeddbstoreresource
+  - librarytrajectory
+  - librarytrajectoryoffline
+  - localcache
+  - localcacheindexeddb
+- id: planned:intent-01938
+  task: 'Add a review rule: console logging is telemetry, never the only UX.'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - consolelogging
+  - consoleloggingtelemetry
+  - loggingtelemetry
+  - loggingtelemetrynever
+  - neveronly
+  - reviewrule
+  - reviewruleconsole
+  - ruleconsole
+- id: planned:intent-01939
+  task: Add tests for rejected promises, offline mode, and soft falsy failures.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - falsyfailures
+  - modesoft
+  - modesoftfalsy
+  - offlinemode
+  - offlinemodesoft
+  - promisesoffline
+  - promisesofflinemode
+  - rejectedpromises
+- id: planned:intent-01941
+  task: planned:intent-01940 — Search for raw alternatives (`alert`, direct clipboard, console-only catch, | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - alternativesdirect
+  - alternativesdirectclipboard
+  - catchdoc
+  - catchdocintent
+  - clipboardconsole
+  - clipboardconsoleonly
+  - consoleonly
+  - consoleonlycatch
+- id: planned:intent-01945
+  task: planned:intent-01944 — Record audit events after the operation they describe, not before. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: UI-UNWIRED
+  terms:
+  - afteroperation
+  - afteroperationthey
+  - auditevents
+  - auditeventsafter
+  - beforedoc
+  - beforedocintent
+  - describebefore
+  - describebeforedoc
+- id: planned:intent-01957
+  task: planned:intent-01956 — Record counterexamples where the shared pattern is implemented correctly. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - correctlydoc
+  - correctlydocintent
+  - counterexampleswhere
+  - counterexampleswhereshared
+  - docintent
+  - implementedcorrectly
+  - implementedcorrectlydoc
+  - intentrecord
+- id: planned:intent-01991
+  task: planned:intent-01981 — Add a test profile using a disposable real database and real ZenStack client. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - ZenStack
+  - clientdoc
+  - clientdocintent
+  - databasereal
+  - databaserealzenstack
+  - disposablereal
+  - disposablerealdatabase
+  - docintent
+- id: planned:intent-01992
+  task: Add Expo web and native-compatible client tests for auth, offline classification, retry, and cancellation.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authoffline
+  - authofflineclassification
+  - classificationretry
+  - classificationretrycancellation
+  - clienttests
+  - clienttestsauth
+  - compatibleclient
+  - compatibleclienttests
+- id: planned:intent-02051
+  task: Connection lifecycle — SDK listener, connect, first-sync timeout and unavailable event | withTimeout does not cancel wait/connect; listener unsubscriber is not retained in inspected function. Prove
+    cl
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: UI-UNWIRED
+  terms:
+  - withTimeout
+  - accountswitch
+  - accountswitchrepeated
+  - cancelwait
+  - cancelwaitconnect
+  - cleanupaccount
+  - cleanupaccountswitch
+  - connectfirst
+- id: planned:intent-02152
+  task: Operations/privacy — Allow-listed diagnostics, correlation, capability degradation, funded recovery and exit | Full prompts/learner content as routine telemetry
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - allowlisted
+  - allowlisteddiagnostics
+  - capabilitydegradation
+  - capabilitydegradationfunded
+  - contentroutine
+  - contentroutinetelemetry
+  - correlationcapability
+  - correlationcapabilitydegradation
+- id: planned:intent-02164
+  task: '`logger`: The new logging system is now stable and the experimental flag is no longer needed to use it. If you were using this flag, you can now set your logger directly in the top-level `logger`
+    fiel'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - logger
+  - astroconfig
+  - directlytop
+  - directlytoplevel
+  - experimentalflag
+  - experimentalflaglonger
+  - fieldyour
+  - fieldyourastro
+- id: planned:intent-02170
+  task: planned:intent-02004 — Add `audit.logs` raw query support via `setMockQueryRowsQueue` | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - setMockQueryRowsQueue
+  - docintent
+  - intentraw
+  - intentrawquery
+  - plannedintent
+  - plannedintentraw
+  - querysupport
+  - querysupportdoc
+- id: planned:intent-02177
+  task: planned:intent-02011 — Mark the hand-coded SVG branch as legacy and prevent new usages. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - branchlegacy
+  - branchlegacyprevent
+  - codedsvg
+  - codedsvgbranch
+  - docintent
+  - handcoded
+  - handcodedsvg
+  - intentmark
+- id: planned:intent-02179
+  task: planned:intent-02013 — Approve light mode first, then generate a matching dark treatment from the same reference | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - approvelight
+  - approvelightmode
+  - darktreatment
+  - darktreatmentsame
+  - docintent
+  - firstthen
+  - firstthengenerate
+  - generatematching
+- id: planned:intent-02180
+  task: planned:intent-02014 — Create only the states and scales that real surfaces need, but make each one emotionally d | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - buteach
+  - buteachone
+  - docintent
+  - eachone
+  - eachoneemotionally
+  - emotionallydoc
+  - emotionallydocintent
+  - intentonly
+- id: planned:intent-02181
+  task: planned:intent-02015 — Add a deliberate `approved artwork -> safe static fallback` chain. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - chaindoc
+  - chaindocintent
+  - deliberatechain
+  - deliberatechaindoc
+  - docintent
+  - intentdeliberate
+  - intentdeliberatechain
+  - plannedintent
+- id: planned:intent-02217
+  task: planned:intent-02048 — Implemented — Current code or database evidence supports the claim. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - claimdoc
+  - claimdocintent
+  - codedatabase
+  - codedatabaseevidence
+  - currentcode
+  - currentcodedatabase
+  - databaseevidence
+  - databaseevidencesupports
+- id: planned:intent-02229
+  task: Add route inventory and OpenAPI drift checks to CI.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - driftchecks
+  - inventoryopenapi
+  - inventoryopenapidrift
+  - openapidrift
+  - openapidriftchecks
+  - routeinventory
+  - routeinventoryopenapi
+- id: planned:intent-02230
+  task: planned:intent-02061 — Add a controlled multi-instance/concurrency probe against Postgres. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - againstpostgres
+  - againstpostgresdoc
+  - concurrencyprobe
+  - concurrencyprobeagainst
+  - controlledmulti
+  - controlledmultiinstance
+  - docintent
+  - instanceconcurrency
+- id: planned:intent-02233
+  task: planned:intent-02064 — Export a new constant `LOCAL_ONLY_TABLES` listing the 12 tables, used by the provider to c | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - LOCAL_ONLY_TABLES
+  - constantlisting
+  - constantlistingtables
+  - docintent
+  - exportconstant
+  - exportconstantlisting
+  - intentexport
+  - intentexportconstant
+- id: planned:intent-02234
+  task: 'Export `LOCAL_ONLY_TABLES` union type and a helper `isLocalOnly(tableName: string) => boolean`.'
+  reason: non-product (ops/marketing/process)
+  engineering_status: null
+  terms:
+  - isLocalOnly
+  - LOCAL_ONLY_TABLES
+  - tableName
+  - exportunion
+  - exportuniontype
+  - typehelper
+  - uniontype
+  - uniontypehelper
+- id: planned:intent-02239
+  task: Add a periodic `trim()` call (e.g. every 24h via `expo-background-task` or on account swap) that calls `storage.trim()` to clear unused keys + memory cache.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - accountswap
+  - accountswapcalls
+  - callevery
+  - calleveryaccount
+  - callsclear
+  - callsclearunused
+  - clearunused
+  - clearunusedkeys
+- id: planned:intent-02241
+  task: Create `docs/architecture/2026-08-25-storage-efficiency-plan.md` (done)
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms: []
+- id: planned:intent-02245
+  task: Founder/developer — Steward platform/ecosystem | platform pulse, topology, institution roster/bridge, creation runway, cross-ecosystem signals
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - bridgecreation
+  - bridgecreationrunway
+  - creationrunway
+  - creationrunwaycross
+  - crossecosystem
+  - crossecosystemsignals
+  - developersteward
+  - developerstewardplatform
+- id: planned:intent-02253
+  task: Founder/developer — Wellbeing/community/knowledge signals | cross-ecosystem; weekly
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - communityknowledge
+  - communityknowledgesignals
+  - crossecosystem
+  - crossecosystemweekly
+  - developerwellbeing
+  - developerwellbeingcommunity
+  - ecosystemweekly
+  - founderdeveloper
+- id: planned:intent-02260
+  task: Implement production logging stripping via Metro / Babel transforms for `apps/gurudevi-mobile` to protect the 2GB RAM budget.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - babeltransforms
+  - babeltransformsprotect
+  - loggingstripping
+  - loggingstrippingmetro
+  - metrobabel
+  - metrobabeltransforms
+  - productionlogging
+  - productionloggingstripping
+- id: planned:intent-02266
+  task: planned:intent-02097 — Create `app/+native-intent.tsx` with `redirectSystemPath`. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: UI-UNWIRED
+  terms:
+  - redirectSystemPath
+  - docintent
+  - intentdoc
+  - intentdocintent
+  - plannedintent
+  - plannedintentdoc
+- id: planned:intent-02287
+  task: Provide turnkey Docker Compose templates for Zonal Education Offices to run a private **Headscale** control plane, giving 50+ regional schools private encrypted IP addresses (`100.x.y.z`).
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - composetemplates
+  - composetemplateszonal
+  - controlplane
+  - controlplanegiving
+  - dockercompose
+  - dockercomposetemplates
+  - educationoffices
+  - educationofficesrun
+- id: planned:intent-02294
+  task: Public demo — no durable principal | feature-specific fixture adapter
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - demodurable
+  - demodurableprincipal
+  - durableprincipal
+  - durableprincipalspecific
+  - fixtureadapter
+  - principalspecific
+  - principalspecificfixture
+  - publicdemo
+- id: planned:intent-02297
+  task: Mobile Guest — guest principal under the separate mobile lease | native local-first adapter
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - firstadapter
+  - guestguest
+  - guestguestprincipal
+  - guestprincipal
+  - guestprincipalunder
+  - leasenative
+  - leasenativelocal
+  - localfirst
+- id: planned:intent-02305
+  task: Add retention/cleanup for durable runs and worker events.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - cleanupdurable
+  - cleanupdurableruns
+  - durableruns
+  - durablerunsworker
+  - retentioncleanup
+  - retentioncleanupdurable
+  - runsworker
+  - runsworkerevents
+- id: planned:intent-02317
+  task: planned:intent-02114 — Create all normalized tables with RLS, constraints, pgvector, idempotency keys | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - constraintspgvector
+  - constraintspgvectoridempotency
+  - docintent
+  - idempotencykeys
+  - idempotencykeysdoc
+  - intentnormalized
+  - intentnormalizedtables
+  - keysdoc
+- id: planned:intent-02322
+  task: Schedule 6-hour official release scan for all tracked packages
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - hourofficial
+  - hourofficialrelease
+  - officialrelease
+  - officialreleasescan
+  - releasescan
+  - releasescantracked
+  - scantracked
+  - scantrackedpackages
+- id: planned:intent-02323
+  task: Schedule daily community discovery scan
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - communitydiscovery
+  - communitydiscoveryscan
+  - dailycommunity
+  - dailycommunitydiscovery
+  - discoveryscan
+  - scheduledaily
+  - scheduledailycommunity
+- id: planned:intent-02324
+  task: Schedule daily local drift scan (lockfile + import changes)
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - dailylocal
+  - dailylocaldrift
+  - driftscan
+  - driftscanlockfile
+  - importchanges
+  - localdrift
+  - localdriftscan
+  - lockfileimport
+- id: planned:intent-02325
+  task: 'Seed Tier C: zod, react-native-screens, react-native-safe-area-context, react-native-keyboard-controller'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - areacontext
+  - areacontextreact
+  - contextreact
+  - contextreactnative
+  - keyboardcontroller
+  - nativekeyboard
+  - nativekeyboardcontroller
+  - nativesafe
+- id: planned:intent-02326
+  task: 'planned:intent-02123 — Seed Tier D: skia, flash-list, bottom-sheet, maps, svg, lottie, pager-view, webview | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - bottomsheet
+  - bottomsheetmaps
+  - docintent
+  - flashbottom
+  - flashbottomsheet
+  - intentseed
+  - intentseedtier
+  - lottiepager
+- id: planned:intent-02327
+  task: 'planned:intent-02124 — Seed Tier E: observability, state, utility packages | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentseed
+  - intentseedtier
+  - observabilitystate
+  - observabilitystateutility
+  - packagesdoc
+  - packagesdocintent
+  - plannedintent
+- id: planned:intent-02329
+  task: Add a shared request policy for pagination, conditional reads, retry/backoff, cancellation, and response-size limits.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - backoffcancellation
+  - backoffcancellationresponse
+  - cancellationresponse
+  - cancellationresponsesize
+  - conditionalreads
+  - conditionalreadsretry
+  - paginationconditional
+  - paginationconditionalreads
+- id: planned:intent-02332
+  task: planned:intent-02129 — Add low-battery and metered-network behavior to the shared runtime policy, not individual | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - batterymetered
+  - batterymeterednetwork
+  - behaviorshared
+  - behaviorsharedruntime
+  - docintent
+  - individualdoc
+  - individualdocintent
+  - intentlow
+- id: planned:intent-02335
+  task: planned:intent-02132 — Create one clean staging Supabase project under the primary owner account. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - accountdoc
+  - accountdocintent
+  - cleanstaging
+  - cleanstagingsupabase
+  - docintent
+  - intentone
+  - intentoneclean
+  - oneclean
+- id: planned:intent-02358
+  task: Add instrumentation counters for trim events and the cache actions taken, with privacy-safe aggregate telemetry only after consent.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - actionstaken
+  - actionstakenprivacy
+  - afterconsent
+  - aggregatetelemetry
+  - aggregatetelemetryonly
+  - cacheactions
+  - cacheactionstaken
+  - counterstrim
+- id: planned:intent-02367
+  task: planned:intent-02164 — Create `gurudevi.ai.web-evidence` flag (boolean, default `false`) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - booleandefault
+  - booleandefaultdoc
+  - defaultdoc
+  - defaultdocintent
+  - docintent
+  - flagboolean
+  - flagbooleandefault
+  - intentflag
+- id: planned:intent-02389
+  task: Enable GitHub secret scanning and push protection (free on public repos).
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - enablegithub
+  - enablegithubsecret
+  - freepublic
+  - freepublicrepos
+  - githubsecret
+  - githubsecretscanning
+  - protectionfree
+  - protectionfreepublic
+- id: planned:intent-02393
+  task: 'planned:intent-02190 — Mark every package `private: true` unless it is genuinely published to npm | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - everypackage
+  - everypackageunless
+  - genuinelypublished
+  - genuinelypublishednpm
+  - intentmark
+  - intentmarkevery
+  - markevery
+- id: planned:intent-02395
+  task: '`SUPPORT.md` distinguishes support from vulnerability reporting.'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - SUPPORT
+  - distinguishessupport
+  - distinguishessupportvulnerability
+  - supportvulnerability
+  - supportvulnerabilityreporting
+  - vulnerabilityreporting
+- id: planned:intent-02411
+  task: Seed scripts and fixtures use obviously synthetic data.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - fixturesobviously
+  - fixturesobviouslysynthetic
+  - obviouslysynthetic
+  - scriptsfixtures
+  - scriptsfixturesobviously
+  - seedscripts
+  - seedscriptsfixtures
+- id: planned:intent-02424
+  task: Retention schedule per data class, with automated enforcement.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - automatedenforcement
+  - classautomated
+  - classautomatedenforcement
+  - retentionschedule
+  - retentionscheduleclass
+  - scheduleclass
+  - scheduleclassautomated
+- id: planned:intent-02435
+  task: '`SUPPORT.md` — where questions go, separate from vulnerability reports.'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - SUPPORT
+  - questionsseparate
+  - questionsseparatevulnerability
+  - separatevulnerability
+  - separatevulnerabilityreports
+  - vulnerabilityreports
+  - wherequestions
+  - wherequestionsseparate
+- id: planned:intent-02444
+  task: 'planned:intent-02241 — Share timing improvements: "Linting dropped from 120s to 45s" | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - droppeddoc
+  - droppeddocintent
+  - improvementslinting
+  - improvementslintingdropped
+  - intentshare
+  - intentsharetiming
+  - lintingdropped
+- id: planned:intent-02446
+  task: Create/update `docs/INDEX.md`
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms: []
+- id: planned:intent-02459
+  task: Enable audit logging and security features
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - auditlogging
+  - auditloggingsecurity
+  - enableaudit
+  - enableauditlogging
+  - loggingsecurity
+- id: planned:intent-02471
+  task: 'planned:intent-02268 — Create service token for production: `dp.st.prod.prd` | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentservice
+  - intentservicetoken
+  - plannedintent
+  - plannedintentservice
+  - productiondoc
+  - productiondocintent
+  - servicetoken
+- id: planned:intent-02472
+  task: 'planned:intent-02269 — Create service token for next environment: `dp.st.next.exp` | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - environmentdoc
+  - environmentdocintent
+  - intentservice
+  - intentservicetoken
+  - nextenvironment
+  - nextenvironmentdoc
+  - plannedintent
+- id: planned:intent-02474
+  task: Add app-specific examples to guide
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - appspecific
+  - appspecificexamples
+  - examplesguide
+  - specificexamples
+  - specificexamplesguide
+- id: planned:intent-02475
+  task: Create quick start guide for developers
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - guidedevelopers
+  - quickstart
+  - quickstartguide
+  - startguide
+  - startguidedevelopers
+- id: planned:intent-02477
+  task: Create debugging procedures
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - debuggingprocedures
+- id: planned:intent-02485
+  task: '**Library:** establish media/rights boundaries, cursor pagination, shared resource cards, contributor flow, and curator prioritization.'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - boundariescursor
+  - boundariescursorpagination
+  - cardscontributor
+  - cardscontributorcurator
+  - contributorcurator
+  - contributorcuratorprioritization
+  - curatorprioritization
+  - cursorpagination
+- id: planned:intent-02488
+  task: 'Add a claim ledger for every high-impact item from `docs/files/` using:'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - claimledger
+  - claimledgerevery
+  - everyhigh
+  - everyhighimpact
+  - highimpact
+  - ledgerevery
+  - ledgereveryhigh
+- id: planned:intent-02490
+  task: Grade-level and assessment-result tests use unambiguous fixtures and names.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - assessmentresult
+  - assessmentresulttests
+  - fixturesnames
+  - gradelevel
+  - gradelevelassessment
+  - levelassessment
+  - levelassessmentresult
+  - resulttests
+- id: planned:intent-02501
+  task: planned:intent-02298 — **Post-MVP (record as backlog, do not implement now):** continuous | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - backlognow
+  - backlognowcontinuous
+  - continuousdoc
+  - continuousdocintent
+  - docintent
+  - intentpost
+  - intentpostmvp
+  - mvprecord
+- id: planned:intent-02503
+  task: Add low-cardinality metrics, dashboards, alerts, dependency health checks,
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - alertsdependency
+  - alertsdependencyhealth
+  - cardinalitymetrics
+  - cardinalitymetricsdashboards
+  - dashboardsalerts
+  - dashboardsalertsdependency
+  - dependencyhealth
+  - dependencyhealthchecks
+- id: planned:intent-02504
+  task: planned:intent-02301 — Mark stale migration/comprehensive-audit checkpoints superseded with links | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - auditcheckpoints
+  - auditcheckpointssuperseded
+  - checkpointssuperseded
+  - checkpointssupersededlinks
+  - comprehensiveaudit
+  - comprehensiveauditcheckpoints
+  - docintent
+  - intentmark
+- id: planned:intent-02508
+  task: planned:intent-02305 — Add `NSUserTrackingUsageDescription` for iOS App Tracking Transparency. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - NSUserTrackingUsageDescription
+  - apptracking
+  - apptrackingtransparency
+  - docintent
+  - intentios
+  - intentiosapp
+  - iosapp
+  - iosapptracking
+- id: planned:intent-02512
+  task: planned:intent-02309 — Add canonical URLs, Article JSON-LD, Open Graph metadata, and RSS feeds. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - articlejson
+  - articlejsonopen
+  - canonicalurls
+  - canonicalurlsarticle
+  - docintent
+  - feedsdoc
+  - feedsdocintent
+  - graphmetadata
+- id: planned:intent-02513
+  task: planned:intent-02310 — Add language and translation-ready fields without claiming translations exist. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - claimingtranslations
+  - claimingtranslationsexist
+  - docintent
+  - existdoc
+  - existdocintent
+  - fieldswithout
+  - fieldswithoutclaiming
+  - intentlanguage
+- id: planned:intent-02514
+  task: Add a delivery ledger with per-channel status, retry, external URL, and
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - channelstatus
+  - channelstatusretry
+  - deliveryledger
+  - deliveryledgerchannel
+  - externalurl
+  - ledgerchannel
+  - ledgerchannelstatus
+  - retryexternal
+- id: planned:intent-02516
+  task: planned:intent-02313 — Add public author profile records and stable author URLs to both sites. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authorprofile
+  - authorprofilerecords
+  - authorurls
+  - authorurlsboth
+  - bothsites
+  - bothsitesdoc
+  - docintent
+  - intentpublic
+- id: planned:intent-02518
+  task: planned:intent-02315 — Add protected API procedures for idempotent event and delivery persistence; | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apiprocedures
+  - apiproceduresidempotent
+  - deliverypersistence
+  - deliverypersistencedoc
+  - docintent
+  - eventdelivery
+  - eventdeliverypersistence
+  - idempotentevent
+- id: planned:intent-02520
+  task: Add scheduling, embargoes, newsletters, search, and performance dashboards.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - embargoesnewsletters
+  - embargoesnewsletterssearch
+  - newsletterssearch
+  - newsletterssearchperformance
+  - performancedashboards
+  - schedulingembargoes
+  - schedulingembargoesnewsletters
+  - searchperformance
+- id: planned:intent-02556
+  task: planned:intent-02353 — Create the Next.js application with public and sanctuary boundaries. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - applicationpublic
+  - applicationpublicsanctuary
+  - boundariesdoc
+  - boundariesdocintent
+  - docintent
+  - intentnext
+  - intentnextapplication
+  - nextapplication
+- id: planned:intent-02618
+  task: planned:intent-02415 — Add diff-scoped evidence and quality reporting for changed deep-link files. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - changeddeep
+  - changeddeeplink
+  - deeplink
+  - deeplinkfiles
+  - diffscoped
+  - diffscopedevidence
+  - docintent
+  - evidencequality
+- id: planned:intent-02630
+  task: planned:intent-02427 — Assign an explicit conflict policy for each command class. Start with | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - assignexplicit
+  - assignexplicitconflict
+  - classstart
+  - classstartdoc
+  - commandclass
+  - commandclassstart
+  - conflictpolicy
+  - conflictpolicyeach
+- id: planned:intent-02631
+  task: 'planned:intent-02428 — Create a versioned `MutationCommand` once at user intent: UUIDv7 command ID, | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - MutationCommand
+  - commanddoc
+  - commanddocintent
+  - docintent
+  - intentuuidv
+  - intentuuidvcommand
+  - intentversioned
+  - intentversionedonce
+- id: planned:intent-02633
+  task: 'planned:intent-02430 — Add an `AccountTransitionPort`: auth requests `preserve_and_quarantine` or | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - preserve_and_quarantine
+  - AccountTransitionPort
+  - authrequests
+  - authrequestsdoc
+  - docintent
+  - intentauth
+  - intentauthrequests
+  - plannedintent
+- id: planned:intent-02667
+  task: 'Implement source adapters for permitted community discovery: GitHub issues/discussions, Reddit, public X material, Stack Overflow, and selected technical blogs.'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - adapterspermitted
+  - adapterspermittedcommunity
+  - communitydiscovery
+  - communitydiscoverygithub
+  - discoverygithub
+  - discoverygithubissues
+  - discussionsreddit
+  - discussionsredditpublic
+- id: planned:intent-02670
+  task: Schedule 6-hour official scans, daily community and local-drift scans, and a weekly review queue in the server-side worker topology.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - communitylocal
+  - communitylocaldrift
+  - dailycommunity
+  - dailycommunitylocal
+  - driftscans
+  - driftscansweekly
+  - hourofficial
+  - hourofficialscans
+- id: planned:intent-02689
+  task: planned:intent-02486 — Allow, deny, stale-scope, expired-session, and cross-account cases exist. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - accountcases
+  - accountcasesexist
+  - allowdeny
+  - allowdenystale
+  - casesexist
+  - casesexistdoc
+  - crossaccount
+  - crossaccountcases
+- id: planned:intent-02755
+  task: Create comprehensive integration guide
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - comprehensiveintegration
+  - comprehensiveintegrationguide
+  - integrationguide
+- id: planned:intent-02756
+  task: Create troubleshooting documentation
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - troubleshootingdocumentation
+- id: planned:intent-02849
+  task: planned:intent-02946 — **Implement pdf-lib API** (generate, merge, split, forms) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apigenerate
+  - apigeneratemerge
+  - docintent
+  - formsdoc
+  - formsdocintent
+  - generatemerge
+  - generatemergesplit
+  - intentpdf
+- id: planned:intent-02871
+  task: apps/gurudevi-mobile/docs/Core/design/principal-redesign-gap-map.md — main | plan
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - appsgurudevi
+  - appsgurudevimobile
+  - coredesign
+  - coredesignprincipal
+  - designprincipal
+  - designprincipalredesign
+  - docscore
+  - docscoredesign
+- id: planned:intent-02911
+  task: apps/gurudevi-mobile/docs/current_progress/2026-05-22-classroom-teacher-implementation-plan.md — main | plan
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - current_progress
+  - appsgurudevi
+  - appsgurudevimobile
+  - classroomteacher
+  - classroomteacherimplementation
+  - currentprogress
+  - currentprogressclassroom
+  - docscurrent
+- id: planned:intent-02931
+  task: apps/gurudevi-mobile/docs/current_progress/2026-09-01-guardian-child-lifecycle-boundary.md — main | progress/status
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - current_progress
+  - appsgurudevi
+  - appsgurudevimobile
+  - boundarymain
+  - boundarymainprogress
+  - childlifecycle
+  - childlifecycleboundary
+  - currentprogress
+- id: planned:intent-03004
+  task: apps/teacher-platform/debug_log.txt — branch-only | other
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - debug_log
+  - appsteacher
+  - appsteacherplatform
+  - branchonly
+  - branchonlyother
+  - debuglog
+  - debuglogtxt
+  - logtxt
+- id: planned:intent-03087
+  task: docs/infra/github-student-pack-toolchain.md — main | architecture/dev
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - architecturedev
+  - docsinfra
+  - docsinfragithub
+  - githubstudent
+  - githubstudentpack
+  - infragithub
+  - infragithubstudent
+  - mainarchitecture
+- id: planned:intent-03219
+  task: planned:intent-00027 — Create `useSelfWorkspaceSurfaces` hooks (6 roles) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - useSelfWorkspaceSurfaces
+  - docintent
+  - hooksroles
+  - hooksrolesdoc
+  - intenthooks
+  - intenthooksroles
+  - plannedintent
+  - plannedintenthooks
+- id: planned:intent-03220
+  task: planned:intent-00052 — Export from `@repo/self` index | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - exportindex
+  - exportindexdoc
+  - indexdoc
+  - indexdocintent
+  - intentexport
+  - intentexportindex
+  - plannedintent
+- id: planned:intent-03227
+  task: planned:intent-00173 — Monitor logs for violations (ongoing) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentmonitor
+  - intentmonitorlogs
+  - logsviolations
+  - logsviolationsongoing
+  - monitorlogs
+  - monitorlogsviolations
+  - ongoingdoc
+- id: planned:intent-03228
+  task: planned:intent-00192 — Create ThemeProvider wrapper | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - ThemeProvider
+  - docintent
+  - intentthemeprovider
+  - intentthemeproviderwrapper
+  - plannedintent
+  - plannedintentthemeprovider
+  - themeproviderwrapper
+  - themeproviderwrapperdoc
+- id: planned:intent-03229
+  task: planned:intent-00195 — Create font utility helpers | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - fontutility
+  - fontutilityhelpers
+  - helpersdoc
+  - helpersdocintent
+  - intentfont
+  - intentfontutility
+  - plannedintent
+- id: planned:intent-03230
+  task: planned:intent-00196 — Create Supabase project | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentsupabase
+  - intentsupabaseproject
+  - plannedintent
+  - plannedintentsupabase
+  - projectdoc
+  - projectdocintent
+  - supabaseproject
+- id: planned:intent-03231
+  task: planned:intent-00197 — Create Supabase client (`/lib/supabase.ts`) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - clientdoc
+  - clientdocintent
+  - docintent
+  - intentsupabase
+  - intentsupabaseclient
+  - plannedintent
+  - plannedintentsupabase
+  - supabaseclient
+- id: planned:intent-03232
+  task: planned:intent-00198 — Create base RLS policies for school isolation | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - baserls
+  - baserlspolicies
+  - docintent
+  - intentbase
+  - intentbaserls
+  - isolationdoc
+  - isolationdocintent
+  - plannedintent
+- id: planned:intent-03233
+  task: planned:intent-00204 — Create role detection utility | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - detectionutility
+  - detectionutilitydoc
+  - docintent
+  - intentrole
+  - intentroledetection
+  - plannedintent
+  - plannedintentrole
+  - roledetection
+- id: planned:intent-03234
+  task: planned:intent-00206 — Create bottom tab navigator (5 tabs) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - bottomtab
+  - bottomtabnavigator
+  - docintent
+  - intentbottom
+  - intentbottomtab
+  - navigatortabs
+  - navigatortabsdoc
+  - plannedintent
+- id: planned:intent-03235
+  task: planned:intent-00207 — Create stack navigators for each tab | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - eachtab
+  - eachtabdoc
+  - intentstack
+  - intentstacknavigators
+  - navigatorseach
+  - navigatorseachtab
+  - plannedintent
+- id: planned:intent-03236
+  task: planned:intent-00208 — Create navigation type definitions | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - definitionsdoc
+  - definitionsdocintent
+  - docintent
+  - intentnavigation
+  - intentnavigationtype
+  - navigationtype
+  - navigationtypedefinitions
+  - plannedintent
+- id: planned:intent-03237
+  task: planned:intent-00209 — Create time utilities | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intenttime
+  - intenttimeutilities
+  - plannedintent
+  - plannedintenttime
+  - timeutilities
+  - timeutilitiesdoc
+  - utilitiesdoc
+- id: planned:intent-03238
+  task: planned:intent-00210 — Create greeting generator | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - generatordoc
+  - generatordocintent
+  - greetinggenerator
+  - greetinggeneratordoc
+  - intentgreeting
+  - intentgreetinggenerator
+  - plannedintent
+- id: planned:intent-03239
+  task: planned:intent-00211 — Create time-based theme helper (for future v0.5) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - basedtheme
+  - basedthemehelper
+  - docintent
+  - futuredoc
+  - futuredocintent
+  - helperfuture
+  - helperfuturedoc
+  - intenttime
+- id: planned:intent-03240
+  task: planned:intent-00212 — Create device detection utility | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - detectionutility
+  - detectionutilitydoc
+  - devicedetection
+  - devicedetectionutility
+  - docintent
+  - intentdevice
+  - intentdevicedetection
+  - plannedintent
+- id: planned:intent-03241
+  task: planned:intent-00213 — Create config based on tier | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - basedtier
+  - basedtierdoc
+  - configbased
+  - configbasedtier
+  - docintent
+  - intentconfig
+  - intentconfigbased
+  - plannedintent
+- id: planned:intent-03242
+  task: planned:intent-00214 — Create haptic utility | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - hapticutility
+  - hapticutilitydoc
+  - intenthaptic
+  - intenthapticutility
+  - plannedintent
+  - plannedintenthaptic
+  - utilitydoc
+- id: planned:intent-03243
+  task: planned:intent-00219 — Add haptic feedback to all interactions | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - feedbackinteractions
+  - feedbackinteractionsdoc
+  - hapticfeedback
+  - hapticfeedbackinteractions
+  - intenthaptic
+  - intenthapticfeedback
+  - interactionsdoc
+- id: planned:intent-03247
+  task: planned:intent-00376 — Create user store (Zustand + MMKV) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentstore
+  - intentstorezustand
+  - mmkvdoc
+  - mmkvdocintent
+  - plannedintent
+  - plannedintentstore
+  - storezustand
+- id: planned:intent-03249
+  task: planned:intent-00493 — Implement responsive mascot positioning across different screen aspect ratios without bloc | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - acrossdifferent
+  - acrossdifferentaspect
+  - aspectratios
+  - aspectratioswithout
+  - blocdoc
+  - blocdocintent
+  - differentaspect
+  - differentaspectratios
+- id: planned:intent-03250
+  task: planned:intent-00511 — create shared workspace types | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentshared
+  - intentsharedworkspace
+  - plannedintent
+  - plannedintentshared
+  - sharedworkspace
+  - sharedworkspacetypes
+  - typesdoc
+- id: planned:intent-03253
+  task: planned:intent-00517 — add shared workspace surface and layout types | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentshared
+  - intentsharedworkspace
+  - layouttypes
+  - layouttypesdoc
+  - plannedintent
+  - plannedintentshared
+  - sharedworkspace
+- id: planned:intent-03256
+  task: planned:intent-00576 — create class | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classdoc
+  - classdocintent
+  - docintent
+  - intentclass
+  - intentclassdoc
+  - plannedintent
+  - plannedintentclass
+- id: planned:intent-03257
+  task: planned:intent-00580 — Create root Expo Router shell | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - exporouter
+  - exporoutershell
+  - intentroot
+  - intentrootexpo
+  - plannedintent
+  - plannedintentroot
+  - rootexpo
+- id: planned:intent-03258
+  task: planned:intent-00583 — Create tab shell layouts | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intenttab
+  - intenttabshell
+  - layoutsdoc
+  - layoutsdocintent
+  - plannedintent
+  - plannedintenttab
+  - shelllayouts
+- id: planned:intent-03259
+  task: planned:intent-00584 — Create route files for tab content | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - contentdoc
+  - contentdocintent
+  - docintent
+  - filestab
+  - filestabcontent
+  - intentroute
+  - intentroutefiles
+  - plannedintent
+- id: planned:intent-03260
+  task: planned:intent-00622 — Share with team | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentshare
+  - intentshareteam
+  - plannedintent
+  - plannedintentshare
+  - shareteam
+  - shareteamdoc
+  - teamdoc
+- id: planned:intent-03261
+  task: planned:intent-00623 — Configure error tracking | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - configureerror
+  - configureerrortracking
+  - docintent
+  - errortracking
+  - errortrackingdoc
+  - intentconfigure
+  - intentconfigureerror
+  - plannedintent
+- id: planned:intent-03269
+  task: planned:intent-00777 — Create Supabase migration with new tables | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentsupabase
+  - intentsupabasemigration
+  - migrationtables
+  - migrationtablesdoc
+  - plannedintent
+  - plannedintentsupabase
+  - supabasemigration
+- id: planned:intent-03270
+  task: planned:intent-00789 — Create QuestionDetailScreen | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - QuestionDetailScreen
+  - docintent
+  - intentquestiondetailscreen
+  - intentquestiondetailscreendoc
+  - plannedintent
+  - plannedintentquestiondetailscreen
+  - questiondetailscreendoc
+  - questiondetailscreendocintent
+- id: planned:intent-03271
+  task: planned:intent-00791 — Create TeachersLounge screen | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - TeachersLounge
+  - docintent
+  - intentteacherslounge
+  - intentteachersloungedoc
+  - plannedintent
+  - plannedintentteacherslounge
+  - teachersloungedoc
+  - teachersloungedocintent
+- id: planned:intent-03272
+  task: planned:intent-00795 — Create PrincipalInbox screen | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - PrincipalInbox
+  - docintent
+  - intentprincipalinbox
+  - intentprincipalinboxdoc
+  - plannedintent
+  - plannedintentprincipalinbox
+  - principalinboxdoc
+  - principalinboxdocintent
+- id: planned:intent-03273
+  task: planned:intent-00797 — Create recognition API | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apidoc
+  - apidocintent
+  - docintent
+  - intentrecognition
+  - intentrecognitionapi
+  - plannedintent
+  - plannedintentrecognition
+  - recognitionapi
+- id: planned:intent-03274
+  task: planned:intent-00799 — Create ContributionsWidget | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - ContributionsWidget
+  - contributionswidgetdoc
+  - contributionswidgetdocintent
+  - docintent
+  - intentcontributionswidget
+  - intentcontributionswidgetdoc
+  - plannedintent
+  - plannedintentcontributionswidget
+- id: planned:intent-03275
+  task: planned:intent-00803 — Create metrics aggregation queries | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - aggregationqueries
+  - aggregationqueriesdoc
+  - docintent
+  - intentmetrics
+  - intentmetricsaggregation
+  - metricsaggregation
+  - metricsaggregationqueries
+  - plannedintent
+- id: planned:intent-03283
+  task: planned:intent-01057 — Implement account deletion workflow | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - accountdeletion
+  - accountdeletionworkflow
+  - deletionworkflow
+  - deletionworkflowdoc
+  - docintent
+  - intentaccount
+  - intentaccountdeletion
+  - plannedintent
+- id: planned:intent-03285
+  task: planned:intent-01210 — See trending and new arrivals shelves — — | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - arrivalsshelves
+  - arrivalsshelvesdoc
+  - docintent
+  - intenttrending
+  - intenttrendingarrivals
+  - plannedintent
+  - plannedintenttrending
+  - shelvesdoc
+- id: planned:intent-03286
+  task: planned:intent-01250 — Created this implementation summary | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - createdimplementation
+  - createdimplementationsummary
+  - docintent
+  - implementationsummary
+  - implementationsummarydoc
+  - intentcreated
+  - intentcreatedimplementation
+  - plannedintent
+- id: planned:intent-03287
+  task: planned:intent-01258 — Export to JSON | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - exportjson
+  - exportjsondoc
+  - intentexport
+  - intentexportjson
+  - jsondoc
+  - jsondocintent
+  - plannedintent
+- id: planned:intent-03288
+  task: planned:intent-01273 — Create comparison report (local vs. remote) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - comparisonreport
+  - comparisonreportlocal
+  - docintent
+  - intentcomparison
+  - intentcomparisonreport
+  - localremote
+  - localremotedoc
+  - plannedintent
+- id: planned:intent-03292
+  task: planned:intent-01552 — delete temporary adapters and bridge logic | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - adaptersbridge
+  - adaptersbridgelogic
+  - bridgelogic
+  - bridgelogicdoc
+  - deletetemporary
+  - deletetemporaryadapters
+  - docintent
+  - intentdelete
+- id: planned:intent-03293
+  task: planned:intent-01580 — Add DNS records in Vercel dashboard | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - dashboarddoc
+  - dashboarddocintent
+  - dnsrecords
+  - dnsrecordsvercel
+  - docintent
+  - intentdns
+  - intentdnsrecords
+  - plannedintent
+- id: planned:intent-03294
+  task: planned:intent-01581 — **Share the link** and get feedback | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - feedbackdoc
+  - feedbackdocintent
+  - getfeedback
+  - getfeedbackdoc
+  - intentshare
+  - intentsharelink
+  - linkget
+- id: planned:intent-03295
+  task: planned:intent-01585 — **Share the URL** with friends for feedback | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - feedbackdoc
+  - feedbackdocintent
+  - friendsfeedback
+  - friendsfeedbackdoc
+  - intentshare
+  - intentshareurl
+  - plannedintent
+- id: planned:intent-03296
+  task: planned:intent-01633 — Add crash reporting | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - crashreporting
+  - crashreportingdoc
+  - docintent
+  - intentcrash
+  - intentcrashreporting
+  - plannedintent
+  - plannedintentcrash
+  - reportingdoc
+- id: planned:intent-03297
+  task: planned:intent-01634 — Track key user flows | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - flowsdoc
+  - flowsdocintent
+  - intenttrack
+  - intenttrackkey
+  - keyflows
+  - keyflowsdoc
+  - plannedintent
+- id: planned:intent-03298
+  task: planned:intent-01635 — Add feature usage tracking | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentusage
+  - intentusagetracking
+  - plannedintent
+  - plannedintentusage
+  - trackingdoc
+  - trackingdocintent
+  - usagetracking
+- id: planned:intent-03299
+  task: planned:intent-01641 — **Search & Filter** 🔍 | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - filterdoc
+  - filterdocintent
+  - intentsearch
+  - intentsearchfilter
+  - plannedintent
+  - plannedintentsearch
+  - searchfilter
+- id: planned:intent-03302
+  task: planned:intent-01711 — Create FeedbackScreen | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - FeedbackScreen
+  - docintent
+  - feedbackscreendoc
+  - feedbackscreendocintent
+  - intentfeedbackscreen
+  - intentfeedbackscreendoc
+  - plannedintent
+  - plannedintentfeedbackscreen
+- id: planned:intent-03304
+  task: planned:intent-01766 — Allow certain screens to override theme | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - allowcertain
+  - allowcertainscreens
+  - certainscreens
+  - certainscreensoverride
+  - docintent
+  - intentallow
+  - intentallowcertain
+  - overridetheme
+- id: planned:intent-03305
+  task: planned:intent-01767 — Create useThemeContext hook | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - useThemeContext
+  - docintent
+  - hookdoc
+  - hookdocintent
+  - intentusethemecontext
+  - intentusethemecontexthook
+  - plannedintent
+  - plannedintentusethemecontext
+- id: planned:intent-03306
+  task: planned:intent-01771 — Let it create PR | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentlet
+  - intentletdoc
+  - letdoc
+  - letdocintent
+  - plannedintent
+  - plannedintentlet
+- id: planned:intent-03307
+  task: planned:intent-01772 — **Monitor progress** (you can check from mobile!) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checkmobile
+  - checkmobiledoc
+  - docintent
+  - intentmonitor
+  - intentmonitorprogress
+  - mobiledoc
+  - mobiledocintent
+  - monitorprogress
+- id: planned:intent-03308
+  task: planned:intent-01775 — Create Firebase project | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - firebaseproject
+  - firebaseprojectdoc
+  - intentfirebase
+  - intentfirebaseproject
+  - plannedintent
+  - plannedintentfirebase
+  - projectdoc
+- id: planned:intent-03309
+  task: planned:intent-01776 — Configure domain (gurudeviapp.page.link) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - configuredomain
+  - configuredomaingurudeviapp
+  - docintent
+  - domaingurudeviapp
+  - domaingurudeviapplink
+  - gurudeviapplink
+  - gurudeviapplinkdoc
+  - intentconfigure
+- id: planned:intent-03311
+  task: planned:intent-01849 — Show only assigned classes | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - assignedclasses
+  - assignedclassesdoc
+  - classesdoc
+  - classesdocintent
+  - docintent
+  - intentonly
+  - intentonlyassigned
+  - onlyassigned
+- id: planned:intent-03312
+  task: planned:intent-01857 — Create `src/navigation` structure (Delegated) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - delegateddoc
+  - delegateddocintent
+  - docintent
+  - intentstructure
+  - intentstructuredelegated
+  - plannedintent
+  - plannedintentstructure
+  - structuredelegated
+- id: planned:intent-03314
+  task: planned:intent-01963 — **Market Maturity** — Experiencing significant growth | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - experiencingsignificant
+  - experiencingsignificantgrowth
+  - growthdoc
+  - growthdocintent
+  - intentmarket
+  - intentmarketmaturity
+  - marketmaturity
+- id: planned:intent-03315
+  task: planned:intent-02069 — Add `byteSize()` tracking on `getStoredValue` / `setStoredValue` — expose via `storage.byt | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - byteSize
+  - setStoredValue
+  - getStoredValue
+  - bytdoc
+  - bytdocintent
+  - docintent
+  - exposestorage
+  - exposestoragebyt
+- id: planned:intent-03316
+  task: planned:intent-02157 — Add classification tests before moving adapters. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - adaptersdoc
+  - adaptersdocintent
+  - beforemoving
+  - beforemovingadapters
+  - classificationtests
+  - classificationtestsbefore
+  - docintent
+  - intentclassification
+- id: planned:intent-03317
+  task: planned:intent-02235 — Create or update | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentdoc
+  - intentdocintent
+  - plannedintent
+  - plannedintentdoc
+- id: planned:intent-03318
+  task: planned:intent-02255 — Create workspace named "Polymath Platform" | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentworkspace
+  - intentworkspacenamed
+  - namedpolymath
+  - namedpolymathplatform
+  - plannedintent
+  - plannedintentworkspace
+  - platformdoc
+- id: planned:intent-03319
+  task: planned:intent-02257 — Create project `polymath-platform` | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - polymath
+  - docintent
+  - intentproject
+  - intentprojectdoc
+  - plannedintent
+  - plannedintentproject
+  - projectdoc
+  - projectdocintent
+- id: planned:intent-03320
+  task: planned:intent-02264 — Create secret mapping document | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - documentdoc
+  - documentdocintent
+  - intentsecret
+  - intentsecretmapping
+  - mappingdocument
+  - mappingdocumentdoc
+  - plannedintent
+- id: planned:intent-03321
+  task: 'planned:intent-02270 — Implement Doppler fallback logic: | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - dopplerfallback
+  - dopplerfallbacklogic
+  - fallbacklogic
+  - fallbacklogicdoc
+  - intentdoppler
+  - intentdopplerfallback
+  - logicdoc
+- id: planned:intent-03322
+  task: planned:intent-02276 — Create rollback plan | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentrollback
+  - intentrollbackplan
+  - plandoc
+  - plandocintent
+  - plannedintent
+  - plannedintentrollback
+  - rollbackplan
+- id: planned:intent-03323
+  task: planned:intent-02435 — SharedWorker or cross-tab coordination — Use a safe single-tab lease; do not let tabs conc | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - SharedWorker
+  - concdoc
+  - concdocintent
+  - coordinationsafe
+  - coordinationsafesingle
+  - crosstab
+  - crosstabcoordination
+  - docintent
+- id: planned:intent-03324
+  task: planned:intent-02524 — Create hierarchical configs for each environment | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - configseach
+  - configseachenvironment
+  - docintent
+  - eachenvironment
+  - eachenvironmentdoc
+  - environmentdoc
+  - environmentdocintent
+  - hierarchicalconfigs
+- id: planned:intent-03325
+  task: planned:intent-02566 — Create comparison framework | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - comparisonframework
+  - comparisonframeworkdoc
+  - docintent
+  - frameworkdoc
+  - frameworkdocintent
+  - intentcomparison
+  - intentcomparisonframework
+  - plannedintent
+- id: planned:intent-03326
+  task: planned:intent-02592 — Review and approve this proposal | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - approveproposal
+  - approveproposaldoc
+  - docintent
+  - intentreview
+  - intentreviewapprove
+  - plannedintent
+  - plannedintentreview
+  - proposaldoc
+- id: planned:intent-03327
+  task: planned:intent-02605 — Reading progress indicators | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - indicatorsdoc
+  - indicatorsdocintent
+  - intentreading
+  - intentreadingprogress
+  - plannedintent
+  - plannedintentreading
+  - progressindicators
+- id: planned:intent-03328
+  task: planned:intent-02619 — Share with personal networks | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentshare
+  - intentsharepersonal
+  - networksdoc
+  - networksdocintent
+  - personalnetworks
+  - personalnetworksdoc
+  - plannedintent
+- id: planned:intent-03330
+  task: planned:intent-02629 — Add individual paradigm detail pages | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - detailpages
+  - detailpagesdoc
+  - docintent
+  - individualparadigm
+  - individualparadigmdetail
+  - intentindividual
+  - intentindividualparadigm
+  - pagesdoc
+- id: planned:intent-03336
+  task: 'planned:intent-02726 — **Shows transparency commitment**: "We will publish monthly reports of every match" | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - commitmentpublish
+  - commitmentpublishmonthly
+  - docintent
+  - everymatch
+  - everymatchdoc
+  - intentshows
+  - intentshowstransparency
+  - matchdoc
+- id: planned:intent-03341
+  task: planned:intent-02787 — Create Doppler project and environments | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - dopplerproject
+  - dopplerprojectenvironments
+  - environmentsdoc
+  - environmentsdocintent
+  - intentdoppler
+  - intentdopplerproject
+  - plannedintent
+- id: planned:intent-03357
+  task: planned:intent-02955 — **Implement SheetJS integration** (parse + grid viewer) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - gridviewer
+  - gridviewerdoc
+  - integrationparse
+  - integrationparsegrid
+  - intentsheetjs
+  - intentsheetjsintegration
+  - parsegrid
+- id: planned:intent-03358
+  task: planned:intent-02957 — **Build UI screens** for each capability | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - capabilitydoc
+  - capabilitydocintent
+  - docintent
+  - eachcapability
+  - eachcapabilitydoc
+  - intentscreens
+  - intentscreenseach
+  - plannedintent
+- id: planned:intent-03359
+  task: planned:intent-02967 — Add progress streaming for long-running maintenance tools. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentprogress
+  - intentprogressstreaming
+  - longrunning
+  - longrunningmaintenance
+  - maintenancetools
+  - maintenancetoolsdoc
+  - plannedintent
+- id: planned:intent-03365
+  task: planned:intent-03033 — Implement **Temporal API** for all date-sensitive logic in `packages/core`. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apidate
+  - apidatesensitive
+  - datesensitive
+  - datesensitivelogic
+  - docintent
+  - intenttemporal
+  - intenttemporalapi
+  - logicdoc
+- id: planned:intent-03367
+  task: 'planned:intent-03073 — Create Implementation Plan (Schema, API, UI) <!-- id: 0 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apidoc
+  - apidocintent
+  - docintent
+  - implementationplan
+  - implementationplanschema
+  - intentimplementation
+  - intentimplementationplan
+  - plannedintent
+- id: planned:intent-03368
+  task: 'planned:intent-03087 — Create `SanctuaryToast` (Success/Error feedback). <!-- id: 26 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: UI-UNWIRED
+  terms:
+  - SanctuaryToast
+  - docintent
+  - errorfeedback
+  - errorfeedbackdoc
+  - feedbackdoc
+  - feedbackdocintent
+  - intentsuccess
+  - intentsuccesserror
+- id: planned:intent-03370
+  task: 'planned:intent-03115 — Implement Gurudevi Landing Page <!-- id: 15 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - gurudevilanding
+  - gurudevilandingdoc
+  - intentgurudevi
+  - intentgurudevilanding
+  - landingdoc
+  - landingdocintent
+  - plannedintent
+- id: planned:intent-03371
+  task: planned:intent-03154 — Add `ViewTransitions` for app-like morphing. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - ViewTransitions
+  - applike
+  - applikemorphing
+  - docintent
+  - intentapp
+  - intentapplike
+  - likemorphing
+  - likemorphingdoc
+- id: planned:intent-03372
+  task: 'planned:intent-03195 — Provide opinion and feedback to user <!-- id: 5 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - feedbackdoc
+  - feedbackdocintent
+  - intentprovide
+  - intentprovideopinion
+  - opinionfeedback
+  - opinionfeedbackdoc
+  - plannedintent
+- id: planned:intent-03373
+  task: 'planned:intent-03197 — Create Walkthrough <!-- id: 29 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentwalkthrough
+  - intentwalkthroughdoc
+  - plannedintent
+  - plannedintentwalkthrough
+  - walkthroughdoc
+  - walkthroughdocintent
+- id: planned:intent-03374
+  task: 'planned:intent-03198 — Create draft of `ALPHA_RELEASE_TRACKER.md` <!-- id: 20 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - ALPHA_RELEASE_TRACKER
+  - docintent
+  - draftdoc
+  - draftdocintent
+  - intentdraft
+  - intentdraftdoc
+  - plannedintent
+  - plannedintentdraft
+- id: planned:intent-03375
+  task: 'planned:intent-03199 — Create standardized directory structure <!-- id: 6 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - directorystructure
+  - directorystructuredoc
+  - docintent
+  - intentstandardized
+  - intentstandardizeddirectory
+  - plannedintent
+  - plannedintentstandardized
+  - standardizeddirectory
+- id: planned:intent-03376
+  task: planned:intent-03206 — Create supabase/old folder | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - folderdoc
+  - folderdocintent
+  - intentsupabase
+  - intentsupabaseold
+  - oldfolder
+  - oldfolderdoc
+  - plannedintent
+- id: planned:intent-03377
+  task: planned:intent-03213 — Create test cases for each policy | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - caseseach
+  - caseseachpolicy
+  - docintent
+  - eachpolicy
+  - eachpolicydoc
+  - intenttest
+  - intenttestcases
+  - plannedintent
+- id: planned:intent-03378
+  task: planned:intent-03240 — Create `.env` with API URL | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apiurl
+  - apiurldoc
+  - docintent
+  - intentapi
+  - intentapiurl
+  - plannedintent
+  - plannedintentapi
+  - urldoc
+- id: planned:intent-03379
+  task: planned:intent-03243 — Search interface | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentsearch
+  - intentsearchinterface
+  - interfacedoc
+  - interfacedocintent
+  - plannedintent
+  - plannedintentsearch
+  - searchinterface
+- id: planned:intent-03380
+  task: planned:intent-03244 — Build Domain pages (I-VI) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - domainpages
+  - domainpagesdoc
+  - intentdomain
+  - intentdomainpages
+  - pagesdoc
+  - pagesdocintent
+  - plannedintent
+- id: planned:intent-03381
+  task: planned:intent-03245 — Create `useLessons()`, `useStudents()` following `useTasks()` pattern | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - useStudents
+  - useLessons
+  - useTasks
+  - docintent
+  - followingpattern
+  - followingpatterndoc
+  - intentfollowing
+  - intentfollowingpattern
+- id: planned:intent-03383
+  task: planned:intent-03253 — Create entire features spanning multiple files | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - entirespanning
+  - entirespanningmultiple
+  - filesdoc
+  - filesdocintent
+  - intententire
+  - intententirespanning
+  - multiplefiles
+- id: planned:intent-03384
+  task: planned:intent-03286 — Create folder structure (Vision/, Architecture/, etc.) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - architectureetc
+  - architectureetcdoc
+  - docintent
+  - etcdoc
+  - etcdocintent
+  - folderstructure
+  - folderstructurevision
+  - intentfolder
+- id: planned:intent-03385
+  task: planned:intent-03287 — Create START_HERE.md navigation | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - herenavigation
+  - herenavigationdoc
+  - intentstart
+  - intentstarthere
+  - navigationdoc
+  - navigationdocintent
+  - plannedintent
+- id: planned:intent-03386
+  task: planned:intent-03288 — Create MASTER_ROADMAP.md (merge 3 files) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - filesdoc
+  - filesdocintent
+  - intentmaster
+  - intentmasterroadmap
+  - masterroadmap
+  - masterroadmapmerge
+  - mergefiles
+- id: planned:intent-03387
+  task: planned:intent-03289 — Create QUICK_REFERENCE.md (merge 3 files) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - filesdoc
+  - filesdocintent
+  - intentquick
+  - intentquickreference
+  - mergefiles
+  - mergefilesdoc
+  - plannedintent
+- id: planned:intent-03388
+  task: planned:intent-03290 — Create SESSION_JOURNAL.md (merge 2 files) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - filesdoc
+  - filesdocintent
+  - intentsession
+  - intentsessionjournal
+  - journalmerge
+  - journalmergefiles
+  - mergefiles
+- id: planned:intent-03389
+  task: planned:intent-03307 — Create feature branch `foundation/phase-1-complete` | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - branchdoc
+  - branchdocintent
+  - docintent
+  - intentbranch
+  - intentbranchdoc
+  - plannedintent
+  - plannedintentbranch
+- id: planned:intent-03390
+  task: planned:intent-03309 — Create quick commands reference | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - commandsreference
+  - commandsreferencedoc
+  - docintent
+  - intentquick
+  - intentquickcommands
+  - plannedintent
+  - plannedintentquick
+  - quickcommands
+- id: planned:intent-03391
+  task: planned:intent-03312 — Create `/assets/fonts/` directory | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - directorydoc
+  - directorydocintent
+  - docintent
+  - intentdirectory
+  - intentdirectorydoc
+  - plannedintent
+  - plannedintentdirectory
+  - /assets/fonts
+- id: planned:intent-03393
+  task: planned:intent-03371 — Create sense of depth and layering | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - depthlayering
+  - depthlayeringdoc
+  - docintent
+  - intentsense
+  - intentsensedepth
+  - layeringdoc
+  - layeringdocintent
+  - plannedintent
+- id: planned:intent-03394
+  task: planned:intent-03372 — Create sense of timelessness | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentsense
+  - intentsensetimelessness
+  - plannedintent
+  - plannedintentsense
+  - sensetimelessness
+  - sensetimelessnessdoc
+  - timelessnessdoc
+- id: planned:intent-03395
+  task: planned:intent-03373 — Create sense of energy and possibility | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - energypossibility
+  - energypossibilitydoc
+  - intentsense
+  - intentsenseenergy
+  - plannedintent
+  - plannedintentsense
+  - possibilitydoc
+- id: planned:intent-03396
+  task: planned:intent-03376 — Seed cursor planted | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - cursorplanted
+  - cursorplanteddoc
+  - docintent
+  - intentseed
+  - intentseedcursor
+  - plannedintent
+  - plannedintentseed
+  - planteddoc
+- id: planned:intent-03397
+  task: planned:intent-03377 — Create navigation (sticky, blur, responsive) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - blurresponsive
+  - blurresponsivedoc
+  - docintent
+  - intentnavigation
+  - intentnavigationsticky
+  - navigationsticky
+  - navigationstickyblur
+  - plannedintent
+- id: planned:intent-03398
+  task: 'planned:intent-03378 — **View the changes**: `npm run dev` in neevsk-web | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - changesneevsk
+  - changesneevskweb
+  - docintent
+  - intentchanges
+  - intentchangesneevsk
+  - neevskweb
+  - neevskwebdoc
+  - plannedintent
+- id: planned:intent-03399
+  task: planned:intent-03380 — Add visual progress/timeline | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentvisual
+  - intentvisualprogress
+  - plannedintent
+  - plannedintentvisual
+  - progresstimeline
+  - progresstimelinedoc
+  - timelinedoc
+- id: planned:intent-03400
+  task: planned:intent-03381 — Create life timeline (birth → 2026) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - birthdoc
+  - birthdocintent
+  - docintent
+  - intentlife
+  - intentlifetimeline
+  - lifetimeline
+  - lifetimelinebirth
+  - plannedintent
+- id: planned:intent-03402
+  task: planned:intent-01738 — **Search & Filter** - Find classrooms by name/subject | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classroomsname
+  - classroomsnamesubject
+  - docintent
+  - filterfind
+  - filterfindclassrooms
+  - findclassrooms
+  - findclassroomsname
+  - intentsearch
+- id: planned:intent-03403
+  task: planned:intent-01827 — Create hierarchy tables | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - hierarchytables
+  - hierarchytablesdoc
+  - intenthierarchy
+  - intenthierarchytables
+  - plannedintent
+  - plannedintenthierarchy
+  - tablesdoc
+- id: planned:intent-03404
+  task: planned:intent-01842 — Show section → grade → classroom hierarchy | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classroomhierarchy
+  - classroomhierarchydoc
+  - docintent
+  - gradeclassroom
+  - gradeclassroomhierarchy
+  - hierarchydoc
+  - hierarchydocintent
+  - intentsection
+- id: planned:intent-03412
+  task: 'planned:intent-00522 — Create one domain-specific agent file with: | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - agentfile
+  - agentfiledoc
+  - docintent
+  - domainspecific
+  - domainspecificagent
+  - filedoc
+  - filedocintent
+  - intentone
+- id: planned:intent-03414
+  task: planned:intent-03031 — Create agent briefs for top items | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - agentbriefs
+  - agentbriefstop
+  - briefstop
+  - briefstopdoc
+  - docintent
+  - intentagent
+  - intentagentbriefs
+  - plannedintent
+- id: planned:intent-03424
+  task: planned:intent-03233 — View announcements | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - announcementsdoc
+  - announcementsdocintent
+  - docintent
+  - intentannouncements
+  - intentannouncementsdoc
+  - plannedintent
+  - plannedintentannouncements
+- id: planned:intent-03432
+  task: planned:intent-00193 — Create language files structure | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - filesstructure
+  - filesstructuredoc
+  - intentlanguage
+  - intentlanguagefiles
+  - languagefiles
+  - languagefilesstructure
+  - plannedintent
+- id: planned:intent-03433
+  task: planned:intent-00194 — Create language switcher utility | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentlanguage
+  - intentlanguageswitcher
+  - languageswitcher
+  - languageswitcherutility
+  - plannedintent
+  - plannedintentlanguage
+  - switcherutility
+- id: planned:intent-03434
+  task: planned:intent-00769 — Create privacy policy | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentprivacy
+  - intentprivacypolicy
+  - plannedintent
+  - plannedintentprivacy
+  - policydoc
+  - policydocintent
+  - privacypolicy
+- id: planned:intent-03435
+  task: planned:intent-01257 — Export/import settings | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - exportimport
+  - exportimportsettings
+  - importsettings
+  - importsettingsdoc
+  - intentexport
+  - intentexportimport
+  - plannedintent
+- id: planned:intent-03436
+  task: planned:intent-01263 — Add accessibility labels to top 10 screens | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - accessibilitylabels
+  - accessibilitylabelstop
+  - docintent
+  - intentaccessibility
+  - intentaccessibilitylabels
+  - labelstop
+  - labelstopscreens
+  - plannedintent
+- id: planned:intent-03437
+  task: planned:intent-01575 — Record the current visual baseline for onboarding, auth, settings, overlays, forms, lists, | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authsettings
+  - authsettingsoverlays
+  - baselineonboarding
+  - baselineonboardingauth
+  - currentvisual
+  - currentvisualbaseline
+  - docintent
+  - formslists
+- id: planned:intent-03438
+  task: planned:intent-01867 — Added success messages in all languages | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - addedsuccess
+  - addedsuccessmessages
+  - docintent
+  - intentadded
+  - intentaddedsuccess
+  - languagesdoc
+  - languagesdocintent
+  - messageslanguages
+- id: planned:intent-03439
+  task: planned:intent-02024 — Search across publications and languages | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - acrosspublications
+  - acrosspublicationslanguages
+  - docintent
+  - intentsearch
+  - intentsearchacross
+  - languagesdoc
+  - languagesdocintent
+  - plannedintent
+- id: planned:intent-03441
+  task: planned:intent-03237 — View settings | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentsettings
+  - intentsettingsdoc
+  - plannedintent
+  - plannedintentsettings
+  - settingsdoc
+  - settingsdocintent
+- id: planned:intent-03449
+  task: planned:intent-00268 — View cached lessons, assignments | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - assignmentsdoc
+  - assignmentsdocintent
+  - cachedlessons
+  - cachedlessonsassignments
+  - docintent
+  - intentcached
+  - intentcachedlessons
+  - lessonsassignments
+- id: planned:intent-03451
+  task: planned:intent-01071 — **Assignment QR** | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - assignmentdoc
+  - assignmentdocintent
+  - docintent
+  - intentassignment
+  - intentassignmentdoc
+  - plannedintent
+  - plannedintentassignment
+- id: planned:intent-03458
+  task: planned:intent-02128 — Review the 15-minute background sync registration and hourly eviction registration against | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - againstdoc
+  - againstdocintent
+  - backgroundsync
+  - backgroundsyncregistration
+  - docintent
+  - evictionregistration
+  - evictionregistrationagainst
+  - hourlyeviction
+- id: planned:intent-03461
+  task: 'planned:intent-03172 — Add Role-based Stats (e.g., Classes Taught, Attendance Streak) <!-- id: 15 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - attendancestreak
+  - attendancestreakdoc
+  - basedstats
+  - basedstatsclasses
+  - classestaught
+  - classestaughtattendance
+  - docintent
+  - intentrole
+- id: planned:intent-03471
+  task: planned:intent-00449 — Shared code must not call `supabase.from(...)`, `supabase.rpc(...)`, `supabase.storage`, ` | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - calldoc
+  - calldocintent
+  - codecall
+  - codecalldoc
+  - docintent
+  - intentshared
+  - intentsharedcode
+  - plannedintent
+- id: planned:intent-03472
+  task: planned:intent-00475 — Create a typed flag manifest/metadata contract in core without reintroducing Supabase eval | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - contractcore
+  - contractcorewithout
+  - corewithout
+  - corewithoutreintroducing
+  - docintent
+  - evaldoc
+  - evaldocintent
+  - flagmanifest
+- id: planned:intent-03473
+  task: planned:intent-00582 — Create authenticated app shell | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - appshell
+  - appshelldoc
+  - authenticatedapp
+  - authenticatedappshell
+  - docintent
+  - intentauthenticated
+  - intentauthenticatedapp
+  - plannedintent
+- id: planned:intent-03475
+  task: planned:intent-01624 — Add password strength validator | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentpassword
+  - intentpasswordstrength
+  - passwordstrength
+  - passwordstrengthvalidator
+  - plannedintent
+  - plannedintentpassword
+  - strengthvalidator
+- id: planned:intent-03476
+  task: planned:intent-01625 — Implement CAPTCHA on login | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - captchalogin
+  - captchalogindoc
+  - docintent
+  - intentcaptcha
+  - intentcaptchalogin
+  - logindoc
+  - logindocintent
+  - plannedintent
+- id: planned:intent-03477
+  task: planned:intent-01637 — Add CAPTCHA to auth forms | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authforms
+  - authformsdoc
+  - captchaauth
+  - captchaauthforms
+  - docintent
+  - formsdoc
+  - formsdocintent
+  - intentcaptcha
+- id: planned:intent-03478
+  task: planned:intent-01638 — Add password strength meter | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentpassword
+  - intentpasswordstrength
+  - meterdoc
+  - meterdocintent
+  - passwordstrength
+  - passwordstrengthmeter
+  - plannedintent
+- id: planned:intent-03479
+  task: planned:intent-01695 — Create NameScreen | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - NameScreen
+  - docintent
+  - intentnamescreen
+  - intentnamescreendoc
+  - namescreendoc
+  - namescreendocintent
+  - plannedintent
+  - plannedintentnamescreen
+- id: planned:intent-03480
+  task: planned:intent-01697 — Create CreateAccountScreen | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - CreateAccountScreen
+  - createaccountscreendoc
+  - createaccountscreendocintent
+  - docintent
+  - intentcreateaccountscreen
+  - intentcreateaccountscreendoc
+  - plannedintent
+  - plannedintentcreateaccountscreen
+- id: planned:intent-03481
+  task: planned:intent-01699 — Create PathfinderAgreementScreen | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - PathfinderAgreementScreen
+  - docintent
+  - intentpathfinderagreementscreen
+  - intentpathfinderagreementscreendoc
+  - pathfinderagreementscreendoc
+  - pathfinderagreementscreendocintent
+  - plannedintent
+  - plannedintentpathfinderagreementscreen
+- id: planned:intent-03482
+  task: planned:intent-01700 — Implement createUser function (database) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - createUser
+  - createuserfunction
+  - createuserfunctiondatabase
+  - databasedoc
+  - databasedocintent
+  - docintent
+  - functiondatabase
+  - functiondatabasedoc
+- id: planned:intent-03483
+  task: planned:intent-01835 — Allow later joining to real school | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - allowlater
+  - allowlaterjoining
+  - docintent
+  - intentallow
+  - intentallowlater
+  - joiningreal
+  - joiningrealschool
+  - laterjoining
+- id: planned:intent-03486
+  task: planned:intent-03228 — Create auth guard for protected routes | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authguard
+  - authguardprotected
+  - docintent
+  - guardprotected
+  - guardprotectedroutes
+  - intentauth
+  - intentauthguard
+  - plannedintent
+- id: planned:intent-03487
+  task: planned:intent-03316 — View each screen (Self, Classroom, Community, Library, Profile, Auth) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authdoc
+  - authdocintent
+  - classroomcommunity
+  - classroomcommunitylibrary
+  - communitylibrary
+  - communitylibraryprofile
+  - docintent
+  - eachself
+- id: planned:intent-03488
+  task: planned:intent-03355 — Track code usage | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - codeusage
+  - codeusagedoc
+  - docintent
+  - intenttrack
+  - intenttrackcode
+  - plannedintent
+  - plannedintenttrack
+  - trackcode
+- id: planned:intent-03493
+  task: planned:intent-00505 — add override and export audit events | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - auditevents
+  - auditeventsdoc
+  - docintent
+  - eventsdoc
+  - eventsdocintent
+  - exportaudit
+  - exportauditevents
+  - intentoverride
+- id: planned:intent-03494
+  task: planned:intent-00525 — create or reuse a shared event contract | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - contractdoc
+  - contractdocintent
+  - docintent
+  - eventcontract
+  - eventcontractdoc
+  - intentreuse
+  - intentreuseshared
+  - plannedintent
+- id: planned:intent-03495
+  task: planned:intent-01628 — Add useCallback to event handlers | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - eventhandlers
+  - eventhandlersdoc
+  - handlersdoc
+  - handlersdocintent
+  - intentusecallback
+  - intentusecallbackevent
+  - plannedintent
+- id: planned:intent-03496
+  task: planned:intent-02462 — Create normalized package, release, API, lifecycle event, compatibility, local-surface, ev | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apilifecycle
+  - apilifecycleevent
+  - compatibilitylocal
+  - compatibilitylocalsurface
+  - docintent
+  - eventcompatibility
+  - eventcompatibilitylocal
+  - intentnormalized
+- id: planned:intent-03497
+  task: planned:intent-00740 — Grade entry form | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - entryform
+  - entryformdoc
+  - formdoc
+  - formdocintent
+  - gradeentry
+  - gradeentryform
+  - intentgrade
+- id: planned:intent-03551
+  task: planned:intent-01086 — Schedule classroom visits | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classroomvisits
+  - classroomvisitsdoc
+  - docintent
+  - intentschedule
+  - intentscheduleclassroom
+  - plannedintent
+  - plannedintentschedule
+  - scheduleclassroom
+- id: planned:intent-03552
+  task: planned:intent-01283 — Create Demo Views for Self & Classroom | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classroomdoc
+  - classroomdocintent
+  - demoviews
+  - demoviewsself
+  - docintent
+  - intentdemo
+  - intentdemoviews
+  - plannedintent
+- id: planned:intent-03554
+  task: planned:intent-01850 — Show only own classroom | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classroomdoc
+  - classroomdocintent
+  - docintent
+  - intentonly
+  - intentonlyown
+  - onlyown
+  - onlyownclassroom
+  - ownclassroom
+- id: planned:intent-03560
+  task: planned:intent-03211 — Implement roster view | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentroster
+  - intentrosterdoc
+  - plannedintent
+  - plannedintentroster
+  - rosterdoc
+  - rosterdocintent
+- id: planned:intent-03561
+  task: planned:intent-03333 — Add remaining Classroom features | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classroomdoc
+  - classroomdocintent
+  - docintent
+  - intentremaining
+  - intentremainingclassroom
+  - plannedintent
+  - plannedintentremaining
+  - remainingclassroom
+- id: planned:intent-03578
+  task: planned:intent-01707 — Create basic community screen (view, post) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - basiccommunity
+  - basiccommunitypost
+  - communitypost
+  - communitypostdoc
+  - docintent
+  - intentbasic
+  - intentbasiccommunity
+  - plannedintent
+- id: planned:intent-03619
+  task: planned:intent-00771 — Post type selector | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentpost
+  - intentposttype
+  - plannedintent
+  - plannedintentpost
+  - posttype
+  - posttypeselector
+  - selectordoc
+- id: planned:intent-03622
+  task: 'planned:intent-01117 — Create post: blocked without tag + group | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - blockedwithout
+  - blockedwithouttag
+  - docintent
+  - groupdoc
+  - groupdocintent
+  - intentpost
+  - intentpostblocked
+  - plannedintent
+- id: planned:intent-03623
+  task: planned:intent-01705 — Create "Alpha Pathfinders" community in database | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - alphapathfinders
+  - alphapathfinderscommunity
+  - communitydatabase
+  - communitydatabasedoc
+  - databasedoc
+  - databasedocintent
+  - docintent
+  - intentalpha
+- id: planned:intent-03624
+  task: 'planned:intent-02265 — Add comment to .env.example files: | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - commentenv
+  - commentenvexample
+  - docintent
+  - envexample
+  - envexamplefiles
+  - examplefiles
+  - examplefilesdoc
+  - filesdoc
+- id: planned:intent-03628
+  task: planned:intent-02659 — Support community channel created | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - channelcreated
+  - channelcreateddoc
+  - communitychannel
+  - communitychannelcreated
+  - createddoc
+  - createddocintent
+  - docintent
+  - intentsupport
+- id: planned:intent-03630
+  task: 'planned:intent-03124 — Create `CenterModal` for Community & Resources <!-- id: 40 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - CenterModal
+  - communityresources
+  - communityresourcesdoc
+  - docintent
+  - intentcommunity
+  - intentcommunityresources
+  - plannedintent
+  - plannedintentcommunity
+- id: planned:intent-03631
+  task: 'planned:intent-03129 — Logic: Add Cross-links between Community & Resources <!-- id: 78 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - betweencommunity
+  - betweencommunityresources
+  - communityresources
+  - communityresourcesdoc
+  - crosslinks
+  - crosslinksbetween
+  - docintent
+  - intentlogic
+- id: planned:intent-03638
+  task: planned:intent-00572 — **Payload Tampering** — Modifying offline policy files or snapshot maps to force permissio | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - filessnapshot
+  - filessnapshotmaps
+  - forcepermissio
+  - forcepermissiodoc
+  - intentpayload
+  - intentpayloadtampering
+  - mapsforce
+- id: planned:intent-03643
+  task: planned:intent-02924 — Implement Hono handlers for Fire Journaling | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - firejournaling
+  - firejournalingdoc
+  - handlersfire
+  - handlersfirejournaling
+  - honohandlers
+  - honohandlersfire
+  - intenthono
+- id: planned:intent-03650
+  task: planned:intent-03258 — Share them with me (just paste them in chat) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - chatdoc
+  - chatdocintent
+  - docintent
+  - intentshare
+  - intentsharethem
+  - justpaste
+  - justpastethem
+  - pastethem
+- id: planned:intent-03676
+  task: planned:intent-01087 — Share feedback forms | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - feedbackforms
+  - feedbackformsdoc
+  - formsdoc
+  - formsdocintent
+  - intentshare
+  - intentsharefeedback
+  - plannedintent
+- id: planned:intent-03692
+  task: planned:intent-00125 — Mark as read/unread | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentmark
+  - intentmarkread
+  - markread
+  - markreadunread
+  - plannedintent
+  - plannedintentmark
+  - readunread
+- id: planned:intent-03695
+  task: planned:intent-00746 — Mark completed issues with ✅ | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - completedissues
+  - completedissuesdoc
+  - docintent
+  - intentmark
+  - intentmarkcompleted
+  - issuesdoc
+  - issuesdocintent
+  - markcompleted
+- id: planned:intent-03696
+  task: planned:intent-00947 — Mark as read functionality | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - functionalitydoc
+  - functionalitydocintent
+  - intentmark
+  - intentmarkread
+  - markread
+  - markreadfunctionality
+  - plannedintent
+- id: planned:intent-03697
+  task: planned:intent-01643 — Grade reports | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - gradereports
+  - gradereportsdoc
+  - intentgrade
+  - intentgradereports
+  - plannedintent
+  - plannedintentgrade
+  - reportsdoc
+- id: planned:intent-03698
+  task: planned:intent-01780 — Mark user as registered locally | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentmark
+  - intentmarkregistered
+  - locallydoc
+  - locallydocintent
+  - markregistered
+  - markregisteredlocally
+  - plannedintent
+- id: planned:intent-03699
+  task: planned:intent-01828 — grades table (1-13) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - gradestable
+  - gradestabledoc
+  - intentgrades
+  - intentgradestable
+  - plannedintent
+  - plannedintentgrades
+  - tabledoc
+- id: planned:intent-03700
+  task: planned:intent-01844 — Manage grades within section | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - gradeswithin
+  - gradeswithinsection
+  - intentmanage
+  - intentmanagegrades
+  - managegrades
+  - managegradeswithin
+  - plannedintent
+- id: planned:intent-03701
+  task: planned:intent-01846 — Show only their grade | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - gradedoc
+  - gradedocintent
+  - intentonly
+  - intentonlytheir
+  - onlytheir
+  - onlytheirgrade
+  - plannedintent
+- id: planned:intent-03702
+  task: planned:intent-03239 — Manage classes in grade | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - classesgrade
+  - classesgradedoc
+  - docintent
+  - gradedoc
+  - gradedocintent
+  - intentmanage
+  - intentmanageclasses
+  - manageclasses
+- id: planned:intent-03705
+  task: planned:intent-00492 — Connect mascot animated states to user wellbeing actions (e.g. lotus/firefly mascot breath | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - actionslotus
+  - actionslotusfirefly
+  - animatedstates
+  - animatedstateswellbeing
+  - breathdoc
+  - breathdocintent
+  - connectmascot
+  - connectmascotanimated
+- id: planned:intent-03707
+  task: planned:intent-00811 — Seed initial data (badges, categories) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - badgescategories
+  - badgescategoriesdoc
+  - categoriesdoc
+  - categoriesdocintent
+  - docintent
+  - initialbadges
+  - initialbadgescategories
+  - intentseed
+- id: planned:intent-03708
+  task: 'planned:intent-01059 — **Track milestone actions**: | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - actionsdoc
+  - actionsdocintent
+  - docintent
+  - intenttrack
+  - intenttrackmilestone
+  - milestoneactions
+  - milestoneactionsdoc
+  - plannedintent
+- id: planned:intent-03709
+  task: planned:intent-01060 — Display progress ring or level-up animation | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - animationdoc
+  - animationdocintent
+  - displayprogress
+  - displayprogressring
+  - docintent
+  - intentdisplay
+  - intentdisplayprogress
+  - levelanimation
+- id: planned:intent-03710
+  task: planned:intent-01728 — Add visual action count badge | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - actioncount
+  - actioncountbadge
+  - badgedoc
+  - badgedocintent
+  - countbadge
+  - countbadgedoc
+  - docintent
+  - intentvisual
+- id: planned:intent-03711
+  task: 'planned:intent-03173 — Add placeholder for Rewards/Badges system <!-- id: 16 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - badgessystem
+  - badgessystemdoc
+  - docintent
+  - intentplaceholder
+  - intentplaceholderrewards
+  - placeholderrewards
+  - placeholderrewardsbadges
+  - plannedintent
+- id: planned:intent-03734
+  task: planned:intent-01891 — Add Sprint A3 tenant-kind reporting helper path. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - helperpath
+  - helperpathdoc
+  - intentsprint
+  - intentsprinttenant
+  - kindreporting
+  - kindreportinghelper
+  - pathdoc
+- id: planned:intent-03741
+  task: planned:intent-01663 — Add real-time subscriptions for announcements | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - announcementsdoc
+  - announcementsdocintent
+  - docintent
+  - intentreal
+  - intentrealtime
+  - plannedintent
+  - plannedintentreal
+  - realtime
+- id: planned:intent-03747
+  task: planned:intent-00269 — Create new lessons (saved locally, synced later) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentlessons
+  - intentlessonssaved
+  - laterdoc
+  - laterdocintent
+  - lessonssaved
+  - lessonssavedlocally
+  - locallysynced
+- id: planned:intent-03750
+  task: planned:intent-01241 — upload lessons | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentupload
+  - intentuploadlessons
+  - lessonsdoc
+  - lessonsdocintent
+  - plannedintent
+  - plannedintentupload
+  - uploadlessons
+- id: planned:intent-03751
+  task: planned:intent-03281 — Display lesson list | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - displaylesson
+  - displaylessondoc
+  - docintent
+  - intentdisplay
+  - intentdisplaylesson
+  - lessondoc
+  - lessondocintent
+  - plannedintent
+- id: planned:intent-03753
+  task: planned:intent-00016 — Shared value transitions | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentshared
+  - intentsharedvalue
+  - plannedintent
+  - plannedintentshared
+  - sharedvalue
+  - sharedvaluetransitions
+  - transitionsdoc
+- id: planned:intent-03754
+  task: planned:intent-00617 — Shared value updates work | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentshared
+  - intentsharedvalue
+  - plannedintent
+  - plannedintentshared
+  - sharedvalue
+  - sharedvalueupdates
+  - updateswork
+- id: planned:intent-03780
+  task: planned:intent-00253 — Share desk with colleagues | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - colleaguesdoc
+  - colleaguesdocintent
+  - deskcolleagues
+  - deskcolleaguesdoc
+  - docintent
+  - intentshare
+  - intentsharedesk
+  - plannedintent
+- id: planned:intent-03781
+  task: planned:intent-00375 — Build auth flow (login, signup, role assignment) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - assignmentdoc
+  - assignmentdocintent
+  - authlogin
+  - authloginsignup
+  - docintent
+  - intentauth
+  - intentauthlogin
+  - loginsignup
+- id: planned:intent-03787
+  task: planned:intent-02602 — Create all markdown files with proper frontmatter | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - filesproper
+  - filesproperfrontmatter
+  - frontmatterdoc
+  - frontmatterdocintent
+  - intentmarkdown
+  - intentmarkdownfiles
+  - markdownfiles
+- id: planned:intent-03788
+  task: planned:intent-02665 — Shared impact reporting framework | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - frameworkdoc
+  - frameworkdocintent
+  - impactreporting
+  - impactreportingframework
+  - intentshared
+  - intentsharedimpact
+  - plannedintent
+- id: planned:intent-03789
+  task: planned:intent-02669 — Shared resource pools established | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - establisheddoc
+  - establisheddocintent
+  - intentshared
+  - intentsharedresource
+  - plannedintent
+  - plannedintentshared
+  - poolsestablished
+- id: planned:intent-03791
+  task: 'planned:intent-03101 — Implement `library_*` tables <!-- id: 7 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - library_
+  - docintent
+  - intenttables
+  - intenttablesdoc
+  - plannedintent
+  - plannedintenttables
+  - tablesdoc
+  - tablesdocintent
+- id: planned:intent-03792
+  task: 'planned:intent-03119 — Integrate "Teaning" concept into Gurudevi & Library pages <!-- id: 22 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - conceptgurudevi
+  - conceptgurudevilibrary
+  - docintent
+  - gurudevilibrary
+  - gurudevilibrarypages
+  - integrateteaning
+  - integrateteaningconcept
+  - intentintegrate
+- id: planned:intent-03793
+  task: planned:intent-03236 — Search and filter | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - filterdoc
+  - filterdocintent
+  - intentsearch
+  - intentsearchfilter
+  - plannedintent
+  - plannedintentsearch
+  - searchfilter
+- id: planned:intent-03794
+  task: planned:intent-03252 — Build curated library | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - curatedlibrary
+  - curatedlibrarydoc
+  - docintent
+  - intentcurated
+  - intentcuratedlibrary
+  - librarydoc
+  - librarydocintent
+  - plannedintent
+- id: planned:intent-03803
+  task: 'planned:intent-00362 — `book`: Digital books, PDFs, EPUBs. | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - bookspdfs
+  - bookspdfsepubs
+  - digitalbooks
+  - digitalbookspdfs
+  - docintent
+  - epubsdoc
+  - epubsdocintent
+  - intentdigital
+- id: planned:intent-03805
+  task: 'planned:intent-03190 — Implement JS-Based Gallery Scanner <!-- id: 9 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - basedgallery
+  - basedgalleryscanner
+  - docintent
+  - galleryscanner
+  - galleryscannerdoc
+  - intentbased
+  - intentbasedgallery
+  - plannedintent
+- id: planned:intent-03806
+  task: planned:intent-03280 — Upload PDF to Supabase Storage | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentupload
+  - intentuploadpdf
+  - pdfsupabase
+  - pdfsupabasestorage
+  - plannedintent
+  - plannedintentupload
+  - storagedoc
+- id: planned:intent-03826
+  task: 'planned:intent-03079 — Implement "Edit Profile" Modal. <!-- id: 11 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - editprofile
+  - editprofiledoc
+  - intentedit
+  - intenteditprofile
+  - plannedintent
+  - plannedintentedit
+  - profiledoc
+- id: planned:intent-03829
+  task: planned:intent-00485 — implement pending/synced/rejected UI states; | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentpending
+  - intentpendingsynced
+  - pendingsynced
+  - pendingsyncedrejected
+  - plannedintent
+  - plannedintentpending
+  - rejectedstates
+- id: planned:intent-03835
+  task: planned:intent-00233 — Create webhook handler (Supabase edge function) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - edgefunction
+  - edgefunctiondoc
+  - functiondoc
+  - functiondocintent
+  - handlersupabase
+  - handlersupabaseedge
+  - intentwebhook
+- id: planned:intent-03844
+  task: planned:intent-00303 — Add dashboards and alerts for API error rate, p95 latency, exporter health, and trace inge | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - alertsapi
+  - alertsapierror
+  - apierror
+  - apierrorrate
+  - dashboardsalerts
+  - dashboardsalertsapi
+  - docintent
+  - errorrate
+- id: planned:intent-03878
+  task: planned:intent-00410 — Created `IIdentityPort` and `IdentityManager`. | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - IdentityManager
+  - IIdentityPort
+  - createddoc
+  - createddocintent
+  - docintent
+  - intentcreated
+  - intentcreateddoc
+  - plannedintent
+- id: planned:intent-03879
+  task: 'planned:intent-03104 — Implement `user_rewards` & `gift_codes` tables <!-- id: 10 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: BACKEND-ONLY
+  terms:
+  - user_rewards
+  - gift_codes
+  - docintent
+  - intenttables
+  - intenttablesdoc
+  - plannedintent
+  - plannedintenttables
+  - tablesdoc
+- id: planned:intent-03884
+  task: planned:intent-00231 — Create tier checker utility | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checkerutility
+  - checkerutilitydoc
+  - docintent
+  - intenttier
+  - intenttierchecker
+  - plannedintent
+  - plannedintenttier
+  - tierchecker
+- id: planned:intent-03885
+  task: planned:intent-00234 — Create subscription status checker | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checkerdoc
+  - checkerdocintent
+  - docintent
+  - intentsubscription
+  - intentsubscriptionstatus
+  - plannedintent
+  - plannedintentsubscription
+  - statuschecker
+- id: planned:intent-03901
+  task: planned:intent-00379 — Build Profile section | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentprofile
+  - intentprofilesection
+  - plannedintent
+  - plannedintentprofile
+  - profilesection
+  - profilesectiondoc
+  - sectiondoc
+- id: planned:intent-03903
+  task: planned:intent-01710 — Create Profile > About section | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - aboutsection
+  - aboutsectiondoc
+  - docintent
+  - intentprofile
+  - intentprofileabout
+  - plannedintent
+  - plannedintentprofile
+  - profileabout
+- id: planned:intent-03904
+  task: planned:intent-01719 — Upload profile picture | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentupload
+  - intentuploadprofile
+  - picturedoc
+  - picturedocintent
+  - plannedintent
+  - plannedintentupload
+  - profilepicture
+- id: planned:intent-03905
+  task: planned:intent-01853 — Add profile progress UI | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentprofile
+  - intentprofileprogress
+  - plannedintent
+  - plannedintentprofile
+  - profileprogress
+  - profileprogressdoc
+  - progressdoc
+- id: planned:intent-03906
+  task: planned:intent-02463 — Implement read-only profile, timeline, compatibility-path, local-impact, workaround, searc | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - compatibilitypath
+  - compatibilitypathlocal
+  - docintent
+  - impactworkaround
+  - impactworkaroundsearc
+  - intentread
+  - intentreadonly
+  - localimpact
+- id: planned:intent-03907
+  task: planned:intent-02601 — Write 5 thinker profiles (Paulo Freire, Montessori, Illich, bell hooks, + 1) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - bellhooks
+  - bellhooksdoc
+  - docintent
+  - freiremontessori
+  - freiremontessoriillich
+  - hooksdoc
+  - hooksdocintent
+  - illichbell
+- id: planned:intent-03954
+  task: planned:intent-00581 — Create auth route group | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - authroute
+  - authroutegroup
+  - docintent
+  - groupdoc
+  - groupdocintent
+  - intentauth
+  - intentauthroute
+  - plannedintent
+- id: planned:intent-03958
+  task: planned:intent-02884 — `GradebookScreen.web.tsx` `Pending` | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - GradebookScreen
+  - docintent
+  - intentdoc
+  - intentdocintent
+  - plannedintent
+  - plannedintentdoc
+- id: planned:intent-04005
+  task: planned:intent-00028 — Enable remote sync + GrowthBook flags | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - GrowthBook
+  - docintent
+  - enableremote
+  - enableremotesync
+  - flagsdoc
+  - flagsdocintent
+  - growthbookflags
+  - growthbookflagsdoc
+- id: planned:intent-04009
+  task: 'planned:intent-03084 — Create `LotusLoader` (Breathing animation). <!-- id: 25 --> | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: UI-UNWIRED
+  terms:
+  - LotusLoader
+  - animationdoc
+  - animationdocintent
+  - breathinganimation
+  - breathinganimationdoc
+  - docintent
+  - intentbreathing
+  - intentbreathinganimation
+- id: planned:intent-04010
+  task: planned:intent-03282 — **Build first complete feature** (Mood check-in) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checkdoc
+  - checkdocintent
+  - completemood
+  - completemoodcheck
+  - docintent
+  - firstcomplete
+  - firstcompletemood
+  - intentfirst
+- id: planned:intent-04012
+  task: planned:intent-03296 — Build UI (mood selector, optional text) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - intentmood
+  - intentmoodselector
+  - moodselector
+  - moodselectoroptional
+  - optionaltext
+  - optionaltextdoc
+  - plannedintent
+- id: planned:intent-04013
+  task: 'planned:intent-03329 — Build Batch 2: Mood Check-In (Gurudevi) | doc-intent'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - batchmood
+  - batchmoodcheck
+  - checkgurudevi
+  - checkgurudevidoc
+  - docintent
+  - gurudevidoc
+  - gurudevidocintent
+  - intentbatch
+- id: planned:intent-04014
+  task: planned:intent-03330 — Build Mood Check-In screen | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checkdoc
+  - checkdocintent
+  - docintent
+  - intentmood
+  - intentmoodcheck
+  - moodcheck
+  - moodcheckdoc
+  - plannedintent
+- id: planned:intent-04015
+  task: planned:intent-03334 — Build Mood Check-In (end-to-end test) | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - checkend
+  - checkendend
+  - docintent
+  - endend
+  - endendtest
+  - endtest
+  - endtestdoc
+  - intentmood
+- id: planned:intent-04016
+  task: planned:intent-03370 — Create sanctuary feeling | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - docintent
+  - feelingdoc
+  - feelingdocintent
+  - intentsanctuary
+  - intentsanctuaryfeeling
+  - plannedintent
+  - plannedintentsanctuary
+  - sanctuaryfeeling
+- id: planned:intent-04039
+  task: planned:intent-01632 — Add error tracking to all API calls | doc-intent
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - apicalls
+  - apicallsdoc
+  - callsdoc
+  - callsdocintent
+  - docintent
+  - errortracking
+  - errortrackingapi
+  - intenterror
+- id: planned:intent-04052
+  task: Create GitHub repository (`github.com/[you]/edlove`)
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - githubrepository
+  - /edlove
+- id: planned:intent-04054
+  task: Connect GitHub to Cloudflare Pages (auto-deploy on push)
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - autodeploy
+  - autodeploypush
+  - cloudflarepages
+  - cloudflarepagesauto
+  - connectgithub
+  - connectgithubcloudflare
+  - deploypush
+  - githubcloudflare
+- id: planned:intent-04072
+  task: Write launch blog post
+  reason: non-product (ops/marketing/process)
+  engineering_status: null
+  terms:
+  - blogpost
+  - launchblog
+  - launchblogpost
+  - writelaunch
+  - writelaunchblog
+- id: planned:intent-04074
+  task: Post on social media
+  reason: non-product (ops/marketing/process)
+  engineering_status: null
+  terms:
+  - postsocial
+  - postsocialmedia
+  - socialmedia
+- id: planned:intent-04110
+  task: Support documentation created
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - documentationcreated
+  - supportdocumentation
+  - supportdocumentationcreated
+- id: planned:intent-04147
+  task: Teacher union engagement
+  reason: non-product (ops/marketing/process)
+  engineering_status: null
+  terms:
+  - teacherunion
+  - teacherunionengagement
+  - unionengagement
+- id: planned:intent-04189
+  task: Teacher unions (e.g. Ceylon Teachers' Union) — Teacher wellbeing is a union concern, and unions can spread the word | Relationship. Be careful with politics
+  reason: non-product (ops/marketing/process)
+  engineering_status: null
+  terms:
+  - carefulpolitics
+  - ceylonteachers
+  - ceylonteachersunion
+  - concernunions
+  - concernunionsspread
+  - relationshipcareful
+  - relationshipcarefulpolitics
+  - spreadword
+- id: planned:intent-04240
+  task: Add security scanning (Snyk + Semgrep) to CI quality gates
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - qualitygates
+  - scanningsnyk
+  - scanningsnyksemgrep
+  - securityscanning
+  - securityscanningsnyk
+  - semgrepquality
+  - semgrepqualitygates
+  - snyksemgrep
+- id: planned:intent-04241
+  task: Create React Doctor integration guide
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - doctorintegration
+  - doctorintegrationguide
+  - integrationguide
+  - reactdoctor
+  - reactdoctorintegration
+- id: planned:intent-04242
+  task: Create comprehensive developer workflow guide
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - comprehensivedeveloper
+  - comprehensivedeveloperworkflow
+  - developerworkflow
+  - developerworkflowguide
+  - workflowguide
+- id: planned:intent-04244
+  task: Create troubleshooting guide for common quality gate failures
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - commonquality
+  - commonqualitygate
+  - gatefailures
+  - guidecommon
+  - guidecommonquality
+  - qualitygate
+  - qualitygatefailures
+  - troubleshootingguide
+- id: planned:intent-04261
+  task: Rate limiting is backed by a shared/edge-safe mechanism for multi-instance deployment.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - backedshared
+  - backedsharededge
+  - edgesafe
+  - edgesafemechanism
+  - instancedeployment
+  - limitingbacked
+  - limitingbackedshared
+  - mechanismmulti
+- id: planned:intent-04277
+  task: Privacy policy, terms, consent, retention, and student/child safeguards are reviewed.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - childsafeguards
+  - childsafeguardsreviewed
+  - consentretention
+  - consentretentionstudent
+  - policyterms
+  - policytermsconsent
+  - privacypolicy
+  - privacypolicyterms
+- id: planned:intent-04390
+  task: Implement Hono handlers for Mood Logging
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - handlersmood
+  - handlersmoodlogging
+  - honohandlers
+  - honohandlersmood
+  - moodlogging
+- id: planned:intent-04433
+  task: add a component inventory/showcase screen;
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms:
+  - inventoryshowcase
+- id: planned:intent-04471
+  task: Add the `.reports/` redirect and the `.gitignore` entries, then `git rm --cached` the generated folders.
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - gitignore
+  - entriesthen
+  - entriesthengenerated
+  - generatedfolders
+  - redirectentries
+  - redirectentriesthen
+  - thengenerated
+  - thengeneratedfolders
+- id: planned:intent-04538
+  task: 'Create `IdentityCard` component (Top Section). <!-- id: 9 -->'
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - IdentityCard
+  - topsection
+- id: planned:intent-04539
+  task: 'Create `ControlScroll` component (Bottom Section). <!-- id: 10 -->'
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - ControlScroll
+  - bottomsection
+- id: planned:intent-04541
+  task: 'Create `GlobalHeader` component (Isolated). <!-- id: 15 -->'
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - GlobalHeader
+- id: planned:intent-04553
+  task: '**Shared Components & UX**'
+  reason: engineering component item, not a user capability
+  engineering_status: not found
+  terms: []
+- id: planned:intent-04625
+  task: 'Create Unified `QRCodeGenerator` component <!-- id: 18 -->'
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - QRCodeGenerator
+- id: planned:intent-04627
+  task: 'Add "Scan" button to `AuthScreen` (Link to existing logic) <!-- id: 10 -->'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - AuthScreen
+  - existinglogic
+  - linkexisting
+  - linkexistinglogic
+  - scanlink
+  - scanlinkexisting
+- id: planned:intent-04628
+  task: 'Create `ScannerModal` component <!-- id: 21 -->'
+  reason: engineering component item, not a user capability
+  engineering_status: EXISTS on main
+  terms:
+  - ScannerModal
+- id: planned:intent-04629
+  task: 'Implement "Scan to Join" logic in `AuthScreen` <!-- id: 22 -->'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PARTIAL
+  terms:
+  - AuthScreen
+  - joinlogic
+  - scanjoin
+  - scanjoinlogic
+- id: planned:intent-04644
+  task: 'Search for existing device capability/performance checks <!-- id: 12 -->'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - capabilityperformance
+  - capabilityperformancechecks
+  - devicecapability
+  - devicecapabilityperformance
+  - existingdevice
+  - existingdevicecapability
+  - performancechecks
+  - searchexisting
+- id: planned:intent-04649
+  task: Create deployment scripts if needed
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - deploymentscripts
+  - deploymentscriptsneeded
+  - scriptsneeded
+- id: planned:intent-04671
+  task: Monitor logs after deployment
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - afterdeployment
+  - logsafter
+  - logsafterdeployment
+  - monitorlogs
+  - monitorlogsafter
+- id: planned:intent-04703
+  task: Grade types — 10/10 | ✅ Perfect
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - gradetypes
+  - gradetypesperfect
+  - typesperfect
+- id: planned:intent-04736
+  task: Create README index
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - readmeindex
+- id: planned:intent-04749
+  task: Create developer reference documentation
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - developerreference
+  - developerreferencedocumentation
+  - referencedocumentation
+- id: planned:intent-04766
+  task: Create status reports and planning docs
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - planningdocs
+  - reportsplanning
+  - reportsplanningdocs
+  - statusreports
+  - statusreportsplanning
+- id: planned:intent-04780
+  task: '**Logging** — console.log only | Structured logging system'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - consolelog
+  - consolelogonly
+  - loggingconsole
+  - loggingconsolelog
+  - loggingsystem
+  - logonly
+  - logonlystructured
+  - onlystructured
+- id: planned:intent-04784
+  task: '**Logging** — None | Console logging pattern'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - consolelogging
+  - consoleloggingpattern
+  - loggingnone
+  - loggingnoneconsole
+  - loggingpattern
+  - noneconsole
+  - noneconsolelogging
+- id: planned:intent-04808
+  task: '`main-preview` — **Release Candidate**: Beta testing for selected schools/principals. | Production-Ready'
+  reason: engineering/implementation item (component/infra/test/docs), not a user capability
+  engineering_status: PLANNED
+  terms:
+  - betatesting
+  - betatestingselected
+  - candidatebeta
+  - candidatebetatesting
+  - principalsproduction
+  - principalsproductionready
+  - productionready
+  - releasecandidate
+- id: planned:intent-04823
+  task: Vice President @ Students Union, Faculty of Business (2025-2026)
+  reason: non-product (ops/marketing/process)
+  engineering_status: null
+  terms:
+  - facultybusiness
+  - presidentstudents
+  - presidentstudentsunion
+  - studentsunion
+  - studentsunionfaculty
+  - unionfaculty
+  - unionfacultybusiness
+  - vicepresident

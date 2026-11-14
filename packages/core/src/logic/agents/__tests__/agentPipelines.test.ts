@@ -5,7 +5,7 @@ import {
   CoordinationGapSchema,
   checkSectionReliefGapsEffect,
   detectAttendanceGapsEffect,
-} from '../index';
+} from '../agents.adapter';
 
 describe('AI Agent Resilience Pipelines', () => {
   describe('detectAttendanceGapsEffect', () => {

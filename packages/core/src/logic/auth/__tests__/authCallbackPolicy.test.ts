@@ -3,9 +3,18 @@ import { classifyAuthCallback } from '../authCallbackPolicy';
 
 describe('auth callback policy', () => {
   it('accepts exactly one code on each approved callback transport', () => {
-    expect(classifyAuthCallback('gurudevi://auth/callback?code=one')).toEqual({ kind: 'code', code: 'one' });
-    expect(classifyAuthCallback('https://gurudevi.app/auth/callback?code=two')).toEqual({ kind: 'code', code: 'two' });
-    expect(classifyAuthCallback('https://gurudevi.app/auth/complete?code=three')).toEqual({ kind: 'code', code: 'three' });
+    expect(classifyAuthCallback('gurudevi://auth/callback?code=one')).toEqual({
+      kind: 'code',
+      code: 'one',
+    });
+    expect(classifyAuthCallback('https://gurudevi.app/auth/callback?code=two')).toEqual({
+      kind: 'code',
+      code: 'two',
+    });
+    expect(classifyAuthCallback('https://gurudevi.app/auth/complete?code=three')).toEqual({
+      kind: 'code',
+      code: 'three',
+    });
   });
 
   it.each([
@@ -24,6 +33,8 @@ describe('auth callback policy', () => {
   });
 
   it('preserves a provider error category without its description', () => {
-    expect(classifyAuthCallback('gurudevi://auth/callback#error=access_denied&error_description=secret')).toEqual({ kind: 'providerError', code: 'access_denied' });
+    expect(
+      classifyAuthCallback('gurudevi://auth/callback#error=access_denied&error_description=secret'),
+    ).toEqual({ kind: 'providerError', code: 'access_denied' });
   });
 });

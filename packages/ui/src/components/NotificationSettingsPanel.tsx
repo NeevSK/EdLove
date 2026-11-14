@@ -1,5 +1,6 @@
+import { useAuthStore } from '@repo/core/store';
 import { SupabasePushNotificationAdapter } from '@repo/core/adapters/supabasePushNotification.adapter';
-import { storage, useStore } from '@repo/core/logic';
+import { storage } from '@repo/core/logic';
 import { getWebPushPermission, registerWebPushSubscription } from '@repo/core/native/webPush';
 import { useNotificationPreferences } from '@repo/ui/hooks/useNotificationPreferences';
 import { BellRing, Mail, Moon, Smartphone } from '@repo/ui/icons';
@@ -28,7 +29,7 @@ import { BrandPulse } from './BrandPulse';
  */
 export const NotificationSettingsPanel = () => {
   const { t } = useTranslation();
-  const userId = useStore((state) => state.user?.id);
+  const userId = useAuthStore((state) => state.user?.id);
   const { preferences, loading, toggleChannel, toggleCategory } = useNotificationPreferences();
   const [browserPushState, setBrowserPushState] = React.useState<
     'idle' | 'registering' | 'enabled' | 'denied' | 'unavailable' | 'error'

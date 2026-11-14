@@ -1,10 +1,5 @@
-import SkeletonLoader, {
-  SkeletonAvatar,
-  SkeletonCard,
-  SkeletonTextLine,
-} from '@repo/ui/components/SkeletonLoader';
-import { Box, Center, HStack, VStack } from '@repo/ui/primitives';
-import { useWindowDimensions } from 'react-native';
+import { WorldSkeleton } from '@repo/ui/components/native';
+import { useWindowDimensions, View } from 'react-native';
 
 /**
  * PROFILE SKELETON
@@ -14,50 +9,50 @@ export default function ProfileSkeleton() {
   const { width } = useWindowDimensions();
 
   return (
-    <Box className="flex-1 bg-phase-canvas p-4">
-      <VStack space="2xl">
+    <View className="flex-1 bg-phase-canvas p-4">
+      <View className="gap-6">
         {/* Identity Card Placeholder */}
-        <Center>
-          <SkeletonLoader width={width - 48} height={200} borderRadius={24} />
-        </Center>
+        <View className="items-center justify-center">
+          <WorldSkeleton width={width - 48} height={200} radius={24} />
+        </View>
 
         {/* Stats Card Placeholder */}
-        <Box>
-          <SkeletonCard height={120} />
-        </Box>
+        <View>
+          <WorldSkeleton height={120} />
+        </View>
 
         {/* Achievements Placeholder */}
-        <Box>
-          <SkeletonTextLine width={150} className="mb-3" />
-          <HStack space="md">
-            <SkeletonAvatar size={60} />
-            <SkeletonAvatar size={60} />
-            <SkeletonAvatar size={60} />
-            <SkeletonAvatar size={60} />
-          </HStack>
-        </Box>
+        <View>
+          <WorldSkeleton width={150} height={14} className="mb-3" />
+          <View className="flex-row items-center gap-3">
+            <WorldSkeleton width={60} height={60} radius={30} />
+            <WorldSkeleton width={60} height={60} radius={30} />
+            <WorldSkeleton width={60} height={60} radius={30} />
+            <WorldSkeleton width={60} height={60} radius={30} />
+          </View>
+        </View>
 
         {/* Contact Info Placeholder */}
-        <Box className="p-5 rounded-2xl border border-phase-surface">
-          <SkeletonTextLine width={100} className="mb-4" />
-          <VStack space="md">
-            <HStack space="md" className="items-center">
-              <SkeletonAvatar size={18} />
-              <VStack className="flex-1">
-                <SkeletonTextLine width={60} className="mb-1" />
-                <SkeletonTextLine width="80%" />
-              </VStack>
-            </HStack>
-            <HStack space="md" className="items-center">
-              <SkeletonAvatar size={18} />
-              <VStack className="flex-1">
-                <SkeletonTextLine width={60} className="mb-1" />
-                <SkeletonTextLine width="60%" />
-              </VStack>
-            </HStack>
-          </VStack>
-        </Box>
-      </VStack>
-    </Box>
+        <View className="p-5 rounded-2xl border border-phase-surface">
+          <WorldSkeleton width={100} height={14} className="mb-4" />
+          <View className="gap-3">
+            <View className="flex-row items-center gap-3">
+              <WorldSkeleton width={18} height={18} radius={9} />
+              <View className="flex-1">
+                <WorldSkeleton width={60} height={14} className="mb-1" />
+                <WorldSkeleton width="80%" height={14} />
+              </View>
+            </View>
+            <View className="flex-row items-center gap-3">
+              <WorldSkeleton width={18} height={18} radius={9} />
+              <View className="flex-1">
+                <WorldSkeleton width={60} height={14} className="mb-1" />
+                <WorldSkeleton width="60%" height={14} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }

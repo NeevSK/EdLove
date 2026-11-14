@@ -23,13 +23,22 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 | [@repo/scanner-kit](../stack-map.md#reposcanner-kit) | domain | Scanning, QR, OCR & code-based capture features reusable across platform surfaces. |
 | [@repo/self](../stack-map.md#repoself) | domain | Personal sanctuary — inner-life, growth, journaling, wellbeing, role-shaped self-work. |
 | [@repo/ui](../stack-map.md#repoui) | ui | Shared design system & shell primitives for the whole product family. |
+| [@repo/verger-android](../stack-map.md#repoverger-android) | domain | Verger's Android half: sensing and the app-wide hardware levers, as an Expo module. It measures and actuates; every decision is made by `@repo/verger-core` in JavaScript. It knows no host app. |
+| [@repo/verger-core](../stack-map.md#repoverger-core) | domain | Verger is an app-level resource supervisor, subordinate to the operating system: it senses pressure, sheds work in a declared order, recovers when the pressure passes, and reports every decision. This package is the host-neutral decision layer: a pure reducer, the runtime loop, telemetry, replay and experiment assignment. It imports nothing and names no app. |
+| [@repo/verger-react](../stack-map.md#repoverger-react) | domain | Verger's React bindings, for any React platform: hooks over the process's verger (no provider) and the long-task observer. |
+| [@repo/verger-react-native](../stack-map.md#repoverger-react-native) | domain | Verger's React Native shell: VergerRoot runs and binds verger, feeds app state, touches, reduced motion and long tasks, and applies the global reduced-motion lever. |
 | [@repo/workforce](../stack-map.md#repoworkforce) | domain | Future non-academic & job-structure domain — school-wide operations beyond classrooms. |
 
-## External deps (177 direct)
+## External deps (183 direct)
 
 ```text
 @azure/core-asynciterator-polyfill
 @expo-google-fonts/inter
+@expo-google-fonts/newsreader
+@expo-google-fonts/noto-sans-sinhala
+@expo-google-fonts/noto-sans-tamil
+@expo-google-fonts/noto-serif-sinhala
+@expo-google-fonts/noto-serif-tamil
 @expo-google-fonts/poppins
 @expo/app-integrity
 @expo/fingerprint
@@ -38,6 +47,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @journeyapps/wa-sqlite
 @legendapp/list
 @lottiefiles/dotlottie-react
+@maplibre/maplibre-react-native
 @op-engineering/op-sqlite
 @powersync/drizzle-driver
 @powersync/react
@@ -53,18 +63,23 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @react-native-vector-icons/lucide
 @sentry/react-native
 @shopify/flash-list
+@shopify/react-native-skia
 @stripe/stripe-react-native
 @supabase/postgrest-js
 @supabase/supabase-js
 @swmansion/react-native-bottom-sheet
 @tanstack/react-pacer
 @tanstack/react-query
+@tanstack/react-store
+@tanstack/react-table
+@tanstack/table-core
 @ts-rest/core
 @types/qrcode
 @zenstackhq/orm
 @zenstackhq/schema
 @zenstackhq/zod
 apca-w3
+buffer
 color-name
 culori
 date-fns
@@ -143,8 +158,6 @@ fast-deep-equal
 hoist-non-react-statics
 i18next
 ieee754
-inline-style-prefixer
-inngest
 invariant
 isomorphic-webcrypto
 jpeg-js
@@ -179,7 +192,6 @@ react-native-nano-icons
 react-native-nitro-google-signin
 react-native-nitro-modules
 react-native-nitro-theme-transition
-react-native-pager-view
 react-native-reanimated
 react-native-reanimated-carousel
 react-native-reanimated-skeleton
@@ -195,47 +207,47 @@ react-native-url-polyfill
 react-native-webview
 react-native-worklets
 scheduler
-sonner-native
 styleq
 tailwindcss
 use-latest-callback
 use-sync-external-store
 uuid
-victory-native
 xstate
 zod
 zustand
 ```
 
-## Dev tooling (36)
+## Dev tooling (39)
 
 ```text
 @babel/runtime
 @babel/traverse
+@expo/agent-cli
 @playwright/test
+@react-native/metro-config
 @repo/eslint-config
 @repo/types-shim
 @repo/typescript-config
 @rozenite/performance-monitor-plugin
 @sentry/cli
 @tailwindcss/postcss
-@testing-library/jest-dom
-@testing-library/jest-native
 @testing-library/react
 @testing-library/react-native
-@types/jest
 @types/react
 @types/react-test-renderer
+@typescript-eslint/eslint-plugin
 babel-preset-expo
 cross-env
+eas-cli
 eslint
 eslint-config-expo
+eslint-plugin-import-x
+eslint-plugin-react
 eslint-plugin-react-compiler
+eslint-plugin-react-native
 eslint-plugin-react-native-a11y
 expo-doctor
 globals
-jest-cucumber
-jest-expo
 lightningcss-linux-x64-gnu
 playwright
 postcss
@@ -246,6 +258,7 @@ reassure
 supabase
 typescript
 vitest
+vitest-native
 ```
 
 ## Coupling notes

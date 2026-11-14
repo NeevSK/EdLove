@@ -1,13 +1,17 @@
-import { useWorkspaceLayoutSync as usePersistentLayoutSync } from '@repo/core/native';
+import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import { useResponsiveGrid } from '@repo/ui';
 import { tokens } from '@repo/ui/tokens';
-import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { getSelfRegistry } from '@/navigation/registries/selfRegistry';
 import type { MobileFeatureItem } from '@/navigation/registries/types';
+import { useNavigator } from '@repo/ui/components/native/navigation';
+
+const EMPTY_AVAILABLE_BONDS: readonly Bond[] = [];
+const EMPTY_PINNED_IDS: string[] = [];
 
 export type SelfCategory = 'all' | NonNullable<MobileFeatureItem['category']>;
 
@@ -43,15 +47,20 @@ function resolveCategoryOrder<TId extends string>(
  * Treats the user as one whole person across all their capacities, decoupled from institutional tenancy.
  */
 export function useSelfCanvas() {
+  const router = useNavigator();
   const { width } = useWindowDimensions();
   const { columns, gutter } = useResponsiveGrid();
   const user = useAuthStore((state) => state.user);
-  const availableBonds = useAuthStore((state) => state.availableBonds);
+  const availableBonds = useScopeSessionStore(
+    (state) => state.snapshot?.availableBonds ?? EMPTY_AVAILABLE_BONDS,
+  );
   const displayName = user?.display_name?.split(' ')[0] || 'Seeker';
 
   const [selectedCategory, setSelectedCategory] = useState<SelfCategory>('all');
   const openTab = useActiveSubTabsStore((state) => state.openTab);
-  const localPinnedIds = useActiveSubTabsStore((state) => state.pinnedFeatureIdsByDomain.self || []);
+  const localPinnedIds = useActiveSubTabsStore(
+    (state) => state.pinnedFeatureIdsByDomain.self ?? EMPTY_PINNED_IDS,
+  );
   const toggleLocalPin = useActiveSubTabsStore((state) => state.togglePinFeature);
 
   // Derive the complete set of capacities this human holds across all active bonds
@@ -70,39 +79,14 @@ export function useSelfCanvas() {
     [registry.items],
   );
 
-  const surfaceDefinitions = useMemo(
-    () =>
-      features.map((feature, index) => ({
-        surfaceId: feature.id,
-        workspaceId: 'self',
-        capabilityKey: feature.id,
-        ownerPackage: 'core' as const,
-        defaultZone: 'work' as const,
-        defaultOrder: index,
-      })),
-    [features],
-  );
-
-  // Syncs layout with Supabase workspace_layouts using domain 'self' under the hood
-  const canvasSync = usePersistentLayoutSync({
-    workspaceId: 'self',
-    userId: user?.id,
-    surfaces: surfaceDefinitions,
-  });
-
-  const preset: SelfAtmospherePreset =
-    (canvasSync.layout?.appearance?.preset as SelfAtmospherePreset) ?? 'default';
-
-  const syncedPinnedIds = canvasSync.layout?.pinned ?? [];
-  const effectivePinnedIds = syncedPinnedIds.length > 0 ? syncedPinnedIds : localPinnedIds;
+  const preset: SelfAtmospherePreset = 'default';
+  const effectivePinnedIds = localPinnedIds;
 
   const togglePin = useCallback(
     (featureId: string) => {
-      const isPinned = effectivePinnedIds.includes(featureId);
       toggleLocalPin('self', featureId);
-      canvasSync.setSurfacePinned(featureId, !isPinned);
     },
-    [canvasSync, effectivePinnedIds, toggleLocalPin],
+    [toggleLocalPin],
   );
 
   const pinnedFeatures = useMemo(
@@ -127,9 +111,8 @@ export function useSelfCanvas() {
     const defaults = rawCategories
       .map((c) => c.id)
       .filter((id): id is Exclude<SelfCategory, 'all'> => id !== 'all');
-    const stored = canvasSync.layout?.groupOrder ?? [];
-    return resolveCategoryOrder(stored, defaults);
-  }, [canvasSync.layout?.groupOrder, rawCategories]);
+    return resolveCategoryOrder([], defaults);
+  }, [rawCategories]);
 
   const categories = useMemo(
     () => [
@@ -168,7 +151,7 @@ export function useSelfCanvas() {
       });
       router.push({ pathname: '/self', params: { feature: feature.id } });
     },
-    [openTab],
+    [openTab, router],
   );
 
   return {

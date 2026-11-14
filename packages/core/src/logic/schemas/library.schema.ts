@@ -19,6 +19,7 @@ export const LibraryCollectionSchema = makeModelSchema('LibraryCollection');
  */
 export const ResourceEngagementSchema = makeModelSchema('ResourceEngagement');
 
-export type LibraryResource = z.infer<typeof LibraryResourceSchema>;
-export type LibraryCollection = z.infer<typeof LibraryCollectionSchema>;
-export type ResourceEngagement = z.infer<typeof ResourceEngagementSchema>;
+/** Database rows (ZenStack models). The domain shapes live in types/Library.ts. */
+export type LibraryResourceRow = z.infer<typeof LibraryResourceSchema>;
+export type LibraryCollectionRow = z.infer<typeof LibraryCollectionSchema>;
+export type ResourceEngagementRow = z.infer<typeof ResourceEngagementSchema>;

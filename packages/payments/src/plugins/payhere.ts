@@ -1,4 +1,5 @@
-import type { PaymentIntent, PaymentProvider, PaymentStatus } from '@repo/payments/types';
+import type { PaymentIntent, PaymentStatus } from '@repo/core/types/Payments';
+import type { PaymentProvider } from '@repo/core/logic/ports/paymentProvider.port';
 
 export class PayHereProvider implements PaymentProvider {
   id = 'payhere';
@@ -7,12 +8,26 @@ export class PayHereProvider implements PaymentProvider {
   async initializePayment(
     amount: number,
     currency: string,
-    metadata?: any,
+    metadata?: Record<string, unknown>,
   ): Promise<PaymentIntent> {
-    // In a real implementation, this would call PayHere API to get a checkout URL or token.
-    // For now, we return a mock intent.
+    const isDevOrTest =
+      process.env.NODE_ENV !== 'production' ||
+      process.env.EDLOVE_DEMO === '1' ||
+      metadata?.demo === true;
+
+    if (!isDevOrTest) {
+      throw new Error(
+        'PayHereProvider: Live payment processing must execute via server-side edge function webhook. Direct client initialization is prohibited in production.',
+      );
+    }
+
+    const intentId =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? `ph_demo_${crypto.randomUUID()}`
+        : `ph_demo_${Date.now()}`;
+
     return {
-      id: `ph_${Math.random().toString(36).substr(2, 9)}`,
+      id: intentId,
       amount,
       currency,
       status: 'pending',
@@ -22,7 +37,15 @@ export class PayHereProvider implements PaymentProvider {
   }
 
   async verifyPayment(_paymentIntentId: string): Promise<PaymentStatus> {
-    // Real check against PayHere API or Webhook status.
+    const isDevOrTest =
+      process.env.NODE_ENV !== 'production' || process.env.EDLOVE_DEMO === '1';
+
+    if (!isDevOrTest) {
+      throw new Error(
+        'PayHereProvider: Payment verification must query the official webhook status on the server edge.',
+      );
+    }
+
     return 'succeeded';
   }
 

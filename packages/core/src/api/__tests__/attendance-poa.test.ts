@@ -1,13 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { storage } from '../../logic/managers/StorageManager';
+import type { IStorage } from '../../logic/interfaces/storage.port';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useTemporalStore } from '../../store/useTemporalStore';
 
-vi.mock('../../logic/permissions/localEvaluator', () => ({
+vi.mock('../../logic/permissions/localEvaluator.adapter', () => ({
   checkLocalPermission: vi.fn(() => Promise.resolve(true)),
 }));
 
-vi.mock('../../lib/security/deviceTrust', () => ({
+vi.mock('../../lib/security/deviceTrust.adapter', () => ({
   DeviceTrustEngine: {
     checkDeviceTrustStatus: vi.fn(() => Promise.resolve(true)),
   },
@@ -24,16 +25,19 @@ import { attendanceAPI } from '../orchestration/operations';
 
 const mockStorage = {
   set: vi.fn(),
+  setAsync: vi.fn(async () => undefined),
   getString: vi.fn(),
   getStringAsync: vi.fn(),
   getBoolean: vi.fn(),
   getNumber: vi.fn(),
   delete: vi.fn(),
+  deleteAsync: vi.fn(async () => undefined),
   clearAll: vi.fn(),
+  clearAllAsync: vi.fn(async () => undefined),
   contains: vi.fn(),
-};
+} satisfies IStorage;
 
-storage.registerAdapter(mockStorage as any);
+storage.registerAdapter(mockStorage);
 
 vi.mock('../supabase', () => ({
   supabaseClient: {
@@ -79,7 +83,7 @@ describe('Attendance POA Orchestration', () => {
     });
     useTemporalStore.setState({
       phase: 'present',
-      isOffline: false,
+      readPolicy: 'live',
     });
   });
 

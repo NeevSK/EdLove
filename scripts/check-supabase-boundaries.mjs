@@ -8,7 +8,7 @@ import path from 'node:path';
  * 1. `@supabase/supabase-js` or `@supabase/postgrest-js` must NEVER be imported outside of:
  *    - `packages/core/src/adapters/**`
  *    - `packages/core/src/logic/domains/factory.ts` (Composition root for service role / RLS clients)
- *    - `packages/core/src/webAuth.ts` (Browser runtime adapter)
+ *    - `packages/core/src/webAuth.adapter.ts` (Browser runtime adapter)
  *    - Tests specifically testing adapters or runtime boundaries
  * 2. `@supabase/*` must NOT be imported in UI packages (`@repo/ui`, `@repo/self`, `@repo/library`, `@repo/profile`, etc.)
  * 3. State slices (`src/store/slices/**`), hooks (`src/hooks/**`), and providers (`src/providers/**`)
@@ -18,8 +18,8 @@ import path from 'node:path';
 const ALLOWED_SUPABASE_PATTERNS = [
   /packages[\\/]core[\\/]src[\\/]adapters[\\/]/,
   /packages[\\/]core[\\/]src[\\/]logic[\\/]domains[\\/]factory\.ts$/,
-  /packages[\\/]core[\\/]src[\\/]webAuth\.ts$/,
-  /packages[\\/]core[\\/]src[\\/]webAuth\.test\.ts$/,
+  /packages[\\/]core[\\/]src[\\/]webAuth\.adapter\.ts$/,
+  /packages[\\/]core[\\/]src[\\/]webAuth\.adapter\.test\.ts$/,
   /packages[\\/]core[\\/]src[\\/]adapters[\\/].*\.test\.ts$/,
 ];
 

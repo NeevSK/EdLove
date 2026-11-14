@@ -1,5 +1,6 @@
 import { useJourneyHistory } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useUIStore } from '@repo/core/store/useUIStore';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { EnergyBarChart } from '@repo/self/components/EnergyBarChart';
@@ -23,8 +24,8 @@ import {
   PhilosophySection,
   VisionSection,
 } from '@repo/self/views/sections';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { EmptyState } from '@repo/ui/components/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Box, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { useState } from 'react';
@@ -51,8 +52,8 @@ export default function FounderSelfView() {
   // UI State
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
-  const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-  const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+  const justFinishedOnboarding = useUIStore((state) => state.justFinishedOnboarding);
+  const setJustFinishedOnboarding = useUIStore((state) => state.setJustFinishedOnboarding);
   const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
   const { notes: wisdomNotes, isLoading: wisdomLoading } = useWisdom();
   const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
@@ -79,7 +80,7 @@ export default function FounderSelfView() {
   };
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
       <BaseSelfView
         perspective="founder"
         description={t('self.founderDescription')}
@@ -167,10 +168,9 @@ export default function FounderSelfView() {
                 id: 'monthly',
                 label: 'Monthly Reflection',
                 content: (
-                  <PositiveInvitation
-                    context="self"
+                  <EmptyState
                     title={t('founder.visionComingSoon')}
-                    description={t('founder.visionComingSoonDesc')}
+                    message={t('founder.visionComingSoonDesc')}
                   />
                 ),
               },
@@ -189,6 +189,6 @@ export default function FounderSelfView() {
         isOpen={justFinishedOnboarding}
         onClose={() => setJustFinishedOnboarding(false)}
       />
-    </ScreenWrapper>
+    </SafeAreaView>
   );
 }

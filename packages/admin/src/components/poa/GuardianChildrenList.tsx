@@ -1,11 +1,11 @@
-import { Box, Text } from '@repo/ui/primitives';
+import { View, Text } from 'react-native';
 import type React from 'react';
-import type { StudentOverview } from '@repo/admin/guardian/types';
+import type { GuardianStudentOverview } from '@repo/core/logic/schemas/guardian.schema';
 import { GuardianStudentsGrid } from '@repo/admin/components/guardian/GuardianStudentsGrid';
 
 interface GuardianChildrenListProps {
-  students: StudentOverview[];
-  onStudentPress: (student: StudentOverview) => void;
+  students: GuardianStudentOverview[];
+  onStudentPress: (student: GuardianStudentOverview) => void;
 }
 
 export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({
@@ -13,9 +13,9 @@ export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({
   onStudentPress,
 }) => {
   return (
-    <Box className="mb-6">
+    <View className="mb-6">
       <Text className="text-primary font-bold text-base md:text-xl mb-4">Your Students</Text>
       <GuardianStudentsGrid students={students} onStudentPress={onStudentPress} />
-    </Box>
+    </View>
   );
 };

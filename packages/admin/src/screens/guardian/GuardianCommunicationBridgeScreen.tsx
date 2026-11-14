@@ -1,7 +1,6 @@
-﻿import { BookOpenText, MessagesSquare, School } from '@repo/ui/icons';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
+﻿import { View, Text, Pressable } from 'react-native';
+import { BookOpenText, MessagesSquare, School } from '@repo/ui/icons';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 import type React from 'react';
 import { GuardianRoomShell } from '@repo/admin/screens/guardian/GuardianRoomShell';
@@ -19,32 +18,32 @@ function BridgeCard({
 }) {
   return (
     <Pressable onPress={onPress} className="active:opacity-80">
-      <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">
-        <HStack className="items-start gap-3">
-          <Box className="rounded-2xl bg-phase-warning/10 p-3">
+      <View className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">
+        <View className="flex-row items-center items-start gap-3">
+          <View className="rounded-2xl bg-phase-warning/10 p-3">
             <Icon size={18} color="#2A2318" />
-          </Box>
-          <VStack className="flex-1 gap-1">
+          </View>
+          <View className="flex-1 gap-1">
             <Text className="text-[14px] font-bold text-phaseText-primary">{title}</Text>
             <Text className="text-[12px] text-phaseText-secondary">{copy}</Text>
-          </VStack>
-        </HStack>
-      </Box>
+          </View>
+        </View>
+      </View>
     </Pressable>
   );
 }
 
 export default function GuardianCommunicationBridgeScreen() {
-  const router = useRouter();
+  const router = useNavigator();
 
   return (
     <GuardianRoomShell
       eyebrow="School-Home Bridge"
       title="Communication Bridge"
       description="This room helps the guardian move from awareness into the right school, community, and resource spaces without losing context."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => router.back('/workspace')}
     >
-      <VStack className="gap-3">
+      <View className="gap-3">
         <BridgeCard
           icon={MessagesSquare}
           title="Open Community Commons"
@@ -63,7 +62,7 @@ export default function GuardianCommunicationBridgeScreen() {
           copy="Come back to the guardian canvas after checking the broader school ecosystem."
           onPress={() => router.push('/workspace')}
         />
-      </VStack>
+      </View>
     </GuardianRoomShell>
   );
 }

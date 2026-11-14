@@ -5,11 +5,11 @@
  * Run with: npx tsx scripts/audit-theme.ts
  */
 
-import type { TemporalPhase } from '../src/context/types';
+import type { Phase } from '../src/theme/types';
 import { resolvePhaseTokens } from '../src/theme/Theme';
 import { checkAccessibility, toHex } from '../src/utils/a11yUtils';
 
-const PHASES: TemporalPhase[] = ['predawn', 'dawn', 'morning', 'afternoon', 'dusk', 'night'];
+const PHASES: Phase[] = ['predawn', 'dawn', 'morning', 'afternoon', 'dusk', 'night'];
 const MODES: ('light' | 'dark')[] = ['light', 'dark'];
 
 console.log('\x1b[36m%s\x1b[0m', '--- GURUDEVI THEME ACCESSIBILITY AUDIT ---');
