@@ -15,6 +15,7 @@ import {
 } from '../../../lib/domain/hooks/useWorkspaceDomain';
 import { setExploreCapacity, useExploreCapacity } from '../../../lib/explore/exploreCapacity';
 import { setDevPreviewCapacity } from '../../../lib/sanctuary/devPreviewCapacity';
+import type { RoomPresentation } from '../../../lib/sanctuary/roomAccess';
 import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
@@ -48,7 +49,9 @@ import styles from './workspace.module.css';
 import {
   filterWorkspaceFeatures,
   getWorkspaceOverviewPosture,
+  presentationShows,
   WORKSPACE_FEATURES,
+  type WorkspaceFeatureItem,
 } from './workspaceFeatures';
 
 type AuthorizedEntryScope = Readonly<{ bondId: string; entityId: string }>;
@@ -60,6 +63,8 @@ type WorkspaceFloorProps = Readonly<{
   displayName?: string;
   scope?: AuthorizedEntryScope;
   isDevPreview?: boolean;
+  /** SanctuaryFeature's decisions from the server; missing lists every feature. */
+  presentation?: RoomPresentation;
 }>;
 
 const WORKSPACE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
@@ -125,7 +130,12 @@ export function WorkspaceFloor({
   displayName = 'Guest Explorer',
   scope,
   isDevPreview = false,
+  presentation,
 }: WorkspaceFloorProps) {
+  const features = useMemo(
+    () => WORKSPACE_FEATURES.filter((feature) => presentationShows(presentation, feature.id)),
+    [presentation],
+  );
   const router = useRouter();
   const exploreCapacity = useExploreCapacity();
   const normalizedCapacity = (
@@ -198,7 +208,7 @@ export function WorkspaceFloor({
   );
 
   const [overview, setOverview] = useState(true);
-  const workspaceFeatureIds = WORKSPACE_FEATURES.map((feature) => feature.id);
+  const workspaceFeatureIds = features.map((feature) => feature.id);
   const quickAccessScope = mode === 'explore' ? 'explore' : 'sanctuary';
   const quickAccess = useQuickAccessPreferences(
     'workspace',
@@ -510,7 +520,7 @@ export function WorkspaceFloor({
     setOverview(false);
   }
 
-  function openWorkspaceFeature(feature: (typeof WORKSPACE_FEATURES)[number]) {
+  function openWorkspaceFeature(feature: WorkspaceFeatureItem) {
     if (feature.id === 'attendance') {
       openAttendance();
       return;
@@ -812,7 +822,7 @@ export function WorkspaceFloor({
             }),
           );
         }}
-        quickAccessItems={WORKSPACE_FEATURES.map((item) => ({
+        quickAccessItems={features.map((item) => ({
           id: item.id,
           label: item.label,
           emoji: item.symbol,
@@ -821,7 +831,7 @@ export function WorkspaceFloor({
         quickAccessUsage={quickAccess.usage}
         quickAccessPinLimit={quickAccess.pinLimit}
         onOpenQuickAccessItem={(item) => {
-          const feature = WORKSPACE_FEATURES.find((candidate) => item.id === candidate.id);
+          const feature = features.find((candidate) => item.id === candidate.id);
           if (feature) {
             openWorkspaceFeature(feature);
             return;
@@ -1071,7 +1081,7 @@ export function WorkspaceFloor({
                       : `${activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} tools`}
                 </h2>
                 <div className={styles.workspaceGrid}>
-                  {filterWorkspaceFeatures(WORKSPACE_FEATURES, activeRole).map((feature) => (
+                  {filterWorkspaceFeatures(features, activeRole).map((feature) => (
                     <LivingCard
                       as="article"
                       className={styles.workspaceCard}
@@ -1426,14 +1436,13 @@ export function WorkspaceFloor({
                 aria-labelledby="workspace-task-title"
               >
                 <span aria-hidden="true" className={styles.workspaceTaskEmoji}>
-                  {WORKSPACE_FEATURES.find((feature) => feature.id === focused?.featureId)
-                    ?.symbol ?? '✨'}
+                  {features.find((feature) => feature.id === focused?.featureId)?.symbol ?? '✨'}
                 </span>
                 <p className={styles.eyebrow}>Workspace task</p>
                 <h2 id="workspace-task-title">{focused?.title ?? 'Workspace feature'}</h2>
                 <p>
-                  {WORKSPACE_FEATURES.find((feature) => feature.id === focused?.featureId)
-                    ?.description ?? 'Open a workspace tool to continue.'}
+                  {features.find((feature) => feature.id === focused?.featureId)?.description ??
+                    'Open a workspace tool to continue.'}
                 </p>
                 {mode === 'explore' ? (
                   <p className={styles.muted}>

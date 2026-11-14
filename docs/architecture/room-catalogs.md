@@ -22,7 +22,9 @@ Decided by Neev on 14 Nov 2026. This replaces the room plans (`ROOM_PLANS`) and 
 | Assembled AppCatalog | phone `apps/gurudevi-mobile/src/boot/registerAppCatalog.ts`, web `apps/gurudevi-web/lib/appCatalog.ts` (same registries) |
 | Zones and groups of each room's floor | `packages/core/src/logic/floor/rooms.ts` (`ROOM_FLOORS`) |
 | A room for one role | `roomCatalogOf(catalog, room, capacity, platform)` |
-| SanctuaryFeature for a whole room | `useRoomPresentation(features)` in `logic/registry/useDomainFeature.ts` |
+| SanctuaryFeature for a whole room | phone: `useRoomPresentation(features)` in `logic/registry/useDomainFeature.ts`; web: `resolveRoomPresentation` in `apps/gurudevi-web/lib/sanctuary/roomAccess.ts` |
+| SanctuaryFeature's gates, as one plain function | `evaluateFeatureFor(person, action, subject, requirement)` in `logic/permissions/personAccess.ts` |
+| What an entry asks of SanctuaryFeature | `requirementOf` and `roomPresentationOf` in `logic/registry/featureRequirement.ts` |
 | The floor on each platform | phone `src/components/floor/RoomFloor.tsx`, web `app/(sanctuary)/components/RoomFloor.tsx`; both use `layoutRoomFloor` |
 
 ## What an entry says
@@ -58,6 +60,8 @@ Only entries that have a `floor` are furniture. Other entries, such as a room sh
 
 ## Not done yet
 
-- **The web has no SanctuaryFeature context.** The web does not fill the auth, Cedar or entitlement stores that SanctuaryFeature reads. The web floor therefore treats every catalog feature as available, until those stores are filled on the web.
+- **The web has no entitlement source.** On the web, SanctuaryFeature runs on the server: it uses the server-checked entry (account, bond, capacity, citizenship) and the permission snapshot that the API signs (`authority.refreshSnapshot`), and it checks the signature. There is no entitlement source yet, on the web or through the v1 API. So every web account counts as FREE, and a paid feature shows as needing an upgrade. If the snapshot is missing or does not check, protected features wait ("loading") rather than open.
+- **Only Workspace uses it on the web so far.** Self, Community and Library pages still list every catalog feature. Each page can call `resolveRoomPresentation` the same way.
+- **The web asks for a fresh snapshot on every Workspace load.** That is one API call and one row upsert per load. It should be cached for each bond until shortly before it expires.
 - **Workforce is hidden on the web.** The catalog marks Workforce as `development`, so the web no longer lists it. Its page still exists.
 - **The phone's work floor is still opt-in.** It is switched on with `EXPO_PUBLIC_WORK_FLOOR=1`, and most Workspace features have no phone screen yet.

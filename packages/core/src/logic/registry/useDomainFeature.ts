@@ -1,15 +1,9 @@
-import { isBaselineReadCapability } from '@repo/core/logic/permissions/baselineCapabilities';
-import {
-  type FeaturePresentationMode,
-  resolveFeaturePresentation,
-} from '@repo/core/logic/permissions/featurePresentation';
+import type { FeaturePresentationMode } from '@repo/core/logic/permissions/featurePresentation';
 import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
-import type {
-  FeatureRequirement,
-  SanctuaryFeatureResult,
-} from '@repo/core/logic/permissions/sanctuaryFeature';
+import type { SanctuaryFeatureResult } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { getDomainEntry } from '@repo/core/logic/registry/appCatalog';
 import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+import { requirementOf, roomPresentationOf } from '@repo/core/logic/registry/featureRequirement';
 import { useCallback, useMemo } from 'react';
 
 export interface DomainFeatureResult {
@@ -19,21 +13,7 @@ export interface DomainFeatureResult {
 
 const onWeb = () => typeof window !== 'undefined' && typeof document !== 'undefined';
 
-/** What a catalog entry asks of SanctuaryFeature. */
-export function requirementOf(entry: DomainEntry, web = onWeb()): FeatureRequirement {
-  const { action, subject } = entry.capabilityRequirement;
-  return {
-    action,
-    subject,
-    citizenshipRequired: entry.citizenshipRequired,
-    platformSupported: web ? entry.webSupport : entry.mobileSupport,
-    entitlementModule: entry.entitlementModule,
-    entitlementTier: entry.entitlementTier,
-    flagKey: entry.flagKey,
-    lifecycleState: entry.state,
-    allowDuringBootstrap: isBaselineReadCapability(action, subject),
-  };
-}
+export { requirementOf };
 
 /**
  * useDomainFeature — reads a domain entry from the AppCatalog
@@ -48,7 +28,7 @@ export function requirementOf(entry: DomainEntry, web = onWeb()): FeatureRequire
  */
 export function useDomainFeature(domainId: string): DomainFeatureResult {
   const entry = getDomainEntry(domainId);
-  const requirement = useMemo(() => requirementOf(entry), [entry]);
+  const requirement = useMemo(() => requirementOf(entry, onWeb()), [entry]);
   const result = useSanctuaryFeature(
     entry.capabilityRequirement.action,
     entry.capabilityRequirement.subject,
@@ -66,17 +46,9 @@ export function useRoomPresentation(
   features: readonly DomainEntry[],
 ): (featureId: string) => FeaturePresentationMode {
   const { evaluate } = useSanctuaryFeature();
-  const modes = useMemo(() => {
-    const out = new Map<string, FeaturePresentationMode>();
-    for (const entry of features) {
-      const { action, subject } = entry.capabilityRequirement;
-      out.set(
-        entry.id,
-        resolveFeaturePresentation(evaluate(action, subject, requirementOf(entry)), entry.state)
-          .mode,
-      );
-    }
-    return out;
-  }, [features, evaluate]);
-  return useCallback((id: string) => modes.get(id) ?? 'hidden', [modes]);
+  const modes = useMemo(
+    () => roomPresentationOf(features, evaluate, onWeb()),
+    [features, evaluate],
+  );
+  return useCallback((id: string) => modes[id] ?? 'hidden', [modes]);
 }

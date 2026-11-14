@@ -52,6 +52,7 @@ function authoritativeFacts(
       entityId: active.entityId,
       entityType: active.entityType,
       roles: [active.capacity],
+      citizenship: active.citizenship,
     },
   };
 }
