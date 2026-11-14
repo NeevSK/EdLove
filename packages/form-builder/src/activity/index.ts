@@ -2,8 +2,16 @@
 // can sit (on a video's timeline). Pure: no React, storage or network, and nothing named after
 // an app. boundary.test.ts holds that, so these can be published with the form builder.
 
-export { type Calibration, calibrationOf, reflectionsOf, type Sureness } from './calibration';
+export {
+  type Calibration,
+  calibrationOf,
+  lastConfidence,
+  reflectionsOf,
+  type Sureness,
+  sureness,
+} from './calibration';
 export { type FromH5P, fromH5PEvent, type H5PEventLike } from './fromH5P';
+export { createFsrsScheduler, type FsrsCard, type FsrsOptions } from './fsrsReview.adapter';
 export {
   type AssistanceKind,
   type AttemptStep,
@@ -63,6 +71,18 @@ export {
   rubricForPolicy,
   schemaForMode,
 } from './mode';
+export {
+  DEFAULT_GRADE_POLICY,
+  dueItems,
+  type Grade,
+  type GradePolicy,
+  gradesFromAttempt,
+  type ItemOf,
+  type ReviewItem,
+  type ReviewQueue,
+  type ReviewScheduler,
+  recordReviews,
+} from './review';
 export {
   advanceCues,
   answerCue,

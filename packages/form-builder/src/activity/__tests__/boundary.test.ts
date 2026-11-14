@@ -9,6 +9,7 @@ const allowed = (s: string) =>
   s.startsWith('./') ||
   s.startsWith('../quiz') ||
   s === 'zod' ||
+  s === 'ts-fsrs' ||
   s.startsWith('@intuitui-labs/form-builder-engine/');
 
 describe('activity boundary', () => {

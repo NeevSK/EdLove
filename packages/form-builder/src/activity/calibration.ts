@@ -9,7 +9,7 @@ import type { Confidence, Journal, ReflectionStage } from './journal';
 
 export type Sureness = 'sure' | 'unsure';
 
-const sureness = (c: Confidence): Sureness =>
+export const sureness = (c: Confidence): Sureness =>
   c === 'sure' || c === 'fairly_sure' ? 'sure' : 'unsure';
 
 export interface Calibration {
@@ -25,6 +25,15 @@ export interface Calibration {
   readonly notRated: readonly string[];
 }
 
+/** The last confidence the person gave for each part. */
+export function lastConfidence(journal: Journal): ReadonlyMap<string, Confidence> {
+  const out = new Map<string, Confidence>();
+  for (const step of journal) {
+    if (step.kind === 'confidence') out.set(step.part, step.level);
+  }
+  return out;
+}
+
 /**
  * `correct` holds the marking of each answered part (from `gradeQuiz`). The confidence that
  * counts is the last one given before or with the last answer to that part.
@@ -33,10 +42,7 @@ export function calibrationOf(
   journal: Journal,
   correct: ReadonlyMap<string, boolean>,
 ): Calibration {
-  const lastConfidence = new Map<string, Confidence>();
-  for (const step of journal) {
-    if (step.kind === 'confidence') lastConfidence.set(step.part, step.level);
-  }
+  const confidence = lastConfidence(journal);
   const groups = {
     sureRight: [] as string[],
     sureWrong: [] as string[],
@@ -45,7 +51,7 @@ export function calibrationOf(
     notRated: [] as string[],
   };
   for (const [part, right] of correct) {
-    const level = lastConfidence.get(part);
+    const level = confidence.get(part);
     if (level === undefined) groups.notRated.push(part);
     else if (sureness(level) === 'sure') (right ? groups.sureRight : groups.sureWrong).push(part);
     else (right ? groups.unsureRight : groups.unsureWrong).push(part);
