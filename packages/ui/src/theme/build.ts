@@ -489,6 +489,7 @@ function buildOverlay(
     toast: {
       info: { edge: t.line },
       success: { edge: t.success },
+      warning: { edge: t.lampDeep },
       danger: { edge: t.danger },
     },
   };

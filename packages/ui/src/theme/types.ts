@@ -305,7 +305,8 @@ export interface WorldMotion {
   haptic: 'soft' | 'crisp';
 }
 
-export type ToastTone = 'info' | 'success' | 'danger';
+/** `warning` takes the world's attention colour (`lamp`): it asks for a look, not an alarm. */
+export type ToastTone = 'info' | 'success' | 'warning' | 'danger';
 
 /**
  * Everything that floats over a screen (dialogs, sheets, popovers, toasts,

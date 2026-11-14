@@ -496,13 +496,33 @@ export interface ToastAction {
   onPress: () => void;
 }
 
+/**
+ * How much room a toast takes. A `pill` is one short line, centred, for a quiet confirmation
+ * ("Saved"). A `card` carries a description or an action. A `banner` spans the top edge and stays
+ * until it is dismissed or resolved: offline, sync trouble, something that waits on the person.
+ */
+export type ToastSize = 'pill' | 'card' | 'banner';
+
 export interface ToastOptions {
   /** Already translated, one short sentence. */
   message: string;
+  /** A second, quieter line. */
+  description?: string;
   tone?: ToastTone;
+  /** Defaults to `card` when there is a description or an action, otherwise `pill`. */
+  size?: ToastSize;
   action?: ToastAction;
-  /** How long it stays, in ms. Toasts with an action stay longer by default. */
+  /** How long it stays, in ms; `Infinity` until dismissed. Banners stay by default. */
   durationMs?: number;
+  /**
+   * Identifies what the toast is about. Showing a toast with the same key updates the one already
+   * up instead of adding another; the same message again counts up (×2, ×3) rather than stacking.
+   */
+  key?: string;
+  /** Announced assertively and shown ahead of the queue, as danger toasts are. */
+  important?: boolean;
+  /** When false, it can't be swiped or tapped away; it leaves when resolved or dismissed in code. */
+  dismissible?: boolean;
 }
 
 export interface TooltipContract {
