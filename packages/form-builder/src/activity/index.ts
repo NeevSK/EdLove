@@ -10,6 +10,7 @@ export {
   type Sureness,
   sureness,
 } from './calibration';
+export { type AttemptForView, classView, type PartView } from './classView';
 export { type FromH5P, fromH5PEvent, type H5PEventLike } from './fromH5P';
 export { createFsrsScheduler, type FsrsCard, type FsrsOptions } from './fsrsReview.adapter';
 export {
