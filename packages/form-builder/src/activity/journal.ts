@@ -33,7 +33,18 @@ export type AttemptStep =
     })
   | (StepBase & { readonly kind: 'left_app' })
   | (StepBase & { readonly kind: 'returned' })
-  | (StepBase & { readonly kind: 'time_up' });
+  | (StepBase & { readonly kind: 'time_up' })
+  /** How sure the person was of an answer, given with it. Used only to reflect back to them. */
+  | (StepBase & { readonly kind: 'confidence'; readonly part: string; readonly level: Confidence })
+  /** A planning, monitoring or evaluating note the person wrote around the activity. */
+  | (StepBase & {
+      readonly kind: 'reflected';
+      readonly stage: ReflectionStage;
+      readonly text: string;
+    });
+
+export type Confidence = 'guessing' | 'unsure' | 'fairly_sure' | 'sure';
+export type ReflectionStage = 'plan' | 'monitor' | 'evaluate';
 
 export type Journal = readonly AttemptStep[];
 
@@ -106,6 +117,7 @@ export function assistanceByPart(journal: Journal): ReadonlyMap<string, PartAssi
         });
         return;
       case 'retried':
+      case 'confidence':
         out.set(step.part, current);
         return;
     }

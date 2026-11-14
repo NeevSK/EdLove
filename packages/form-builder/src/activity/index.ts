@@ -2,15 +2,18 @@
 // can sit (on a video's timeline). Pure: no React, storage or network, and nothing named after
 // an app. boundary.test.ts holds that, so these can be published with the form builder.
 
+export { type Calibration, calibrationOf, reflectionsOf, type Sureness } from './calibration';
 export { type FromH5P, fromH5PEvent, type H5PEventLike } from './fromH5P';
 export {
   type AssistanceKind,
   type AttemptStep,
   appendStep,
   assistanceByPart,
+  type Confidence,
   gradeInputFromJournal,
   type Journal,
   type PartAssistance,
+  type ReflectionStage,
 } from './journal';
 export {
   answerLive,
