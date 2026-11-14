@@ -533,8 +533,8 @@ export function SettingsFloor({
           <div className={styles.optionsGrid} role="radiogroup" aria-label="World behind screens">
             {(
               [
-                ['lively', 'Lively', 'The full world behind every screen, reading ones too'],
-                ['balanced', 'Balanced', 'Full in rooms and screens, calmer where you read or work'],
+                ['lively', 'Lively', 'The moving world in rooms and behind every screen, reading ones too'],
+                ['balanced', 'Balanced', 'Full in rooms, behind the header on screens, still where you read or work'],
                 ['calm', 'Calm', 'A still, fainter world everywhere, rooms included'],
               ] as const
             ).map(([id, label, sub]) => (

@@ -46,6 +46,23 @@ const EXPECTED_DOMAIN_IDS = [
   'badges',
   'school',
   'events',
+  // Library, Community and Profile on the phone (14 Nov 2026)
+  'library-continue',
+  'library-new',
+  'library-search',
+  'library-map',
+  'library-contribute',
+  'library-school-shelf',
+  'community-explore',
+  'community-notices',
+  'profile-card',
+  'profile-bonds',
+  'profile-invite',
+  'profile-achievements',
+  'profile-record',
+  'profile-security',
+  'profile-privacy',
+  'profile-settings',
 ] as const;
 
 describe('production AppCatalog boot contract', () => {

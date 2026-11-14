@@ -1393,6 +1393,9 @@ importers:
       '@repo/library':
         specifier: workspace:*
         version: link:../../packages/library
+      '@repo/profile':
+        specifier: workspace:*
+        version: link:../../packages/profile
       '@repo/self':
         specifier: workspace:*
         version: link:../../packages/self

@@ -191,6 +191,7 @@ export {
   setStagePreview,
   splitLayers,
   useFloorPresence,
+  useScreenGround,
   useStage,
   useStageContext,
   useStagePreview,

@@ -10,6 +10,7 @@ export {
 export {
   type StageContextValue,
   useFloorPresence,
+  useScreenGround,
   useStage,
   useStageContext,
   useStageScroll,

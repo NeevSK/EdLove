@@ -25,6 +25,17 @@ function alphaHex(alpha: number): string {
     .padStart(2, '0');
 }
 
+const PAPER = 'var(--w-ground, var(--paper))';
+
+/** The shared veil (`GROUND_PRESENCE_VEILS`) as a CSS gradient of the world's paper. */
+function veilGradient(veil: GroundPlan['veil']): string {
+  const stops = veil.map(
+    ([at, alpha]) =>
+      `color-mix(in srgb, ${PAPER} ${Math.round(alpha * 100)}%, transparent) ${Math.round(at * 100)}%`,
+  );
+  return `linear-gradient(to bottom, ${stops.join(', ')})`;
+}
+
 export interface GroundLayersProps {
   plan: GroundPlan;
   worldId: string;
@@ -95,17 +106,17 @@ export function GroundLayers({
         worldId={worldId}
       />
       <FloorAtmosphere kind={plan.texture} preset={plan.tint?.preset ?? 'default'} />
-      {plan.veil > 0 ? (
+      {plan.veil.length > 0 ? (
         <div
           aria-hidden="true"
           data-layer="ground-veil"
+          data-presence={plan.presence}
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 0,
             pointerEvents: 'none',
-            background: 'var(--w-ground, var(--paper))',
-            opacity: plan.veil,
+            backgroundImage: veilGradient(plan.veil),
           }}
         />
       ) : null}

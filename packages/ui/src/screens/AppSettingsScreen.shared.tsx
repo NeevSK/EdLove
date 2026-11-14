@@ -663,7 +663,11 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: world.tokens.ground }}
+      // On a phone the world's floor shows through (calmly veiled); the web page paints its own.
+      style={{
+        flex: 1,
+        backgroundColor: Platform.OS === 'web' ? world.tokens.ground : 'transparent',
+      }}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
         paddingTop: 8,

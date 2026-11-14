@@ -34,6 +34,7 @@
     "@repo/core": "workspace:*",
     "@repo/form-builder": "workspace:*",
     "@repo/library": "workspace:*",
+    "@repo/profile": "workspace:*",
     "@repo/self": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/verger-core": "workspace:*",

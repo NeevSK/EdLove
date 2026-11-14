@@ -126,7 +126,13 @@ export default function NotificationsScreen() {
   const isStale = hasData && (isOffline || Boolean(error) || !isRealtimeConnected);
 
   return (
-    <ScreenWrapper scroll={false} fullWidth noTopInset>
+    <ScreenWrapper
+      scroll={false}
+      fullWidth
+      noTopInset
+      // On a phone the world's floor shows through (calmly veiled) instead of a flat colour.
+      backgroundColor={Platform.OS === 'web' ? undefined : 'transparent'}
+    >
       <SanctuaryFlashList
         data={hasData ? notifications : []}
         keyExtractor={(item) => item.id}

@@ -37,6 +37,8 @@ export interface RoomFloorProps {
   presentationOf?: (featureId: string) => FeaturePresentationMode;
   onSeeAll?: (groupId: string) => void;
   words?: Partial<PatternWords>;
+  /** The screen already scrolls and pads the floor (a room page with a lead above). */
+  inScroll?: boolean;
 }
 
 /**
@@ -54,6 +56,7 @@ export function RoomFloor({
   presentationOf,
   onSeeAll,
   words,
+  inScroll = false,
 }: RoomFloorProps) {
   const win = useWindowDimensions();
   const stage = useStage();
@@ -98,8 +101,14 @@ export function RoomFloor({
   );
 
   return (
-    <View style={styles.floor}>
-      <FloorView tree={floor.tree} renderPiece={renderPiece} onSeeAll={onSeeAll} words={words} />
+    <View style={inScroll ? undefined : styles.floor}>
+      <FloorView
+        tree={floor.tree}
+        renderPiece={renderPiece}
+        onSeeAll={onSeeAll}
+        words={words}
+        scroll={!inScroll}
+      />
     </View>
   );
 }

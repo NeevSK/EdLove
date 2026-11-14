@@ -28,7 +28,7 @@ import {
   connectionStatusOf,
   Sheet,
   Text as WText,
-  useFloorPresence,
+  useScreenGround,
   WorldHeader,
   WorldPicker,
   YouSheet,
@@ -68,6 +68,10 @@ import { AssistantSheet } from '@/components/shell/AssistantSheet';
 import { RoomFab } from '@/components/shell/RoomFab';
 import { type CommonActions, ROOM_NAMES } from '@/components/shell/roomActions';
 import { ShellTabBar } from '@/components/shell/ShellTabBar';
+import { GroundSheet } from '@/components/ground/GroundSheet';
+import { useRoomGround } from '@/components/ground/useRoomGround';
+import { groundStageForPath } from '@/components/shell/screenPresence';
+import { useShellRequests } from '@/components/shell/shellRequests';
 import { TabFeatureCatalogSheet } from '@/components/navigation/TabFeatureCatalogSheet';
 import { getNavigationTitle } from '@/lib/navigation/appNavigation';
 import { useShellVariant } from '@/lib/navigation/shellVariant';
@@ -157,6 +161,14 @@ function TabsLayoutContent() {
     'workspace' | 'self' | 'library' | 'community' | 'profile' | null
   >(null);
   const [isInviteCodeModalOpen, setInviteCodeModalOpen] = useState(false);
+  const [groundOpen, setGroundOpen] = useState(false);
+  // A room asked for one of the shell's sheets (Profile: switch bond, join with a code).
+  const askedSheet = useShellRequests((state) => state.asked);
+  useEffect(() => {
+    const sheet = askedSheet ? useShellRequests.getState().take() : null;
+    if (sheet === 'perspectives') setPerspectiveSwitcherOpen(true);
+    if (sheet === 'invite') setInviteCodeModalOpen(true);
+  }, [askedSheet]);
 
   // Auto-reconcile perspective entities from Postgres / PowerSync SQLite on boot
   useEffect(() => {
@@ -329,8 +341,18 @@ function TabsLayoutContent() {
     }
     return pathname === `/${currentDomain}` || pathname === `/${currentDomain}/`;
   }, [currentDomain, globalParams.feature, pathname]);
-  // A room's home shows the whole floor; inside a room it shows only behind the header.
-  useFloorPresence(isDomainRoot ? 'full' : 'band');
+  // Every screen stands on the world's ground. The shell names the kind of screen; the ground
+  // policy, the person's Visual settings and verger decide how much of the ground shows.
+  const groundStage = groundStageForPath(pathname, { roomRoot: isDomainRoot });
+  useScreenGround(groundStage);
+  // The room's look (the world's, or the room's own) is planned once here and drawn by the
+  // one floor at the root, so every screen in the room stands on it.
+  const roomGround = useRoomGround({
+    room: currentDomain,
+    stage: groundStage,
+    userId: user?.id,
+    perspectiveId: activePerspective.id,
+  });
 
   const domainTabs = useActiveSubTabsStore(
     (s) => s.tabsByDomain[currentDomain] ?? EMPTY_DOMAIN_TABS,
@@ -497,6 +519,11 @@ function TabsLayoutContent() {
               onPress: () => setCatalogSheetTab(currentDomain),
             }
           : undefined,
+      look: {
+        label: `Ground for ${roomLabels[currentDomain]}`,
+        icon: Sparkles as ComponentType<KitIconProps>,
+        onPress: () => setGroundOpen(true),
+      },
       // On a tall phone held upright, the header's bell is beyond the thumb: the action carries it.
       notices:
         layout.aspect === 'tall' && layout.posture === 'portrait'
@@ -507,7 +534,7 @@ function TabsLayoutContent() {
             }
           : undefined,
     }),
-    [assistantChoice, currentDomain, setBreathingOpen, layout.aspect, layout.posture, unreadCount],
+    [assistantChoice, currentDomain, setBreathingOpen, layout.aspect, layout.posture, unreadCount, roomLabels],
   );
 
   // Space the floating action keeps above the rooms bar.
@@ -666,6 +693,13 @@ function TabsLayoutContent() {
         onGuide={() => setAssistant({ open: true, guide: true })}
         onHelp={() => setAssistant({ open: true, guide: false })}
         onSettings={() => router.push('/settings')}
+      />
+
+      <GroundSheet
+        open={groundOpen}
+        onClose={() => setGroundOpen(false)}
+        roomName={roomLabels[currentDomain]}
+        ground={roomGround}
       />
 
       <Sheet open={worldOpen} onClose={() => setWorldOpen(false)} title="Your world">

@@ -17,7 +17,7 @@ import {
   Pebble,
   Surface,
   Text,
-  useFloorPresence,
+  useScreenGround,
   useRoomScroll,
   useShellLayout,
 } from '@repo/ui/components/native';
@@ -43,7 +43,7 @@ export function practiceGrid(width: number, gap: number): { columns: number; car
 }
 
 export function SelfFloor() {
-  useFloorPresence('full');
+  useScreenGround('room');
   const canvas = useSelfCanvas();
   const scroll = useRoomScroll();
   const insets = useSafeAreaInsets();

@@ -22,7 +22,12 @@ import { useEffect, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Canvas, LinearGradient, Rect, vec } from 'react-native-skia';
+import { GROUND_PRESENCE_VEILS, type GroundPlan } from '@repo/core/logic/workspace/groundPlan';
+import { photoUrlFor } from '@repo/core/logic/workspace/worldBackdrops';
+import { groundLimitsOf } from '../../../theme/groundLimits';
+import { GURUDEVI_APP } from '../../../utils/urls';
 import { useVisualCapabilities } from '../../../context/VisualCapabilities';
+import { quietVeilOf, veilGradientOf } from '../../../theme/scene/screenGround';
 import { alpha } from '../../../theme/color';
 import { useWorld } from '../../../theme/native/WorldContext';
 import { type ArtLayer, type ScenePresence, resolveScene, sceneArtOf } from '../../../theme/scene';
@@ -40,6 +45,11 @@ export interface WorldFloorProps {
   stage: Stage;
   presence: ScenePresence;
   scrolling: boolean;
+  /**
+   * The planned ground for the room on screen (the world's look or the room's own, already
+   * limited by verger): a still sky, a photo, or the world's plain paper instead of the live sky.
+   */
+  ground?: GroundPlan | null;
 }
 
 /** The trailing run of moving layers: they go on the live canvas, everything before stays still. */
@@ -52,14 +62,17 @@ export function splitLayers(layers: readonly ArtLayer[], live: boolean) {
 
 const VEIL_MS = 420;
 
-export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
+export function WorldFloor({ stage, presence, scrolling, ground: plan = null }: WorldFloorProps) {
   const world = useWorld();
   const budget = useVisualCapabilities();
   const visibility = useVergerSnapshot()?.visibility ?? 'active';
   const now = useMinuteClock();
   const pins = useStagePreview();
   const { width, height } = useWindowDimensions();
-  const plain = world.definition.floor === 'plain' || stage.tier === 'bare';
+  const plainWorld = world.definition.floor === 'plain' || stage.tier === 'bare';
+  // The planned ground: paper is the world's plain ground; a photo replaces the sky.
+  const photo = !plainWorld && plan?.surface === 'photo' && plan.photo ? plan.photo : null;
+  const plain = plainWorld || plan?.surface === 'paper' || photo !== null;
 
   const scene = useMemo(
     () =>
@@ -87,7 +100,10 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
     [plain, scene, world.id, width, height, light],
   );
 
-  const live = stage.fps > 0 && (art?.particles.length ?? 0) + (art?.layers.length ?? 0) > 0;
+  const live =
+    plan?.surface !== 'still' &&
+    stage.fps > 0 &&
+    (art?.particles.length ?? 0) + (art?.layers.length ?? 0) > 0;
   const { still, moving } = useMemo(
     () =>
       splitLayers(
@@ -98,14 +114,17 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
   );
   const active = live && presence !== 'quiet' && !scrolling && visibility === 'active';
 
-  // Veils: a band veil keeps the floor visible behind the header only; quiet hides it.
+  // Veils: a band veil keeps the floor visible behind the header only. Quiet (settings, forms,
+  // reading) stills the floor and veils it calmly, but never hides it: every screen still stands
+  // on the world's ground. A plain world (Classic) has only its ground.
+  const quietTo = plainWorld ? 1 : presence === 'quiet' ? quietVeilOf() : 0;
   const band = useSharedValue(presence === 'band' ? 1 : 0);
-  const quiet = useSharedValue(presence === 'quiet' || plain ? 1 : 0);
+  const quiet = useSharedValue(quietTo);
   useEffect(() => {
     const ms = stage.transition === 'none' ? 0 : VEIL_MS;
     band.set(withTiming(presence === 'band' ? 1 : 0, { duration: ms }));
-    quiet.set(withTiming(presence === 'quiet' || plain ? 1 : 0, { duration: ms }));
-  }, [presence, plain, stage.transition, band, quiet]);
+    quiet.set(withTiming(quietTo, { duration: ms }));
+  }, [presence, quietTo, stage.transition, band, quiet]);
   const bandStyle = useAnimatedStyle(() => ({ opacity: band.get() }));
   const quietStyle = useAnimatedStyle(() => ({ opacity: quiet.get() }));
 
@@ -128,6 +147,21 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
       importantForAccessibility="no-hide-descendants"
       style={StyleSheet.absoluteFill}
     >
+      {photo ? (
+        // A photo stays inside the world's limit, so words written over it keep their contrast.
+        <Image
+          source={{ uri: photoUrlFor(photo, GURUDEVI_APP) }}
+          style={{
+            width,
+            height,
+            opacity: groundLimitsOf(world.tokens).photoOpacity * (plan?.dim ? 0.6 : 1),
+          }}
+          contentFit="cover"
+          transition={stage.transition === 'none' ? 0 : 600}
+          cachePolicy="disk"
+          accessible={false}
+        />
+      ) : null}
       {picture && art ? (
         <>
           <Image
@@ -189,7 +223,7 @@ export function WorldFloor({ stage, presence, scrolling }: WorldFloorProps) {
           StyleSheet.absoluteFill,
           bandStyle,
           {
-            backgroundImage: `linear-gradient(to bottom, ${alpha(ground, 0.1)} 0%, ${alpha(ground, 0.55)} 12%, ${alpha(ground, 0.9)} 22%, ${alpha(ground, 0.94)} 100%)`,
+            backgroundImage: veilGradientOf(GROUND_PRESENCE_VEILS.band, (a) => alpha(ground, a)),
           },
         ]}
       />
