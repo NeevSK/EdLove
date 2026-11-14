@@ -6,7 +6,14 @@
     "maturity": "available",
     "owner": "Naveen"
   },
-  "links": ["intent:student.daily_prep", "intent:student.timetable_schedule", "intent:student.mindful_reflection"],
+  "links": [
+    "intent:student.daily_prep",
+    "intent:student.timetable_schedule",
+    "intent:student.mindful_reflection",
+    "intent:learner.monitor_own_learning",
+    "intent:learner.recognise_growth",
+    "intent:learner.review_spaced"
+  ],
   "intents": [
     {
       "id": "intent:student.daily_prep",
@@ -21,9 +28,7 @@
           "situation": "In the evening during the wind-down phase, a learner opens Self to set three intentional things to prepare for tomorrow.",
           "outcome": "Goals are captured in local SQLite and swiped complete the next day with tactile haptic feedback.",
           "context": "daily",
-          "preconditions": [
-            "Authenticated account exists."
-          ],
+          "preconditions": ["Authenticated account exists."],
           "entry": "step:student.open_self",
           "development": {
             "mode": "brownfield",
@@ -138,9 +143,7 @@
           "situation": "A student needs to know which subject, teacher, and room they should be in during the current period.",
           "outcome": "Current and upcoming class periods are displayed with active period highlighted.",
           "context": "daily",
-          "preconditions": [
-            "Authenticated account is enrolled in at least one active classroom."
-          ],
+          "preconditions": ["Authenticated account is enrolled in at least one active classroom."],
           "entry": "step:student.view_timetable",
           "development": {
             "mode": "brownfield",
@@ -227,9 +230,7 @@
           "situation": "A learner feeling agitated or overwhelmed seeks a quick calming reset.",
           "outcome": "Gentle breath cadence is delivered with sensory haptics and peaceful visuals.",
           "context": "recovery",
-          "preconditions": [
-            "App is running in any context."
-          ],
+          "preconditions": ["App is running in any context."],
           "entry": "step:student.initiate_breath",
           "development": {
             "mode": "brownfield",
@@ -306,6 +307,466 @@
             }
           ],
           "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:learner.monitor_own_learning",
+      "title": "Plan, check and look back on my own learning",
+      "actor": "student",
+      "outcome": "The learner gets better at knowing what they know.",
+      "links": ["journey:learner.attempt_reflection"],
+      "journeys": [
+        {
+          "id": "journey:learner.attempt_reflection",
+          "title": "Plan, check and look back on an attempt",
+          "situation": "A learner opens a quiz or practice set and wants to do better than last time.",
+          "outcome": "The learner sees how well their confidence matched their answers and writes what they will do differently.",
+          "links": [],
+          "planning": {
+            "maturity": "proposed",
+            "implementation": "partial",
+            "verification": "partial"
+          },
+          "context": "daily",
+          "preconditions": ["The person has opened Gurudevi on their own device."],
+          "entry": "step:learner.plan_first_move",
+          "development": {
+            "mode": "mixed",
+            "existingBehavior": [],
+            "invariants": [
+              "Every prompt can be skipped.",
+              "Calibration is never shown to anyone else unless the person shares it."
+            ],
+            "openQuestions": [
+              "Who sees calibration: the learner only, or also the teacher in the relation?"
+            ],
+            "integrationPoints": [
+              "packages/form-builder/src/activity/calibration.ts",
+              "packages/core/src/flows/moments/learningMoments.ts"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:learner.plan_first_move",
+              "title": "Choose a first move",
+              "interaction": "Pick one of three planning prompts, or skip.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:learner.rate_confidence",
+              "title": "Say how sure",
+              "interaction": "Tap a confidence level with each answer.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:learner.see_calibration",
+              "title": "See calibration",
+              "interaction": "Sure and right, sure and wrong, unsure but right, unsure and wrong.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:learner.write_evaluation",
+              "title": "Look back",
+              "interaction": "Write or record one thing to do differently.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:learner.plan_to_answer",
+              "title": "Start answering",
+              "from": "step:learner.plan_first_move",
+              "to": "step:learner.rate_confidence",
+              "action": "Choose or skip a plan",
+              "feedback": "The first question opens.",
+              "links": []
+            },
+            {
+              "id": "transition:learner.answer_to_calibration",
+              "title": "Finish the attempt",
+              "from": "step:learner.rate_confidence",
+              "to": "step:learner.see_calibration",
+              "action": "Submit",
+              "feedback": "Calibration groups appear; sure-and-wrong items are offered to the review queue.",
+              "links": []
+            },
+            {
+              "id": "transition:learner.calibration_to_evaluation",
+              "title": "Look back",
+              "from": "step:learner.see_calibration",
+              "to": "step:learner.write_evaluation",
+              "action": "Write a note or skip",
+              "feedback": "The note is kept in the person's journal.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:learning.reflected_never_computed",
+              "title": "Reflected, never computed",
+              "statement": "Whether someone learned or flourished is reflected back to the person, never computed, ranked or predicted by the system; facts are exact, meaning is the person's.",
+              "classification": "constraint",
+              "origin": "user",
+              "links": []
+            },
+            {
+              "id": "requirement:learner.metacognition_explicit",
+              "title": "Metacognition made explicit",
+              "statement": "Planning, monitoring and evaluating are offered as explicit prompts inside activities, because metacognition must be taught explicitly to have its effect. Project doc claude/learning-that-works.md (evidence, 14 Nov 2026).",
+              "classification": "product",
+              "origin": "source",
+              "links": ["requirement:learning.reflected_never_computed"]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:learner.calibration_core",
+              "title": "Calibration core",
+              "category": "architecture",
+              "reference": "packages/form-builder/src/activity/calibration.ts",
+              "status": "implemented",
+              "note": "confidence and reflected journal steps, calibrationOf (G1).",
+              "links": []
+            },
+            {
+              "id": "binding:learner.plan_moment_rule",
+              "title": "Plan moment rule",
+              "category": "architecture",
+              "reference": "packages/core/src/flows/moments/learningMoments.ts",
+              "status": "implemented",
+              "note": "moment:plan_before_activity and moment:calibration_after_attempt (G1).",
+              "links": []
+            },
+            {
+              "id": "binding:learner.attempt_reflection_flow",
+              "title": "Attempt reflection flow and screen",
+              "category": "mobile",
+              "reference": "packages/core/src/flows/index.ts",
+              "status": "planned",
+              "note": "flow:self:attempt_reflection is not registered yet.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:learner.reflect_after_check",
+              "title": "Reflect after a class check",
+              "transitions": [
+                "transition:learner.plan_to_answer",
+                "transition:learner.answer_to_calibration",
+                "transition:learner.calibration_to_evaluation"
+              ],
+              "expected": "Calibration is shown only to the learner and stored as their facts, not as a judgment of them.",
+              "links": [
+                "requirement:learner.metacognition_explicit",
+                "requirement:learning.reflected_never_computed",
+                "binding:learner.calibration_core",
+                "binding:learner.attempt_reflection_flow"
+              ]
+            }
+          ],
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "id": "intent:learner.recognise_growth",
+      "title": "Recognise what I can now do",
+      "actor": "student",
+      "outcome": "The learner sees their own growing competence, in their own words.",
+      "links": ["journey:learner.claim_growth"],
+      "journeys": [
+        {
+          "id": "journey:learner.claim_growth",
+          "title": "Recognise and keep what I can now do",
+          "situation": "Help has faded on something the learner used to need hints for, or they learned something outside school.",
+          "outcome": "The learner keeps a can-do moment in their own words, with evidence, or lets it pass.",
+          "links": [],
+          "planning": {
+            "maturity": "proposed",
+            "implementation": "partial",
+            "verification": "partial"
+          },
+          "context": "daily",
+          "preconditions": ["The person has opened Gurudevi on their own device."],
+          "entry": "step:learner.growth_offered",
+          "development": {
+            "mode": "greenfield",
+            "existingBehavior": [],
+            "invariants": [
+              "Only the person claims.",
+              "Nothing computes a level, rank or prediction."
+            ],
+            "openQuestions": [
+              "Default areas offered to students, and their wording in si/ta/en.",
+              "Whether guardians see shared moments in Family or messaging."
+            ],
+            "integrationPoints": [
+              "packages/core/src/flows/moments/moments.ts",
+              "docs/architecture/domains/wellbeing/growth.md"
+            ]
+          },
+          "steps": [
+            {
+              "id": "step:learner.growth_offered",
+              "title": "A moment is offered",
+              "interaction": "See the fact: done alone today, two hints last month. Or tap 'I learned something'.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:learner.growth_claimed",
+              "title": "Keep it",
+              "interaction": "Write it in their own words, choose an area, add a photo or voice note, ask someone to witness.",
+              "terminal": true,
+              "links": []
+            },
+            {
+              "id": "step:learner.growth_let_pass",
+              "title": "Let it pass",
+              "interaction": "Dismiss with no mark beyond the offer.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:learner.offer_to_claim",
+              "title": "Keep the moment",
+              "from": "step:learner.growth_offered",
+              "to": "step:learner.growth_claimed",
+              "action": "Claim",
+              "feedback": "The moment joins the person's areas and the radar.",
+              "links": []
+            },
+            {
+              "id": "transition:learner.offer_to_pass",
+              "title": "Let it pass",
+              "from": "step:learner.growth_offered",
+              "to": "step:learner.growth_let_pass",
+              "action": "Dismiss",
+              "feedback": "Nothing is recorded about the person; the engine asks less after repeated dismissals.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:learner.only_person_claims",
+              "title": "Only the person claims",
+              "statement": "A can-do moment exists only when the person claims or declares it; a witness confirms but never creates one, and outside-syllabus learning counts the same.",
+              "classification": "constraint",
+              "origin": "proposal",
+              "links": ["requirement:learning.reflected_never_computed"]
+            },
+            {
+              "id": "requirement:learner.competence_visible",
+              "title": "Competence made visible",
+              "statement": "The learner can see evidence of growing competence, the strongest predictor of self-determined motivation, without a level or score. Project doc claude/learning-that-works.md (evidence, 14 Nov 2026).",
+              "classification": "product",
+              "origin": "source",
+              "links": ["requirement:learning.reflected_never_computed"]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:learner.growth_card",
+              "title": "Growth subdomain card",
+              "category": "documentation",
+              "reference": "docs/architecture/domains/wellbeing/growth.md",
+              "status": "implemented",
+              "note": "Proposed card; L0 encoding is the owner's.",
+              "links": []
+            },
+            {
+              "id": "binding:learner.moments_engine",
+              "title": "Moments engine",
+              "category": "architecture",
+              "reference": "packages/core/src/flows/moments/moments.ts",
+              "status": "implemented",
+              "note": "moment:help_faded with consent, caps, quiet hours and dismissal memory (G1).",
+              "links": []
+            },
+            {
+              "id": "binding:learner.growth_radar",
+              "title": "Person-owned radar",
+              "category": "mobile",
+              "reference": "packages/ui/src/components/native/Radar/Radar.tsx",
+              "status": "planned",
+              "note": "Areas the person chose; self-rating or claimed moments; then and now.",
+              "links": []
+            },
+            {
+              "id": "binding:learner.claim_growth_flow",
+              "title": "Claim growth flow and screen",
+              "category": "mobile",
+              "reference": "packages/core/src/flows/index.ts",
+              "status": "planned",
+              "note": "flow:self:claim_growth is not registered yet.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:learner.claim_after_help_faded",
+              "title": "Keep a moment after help faded",
+              "transitions": ["transition:learner.offer_to_claim"],
+              "expected": "The moment is kept in the person's words, and only they can share it.",
+              "links": [
+                "requirement:learner.only_person_claims",
+                "requirement:learner.competence_visible",
+                "binding:learner.moments_engine",
+                "binding:learner.claim_growth_flow"
+              ]
+            },
+            {
+              "id": "scenario:learner.let_growth_pass",
+              "title": "Let an offer pass",
+              "transitions": ["transition:learner.offer_to_pass"],
+              "expected": "No mark about the person remains; fewer offers follow repeated dismissals.",
+              "links": [
+                "requirement:learning.reflected_never_computed",
+                "binding:learner.moments_engine"
+              ]
+            }
+          ],
+          "evidence": [],
+          "sharedRequirements": ["requirement:learning.reflected_never_computed"]
+        }
+      ]
+    },
+    {
+      "id": "intent:learner.review_spaced",
+      "title": "Keep what I learned",
+      "actor": "student",
+      "outcome": "Things learned come back at the right time.",
+      "links": ["journey:learner.review_session"],
+      "journeys": [
+        {
+          "id": "journey:learner.review_session",
+          "title": "Review what's due, spaced over time",
+          "situation": "Items the learner met days or weeks ago are due for review.",
+          "outcome": "A short, mixed review brings them back, and each item's next review is scheduled.",
+          "links": [],
+          "planning": {
+            "maturity": "proposed",
+            "implementation": "partial",
+            "verification": "partial"
+          },
+          "context": "daily",
+          "preconditions": ["The person has opened Gurudevi on their own device."],
+          "entry": "step:learner.review_offered",
+          "development": {
+            "mode": "mixed",
+            "existingBehavior": [],
+            "invariants": ["Schedules are never shown as a score."],
+            "openQuestions": ["Whether review schedules sync to the server or stay on the device."],
+            "integrationPoints": ["packages/form-builder/src/activity/review.ts"]
+          },
+          "steps": [
+            {
+              "id": "step:learner.review_offered",
+              "title": "Review offered",
+              "interaction": "A gentle offer when items are due, at most once a day.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:learner.review_answering",
+              "title": "Review",
+              "interaction": "Answer a few items, mixed across topics.",
+              "terminal": false,
+              "links": []
+            },
+            {
+              "id": "step:learner.review_done",
+              "title": "Done",
+              "interaction": "See how many came back easily; nothing is scored.",
+              "terminal": true,
+              "links": []
+            }
+          ],
+          "transitions": [
+            {
+              "id": "transition:learner.review_start",
+              "title": "Start reviewing",
+              "from": "step:learner.review_offered",
+              "to": "step:learner.review_answering",
+              "action": "Start",
+              "feedback": "Due items appear, most overdue first, mixed by topic.",
+              "links": []
+            },
+            {
+              "id": "transition:learner.review_finish",
+              "title": "Finish",
+              "from": "step:learner.review_answering",
+              "to": "step:learner.review_done",
+              "action": "Answer the last item",
+              "feedback": "Each item's next review is scheduled from how it went.",
+              "links": []
+            }
+          ],
+          "requirements": [
+            {
+              "id": "requirement:learner.spaced_practice",
+              "title": "Spaced, mixed practice",
+              "statement": "Practice comes back over days and weeks and is mixed across topics, because distributed practice and practice testing have the strongest evidence. Project doc claude/learning-that-works.md (evidence, 14 Nov 2026).",
+              "classification": "product",
+              "origin": "source",
+              "links": ["requirement:learning.reflected_never_computed"]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:learner.review_queue",
+              "title": "Review queue",
+              "category": "architecture",
+              "reference": "packages/form-builder/src/activity/review.ts",
+              "status": "implemented",
+              "note": "Grades from the journal and interleaved due items (G1).",
+              "links": []
+            },
+            {
+              "id": "binding:learner.fsrs_adapter",
+              "title": "FSRS adapter",
+              "category": "architecture",
+              "reference": "packages/form-builder/src/activity/fsrsReview.adapter.ts",
+              "status": "implemented",
+              "note": "ts-fsrs 6.0.0 pinned to FSRS-7 (G1).",
+              "links": []
+            },
+            {
+              "id": "binding:learner.review_flow",
+              "title": "Review session flow and screen",
+              "category": "mobile",
+              "reference": "packages/core/src/flows/index.ts",
+              "status": "planned",
+              "note": "flow:self:review_session is not registered yet.",
+              "links": []
+            }
+          ],
+          "scenarios": [
+            {
+              "id": "scenario:learner.daily_review",
+              "title": "A daily review",
+              "transitions": [
+                "transition:learner.review_start",
+                "transition:learner.review_finish"
+              ],
+              "expected": "Due items come back mixed; schedules stay the person's own.",
+              "links": [
+                "requirement:learner.spaced_practice",
+                "binding:learner.review_queue",
+                "binding:learner.review_flow"
+              ]
+            }
+          ],
+          "evidence": [],
+          "sharedRequirements": ["requirement:learning.reflected_never_computed"]
         }
       ]
     }
