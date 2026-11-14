@@ -10,6 +10,7 @@
 
 export { initialsOf } from '../shared/initials';
 export { toast } from '../shared/toasts';
+export { listenForFeedback } from '../shared/feedbackToasts';
 export { celebrate, WorldMomentHost } from './Moment/WorldMoment';
 export {
   ApprovalCard,

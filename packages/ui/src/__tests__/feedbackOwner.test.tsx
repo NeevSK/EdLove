@@ -2,15 +2,27 @@ import { showToast } from '@repo/core/lib/feedback.adapter';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { act, render } from '@testing-library/react-native';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { ToastHost } from '../components/native/Toast/ToastHost';
+import { resetToasts } from '../components/shared/toasts';
 import { ToastProvider } from '../providers/ToastProvider';
 
-afterEach(() => {
+vi.mock('../utils/haptics', () => ({ hapticImpact: vi.fn(), haptic: vi.fn() }));
+vi.mock('react-native-worklets', () => ({
+  scheduleOnRN: (fn: (...args: unknown[]) => void, ...args: unknown[]) => fn(...args),
+}));
+vi.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+
+
+afterEach(async () => {
+  await act(() => resetToasts());
   vi.useRealTimers();
 });
 describe('canonical feedback host', () => {
   it('clears outgoing account feedback when scoped state is reset', async () => {
     vi.useFakeTimers();
-    const view = await render(<ToastProvider>{null}</ToastProvider>);
+    const view = await render(<ToastProvider><ToastHost /></ToastProvider>);
     await act(async () => {
       showToast('Outgoing account', 'info');
     });
@@ -23,7 +35,7 @@ describe('canonical feedback host', () => {
   });
   it('renders imperative requests without auth state and retains the requested duration', async () => {
     vi.useFakeTimers();
-    const view = await render(<ToastProvider>{null}</ToastProvider>);
+    const view = await render(<ToastProvider><ToastHost /></ToastProvider>);
     await act(async () => {
       showToast('Saved offline', 'info', 5000);
     });
@@ -40,7 +52,7 @@ describe('canonical feedback host', () => {
   });
   it('releases its bus listener before a replacement host mounts', async () => {
     vi.useFakeTimers();
-    const first = await render(<ToastProvider>{null}</ToastProvider>);
+    const first = await render(<ToastProvider><ToastHost /></ToastProvider>);
     await act(async () => {
       showToast('Outgoing', 'success');
     });
@@ -49,7 +61,7 @@ describe('canonical feedback host', () => {
     await act(async () => {
       showToast('No host', 'error');
     });
-    const replacement = await render(<ToastProvider>{null}</ToastProvider>);
+    const replacement = await render(<ToastProvider><ToastHost /></ToastProvider>);
     expect(replacement.queryByText('No host')).toBeNull();
     await act(async () => {
       showToast('Incoming', 'info');

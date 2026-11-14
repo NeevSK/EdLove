@@ -12,7 +12,6 @@ import {
   KeypadHost,
   registerFloorPictures,
   TypingBar,
-  toast,
   ToastHost,
   WorldMomentHost,
   WorldStage,
@@ -74,23 +73,6 @@ import { useSomaticShake } from '@/somatic/useSomaticShake';
 registerFloorPictures(FLOOR_PICTURES, FLOOR_PICTURES_WIDE);
 
 const readLocalGuestId = async () => (await readLocalGuestSession())?.id ?? null;
-
-/** Every app toast is drawn by the world's own toast host, in the world's surface and words. */
-function toWorldToast({
-  message,
-  type,
-  duration,
-}: {
-  message: string;
-  type: string;
-  duration: number;
-}) {
-  toast.show({
-    message,
-    tone: type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info',
-    durationMs: duration,
-  });
-}
 
 export function EntryShell() {
   const pathname = usePathname();
@@ -170,7 +152,7 @@ export function EntryShell() {
                       <PersonalPreferences />
                       <CircadianProvider>
                         <PortalProvider>
-                          <ToastProvider delegate={toWorldToast}>
+                          <ToastProvider>
                             <ExternalLinkProvider>
                               <DeepLinkProvider>
                                 <AuthQueryCacheBoundary />
