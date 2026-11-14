@@ -303,6 +303,11 @@ Evidence was gathered on 2026-11-12 with ripgrep over `packages/` and `apps/`. R
 
 - **Today.** `ui/theme/feedback.ts` exists; haptics imported directly in 16 files; toasts fired from
   51 files.
+- **Done 2026-11-14.** One toast engine and host on both platforms (`ui/components/shared/toasts`,
+  `ToastHost` native and web): sizes, stacking, banners, keys, `promise`, pause/resume, swipe, world
+  motion. Every source arrives there: kit `toast`, core `showToast` via `listenForFeedback`, and the
+  older `useSanctuaryToast`/`useToast` facade. `sonner-native` and Gluestack toast drawing are gone.
+  Still open: outcome table (screens emit outcomes, not toasts), offline/sync banners, undo.
 - **Baseline.** One feedback channel: screens emit outcomes, not toasts. A table maps each outcome
   to its toast, haptic, sound and inline state. Direct `expo-haptics` imports outside the channel are
   ratcheted to 0.
