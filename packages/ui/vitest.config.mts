@@ -26,6 +26,10 @@ export default defineConfig({
         replacement: new URL('./vitest-nativewind-mock.ts', import.meta.url).pathname,
       },
       {
+        find: '@swmansion/react-native-bottom-sheet',
+        replacement: new URL('./vitest-bottom-sheet-mock.tsx', import.meta.url).pathname,
+      },
+      {
         find: 'expo-image',
         replacement: new URL('./vitest-expo-ui-mock.ts', import.meta.url).pathname,
       },
