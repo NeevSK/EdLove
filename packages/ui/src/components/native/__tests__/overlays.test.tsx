@@ -132,6 +132,8 @@ describe('ToastHost', { tags: ['a11y', 'interaction', 'unit'] }, () => {
       toast.show({ message: 'Could not sync', tone: 'danger' });
       toast.show({ message: 'Deleted', action: { label: 'Undo', onPress: undo } });
     });
+    // Gathered, only the newest is read; fanned out, every toast is.
+    await fireEvent.press(screen.getByTestId('toast-stack'));
     const parentRole = (text: string) => {
       let node = screen.getByText(text).parent;
       while (node && node.props.role === undefined) node = node.parent;
@@ -142,6 +144,45 @@ describe('ToastHost', { tags: ['a11y', 'interaction', 'unit'] }, () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Undo' }));
     expect(undo).toHaveBeenCalledTimes(1);
     expect(screen.queryByText('Deleted')).toBeNull();
+  });
+
+  it('gathers several into a stack where only the newest is read', async () => {
+    await render(<ToastHost />);
+    await act(() => {
+      toast.show({ message: 'First' });
+      toast.show({ message: 'Second' });
+    });
+    expect(screen.getByText('Second')).toBeTruthy();
+    expect(screen.queryByText('First')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Show all 2 notifications' })).toBeTruthy();
+  });
+
+  it('gives each size its own place: banners at the top, the rest in the stack', async () => {
+    await render(<ToastHost />);
+    await act(() => {
+      toast.show({ message: 'Offline', size: 'banner' });
+      toast.show({ message: 'Copied', size: 'pill' });
+    });
+    expect(screen.getByTestId('toast-banners')).toBeTruthy();
+    expect(screen.getByTestId('toast-banner')).toBeTruthy();
+    expect(screen.getByTestId('toast-pill')).toBeTruthy();
+  });
+
+  it('counts repeats under one key and shows a pending toast until it resolves', async () => {
+    await render(<ToastHost />);
+    await act(() => {
+      toast.show({ message: 'Retrying', key: 'sync' });
+      toast.show({ message: 'Retrying', key: 'sync' });
+    });
+    expect(screen.getByText('×2')).toBeTruthy();
+    let finish: (v: string) => void = () => {};
+    await act(() => {
+      void toast.promise(new Promise<string>((r) => { finish = r; }), { loading: 'Uploading', success: 'Uploaded', error: 'Upload failed' });
+    });
+    await fireEvent.press(screen.getByTestId('toast-stack'));
+    expect(screen.getByText('Uploading')).toBeTruthy();
+    await act(async () => { finish('ok'); });
+    expect(screen.getByText('Uploaded')).toBeTruthy();
   });
 });
 
