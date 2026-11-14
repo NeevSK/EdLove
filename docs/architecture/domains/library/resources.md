@@ -39,7 +39,7 @@ manifest and download planning are built now in `@repo/library/content`.
   - its authors and contributors, using the editorial roles (`author`, `translator`, `editor`, `reviewer`, `curator`). Owner kind is **person**, or **public** once published;
   - an optional institution, when a school publishes it officially.
 - **Version.** An immutable snapshot of a work. Attempts, journal steps, shares and alignments all name a version, so changing a lesson never rewrites what a learner did. It holds:
-  - its body, by kind: page blocks, a file reference, an H5P package, or a form schema;
+  - its body, by kind: Gurudevi Markdown for pages and slides ([content authoring and formats](../../2026-11-14-content-authoring-and-formats.md)), a file reference, an H5P package, or a form schema;
   - its licence (an SPDX or Creative Commons identifier) and attribution;
   - its source, when curated or licensed (the editorial `ExternalSource`);
   - its review state: `draft` → `in_review` → (`rights_review`) → `published` · `withdrawn`;
@@ -105,6 +105,6 @@ A pack is the files of one version, with a manifest (`gurudevi-pack.json`) listi
 
 ## Open questions
 
-- **Page blocks.** Which block editor (or Markdown) is the page body? _Default:_ a small block set (text, image, video, H5P, activity, callout, maths), stored as JSON.
+- **Page body.** Settled as Gurudevi Markdown with named blocks (activity, H5P, video, callouts, hints, maths), not an editor's JSON. See [content authoring and formats](../../2026-11-14-content-authoring-and-formats.md). Which editor teachers get is still open.
 - **Who reviews official content.** Is it per institution or national? _Default:_ per institution, with a separate ministry mark.
 - **Teachers' copies.** Does editing someone else's published work make a fork (a new work) or a suggestion? _Default:_ a fork that credits the original, as `LibraryCollection.original_collection_id` does today.
