@@ -61,6 +61,17 @@ An attempt is a list of steps, append-only and keyed by ids made on the device:
   - Candidate adapters, not yet added: `react-native-tcp-socket` 6.4.3 with `react-native-zeroconf` 0.17.7, and `expo-nearby-connections` 1.1.1 (needs Nitro Modules).
 - **Not built yet:** in a post (poll), in a relation's thread (shared to one learner), and in a reading (at a place in a document).
 
+## Learning loops on the journal
+
+Each of these reads the journal and, like the rest of this folder, stores no judgment of the person. The evidence behind each is in the project doc `claude/learning-that-works.md`.
+
+| File | Loop | What it does |
+| --- | --- | --- |
+| `calibration.ts` | Metacognition | `confidence` and `reflected` (plan, monitor, evaluate) journal steps. `calibrationOf` sorts answers into sure and right, sure and wrong, unsure but right, unsure and wrong, to reflect back to the person. |
+| `review.ts`, `fsrsReview.adapter.ts` | Spacing | Grades from the journal (wrong is again; helped or unsure is hard; alone and sure is good; easy is never inferred), schedules on FSRS-7 through `ts-fsrs` 6.0.0, and offers what is due, mixed across topics. |
+| `classView.ts` | The teacher's view | Per question: answered, right, right alone, and the most common wrong answers. Computed at read time; names no one. |
+| `fromH5P.ts` | One journal | H5P answers become journal steps under their part; a top-level completion ends the activity. |
+
 ## Not built yet
 
 1. **The runner reads a `ModePolicy`.** `QuizRunner` takes the policy and writes journal steps (`hintsUsed` reaches marking today but is dropped from `QuizAttempt`).
@@ -71,4 +82,4 @@ An attempt is a list of steps, append-only and keyed by ids made on the device:
 
 ## Evidence
 
-G1 only: `vitest run src/activity src/quiz` passes 65 tests. tsc shows no errors in these files (44 pre-existing errors elsewhere in the package). The tests prove the rules under substituted time and answers. They don't prove a real player, a device or the screens.
+G1 only: `vitest run src/activity src/quiz` passes 83 tests. tsc shows no errors in these files (44 pre-existing errors elsewhere in the package). The tests prove the rules under substituted time and answers. They don't prove a real player, a device or the screens.
