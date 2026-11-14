@@ -1,6 +1,8 @@
 // How an activity runs (its mode), what happened in an attempt (its journal), and where it
 // can sit (on a video's timeline). Pure: no React, storage or network, and nothing named after
 // an app. boundary.test.ts holds that, so these can be published with the form builder.
+
+export { type FromH5P, fromH5PEvent, type H5PEventLike } from './fromH5P';
 export {
   type AssistanceKind,
   type AttemptStep,
