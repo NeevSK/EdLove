@@ -68,6 +68,11 @@ export interface ActiveSubTabsState {
   pinnedFeatureIdsByDomain: Record<string, string[]>;
   preferences: NavigationPreferences;
   isChromeVisible: boolean;
+  /**
+   * How many overlays (an open side panel) are covering the screen right now. While any are, the
+   * shell tucks its chrome away with the same animation as scrolling does; not persisted.
+   */
+  chromeCovers: number;
   openTab: (tab: ActiveSubTabInput) => void;
   closeTab: (domain: ActiveSubTabDomain, tabId: string) => ActiveSubTabCloseResult;
   setActiveTab: (domain: ActiveSubTabDomain, tabId: string) => void;
@@ -77,6 +82,8 @@ export interface ActiveSubTabsState {
   isFeaturePinned: (domain: string, featureId: string) => boolean;
   reorderPinnedFeatures: (domain: string, featureIds: string[]) => void;
   setChromeVisible: (visible: boolean) => void;
+  /** Covers the chrome until the returned release is called; releasing twice is harmless. */
+  coverChrome: () => () => void;
   updatePreferences: (updates: Partial<NavigationPreferences>) => void;
   resetPreferences: () => void;
 }
@@ -276,6 +283,7 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
       pinnedFeatureIdsByDomain: DEFAULT_PINNED_FEATURES,
       preferences: DEFAULT_PREFERENCES,
       isChromeVisible: true,
+      chromeCovers: 0,
 
       openTab: (input) => {
         if (!isWorkbenchDomain(input.domain)) return;
@@ -444,6 +452,15 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
         })),
       setChromeVisible: (visible) => {
         if (get().isChromeVisible !== visible) set({ isChromeVisible: visible });
+      },
+      coverChrome: () => {
+        set((state) => ({ chromeCovers: state.chromeCovers + 1 }));
+        let released = false;
+        return () => {
+          if (released) return;
+          released = true;
+          set((state) => ({ chromeCovers: Math.max(0, state.chromeCovers - 1) }));
+        };
       },
       updatePreferences: (updates) =>
         set((state) => ({ preferences: { ...state.preferences, ...updates } })),

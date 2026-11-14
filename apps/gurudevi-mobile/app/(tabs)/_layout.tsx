@@ -366,7 +366,11 @@ function TabsLayoutContent() {
   // A screen reader moves through the page by swipes, so a bar that tucks away on scroll (and
   // leaves the reader's reach while tucked) would strand the person: with one on, chrome stays.
   const { isScreenReaderEnabled } = useAccessibility();
-  const chromeShown = !autoHideChromeOnScroll || isChromeVisible || isScreenReaderEnabled;
+  // An open side panel covers the screen: the chrome tucks away under it with the same motion as
+  // scrolling, and returns when the panel closes. The panel is modal, so nothing is out of reach.
+  const chromeCovered = useActiveSubTabsStore((s) => s.chromeCovers > 0);
+  const chromeShown =
+    !chromeCovered && (!autoHideChromeOnScroll || isChromeVisible || isScreenReaderEnabled);
 
   const [youOpen, setYouOpen] = useState(false);
   const [worldOpen, setWorldOpen] = useState(false);
